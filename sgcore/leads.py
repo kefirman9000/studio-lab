@@ -18,6 +18,9 @@ GENRE_DEVICES = {
     'reggae': ['call', 'hook'], 'dnb': ['hook', 'chops'], 'jungle': ['chops', 'hook'], 'dubstep': ['hook', 'riff'],
     'breakcore': ['arp', 'chops'], 'downtempo': ['hook', 'call'], 'vaporwave': ['hook', 'chops'], 'city_pop': ['hook', 'call'],
     'pop': ['hook', 'call'], 'folk': ['hook', 'call'], 'bossa_nova': ['hook', 'call'],
+    'neoclassical': ['hook'], 'chamber': ['hook', 'call'], 'baroque': ['arp', 'hook'], 'fantasy_rpg': ['hook', 'call'],
+    'hybrid_trailer': ['hook', 'ostinato'], 'orchestral_hiphop': ['bell', 'hook'], 'symphonic_metal': ['hook', 'riff'],
+    'holiday': ['hook', 'call'], 'western': ['hook', 'call'], 'chamber_pop': ['hook', 'call'],
 }
 DEVICES = ['hook', 'arp', 'riff', 'ostinato', 'bell', 'call', 'chops']
 

@@ -9,6 +9,20 @@ GM_DRUM = {'kick': 36, 'chipkick': 36, 'snare': 38, 'chipsnare': 38, 'clap': 39,
            'conga': 63, 'taiko': 41, 'timp': 43, 'snap': 39, 'tamb': 54, 'woodblock': 76}
 
 
+
+def gm_program(t):
+    """General MIDI program for a track: sampled ('sf:cello') and plugin ('vst:...') parts use the instrument they stand for."""
+    inst = t['inst']
+    if inst.startswith('vst:'):
+        inst = t.get('rig_from') or t.get('fallback') or inst
+    if inst.startswith('sf:'):
+        from . import soundfont as sfm
+        hit = sfm.SAMPLED.get(inst[3:])
+        if hit and hit[0] == 0:
+            return hit[1]
+        inst = sfm.FALLBACK.get(inst[3:], inst[3:])
+    return GM_PROGRAM.get(inst, 0)
+
 def _vlq(n):
     out = [n & 0x7F]
     n >>= 7
@@ -67,7 +81,7 @@ def write_midi(path, song):
         if ch == 9:
             ch += 1
         chn = ch % 16
-        out = [(0, 0, bytes([0xC0 | chn, GM_PROGRAM.get(t['inst'], 0)]))]
+        out = [(0, 0, bytes([0xC0 | chn, gm_program(t)]))]
         for e in evs:
             tk = int(round(e.beat * ppq))
             te = tk + max(1, int(round(e.dur * ppq)))
@@ -140,6 +154,13 @@ SUGGEST = {
     'celesta': 'Celesta - BBC SO Discover "Celeste"; GM 8',
     'piano': 'Piano - Spitfire LABS "Soft Piano" or any free grand; GM 0',
     'softlead': 'Flute - BBC SO Discover "Flute"; GM 73',
+    'spiccato': 'Short strings - BBC SO Discover "Strings" spiccato/staccato articulation; GM 48 with short notes',
+    'tremolo': 'Tremolo strings - BBC SO Discover "Strings" tremolo articulation; GM 44',
+    'cello': 'Solo cello / celli - BBC SO Discover "Celli", Spitfire LABS "Solo Cello"; GM 42',
+    'harpsichord': 'Harpsichord - any free harpsichord (pianobook.co.uk); GM 6',
+    'clarinet': 'Clarinet - BBC SO Discover "Clarinet"; GM 71',
+    'oboe': 'Oboe - BBC SO Discover "Oboe"; GM 68',
+    'braam': 'Trailer braam - BBC SO Discover low brass (trombones/tuba) layered with a distorted synth; GM 61',
 }
 
 

@@ -356,20 +356,20 @@ SAMPLED = {
     'odguitar': (0, 29, 'Overdriven guitar', 0.6), 'distguitar': (0, 30, 'Distortion guitar', 0.6),
     'pickbass': (0, 34, 'Picked bass', 0.4), 'slapbass': (0, 36, 'Slap bass', 0.4),
     'mutedtrumpet': (0, 59, 'Muted trumpet', 0.4), 'tenorsax': (0, 66, 'Tenor sax', 0.4),
+    'harpsichord': (0, 6, 'Harpsichord', 1.0), 'spiccato': (0, 48, 'Staccato strings', 0.25),
 }
 # Extra realistic instruments that only exist as samples (shown in the instrument lists when the library is installed)
 SAMPLED_ONLY = ['nylon', 'cleanguitar', 'muted', 'odguitar', 'distguitar', 'acbass', 'fingerbass', 'pickbass', 'slapbass',
-                'viola', 'cello', 'contrabass', 'tremolo', 'slowstrings', 'trumpet', 'mutedtrumpet', 'trombone', 'tuba',
-                'oboe', 'bassoon', 'clarinet', 'piccolo', 'tenorsax']
+                'viola', 'contrabass', 'slowstrings', 'trumpet', 'mutedtrumpet', 'trombone', 'tuba',
+                'bassoon', 'piccolo', 'tenorsax']
 # built-in synth stand-ins for when the library is missing (or a sample can't be played)
 FALLBACK = {'nylon': 'guitar', 'cleanguitar': 'guitar', 'muted': 'pluck', 'odguitar': 'guitar', 'distguitar': 'guitar',
-            'acbass': 'pluck', 'fingerbass': 'pluck', 'pickbass': 'pluck', 'slapbass': 'fmbass', 'viola': 'strings',
-            'cello': 'strings', 'contrabass': 'strings', 'tremolo': 'strings', 'slowstrings': 'strings', 'trumpet': 'brass',
-            'mutedtrumpet': 'brass', 'trombone': 'brass', 'tuba': 'brass', 'oboe': 'flute', 'bassoon': 'flute',
-            'clarinet': 'flute', 'piccolo': 'flute', 'tenorsax': 'sax', 'taikodrum': 'timpani'}
+            'acbass': 'pluck', 'fingerbass': 'pluck', 'pickbass': 'pluck', 'slapbass': 'fmbass', 'viola': 'violin',
+            'contrabass': 'cello', 'slowstrings': 'strings', 'trumpet': 'brass',
+            'mutedtrumpet': 'brass', 'trombone': 'horn', 'tuba': 'horn', 'bassoon': 'clarinet', 'piccolo': 'flute', 'tenorsax': 'sax', 'taikodrum': 'timpani'}
 # electronic genres only swap instruments that are obviously acoustic
 ELECTRONIC_SWAP = {'piano', 'epiano', 'guitar', 'violin', 'harp', 'flute', 'sax', 'marimba', 'kalimba', 'steeldrum',
-                   'celesta', 'pizz', 'clav'}
+                   'celesta', 'pizz', 'clav', 'cello', 'harpsichord', 'oboe', 'clarinet', 'spiccato', 'tremolo'}
 
 
 def fallback_for(name):
@@ -379,7 +379,8 @@ def fallback_for(name):
     return FALLBACK.get(name, 'pluck_saw')
 # Built-in names that sound noticeably better sampled; 'auto' engine swaps these for acoustic genres
 ACOUSTIC = {'piano', 'epiano', 'clav', 'celesta', 'marimba', 'organ', 'guitar', 'violin', 'pizz', 'harp', 'timpani',
-            'strings', 'choir', 'horn', 'brass', 'sax', 'flute', 'kalimba', 'steeldrum', 'bell'}
+            'strings', 'choir', 'horn', 'brass', 'sax', 'flute', 'kalimba', 'steeldrum', 'bell',
+            'cello', 'tremolo', 'spiccato', 'harpsichord', 'clarinet', 'oboe'}
 
 # GM drum notes, and which GS kit suits which Studio Lab kit
 GM_DRUM = {'kick': 36, 'snare': 38, 'clap': 39, 'snap': 39, 'rim': 37, 'chat': 42, 'ohat': 46, 'ride': 51, 'crash': 49,

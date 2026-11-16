@@ -82,6 +82,21 @@ PATCHES = {
         'Filter Attack': 0.0, 'Filter Decay': 0.28, 'Filter Sustain': 0.0, 'Amp Attack': 0.0, 'Amp Sustain': 0.9,
         'Amp Release': 0.08, 'Portamento Amount': 0.15, 'Chorus 1 Enable': OFF, 'Chorus 2 Enable': OFF,
         'Delay Wet': 0.0, 'Reverb Wet': 0.0}),
+    'tal.strings': dict(player='tal', label='Juno strings', required=['Amp Attack'], params={
+        'Osc 1 Waveform': 'saw', 'Osc 2 Waveform': 'saw', 'Osc 1 Volume': 0.8, 'Osc 2 Volume': 0.75, 'Osc 3 Volume': 0.0,
+        'Master Detune': 0.18, 'Filter Type': 'LP 24', 'Filter Cutoff': 0.58, 'Filter Resonance': 0.05, 'Filter Contour': 0.05,
+        'Amp Attack': 0.3, 'Amp Decay': 0.5, 'Amp Sustain': 1.0, 'Amp Release': 0.45,
+        'Chorus 1 Enable': ON, 'Chorus 2 Enable': ON, 'Reverb Wet': 0.2, 'Delay Wet': 0.0}),
+    'tal.fat_bass': dict(player='tal', label='Fat square bass', required=['Filter Cutoff'], params={
+        'Osc 1 Waveform': 'pulse', 'Osc 2 Waveform': 'saw', 'Osc 1 Volume': 0.8, 'Osc 2 Volume': 0.5, 'Osc 3 Volume': 0.7,
+        'Master Detune': 0.05, 'Filter Type': 'LP 24', 'Filter Cutoff': 0.3, 'Filter Resonance': 0.25, 'Filter Contour': 0.45,
+        'Filter Attack': 0.0, 'Filter Decay': 0.28, 'Filter Sustain': 0.2, 'Amp Attack': 0.0, 'Amp Decay': 0.5,
+        'Amp Sustain': 0.9, 'Amp Release': 0.08, 'Chorus 1 Enable': OFF, 'Chorus 2 Enable': OFF, 'Delay Wet': 0.0, 'Reverb Wet': 0.0}),
+    'tal.square_lead': dict(player='tal', label='Square lead', required=['Filter Cutoff'], params={
+        'Osc 1 Waveform': 'pulse', 'Osc 2 Waveform': 'pulse', 'Osc 1 Volume': 0.8, 'Osc 2 Volume': 0.5, 'Osc 3 Volume': 0.0,
+        'Master Detune': 0.1, 'Filter Type': 'LP 24', 'Filter Cutoff': 0.7, 'Filter Resonance': 0.1, 'Filter Contour': 0.2,
+        'Amp Attack': 0.01, 'Amp Sustain': 0.9, 'Amp Release': 0.2, 'Portamento Amount': 0.08,
+        'Chorus 1 Enable': ON, 'Delay Wet': 0.18, 'Reverb Wet': 0.12}),
     # ---- TB-303 clones (JC303 and Nekobi share the 303 panel names)
     'jc303.acid': dict(player='jc303', label='303 acid', required=['Cutoff', 'Resonance'], params={
         'Waveform': 0.0, 'Cutoff': 0.28, 'Resonance': 0.82, 'Env Mod|Envmod': 0.65, 'Decay': 0.4, 'Accent': 0.6, 'Volume': 0.8}),
@@ -104,6 +119,15 @@ PATCHES = {
     'dexed.bass': dict(player='dexed', label='DX7 Bass 1', program=['BASS 1', 14], params={}),
     'dexed.organ': dict(player='dexed', label='DX7 E.Organ', program=['E.ORGAN 1', 16], params={}),
     'dexed.koto': dict(player='dexed', label='DX7 Koto', program=['KOTO', 22], params={}),
+    'dexed.brass': dict(player='dexed', label='DX7 Brass 1', program=['BRASS 1', 0], params={}),
+    'dexed.strings': dict(player='dexed', label='DX7 Strings 1', program=['STRINGS 1', 3], params={}),
+    'dexed.piano': dict(player='dexed', label='DX7 Piano 1', program=['PIANO 1', 7], params={}),
+    'dexed.synlead': dict(player='dexed', label='DX7 Syn-Lead 1', program=['SYN-LEAD 1', 13], params={}),
+    'dexed.bass2': dict(player='dexed', label='DX7 Bass 2', program=['BASS 2', 15], params={}),
+    'dexed.harpsichord': dict(player='dexed', label='DX7 Harpsichord', program=['HARPSICH 1', 18], params={}),
+    'dexed.flute': dict(player='dexed', label='DX7 Flute 1', program=['FLUTE 1', 23], params={}),
+    'dexed.chime': dict(player='dexed', label='DX7 Orch-Chime', program=['ORCH-CHIME', 24], params={}),
+    'dexed.voice': dict(player='dexed', label='DX7 Voice 1', program=['VOICE 1', 29], params={}),
     # ---- Surge XT: from its init patch (scene A). Surge names parameters "A Osc 1 ...", "A Filter 1 ...".
     'surge.supersaw': dict(player='surge', label='Supersaw', required=['A Osc 1 Unison Voices'], params={
         'A Osc 1 Unison Voices|Osc 1 Unison Voices': 0.4, 'A Osc 1 Unison Detune|Osc 1 Unison Detune': 0.32,
@@ -125,6 +149,17 @@ PATCHES = {
         'A Osc 1 Unison Voices|Osc 1 Unison Voices': 0.2, 'A Osc 1 Unison Detune|Osc 1 Unison Detune': 0.2,
         'A Filter 1 Cutoff|Filter 1 Cutoff': 0.6, 'A Amp EG Attack|Amp EG Attack': 0.0, 'A Amp EG Decay|Amp EG Decay': 0.42,
         'A Amp EG Sustain|Amp EG Sustain': 0.0, 'A Amp EG Release|Amp EG Release': 0.4}),
+    'surge.wide_pad': dict(player='surge', label='Wide unison pad', required=['A Osc 1 Unison Voices'], params={
+        'A Osc 1 Unison Voices|Osc 1 Unison Voices': 0.55, 'A Osc 1 Unison Detune|Osc 1 Unison Detune': 0.4,
+        'A Filter 1 Cutoff|Filter 1 Cutoff': 0.6, 'A Amp EG Attack|Amp EG Attack': 0.45, 'A Amp EG Release|Amp EG Release': 0.68}),
+    'surge.dark_supersaw': dict(player='surge', label='Dark supersaw', required=['A Osc 1 Unison Voices'], params={
+        'A Osc 1 Unison Voices|Osc 1 Unison Voices': 0.47, 'A Osc 1 Unison Detune|Osc 1 Unison Detune': 0.22,
+        'A Filter 1 Cutoff|Filter 1 Cutoff': 0.62, 'A Filter 1 Resonance|Filter 1 Resonance': 0.15,
+        'A Amp EG Attack|Amp EG Attack': 0.1, 'A Amp EG Release|Amp EG Release': 0.5, 'A Amp EG Sustain|Amp EG Sustain': 1.0}),
+    'surge.bright_pluck': dict(player='surge', label='Bright pluck', required=['A Amp EG Sustain'], params={
+        'A Osc 1 Unison Voices|Osc 1 Unison Voices': 0.27, 'A Osc 1 Unison Detune|Osc 1 Unison Detune': 0.15,
+        'A Filter 1 Cutoff|Filter 1 Cutoff': 0.78, 'A Amp EG Attack|Amp EG Attack': 0.0, 'A Amp EG Decay|Amp EG Decay': 0.35,
+        'A Amp EG Sustain|Amp EG Sustain': 0.0, 'A Amp EG Release|Amp EG Release': 0.35}),
     'surge.saw_lead': dict(player='surge', label='Saw lead', required=['A Filter 1 Cutoff'], params={
         'A Osc 1 Unison Voices|Osc 1 Unison Voices': 0.07, 'A Osc 1 Unison Detune|Osc 1 Unison Detune': 0.15,
         'A Filter 1 Cutoff|Filter 1 Cutoff': 0.75, 'A Amp EG Attack|Amp EG Attack': 0.0, 'A Amp EG Release|Amp EG Release': 0.35}),
@@ -133,20 +168,26 @@ PATCHES = {
 # what each built-in instrument becomes, best first (synths: only in electronic styles unless marked 'any')
 ROLE_PATCHES = {
     'acid': ['jc303.acid', 'nekobi.acid', 'tal.acid'],
-    'sawbass': ['tal.saw_bass', 'surge.saw_bass', 'jc303.bass', 'nekobi.bass'],
+    'sawbass': ['tal.saw_bass', 'surge.saw_bass', 'tal.fat_bass', 'jc303.bass', 'nekobi.bass'],
     'reese': ['surge.reese', 'tal.reese'],
     'wobble': [],                                              # LFO-routed wobbles stay built-in
-    'fmbass': ['dexed.bass'],
+    'fmbass': ['dexed.bass', 'dexed.bass2', 'tal.fat_bass'],
     'chipbass': [], 'sinebass': [], '808': [],                # sub-heavy parts sound best from the built-in engine
-    'supersaw': ['surge.supersaw', 'tal.analog_pad'],
+    'supersaw': ['surge.supersaw', 'surge.dark_supersaw', 'tal.analog_pad'],
     'supersaw_lead': ['surge.supersaw_lead', 'tal.80s_lead'],
-    'warmpad': ['tal.analog_pad', 'surge.warm_pad'],
-    'stab': ['tal.brass_stab', 'surge.pluck'],
-    'pluck_saw': ['tal.pluck', 'surge.pluck'],
-    'leadsaw': ['tal.80s_lead', 'surge.saw_lead'],
-    'softlead': ['tal.soft_lead'],
-    'pluck': ['kars.pluck', 'tal.pluck'],
-    'epiano': ['dexed.epiano'], 'clav': ['dexed.clav'], 'marimba': ['dexed.marimba'], 'bell': ['dexed.bells'],
+    'warmpad': ['tal.analog_pad', 'surge.warm_pad', 'surge.wide_pad'],
+    'strings': ['tal.strings', 'dexed.strings', 'surge.wide_pad'],
+    'stab': ['tal.brass_stab', 'surge.pluck', 'surge.bright_pluck'],
+    'brass': ['tal.brass_stab', 'dexed.brass'],
+    'pluck_saw': ['tal.pluck', 'surge.pluck', 'surge.bright_pluck'],
+    'leadsaw': ['tal.80s_lead', 'surge.saw_lead', 'tal.square_lead', 'dexed.synlead'],
+    'softlead': ['tal.soft_lead', 'dexed.flute'],
+    'pluck': ['kars.pluck', 'tal.pluck', 'surge.bright_pluck'],
+    'chip': ['tal.square_lead'],
+    'vox': ['dexed.voice'],
+    'piano': ['dexed.piano'], 'harpsichord': ['dexed.harpsichord'], 'flute': ['dexed.flute'],
+    'epiano': ['dexed.epiano'], 'clav': ['dexed.clav'], 'marimba': ['dexed.marimba'], 'bell': ['dexed.bells', 'dexed.chime', 'dexed.vibes'],
+    'celesta': ['dexed.chime', 'dexed.vibes'],
     'steeldrum': ['dexed.steeldrum'], 'kalimba': ['dexed.koto'], 'cowbell': [], 'organ': ['dexed.organ'],
 }
 ANY_CATEGORY = {'epiano', 'clav', 'marimba', 'steeldrum', 'kalimba', 'fmbass'}   # FM keys also suit funk, city pop, bossa, reggae
@@ -164,20 +205,41 @@ SOUND_WORDS = {
     'leadsaw': ['lead'], 'softlead': ['lead'], 'hoover': ['hoover', 'lead'], 'stab': ['stab', 'chords'],
     'pluck': ['pluck'], 'pluck_saw': ['pluck'], 'acid': ['acid', '303'], '808': ['808'],
     'sawbass': ['bass'], 'reese': ['reese', 'bass'], 'fmbass': ['bass'], 'sinebass': ['sub', 'bass'], 'wobble': ['wobble', 'bass'],
+    # orchestra sections and articulations (BBC Symphony Orchestra / LABS / Kontakt sounds you saved)
+    'spiccato': ['spiccato', 'staccato', 'short', 'ostinato', 'marcato', 'strings', 'string'],
+    'tremolo': ['tremolo', 'trem', 'strings', 'string'], 'slowstrings': ['legato', 'long', 'strings', 'string'],
+    'cello': ['cello', 'celli', 'low strings', 'basses', 'strings'], 'viola': ['viola', 'violas', 'strings'],
+    'contrabass': ['contrabass', 'basses', 'double bass', 'celli', 'cello'], 'harpsichord': ['harpsichord', 'cembalo'],
+    'clarinet': ['clarinet', 'clarinets', 'woodwind', 'woodwinds'], 'oboe': ['oboe', 'oboes', 'woodwind', 'woodwinds'],
+    'bassoon': ['bassoon', 'bassoons', 'woodwind'], 'piccolo': ['piccolo', 'flute'],
+    'trumpet': ['trumpet', 'trumpets', 'brass'], 'trombone': ['trombone', 'trombones', 'low brass', 'brass'],
+    'tuba': ['tuba', 'low brass'], 'braam': ['braam', 'low brass', 'trombone', 'trombones', 'tuba', 'brass', 'horns', 'horn'],
 }
+# articulation words: a long-note part never picks a short-note sound (and the reverse) while a better one exists
+SHORT_WORDS = ('spiccato', 'staccato', 'short', 'pizz', 'pizzicato', 'marcato', 'ostinato')
+LONG_ROLES = {'strings', 'violin', 'slowstrings', 'cello', 'viola', 'contrabass', 'tremolo', 'horn', 'brass', 'choir', 'vox', 'braam'}
 SAMPLER_ROLES = {k for k in SOUND_WORDS if k in ('strings', 'violin', 'pizz', 'horn', 'brass', 'harp', 'timpani', 'celesta',
-                                                    'choir', 'vox', 'flute', 'piano')}
+                                                    'choir', 'vox', 'flute', 'piano', 'spiccato', 'tremolo', 'slowstrings',
+                                                    'cello', 'viola', 'contrabass', 'harpsichord', 'clarinet', 'oboe',
+                                                    'bassoon', 'piccolo', 'trumpet', 'trombone', 'tuba', 'braam')}
 
 # genre flavour: which plugin family to reach for first, and a tone tweak (shifts filter cutoffs)
 STYLE_PREF = {
     'synthwave': ['tal'], 'synthpop': ['tal'], 'electro': ['tal'], 'vaporwave': ['tal', 'dexed'], 'eurodance': ['tal', 'surge'],
     'city_pop': ['dexed', 'tal'], 'house': ['tal'], 'deep_house': ['tal', 'dexed'], 'ukgarage': ['tal'],
     'trance': ['surge'], 'progressive_house': ['surge'], 'bigroom': ['surge'], 'hardstyle': ['surge'], 'future_bass': ['surge'],
-    'dnb': ['surge'], 'jungle': ['surge'], 'hyperpop': ['surge'],
+    'dnb': ['surge'], 'jungle': ['surge'], 'hyperpop': ['surge'], 'orchestral_hiphop': ['dexed'],
     'acid_house': ['jc303', 'nekobi'], 'techno': ['jc303', 'nekobi'], 'psytrance': ['jc303', 'surge'], 'minimal': ['jc303'],
 }
 STYLE_TONE = {'lofi': -0.12, 'vaporwave': -0.1, 'downtempo': -0.08, 'deep_house': -0.08, 'ambient': -0.1, 'boombap': -0.08,
               'trance': 0.08, 'bigroom': 0.1, 'hyperpop': 0.12, 'eurodance': 0.06, 'hardstyle': 0.08, 'future_bass': 0.06}
+
+
+# how to name a saved orchestra sound so a part finds it (shown in Genre VSTs)
+ORCH_HINT = {'strings': 'strings legato', 'spiccato': 'strings spiccato', 'tremolo': 'strings tremolo', 'pizz': 'strings pizzicato',
+             'violin': 'violins', 'cello': 'celli', 'horn': 'horns', 'brass': 'brass', 'choir': 'choir', 'harp': 'harp',
+             'celesta': 'celeste', 'flute': 'flute', 'clarinet': 'clarinet', 'oboe': 'oboe', 'braam': 'low brass',
+             'timpani': 'timpani'}
 
 
 # ----------------------------------------------------------------------------- plugin lookup
@@ -290,17 +352,44 @@ def layer_choices(layer, plugins=None, instruments=None):
     return out
 
 
-def _user_sound(role, sounds):
-    """First of your own saved VST sounds whose name says it plays this kind of part (best word first)."""
+def _has(word, name):
+    return re.search(r'(?<![a-z0-9])' + re.escape(word) + r'(?![a-z0-9])', name) is not None
+
+
+def _user_sounds(role, sounds):
+    """Your own saved VST sounds that say they play this kind of part, best first: [(sound, rank)].
+    Rank = which of the role's words matched (0 = the most specific). Articulations are respected: a long-note part
+    (legato strings, horns, choir) only takes a 'spiccato' / 'pizz' sound if nothing else fits, and short parts the reverse."""
     words = SOUND_WORDS.get(role)
     if not words:
-        return None
+        return []
     mine = [x for x in sounds if x.get('ok') and not x.get('auto')]
-    for w in words:
-        for s in mine:
-            if re.search(r'(?<![a-z0-9])' + re.escape(w) + r'(?![a-z0-9])', s['name'].lower()):
-                return s
-    return None
+    out = []
+    for s in mine:
+        n = s['name'].lower()
+        rank = next((i for i, w in enumerate(words) if _has(w, n)), None)
+        if rank is None:
+            continue
+        short = any(_has(w, n) for w in SHORT_WORDS)
+        if role in LONG_ROLES and short:
+            rank += 50
+        elif role in ('spiccato', 'pizz') and not short and not _has(words[0], n):
+            rank += 20
+        if role == 'spiccato' and (_has('pizz', n) or _has('pizzicato', n)):
+            rank += 30                                         # plucked is a different sound from bowed-short
+        out.append((s, rank))
+    out.sort(key=lambda x: x[1])
+    return out
+
+
+def _user_sound(role, sounds, rng=None):
+    """One of your saved sounds for this part: the best-matching ones, and a random one of those when you saved several
+    (e.g. two string libraries), so songs don't always use the same sound."""
+    hits = _user_sounds(role, sounds)
+    if not hits:
+        return None
+    best = [s for s, r in hits if r == hits[0][1] or (r < 50 and hits[0][1] < 50 and r <= hits[0][1] + 1)]
+    return rng.choice(best) if (rng and len(best) > 1) else best[0]
 
 
 def ordered(cands, style):
@@ -311,20 +400,31 @@ def ordered(cands, style):
     return sorted(cands, key=lambda c: (pref.index(PATCHES[c]['player']) if PATCHES[c]['player'] in pref else len(pref), rank[c]))
 
 
-def choose(inst, style, category, plugins=None, sounds=None):
-    """-> (kind, id, label) for this part, or None to keep the built-in sound."""
+def choose(inst, style, category, plugins=None, sounds=None, rng=None):
+    """-> (kind, id, label) for this part, or None to keep the built-in sound.
+    With an rng (one per song and part) the pick varies between every suitable patch of the plugins you have - the
+    genre's preferred plugin stays the likeliest - instead of always using the first one."""
     plugins = plugins if plugins is not None else plugins_on_disk()
-    s = _user_sound(inst, sounds if sounds is not None else vsthost.list_sounds())
+    s = _user_sound(inst, sounds if sounds is not None else vsthost.list_sounds(), rng)
     if s:
         return ('user', s['id'], s['name'])
     cands = list(ROLE_PATCHES.get(inst, []))
     if not cands or (category != 'Electronic' and inst not in ANY_CATEGORY):
         return None
+    avail = []
     for c in ordered(cands, style):
         path = player_path(PATCHES[c]['player'], plugins)
         if path:
-            return ('patch', c, path)
-    return None
+            avail.append((c, path))
+    if not avail:
+        return None
+    if rng is None or len(avail) == 1:
+        c, path = avail[0]
+    else:
+        pref = STYLE_PREF.get(style, [])
+        w = [(2.5 if i == 0 else 1.0) * (1.5 if PATCHES[c]['player'] in pref else 1.0) for i, (c, _) in enumerate(avail)]
+        c, path = rng.choices(avail, w)[0]
+    return ('patch', c, path)
 
 
 def assign(st, opts, log=None):
@@ -337,12 +437,18 @@ def assign(st, opts, log=None):
         return {}
     sounds = vsthost.list_sounds()
     used = {}
+    import random
+    seed = int(getattr(opts, 'seed', 0) or 0)
+    ps = getattr(opts, 'part_seeds', None) or {}
     for t in st['tracks']:
         inst = t['inst']
         if t['layer'] not in MELODIC_ROLES or t.get('user_pick') or inst.startswith(('vst:', 'user:')):
             continue
         base = inst[3:] if inst.startswith('sf:') else inst
-        pick = choose(base, style, cat, plugins, sounds)
+        part = {'bass': 'bass', 'lead': 'melody', 'arp': 'melody'}.get(t['layer'], 'chords')
+        sd = ps.get(part) if ps.get(part) is not None else seed
+        rng = random.Random(f"{sd}-{t['layer']}-{base}-{style}-rig")
+        pick = choose(base, style, cat, plugins, sounds, rng)
         if not pick:
             continue
         kind, ident, extra = pick
@@ -374,8 +480,8 @@ def plan(style, category=None):
         if pick:
             kind, ident, extra = pick
             row['uses'] = extra if kind == 'user' else f"{PLAYERS[PATCHES[ident]['player']]['name']} · {PATCHES[ident]['label']}"
-        elif inst in SAMPLER_ROLES and category == 'Orchestral':
-            row['hint'] = 'save a BBC Symphony Orchestra / LABS sound named after this part (e.g. "BBC ' + inst + '")'
+        elif inst in SAMPLER_ROLES and (category == 'Orchestral' or inst in ORCH_HINT):
+            row['hint'] = 'save a BBC Symphony Orchestra / LABS sound named after this part (e.g. "BBC ' + ORCH_HINT.get(inst, inst) + '")'
         cands = ordered(ROLE_PATCHES.get(inst, []), style) if (category == 'Electronic' or inst in ANY_CATEGORY) else []
         using = PATCHES[pick[1]]['player'] if pick and pick[0] == 'patch' else None
         for c in cands:                                        # better plugins than the one in use, best first

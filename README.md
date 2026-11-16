@@ -44,6 +44,8 @@ Click **⟳ Updates** in the top-right corner. Your files, presets and settings 
 
 Studio Lab finds the plugins installed on your computer and uses them automatically. Click **🎚 Genre VSTs** to download free, open-source instruments (Surge XT, Dexed, JC303) and play each genre through the plugin that defines its sound: a 303 for acid, supersaws for trance, a DX7 electric piano for city pop. Plugins you already own, like TAL-NoiseMaker, are used too; save sounds from any plugin with names like "Serum supersaw" or "BBC strings" and matching parts use them.
 
+**Orchestra plugins** (BBC Symphony Orchestra, LABS, Kontakt ...): save one sound per section and articulation - e.g. "BBC strings legato", "BBC strings spiccato", "BBC strings pizzicato", "BBC celli", "BBC horns", "BBC low brass", "BBC flute" - and every part that plays strings, celli, horns or woodwinds uses the right one, in any genre. Try the orchestral genres: Neoclassical, Chamber, Baroque, Fantasy RPG, Hybrid Trailer, Cinematic, Orchestral Hip Hop, Symphonic Metal.
+
 ```
 python studiolab.py vsts --for trance      # download what trance needs, show which plugin plays each part
 python studiolab.py generate --style trance
@@ -78,3 +80,7 @@ python studiolab.py generate --help
 ## License
 
 MIT
+
+## Support
+
+If you enjoy Studio Lab, you can support its development through [GitHub Sponsors](https://github.com/sponsors/kefirman9000).

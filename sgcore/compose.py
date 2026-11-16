@@ -169,12 +169,17 @@ MELODY_STYLES = ['diatonic', 'pentatonic', 'blues', 'bebop']
 # how each genre's lead player phrases, and how its keyboard player voices chords (styles not listed: diatonic / style's own)
 GENRE_MELODY = {'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
                 'folk': 'pentatonic', 'afrobeats': 'pentatonic', 'amapiano': 'pentatonic', 'reggae': 'pentatonic',
-                'lofi': 'pentatonic', 'pop': 'pentatonic', 'disco': 'pentatonic', 'jazz': 'bebop', 'bossa_nova': 'bebop'}
+                'lofi': 'pentatonic', 'pop': 'pentatonic', 'disco': 'pentatonic', 'jazz': 'bebop', 'bossa_nova': 'bebop',
+                'western': 'pentatonic', 'chamber_pop': 'pentatonic', 'fantasy_rpg': 'pentatonic'}
 GENRE_VOICING = {'jazz': 'rootless', 'bossa_nova': 'rootless', 'lofi': 'rootless', 'boombap': 'rootless', 'city_pop': 'drop2',
-                 'deep_house': 'drop2', 'ukgarage': 'drop2', 'funk': 'drop2', 'disco': 'drop2', 'downtempo': 'drop2'}
+                 'deep_house': 'drop2', 'ukgarage': 'drop2', 'funk': 'drop2', 'disco': 'drop2', 'downtempo': 'drop2',
+                 'neoclassical': 'open', 'chamber': 'open', 'fantasy_rpg': 'open', 'cinematic': 'open', 'orchestral': 'open'}
 GENRE_COLORS = {'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
                 'city_pop': ['7', '9', 'add9'], 'deep_house': ['7', '9', 'add9'], 'ukgarage': ['7', '9'], 'funk': ['7', '9'],
-                'blues': ['7'], 'downtempo': ['7', 'add9', '9']}
+                'blues': ['7'], 'downtempo': ['7', 'add9', '9'], 'neoclassical': ['triad', 'add9', 'add9', 'sus2'],
+                'baroque': ['triad'], 'chamber': ['triad', 'triad', '7'], 'holiday': ['triad', '6', '7', 'add9'],
+                'western': ['triad', 'triad', 'sus4'], 'hybrid_trailer': ['triad', 'triad', 'add9no3'],
+                'symphonic_metal': ['triad'], 'fantasy_rpg': ['triad', 'add9', 'sus2']}
 
 
 def fold(m, lo):
@@ -376,6 +381,14 @@ def groove_family(st):
     return 'other'
 
 
+# synth tone controls (their built-in defaults) that get a per-song twist, so one instrument isn't one preset
+TONE_DEFAULTS = {'sawbass': dict(cut=2200), 'supersaw': dict(cut=3000, detune=1.0), 'stab': dict(cut=5000),
+                 'pluck_saw': dict(cut=6000), 'leadsaw': dict(cut=5000), 'warmpad': dict(cut=1100), 'strings': dict(cut=3200),
+                 'pluck': dict(bright=5000), 'supersaw_lead': dict(cut=7000, detune=1.3), 'hoover': dict(cut=4500),
+                 'reese': dict(cut=900), 'softlead': dict(cut=3000), 'violin': dict(cut=4500), 'cello': dict(cut=2600),
+                 'spiccato': dict(cut=4200), 'tremolo': dict(cut=3600), 'brass': dict(cut=3800), 'horn': dict(cut=1600)}
+
+
 def apply_variety(st, opts, rnd):
     """Give every song its own palette: instrument swaps, tone tweaks, extra groove patterns, kit and arrangement."""
     v = max(0.0, min(1.0, float(opts.variety)))
@@ -403,21 +416,42 @@ def apply_variety(st, opts, rnd):
     if st.get('voicing') != 'power' and rc.random() < 0.3 + 0.6 * v:
         bank = EXTRA_CHORD_RH.get(fam, EXTRA_CHORD_RH['other'])
         st['chord_rh'] = list(st['chord_rh']) + rc.sample(bank, min(len(bank), 1 + int(2 * v)))
+    from .styles import POOLS
     pal = PALETTES.get(st.get('category'), {})
+    fusion = st.get('fusion') or {}
     part_rng = {}
     chip_locked = st.get('name') == 'chiptune' and v < 0.85
     tracks = []
     for t in st['tracks']:
         t = dict(t, p=dict(t['p']))
         role = t['layer']
-        rr = part_rng.setdefault(role, r_for({'bass': 'bass', 'lead': 'melody'}.get(role, 'chords')))
-        if role in pal and role not in (opts.instruments or {}) and not chip_locked and rr.random() < 0.12 + 0.5 * v:
+        part = {'bass': 'bass', 'lead': 'melody', 'arp': 'melody'}.get(role, 'chords')
+        owner = fusion.get({'bass': 'bass', 'chords': 'harmony', 'pad': 'harmony'}.get(role, 'melody'), opts.style)
+        pool = POOLS.get(owner, {}).get(role)
+        if role not in part_rng:                      # seeded per part + genre, so genres don't all pick alike
+            sd = ps.get(part) if ps.get(part) is not None else opts.seed * 1009 + PART_K[part]
+            part_rng[role] = random.Random(f'{sd}-{role}-{owner}-variety')
+        rr = part_rng[role]
+        free = role not in (opts.instruments or {}) and not t.get('user_pick') and not chip_locked
+        if free and pool and rr.random() < 0.3 + 0.55 * v:
+            # the genre's own pool: its signature sound stays the likeliest, the others are all authentic alternatives
+            w = [2.0 if i == 0 else 1.0 for i in range(len(pool))]
+            choice = rr.choices(pool, w)[0]
+            if choice != t['inst']:
+                t.update(inst=choice, p={}, db=None, pooled=True)
+        elif free and not pool and role in pal and rr.random() < 0.12 + 0.5 * v:
             choice = rr.choice(pal[role])
             if choice != t['inst']:
-                t.update(inst=choice, p={}, db=None)
+                t.update(inst=choice, p={}, db=None, pooled=True)
+        for k, dv in TONE_DEFAULTS.get(t['inst'], {}).items():   # each song gets its own take on the patch
+            t['p'].setdefault(k, dv)
         for k in ('cut', 'bright'):
             if k in t['p']:
                 t['p'][k] *= 2 ** (rr.uniform(-0.6, 0.6) * v)
+        if 'detune' in t['p']:
+            t['p']['detune'] *= rr.uniform(1 - 0.35 * v, 1 + 0.35 * v)
+        if 'res' in t['p']:
+            t['p']['res'] *= rr.uniform(1 - 0.2 * v, 1 + 0.15 * v)
         if t['rev']:
             t['rev'] *= rnd.uniform(1 - 0.4 * v, 1 + 0.4 * v)
         if t['dly'] or (role in ('lead', 'arp') and rnd.random() < 0.3 * v):
@@ -467,7 +501,7 @@ def apply_sampled(st, opts):
         if not on or inst.startswith(('user:', 'vst:')) or t['layer'] not in MELODIC_ROLES:
             continue
         user_pick = bool(t.get('fallback'))
-        mapped = None if user_pick else ACOUSTIC_MAP.get(name, {}).get(t['layer'])
+        mapped = None if (user_pick or t.get('pooled')) else ACOUSTIC_MAP.get(name, {}).get(t['layer'])
         if mapped:
             target = mapped
         elif inst in sfm.ACOUSTIC and (cat in ('Orchestral', 'Classic') or engine == 'sampled' or inst in sfm.ELECTRONIC_SWAP):
@@ -532,7 +566,6 @@ def resolve_style(opts, rnd=None, mood=None):
             t['db'] = None
         tracks.append(t)
     st['tracks'] = tracks
-    apply_sampled(st, opts)
     kit = dict(KITS.get(opts.kit or st['kit'], {}))
     if not opts.kit:
         for k, v in st.get('kit_override', {}).items():
@@ -580,7 +613,9 @@ PHRASE_FAMILY = {
     **{k: 'syncopated' for k in ('funk', 'disco', 'afrobeats', 'amapiano', 'reggaeton', 'moombahton', 'reggae', 'ukgarage', 'house',
                                  'deep_house', 'tech_house', 'city_pop', 'bossa_nova')},
     **{k: 'sparse' for k in ('ambient', 'downtempo', 'lofi', 'vaporwave', 'jazz', 'cinematic', 'orchestral', 'film_piano',
-                             'adventure', 'tension', 'boombap')},
+                             'adventure', 'tension', 'boombap', 'neoclassical', 'western', 'hybrid_trailer')},
+    **{k: 'sung' for k in ('chamber', 'fantasy_rpg', 'holiday', 'chamber_pop', 'symphonic_metal')},
+    'baroque': 'busy', 'orchestral_hiphop': 'busy',
 }
 
 
@@ -998,10 +1033,12 @@ def compose(opts):
                             m = root
                         evs.append(Ev('bass', beat0 + step / 4, l / 4 * gate, m, rnd_b.uniform(0.85, 1.0)))
             # ---------------- chords
+            bar_col = chord_color
+            if b % cb == 0 and chord_color not in ('sus2', 'sus4', 'add9no3') and rnd_c.random() < 0.15 \
+                    and not (opts_s.get('drop') or sname in BIG_SECTIONS):
+                bar_col = rnd_c.choice(['sus4', 'sus2', chord_color])   # a sus colour now and then (chords + pad agree)
             if 'chords' in layers and 'chords' in tracks and chord_pat and (b % cb == 0):
-                col = chord_color if st.get('voicing', 'close') != 'power' and chord_size <= 4 else None
-                if col and rnd_c.random() < 0.15:
-                    col = rnd_c.choice(['sus4', 'sus2', col])
+                col = bar_col if st.get('voicing', 'close') != 'power' and chord_size <= 4 else None
                 notes = voice_chord(key, chord, chord_size, st.get('chord_center', 62), st.get('voicing', 'close'), col)
                 if (opts_s.get('drop') or sname in BIG_SECTIONS) and notes and notes[-1] + 12 <= 96 and st.get('voicing') != 'power':
                     notes = notes + [notes[-1] + 12]                   # choruses / drops open up: top note doubled (once)
@@ -1013,12 +1050,13 @@ def compose(opts):
             # ---------------- pad
             if 'pad' in layers and 'pad' in tracks and (b % cb == 0):
                 notes = voice_chord(key, chord, min(4, chord_size), st.get('chord_center', 62) - 2, pad_voicing,
-                                    chord_color if chord_color in ('triad', '7', 'add9', 'sus2', '6') else None)
+                                    bar_col if bar_col in ('triad', '7', 'add9', 'sus2', 'sus4', '6', 'add9no3') else None)
                 for m in notes:
                     evs.append(Ev('pad', beat0, 4 * cb * 0.98, m, 0.8))
             # ---------------- arp
             if 'arp' in layers and 'arp' in tracks:
-                tones = voice_chord(key, chord, 3, 12 * (arp['oct'] + 1) + 4)
+                acol = bar_col if bar_col in ('sus2', 'sus4', 'add9no3') else None   # arps follow a sus chord
+                tones = voice_chord(key, chord, 3, 12 * (arp['oct'] + 1) + 4, 'close', acol)
                 seq = tones + [tones[0] + 12]
                 if arp['mode'] == 'updown':
                     seq = seq + seq[-2:0:-1]
@@ -1080,12 +1118,95 @@ def compose(opts):
     lock_bass_to_kick(evs, tracks, st)
     add_transitions(sections, evs, fx, tracks, st, opts)
     bar0 = apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_color, bar0)
-    sname = '+'.join([opts.style] + [b for b in (opts.blend or []) if b != opts.style])
+    in_evs = {id(e) for e in evs}
+    st['tuned_notes'] = fix_clashes(evs + [v for v in vocal if id(v) not in in_evs], {**tracks, 'vocal': tracks.get('vocal') or
+                                    dict(layer='lead')}, key, st, sections)
+    sname ='+'.join([opts.style] + [b for b in (opts.blend or []) if b != opts.style])
     song = dict(style=sname, seed=opts.seed, bpm=bpm, key=key, events=evs, sections=sections, fx=fx,
                 total_bars=bar0, prog_main=prog_main, prog_alt=prog_alt, prog_verse=prog_verse, chord_color=chord_color,
                 modulate=modulate, st=st, opts=opts, user_opts=user_opts, vocal=vocal,
                 energy=energy)
     return song
+
+
+CLASH_LAYERS = ('lead', 'arp')
+
+
+def fix_clashes(evs, tracks, key, st, sections):
+    """Keep held melody notes in tune with the harmony under them.
+
+    A lead / arp / vocal note that is held (or sits on the beat) a semitone away from a chord, pad or held bass note
+    that is sounding at the same moment - and isn't itself one of those notes - moves to the nearest note that fits:
+    a chord tone first, otherwise a scale note that doesn't rub. Short passing notes, slides and bebop approach
+    notes are left alone (that's what makes them passing notes), and so are the blue notes in blues-flavoured genres."""
+    import bisect
+    harm = []
+    for e in evs:
+        t = tracks.get(e.track)
+        if e.midi is None or not t:
+            continue
+        lay = t['layer']
+        if lay in ('chords', 'pad') or (lay == 'bass' and e.dur >= 0.75):
+            harm.append((e.beat, e.beat + e.dur, e.midi % 12))
+    if not harm:
+        return 0
+    harm.sort()
+    starts = [h[0] for h in harm]
+    maxdur = max(h[1] - h[0] for h in harm)
+
+    def sounding(t):
+        i = bisect.bisect_right(starts, t)
+        out = set()
+        j = i - 1
+        while j >= 0 and starts[j] >= t - maxdur:
+            if harm[j][1] > t:
+                out.add(harm[j][2])
+            j -= 1
+        return out
+    shift_at = []                                         # key changes move the scale too
+    for s in sections:
+        if s.get('key_change'):
+            shift_at.append((s['bar'] * 4, s['key_change']))
+    base_pcs = {(key.root + iv) % 12 for iv in key.scale}
+    blue = {(key.root + 3) % 12, (key.root + 10) % 12} if st.get('melody_lang') == 'blues' else set()
+
+    def scale_at(t):
+        sh = sum(k for b, k in shift_at if t >= b)
+        return {(p + sh) % 12 for p in base_pcs}, {(p + sh) % 12 for p in blue}
+    short = 0.3 if st.get('melody_lang') == 'bebop' else 0.2   # bebop approach notes are 0.22 beats on purpose
+    fixed = 0
+    for e in evs:
+        t = tracks.get(e.track)
+        if e.midi is None or not t or not (t['layer'] in CLASH_LAYERS or e.track == 'vocal'):
+            continue
+        on_beat = abs(e.beat - round(e.beat)) < 0.01
+        if e.dur < short and not (on_beat and e.dur >= 0.2):
+            continue
+        snd = sounding(e.beat + 0.01)
+        if e.dur >= 1.0:
+            snd |= sounding(e.beat + e.dur * 0.5)
+        pc = e.midi % 12
+        if not snd or pc in snd:
+            continue
+        rubs = lambda p: any((p - q) % 12 in (1, 11) for q in snd)
+        scl, bl = scale_at(e.beat)
+        if not rubs(pc) or pc in bl:
+            continue
+        best = None
+        for mv in (-1, 1, -2, 2, -3, 3):
+            p = (pc + mv) % 12
+            if rubs(p):
+                continue
+            score = (0 if p in snd else 1 if p in scl else 3) + abs(mv) * 0.4
+            if best is None or score < best[0]:
+                best = (score, mv)
+        if best is None:
+            continue
+        e.midi += best[1]
+        if e.glide is not None:
+            e.glide += best[1]
+        fixed += 1
+    return fixed
 
 
 def apply_variation(evs, b0, b1, seed, key, st, tracks):
@@ -1129,9 +1250,10 @@ GENRE_BUILD = {'trance': 'roll', 'bigroom': 'roll', 'progressive_house': 'roll',
                'hyperpop': 'triplet', 'dubstep': 'stutter', 'breakcore': 'stutter', 'house': 'filter', 'deep_house': 'filter',
                'tech_house': 'filter', 'techno': 'filter', 'minimal': 'filter', 'acid_house': 'filter', 'psytrance': 'filter',
                'ukgarage': 'pause', 'amapiano': 'pause', 'afrobeats': 'pause', 'reggaeton': 'pause', 'synthwave': 'lift',
-               'synthpop': 'lift', 'chiptune': 'lift'}
+               'synthpop': 'lift', 'chiptune': 'lift', 'orchestral_hiphop': 'pause', 'hybrid_trailer': 'swell',
+               'symphonic_metal': 'roll'}
 BIG_SECTIONS = {'chorus', 'hook', 'climax', 'theme', 'drop'}
-HIT_FORMS = {'song', 'song_b', 'jazz', 'orchestral', 'cinematic', 'trap', 'halftime', 'halftime_b', 'chip'}
+HIT_FORMS = {'song', 'song_b', 'jazz', 'orchestral', 'cinematic', 'trap', 'halftime', 'halftime_b', 'chip', 'trailer'}
 
 
 def _track_of(tracks, layer):

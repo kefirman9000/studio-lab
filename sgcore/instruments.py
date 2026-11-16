@@ -831,3 +831,134 @@ PALETTES = {
     'Orchestral': {'chords': ['strings', 'harp', 'piano'], 'pad': ['choir', 'horn', 'strings'],
                    'arp': ['harp', 'pizz', 'celesta', 'piano', 'marimba'], 'lead': ['violin', 'horn', 'flute', 'celesta', 'choir', 'brass']},
 }
+
+
+# =============================================================================
+#  More orchestra (v1.9): string articulations, solo cello, harpsichord, woodwinds, trailer braam, sleigh bells
+# =============================================================================
+
+def _string_section(f, n, cents=(-12, -5, 0, 5, 12), vib=7, rate=4.6):
+    L = np.zeros(n)
+    Rt = np.zeros(n)
+    for i, c in enumerate(cents):
+        fv = vibrato(f * 2 ** (c / 1200), n, rate=rate + i * 0.31, cents=vib, delay=0.08)
+        s = saw(fv, n, _rng().random())
+        th = i / max(1, len(cents) - 1) * np.pi / 2
+        L += s * np.cos(th)
+        Rt += s * np.sin(th)
+    return np.vstack([L, Rt])
+
+
+def i_spiccato(m, dur, p, glide=None, mod=None):
+    """Short-bowed string section (spiccato / staccato): the driving ostinato of film and trailer music."""
+    f = float(mtof(m))
+    ln = min(dur, p.get('len', 0.22))
+    n = int((ln + 0.18) * SR)
+    t = np.arange(n) / SR
+    x = _string_section(f, n, vib=3)
+    bow = 0.06 * noise(n) * np.exp(-t * 60)
+    env = np.minimum(t / 0.006, 1) * np.exp(-t * p.get('decay', 9.0))
+    env[int(ln * SR):] *= np.exp(-np.arange(n - int(ln * SR)) / (0.04 * SR))
+    y = hp(lp(x + bow, p.get('cut', 4200)), 160)
+    y = eq(y, 'peak', 2500, 1.2, 3)
+    return y * env * 0.42
+
+
+def i_tremolo(m, dur, p, glide=None, mod=None):
+    """Tremolo strings: fast repeated bow strokes - tension, suspense, shimmering beds."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, p.get('a', 0.2), 0.4, 0.9, p.get('r', 0.6))
+    n = len(env)
+    t = np.arange(n) / SR
+    rate = p.get('rate', 13.0)
+    strokes = 0.55 + 0.45 * np.abs(np.sin(np.pi * rate * t + 0.3 * np.sin(2 * np.pi * 0.7 * t)))
+    x = _string_section(f, n, vib=4)
+    y = hp(lp(x, p.get('cut', 3600)), 170)
+    return y * env * strokes * 0.3
+
+
+def i_cello(m, dur, p, glide=None, mod=None):
+    """Solo cello: darker, woodier bowed string with a slow, wide vibrato."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, p.get('a', 0.12), 0.3, 0.92, 0.3)
+    n = len(env)
+    t = np.arange(n) / SR
+    fv = vibrato(f, n, rate=5.0, cents=p.get('vib', 16), delay=0.22)
+    x = saw(fv, n) + 0.3 * square(fv, n, pw=0.35) + 0.04 * noise(n) * np.exp(-t * 15)
+    y = lp(x, p.get('cut', 2600))
+    y = eq(eq(eq(y, 'peak', 220, 1.1, 5), 'peak', 600, 1.4, -3), 'peak', 1500, 1.2, 2)
+    return hp(y, 55) * env * 0.42
+
+
+def i_harpsichord(m, dur, p, glide=None, mod=None):
+    """Harpsichord: two plucked strings (8' + 4' an octave up), quill snap, quick decay - baroque continuo."""
+    a = i_pluck(m, max(dur, 0.6), dict(bright=p.get('bright', 9000), damp=0.9965, r=0.5))
+    b = i_pluck(m + 12, max(dur, 0.6), dict(bright=10000, damp=0.995, r=0.4))
+    n = max(len(a), len(b))
+    y = np.zeros(n)
+    y[:len(a)] += a
+    y[:len(b)] += 0.45 * b
+    y = eq(hp(y, 120), 'peak', 3000, 1.0, 4)
+    return y * 0.8
+
+
+def i_clarinet(m, dur, p, glide=None, mod=None):
+    """Clarinet: hollow, odd-harmonic reed tone (warm, round woodwind lines)."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.05, 0.3, 0.88, 0.15)
+    n = len(env)
+    fv = vibrato(f, n, rate=4.8, cents=6, delay=0.35)
+    x = square(fv, n) * 0.8 + 0.2 * sine(fv, n)
+    y = lp(x, p.get('cut', min(3200, f * 7))) + 0.03 * bp(noise(n), 1200, 4000)
+    return y * env * 0.45
+
+
+def i_oboe(m, dur, p, glide=None, mod=None):
+    """Oboe: nasal double-reed tone with a strong formant - pastoral and plaintive solos."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.04, 0.3, 0.88, 0.14)
+    n = len(env)
+    fv = vibrato(f, n, rate=5.4, cents=10, delay=0.25)
+    x = square(fv, n, pw=0.22) * 0.7 + saw(fv, n) * 0.3
+    y = bp(x, 700, 1600) + 0.6 * bp(x, 2400, 3600) + 0.25 * lp(x, 900)
+    return y * env * 0.55
+
+
+def i_braam(m, dur, p, glide=None, mod=None):
+    """Trailer 'braam': a huge low brass blast - stacked saws, growl and distortion with a slow filter bloom."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.04, 1.2, 0.75, 1.2)
+    n = len(env)
+    t = np.arange(n) / SR
+    growl = 1 + 0.004 * np.sin(2 * np.pi * 31 * t)
+    x = sum(saw(f * growl * 2 ** (c / 1200), n, _rng().random()) for c in (-18, -7, 0, 7, 18)) / 5
+    x += 0.6 * saw(f * 0.5, n) + 0.4 * saw(f * 1.5 * 2 ** (3 / 1200), n)
+    fe = np.clip(t / 0.5, 0, 1) * (0.6 + 0.4 * np.exp(-t * 1.5))
+    y = filt_env(x, 120, p.get('cut', 1800), fe)
+    y = soft(eq(y, 'peak', 250, 0.9, 5) * 2.0, 2.5)
+    return np.vstack([y, y]) * env * 0.4
+
+
+def d_sleigh(p):
+    """Sleigh bells: a shaken jingle (holiday music)."""
+    n = int(0.45 * SR)
+    t = np.arange(n) / SR
+    y = hp(_metallic(n, 4.3) + 0.7 * noise(n), 5500)
+    env = np.exp(-t * 9) * (1 + 0.8 * np.sin(2 * np.pi * 22 * t) ** 2)
+    return fade_out(y * env * 0.8, 0.04)
+
+
+INSTRUMENTS.update({'spiccato': i_spiccato, 'tremolo': i_tremolo, 'cello': i_cello, 'harpsichord': i_harpsichord,
+                    'clarinet': i_clarinet, 'oboe': i_oboe, 'braam': i_braam})
+INSTRUMENT_INFO.update({'spiccato': 'Spiccato strings (short)', 'tremolo': 'Tremolo strings', 'cello': 'Solo cello',
+                        'harpsichord': 'Harpsichord', 'clarinet': 'Clarinet', 'oboe': 'Oboe', 'braam': 'Trailer braam'})
+DRUMS.update({'sleigh': d_sleigh})
+ROLE_CHOICES['bass'] += ['cello', 'spiccato']
+ROLE_CHOICES['chords'] += ['spiccato', 'tremolo', 'harpsichord']
+ROLE_CHOICES['pad'] += ['tremolo', 'braam']
+ROLE_CHOICES['arp'] += ['spiccato', 'harpsichord']
+ROLE_CHOICES['lead'] += ['cello', 'clarinet', 'oboe', 'harpsichord']
+GM_PROGRAM.update({'spiccato': 48, 'tremolo': 44, 'cello': 42, 'harpsichord': 6, 'clarinet': 71, 'oboe': 68, 'braam': 61})
+PALETTES['Orchestral'] = {**PALETTES['Orchestral'],
+                          'chords': PALETTES['Orchestral']['chords'] + ['spiccato', 'tremolo'],
+                          'lead': PALETTES['Orchestral']['lead'] + ['cello', 'oboe', 'clarinet']}

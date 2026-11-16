@@ -133,6 +133,47 @@ def main():
         pass
     print('ok  MIDI / settings references')
 
+    # ---- 1.9: in tune, per-genre instrument pools, orchestra genres, rig variety
+    import bisect
+    from sgcore.styles import POOLS
+    from sgcore.instruments import INSTRUMENTS
+    from sgcore import soundfont as sfm, vstrigs
+    from sgcore.exporters import gm_program
+
+    def clash_rate(song):
+        tr = {t['name']: t for t in song['st']['tracks']}
+        harm = sorted((e for e in song['events'] if e.midi is not None and tr.get(e.track, {}).get('layer') in ('chords', 'pad')),
+                      key=lambda e: e.beat)
+        starts = [e.beat for e in harm]
+        bad = tot = 0
+        for m in song['events']:
+            if m.midi is None or tr.get(m.track, {}).get('layer') not in ('lead', 'arp') or m.dur < 0.2:
+                continue
+            i = bisect.bisect_right(starts, m.beat + 0.01)
+            snd = {h.midi % 12 for h in harm[max(0, i - 60):i] if h.beat <= m.beat + 0.01 < h.beat + h.dur}
+            tot += 1
+            bad += m.midi % 12 not in snd and any((m.midi - p) % 12 in (1, 11) for p in snd)
+        return bad / max(1, tot)
+    for s in ('trap', 'uk_drill', 'trance', 'pop', 'cinematic', 'baroque', 'orchestral_hiphop', 'hybrid_trailer'):
+        r = max(clash_rate(compose(Options(style=s, seed=k))) for k in (1, 2, 3))
+        assert r < 0.02, (s, r)                                                 # held notes don't rub against the chords
+    for s, d in POOLS.items():
+        for layer, pool in d.items():
+            assert all(i in INSTRUMENTS or (i.startswith('sf:') and i[3:] in sfm.SAMPLED) for i in pool), (s, layer)
+            own = [t['inst'] for t in STYLES[s]['tracks'] if t['layer'] == layer]
+            assert own and own[0] == pool[0], (s, layer)                        # the genre's own sound leads its pool
+    hh = {t['inst'] for k in range(1, 13) for t in compose(Options(style='orchestral_hiphop', seed=k))['st']['tracks'] if t['layer'] == 'chords'}
+    assert len(hh) >= 3 and hh <= set(POOLS['orchestral_hiphop']['chords']), hh   # varied, but only authentic choices
+    a = {t['layer']: t['inst'] for t in compose(Options(style='cinematic', seed=3))['st']['tracks']}
+    b = {t['layer']: t['inst'] for t in compose(Options(style='trance', seed=3))['st']['tracks']}
+    assert a['chords'] in POOLS['cinematic']['chords'] and b['chords'] in POOLS['trance']['chords']
+    S = [dict(id='a', name='BBC strings legato', ok=1), dict(id='b', name='BBC strings spiccato', ok=1),
+         dict(id='c', name='BBC celli', ok=1), dict(id='d', name='BBC strings pizzicato', ok=1)]
+    assert vstrigs._user_sound('strings', S)['id'] == 'a' and vstrigs._user_sound('spiccato', S)['id'] == 'b'
+    assert vstrigs._user_sound('pizz', S)['id'] == 'd' and vstrigs._user_sound('cello', S)['id'] == 'c'
+    assert gm_program(dict(inst='sf:cello')) == 42 and gm_program(dict(inst='vst:x', rig_from='sf:trumpet')) == 56
+    print('ok  in tune, genre instrument pools, orchestra articulations')
+
 
 if __name__ == '__main__':
     main()
