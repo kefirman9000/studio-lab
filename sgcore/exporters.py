@@ -6,7 +6,7 @@ from .instruments import DRUMS, GM_PROGRAM, INSTRUMENT_INFO
 
 GM_DRUM = {'kick': 36, 'chipkick': 36, 'snare': 38, 'chipsnare': 38, 'clap': 39, 'chat': 42, 'chiphat': 42,
            'ohat': 46, 'shaker': 70, 'ride': 51, 'rim': 37, 'crash': 49, 'tom': 45, 'cowbell808': 56,
-           'conga': 63, 'taiko': 41, 'timp': 43}
+           'conga': 63, 'taiko': 41, 'timp': 43, 'snap': 39, 'tamb': 54, 'woodblock': 76}
 
 
 def _vlq(n):
@@ -81,6 +81,28 @@ def write_midi(path, song):
         for c in chunks:
             f.write(c)
     return path
+
+
+def write_part_midis(folder, song):
+    """One small MIDI file per part (drag-and-drop friendly). Returns {part: path}."""
+    import copy
+    os.makedirs(folder, exist_ok=True)
+    out = {}
+    st = song['st']
+    drum_names = [t['name'] for t in st['tracks'] if t['inst'] in DRUMS]
+    parts = [t['name'] for t in st['tracks'] if t['inst'] not in DRUMS]
+    groups = [(p, [p]) for p in parts] + ([('drums', drum_names)] if drum_names else [])
+    for label, names in groups:
+        evs = [e for e in song['events'] if e.track in names]
+        if not evs:
+            continue
+        sub = dict(song)
+        sub['events'] = evs
+        sub['st'] = dict(st, tracks=[t for t in st['tracks'] if t['name'] in names])
+        path = os.path.join(folder, f"{song['style']}_{song['bpm']}bpm_{label}.mid")
+        write_midi(path, sub)
+        out[label] = path
+    return out
 
 
 # Suggested replacement instruments for a DAW (free options first)
@@ -159,13 +181,21 @@ LMMS_PATCH = {
     'violin':   dict(osc=[(2, 80, 0, -3, 3, 0), (2, 20, 12, 0, 0, 0), (0, 0, 0, 0, 0, 0)], env=(0.08, 0.3, 0.9, 0.25), filt=(0, 3800, 0.9)),
     'harp':     dict(osc=[(1, 80, 0, 0, 0, 0), (0, 40, 12, 0, 0, 0), (0, 0, 0, 0, 0, 0)], env=(0.001, 1.5, 0.0, 1.0)),
     'pizz':     dict(osc=[(1, 80, 0, 0, 0, 0), (2, 20, 0, 0, 0, 0), (0, 0, 0, 0, 0, 0)], env=(0.001, 0.2, 0.0, 0.1), filt=(0, 2000, 0.8)),
+    'logdrum':  dict(osc=[(0, 100, 0, 0, 0, 0), (1, 30, 0, 0, 0, 0), (0, 15, 12, 0, 0, 0)], env=(0.001, 0.35, 0.0, 0.1), filt=(0, 1500, 0.8)),
+    'marimba':  dict(osc=[(0, 100, 0, 0, 0, 0), (0, 25, 24, 0, 0, 0), (1, 10, 12, 0, 0, 0)], env=(0.001, 0.5, 0.0, 0.3)),
+    'kalimba':  dict(osc=[(0, 100, 0, 0, 0, 0), (1, 20, 12, 0, 0, 0), (0, 10, 31, 0, 0, 0)], env=(0.001, 0.9, 0.0, 0.5)),
+    'steeldrum': dict(osc=[(0, 90, 0, 0, 0, 0), (0, 60, 12, 0, 0, 0), (1, 25, 19, 0, 0, 0)], env=(0.001, 0.7, 0.0, 0.4)),
+    'sax':      dict(osc=[(2, 60, 0, -3, 3, 0), (3, 40, 0, 3, -3, 0), (6, 4, 0, 0, 0, 0)], env=(0.04, 0.3, 0.85, 0.12), filt=(0, 2400, 1.6)),
+    'flute':    dict(osc=[(0, 90, 0, 0, 0, 0), (1, 20, 12, 0, 0, 0), (6, 3, 0, 0, 0, 0)], env=(0.06, 0.3, 0.85, 0.2), filt=(0, 5000, 0.7)),
+    'clav':     dict(osc=[(3, 60, 0, 0, 0, 0), (2, 40, 12, 0, 0, 0), (0, 0, 0, 0, 0, 0)], env=(0.001, 0.25, 0.0, 0.05), filt=(0, 2000, 1.4), fenv=(0.5, 0.08)),
     'timpani':  dict(osc=[(0, 100, 0, 0, 0, 0), (0, 25, 7, 0, 0, 0), (6, 3, 0, 0, 0, 0)], env=(0.002, 1.8, 0.0, 0.5), filt=(0, 1500, 0.7)),
 }
 LMMS_SAMPLES = {
     'default': dict(snare='drums/snare01.ogg', clap='drums/clap01.ogg', chat='drums/hihat_closed01.ogg', ohat='drums/hihat_opened01.ogg',
                     shaker='drums/shaker01.ogg', ride='drums/ride01.ogg', rim='drums/rim01.ogg', crash='drums/crash01.ogg',
                     tom='drums/tom01.ogg', cowbell808='drumsynth/tr808/Cowbell.ds', conga='drumsynth/latin/bongo_l.ds',
-                    taiko='drumsynth/latin/taiko.ds', timp='drums/tom_low01.ogg', chipsnare='drums/snare_electro01.ogg',
+                    taiko='drumsynth/latin/taiko.ds', timp='drums/tom_low01.ogg', snap='drums/clap02.ogg',
+                    tamb='drumsynth/linn/linn_tamb.ds', woodblock='drums/wood01.ogg', chipsnare='drums/snare_electro01.ogg',
                     chiphat='drums/hihat_closed02.ogg'),
     '808': dict(snare='drumsynth/tr808/Snare.ds', clap='drumsynth/tr808/Handclap.ds', chat='drumsynth/tr808/Hat_c.ds',
                 ohat='drumsynth/tr808/Hat_o.ds', ride='drumsynth/tr808/Ride.ds', rim='drumsynth/tr808/Rimshot.ds', tom='drumsynth/tr808/Tom_lo.ds'),
@@ -195,10 +225,15 @@ def _env_xml(tag, amt, att, dec, sus, rel, lfo=None):
             f'rel="{_knob(rel)}" latt="0" lamt="{lfo_amt}" lspd="{lfo_spd}" lshp="{lfo_shp}"/>')
 
 
+def _has_user_drum(inst):
+    from .usersounds import SLOT_FOR, path as upath
+    return bool(SLOT_FOR.get(inst) and upath('drums', SLOT_FOR[inst]))
+
+
 def _instrument_xml(tcfg, kit, spb):
     inst = tcfg['inst']
     name = tcfg['name']
-    if inst in ('kick', 'chipkick', 'taiko') and inst != 'taiko':
+    if inst in ('kick', 'chipkick') and not (kit.get('_user_drums') and _has_user_drum(inst)):
         k = dict(kit.get('kick', {}))
         pitch = k.get('pitch', 48)
         start = pitch + k.get('punch', 120) * (1.6 if inst == 'chipkick' else 1)
@@ -207,6 +242,17 @@ def _instrument_xml(tcfg, kit, spb):
         return ('<instrument name="kicker"><kicker version="1" startnote="0" endnote="0" decay_syncmode="0" decay_numerator="4" '
                 f'decay_denominator="4" startfreq="{start:.0f}" endfreq="{pitch:.0f}" decay="{decay}" dist="{dist:.1f}" distend="{dist / 2:.1f}" '
                 f'gain="1" env="0.163" noise="0" click="{min(1, k.get("click", 0.3) + 0.1):.2f}" slope="0.06"/></instrument>'), None
+    if inst.startswith('user:'):
+        from .usersounds import path as upath
+        src = upath('inst', inst[5:]) or ''
+        return (f'<instrument name="audiofileprocessor"><audiofileprocessor src={quoteattr(src)} amp="100" interp="1" reversed="0" '
+                'looped="0" sframe="0" lframe="0" eframe="1" stutter="0"/></instrument>'), dict(env=(0.003, 0.3, 0.9, 0.15))
+    if inst in DRUMS and kit.get('_user_drums'):
+        from .usersounds import SLOT_FOR, path as upath
+        src = upath('drums', SLOT_FOR.get(inst, '')) if SLOT_FOR.get(inst) else None
+        if src:
+            return (f'<instrument name="audiofileprocessor"><audiofileprocessor src={quoteattr(src)} amp="100" interp="1" reversed="0" '
+                    'looped="0" sframe="0" lframe="0" eframe="1" stutter="0"/></instrument>'), None
     if inst in DRUMS:
         kitname = kit.get('_name', 'default')
         src = LMMS_SAMPLES.get(kitname, {}).get(inst) or LMMS_SAMPLES['default'].get(inst, 'drums/snare01.ogg')
@@ -249,6 +295,7 @@ def write_lmms(path, song):
     spb = 60.0 / song['bpm']
     kit = dict(st.get('kitparams', {}))
     kit['_name'] = song['opts'].kit or st.get('kit', 'default')
+    kit['_user_drums'] = bool(getattr(song['opts'], 'user_drums', False))
     groups = {}
     for e in song['events']:
         groups.setdefault(e.track, []).append(e)
@@ -276,7 +323,8 @@ def write_lmms(path, song):
         ixml, patch = _instrument_xml(t, kit, spb)
         vol = _lmms_vol(t)
         out.append(f'      <track muted="0" type="0" name={quoteattr(t["name"] + " - " + t["inst"])} solo="0">')
-        out.append(f'        <instrumenttrack pan="{int(t["pan"] * 100)}" fxch="{ch}" usemasterpitch="1" pitchrange="1" pitch="0" basenote="57" vol="{vol}">')
+        base = 48 if t['inst'].startswith('user:') else 57
+        out.append(f'        <instrumenttrack pan="{int(t["pan"] * 100)}" fxch="{ch}" usemasterpitch="1" pitchrange="1" pitch="0" basenote="{base}" vol="{vol}">')
         out.append('          ' + ixml)
         out.append('          ' + _eldata_xml(patch if t['inst'] not in DRUMS else None, spb))
         out.append('          <chordcreator chord="0" chordrange="1" chord-enabled="0"/>')

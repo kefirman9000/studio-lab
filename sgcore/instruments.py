@@ -714,3 +714,120 @@ GM_PROGRAM = {
     'brass': 61, 'horn': 60, 'softlead': 73, 'leadsaw': 81, 'supersaw_lead': 81, 'hoover': 81, 'chip': 80,
     'supersaw': 90, 'warmpad': 89, 'stab': 62, 'pluck_saw': 84, 'cowbell': 113,
 }
+
+
+# =============================================================================
+#  World / acoustic colours (v1.2)
+# =============================================================================
+
+def i_logdrum(m, dur, p, glide=None, mod=None):
+    """Amapiano log drum: pitched, knocking sub with a fast pitch drop."""
+    f = float(mtof(m))
+    n = int((min(dur, 1.2) + 0.25) * SR)
+    t = np.arange(n) / SR
+    fr = f * (1 + 1.2 * np.exp(-t * 45))
+    y = np.sin(2 * np.pi * np.cumsum(fr) / SR) + 0.35 * np.sin(4 * np.pi * np.cumsum(fr) / SR)
+    y *= np.exp(-t * p.get('decay', 5.0)) * np.minimum(t / 0.001, 1)
+    return lp(soft(y * 2.2, 2.0), 1500) * 0.8
+
+
+def _modal(f, n, partials, strike=0.0):
+    t = np.arange(n) / SR
+    y = np.zeros(n)
+    for r, a, d in partials:
+        if f * r < 18000:
+            y += a * np.sin(2 * np.pi * f * r * t) * np.exp(-t * d)
+    if strike:
+        y += strike * bp(noise(n), 1500, 7000) * np.exp(-t * 300)
+    return y * np.minimum(t / 0.0008, 1)
+
+
+def i_marimba(m, dur, p, glide=None, mod=None):
+    f = float(mtof(m))
+    n = int(1.2 * SR)
+    return fade_out(_modal(f, n, [(1, 1.0, 5), (3.93, 0.35, 16), (9.9, 0.12, 35)], 0.15), 0.05) * 0.7
+
+
+def i_kalimba(m, dur, p, glide=None, mod=None):
+    f = float(mtof(m))
+    n = int(1.6 * SR)
+    return fade_out(_modal(f, n, [(1, 1.0, 3.2), (1.003, 0.4, 3.0), (5.95, 0.25, 18), (2.0, 0.08, 8)], 0.08), 0.05) * 0.7
+
+
+def i_steeldrum(m, dur, p, glide=None, mod=None):
+    f = float(mtof(m))
+    n = int(1.4 * SR)
+    return fade_out(_modal(f, n, [(1, 1.0, 3.5), (2, 0.7, 4.5), (3, 0.3, 6), (4.2, 0.15, 9), (5.1, 0.08, 12)], 0.05), 0.05) * 0.6
+
+
+def i_sax(m, dur, p, glide=None, mod=None):
+    """Breathy tenor-ish sax: pulse source, formants, breath, growl on attack."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.04, 0.3, 0.85, 0.12)
+    n = len(env)
+    t = np.arange(n) / SR
+    fv = vibrato(f, n, rate=5.2, cents=14, delay=0.25) * (1 - 0.03 * np.exp(-t * 25))
+    src = square(fv, n, pw=0.42) * 0.6 + saw(fv, n) * 0.4
+    y = bp(src, 450, 1400) + 0.6 * bp(src, 1600, 3000) + 0.12 * bp(noise(n), 1500, 5000) * (0.4 + 0.6 * np.exp(-t * 12))
+    return soft(y * env * 1.6, 1.4) * 0.5
+
+
+def i_flute(m, dur, p, glide=None, mod=None):
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.06, 0.3, 0.85, 0.2)
+    n = len(env)
+    fv = vibrato(f, n, rate=5.0, cents=12, delay=0.2)
+    y = sine(fv, n) + 0.12 * sine(fv * 2, n) + 0.05 * sine(fv * 3, n)
+    y += 0.08 * bp(noise(n), f * 0.8, min(f * 3, 15000))
+    return y * env * 0.6
+
+
+def i_clav(m, dur, p, glide=None, mod=None):
+    y = i_pluck(m, min(dur, 0.3), dict(bright=9000, damp=0.985, r=0.06))
+    return eq(hp(y, 250), 'peak', 1800, 1.0, 6) * 0.8
+
+
+def d_snap(p):
+    n = int(0.12 * SR)
+    t = np.arange(n) / SR
+    y = bp(noise(n), 1200, 5000) * np.exp(-t * 90) + 0.5 * np.sin(2 * np.pi * 2100 * t) * np.exp(-t * 200)
+    return fade_out(y, 0.01)
+
+
+def d_tamb(p):
+    n = int(0.35 * SR)
+    t = np.arange(n) / SR
+    y = hp(_metallic(n, 3.1) + 0.6 * noise(n), 6000)
+    env = np.exp(-t * 14) * (1 + 0.6 * np.sin(2 * np.pi * 28 * t))
+    return fade_out(y * env, 0.03)
+
+
+def d_woodblock(p):
+    n = int(0.15 * SR)
+    t = np.arange(n) / SR
+    y = np.sin(2 * np.pi * p.get('pitch', 1050) * t) * np.exp(-t * 55) + 0.3 * np.sin(2 * np.pi * 2650 * t) * np.exp(-t * 90)
+    return fade_out(y, 0.01)
+
+
+INSTRUMENTS.update({'logdrum': i_logdrum, 'marimba': i_marimba, 'kalimba': i_kalimba, 'steeldrum': i_steeldrum,
+                    'sax': i_sax, 'flute': i_flute, 'clav': i_clav})
+INSTRUMENT_INFO.update({'logdrum': 'Log drum (amapiano)', 'marimba': 'Marimba', 'kalimba': 'Kalimba', 'steeldrum': 'Steel drum',
+                        'sax': 'Saxophone', 'flute': 'Flute', 'clav': 'Clavinet'})
+DRUMS.update({'snap': d_snap, 'tamb': d_tamb, 'woodblock': d_woodblock})
+ROLE_CHOICES['bass'] += ['logdrum']
+ROLE_CHOICES['chords'] += ['clav', 'marimba']
+ROLE_CHOICES['arp'] += ['marimba', 'kalimba', 'steeldrum', 'clav']
+ROLE_CHOICES['lead'] += ['sax', 'flute', 'steeldrum', 'marimba', 'kalimba']
+GM_PROGRAM.update({'logdrum': 116, 'marimba': 12, 'kalimba': 108, 'steeldrum': 114, 'sax': 66, 'flute': 73, 'clav': 7})
+
+# Per-genre-family sound pools: each song may swap in another instrument from these for variety
+PALETTES = {
+    'Electronic': {'chords': ['stab', 'supersaw', 'pluck_saw', 'epiano', 'organ', 'warmpad', 'vox', 'bell', 'marimba'],
+                   'pad': ['supersaw', 'warmpad', 'strings', 'choir', 'vox'],
+                   'arp': ['pluck_saw', 'bell', 'chip', 'pluck', 'marimba', 'kalimba', 'steeldrum', 'acid'],
+                   'lead': ['leadsaw', 'supersaw_lead', 'pluck', 'bell', 'vox', 'hoover', 'chip', 'flute', 'sax', 'kalimba']},
+    'Classic': {'chords': ['piano', 'epiano', 'organ', 'guitar', 'clav'], 'pad': ['strings', 'organ', 'warmpad', 'choir'],
+                'arp': ['guitar', 'piano', 'marimba', 'clav', 'epiano'], 'lead': ['brass', 'sax', 'flute', 'guitar', 'piano', 'organ', 'leadsaw']},
+    'Orchestral': {'chords': ['strings', 'harp', 'piano'], 'pad': ['choir', 'horn', 'strings'],
+                   'arp': ['harp', 'pizz', 'celesta', 'piano', 'marimba'], 'lead': ['violin', 'horn', 'flute', 'celesta', 'choir', 'brass']},
+}

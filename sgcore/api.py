@@ -9,11 +9,11 @@ import time
 import numpy as np
 
 from . import dsp
-from .compose import Options, compose, preview_window
+from .compose import Options, compose, preview_window, section_window, loop_window
 from .render import Renderer, master
 from .styles import STYLES
 
-OUTPUTS = ('wav', 'mp3', 'midi', 'stems', 'lmms', 'waveform')
+OUTPUTS = ('wav', 'mp3', 'midi', 'stems', 'lmms', 'waveform', 'pack')
 
 
 def have_ffmpeg():
@@ -34,10 +34,13 @@ def describe(song):
                 instruments={t['layer']: t['inst'] for t in song['st']['tracks']
                              if t['layer'] in ('bass', 'chords', 'pad', 'arp', 'lead')},
                 fusion=song['st'].get('fusion') if song['opts'].blend or song['opts'].blend_parts else None,
+                sections=[dict(index=x['index'], name=x['name'], bar=x['bar'], bars=x['bars'], src=x['src'], copy=x['copy'],
+                               layers=x['layers'], edited=x.get('edited', False),
+                               start=round(x['bar'] * 4 * 60 / song['bpm'], 2)) for x in song['sections']],
                 mood=song['opts'].mood)
 
 
-def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=None, prefs=None):
+def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=None, prefs=None, section=None):
     """Compose + render + master + write requested outputs. Returns dict with info and file paths."""
     if isinstance(opts, dict):
         opts = Options.from_dict(opts)
@@ -45,9 +48,15 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     t0 = time.time()
     song = compose(opts)
     info = describe(song)
-    if preview:
+    full_song = song
+    if section is not None and 0 <= int(section) < len(song['sections']):
+        song = section_window(song, int(section))
+        preview = True
+        info['previewed_section'] = int(section)
+    elif preview:
         song = preview_window(song)
-    title = song_title(song) + ('_preview' if preview else '')
+    title = song_title(song) + (f'_sec{int(section)}_{abs(hash(json.dumps(opts.sections, sort_keys=True, default=str))) % 10**6}'
+                                if section is not None else ('_preview' if preview else ''))
     os.makedirs(outdir, exist_ok=True)
     log(f"== {info['style']} | {info['key']} | {info['bpm']} BPM | {info['duration']} | seed {opts.seed}")
     log(f"   form: {info['form']}")
@@ -83,6 +92,10 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
                                                    p.get('os', 'windows'), p.get('found'))
         if 'midi' in outputs:
             files['midi'] = exporters.write_midi(os.path.join(outdir, title + '.mid'), full)
+            files['parts'] = exporters.write_part_midis(os.path.join(outdir, title + '_parts'), full)
+        if 'pack' in outputs:
+            from .samplepack import write_pack
+            files['pack'] = write_pack(os.path.join(outdir, title + '_samplepack'), full, log=log)
         if 'lmms' in outputs:
             files['lmms'] = exporters.write_lmms(os.path.join(outdir, title + '.mmp'), full)
         if 'waveform' in outputs:
@@ -91,6 +104,8 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
             files['stems'] = stems_dir
         elif stems_dir:
             shutil.rmtree(stems_dir, ignore_errors=True)
+        if isinstance(files.get('parts'), dict):
+            info['parts'] = files.pop('parts')
         with open(os.path.join(outdir, title + '_settings.json'), 'w') as f:
             json.dump(dict(options=opts.to_dict(), info=info), f, indent=2)
         from . import plugins

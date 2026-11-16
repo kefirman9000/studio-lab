@@ -31,6 +31,10 @@ The app opens in your browser. Everything runs locally on your machine.
 
 *Optional:* install [ffmpeg](https://ffmpeg.org/download.html) for MP3 export.
 
+## Privacy
+
+Everything runs on your own computer. The app opens a page only your own browser can reach (127.0.0.1), protected by a secret that changes every launch. Nothing is uploaded anywhere. The only internet use is the optional update check.
+
 ## Updating
 
 Click **⟳ Updates** in the top-right corner. Your files, presets and settings are kept.

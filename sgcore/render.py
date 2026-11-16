@@ -38,7 +38,8 @@ class Renderer:
             b += (st['swing'] - 0.5) * (0.5 if unit == 16 else 1.0)
         t = b * self.spb
         if human and st.get('human'):
-            t += self.hrng.gauss(0, st['human'])
+            # deterministic per position, so editing one section never shifts the feel of another
+            t += random.Random(self.song['seed'] * 1000003 + int(round(beat * 960))).gauss(0, st['human'])
         return max(0.0, t)
 
     def _params(self, tcfg):
@@ -58,7 +59,11 @@ class Renderer:
         key = (tcfg['name'], ev.midi, dur, ev.glide, ev.mod)
         sig = self.cache.get(key)
         if sig is None:
-            sig = INSTRUMENTS[tcfg['inst']](ev.midi, dur, p, ev.glide, ev.mod).astype(np.float32)
+            fn = INSTRUMENTS.get(tcfg['inst'])
+            if fn is None and tcfg['inst'].startswith('user:'):
+                from .usersounds import sampler
+                fn = sampler(tcfg['inst'][5:])
+            sig = fn(ev.midi, dur, p, ev.glide, ev.mod).astype(np.float32)
             self.cache[key] = sig
         return sig
 
@@ -66,8 +71,15 @@ class Renderer:
         inst = inst or name
         sig = self.cache.get(('drum', name))
         if sig is None:
-            kitp = self.st.get('kitparams', {}).get(inst, {})
-            sig = DRUMS[inst](kitp)
+            user = None
+            if getattr(self.opts, 'user_drums', False):
+                from .usersounds import drum
+                user = drum(inst)
+            if user is not None:
+                sig = user
+            else:
+                kitp = self.st.get('kitparams', {}).get(inst, {})
+                sig = DRUMS[inst](kitp)
             sig = (sig / (np.max(np.abs(sig)) + 1e-9)).astype(np.float32)
             self.cache[('drum', name)] = sig
         return sig

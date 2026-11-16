@@ -5,3 +5,5 @@ presets/
 settings.json
 .backup/
 .DS_Store
+user_sounds/
+ratings.json

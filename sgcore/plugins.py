@@ -118,6 +118,7 @@ INST_CAT = {
     'piano': 'keys', 'organ': 'organ', 'pluck': 'guitar', 'guitar': 'guitar', 'bell': 'fm', 'cowbell': 'fm',
     'brass': 'brass', 'vox': 'choir', 'choir': 'choir', 'strings': 'strings', 'violin': 'orchestral', 'pizz': 'orchestral',
     'harp': 'orchestral', 'horn': 'orchestral', 'timpani': 'orchestral', 'celesta': 'orchestral',
+    'logdrum': 'bass', 'marimba': 'keys', 'kalimba': 'keys', 'steeldrum': 'fm', 'sax': 'brass', 'flute': 'orchestral', 'clav': 'keys',
 }
 CAT_FALLBACK = {'808': ['bass', 'drums'], 'organ': ['keys', 'pad'], 'epiano': ['keys', 'fm'], 'brass': ['orchestral', 'lead'],
                 'choir': ['pad'], 'strings': ['orchestral', 'pad'], 'chords': ['pluck', 'pad'], 'pluck': ['lead'],

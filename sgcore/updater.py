@@ -9,7 +9,7 @@ import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG = os.path.join(ROOT, 'update.json')
-KEEP = {'songs', 'presets', 'update.json', '.git', 'settings.json', '__pycache__'}
+KEEP = {'songs', 'presets', 'update.json', '.git', 'settings.json', '__pycache__', 'user_sounds', 'ratings.json'}
 
 
 def _config():
@@ -79,6 +79,8 @@ def apply():
         out = subprocess.run(['git', '-C', ROOT, 'pull', '--ff-only'], capture_output=True, text=True)
         if out.returncode == 0:
             return dict(ok=True, message=out.stdout.strip() or 'Updated', version=local_version())
+    if not r or '/' not in r or any(c in r for c in ' ?#\\'):
+        return dict(ok=False, message='No valid update source configured')
     data = _get(f'https://github.com/{r}/archive/refs/heads/{branch()}.zip', timeout=120)
     zf = zipfile.ZipFile(io.BytesIO(data))
     top = zf.namelist()[0].split('/')[0]
@@ -94,7 +96,9 @@ def apply():
             rel = member[len(top) + 1:]
             if not rel or rel.split('/')[0] in KEEP:
                 continue
-            dst = os.path.join(ROOT, rel)
+            dst = os.path.realpath(os.path.join(ROOT, rel))
+            if os.path.commonpath([dst, os.path.realpath(ROOT)]) != os.path.realpath(ROOT):
+                continue                    # never write outside the app folder
             if member.endswith('/'):
                 os.makedirs(dst, exist_ok=True)
             else:
