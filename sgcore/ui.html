@@ -214,7 +214,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f"><label>Groove feel <span class="hint">timing of each part</span></label><select id="groove"><option value="">Genre feel</option><option value="straight">Straight (on the grid)</option><option value="dilla">Lazy hip-hop (J Dilla)</option><option value="laidback">Laid back (reggae)</option><option value="afro">Afro swing</option><option value="dembow">Dembow push</option><option value="jazz">Jazz (ride on top)</option><option value="house">House (late hats)</option><option value="funk">Funk (pushed 16ths)</option></select></div>
       <div class="f"><label>Lead style <span class="hint">how the lead line is built</span></label><select id="leadStyle"><option value="">Genre default</option><option value="hook">Hook (sung-style melody)</option><option value="arp">Arpeggio (trance, synthwave)</option><option value="riff">Riff (rock, funk)</option><option value="ostinato">Ostinato (techno)</option><option value="bell">Bell motif (trap)</option><option value="call">Call &amp; response (afro, reggae)</option><option value="chops">Vocal-chop stabs (house, garage)</option></select></div>
       <div class="f"><label title="Verses, choruses and breaks play parts on different instruments from the genre's own pool">Instrument rotation</label><select id="rotation"><option value="auto">Auto (with Variety)</option><option value="off">Off - one instrument per part</option><option value="some">Some - one part changes</option><option value="lots">Lots - several parts change</option></select></div>
-      <div class="f"><label>Build-ups</label><select id="buildStyle"><option value="">Genre default</option><option value="roll">Snare roll + riser (trance, big room)</option><option value="filter">Filter sweep, kick out (house, techno)</option><option value="triplet">Triplet roll (future bass)</option><option value="kick_roll">Kick roll (hardstyle)</option><option value="stutter">Stutter + silence (dubstep)</option><option value="pause">Drop-out (amapiano, garage)</option><option value="lift">Snare lift (pop, rock)</option><option value="swell">Swell (film)</option></select></div>
+      <div class="f"><label>Build-ups</label><select id="buildStyle"><option value="">Genre default (varies per song)</option><option value="roll">Snare roll + riser (trance, big room)</option><option value="filter">Filter sweep, kick out (house, techno)</option><option value="triplet">Triplet roll (future bass)</option><option value="kick_roll">Kick roll (hardstyle)</option><option value="stutter">Stutter + silence (dubstep)</option><option value="pause">Drop-out (amapiano, garage)</option><option value="lift">Snare lift (pop, rock)</option><option value="swell">Swell (film)</option><option value="hats">Accelerating hats</option><option value="claps">Clap build</option><option value="toms">Tom run</option><option value="halftime">Half-time, then snap</option><option value="drumless">Drums out - riser &amp; filter only</option></select></div>
       <div class="f"><label>Bass rhythm</label><select id="bassRhythm"><option value="">Style's bassline</option><option value="kick">Follow the kick drum</option></select></div>
       <div class="f"><label>Ending</label><select id="ending"><option value="auto">Genre default</option><option value="hit">Final chord + crash</option><option value="fade">Fade out</option></select></div>
       <div class="f"><label>Counter-melody <span class="hint">a second line answering the lead</span></label><select id="counter"><option value="">Genre decides</option><option value="on">Always</option><option value="off">Never</option></select></div>
@@ -224,6 +224,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 
     <details class="card" open><summary>Sound</summary><div class="body" id="soundBody">
       <div class="f"><label>Drum kit <span class="auto"><input type="checkbox" id="userDrums">my samples</span></label><select id="kit"></select></div>
+      <div class="f"><label>Vinyl crackle</label><select id="vinyl"><option value="">Genre default</option><option value="off">Off</option><option value="on">On</option></select></div>
       <div class="f"><label>Brightness <b id="brightnessV"></b></label><input type="range" id="brightness" min="-100" max="100" value="0"></div>
       <div class="f"><label>Melody style <span class="hint">how the lead phrases</span></label><select id="melStyle"></select></div>
       <div class="f"><label>Chord voicing</label><select id="voicing"></select></div>
@@ -402,6 +403,7 @@ function options(){
   if($('#rotation').value!=='auto') o.rotation=$('#rotation').value;
   if($('#leadStyle').value) o.lead_style=$('#leadStyle').value;
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
+  if($('#vinyl').value) o.vinyl=$('#vinyl').value==='on';
   if($('#bassRhythm').value) o.bass_rhythm=$('#bassRhythm').value;
   if($('#ending').value!=='auto') o.ending=$('#ending').value;
   if($('#counter').value) o.counter=$('#counter').value;
@@ -424,7 +426,7 @@ function applyOptions(o){
   $('#swingAuto').checked=o.swing==null; if(o.swing!=null)$('#swing').value=o.swing*100;
   $('#scAuto').checked=o.sidechain==null; if(o.sidechain!=null)$('#sidechain').value=o.sidechain*100;
   $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#userDrums').checked=!!o.user_drums;
-  $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#vocalGuide').checked=!!o.vocal_guide;
+  $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#vinyl').value=o.vinyl===true?'on':(o.vinyl===false?'off':''); $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#vocalGuide').checked=!!o.vocal_guide;
   $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';
   LEVELS.forEach(([k,n,layers])=>{ $('#lv_'+k).value=(o.part_levels||{})[layers[0]]||0; });
   const cat=Object.entries(META.categories).find(([c,l])=>l.some(s=>s.id===o.style)); if(cat) state.cat=cat[0];
@@ -519,7 +521,7 @@ function addResult(r, target){
       <span style="margin-left:auto"></span><button class="rate" data-r="1" title="I like this">👍</button><button class="rate" data-r="-1" title="Not for me">👎</button></div>
     <div class="tl" title="Click a section to edit it"></div><div class="sedbox"></div>
     <div class="dragrow rr"></div>
-    ${r.orch_note?`<div class="hint" style="margin-top:6px">🎻 ${esc(r.orch_note)} <a href="#" class="orchGo">Set up now</a></div>`:''}
+    ${r.orch_note?`<div class="hint" style="margin-top:6px">🎻 ${esc(r.orch_note)} <a href="#" class="orchGo" data-note="${esc(r.orch_note)}">Set up now</a></div>`:''}
     ${r.warnings&&r.warnings.length?`<div class="hint" style="color:#ffb547;margin-top:6px">⚠ ${r.warnings.map(esc).join('<br>⚠ ')}</div>`:''}
     <div class="plugrec"></div>
     <div class="files"></div>`;
@@ -758,18 +760,29 @@ async function soundsModal(data){
 // ------------------------------------------------------------- sampled sound library
 async function libModal(){
   const L=await api('/api/soundlib',{});
-  $('#modalBox').className='box';
-  $('#modalBox').innerHTML=`<h3>Real instruments</h3>
-    <p class="hint">Download a free library of <b>recorded</b> instruments (GeneralUser GS by S. Christian Collins, ~31 MB, free for any music).
-    Once installed, Studio Lab plays orchestral strings, brass, woodwinds, timpani, pianos, guitars, basses and acoustic drum kits
-    from real recordings in previews and full songs - automatically for Orchestral & Classic styles, and for obviously acoustic parts (piano, guitar, flute...) in electronic styles.
-    LMMS projects use the same library through LMMS's built-in SoundFont player.</p>
-    ${L.installed?'<p><span class="tag ok">Installed</span></p>':'<div class="row"><button class="btn p" id="libGo">Download real instruments</button><span class="hint">needs internet</span></div><pre id="libLog" class="hint"></pre>'}
+  const real=(L.real||[]).map(r=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(r.title)}</span> <span class="tag inst">${r.mb} MB</span> <span class="tag ok">${esc(r.license)}</span>
+      <div class="m">${esc(r.blurb)}</div><div class="m">by ${esc(r.by)} · <a href="${esc(r.source)}" target="_blank" rel="noopener">source</a></div><pre class="hint" id="rl_${r.id}" style="max-height:90px;overflow:auto;margin:4px 0 0"></pre></div>
+      <div class="row">${r.installed?`<span class="tag ok">Installed</span><button class="mini" data-rrm="${r.id}">Remove</button>`:`<button class="mini acc" data-rin="${r.id}">Download</button>`}</div></div>`).join('');
+  $('#modalBox').className='box wide';
+  $('#modalBox').innerHTML=`<h3>🎻 Real instruments</h3>
+    <p class="hint"><b>Real recorded libraries</b> - multi-sampled (several dynamics and round-robin takes per note), played automatically wherever a genre uses that instrument.
+     All are <b>CC0 / public domain</b> recordings by Versilian Studios, downloaded from their official GitHub at a fixed version; every file is checked against its published checksum and only audio is stored - nothing is run. What you make with them is entirely yours.</p>
+    ${real}
+    <h3 style="margin-top:14px">General MIDI library</h3>
+    <p class="hint">GeneralUser GS by S. Christian Collins (~31 MB): pianos, guitars, basses and everything the real libraries above don't cover. Also used by LMMS projects.</p>
+    ${L.installed?'<p><span class="tag ok">Installed</span></p>':'<div class="row"><button class="btn p" id="libGo">Download GeneralUser GS</button><span class="hint">needs internet</span></div><pre id="libLog" class="hint"></pre>'}
     <div style="text-align:right;margin-top:14px"><button class="btn p" onclick="closeModal()">Done</button></div>`;
   if($('#libGo')) $('#libGo').onclick=async()=>{ $('#libGo').disabled=true; $('#libGo').textContent='Downloading…';
     const {job}=await api('/api/soundlib/install',{});
     pollJob(job, j=>{ if(j.status==='done'){ $('#libLog').textContent+='\nDone! New songs will use real instruments.'; $('#libBtn').textContent='🎻 Real instruments ✓'; }
       else $('#libLog').textContent+='\nDownload failed: '+(j.error||''); }, l=>$('#libLog').textContent=l); };
+  $$('#modalBox [data-rin]').forEach(b=>b.onclick=async()=>{ const id=b.dataset.rin; b.disabled=true;
+    const {job,error}=await api('/api/samplelibs/install',{id}); if(error){alert(error);return}
+    const t=setInterval(async()=>{ const j=await api('/api/job/'+job); b.textContent=Math.round((j.progress||0)*100)+'%'; }, 800);
+    pollJob(job, j=>{ clearInterval(t); if(j.status==='done') libModal(); else { b.disabled=false; b.textContent='Retry'; $('#rl_'+id).textContent+='\nFailed: '+(j.error||''); } },
+      l=>$('#rl_'+id).textContent=l); });
+  $$('#modalBox [data-rrm]').forEach(b=>b.onclick=async()=>{ if(!confirm('Remove this library? You can download it again any time.')) return;
+    await api('/api/samplelibs/remove',{id:b.dataset.rrm}); libModal(); });
   $('#modal').classList.add('on');
 }
 // ------------------------------------------------------------- VST instruments (experimental)
@@ -1029,6 +1042,7 @@ async function init(){
 }
 init();
 document.addEventListener('click',async e=>{ const a=e.target.closest&&e.target.closest('.orchGo'); if(!a) return; e.preventDefault();
+  if(/Real instruments/.test(a.dataset.note||'')){ libModal(); return }
   const V=await api('/api/vst',{}); if(!V.available){ vstModal(); return } orchModal(V); });
 </script>
 </body>

@@ -50,6 +50,10 @@ def _nice(name):
     if name.startswith(('vst:', 'user:')):
         return _inst_label(name)
     from .instruments import INSTRUMENT_INFO
+    if name.startswith('real:'):
+        from . import soundfont as sfm
+        hit = sfm.SAMPLED.get(name[5:])
+        return (hit[2] if hit else name[5:]) + ' (real orchestra)'
     if name.startswith('sf:'):
         from . import soundfont as sfm
         hit = sfm.SAMPLED.get(name[3:])

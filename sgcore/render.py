@@ -62,6 +62,13 @@ class Renderer:
 
     def _note(self, tcfg, ev, p):
         dur = round(ev.dur * self.spb, 3)
+        if tcfg['inst'].startswith('real:'):
+            sig = self._real(tcfg, ev, dur)
+            if sig is not None:
+                return sig
+            alt = tcfg.get('real_from') or ''
+            tcfg = dict(tcfg, inst=alt if alt.startswith('sf:') else (tcfg.get('fallback') or 'pluck_saw'), p={})
+            p = self._params(tcfg)
         if tcfg['inst'].startswith('sf:'):
             return self._sampled(tcfg, ev, dur, p)
         key = (tcfg['name'], ev.midi, dur, ev.glide, ev.mod)
@@ -72,6 +79,51 @@ class Renderer:
                 from .usersounds import sampler
                 fn = sampler(tcfg['inst'][5:])
             sig = fn(ev.midi, dur, p, ev.glide, ev.mod).astype(np.float32)
+            self.cache[key] = sig
+        return sig
+
+    def _real(self, tcfg, ev, dur):
+        """Multi-sampled orchestra: nearest recorded note, velocity layer, round robin, articulation by note length."""
+        from . import samplelibs as sl
+        vel = max(0.05, min(1.0, ev.vel))
+        vb = round(vel * 8) / 8
+        rr = int(round(ev.beat * 4) * 7 + ev.midi) % 4
+        key = ('real', tcfg['name'], ev.midi, dur, vb, rr)
+        sig = self.cache.get(key)
+        if sig is None:
+            try:
+                sig = sl.orch_note(tcfg['inst'][5:], int(ev.midi), dur, vb, f'{rr}')
+            except Exception as e:
+                if not getattr(self, '_real_warned', False):
+                    self.log(f'   real instrument unavailable ({e}) - using the fallback sound')
+                    self._real_warned = True
+                sig = None
+            if sig is None:
+                return None
+            self.cache[key] = sig
+        return sig
+
+    def _real_drum(self, inst, ev, idx):
+        """Real kit / percussion hit with a velocity layer and a different take each time (None: not available)."""
+        from . import samplelibs as sl
+        kit, perc = self.st.get('real_kit'), self.st.get('real_perc')
+        name = None
+        if kit and inst in sl.KIT_PARTS and inst != 'clap':
+            name = kit + ':' + sl.KIT_PARTS[inst]
+        elif inst == 'clap' and kit and perc:
+            name = 'clap'
+        elif perc and inst in sl.PERC:
+            name = sl.PERC[inst]
+        if not name:
+            return None
+        vb = round(max(0.05, min(1.0, ev.vel)) * 6) / 6
+        key = ('realdrum', name, vb, idx % 4)
+        sig = self.cache.get(key, False)
+        if sig is False:
+            try:
+                sig = sl.hit(name, vb, f'{idx % 4}')
+            except Exception:
+                sig = None
             self.cache[key] = sig
         return sig
 
@@ -175,9 +227,14 @@ class Renderer:
         is_drum = tcfg['inst'] in DRUMS
         p = None if is_drum else self._params(tcfg)
         kick = self.st.get('kick_track', 'kick')
-        for ev in evs:
+        real_drums = is_drum and (self.st.get('real_kit') or self.st.get('real_perc'))
+        for i, ev in enumerate(evs):
             s = int((self.t_of(ev.beat, human=(tcfg['name'] != kick), layer=tcfg['layer']) + getattr(ev, 'strum', 0.0) * self.spb) * SR)
-            sig = self._drum(tcfg['name'], tcfg['inst']) if is_drum else self._note(tcfg, ev, p)
+            sig = None
+            if real_drums:
+                sig = self._real_drum(tcfg['inst'], ev, i)
+            if sig is None:
+                sig = self._drum(tcfg['name'], tcfg['inst']) if is_drum else self._note(tcfg, ev, p)
             self._add(buf, sig * ev.vel, s)
         if tcfg.get('drive'):
             buf = (soft(buf * (1 + tcfg['drive'] * 3), 1.5) / (1 + tcfg['drive'])).astype(np.float32)

@@ -521,8 +521,7 @@ style('phonk', 'Electronic', 'Drift phonk: a heavily distorted pitched 808 cowbe
               T('chords', 'chords', 'warmpad', rev=0.5, db=-30, p=dict(cut=650)),
               T('pad', 'pad', 'choir', rev=0.6, db=-30, p=dict(vowel='o')),
               T('arp', 'arp', 'vox', rev=0.35, dly=0.3, db=-25),
-              T('lead', 'lead', 'cowbell', rev=0.25, dly=0.2, db=-15, drive=0.6, p=dict(drive=6.0, crush=0.35)),
-              T('vinyl', 'fx', 'vinyl', db=-36)],
+              T('lead', 'lead', 'cowbell', rev=0.25, dly=0.2, db=-15, drive=0.6, p=dict(drive=6.0, crush=0.35)),],
       lead_lo=57,
       master=dict(lufs=-7.0, air=-0.5, low=2.5, drive=0.45, lofi=True, wobble=0.3))
 
@@ -2227,8 +2226,7 @@ style('house_phonk', 'Electronic', 'House phonk: four-on-the-floor phonk - disto
               T('bass', 'bass', '808', sc=0.6, db=-12, drive=0.4, p=dict(drive=7.0, decay=0.3)),
               T('chords', 'chords', 'warmpad', sc=0.6, rev=0.4, db=-29, p=dict(cut=700)),
               T('arp', 'arp', 'vox', rev=0.3, dly=0.25, db=-24),
-              T('lead', 'lead', 'cowbell', sc=0.3, rev=0.2, dly=0.2, db=-15, drive=0.6, p=dict(drive=6.0, crush=0.3)),
-              T('vinyl', 'fx', 'vinyl', db=-37)],
+              T('lead', 'lead', 'cowbell', sc=0.3, rev=0.2, dly=0.2, db=-15, drive=0.6, p=dict(drive=6.0, crush=0.3)),],
       lead_lo=57, chord_center=55, repetition=0.9, simplicity=0.25,
       lead_rh=['x..x..x.........', 'x.x.x...x.......', 'x..x..x.x..x....', 'x.xx.x..x.x.....', 'x.x.x.x.x..x..x.'],
       master=dict(lufs=-7.0, air=0.0, low=2.4, drive=0.4, lofi=True, wobble=0.2))
@@ -2249,7 +2247,7 @@ style('memphis_phonk', 'Electronic', 'Memphis phonk: the original - slow, dusty 
               T('bass', 'bass', '808', db=-12, p=dict(drive=4.0, decay=0.5)),
               T('chords', 'chords', 'piano', rev=0.3, db=-23), T('arp', 'arp', 'vox', rev=0.3, dly=0.3, db=-23),
               T('pad', 'pad', 'choir', rev=0.6, db=-31, p=dict(vowel='o', cut=900)),
-              T('lead', 'lead', 'cowbell', rev=0.25, dly=0.2, db=-16, drive=0.5, p=dict(drive=4.0, crush=0.4)), T('vinyl', 'fx', 'vinyl', db=-35)],
+              T('lead', 'lead', 'cowbell', rev=0.25, dly=0.2, db=-16, drive=0.5, p=dict(drive=4.0, crush=0.4))],
       lead_lo=57, repetition=0.9, simplicity=0.3,
       master=dict(lufs=-9.0, air=-1.0, low=2.0, lofi=True, wobble=0.8))
 
@@ -2425,8 +2423,7 @@ style('brazilian_phonk', 'Electronic', 'Brazilian phonk: baile-funk bounce under
               T('chords', 'chords', 'warmpad', rev=0.4, db=-31, p=dict(cut=700)),
               T('pad', 'pad', 'choir', rev=0.5, db=-32, p=dict(vowel='o')),
               T('arp', 'arp', 'vox', rev=0.25, dly=0.2, db=-23),
-              T('lead', 'lead', 'cowbell', rev=0.2, dly=0.15, db=-15, drive=0.6, p=dict(drive=6.0, crush=0.3)),
-              T('vinyl', 'fx', 'vinyl', db=-38)],
+              T('lead', 'lead', 'cowbell', rev=0.2, dly=0.15, db=-15, drive=0.6, p=dict(drive=6.0, crush=0.3)),],
       master=dict(lufs=-7.0, air=0.2, low=2.4, drive=0.4))
 LABELS['brazilian_phonk'] = 'Brazilian Phonk'
 POOLS['brazilian_phonk'] = dict(lead=['cowbell'], bass=['808'], chords=['warmpad', 'organ', 'stab'], arp=['vox', 'phonkbell'])

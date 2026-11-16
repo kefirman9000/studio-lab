@@ -15,6 +15,8 @@ def gm_program(t):
     inst = t['inst']
     if inst.startswith('vst:'):
         inst = t.get('rig_from') or t.get('fallback') or inst
+    if inst.startswith('real:'):
+        inst = 'sf:' + inst[5:]
     if inst.startswith('sf:'):
         from . import soundfont as sfm
         hit = sfm.SAMPLED.get(inst[3:])
@@ -380,6 +382,8 @@ def write_lmms(path, song):
         ch = i + 1
         if t['inst'].startswith('vst:'):          # LMMS can't load VST3 - use the matching built-in patch
             t = dict(t, inst=t.get('fallback') or 'pluck_saw')
+        if t['inst'].startswith('real:'):         # LMMS plays the General MIDI version of a real-library part
+            t = dict(t, inst='sf:' + t['inst'][5:])
         if t['inst'].startswith('sf:'):
             from . import soundfont as _sfm
             if not _sfm.library_path():

@@ -482,13 +482,21 @@ def orchestra_note(st, plugins, cat, used):
     parts = []
     for t in st.get('tracks', []):
         base = t['inst'][3:] if t['inst'].startswith('sf:') else t['inst']
-        if base in ORCH_PARTS and not t['inst'].startswith(('vst:', 'user:')):
+        if base in ORCH_PARTS and not t['inst'].startswith(('vst:', 'user:', 'real:')):
             parts.append(t['layer'])
     if not parts:
         return None
     parts = sorted(set(parts))
     have = [PLAYERS[p]['name'] for p in ('bbcso', 'labs') if plugins and player_path(p, plugins)]
     what = ', '.join(parts)
+    try:
+        from . import samplelibs
+        real = samplelibs.installed('strings') or samplelibs.installed('winds')
+    except Exception:
+        real = True
+    if not real and not have:
+        return (f'Orchestral parts ({what}) used the built-in General MIDI library. Install the free real orchestra '
+                '(🎻 Real instruments → Strings / Brass & woodwinds) for multi-sampled sections, or set up BBC Symphony Orchestra / LABS.')
     if have:
         return (f'Orchestral parts ({what}) used the built-in library - {have[0]} is installed but has no saved sounds yet. '
                 'Open VST instruments → "Set up my orchestra…" (about 2 minutes) and every song will use it.')

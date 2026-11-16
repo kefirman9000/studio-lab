@@ -679,8 +679,30 @@ class Handler(BaseHTTPRequestHandler):
             detected(refresh=True)
             return self._json(r)
         if p == '/api/soundlib':
-            from . import soundfont
-            return self._json({'installed': soundfont.installed(), 'path': soundfont.library_path()})
+            from . import soundfont, samplelibs
+            return self._json({'installed': soundfont.installed(), 'path': soundfont.library_path(), 'real': samplelibs.status()})
+        if p == '/api/samplelibs/install':
+            from . import samplelibs
+            lib = str(body.get('id', ''))
+            if lib not in samplelibs.LIB_ORDER:
+                return self._json({'error': 'unknown library'})
+            ref = {}
+
+            def job(log):
+                def prog(f):
+                    j = JOBS.get(ref.get('id'))
+                    if j:
+                        j['progress'] = f
+                samplelibs.install(lib, log, prog)
+                return {'ok': True}
+            ref['id'] = bg_job(job)
+            return self._json({'job': ref['id']})
+        if p == '/api/samplelibs/remove':
+            from . import samplelibs
+            lib = str(body.get('id', ''))
+            if lib in samplelibs.LIB_ORDER:
+                samplelibs.remove(lib)
+            return self._json({'real': samplelibs.status()})
         if p == '/api/soundlib/install':
             from . import soundfont
 

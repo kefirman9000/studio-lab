@@ -10,6 +10,8 @@ import xml.dom.minidom
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sgcore.api import generate
+from sgcore import samplelibs as _sl  # noqa: E402
+_sl.REAL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_no_real_libs')   # same sounds as CI
 from sgcore.compose import Options, compose, MOODS
 from sgcore.exporters import write_lmms, write_midi
 from sgcore.styles import STYLES

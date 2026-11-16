@@ -54,6 +54,7 @@ class Options:
     drive: float = 0.0            # master saturation 0..1
     loudness: float = None        # target LUFS
     lofi: bool = None             # force tape/vinyl master on/off
+    vinyl: bool = None            # vinyl crackle: None = genre default, False = off, True = on
     blend: list = field(default_factory=list)          # extra styles to fuse with the main style
     blend_parts: dict = field(default_factory=dict)    # part -> style  (groove, bass, harmony, melody, form, mix)
     part_seeds: dict = field(default_factory=dict)     # re-roll one part: harmony, melody, drums, bass, chords
@@ -71,7 +72,7 @@ class Options:
     vocal_guide: bool = False     # also play the vocal guide melody (it is always in the MIDI export)
     bass_rhythm: str = None       # None = style | kick (bass plays with the kick drum)
     lead_style: str = None        # None = genre | hook | arp | riff | ostinato | bell | call | chops
-    build_style: str = None       # None = genre | roll | triplet | kick_roll | filter | stutter | pause | lift | swell
+    build_style: str = None       # None = genre (varies per song) | roll | triplet | kick_roll | filter | stutter | pause | lift | swell | hats | claps | toms | halftime | drumless
     groove: str = None            # None = genre feel | straight | dilla | laidback | afro | dembow | jazz | house | funk
     mood: str = None              # dark | happy | chill | epic | dreamy | aggressive | melancholic | energetic | mysterious | romantic
     counter: str = None           # None = genre decides | on | off  (a second line answering the lead: celli, horns, flute ...)
@@ -626,6 +627,48 @@ def apply_sampled(st, opts):
             kit = None
         if kit:
             st['sampled_kit'] = kit
+    if engine != 'synth':
+        apply_real(st, opts)
+
+
+def apply_real(st, opts):
+    """Real multi-sampled libraries (orchestra, percussion, acoustic kits - see samplelibs) beat the General MIDI bank."""
+    from . import samplelibs as sl
+    from .styles import ACOUSTIC_KIT
+    try:
+        any_lib = any(sl.installed(x) for x in sl.LIB_ORDER)
+    except Exception:
+        any_lib = False
+    if not any_lib:
+        return
+    for t in st['tracks']:
+        inst = t['inst']
+        if t['layer'] not in MELODIC_ROLES or inst.startswith(('user:', 'vst:', 'real:')):
+            continue
+        base = inst[3:] if inst.startswith('sf:') else inst
+        if base in sl.ORCH and sl.plays(base):
+            from . import soundfont as sfm
+            t['fallback'] = t.get('fallback') or sfm.fallback_for(base)
+            t['real_from'] = inst
+            t['inst'] = 'real:' + base
+    if getattr(opts, 'user_drums', False):
+        return
+    name = opts.style
+    if sl.installed('drums') and (opts.kit in (None, '', 'acoustic')):
+        acoustic = st.get('sampled_kit') not in (None, 'orchestra') or ACOUSTIC_KIT.get(name) or st.get('kit') == 'acoustic' \
+            or opts.kit == 'acoustic'
+        if name in sl.LOFI_KIT_STYLES:
+            st['real_kit'] = 'lofi'
+        elif acoustic:
+            st['real_kit'] = 'studio'
+    if sl.installed('percussion'):
+        st['real_perc'] = True
+    if 'orch_note' in st:                                  # re-check now that parts may play the real orchestra
+        from . import vstrigs
+        try:
+            st['orch_note'] = vstrigs.orchestra_note(st, vstrigs.plugins_on_disk(), st.get('category'), {})
+        except Exception:
+            pass
 
 
 def _installed_vst(choice, opts):
@@ -702,6 +745,12 @@ def resolve_style(opts, rnd=None, mood=None):
     if opts.lofi is not None:
         m['lofi'] = opts.lofi
     st['master'] = m
+    vin = getattr(opts, 'vinyl', None)
+    if vin is False:
+        st['tracks'] = [t for t in st['tracks'] if t['inst'] != 'vinyl']
+    elif vin is True and not any(t['inst'] == 'vinyl' for t in st['tracks']):
+        st['tracks'] = st['tracks'] + [dict(name='vinyl', layer='fx', inst='vinyl', pan=0.0, rev=0.0, dly=0.0, sc=0.0, db=-36,
+                                            hp=None, drive=None, p={})]
     return st
 
 
@@ -1042,6 +1091,8 @@ def compose(opts):
     bsel = getattr(opts, 'build_style', None)
     st['build_style'] = bsel if bsel in BUILD_STYLES else GENRE_BUILD.get(sname) or \
         {'Classic': 'lift', 'Orchestral': 'swell'}.get(st.get('category'), 'roll')
+    st['build_home'] = st['build_style']
+    st['build_seq'] = build_sequence(st['build_style'], bool(bsel in BUILD_STYLES), random.Random(f'{opts.seed}-build-{sname}'))
     g = getattr(opts, 'groove', None)
     st['groove'] = None if g == 'straight' else (g if g in GROOVES else STYLE_GROOVE.get(sname))
     pad_voicing = rnd.choice(['close', 'close', 'open'])
@@ -1125,6 +1176,7 @@ def compose(opts):
             return random.Random(f"{sd[part]}-{part}-edit")
         return random.Random(f"{base_seed[part]}-{part}-{uid}")
     variations = []
+    n_builds = 0
     for si, ed in enumerate(edits):
         src = int(ed['src'])
         uid = f"{src}:{int(ed.get('copy', 0))}"
@@ -1144,7 +1196,12 @@ def compose(opts):
             mel, ph = gen_melody(key, prog, cb, st, random.Random(f"{ed['seeds']['melody']}-melody-edit"), cx)
             mel = [(a, b_, m + lead_k, v) for a, b_, m, v in mel]
         if opts_s.get('build'):
-            bs = st.get('build_style', 'roll')
+            seq = st.get('build_seq') or [st.get('build_style', 'roll')]
+            st['build_style'] = bs = seq[min(n_builds, len(seq) - 1)]
+            n_builds += 1
+            st.setdefault('builds_used', []).append(bs)
+            if bs in ('hats', 'claps', 'toms', 'drumless', 'halftime'):   # these builds bring their own drums (or none)
+                layers -= {'kick', 'snare', 'top'}
             if bs in ('filter', 'kick_roll'):
                 layers |= {'kick', 'snare', 'top'} if bs == 'filter' else {'kick'}
             elif bs == 'pause':
@@ -1368,7 +1425,7 @@ def compose(opts):
                             continue
                         evs.append(Ev('lead', beat, du, m, v * soft_lead))
         if opts_s.get('build'):
-            add_build_fx(fx, st.get('build_style', 'roll'), sec_start, nbars)
+            add_build_fx(fx, st.get('build_style', 'roll'), sec_start, nbars, riser=st.get('build_home') not in ('lift', 'swell', 'pause'))
         if opts_s.get('drop'):
             fx.append(('crash', sec_start, 0))
             fx.append(('impact', sec_start, 0))
@@ -1946,7 +2003,31 @@ def apply_variation(evs, b0, b1, seed, key, st, tracks):
     return out + [a for a in added if b0 <= a.beat < b1]
 
 
-BUILD_STYLES = ['roll', 'triplet', 'kick_roll', 'filter', 'stutter', 'pause', 'lift', 'swell']
+BUILD_STYLES = ['roll', 'triplet', 'kick_roll', 'filter', 'stutter', 'pause', 'lift', 'swell', 'hats', 'claps', 'toms',
+                'halftime', 'drumless']
+# a genre's own build-up first, then the other ones that suit it - each song (and each build in a song) picks from these
+BUILD_FAMILY = {
+    'roll': ['roll', 'triplet', 'claps', 'hats', 'drumless', 'swell', 'halftime'],
+    'triplet': ['triplet', 'roll', 'hats', 'drumless', 'claps'],
+    'kick_roll': ['kick_roll', 'roll', 'drumless', 'halftime'],
+    'filter': ['filter', 'hats', 'drumless', 'claps', 'toms'],
+    'stutter': ['stutter', 'halftime', 'drumless', 'roll', 'hats'],
+    'pause': ['pause', 'drumless', 'halftime', 'hats'],
+    'lift': ['lift', 'toms', 'claps', 'hats'],
+    'swell': ['swell', 'toms', 'drumless'],
+}
+
+
+def build_sequence(default, forced, rnd, n=4):
+    """The build-up style for each build in the song: never the same one twice in a row, and the genre's own one
+    only some of the time, so songs (and the builds inside one song) don't all ramp up the same way."""
+    if forced:
+        return [default] * n
+    fam = BUILD_FAMILY.get(default, [default])
+    seq = [default if rnd.random() < 0.4 else rnd.choice(fam)]
+    while len(seq) < n:
+        seq.append(rnd.choice([b for b in fam if b != seq[-1]] or fam))
+    return seq
 GENRE_BUILD = {'tempa_dubstep': 'pause', 'progressive_trance': 'roll', 'organic_house': 'filter', 'disco_funk': 'lift', 'trance': 'roll', 'bigroom': 'roll', 'progressive_house': 'roll', 'electro': 'roll', 'eurodance': 'roll',
                'moombahton': 'roll', 'dnb': 'roll', 'jungle': 'stutter', 'hardstyle': 'kick_roll', 'future_bass': 'triplet',
                'hyperpop': 'triplet', 'dubstep': 'stutter', 'breakcore': 'stutter', 'house': 'filter', 'deep_house': 'filter',
@@ -2095,12 +2176,81 @@ def add_build_drums(evs, st, tracks, snares, kick, b, nbars, beat0, rnd):
         g = grid_of(st)
         for k in range(g if not last else g - 2):
             evs.append(Ev(snare, beat0 + 4 * k / g, 0.25, None, 0.25 + 0.6 * ((b - nbars + 2) * g + k) / (2 * g)))
+    elif bs == 'hats':                                  # hats accelerate, open hats on the last off-beats
+        hat = next((h for h in ('chat', 'hat', 'shaker', 'ohat') if h in tracks), None)
+        if hat:
+            roll(hat, (2, 4, 4, 8))
+            if last and 'ohat' in tracks:
+                for pos in (0.5, 1.5, 2.5):
+                    evs.append(Ev('ohat', beat0 + pos, 0.25, None, 0.8))
+    elif bs == 'claps':                                 # claps on 2 and 4, then 8ths, then 16ths
+        clap = 'clap' if 'clap' in tracks else snare
+        if clap:
+            div = 0.5 if pb < 0.5 else (2 if pb < 0.8 else 4)
+            for k in range(int(4 * div)):
+                pos = k / div
+                if div == 0.5:
+                    pos = 1 + 2 * k
+                if last and pos >= 3.5:
+                    break
+                evs.append(Ev(clap, beat0 + pos, 0.25, None, 0.45 + 0.5 * (b + pos / 4) / nbars))
+    elif bs == 'toms':                                  # a tom run down the kit, getting busier
+        toms = ensure_toms(st, tracks)
+        sub = 2 if pb < 0.6 else 4
+        steps = int(4 * sub) if not last else int(3 * sub)
+        for k in range(steps):
+            if sub == 2 or k % 2 == 0 or rnd.random() < 0.7:
+                name = toms[min(2, int(3 * k / steps))]
+                evs.append(Ev(name, beat0 + k / sub, 0.25, None, 0.45 + 0.45 * (b + k / steps) / nbars))
+    elif bs == 'halftime':                              # the beat drops to half-time, then snaps forward
+        if kick in tracks and not last:
+            evs.append(Ev(kick, beat0, 0.25, None, 0.9))
+        if snare:
+            if not last:
+                evs.append(Ev(snare, beat0 + 2, 0.25, None, 0.8))
+            else:
+                for k in range(8):
+                    evs.append(Ev(snare, beat0 + k / 2 if k < 4 else beat0 + 2 + (k - 4) / 4, 0.25, None, 0.5 + 0.06 * k))
     if bs in ('filter', 'kick_roll', 'lift') and last:   # kick drops out on the final beat
         evs[:] = [e for e in evs if not (e.track == kick and e.beat >= beat0 + 3)]
 
 
-def add_build_fx(fx, bs, start, nbars):
+def ensure_toms(st, tracks):
+    names = []
+    for name, pitch, pan in (('tom_hi', 190, 0.25), ('tom_mid', 140, 0.0), ('tom_lo', 100, -0.25)):
+        if name not in tracks:
+            t = dict(name=name, layer='snare', inst='tom', pan=pan, rev=0.12, dly=0.0, sc=0.0, db=-19, hp=None, drive=None, p={})
+            tracks[name] = t
+            st['tracks'].append(t)
+        st.setdefault('drum_voice', {})[name] = {'pitch': pitch}
+        names.append(name)
+    return names
+
+
+def add_build_fx(fx, bs, start, nbars, riser=True):
     end = start + nbars * 4
+    if bs in ('hats', 'claps', 'drumless') and not riser:     # band / pop / film styles: a swell, never an EDM riser
+        fx.append(('swell', end - 4, 4))
+        fx.append(('gap', end - 0.5, 0.5))
+        return
+    if bs in ('hats', 'claps'):
+        fx.append(('riser', end - min(8, nbars * 4), min(8, nbars * 4)))
+        fx.append(('gap', end - 0.5, 0.5))
+        return
+    if bs == 'toms':
+        fx.append(('swell', end - 4, 4))
+        return
+    if bs == 'halftime':
+        fx.append(('hpsweep', start, nbars * 4))
+        fx.append(('swell', end - 4, 4))
+        fx.append(('gap', end - 1, 1))
+        return
+    if bs == 'drumless':                                # drums out: only the riser, a filter and a reverse swell
+        fx.append(('riser', end - min(8, nbars * 2), min(8, nbars * 2)))
+        fx.append(('hpsweep', start, nbars * 4))
+        fx.append(('swell', end - 4, 4))
+        fx.append(('gap', end - 0.5, 0.5))
+        return
     if bs in ('roll', 'triplet', 'kick_roll', 'stutter'):
         fx.append(('riser', start, nbars * 4))
         fx.append(('hpsweep', start, nbars * 4))
@@ -2152,10 +2302,29 @@ def add_transitions(sections, evs, fx, tracks, st, opts):
                 name = 'tom_hi' if k < n / 3 else ('tom_mid' if k < 2 * n / 3 else 'tom_lo')
                 if k % 2 == 0 or rnd.random() < 0.6:
                     evs.append(Ev(snare if k == 0 else name, start + k / sub, 0.25, None, 0.6 + 0.35 * k / n))
-        else:
+        else:                                               # electronic: the fill changes from one transition to the next
             n = beats * sub
-            for k in range(n):
-                evs.append(Ev(snare, start + k / sub, 0.25, None, 0.45 + 0.5 * k / n))
+            kind = rnd.choice(['snare', 'snare', 'toms', 'hats', 'gap', 'clap_flam'])
+            if kind == 'toms':
+                toms = ensure_toms(st, tracks)
+                for k in range(n):
+                    if k % 2 == 0 or rnd.random() < 0.6:
+                        evs.append(Ev(toms[min(2, int(3 * k / n))], start + k / sub, 0.25, None, 0.55 + 0.35 * k / n))
+            elif kind == 'hats' and any(h in tracks for h in ('chat', 'ohat')):
+                hat = 'chat' if 'chat' in tracks else 'ohat'
+                for k in range(n * 2):
+                    evs.append(Ev(hat, start + k / (2 * sub), 0.12, None, 0.35 + 0.5 * k / (2 * n)))
+                if 'ohat' in tracks:
+                    evs.append(Ev('ohat', end - 0.5, 0.25, None, 0.85))
+            elif kind == 'gap':                             # everything stops for the last beat - silence is the fill
+                fx.append(('gap', end - 1, 1))
+            elif kind == 'clap_flam':
+                clap = 'clap' if 'clap' in tracks else snare
+                for pos in (end - 1.0, end - 0.5, end - 0.25):
+                    evs.append(Ev(clap, pos, 0.25, None, 0.8))
+            else:
+                for k in range(n):
+                    evs.append(Ev(snare, start + k / sub, 0.25, None, 0.45 + 0.5 * k / n))
 
 
 def apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_color, total_bars):

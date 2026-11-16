@@ -7,6 +7,8 @@ import tempfile
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sgcore.compose import Options, compose, voice_chord, Key, GENRE_MELODY, GENRE_VOICING
+from sgcore import samplelibs as _sl  # noqa: E402
+_sl.REAL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_no_real_libs')   # same sounds as CI
 from sgcore.styles import STYLES
 
 
@@ -66,8 +68,11 @@ def main():
     # ---- genre build-ups and lead devices
     from sgcore.leads import GENRE_DEVICES
     want = {'trance': 'roll', 'techno': 'filter', 'hardstyle': 'kick_roll', 'dubstep': 'stutter', 'amapiano': 'pause', 'pop': 'lift'}
+    from sgcore.compose import BUILD_FAMILY
     for name, bs in want.items():
-        assert compose(Options(style=name, seed=5))['st']['build_style'] == bs, name
+        for k in (5, 6, 7):
+            seq = compose(Options(style=name, seed=k))['st']['build_seq']
+            assert set(seq) <= set(BUILD_FAMILY[bs]), (name, seq)               # varies, but within the genre's idiom
     techno = compose(Options(style='techno', seed=5))
     assert techno['st']['form'] == 'groove' and not any(f[0] == 'riser' and f[2] > 8 for f in techno['fx'])   # no long EDM riser
     pop = compose(Options(style='pop', seed=5, structure='auto'))
@@ -324,7 +329,33 @@ def test_rotation_and_freshness():
     print('ok  instrument rotation between sections, freshness, reproducibility')
 
 
+
+def test_builds_and_vinyl():
+    from collections import Counter
+    for st in ('house', 'dubstep', 'future_bass'):
+        used = Counter(b for k in range(1, 11) for b in compose(Options(style=st, seed=k))['st'].get('builds_used', []))
+        assert len(used) >= 3, (st, used)                                   # not the same build-up every song
+    for k in range(1, 9):
+        u = compose(Options(style='house', seed=k))['st'].get('builds_used', [])
+        assert all(a != b for a, b in zip(u, u[1:])), u                     # never the same build twice in a row
+    assert set(compose(Options(style='house', seed=4, build_style='roll'))['st']['builds_used']) == {'roll'}
+    for bs in ('hats', 'claps', 'toms', 'halftime', 'drumless'):
+        s = compose(Options(style='trance', seed=2, build_style=bs))
+        sec = next(x for x in s['sections'] if x['opts'].get('build'))
+        a, b = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+        drums = [e for e in s['events'] if a <= e.beat < b and e.midi is None]
+        if bs == 'drumless':
+            assert not any(e.track in ('kick', 'snare', 'clap') for e in drums), bs
+        else:
+            assert drums, bs
+    vin = lambda **kw: any(t['inst'] == 'vinyl' for t in compose(Options(seed=3, **kw))['st']['tracks'])
+    assert not vin(style='phonk') and not vin(style='memphis_phonk') and vin(style='phonk', vinyl=True)
+    assert vin(style='lofi') and not vin(style='lofi', vinyl=False)
+    print('ok  build-ups vary per song and per build, new build types, vinyl on/off')
+
+
 if __name__ == '__main__':
     main()
+    test_builds_and_vinyl()
     test_chords_and_knobs()
     test_rotation_and_freshness()

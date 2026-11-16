@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.16.0
+- **Real instrument libraries** (🎻 Real instruments): free, multi-sampled recordings that replace the General MIDI sounds wherever a genre uses them:
+  - *Orchestral strings* (537 MB) - violin, viola, cello and bass sections with sustain, spiccato, pizzicato and tremolo, plus a solo violin. Each note comes from the section that plays that register, and violins/violas are doubled an octave down by the section below for real ensemble weight.
+  - *Brass, woodwinds & timpani* (406 MB) - French horn, trumpet, trombone, tuba, flute, oboe, clarinet, bassoon, piccolo (sustain + staccato), timpani. "Brass" parts play a real section split by register.
+  - *Percussion* (33 MB) - real congas, bongos, shakers, tambourine, claps, cowbell, claves, guiro, woodblock, triangle, cabasa - used in every genre that has them.
+  - *Acoustic drum kits* (78 MB) - Virtuosity Drums, a real kit (kick, snare, cross-stick, rimshot, hats, ride, crash, toms) with a clean studio sound and a vintage lo-fi mic used by lo-fi / boom-bap. Used by funk, disco, rock, jazz, soul and other acoustic styles.
+  - Every note uses the nearest recorded pitch, a velocity layer that matches how hard it's played and a different round-robin take each time; short notes switch to spiccato / staccato automatically.
+  - All CC0 / public domain (Versilian Studios), downloaded from the official GitHub repos at a fixed version; every file must match its published git checksum, and only audio is stored. Songs made with them are entirely yours.
+- **Build-ups don't all sound the same any more.** Each genre now has a family of fitting build-ups and every song - and every build inside a song - picks a different one. Five new build types that aren't snare rolls: accelerating hats, clap build, tom run, half-time-then-snap, and drums-out (riser and filter only). Band, pop and film styles never get EDM risers.
+- **Fills into choruses and drops vary too** in electronic genres: snare fill, tom fill, hat roll, a clap flam, or a one-beat silence.
+- **Vinyl crackle setting** (Sound → Vinyl crackle: genre default / off / on; `--vinyl on|off`). Phonk no longer has vinyl crackle by default.
+
 ## 1.15.0
 - **Phonk rebuilt to sound like real phonk:**
   - *Drift Phonk* now runs at 145-165 BPM (was 135-155) with dark, root-heavy minor / phrygian / harmonic-minor harmony instead of moving chord progressions.
