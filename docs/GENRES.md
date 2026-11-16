@@ -1,4 +1,4 @@
-# Studio Lab genres (114)
+# Studio Lab genres (119)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
@@ -20,12 +20,12 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Brostep | `brostep` | 140-150 | Brostep: festival dubstep - snarling growls, wobbles and FM stabs trading bars in the drop over a clean sub, aggressive half-time drums, pitch dives, risers and hard stops |
 | Chiptune | `chiptune` | 140-160 | 8-bit chiptune: pulse-wave leads, triangle bass, noise drums, lightning arpeggios |
 | Dancehall | `dancehall` | 88-104 | Dancehall: digital riddim, syncopated kick and snare, sub bass, synth stabs and chanted hooks |
+| Deep Dubstep (dark, minimal) | `deep_dubstep` | 138-142 | Deep / minimal dubstep: half-time 140 with the kick on 1 and the snare on 3, sparse shuffled 2-step percussion thrown into dub delays, a heavy clean sub carrying the track, one eerie motif, dub chord stabs and lots of dark negative space - soundsystem pressure, not festival brostep |
 | Deep House | `deep_house` | 118-123 | Deep house: warm organ & Rhodes 7th chords, round sub, shuffled shakers |
 | Downtempo | `downtempo` | 85-100 | Downtempo / chillout: laid-back beats, Rhodes & piano, warm pads, glassy bells |
 | Drift Phonk | `phonk` | 145-165 | Drift phonk: a heavily distorted pitched 808 cowbell riff on loop, clipped growling 808s, rolling hats, dark minor / phrygian mood, chopped vocals and tape grit - made at 3 a.m., played too loud in a car |
 | Drum & Bass | `dnb` | 170-176 | Drum & bass: two-step breaks at 174, growling reese bass, wide pads |
 | Dubstep (Dark / UK) | `dubstep` | 138-142 | Dark / UK dubstep: half-time at 140, deep clean sub with a slow wobbling mid-bass, sparse syncopated drums, lots of space, dark atmospheres |
-| Dubstep (classic UK / Tempa) | `tempa_dubstep` | 138-142 | Classic UK dubstep (early Tempa / DMZ era): half-time 140, heavy sub-bass pressure, sparse shuffled 2-step drums, dub reverb and delay, dark negative space - soundsystem music, not festival brostep |
 | Electro | `electro` | 125-132 | Electro: robotic 808 funk, FM bass grit, zappy leads |
 | Eurodance | `eurodance` | 134-142 | 90s eurodance: driving four-on-the-floor, offbeat bass, piano stabs, big anthemic leads |
 | Future Bass | `future_bass` | 140-160 | Future bass: lush pitch-chopped supersaw chords, vocal chops, half-time trap drums |
@@ -111,7 +111,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Symphonic Metal | `symphonic_metal` | 120-170 | Symphonic metal: double-kick drums and power chords under choir, string ostinatos and a soaring lead |
 | Tango | `tango` | 108-126 | Tango: marcato four-beat pulse, bandoneon, dramatic violin lines, staccato piano and double bass |
 
-## Orchestral (15)
+## Orchestral (20)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -120,9 +120,14 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Chamber / String Quartet | `chamber` | 72-112 | Chamber / string quartet: violin melody, viola harmony, cello line, pizzicato colour |
 | Cinematic / Epic | `cinematic` | 80-110 | Epic cinematic / trailer: string ostinatos, taiko & timpani, horns, choir, huge climax |
 | Classical (Mozart era) | `classical_period` | 100-140 | Classical period (Mozart / Haydn): elegant homophony - a clear singing melody over Alberti-bass and string accompaniment, 4+4-bar phrases, functional cadences, pairs of winds, horns and timpani |
+| Dark Choral Epic | `epic_choir` | 60-84 | Dark choral epic ("Dies Irae" / sacred horror): a massive choir over pipe organ, droning double basses and tuba, tolling tubular bells, timpani and orchestral bass drum - slow, monumental, apocalyptic |
 | Dark Tension | `tension` | 60-84 | Dark tension / horror: creeping low strings, eerie celesta, choir swells, timpani hits |
+| Epic Battle | `epic_battle` | 128-150 | Epic battle music: war drums in driving 16ths, relentless low-string and spiccato ostinatos, staccato low-brass hits, chanting choir and screaming horns - phrygian darkness at full force |
+| Epic Orchestral | `epic_orchestral` | 84-112 | Epic orchestral (trailer / "Two Steps" scale): driving string ostinatos over double basses and celli, horns and trombones carrying a huge theme, tuba and low brass underneath, choir, taiko and timpani - SUPER EPIC |
 | Fantasy RPG | `fantasy_rpg` | 84-116 | Fantasy RPG / video-game score: harp arpeggios, flute & oboe melody, warm strings, horn swells |
 | Film Piano | `film_piano` | 64-84 | Emotional film score: solo piano theme over warm strings, celesta sparkles |
+| Grand Symphonic Finale | `symphonic_finale` | 96-132 | Grand symphonic finale (Tchaikovsky / Mahler scale): full brass chorale over tremolo strings, thundering timpani rolls, cymbal crashes, double basses and tuba - the last, enormous page of a symphony |
+| Heroic Anthem | `heroic_anthem` | 92-124 | Heroic anthem: a soaring major-key fanfare on horns and trumpets, sweeping violins, marching snare, cymbals and timpani over trombones, tuba and a rock-solid string bass - triumphant and huge |
 | Hybrid Trailer | `hybrid_trailer` | 90-120 | Hybrid trailer: pulsing spiccato ostinatos, braams, taiko, distorted synth bass, huge choir |
 | Impressionism | `impressionism` | 56-80 | Impressionism (Debussy / Ravel): modal and lydian colours, parallel gliding chords, blurred harmony, harp and flute over muted strings and piano washes, flexible pulse - atmosphere over function |
 | Minimalism | `minimalism` | 120-160 | Minimalism (Reich / Glass / Adams): a steady pulse of repeating cells on marimba, piano and strings, shifting by gradual additive / phasing processes over slow diatonic harmony |

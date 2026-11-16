@@ -2280,32 +2280,49 @@ for _n in ('brostep', 'melodic_dubstep'):
 
 # ---------------------------------------------------------------------------------------------------------------
 # v1.14: classic UK dubstep, emotional progressive trance, organic melodic house, 70s disco-funk
-style('tempa_dubstep', 'Electronic', 'Classic UK dubstep (early Tempa / DMZ era): half-time 140, heavy sub-bass pressure, sparse shuffled '
-      '2-step drums, dub reverb and delay, dark negative space - soundsystem music, not festival brostep',
-      bpm=(138, 142), scales=['minor', 'phrygian'], swing=0.56, swing_unit=16, human=0.006, kit='punchy', form='groove',
-      form_scale=1.5, chord_size=3, sc_depth=0.15, reverb=3.0, delay_beats=0.75,
-      progs={'minor': [[0, 0, 0, 5], [0, 0, 6, 5], [0, 0, 0, 3], [0, 5, 0, 6]], 'phrygian': [[0, 0, 1, 0], [0, 1, 0, 6]]},
-      kit_override={'kick': {'drive': 1.6, 'decay': 6}, 'snare': {'snap': 1.3, 'decay': 9}},
-      drums={'kick': ['X.........X.....', 'X.....X.......X.', 'X.........X..x..'], 'snare': ['........X.......'],
-             'rim': ['...x......x...x.', '......x.....x...', '...x..x.......x.'],
-             'chat': ['..x...x.x...x...', '....x.....x...x.', '..x.....x.x.....'], 'ohat': ['..............x.', '................']},
-      snare_tracks=['snare'], ghosts=False, fill=False,
-      bass=['R-------....R---', 'R---..R-R-------', 'R-----..R-..R---', 'R-------R---..R-'], bass_lo=26, bass_gate=0.95,
-      chord_rh=['....x...........', '........x.......', '............x...', '....x.......x...'], chord_center=60,
-      arp=dict(rate=4, mode='random', oct=5, prob=0.25), lead_oct=5,
-      lead_rh=['x-------........', '........x---....', 'x---............', '....x-------....'],
-      sub_layer=True, repetition=0.75, simplicity=0.3,
-      gm_hint='Clean sine sub (the lead instrument); dub chord stabs into long delays; eerie bells / melodica; dark drones',
-      tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.4, dly=0.2, db=-17),
-              T('rim', 'top', 'rim', pan=0.2, dly=0.35, rev=0.3, db=-27), T('chat', 'top', 'chat', pan=-0.25, db=-31),
-              T('ohat', 'top', 'ohat', pan=0.3, rev=0.3, db=-31),
-              T('bass', 'bass', 'sinebass', db=-12, p=dict(cut=300)),
-              T('chords', 'chords', 'stab', rev=0.5, dly=0.6, db=-26, p=dict(cut=1600)),
-              T('pad', 'pad', 'warmpad', rev=0.6, db=-31, p=dict(cut=900, a=0.6)),
-              T('arp', 'arp', 'bell', rev=0.6, dly=0.5, pan=0.3, db=-31),
-              T('lead', 'lead', 'flute', rev=0.5, dly=0.4, pan=-0.15, db=-24),
+# deep / minimal dubstep (half-time 140, sub-pressure, sparse shuffled drums, dub space): long DJ intro -> drop where the sub
+# enters -> stripped breakdown -> a silent beat -> second drop (mid-bass wobble allowed) -> long DJ outro
+FORMS['deep_dubstep'] = [('intro', 16, {'kick', 'top', 'pad', 'fx'}, {'filter_in': True}),
+                         ('intro', 8, {'kick', 'snare', 'top', 'pad', 'fx', 'chords'}, {}),
+                         ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'fx'}, {'drop': True}),
+                         ('break', 16, {'top', 'pad', 'chords', 'fx', 'arp'}, {'alt': True}),
+                         ('build', 4, {'kick', 'snare', 'top', 'pad'}, {'build': True}),
+                         ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'fx', 'arp'}, {'drop': True, 'alt': True}),
+                         ('outro', 16, {'kick', 'top', 'pad', 'fx'}, {'fade': True})]
+
+style('deep_dubstep', 'Electronic', 'Deep / minimal dubstep: half-time 140 with the kick on 1 and the snare on 3, sparse shuffled 2-step '
+      'percussion thrown into dub delays, a heavy clean sub carrying the track, one eerie motif, dub chord stabs and lots of dark '
+      'negative space - soundsystem pressure, not festival brostep',
+      bpm=(138, 142), scales=['minor', 'phrygian'], swing=0.57, swing_unit=16, human=0.006, kit='punchy', form='deep_dubstep',
+      chord_size=3, sc_depth=0.1, reverb=3.2, delay_beats=0.75,
+      progs={'minor': [[0, 0, 0, 0], [0, 0, 5, 5], [0, 0, 0, 6], [0, 5, 0, 6]], 'phrygian': [[0, 0, 1, 0], [0, 0, 0, 1]]},
+      kit_override={'kick': {'drive': 1.4, 'decay': 7, 'pitch': 46}, 'snare': {'snap': 1.4, 'decay': 8, 'tone': 190}},
+      drums={'kick': ['X.........X.....', 'X.........x.....', 'X.....x...X.....', 'X..........X....'],
+             'snare': ['........X.......', '........X......o'],
+             'clap': ['........x.......'],
+             'rim': ['...x......x...x.', '......x.....x...', '...x..x....x....', '.....x.....x..x.'],
+             'shaker': ['..x...x.x.x...x.', '..x.x...x...x.x.'],
+             'chat': ['....x.......x...', '..x.....x.....x.', '......x.......x.'],
+             'ohat': ['..............x.', '................', '......x.........']},
+      snare_tracks=['snare', 'clap'], ghosts=False, fill=False,
+      bass=['R-------........', 'R-------....R---', 'R-----..R-------', 'R---------..R-R-'], bass_lo=26, bass_gate=0.95,
+      chord_rh=['....x...........', '........x.......', '............x...', '....x.......x...'], chord_center=58,
+      arp=dict(rate=4, mode='random', oct=4, prob=0.2), lead_oct=5,
+      lead_rh=['x-------........', '........x---....', 'x---....x-......', '....x-------....'],
+      repetition=0.9, simplicity=0.5,
+      gm_hint='Clean sine sub (the lead instrument); dub chord stabs into long delays; eerie melodica / bell motif; dark drones; '
+              'shuffled rims and shakers with delay throws',
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.45, dly=0.15, db=-16),
+              T('clap', 'snare', 'clap', rev=0.5, db=-22),
+              T('rim', 'top', 'rim', pan=0.25, dly=0.45, rev=0.35, db=-26), T('shaker', 'top', 'shaker', pan=-0.3, db=-31),
+              T('chat', 'top', 'chat', pan=-0.2, dly=0.2, db=-30), T('ohat', 'top', 'ohat', pan=0.3, rev=0.3, db=-31),
+              T('bass', 'bass', 'sinebass', db=-11, p=dict(cut=260)),
+              T('chords', 'chords', 'stab', rev=0.55, dly=0.65, db=-26, p=dict(cut=1400)),
+              T('pad', 'pad', 'warmpad', rev=0.6, db=-32, p=dict(cut=800, a=0.8)),
+              T('arp', 'arp', 'bell', rev=0.6, dly=0.55, pan=0.3, db=-32),
+              T('lead', 'lead', 'stab', rev=0.55, dly=0.55, pan=-0.15, db=-25, p=dict(cut=1800)),
               T('texture', 'fx', 'texture', rev=0.6, db=-35)],
-      master=dict(lufs=-10.5, air=0.8, low=2.0))
+      master=dict(lufs=-10.5, air=0.6, low=2.2))
 
 style('progressive_trance', 'Electronic', 'Emotional progressive trance / melodic progressive house: simple emotive chords, a big singable lead, '
       'long builds, a piano breakdown and a clean, wide drop - melody over complexity',
@@ -2373,12 +2390,12 @@ style('disco_funk', 'Classic', '70s disco-funk: punchy dry four-on-the-floor, a 
               T('lead', 'lead', 'brass', rev=0.2, db=-18)],
       master=dict(lufs=-10.0, air=2.0, low=1.0))
 
-LABELS.update({'tempa_dubstep': 'Dubstep (classic UK / Tempa)', 'progressive_trance': 'Progressive Trance (emotional)',
+LABELS.update({'deep_dubstep': 'Deep Dubstep (dark, minimal)', 'progressive_trance': 'Progressive Trance (emotional)',
                'organic_house': 'Organic Melodic House', 'disco_funk': 'Disco Funk (70s)'})
 POOLS.update({
-    'tempa_dubstep': {'bass': ['sinebass', 'wobble', 'reese'], 'chords': ['stab', 'organ', 'warmpad', 'epiano'],
+    'deep_dubstep': {'bass': ['sinebass', 'wobble'], 'chords': ['stab', 'organ', 'warmpad', 'epiano'],
                       'pad': ['warmpad', 'strings', 'glasspad', 'choir'], 'arp': ['bell', 'celesta', 'pluck'],
-                      'lead': ['flute', 'bell', 'vox', 'organ', 'softlead']},
+                      'lead': ['stab', 'organ', 'bell', 'vox', 'softlead']},
     'progressive_trance': {'bass': ['sawbass', 'moogbass', 'fmbass'], 'chords': ['supersaw', 'piano', 'pluck_saw', 'polysynth', 'stab'],
                            'pad': ['strings', 'warmpad', 'glasspad', 'choir', 'supersaw'], 'arp': ['pluck_saw', 'pluck', 'piano', 'bell'],
                            'lead': ['supersaw_lead', 'pluck_saw', 'piano', 'leadsaw', 'vox']},
@@ -2654,6 +2671,150 @@ POOLS.update({
 
 
 # ---------------------------------------------------------------------------------------------------------------
+# v1.22: SUPER EPIC orchestral genres - the whole low end stacked: double basses + celli an octave up, trombones & tuba
+# doubling the brass an octave down, timpani, taiko, orchestral bass drum and crashes, choir on top.
+_EPIC_ALL = {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead', 'fx'}
+FORMS['epic'] = [('intro', 8, {'pad', 'fx', 'bass'}, {'filter_in': True}),
+                 ('rise', 8, {'bass', 'chords', 'kick', 'pad'}, {}),
+                 ('theme', 16, _EPIC_ALL - {'fx'}, {'drop': True, 'crash': True}),
+                 ('calm', 8, {'lead', 'pad', 'chords'}, {'alt': True}),
+                 ('build', 8, {'bass', 'chords', 'kick', 'snare', 'arp', 'pad'}, {'build': True}),
+                 ('climax', 16, _EPIC_ALL, {'drop': True, 'crash': True}),
+                 ('climax', 8, _EPIC_ALL, {'drop': True, 'crash': True}),
+                 ('outro', 4, {'pad', 'bass', 'kick', 'fx'}, {})]
+
+
+def _lows(extra_pad_choir=True, bass_doubles=('cello', 12)):
+    """The stacked low end every epic genre shares."""
+    out = [T('bass', 'bass', 'contrabass', rev=0.35, db=-15, p=dict(a=0.02)),
+           T('celli', 'bass', bass_doubles[0], rev=0.35, db=-19, double_of='bass', octave=bass_doubles[1]),
+           T('lowbrass', 'pad', 'brass', rev=0.4, db=-19, double_of='pad', octave=-12)]
+    if extra_pad_choir:
+        out.append(T('choir', 'pad', 'choir', rev=0.55, db=-22, double_of='pad', octave=0, p=dict(vowel='a')))
+    return out
+
+
+_EPIC_DRUMS = [T('taiko', 'kick', 'taiko', rev=0.35, db=-11), T('timp', 'snare', 'timp', real='timp', rev=0.45, db=-16),
+               T('snare', 'snare', 'snare', rev=0.45, db=-22), T('crash', 'top', 'crash', real='orchcrash', rev=0.5, db=-24)]
+
+style('epic_orchestral', 'Orchestral', 'Epic orchestral (trailer / "Two Steps" scale): driving string ostinatos over double basses and '
+      'celli, horns and trombones carrying a huge theme, tuba and low brass underneath, choir, taiko and timpani - SUPER EPIC',
+      bpm=(84, 112), scales=['minor', 'harmonic_minor'], chord_size=3, form='epic', reverb=3.8, human=0.006,
+      progs={'minor': [[0, 5, 2, 6], [0, 5, 3, 4], [0, 6, 5, 6], [0, 3, 6, 4]], 'harmonic_minor': [[0, 5, 3, 4], [0, 5, 0, 4]]},
+      drums={'taiko': ['X.....x.X...x.x.', 'X..x..x.X.x.x...', 'X.x.X...X.x.X.x.'], 'timp': ['X.......X.......', 'X.....X.X.......'],
+             'snare': ['....x.......x...', '..x.x..x..x.x.xx'], 'crash': ['X...............', '................']},
+      kick_track='taiko', snare_tracks=['snare'], fill=True,
+      bass=['R.R.R.R.R.R.R.R.', 'RRRRRRRRRRRRRRRR', 'R.RRR.RRR.RRR.RR'], bass_lo=24, bass_gate=0.7,
+      chord_rh=['xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxx.xx'], chord_center=58, arp=dict(rate=1, mode='updown', oct=5),
+      lead_rh=['x-------x---x---', 'x---x---x-------', 'x-----x-x-------', 'x-------x-------'], lead_oct=4, repetition=0.8,
+      gm_hint='Double basses + celli (ostinato); violins & violas spiccato; 6 horns + trombones (theme); tuba; choir; taiko, timpani',
+      tracks=_EPIC_DRUMS + _lows() + [
+          T('chords', 'chords', 'spiccato', rev=0.4, db=-20),
+          T('pad', 'pad', 'horn', rev=0.5, db=-19),
+          T('arp', 'arp', 'violins', rev=0.4, pan=0.25, db=-25),
+          T('lead', 'lead', 'brass', rev=0.5, db=-16),
+          T('lead_hi', 'lead', 'violins', rev=0.5, db=-21, double_of='lead', octave=12),
+          T('texture', 'fx', 'texture', rev=0.5, db=-38)],
+      master=dict(lufs=-10.0, air=1.4, low=2.2))
+
+style('epic_battle', 'Orchestral', 'Epic battle music: war drums in driving 16ths, relentless low-string and spiccato ostinatos, staccato '
+      'low-brass hits, chanting choir and screaming horns - phrygian darkness at full force',
+      bpm=(128, 150), scales=['phrygian', 'harmonic_minor', 'minor'], chord_size=3, form='epic', reverb=3.4, human=0.004,
+      progs={'phrygian': [[0, 1, 0, 1], [0, 0, 1, 6], [0, 1, 6, 5]], 'harmonic_minor': [[0, 5, 0, 4], [0, 1, 0, 4]],
+             'minor': [[0, 5, 6, 4], [0, 0, 5, 6]]},
+      drums={'taiko': ['X.x.X.x.X.xxX.x.', 'X.xxX.x.X.xxX.xx', 'XxX.XxX.XxX.Xxxx'], 'timp': ['X...X...X...X...', 'X.X.X...X.X.X...'],
+             'snare': ['x.x.x.x.x.xxx.x.', '..x...x...x.xxxx'], 'tom': ['......x.......xx', '..x.....x.x...xx'],
+             'crash': ['X...............', '................']},
+      kick_track='taiko', snare_tracks=['snare'], fill=True,
+      bass=['RRRRRRRRRRRRRRRR', 'R.RRR.RRR.RRR.RR'], bass_lo=24, bass_gate=0.6,
+      chord_rh=['xxxxxxxxxxxxxxxx', 'xx.xx.xx.xx.xx.x'], chord_center=57, arp=dict(rate=1, mode='random', oct=5),
+      lead_rh=['x-x-x---x-x-x---', 'x---x-x-x-------', 'x.x.x---x.x.x---', 'x-------x-x-x---'], lead_oct=4, repetition=0.85,
+      tracks=_EPIC_DRUMS + [T('tom', 'top', 'tom', rev=0.35, db=-21)] + _lows() + [
+          T('chords', 'chords', 'spiccato', rev=0.35, db=-19),
+          T('pad', 'pad', 'brass', rev=0.4, db=-19),
+          T('arp', 'arp', 'spiccato', rev=0.3, pan=0.3, db=-25),
+          T('lead', 'lead', 'horn', rev=0.45, db=-16),
+          T('lead_choir', 'lead', 'choir', rev=0.5, db=-21, double_of='lead', octave=0, p=dict(vowel='o')),
+          T('texture', 'fx', 'texture', rev=0.5, db=-36)],
+      master=dict(lufs=-9.5, air=1.3, low=2.4, drive=0.15))
+
+style('epic_choir', 'Orchestral', 'Dark choral epic ("Dies Irae" / sacred horror): a massive choir over pipe organ, droning double '
+      'basses and tuba, tolling tubular bells, timpani and orchestral bass drum - slow, monumental, apocalyptic',
+      bpm=(60, 84), scales=['minor', 'harmonic_minor', 'phrygian'], chord_size=3, chord_bars=2, form='epic', reverb=4.5,
+      human=0.008,
+      progs={'minor': [[0, 5, 6, 4], [0, 3, 5, 4], [0, 6, 5, 4]], 'harmonic_minor': [[0, 5, 1, 4], [0, 3, 4, 4]],
+             'phrygian': [[0, 1, 0, 1], [0, 1, 6, 0]]},
+      drums={'taiko': ['X...............', 'X.......X.......'], 'timp': ['X.......X.......', 'X...........X.x.'],
+             'crash': ['X...............', '................']},
+      kick_track='taiko', snare_tracks=['timp'],
+      bass=['R---------------', 'R-------R-------'], bass_lo=24,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=57, arp=dict(rate=4, mode='up', oct=4, prob=0.6),
+      lead_rh=['x---x---x-------', 'x-------x---x---', 'x---x---x---x---'], lead_oct=4, repetition=0.85,
+      tracks=[T('taiko', 'kick', 'taiko', rev=0.5, db=-14), T('timp', 'snare', 'timp', real='timp', rev=0.5, db=-16),
+              T('crash', 'top', 'crash', real='orchcrash', rev=0.6, db=-24)] + _lows(extra_pad_choir=False) + [
+          T('chords', 'chords', 'organ', rev=0.55, db=-21),
+          T('pad', 'pad', 'choir', rev=0.6, db=-17, p=dict(vowel='a')),
+          T('arp', 'arp', 'tubular', rev=0.6, db=-22),
+          T('lead', 'lead', 'choir', rev=0.6, db=-16, p=dict(vowel='o')),
+          T('lead_brass', 'lead', 'brass', rev=0.5, db=-22, double_of='lead', octave=-12)],
+      master=dict(lufs=-11.0, air=1.0, low=2.4))
+
+style('heroic_anthem', 'Orchestral', 'Heroic anthem: a soaring major-key fanfare on horns and trumpets, sweeping violins, marching snare, '
+      'cymbals and timpani over trombones, tuba and a rock-solid string bass - triumphant and huge',
+      bpm=(92, 124), scales=['major', 'lydian', 'mixolydian'], chord_size=3, form='epic', reverb=3.6, human=0.006,
+      progs={'major': [[0, 4, 5, 3], [0, 3, 0, 4], [5, 3, 0, 4], [0, 6, 3, 4]], 'lydian': [[0, 1, 0, 1], [0, 1, 4, 0]],
+             'mixolydian': [[0, 6, 3, 0], [0, 6, 0, 4]]},
+      drums={'taiko': ['X.......X.......', 'X.....x.X.......'], 'timp': ['X.......X.......', 'X...X...X.x.x.x.'],
+             'snare': ['x.xxx.x.x.xxx.x.', 'x.x.x.x.xxx.xxxx'], 'crash': ['X...............', '................']},
+      kick_track='taiko', snare_tracks=['snare'], fill=True,
+      bass=['R.R.R.R.R.R.R.R.', 'R-R-R-R-R-R-R-R-', 'R---R---R---R---'], bass_lo=26,
+      chord_rh=['x.xx.xx.x.xx.xx.', 'xxxxxxxxxxxxxxxx'], chord_center=60, arp=dict(rate=1, mode='updown', oct=5),
+      lead_rh=['x--x-xx---x-x---', 'x-----x-x-x-----', 'x---x-x-x---x---', 'x-x-x-----x-----'], lead_oct=5, repetition=0.8,
+      tracks=_EPIC_DRUMS + _lows() + [
+          T('chords', 'chords', 'spiccato', rev=0.4, db=-21),
+          T('pad', 'pad', 'horn', rev=0.45, db=-19),
+          T('arp', 'arp', 'violins', rev=0.4, pan=0.25, db=-25),
+          T('lead', 'lead', 'trumpet', rev=0.45, db=-16),
+          T('lead_horns', 'lead', 'horn', rev=0.45, db=-20, double_of='lead', octave=-12),
+          T('lead_hi', 'lead', 'violins', rev=0.5, db=-22, double_of='lead', octave=12)],
+      master=dict(lufs=-10.5, air=1.6, low=2.0))
+
+style('symphonic_finale', 'Orchestral', 'Grand symphonic finale (Tchaikovsky / Mahler scale): full brass chorale over tremolo strings, '
+      'thundering timpani rolls, cymbal crashes, double basses and tuba - the last, enormous page of a symphony',
+      bpm=(96, 132), scales=['major', 'minor', 'harmonic_minor'], chord_size=4, chord_bars=1, form='epic', reverb=3.8, human=0.01,
+      rubato=0.3, voicing='open',
+      progs={'major': [[0, 3, 4, 0], [0, 5, 3, 4], [0, 1, 4, 0]], 'minor': [[0, 5, 3, 4], [0, 3, 4, 0]],
+             'harmonic_minor': [[0, 3, 4, 0], [0, 5, 1, 4]]},
+      drums={'timp': ['X.X.X.X.X.X.X.X.', 'XXXXXXXXXXXXXXXX', 'X.......X.......'], 'crash': ['X...............', '................'],
+             'taiko': ['X...............']},
+      kick_track='taiko', snare_tracks=['timp'],
+      bass=['R---R---R---R---', 'R-------R-------', 'R.R.R.R.R.R.R.R.'], bass_lo=24,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=58, arp=dict(rate=2, mode='updown', oct=5),
+      lead_rh=['x-------x---x---', 'x---x---x-x-x---', 'x-----x-x-------'], lead_oct=5,
+      tracks=[T('taiko', 'kick', 'taiko', rev=0.45, db=-16), T('timp', 'snare', 'timp', real='timp', rev=0.45, db=-15),
+              T('crash', 'top', 'crash', real='orchcrash', rev=0.55, db=-23)] + _lows() + [
+          T('chords', 'chords', 'tremolo', rev=0.45, db=-20),
+          T('pad', 'pad', 'brass', rev=0.5, db=-18),
+          T('arp', 'arp', 'harp', rev=0.45, db=-25),
+          T('lead', 'lead', 'violins', rev=0.5, db=-16),
+          T('lead_horns', 'lead', 'horn', rev=0.5, db=-20, double_of='lead', octave=-12)],
+      master=dict(lufs=-11.5, air=1.2, low=1.8))
+
+LABELS.update({'epic_orchestral': 'Epic Orchestral', 'epic_battle': 'Epic Battle', 'epic_choir': 'Dark Choral Epic',
+               'heroic_anthem': 'Heroic Anthem', 'symphonic_finale': 'Grand Symphonic Finale'})
+POOLS.update({
+    'epic_orchestral': dict(chords=['spiccato', 'strings'], pad=['horn', 'brass', 'choir'], lead=['brass', 'horn', 'violins', 'choir'],
+                            arp=['violins', 'spiccato', 'harp']),
+    'epic_battle': dict(chords=['spiccato'], pad=['brass', 'horn'], lead=['horn', 'brass', 'choir'], arp=['spiccato', 'violins']),
+    'epic_choir': dict(chords=['organ', 'strings'], pad=['choir'], lead=['choir', 'horn', 'brass'], arp=['tubular', 'harp']),
+    'heroic_anthem': dict(chords=['spiccato', 'strings'], pad=['horn', 'brass'], lead=['trumpet', 'horn', 'brass', 'violins'],
+                          arp=['violins', 'harp', 'spiccato']),
+    'symphonic_finale': dict(chords=['tremolo', 'strings'], pad=['brass', 'horn', 'choir'], lead=['violins', 'horn', 'trumpet'],
+                             arp=['harp', 'spiccato']),
+})
+
+
+# ---------------------------------------------------------------------------------------------------------------
 # wider pad / bass pools for genres that only had one or two options - only sounds that genuinely fit the genre
 _PAD_FAMILY = {
     ('house', 'deep_house', 'tech_house', 'ukgarage', 'afro_house', 'melodic_house', 'progressive_house', 'disco'):
@@ -2711,7 +2872,7 @@ _widen(_BASS_FAMILY, 'bass')
 # replaced by the genre's own sound for that part.
 BELLS = {'bell', 'celesta', 'sf:glock', 'sf:musicbox', 'sf:tubular', 'glock', 'musicbox', 'tubular', 'sf:celesta'}
 MALLETS = {'marimba', 'kalimba', 'vibes', 'steeldrum', 'sf:marimba', 'sf:vibes', 'sf:kalimba', 'sf:steeldrum', 'sf:xylophone'}
-BELL_OK = {'impressionism', 'trap', 'holiday', 'fantasy_rpg', 'ambient', 'cinematic', 'orchestral', 'film_piano', 'waltz', 'neoclassical',
+BELL_OK = {'deep_dubstep', 'epic_choir', 'epic_orchestral', 'symphonic_finale', 'impressionism', 'trap', 'holiday', 'fantasy_rpg', 'ambient', 'cinematic', 'orchestral', 'film_piano', 'waltz', 'neoclassical',
            'adventure', 'tension', 'hauntology', 'chamber_pop', 'braindance', 'orchestral_hiphop', 'hybrid_trailer', 'lofi'}
 MALLET_OK = BELL_OK | {'minimalism', 'afrobeats', 'amapiano', 'afro_house', 'cumbia', 'salsa', 'dancehall', 'bossa_nova', 'jazz', 'swing',
                        'lofi', 'organic_house', 'liquid_dnb', 'city_pop', 'downtempo'}
@@ -2726,7 +2887,7 @@ NO_BELL = {
     'dnb': dict(arp='stab', lead='leadsaw'), 'neurofunk': dict(arp='stab', lead='reese', chords='stab'),
     'jungle': dict(arp='stab', lead='vox'), 'breakcore': dict(arp='stab', lead='chip'),
     'dubstep': dict(arp='pluck_saw', lead='leadsaw'), 'brostep': dict(arp='pluck_saw', lead='leadsaw'),
-    'melodic_dubstep': dict(arp='pluck_saw', lead='supersaw_lead'), 'tempa_dubstep': dict(arp='organ', lead='flute'),
+    'melodic_dubstep': dict(arp='pluck_saw', lead='supersaw_lead'), 'deep_dubstep': dict(arp='organ', lead='stab'),
     'future_bass': dict(arp='pluck_saw', lead='supersaw_lead'), 'ukgarage': dict(arp='organ', lead='vox'),
     'synthwave': dict(arp='pluck_saw', lead='leadsaw'), 'synthpop': dict(arp='pluck_saw', lead='polysynth'),
     'electro': dict(arp='pluck_saw', lead='leadsaw'), 'bigroom': dict(arp='pluck_saw', lead='supersaw_lead'),
@@ -2893,3 +3054,7 @@ STYLES['ambient']['master'] = dict(STYLES['ambient']['master'], wobble=0.15)
 BELL_OK.add('downtempo')
 MALLET_OK.add('downtempo')
 POOLS['downtempo']['arp'] = ['bell', 'epiano', 'pluck', 'guitar', 'kalimba']
+
+
+# renamed genres: old ids still work (saved presets, links, command line)
+STYLE_ALIASES = {'tempa_dubstep': 'deep_dubstep'}

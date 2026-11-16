@@ -142,6 +142,36 @@ def _inst_label(name):
     return name
 
 
+def trim_lead_in(out, keep=1.0, rel_db=-40.0):
+    """Cut quiet space before the music starts so at most `keep` seconds remain. 'Starts' = the first moment the mix
+    gets within `rel_db` of its loud parts (so a barely-audible pad fade-in or a lone room tail counts as empty).
+    Only the finished mix is trimmed; stems and MIDI keep the full timeline so they still line up in a DAW."""
+    from .dsp import SR
+    x = np.asarray(out)
+    mono = np.abs(x).max(axis=0) if x.ndim == 2 else np.abs(x)
+    w = int(0.02 * SR)
+    n = len(mono) // w
+    if n < 10:
+        return out, 0.0
+    rms = np.sqrt(np.mean((mono[:n * w].reshape(n, w)) ** 2, axis=1)) + 1e-12
+    ref = np.percentile(rms, 95)
+    hits = np.nonzero(rms > ref * 10 ** (rel_db / 20))[0]
+    if not len(hits):
+        return out, 0.0
+    start = hits[0] * w
+    cut = start - int(keep * SR)
+    if cut <= int(0.05 * SR):
+        return out, 0.0
+    y = x[:, cut:].copy() if x.ndim == 2 else x[cut:].copy()
+    f = min(int(0.03 * SR), y.shape[-1])
+    ramp = np.linspace(0.0, 1.0, f) ** 2
+    if y.ndim == 2:
+        y[:, :f] *= ramp
+    else:
+        y[:f] *= ramp
+    return y, cut / SR
+
+
 def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=None, prefs=None, section=None):
     """Compose + render + master + write requested outputs. Returns dict with info and file paths."""
     if isinstance(opts, dict):
@@ -174,6 +204,10 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     mix = r.render(stems_dir, progress=progress)
     r.premaster_peak = float(np.max(np.abs(mix)))
     out = master(mix, song['st']['master'], log=log)
+    out, trimmed = trim_lead_in(out)
+    if trimmed > 0.05:
+        log(f'   trimmed {trimmed:.1f} s of near-silent lead-in (at most 1 s left before the music)')
+        info['trimmed_lead_in'] = round(trimmed, 2)
     files = {}
     wav = os.path.join(outdir, title + '.wav')
     dsp.write_wav(wav, out)

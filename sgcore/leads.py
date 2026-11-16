@@ -7,10 +7,11 @@ import random
 
 # which devices suit each genre (one is picked per song, so the same style still varies)
 GENRE_DEVICES = {
+    'epic_orchestral': ['hook'], 'epic_battle': ['hook', 'riff'], 'epic_choir': ['hook'], 'heroic_anthem': ['hook'], 'symphonic_finale': ['hook'],
     'italo_disco': ['hook', 'arp'], 'new_beat': ['ostinato', 'chops'], 'gabber': ['riff', 'hook'], 'rave_hardcore': ['chops', 'hook'],
     'future_funk': ['chops', 'call'], 'bebop': ['hook'], 'modal_jazz': ['hook', 'call'], 'soul_jazz': ['riff', 'call'], 'fusion': ['hook', 'riff'],
     'classical_period': ['hook', 'call'], 'romantic': ['hook'], 'impressionism': ['hook'], 'minimalism': ['ostinato'],
-    'tempa_dubstep': ['hook', 'ostinato'], 'progressive_trance': ['hook', 'hook', 'call'], 'organic_house': ['hook', 'call'],
+    'deep_dubstep': ['hook', 'ostinato'], 'progressive_trance': ['hook', 'hook', 'call'], 'organic_house': ['hook', 'call'],
     'disco_funk': ['riff', 'call'],
     'trance': ['arp', 'hook'], 'progressive_house': ['arp', 'hook'], 'synthwave': ['arp', 'hook'], 'eurodance': ['hook', 'arp'],
     'chiptune': ['arp', 'hook'], 'electro': ['arp', 'riff'], 'synthpop': ['hook', 'arp'], 'bigroom': ['hook', 'chops'],

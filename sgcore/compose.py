@@ -217,7 +217,7 @@ def voice_chord(key, deg, size, center, voicing='close', color=None):
 VOICINGS = ['close', 'open', 'drop2', 'rootless', 'power']
 MELODY_STYLES = ['diatonic', 'pentatonic', 'blues', 'bebop']
 # how each genre's lead player phrases, and how its keyboard player voices chords (styles not listed: diatonic / style's own)
-GENRE_MELODY = {'bebop': 'bebop', 'soul_jazz': 'blues', 'modal_jazz': 'diatonic', 'fusion': 'pentatonic', 'future_funk': 'pentatonic', 'italo_disco': 'diatonic', 'classical_period': 'diatonic', 'romantic': 'diatonic', 'impressionism': 'pentatonic', 'minimalism': 'diatonic', 'brazilian_phonk': 'blues', 'tempa_dubstep': 'diatonic', 'progressive_trance': 'diatonic', 'organic_house': 'diatonic', 'disco_funk': 'pentatonic', 'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
+GENRE_MELODY = {'epic_orchestral': 'diatonic', 'epic_battle': 'diatonic', 'epic_choir': 'diatonic', 'heroic_anthem': 'diatonic', 'symphonic_finale': 'diatonic', 'bebop': 'bebop', 'soul_jazz': 'blues', 'modal_jazz': 'diatonic', 'fusion': 'pentatonic', 'future_funk': 'pentatonic', 'italo_disco': 'diatonic', 'classical_period': 'diatonic', 'romantic': 'diatonic', 'impressionism': 'pentatonic', 'minimalism': 'diatonic', 'brazilian_phonk': 'blues', 'deep_dubstep': 'diatonic', 'progressive_trance': 'diatonic', 'organic_house': 'diatonic', 'disco_funk': 'pentatonic', 'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
                 'folk': 'pentatonic', 'afrobeats': 'pentatonic', 'amapiano': 'pentatonic', 'reggae': 'pentatonic',
                 'lofi': 'pentatonic', 'pop': 'pentatonic', 'disco': 'pentatonic', 'jazz': 'bebop', 'bossa_nova': 'bebop',
                 'western': 'pentatonic', 'chamber_pop': 'pentatonic', 'fantasy_rpg': 'pentatonic',
@@ -231,7 +231,7 @@ GENRE_VOICING = {'bebop': 'rootless', 'soul_jazz': 'rootless', 'modal_jazz': 'op
                  'deep_house': 'drop2', 'ukgarage': 'drop2', 'funk': 'drop2', 'disco': 'drop2', 'downtempo': 'drop2',
                  'neoclassical': 'open', 'chamber': 'open', 'fantasy_rpg': 'open', 'cinematic': 'open', 'orchestral': 'open',
                  'swing': 'drop2', 'gospel': 'open', 'rnb': 'drop2', 'waltz': 'open', 'tango': 'close'}
-GENRE_COLORS = {'bebop': ['9', '7', '6'], 'modal_jazz': ['9', 'sus4', '7'], 'soul_jazz': ['7', '9'], 'fusion': ['9', 'add9', '7'], 'future_funk': ['7', '9'], 'italo_disco': ['triad', 'add9'], 'new_beat': ['triad'], 'gabber': ['triad'], 'rave_hardcore': ['triad', '7'], 'classical_period': ['triad'], 'romantic': ['7', 'triad', 'add9'], 'impressionism': ['add9', '9', 'sus2'], 'minimalism': ['triad', 'add9'], 'tempa_dubstep': ['triad'], 'progressive_trance': ['triad', 'sus2', 'add9'], 'organic_house': ['add9', 'triad', 'sus2'], 'disco_funk': ['7', '9', 'triad'], 'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
+GENRE_COLORS = {'epic_orchestral': ['triad', 'sus4'], 'epic_battle': ['triad'], 'epic_choir': ['triad'], 'heroic_anthem': ['triad', 'sus4', 'add9'], 'symphonic_finale': ['triad', '7'], 'bebop': ['9', '7', '6'], 'modal_jazz': ['9', 'sus4', '7'], 'soul_jazz': ['7', '9'], 'fusion': ['9', 'add9', '7'], 'future_funk': ['7', '9'], 'italo_disco': ['triad', 'add9'], 'new_beat': ['triad'], 'gabber': ['triad'], 'rave_hardcore': ['triad', '7'], 'classical_period': ['triad'], 'romantic': ['7', 'triad', 'add9'], 'impressionism': ['add9', '9', 'sus2'], 'minimalism': ['triad', 'add9'], 'deep_dubstep': ['triad'], 'progressive_trance': ['triad', 'sus2', 'add9'], 'organic_house': ['add9', 'triad', 'sus2'], 'disco_funk': ['7', '9', 'triad'], 'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
                 'city_pop': ['7', '9', 'add9'], 'deep_house': ['7', '9', 'add9'], 'ukgarage': ['7', '9'], 'funk': ['7', '9'],
                 'blues': ['7'], 'downtempo': ['7', 'add9', '9'], 'neoclassical': ['triad', 'add9', 'add9', 'sus2'],
                 'baroque': ['triad'], 'chamber': ['triad', 'triad', '7'], 'holiday': ['triad', '6', '7', 'add9'],
@@ -540,7 +540,7 @@ def apply_variety(st, opts, rnd):
             sd = ps.get(part) if ps.get(part) is not None else opts.seed * 1009 + PART_K[part]
             part_rng[role] = random.Random(f'{sd}-{role}-{owner}-variety')
         rr = part_rng[role]
-        free = role not in (opts.instruments or {}) and not t.get('user_pick') and not chip_locked
+        free = role not in (opts.instruments or {}) and not t.get('user_pick') and not chip_locked and not t.get('double_of')
         if free and pool and rr.random() < 0.55 + 0.4 * v:
             # the genre's own pool: its signature sound a little likelier, every other one an authentic alternative;
             # instruments your last songs in this genre used are picked less often, so the next one sounds fresh
@@ -793,7 +793,7 @@ PHRASE_FAMILY = {
     **{k: 'busy' for k in ('psytrance', 'dnb', 'jungle', 'breakcore', 'hyperpop', 'chiptune', 'trap', 'phonk', 'uk_drill', 'hardstyle')},
     **{k: 'syncopated' for k in ('future_funk', 'fusion', 'disco_funk', 'funk', 'disco', 'afrobeats', 'amapiano', 'reggaeton', 'moombahton', 'reggae', 'ukgarage', 'house',
                                  'deep_house', 'tech_house', 'city_pop', 'bossa_nova')},
-    **{k: 'sparse' for k in ('tempa_dubstep', 'ambient', 'downtempo', 'lofi', 'vaporwave', 'jazz', 'cinematic', 'orchestral', 'film_piano',
+    **{k: 'sparse' for k in ('deep_dubstep', 'ambient', 'downtempo', 'lofi', 'vaporwave', 'jazz', 'cinematic', 'orchestral', 'film_piano',
                              'adventure', 'tension', 'boombap', 'neoclassical', 'western', 'hybrid_trailer')},
     **{k: 'sung' for k in ('chamber', 'fantasy_rpg', 'holiday', 'chamber_pop', 'symphonic_metal', 'gospel', 'rnb', 'motown',
                            'country', 'kpop', 'indie_rock', 'punk', 'cumbia', 'ska', 'dancehall')},
@@ -1025,6 +1025,10 @@ def style_knob_defaults(opts):
 
 def compose(opts):
     from . import drumkits  # noqa: F401  (break patterns)
+    from .styles import STYLE_ALIASES
+    if opts.style in STYLE_ALIASES or any(b in STYLE_ALIASES for b in (opts.blend or [])):
+        opts = replace(opts, style=STYLE_ALIASES.get(opts.style, opts.style),
+                       blend=[STYLE_ALIASES.get(b, b) for b in (opts.blend or [])])
     user_opts = opts
     opts = style_knob_defaults(opts)
     opts = apply_simplicity(opts)
@@ -1853,7 +1857,8 @@ def section_group(sec):
 
 
 # genres whose lead sound is the genre - rotation only uses their own pool
-SIGNATURE_SOUNDS = {'phonk', 'house_phonk', 'memphis_phonk', 'brazilian_phonk', 'metal', 'punk', 'symphonic_metal', 'rock'}
+SIGNATURE_SOUNDS = {'phonk', 'house_phonk', 'memphis_phonk', 'brazilian_phonk', 'metal', 'punk', 'symphonic_metal', 'rock',
+                    'epic_orchestral', 'epic_battle', 'epic_choir', 'heroic_anthem', 'symphonic_finale'}
 
 
 def add_section_switch_tracks(st, opts, rnd):
@@ -2088,7 +2093,7 @@ def build_sequence(default, forced, rnd, n=4):
     while len(seq) < n:
         seq.append(rnd.choice([b for b in fam if b != seq[-1]] or fam))
     return seq
-GENRE_BUILD = {'italo_disco': 'lift', 'new_beat': 'filter', 'gabber': 'kick_roll', 'rave_hardcore': 'roll', 'future_funk': 'filter', 'bebop': 'lift', 'modal_jazz': 'lift', 'soul_jazz': 'lift', 'fusion': 'lift', 'classical_period': 'swell', 'romantic': 'swell', 'impressionism': 'swell', 'minimalism': 'swell', 'tempa_dubstep': 'pause', 'progressive_trance': 'roll', 'organic_house': 'filter', 'disco_funk': 'lift', 'trance': 'roll', 'bigroom': 'roll', 'progressive_house': 'roll', 'electro': 'roll', 'eurodance': 'roll',
+GENRE_BUILD = {'epic_orchestral': 'roll', 'epic_battle': 'roll', 'epic_choir': 'swell', 'heroic_anthem': 'roll', 'symphonic_finale': 'swell', 'italo_disco': 'lift', 'new_beat': 'filter', 'gabber': 'kick_roll', 'rave_hardcore': 'roll', 'future_funk': 'filter', 'bebop': 'lift', 'modal_jazz': 'lift', 'soul_jazz': 'lift', 'fusion': 'lift', 'classical_period': 'swell', 'romantic': 'swell', 'impressionism': 'swell', 'minimalism': 'swell', 'deep_dubstep': 'pause', 'progressive_trance': 'roll', 'organic_house': 'filter', 'disco_funk': 'lift', 'trance': 'roll', 'bigroom': 'roll', 'progressive_house': 'roll', 'electro': 'roll', 'eurodance': 'roll',
                'moombahton': 'roll', 'dnb': 'roll', 'jungle': 'stutter', 'hardstyle': 'kick_roll', 'future_bass': 'triplet',
                'hyperpop': 'triplet', 'dubstep': 'stutter', 'breakcore': 'stutter', 'house': 'filter', 'deep_house': 'filter',
                'tech_house': 'filter', 'techno': 'filter', 'minimal': 'filter', 'acid_house': 'filter', 'psytrance': 'filter',

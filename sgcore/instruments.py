@@ -1312,3 +1312,54 @@ INSTRUMENTS['growl'] = i_growl
 INSTRUMENT_INFO['growl'] = 'Growl bass (FM + formant)'
 ROLE_CHOICES['bass'] += ['growl']
 GM_PROGRAM['growl'] = 39
+
+
+# ---------------------------------------------------------------- orchestral sections (synth fallbacks)
+# When the real orchestra library (or the user's orchestra plugin) is installed these names are played by
+# the matching recorded section; otherwise these synth voices stand in.
+def i_violins(m, dur, p, glide=None, mod=None):
+    """1st violin section: bright string ensemble with expressive vibrato."""
+    return i_strings(m, dur, dict(a=p.get('a', 0.18), r=p.get('r', 0.6), cut=p.get('cut', 5200)))
+
+
+def i_violas(m, dur, p, glide=None, mod=None):
+    return i_strings(m, dur, dict(a=p.get('a', 0.25), r=p.get('r', 0.6), cut=p.get('cut', 2800)))
+
+
+def i_contrabass(m, dur, p, glide=None, mod=None):
+    """Double basses: dark bowed low strings with a little sub weight."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, p.get('a', 0.12), 0.3, 0.9, 0.35)
+    n = len(env)
+    fv = vibrato(f, n, rate=4.6, cents=6, delay=0.25)
+    x = saw(fv, n) + 0.6 * saw(fv * 1.004, n, 0.3) + 0.5 * np.sin(2 * np.pi * np.cumsum(fv) / SR)
+    y = eq(lp(x, p.get('cut', 1300)), 'peak', 110, 1.0, 4)
+    return hp(y, 30) * env * 0.42
+
+
+def i_trombone(m, dur, p, glide=None, mod=None):
+    return i_brass(m, dur, dict(cut=p.get('cut', 2200)))
+
+
+def i_tuba(m, dur, p, glide=None, mod=None):
+    y = i_brass(m, dur, dict(cut=p.get('cut', 900)))
+    return eq(y, 'peak', 90, 1.0, 5)
+
+
+def i_bassoon(m, dur, p, glide=None, mod=None):
+    return i_clarinet(m, dur, dict(p, cut=p.get('cut', 1600)))
+
+
+def i_tubular(m, dur, p, glide=None, mod=None):
+    return i_bell(m, max(dur, 2.5), dict(p))
+
+
+INSTRUMENTS.update({'violins': i_violins, 'violas': i_violas, 'contrabass': i_contrabass, 'trombone': i_trombone,
+                    'tuba': i_tuba, 'bassoon': i_bassoon, 'tubular': i_tubular})
+INSTRUMENT_INFO.update({'violins': 'Violins (section)', 'violas': 'Violas (section)', 'contrabass': 'Double basses',
+                        'trombone': 'Trombones', 'tuba': 'Tuba', 'bassoon': 'Bassoon', 'tubular': 'Tubular bells'})
+ROLE_CHOICES['bass'] += ['contrabass', 'tuba']
+ROLE_CHOICES['lead'] += ['violins', 'violas', 'trombone']
+ROLE_CHOICES['pad'] += ['violins', 'violas', 'trombone']
+ROLE_CHOICES['arp'] += ['violins']
+GM_PROGRAM.update({'violins': 40, 'violas': 41, 'contrabass': 43, 'trombone': 57, 'tuba': 58, 'bassoon': 70, 'tubular': 14})

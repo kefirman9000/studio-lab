@@ -396,7 +396,7 @@ BRASS = [(60, 'trumpet'), (53, 'horn'), (41, 'trombone'), (0, 'tuba')]
 ORCH = {
     'strings': ('section', 'sus'), 'slowstrings': ('section', 'sus'), 'spiccato': ('section', 'short'),
     'pizz': ('section', 'pizz'), 'tremolo': ('section', 'trem'),
-    'violins': ('solo', 'violins'), 'violin': ('solo', 'violin'), 'fiddle': ('solo', 'violin'), 'viola': ('solo', 'violas'), 'cello': ('solo', 'celli'),
+    'violins': ('solo', 'violins'), 'violin': ('solo', 'violin'), 'fiddle': ('solo', 'violin'), 'viola': ('solo', 'violas'), 'violas': ('solo', 'violas'), 'cello': ('solo', 'celli'),
     'contrabass': ('solo', 'basses'),
     'brass': ('brass', 'sus'), 'trumpetsection': ('brass', 'sus'), 'horn': ('solo', 'horn'), 'trumpet': ('solo', 'trumpet'),
     'trombone': ('solo', 'trombone'), 'tuba': ('solo', 'tuba'), 'flute': ('solo', 'flute'), 'oboe': ('solo', 'oboe'),
@@ -410,7 +410,7 @@ ORCH = {
 }
 # styles whose piano is a worn upright rather than a concert grand
 UPRIGHT_STYLES = {'lofi', 'boombap', 'hauntology', 'vaporwave', 'memphis_phonk', 'blues', 'soul_ballad', 'folk', 'western', 'motown'}
-PIPE_ORGAN_STYLES = {'baroque', 'cinematic', 'tension', 'hybrid_trailer', 'symphonic_metal', 'adventure', 'romantic'}
+PIPE_ORGAN_STYLES = {'epic_choir', 'baroque', 'cinematic', 'tension', 'hybrid_trailer', 'symphonic_metal', 'adventure', 'romantic'}
 SHORT_NOTE = 0.24          # seconds: notes this short are played with the short articulation (spiccato / staccato)
 
 
@@ -459,7 +459,7 @@ def orch_note(name, midi, dur, vel, rr_key):
 
 # which real drum kit plays a style's drums
 LOFI_KIT_STYLES = {'lofi', 'boombap', 'hauntology', 'vaporwave', 'soul_ballad', 'jazzhop'}
-PERC = {'sleigh': 'sleigh', 'claves': 'claves', 'bongo': 'bongo', 'guiro': 'guiro', 'conga': 'conga', 'shaker': 'shaker', 'tamb': 'tamb', 'cowbell': 'cowbell', 'claves': 'claves', 'guiro': 'guiro',
+PERC = {'orchcrash': 'orchcrash', 'timp': 'timpani', 'sleigh': 'sleigh', 'claves': 'claves', 'bongo': 'bongo', 'guiro': 'guiro', 'conga': 'conga', 'shaker': 'shaker', 'tamb': 'tamb', 'cowbell': 'cowbell', 'claves': 'claves', 'guiro': 'guiro',
         'woodblock': 'woodblock', 'triangle': 'triangle', 'cabasa': 'cabasa', 'bongo': 'bongo', 'agogo': 'agogo'}
 KIT_PARTS = {'kick': 'kick', 'snare': 'snare', 'rim': 'rim', 'chat': 'chat', 'ohat': 'ohat', 'ride': 'ride', 'crash': 'crash',
              'tom': 'tom', 'clap': 'clap', 'cymbal': 'crash'}

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.22.0
+- **No more long silent intros**: the finished mix now starts at most 1 second before the music is audible (very quiet fade-ins and empty bars are trimmed with a short fade). Stems and MIDI keep the full timeline.
+- **Five new SUPER EPIC orchestral genres** (Orchestral tab): *Epic Orchestral*, *Epic Battle*, *Epic Choir*, *Heroic Anthem* and *Symphonic Finale*. Every one stacks the full low end - double basses, celli an octave up, trombones/tuba under the horns - with taiko, timpani, orchestral crashes, choir and soaring violins. They use the real orchestra (or your orchestra plugin) when installed.
+- **New orchestral section sounds** in the Sound dropdowns: violins (section), violas, double basses, trombones, tuba, bassoon, tubular bells.
+- **Tempa Dubstep is now "Deep Dubstep (dark, minimal)"**: proper 140 BPM half-time - kick on 1, snare+clap on 3, shuffled rims and shakers with dub delay, sub-heavy sine bass with wobble, sparse stabs, 16-bar intros, 32-bar drops, a breakdown and second drop. Old saved settings using the old name still work.
+
 ## 1.21.0
 - **Two new free real-instrument libraries** (🎻 Real instruments, CC0 / public domain, Versilian Community Sample Library):
   - *Pianos & keys* (433 MB): a **Steinway grand piano** that now plays every genre's piano part, a **Yamaha upright** for lo-fi, boom bap, blues, soul and other vintage styles, a Flemish **harpsichord**, a **pipe organ** for baroque and film styles, and a Yamaha TX81Z FM piano.
