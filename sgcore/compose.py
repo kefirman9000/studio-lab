@@ -11,6 +11,8 @@ SCALES = {
     'major': [0, 2, 4, 5, 7, 9, 11], 'minor': [0, 2, 3, 5, 7, 8, 10], 'dorian': [0, 2, 3, 5, 7, 9, 10],
     'phrygian': [0, 1, 3, 5, 7, 8, 10], 'harmonic_minor': [0, 2, 3, 5, 7, 8, 11], 'mixolydian': [0, 2, 4, 5, 7, 9, 10],
     'lydian': [0, 2, 4, 6, 7, 9, 11],
+    'phrygian_dominant': [0, 1, 4, 5, 7, 8, 10],   # 'Spanish' / Hijaz: dramatic, exotic - phonk, dark electronic, metal
+    'melodic_minor': [0, 2, 3, 5, 7, 9, 11],       # jazz minor: minor with a bright top - jazz, sophisticated electronic
 }
 NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 FLAT_NAMES = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
@@ -176,6 +178,8 @@ GENRE_MELODY = {'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': '
                 'gospel': 'blues', 'rnb': 'pentatonic', 'motown': 'pentatonic', 'country': 'pentatonic', 'bluegrass': 'pentatonic',
                 'swing': 'bebop', 'punk': 'pentatonic', 'indie_rock': 'pentatonic', 'kpop': 'pentatonic', 'soul_ballad': 'pentatonic',
                 'dancehall': 'pentatonic', 'afro_house': 'pentatonic', 'jersey_club': 'pentatonic', 'baile_funk': 'pentatonic',
+                'hauntology': 'pentatonic', 'braindance': 'diatonic', 'liquid_dnb': 'pentatonic', 'melodic_dubstep': 'diatonic', 'jam_band': 'blues', 'soft_rock': 'pentatonic',
+                'teen_pop': 'pentatonic', 'luxury_rap': 'diatonic', 'uplifting_trance': 'diatonic', 'melodic_house': 'pentatonic',
                 'celtic_jig': 'diatonic', 'waltz': 'diatonic', 'tango': 'diatonic', 'salsa': 'diatonic', 'cumbia': 'diatonic'}
 GENRE_VOICING = {'jazz': 'rootless', 'bossa_nova': 'rootless', 'lofi': 'rootless', 'boombap': 'rootless', 'city_pop': 'drop2',
                  'deep_house': 'drop2', 'ukgarage': 'drop2', 'funk': 'drop2', 'disco': 'drop2', 'downtempo': 'drop2',
@@ -191,7 +195,11 @@ GENRE_COLORS = {'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lo
                 'country': ['triad'], 'bluegrass': ['triad'], 'tango': ['triad', '7'], 'salsa': ['triad', '7', '6'],
                 'kpop': ['triad', 'add9', '7'], 'afro_house': ['7', '9', 'triad'], 'melodic_techno': ['triad', 'sus2', 'add9no3'],
                 'soul_ballad': ['triad', '7', '6'], 'waltz': ['triad'], 'celtic_jig': ['triad', 'sus2'], 'ska': ['triad', '7'],
-                'cumbia': ['triad'], 'dancehall': ['triad', '7'], 'punk': ['triad'], 'indie_rock': ['triad', 'add9', 'sus2']}
+                'cumbia': ['triad'], 'dancehall': ['triad', '7'], 'hauntology': ['add9', '7', 'triad', 'sus2'],
+                'braindance': ['add9', 'sus2', '7', 'add9no3'], 'liquid_dnb': ['7', '9', 'add9'], 'neurofunk': ['triad', 'add9no3'],
+                'melodic_dubstep': ['triad', 'add9', 'sus2'], 'brostep': ['triad'], 'memphis_phonk': ['triad', '7'], 'jam_band': ['triad', '7', 'sus4'],
+                'soft_rock': ['triad', 'add9', '7', 'sus2'], 'teen_pop': ['triad', 'add9', '7'], 'luxury_rap': ['7', 'add9', '9', 'triad'],
+                'uplifting_trance': ['triad', 'add9', 'sus2'], 'melodic_house': ['add9', '7', 'triad', 'sus2'], 'punk': ['triad'], 'indie_rock': ['triad', 'add9', 'sus2']}
 
 
 def fold(m, lo):
@@ -310,6 +318,8 @@ GENERIC_PROGS = {
     'harmonic_minor': [[0, 5, 3, 4], [0, 3, 4, 0], [0, 5, 4, 0], [0, 3, 5, 4], [5, 3, 4, 0], [0, 4]],
     'mixolydian': [[0, 6, 3, 0], [0, 0, 3, 0], [0, 6, 0, 3], [0, 4, 6, 3], [0, 6, 5, 6], [0, 3, 6, 0], [0, 6]],
     'lydian': [[0, 1, 0, 1], [0, 1, 4, 0], [0, 1, 5, 4], [0, 4, 1, 0], [0, 1, 2, 1], [0, 1]],
+    'phrygian_dominant': [[0, 1, 0, 1], [0, 3, 1, 0], [0, 6, 1, 0], [0, 1, 6, 0], [0, 0, 3, 1], [0, 1]],
+    'melodic_minor': [[0, 3, 4, 0], [0, 1, 4, 0], [0, 3, 0, 4], [1, 4, 0, 0], [0, 4]],
 }
 
 # chord colours: scale-degree stacks above the root (0=root 2=3rd 4=5th 6=7th 8=9th, 1/3 = sus2/sus4, 5 = 6th)
@@ -668,9 +678,27 @@ PHRASE_FAMILY = {
                              'adventure', 'tension', 'boombap', 'neoclassical', 'western', 'hybrid_trailer')},
     **{k: 'sung' for k in ('chamber', 'fantasy_rpg', 'holiday', 'chamber_pop', 'symphonic_metal', 'gospel', 'rnb', 'motown',
                            'country', 'kpop', 'indie_rock', 'punk', 'cumbia', 'ska', 'dancehall')},
-    **{k: 'busy' for k in ('bluegrass', 'salsa', 'swing', 'melodic_techno', 'baile_funk', 'jersey_club', 'afro_house')},
+    **{k: 'busy' for k in ('bluegrass', 'salsa', 'swing', 'melodic_techno', 'baile_funk', 'jersey_club', 'afro_house', 'braindance')},
+    'hauntology': 'sparse', 'brostep': 'sparse', 'neurofunk': 'sparse', 'melodic_dubstep': 'sung', 'liquid_dnb': 'sung', 'jam_band': 'busy', 'soft_rock': 'sung', 'teen_pop': 'sung', 'luxury_rap': 'sparse',
     'baroque': 'busy', 'orchestral_hiphop': 'busy', 'tango': 'sparse',
 }
+
+
+def lead_octave_shift(mel, st):
+    """Octaves to move the lead by so it sits where the genre's lead lives, whatever the key: around E5-E6 for a
+    sung-style or synth lead (a little higher for trap bells and trance arps), and always clear above the chords so the
+    melody isn't buried. Riff leads (rock, metal, funk, blues) already place themselves low and are left alone."""
+    if not mel or st.get('lead_device') == 'riff':
+        return 0
+    mean = sum(m for _, _, m, _ in mel) / len(mel)
+    lo = max(12 * (st.get('lead_oct', 5) + 1) + 1, st.get('chord_center', 62) + 8)
+    lo += {'bell': 3, 'arp': 2}.get(st.get('lead_device'), 0)
+    k = 0
+    while mean + k >= lo + 12:
+        k -= 12
+    while mean + k < lo:
+        k += 12
+    return k
 
 
 def gen_melody(key, prog, chord_bars, st, rnd, complexity):
@@ -740,6 +768,8 @@ def gen_melody(key, prog, chord_bars, st, rnd, complexity):
             last = (b8 == 7 and i == len(rh) - 1)
             half = (b8 == 3 and i == len(rh) - 1)
             ln = l
+            if fam in ('sung', 'sparse', 'triple') and b8 in (1, 3, 5) and i == len(rh) - 1 and step + l >= 13:
+                ln = (12 - step) if step <= 10 else min(l, 2)     # a breath (about a beat) before the next phrase
             if last:
                 d = min([x for x in ct if (x - chord) % 7 == 0] or ct, key=lambda x: abs(x - d))
                 ln = max(l, 16 - step)
@@ -807,6 +837,7 @@ def compose(opts):
     st = apply_variety(st, opts, random.Random(opts.seed * 7919 + 17))
     add_counter_track(st, opts)
     add_layer_tracks(st, opts)
+    add_bass_switch_tracks(st)
     apply_sampled(st, opts)
     by_name = {t['name']: t for t in st['tracks']}
     st['tracks'] = [t for t in st['tracks'] if not (t.get('double_of') and by_name.get(t['double_of'], {}).get('inst') == t['inst'])]
@@ -821,7 +852,7 @@ def compose(opts):
         root, minor = parse_key(opts.key)
         scale = opts.scale or ('minor' if minor else 'major')
         if not opts.scale and scale not in scales:
-            alt = [s for s in scales if (s in ('minor', 'dorian', 'phrygian', 'harmonic_minor')) == minor]
+            alt = [s for s in scales if (s in ('minor', 'dorian', 'phrygian', 'harmonic_minor', 'melodic_minor')) == minor]
             scale = alt[0] if alt else scale
     else:
         root = rnd.randrange(12)
@@ -879,13 +910,17 @@ def compose(opts):
     g = getattr(opts, 'groove', None)
     st['groove'] = None if g == 'straight' else (g if g in GROOVES else STYLE_GROOVE.get(sname))
     pad_voicing = rnd.choice(['close', 'close', 'open'])
-    modulate = rnd.random() < 0.22 and st.get('form') in ('edm', 'song', 'trap', 'chip', 'halftime')
+    modulate = rnd.random() < {'teen_pop': 0.75, 'gospel': 0.35, 'soul_ballad': 0.35}.get(st.get('name'), 0.22) \
+        and st.get('form') in ('edm', 'song', 'trap', 'chip', 'halftime', 'song_b')   # (teen pop: the last-chorus key change)
     cb = st['chord_bars']
     chord_size = st['chord_size'] + (1 if cx > 0.72 else 0) - (1 if cx < 0.28 and st['chord_size'] > 3 else 0)
     chord_size = max(3, min(5, chord_size))
     mel_main, ph_bars = gen_melody(key, prog_main, cb, st, rnd_m, cx)
     mel_alt, ph_alt = gen_melody(key, prog_alt, cb, st, rnd_m, cx)
     mel_verse, ph_verse = gen_melody(key, prog_verse, cb, st, rnd_m, cx)
+    lead_k = lead_octave_shift(mel_main, st)            # same register in every key (not an octave higher in B than in C)
+    mel_main, mel_alt, mel_verse = [[(a, b, m + lead_octave_shift(x, st), v) for a, b, m, v in x] for x in (mel_main, mel_alt, mel_verse)]
+    st['lead_shift'] = lead_k
     acid_pat = gen_acid_pattern(key, rnd_b, energy)
 
     tracks = {t['name']: t for t in st['tracks']}
@@ -955,9 +990,9 @@ def compose(opts):
         if ed.get('bars') and not opts_s.get('build'):
             nbars = max(2, min(64, int(ed['bars'])))
         rnd_d, rnd_b, rnd_c = sec_rng('drums', uid, ed), sec_rng('bass', uid, ed), sec_rng('chords', uid, ed)
-        layers = set(layers) - muted - set(ed.get('mute') or [])
+        layers = set(layers) - set(ed.get('mute') or [])   # (switched-off parts are removed at the end: same take)
         if energy > 0.75 and opts_s.get('drop'):
-            layers |= {'arp'} - muted
+            layers |= {'arp'}
         if energy < 0.25:
             layers -= {'arp'} if sname not in ('drop', 'chorus', 'hook', 'climax') else set()
         is_verse = sname in ('verse', 'A', 'rise', 'head') and not opts_s.get('drop')
@@ -965,6 +1000,7 @@ def compose(opts):
         mel, ph = (mel_alt, ph_alt) if opts_s.get('alt') else ((mel_verse, ph_verse) if is_verse else (mel_main, ph_bars))
         if (ed.get('seeds') or {}).get('melody') is not None:
             mel, ph = gen_melody(key, prog, cb, st, random.Random(f"{ed['seeds']['melody']}-melody-edit"), cx)
+            mel = [(a, b_, m + lead_k, v) for a, b_, m, v in mel]
         if opts_s.get('build'):
             bs = st.get('build_style', 'roll')
             if bs in ('filter', 'kick_roll'):
@@ -1226,10 +1262,13 @@ def compose(opts):
     add_transitions(sections, evs, fx, tracks, st, opts)
     bar0 = apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_color, bar0)
     shape_dynamics(evs, tracks, sections, st)
-    evs += double_layers(evs, tracks)
     in_evs = {id(e) for e in evs}
     st['tuned_notes'] = fix_clashes(evs + [v for v in vocal if id(v) not in in_evs], {**tracks, 'vocal': tracks.get('vocal') or
                                     dict(layer='lead')}, key, st, sections)
+    evs += double_layers(evs, tracks)                    # layers copy the tuned notes
+    switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
+    if muted:                                            # parts you switched off: everything else stays note-for-note
+        evs = [e for e in evs if tracks.get(e.track, {}).get('layer') not in muted]
     sname ='+'.join([opts.style] + [b for b in (opts.blend or []) if b != opts.style])
     expr = expression_curves(evs, tracks, sections, fx, bar0)
     song = dict(style=sname, seed=opts.seed, bpm=bpm, key=key, events=evs, sections=sections, fx=fx, expr=expr,
@@ -1247,7 +1286,7 @@ COLOR_HARMONY = {
     'pop', 'jazz', 'bossa_nova', 'city_pop', 'disco', 'folk', 'holiday', 'western', 'chamber_pop', 'soul_ballad', 'celtic_jig',
     'cinematic', 'orchestral', 'film_piano', 'adventure', 'tension', 'neoclassical', 'chamber', 'baroque', 'fantasy_rpg',
     'waltz', 'synthpop', 'eurodance', 'future_bass', 'progressive_house', 'trance', 'downtempo', 'vaporwave', 'lofi', 'boombap',
-    'hybrid_trailer', 'orchestral_hiphop', 'gospel', 'rnb', 'motown', 'swing', 'country', 'tango', 'salsa', 'kpop', 'ska',
+    'hybrid_trailer', 'orchestral_hiphop', 'teen_pop', 'soft_rock', 'luxury_rap', 'uplifting_trance', 'gospel', 'rnb', 'motown', 'swing', 'country', 'tango', 'salsa', 'kpop', 'ska',
     'indie_rock', 'bluegrass'}
 # how often the bass steps into the next chord on the last beat (styles with a moving, song-like bass)
 BASS_PASS = {'pop': 0.35, 'folk': 0.5, 'holiday': 0.5, 'western': 0.45, 'chamber_pop': 0.45, 'baroque': 0.6, 'chamber': 0.55,
@@ -1255,7 +1294,7 @@ BASS_PASS = {'pop': 0.35, 'folk': 0.5, 'holiday': 0.5, 'western': 0.45, 'chamber
              'rock': 0.25, 'disco': 0.2, 'city_pop': 0.3, 'soul_ballad': 0.5, 'celtic_jig': 0.4, 'waltz': 0.45, 'bossa_nova': 0.35,
              'synthpop': 0.2, 'eurodance': 0.15, 'downtempo': 0.25, 'lofi': 0.25, 'boombap': 0.2, 'symphonic_metal': 0.2,
              'country': 0.5, 'bluegrass': 0.6, 'motown': 0.4, 'gospel': 0.4, 'ska': 0.3, 'tango': 0.3, 'indie_rock': 0.3,
-             'cumbia': 0.25, 'kpop': 0.2}
+             'cumbia': 0.25, 'kpop': 0.2, 'jam_band': 0.5, 'soft_rock': 0.4, 'teen_pop': 0.2}
 # genres that get a counter-melody (when the genre decides): the instruments that play it, likeliest first
 COUNTER_STYLES = {
     'orchestral': ['cello', 'horn', 'clarinet', 'flute'], 'cinematic': ['horn', 'cello', 'strings'],
@@ -1268,7 +1307,8 @@ COUNTER_STYLES = {
     'orchestral_hiphop': ['cello', 'horn'], 'city_pop': ['brass', 'strings'], 'disco': ['strings'], 'jazz': ['sax', 'brass'],
     'bossa_nova': ['flute', 'strings'], 'gospel': ['organ', 'choir'], 'motown': ['strings', 'brass'],
     'country': ['violin', 'softlead', 'guitar'], 'swing': ['brass', 'clarinet'], 'tango': ['cello', 'violin', 'accordion'],
-    'kpop': ['strings', 'pluck', 'bell'], 'rnb': ['strings', 'guitar'], 'bluegrass': ['banjo', 'guitar'], 'salsa': ['flute', 'violin'],
+    'kpop': ['strings', 'pluck', 'bell'], 'teen_pop': ['strings', 'pluck', 'vox'], 'luxury_rap': ['horn', 'strings', 'choir'],
+    'soft_rock': ['organ', 'epiano', 'guitar'], 'jam_band': ['organ', 'piano'], 'uplifting_trance': ['pluck_saw', 'strings'], 'rnb': ['strings', 'guitar'], 'bluegrass': ['banjo', 'guitar'], 'salsa': ['flute', 'violin'],
 }
 
 
@@ -1481,9 +1521,14 @@ def add_layer_tracks(st, opts):
         r = random.Random(f'{sd}-{role}-layer')
         owner = fusion.get({'bass': 'bass', 'chords': 'harmony', 'pad': 'harmony'}.get(role, 'melody'), opts.style)
         if role == 'bass':
-            if cat != 'Electronic' or t['inst'] in NO_LAYER or r.random() > odds:
+            forced = st.get('sub_layer') and t['inst'] not in ('808', 'sinebass', 'logdrum', 'chipbass') and want != 'off'
+            if forced and t['inst'] == 'wobble':
+                t['p'] = dict(t['p'], sub=0.0)                # the separate clean sub takes over the low end
+            if not forced and (cat != 'Electronic' or t['inst'] in NO_LAYER or r.random() > odds):
                 continue
             inst, octv = 'sinebass', 0                       # the classic sub layer under a mid bass
+            if forced:
+                picks -= 1                                   # the genre's own sub doesn't count as a 'layer'
         else:
             pool = [i for i in (POOLS.get(owner, {}).get(role) or PALETTES.get(cat, {}).get(role) or []) if i != t['inst']]
             if not pool or r.random() > odds or picks >= (3 if want == 'more' else 2):
@@ -1513,6 +1558,38 @@ def double_layers(evs, tracks):
                     m = e.midi
                 out.append(Ev(name, e.beat, e.dur, m, e.vel * 0.9, None if e.glide is None else e.glide + (m - e.midi), e.mod))
     return out
+
+
+def add_bass_switch_tracks(st):
+    """Styles with 'bass_switch': extra bass voices (each a different timbre) that take over bars of the drop."""
+    names = st.get('bass_switch') or []
+    main = next((t for t in st['tracks'] if t['name'] == 'bass'), None)
+    if not names or not main:
+        return
+    spare = [i for i in ('growl', 'wobble', 'fmbass', 'reese') if i != main['inst'] and i not in names]
+    names = [n if n != main['inst'] else spare.pop(0) for n in names]   # every voice a different timbre
+    for i, inst in enumerate(names):
+        st['tracks'].append(dict(name=f'bass_{"bcd"[i]}', layer='bass', inst=inst, pan=0.0, rev=0.0, dly=0.0,
+                                 sc=main.get('sc') or 0.0, db=main.get('db'), hp=None, drive=None,
+                                 p={'sub': 0.0} if inst == 'wobble' else {}, switch_of='bass'))
+
+
+def switch_basses(evs, tracks, sections, st):
+    """In drops and climaxes, hand bars of the bass line to the other bass voices in a call-and-response order
+    (main, B, main, C ...), so the drop moves between growls, wobbles and FM stabs instead of looping one sound.
+    The clean sub layer was copied from the whole line first, so the low end stays continuous."""
+    voices = [n for n, t in tracks.items() if t.get('switch_of') == 'bass']
+    if not voices:
+        return
+    order = ['bass', voices[0], 'bass', voices[-1]] if len(voices) > 1 else ['bass', voices[0]]
+    per = st.get('switch_bars', 1)
+    for s_ in sections:
+        if not (s_['opts'].get('drop') or s_['name'] in BIG_SECTIONS):
+            continue
+        b0, b1 = s_['bar'] * 4, (s_['bar'] + s_['bars']) * 4
+        for e in evs:
+            if e.track == 'bass' and b0 <= e.beat < b1:
+                e.track = order[int((e.beat - b0) // (4 * per)) % len(order)]
 
 
 CLASH_LAYERS = ('lead', 'arp')
@@ -1639,7 +1716,9 @@ GENRE_BUILD = {'trance': 'roll', 'bigroom': 'roll', 'progressive_house': 'roll',
                'synthpop': 'lift', 'chiptune': 'lift', 'orchestral_hiphop': 'pause', 'hybrid_trailer': 'swell',
                'symphonic_metal': 'roll', 'kpop': 'lift', 'melodic_techno': 'filter', 'afro_house': 'filter',
                'jersey_club': 'pause', 'baile_funk': 'stutter', 'punk': 'roll', 'waltz': 'swell', 'celtic_jig': 'swell',
-               'soul_ballad': 'swell'}
+               'soul_ballad': 'swell', 'braindance': 'stutter', 'hauntology': 'pause', 'brostep': 'roll', 'melodic_dubstep': 'roll',
+               'neurofunk': 'stutter', 'liquid_dnb': 'filter', 'house_phonk': 'roll', 'memphis_phonk': 'pause', 'uplifting_trance': 'roll',
+               'melodic_house': 'filter', 'teen_pop': 'lift', 'luxury_rap': 'pause', 'jam_band': 'lift', 'soft_rock': 'lift'}
 BIG_SECTIONS = {'chorus', 'hook', 'climax', 'theme', 'drop'}
 HIT_FORMS = {'song', 'song_b', 'jazz', 'orchestral', 'cinematic', 'trap', 'halftime', 'halftime_b', 'chip', 'trailer'}
 
@@ -1734,7 +1813,7 @@ STYLE_GROOVE = {'boombap': 'dilla', 'lofi': 'dilla', 'phonk': 'dilla', 'reggae':
                 'afrobeats': 'afro', 'amapiano': 'afro', 'reggaeton': 'dembow', 'moombahton': 'dembow', 'jazz': 'jazz',
                 'house': 'house', 'deep_house': 'house', 'tech_house': 'house', 'ukgarage': 'house',
                 'funk': 'funk', 'disco': 'funk', 'city_pop': 'funk', 'rnb': 'laidback', 'gospel': 'laidback',
-                'swing': 'jazz', 'afro_house': 'afro', 'dancehall': 'dembow', 'cumbia': 'afro'}
+                'swing': 'jazz', 'afro_house': 'afro', 'dancehall': 'dembow', 'cumbia': 'afro', 'hauntology': 'dilla'}
 
 
 def add_build_drums(evs, st, tracks, snares, kick, b, nbars, beat0, rnd):

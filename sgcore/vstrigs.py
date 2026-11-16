@@ -189,6 +189,9 @@ ROLE_PATCHES = {
     'epiano': ['dexed.epiano'], 'clav': ['dexed.clav'], 'marimba': ['dexed.marimba'], 'bell': ['dexed.bells', 'dexed.chime', 'dexed.vibes'],
     'celesta': ['dexed.chime', 'dexed.vibes'],
     'steeldrum': ['dexed.steeldrum'], 'kalimba': ['dexed.koto'], 'cowbell': [], 'organ': ['dexed.organ'],
+    'polysynth': ['tal.pluck', 'tal.analog_pad', 'surge.pluck'], 'synthbrass': ['tal.brass_stab', 'dexed.brass'],
+    'moogbass': ['tal.fat_bass', 'tal.saw_bass', 'surge.saw_bass'], 'glasspad': ['surge.wide_pad', 'dexed.chime'],
+    'solina': ['tal.strings'], 'wurli': ['dexed.epiano'], 'vibes': ['dexed.vibes'],
 }
 ANY_CATEGORY = {'epiano', 'clav', 'marimba', 'steeldrum', 'kalimba', 'fmbass'}   # FM keys also suit funk, city pop, bossa, reggae
 
@@ -213,6 +216,11 @@ SOUND_WORDS = {
     'clarinet': ['clarinet', 'clarinets', 'woodwind', 'woodwinds'], 'oboe': ['oboe', 'oboes', 'woodwind', 'woodwinds'],
     'bassoon': ['bassoon', 'bassoons', 'woodwind'], 'piccolo': ['piccolo', 'flute'],
     'trumpet': ['trumpet', 'trumpets', 'brass'], 'trombone': ['trombone', 'trombones', 'low brass', 'brass'],
+    'upright': ['upright', 'double bass', 'acoustic bass'], 'vibes': ['vibraphone', 'vibes'],
+    'wurli': ['wurli', 'wurlitzer'], 'harmonica': ['harmonica', 'harp mic'], 'pedalsteel': ['pedal steel', 'lap steel', 'steel guitar'],
+    'mutedgtr': ['muted guitar', 'palm mute', 'palm muted'], 'polysynth': ['juno', 'polysynth', 'poly synth'],
+    'synthbrass': ['synth brass', 'prophet brass', 'ob brass'], 'moogbass': ['moog', 'minimoog', 'model d'],
+    'glasspad': ['glass pad'], 'solina': ['solina', 'string machine', 'string ensemble synth'],
     'tuba': ['tuba', 'low brass'], 'braam': ['braam', 'low brass', 'trombone', 'trombones', 'tuba', 'brass', 'horns', 'horn'],
 }
 # articulation words: a long-note part never picks a short-note sound (and the reverse) while a better one exists

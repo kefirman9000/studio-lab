@@ -69,6 +69,17 @@ h3{margin:0 0 10px;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;
 .f label b{color:var(--text);font-weight:500;font-family:var(--mono);font-size:11.5px}
 select,input[type=number],input[type=text]{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 8px;outline:none;width:100%}
 input[type=range]{width:100%;accent-color:var(--acc)}
+.knob{width:46px;height:46px;cursor:ns-resize;touch-action:none;outline:none;flex:none;user-select:none}
+.knob svg{width:100%;height:100%;display:block}
+.knob .kbg{fill:var(--panel2);stroke:var(--line);stroke-width:1.5}
+.knob .karc{fill:none;stroke:var(--line);stroke-width:3.5;stroke-linecap:round}
+.knob .kval{fill:none;stroke:var(--acc);stroke-width:3.5;stroke-linecap:round}
+.knob .kptr{stroke:var(--text);stroke-width:2.5;stroke-linecap:round}
+.knob.off{opacity:.35;cursor:default}
+.knob:focus-visible .kbg{stroke:var(--acc)}
+.knob:hover .kbg{fill:var(--line)}
+input.knobbed{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+.lv{display:inline-flex;flex-direction:column;align-items:center;gap:2px;margin-right:10px}
 .seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:2px}
 .seg button{flex:1;border:0;background:none;padding:5px 4px;border-radius:7px;cursor:pointer;font-size:12.5px;color:var(--muted)}
 .seg button.on{background:var(--chipon);color:#fff}
@@ -227,7 +238,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
         <div class="levels" id="levels"></div></div>
     </div></details>
 
-    <details class="card"><summary>Parts</summary><div class="body">
+    <details class="card" open><summary>Parts <span class="hint" style="margin-left:6px">click to switch a part off - e.g. no lead for an instrumental bed</span></summary><div class="body">
       <div class="layers" id="layers"></div>
       <div class="f wide" id="fusionBox" style="display:none"><label>Fusion — which style drives each part</label><div class="body" id="fusionParts" style="padding:0;grid-template-columns:1fr 1fr 1fr"></div></div>
     </div></details>
@@ -410,6 +421,41 @@ function applyOptions(o){
   const cat=Object.entries(META.categories).find(([c,l])=>l.some(s=>s.id===o.style)); if(cat) state.cat=cat[0];
   syncAutos(); initSegs(); renderMoods(); renderLayers(); renderTabs(); refresh(); $$('input[type=range]').forEach(e=>e.oninput&&e.oninput());
 }
+// ------------------------------------------------------------- knobs: every slider becomes a rotary knob
+// drag up/down (Shift = fine), scroll wheel or arrow keys to turn; double-click resets. The hidden slider underneath
+// keeps its value, events and disabled state, so all the existing settings code works unchanged.
+function initKnobs(){
+  const VD=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value'), DD=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'disabled');
+  $$('input[type=range]').forEach(inp=>{
+    if(inp.dataset.knob) return; inp.dataset.knob='1';
+    const k=document.createElement('div'); k.className='knob'; k.tabIndex=0; k.setAttribute('role','slider');
+    k.innerHTML='<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="15" class="kbg"/><path class="karc"/><path class="kval"/><line class="kptr" x1="24" y1="24" x2="24" y2="12"/></svg>';
+    inp.parentNode.insertBefore(k, inp); inp.classList.add('knobbed');
+    const min=+inp.min, max=+inp.max, step=+(inp.step||1), def=+inp.defaultValue;
+    const ang=v=>-135+270*(v-min)/((max-min)||1);
+    const pt=(a,r)=>{const t=(a-90)*Math.PI/180; return [24+r*Math.cos(t),24+r*Math.sin(t)]};
+    const arc=(a0,a1,r)=>{ if(a1-a0<0.5) a1=a0+0.5; const [x0,y0]=pt(a0,r),[x1,y1]=pt(a1,r); return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${a1-a0>180?1:0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`; };
+    const draw=()=>{ const v=+VD.get.call(inp), a=ang(v), z=(min<0&&max>0)?ang(0):-135;
+      k.querySelector('.karc').setAttribute('d',arc(-135,135,20)); k.querySelector('.kval').setAttribute('d',a>=z?arc(z,a,20):arc(a,z,20));
+      const [x,y]=pt(a,12); const l=k.querySelector('.kptr'); l.setAttribute('x2',x.toFixed(2)); l.setAttribute('y2',y.toFixed(2));
+      k.classList.toggle('off',DD.get.call(inp)); k.setAttribute('aria-valuenow',v); };
+    Object.defineProperty(inp,'value',{configurable:true,get(){return VD.get.call(this)},set(v){VD.set.call(this,v);draw()}});
+    Object.defineProperty(inp,'disabled',{configurable:true,get(){return DD.get.call(this)},set(v){DD.set.call(this,v);draw()}});
+    const set=v=>{ v=Math.min(max,Math.max(min,Math.round(v/step)*step)); v=+v.toFixed(4); if(+inp.value===v) return; inp.value=v;
+      inp.dispatchEvent(new Event('input',{bubbles:true})); inp.dispatchEvent(new Event('change',{bubbles:true})); };
+    let sy=0, sv=0, drag=false;
+    k.addEventListener('pointerdown',e=>{ if(inp.disabled) return; drag=true; sy=e.clientY; sv=+inp.value; k.setPointerCapture(e.pointerId); e.preventDefault(); });
+    k.addEventListener('pointermove',e=>{ if(drag) set(sv+(sy-e.clientY)/(e.shiftKey?600:160)*(max-min)); });
+    k.addEventListener('pointerup',()=>drag=false); k.addEventListener('pointercancel',()=>drag=false);
+    k.addEventListener('wheel',e=>{ if(inp.disabled) return; e.preventDefault(); set(+inp.value+(e.deltaY<0?1:-1)*Math.max(step,(max-min)/40)); },{passive:false});
+    k.addEventListener('dblclick',()=>{ if(!inp.disabled) set(def); });
+    k.addEventListener('keydown',e=>{ if(inp.disabled) return; const d=Math.max(step,(max-min)/40);
+      if(e.key==='ArrowUp'||e.key==='ArrowRight'){ set(+inp.value+d); e.preventDefault(); }
+      if(e.key==='ArrowDown'||e.key==='ArrowLeft'){ set(+inp.value-d); e.preventDefault(); } });
+    k.title='Drag up/down, scroll or use arrow keys · double-click to reset';
+    draw();
+  });
+}
 function syncAutos(){
   [['bpmAuto','bpm'],['swingAuto','swing'],['scAuto','sidechain'],['loudAuto','loud']].forEach(([a,r])=>{$('#'+r).disabled=$('#'+a).checked});
   $('#bpmV').textContent=$('#bpmAuto').checked?'auto':$('#bpm').value;
@@ -452,11 +498,12 @@ function addResult(r, target){
   const fusion=r.fusion?Object.entries(r.fusion).map(([p,s])=>`${p}←<span>${styleName(s)}</span>`).join(' · '):'';
   el.innerHTML=`<div class="top"><button class="play">▶</button><div style="min-width:0"><div class="tt">${title}</div>
     <div class="mt">${r.key} · ${r.meter&&r.meter!=='4/4'?r.meter+' · ':''}${r.bpm_quarter&&r.bpm_quarter!==r.bpm?r.bpm_quarter:r.bpm} BPM · seed ${r.seed}${r.mood?' · '+r.mood:''}${r.preview?' · preview':' · '+r.duration}</div>
-    ${r.arrangement&&r.arrangement.length?`<div class="tags">${r.arrangement.map(a=>`<span class="tag">${esc(a)}</span>`).join(' ')}</div>`:''}</div></div>
+    ${(r.arrangement&&r.arrangement.length)||r.genre_fit?`<div class="tags">${r.genre_fit?`<span class="tag ${r.genre_fit.score>=100?'ok':''}" title="Genre check: ${esc(r.genre_fit.checks.map(c=>(c.ok?'✓ ':'✗ ')+c.name).join(' · '))}">genre fit ${r.genre_fit.score}%</span>`:''}${(r.arrangement||[]).map(a=>`<span class="tag">${esc(a)}</span>`).join(' ')}</div>`:''}</div></div>
     <canvas class="wave"></canvas>
     <div class="info">Chords <span>${r.chords}</span> · alt <span>${r.chords_alt}</span><br>${inst}${fusion?'<br>Fusion '+fusion:''}</div>
     <div class="rr"><span class="lbl" title="New version of one part; everything else stays exactly the same">Re-roll</span>${['drums','bass','chords','melody','harmony'].map(p=>`<button class="mini" data-p="${p}">${p}</button>`).join('')}
       <label class="hint" title="Make 4 versions of the part you click, over this exact song" style="margin-left:6px"><input type="checkbox" class="x4"> ×4</label></div>
+    <div class="rr"><span class="lbl" title="Switch a part off (or back on) and hear this exact take again">On / off</span>${LAYERS.map(([k,n])=>`<span class="chip ${(r.options.muted||[]).includes(k)?'':'on'}" data-mu="${k}" style="cursor:pointer;font-size:11.5px;padding:2px 8px">${(r.options.muted||[]).includes(k)?'○':'●'} ${n}</span>`).join(' ')}</div>
     <div class="rr"><span class="lbl" title="🔒 keep this part in your next previews · ♥ you like this part (Surprise me learns from it)">Parts</span>${PARTSEED.map(([p])=>`<span class="pp">${p}<button class="ico" data-lk="${p}" title="Keep this ${p} part in new previews">🔒</button><button class="ico" data-lv="${p}" title="I like this ${p} part">♥</button></span>`).join('')}
       <span style="margin-left:auto"></span><button class="mini" data-a="ab" title="Compare two results back to back at matched loudness">A/B</button></div>
     <div class="rr"><button class="mini acc" data-a="full">⬇ Full song from this</button><button class="mini" data-a="use">Use settings</button><button class="mini" data-a="save">★ Save preset</button>
@@ -501,6 +548,9 @@ function addResult(r, target){
   el.querySelectorAll('[data-lv]').forEach(b=>b.onclick=async()=>{ b.classList.toggle('on'); const p=b.dataset.lv; const role=p==='melody'?'lead':p;
     TASTE=await api('/api/rate',{options:r.options,rating:1,part:p,part_seed:partSeed(p),inst:(r.instruments||{})[role]});
     $('#status').textContent=`Noted - you like this ${p} part.`; });
+  el.querySelectorAll('[data-mu]').forEach(b=>b.onclick=()=>{ const o=JSON.parse(JSON.stringify(r.options)); o.seed=r.seed;
+    const k=b.dataset.mu; const m=new Set(o.muted||[]); m.has(k)?m.delete(k):m.add(k); o.muted=[...m];
+    $('#status').textContent=(m.has(k)?'Removing ':'Bringing back ')+k+' - same take…'; run(true,1,o); });
   el.querySelector('[data-a=ab]').onclick=()=>abPick(r, el);
   el.querySelector('[data-a=full]').onclick=()=>run(false,1,r.options);
   el.querySelector('[data-a=use]').onclick=()=>applyOptions(r.options);
@@ -898,6 +948,7 @@ async function init(){
   fill('#melStyle',META.melody_styles,'Genre default'); fill('#voicing',META.voicings,'Genre default'); fill('#chordColor',META.chord_colors,'Varies per song');
   $('#levels').innerHTML=LEVELS.map(([k,n])=>`<label class="lv">${n} <b id="lvV_${k}">0</b><input type="range" id="lv_${k}" min="-12" max="6" step="1" value="0"></label>`).join('');
   LEVELS.forEach(([k])=>{ const e=$('#lv_'+k); e.oninput=()=>$('#lvV_'+k).textContent=(e.value>0?'+':'')+e.value; });
+  initKnobs();
   $('#lvReset').onclick=e=>{ e.preventDefault(); LEVELS.forEach(([k])=>{ $('#lv_'+k).value=0; $('#lv_'+k).oninput(); }); };
   $('#seed').value=Math.floor(Math.random()*99999)+1;
   initSegs(); renderTabs(); renderMoods(); renderLayers(); renderOuts(); refresh();

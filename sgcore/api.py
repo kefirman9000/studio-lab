@@ -35,6 +35,7 @@ def describe(song):
                 meter=song.get('meter', '4/4'),
                 bpm_quarter=round(song['bpm'] * 1.5) if song.get('meter') == '3/4' else song['bpm'],
                 arrangement=_arrangement(song),
+                genre_fit=_fit(song),
                 fusion=song['st'].get('fusion') if song['opts'].blend or song['opts'].blend_parts else None,
                 sections=[dict(index=x['index'], name=x['name'], bar=x['bar'], bars=x['bars'], src=x['src'], copy=x['copy'],
                                layers=x['layers'], edited=x.get('edited', False),
@@ -70,7 +71,17 @@ def _instruments(song):
             out[src['layer']] += ' + ' + _nice(t['inst']) + o
         if t.get('counter'):
             out['counter'] = _nice(t['inst'])
+        if t.get('switch_of') and t['switch_of'] in [x['name'] for x in tracks] and 'bass' in out:
+            out['bass'] += ' / ' + _nice(t['inst'])          # bass voices that trade bars in the drop
     return out
+
+
+def _fit(song):
+    try:
+        from .fitness import genre_fit
+        return genre_fit(song)
+    except Exception:
+        return None
 
 
 def _arrangement(song):
@@ -85,7 +96,7 @@ def _arrangement(song):
                      'bell': 'bell melody', 'chops': 'vocal-chop lead'}.get(dev, dev + ' lead'))
     if any(t.get('counter') for t in st['tracks']):
         tags.append('counter-melody')
-    n = sum(1 for t in st['tracks'] if t.get('double_of'))
+    n = sum(1 for t in st['tracks'] if t.get('double_of') and not (t['layer'] == 'bass' and t['inst'] == 'sinebass'))
     if n:
         tags.append(f'{n} layered part' + ('s' if n > 1 else ''))
     if song.get('harm_alts'):

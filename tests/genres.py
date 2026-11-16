@@ -208,6 +208,44 @@ def main():
     assert len(STYLES) >= 80
     print('ok  meters, layered parts, counter-melodies, expression, new genres')
 
+    # ---- 1.11: same take with a part switched off, lead register in every key, new instruments and genres
+    def sig(s, layers):
+        tr = {t['name']: t['layer'] for t in s['st']['tracks']}
+        return {l: [(round(e.beat, 3), e.midi, round(e.vel, 3)) for e in s['events'] if tr.get(e.track) == l] for l in layers}
+    L = ['bass', 'chords', 'arp', 'lead', 'kick', 'snare', 'pad', 'top']
+    for s in ('pop', 'orchestral', 'jazz'):
+        a = sig(compose(Options(style=s, seed=7)), L)
+        for m in ('lead', 'chords', 'pad', 'arp'):
+            b = sig(compose(Options(style=s, seed=7, muted=[m])), L)
+            assert not b[m] and all(a[l] == b[l] for l in L if l != m), (s, m)            # switching a part off keeps the take
+    for s in ('pop', 'house', 'jazz', 'orchestral', 'kpop'):
+        for k in range(1, 7):
+            song = compose(Options(style=s, seed=k))
+            ld = [e.midi for e in song['events'] if e.track == 'lead' and e.midi is not None]
+            if ld:
+                assert 70 <= sum(ld) / len(ld) <= 88, (s, k, song['key'].name(), sum(ld) / len(ld))   # same register in any key
+    for i in ('polysynth', 'synthbrass', 'moogbass', 'glasspad', 'solina', 'wurli', 'vibes', 'upright', 'mutedgtr', 'harmonica',
+              'trumpet', 'pedalsteel'):
+        y = INSTRUMENTS[i](64, 0.8, {})
+        assert np.isfinite(y).all() and 0.01 < np.abs(y).max() < 4, i
+    for s in ('braindance', 'hauntology'):
+        assert compose(Options(style=s, seed=1))['events']
+    print('ok  same take with parts off, lead register, new synths, braindance + hauntology')
+
+    # ---- genre authenticity: every profiled genre passes its own production rules
+    from sgcore.fitness import genre_fit
+    low = []
+    for s in STYLES:
+        for k in (1, 2):
+            f = genre_fit(compose(Options(style=s, seed=k)))
+            if f and f['score'] < 100:
+                low.append((s, k, [c['name'] for c in f['checks'] if not c['ok']]))
+    assert not low, low
+    song = compose(Options(style='neurofunk', seed=2))
+    assert any(t.get('switch_of') for t in song['st']['tracks']) and any(e.track.startswith('bass_') for e in song['events'])
+    assert any(t.get('double_of') == 'bass' and t['inst'] == 'sinebass' for t in song['st']['tracks'])     # clean sub under it all
+    print('ok  genre authenticity checks, bass switching, sub layers')
+
 
 if __name__ == '__main__':
     main()

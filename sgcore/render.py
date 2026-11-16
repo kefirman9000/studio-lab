@@ -392,10 +392,13 @@ class Renderer:
         return mix
 
 
-def tape_wobble(x):
+def tape_wobble(x, depth=1.0):
+    """Tape wow & flutter. depth 1 = a gentle ~6 cent drift; 3 = the warped, seasick tape of hauntology. The whole mix
+    moves together, so the parts stay in tune with each other - only the 'tape speed' drifts."""
     n = x.shape[1]
     t = np.arange(n) / SR
-    d = 0.0025 + 0.0012 * np.sin(2 * np.pi * 0.45 * t) + 0.00015 * np.sin(2 * np.pi * 6.3 * t)
+    d = 0.0025 * max(1.0, depth) + depth * (0.0012 * np.sin(2 * np.pi * 0.45 * t) + 0.0009 * np.sin(2 * np.pi * 0.13 * t + 1.3)) \
+        + 0.00015 * np.sin(2 * np.pi * 6.3 * t)
     idx = np.arange(n) - d * SR
     return np.vstack([np.interp(idx, np.arange(n), x[c]) for c in range(2)])
 
@@ -413,7 +416,7 @@ def master(x, cfg, log=print):
     x = eq(x, 'highshelf', 9000, 0.7, cfg.get('air', 1.5))
     if cfg.get('lofi'):
         x = lp(x, 9500)
-        x = tape_wobble(x)
+        x = tape_wobble(x, cfg.get('wobble', 1.0))
         x = soft(x * 1.4, 1.3) / 1.4
     if gentle:     # acoustic / orchestral: keep the dynamics, no pumping glue
         x = compressor(x, thresh=-24, ratio=1.3, attack=0.05, release=0.4, win=0.03)

@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.11.0 - the biggest one yet: 96 genres, 14 new instruments, knobs, genre-fit scores
+- **Every genre audited.** Each genre was measured (tempo, kick and snare placement, swing, bass movement, harmonic rhythm, lead register, phrasing, song length) and checked against how the genre really sounds. The fixes:
+  - **Leads sit in the right register in every key.** They used to be up to an octave too high in keys like B♭ or B, so they came out shrill. They're now centred around E5–E6 (a little higher for trap bells and trance) and always above the chords.
+  - **Sung-style leads breathe** at the end of each phrase instead of playing non-stop (country, soul ballad, waltz and others).
+  - **Song lengths match each genre** (future bass, dubstep, jazz, swing, waltz and R&B were too short or too long).
+  - **Upright bass** is now the bass of jazz, swing, bluegrass, bossa nova, folk, holiday, Celtic and western.
+- **Genre-fit score** on every result card, based on a production reference guide. Hover it to see what was checked: tempo range, four-on-the-floor / half-time / two-step / backbeat skeleton, swing, the clean sub in bass music, 808 slides, the genre's signature sound. Every genre passes its own checks in the tests.
+- **Phonk rebuilt:**
+  - **Drift Phonk** (135–155 BPM) now has a detuned, distorted phonk cowbell, a crushed long-sliding 808, a harder clipped kick, dark phrygian / phrygian-dominant melodies (with the flat 2nd and flat 6th), Memphis-style vocal chops and a louder, grittier master.
+  - New **House Phonk** (four-on-the-floor) and **Memphis Phonk** (slow, lo-fi, cassette grit).
+- **Bass music, done properly:**
+  - **Dubstep (Dark / UK)**: 138–142, sparse, sub-heavy.
+  - New **Brostep**: growl, wobble and FM basses take turns bar by bar in the drop.
+  - New **Melodic Dubstep**: the drop carries the melody.
+  - New **Liquid DnB** and **Neurofunk**.
+  - Dubstep and DnB styles always have a clean mono sine sub under the mid-bass.
+- **Trance arrangement:** DJ intro and a long beatless breakdown as the emotional peak, then the climax.
+- **More new genres:** Braindance / IDM, Hauntology (warped-tape analog nostalgia, with a deeper tape wobble), Uplifting Trance, Melodic Deep House, Jam Band, Teen Pop ('99, with its last-chorus key change), 70s Soft Rock and Luxury Rap.
+- **14 new instruments:** Juno-style poly synth, Prophet/OB synth brass, Moog bass, glass pad, Solina string machine, Wurlitzer, vibraphone, upright bass, palm-muted guitar, harmonica, trumpet, pedal steel, growl bass and phonk cowbell. Each is added to the genres it belongs in, and each plays a recorded version when the sound library has one.
+- **New scales:** phrygian dominant (phonk, dark electronic) and melodic minor (jazz).
+- **Knobs:** every slider is now a rotary knob. Drag up or down (Shift for fine control), scroll or use the arrow keys; double-click resets.
+- **Switch parts off from any result card** (**On / off**): no lead for an instrumental bed, no drums for a loop. You get the same take minus that part, note for note. The **Parts** panel is now open by default.
+- Layered instruments now copy the tuned notes (they could differ slightly from the part they doubled).
+- Note: songs from earlier versions may sound different with the same seed.
+
 ## 1.10.0 - 21 more genres, layered sounds, real dynamics
 - **21 new genres (82 total):** Waltz (3/4), Celtic Jig (6/8), Soul Ballad (12/8), Gospel, Country, Bluegrass, Motown / 60s Soul, R&B / Neo-soul, Big Band Swing, Ska, Punk, Indie Rock, Salsa, Cumbia, Tango, Dancehall, Afro House, Melodic Techno, K-pop, Jersey Club and Baile Funk. Each has its own drums, bass lines, harmony and pool of authentic instruments.
 - **Time signatures besides 4/4:** 3/4, 6/8 and 12/8 genres with triplet-grid rhythms throughout (drums, bass, chords, melody, fills, vocal guide). MIDI exports carry the real time signature and tempo.

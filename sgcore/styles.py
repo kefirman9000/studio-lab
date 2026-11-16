@@ -462,22 +462,26 @@ style('future_bass', 'Electronic', 'Future bass: lush pitch-chopped supersaw cho
               T('lead', 'lead', 'vox', sc=0.6, rev=0.35, dly=0.3)],
       master=dict(lufs=-8.5, air=2.5, low=1.0))
 
-style('dubstep', 'Electronic', 'Dubstep: half-time slam, LFO wobble basses, dark atmospheres',
-      bpm=(140, 150), scales=['minor', 'phrygian'], progs=[[0, 0, 5, 6], [0, 0, 1, 0], [0, 5, 0, 6]],
-      sc_depth=0.6, sc_release=0.3, reverb=2.4, kit='hard', form='halftime',
-      kit_override=dict(kick=dict(drive=3.0, punch=200, decay=6), snare=dict(snap=1.5, decay=10)),
-      drums={'kick': ['X.........X.....', 'X.....X...X.....'], 'snare': [HALF], 'chat': ['x.x.x.x.x.x.x.x.'],
-             'ohat': ['..............x.']}, snare_tracks=['snare'],
-      bass_mode='wobble', bass_lo=26, chord_rh=['x---------------'], arp=dict(rate=2, mode='random', oct=5, prob=0.5),
-      lead_rh=['x-------x-------', 'x---x---x-------', 'x.x.x...x.......', 'x---------------'], lead_oct=5,
-      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.25, db=-14),
-              T('chat', 'top', 'chat', pan=0.2, db=-28), T('ohat', 'top', 'ohat', db=-29),
-              T('bass', 'bass', 'wobble', sc=0.7, db=-14),
-              T('chords', 'chords', 'warmpad', sc=0.6, rev=0.5, db=-26),
-              T('pad', 'pad', 'choir', sc=0.6, rev=0.5, db=-27),
-              T('arp', 'arp', 'bell', dly=0.4, rev=0.3, db=-28),
-              T('lead', 'lead', 'hoover', sc=0.4, rev=0.3, db=-21)],
-      master=dict(lufs=-7.5, air=1.5, low=1.5))
+style('dubstep', 'Electronic', 'Dark / UK dubstep: half-time at 140, deep clean sub with a slow wobbling mid-bass, sparse '
+      'syncopated drums, lots of space, dark atmospheres',
+      bpm=(138, 142), scales=['minor', 'phrygian'], progs=[[0, 0, 5, 6], [0, 0, 1, 0], [0, 5, 0, 6], [0, 0, 0, 6]],
+      sc_depth=0.5, sc_release=0.3, reverb=3.0, delay_beats=0.75, kit='hard', form='halftime', sub_layer=True,
+      kit_override=dict(kick=dict(drive=2.0, punch=200, decay=6), snare=dict(snap=1.5, decay=10)),
+      drums={'kick': ['X.........X.....', 'X.....X...X.....', 'X.......X.X.....'], 'snare': [HALF],
+             'chat': ['x...x...x...x.x.', '..x...x...x...x.'], 'ohat': ['..............x.'], 'rim': ['.....x.......x..']},
+      snare_tracks=['snare'], bass_mode='wobble', bass_lo=26, chord_rh=['x---------------'],
+      arp=dict(rate=2, mode='random', oct=5, prob=0.35),
+      lead_rh=['x-------x-------', 'x---x---x-------', 'x---------------', '........x-------'], lead_oct=5,
+      gm_hint='Clean mono sine sub + LFO-wobbled mid-bass; sparse punchy drums; dark pads and drones',
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.35, db=-14),
+              T('chat', 'top', 'chat', pan=0.2, db=-29), T('ohat', 'top', 'ohat', db=-30), T('rim', 'top', 'rim', pan=-0.25, db=-30),
+              T('bass', 'bass', 'wobble', sc=0.7, db=-14, p=dict(sub=0.0)),
+              T('chords', 'chords', 'warmpad', sc=0.5, rev=0.6, db=-27, p=dict(cut=900)),
+              T('pad', 'pad', 'choir', sc=0.5, rev=0.6, db=-28, p=dict(vowel='o')),
+              T('arp', 'arp', 'bell', dly=0.5, rev=0.4, db=-29),
+              T('lead', 'lead', 'hoover', sc=0.4, rev=0.4, db=-22),
+              T('texture', 'fx', 'texture', rev=0.5, db=-36)],
+      master=dict(lufs=-8.0, air=1.2, low=1.8))
 
 style('trap', 'Electronic', 'Modern trap: half-time snares, rolling hi-hats, gliding 808s, dark bells',
       bpm=(136, 150), scales=['minor', 'harmonic_minor'], progs=[[0, 0, 5, 4], [0, 5, 3, 4], [0, 3, 0, 4], [0, 6, 5, 4]],
@@ -496,21 +500,26 @@ style('trap', 'Electronic', 'Modern trap: half-time snares, rolling hi-hats, gli
               T('lead', 'lead', 'bell', rev=0.4, dly=0.3, pan=0.1)],
       master=dict(lufs=-9.0, air=2.0, low=1.5))
 
-style('phonk', 'Electronic', 'Drift phonk: pitched cowbell riffs, distorted 808s, Memphis-style drums',
-      bpm=(125, 145), scales=['phrygian', 'minor'], progs=[[0, 0, 1, 0], [0, 5, 1, 0], [0, 0, 5, 6]],
-      sc_depth=0.3, sc_release=0.3, reverb=1.6, kit='808', form='trap', trap_hats=True,
-      kit_override=dict(kick=dict(drive=3.0)),
-      drums={'kick': ['X.....X...X.....', 'X..X......X..X..'], 'snare': [HALF], 'clap': [HALF]},
-      snare_tracks=['snare', 'clap'], bass_mode='808', bass_lo=28,
-      chord_rh=['x---------------'], arp=dict(rate=2, mode='random', oct=5, prob=0.5),
+style('phonk', 'Electronic', 'Drift phonk: detuned distorted cowbell melodies, crushed sliding 808s, hard Memphis-style '
+      'drums with rolling hats, dark phrygian riffs and chopped vocal shouts',
+      bpm=(125, 140), scales=['phrygian', 'minor'], progs={'phrygian': [[0, 0, 1, 0], [0, 1, 0, 6], [0, 0, 5, 1]],
+                                                           'minor': [[0, 0, 5, 6], [0, 5, 0, 6], [0, 0, 5, 5]]},
+      sc_depth=0.45, sc_release=0.25, reverb=1.4, kit='808', form='trap', trap_hats=True, human=0.0,
+      kit_override=dict(kick=dict(drive=6.0), clap=dict(drive=2.0), snare=dict(drive=2.5)),
+      drums={'kick': ['X.....X...X.....', 'X..X......X..X..', 'X.....X.X...X...'], 'snare': [HALF], 'clap': [HALF],
+             'cowbell808': ['................', '..x.......x.....']},
+      snare_tracks=['snare', 'clap'], bass_mode='808', bass_lo=26,
+      chord_rh=['x---------------'], arp=dict(rate=4, mode='random', oct=5, prob=0.35),
       lead_rh=['x.x.x.x.x.x.x.x.', 'x.xxx.x.x.xxx.x.', 'x..x..x.x..x..x.', 'xxx.x.x.xxx.x.x.'], lead_oct=5,
-      tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.2), T('clap', 'snare', 'clap', db=-20),
-              T('chat', 'top', 'chat', pan=0.2, db=-26),
-              T('bass', 'bass', '808', sc=0.5, db=-12, p=dict(drive=5.0)),
-              T('chords', 'chords', 'warmpad', rev=0.5, db=-27),
-              T('pad', 'pad', 'choir', rev=0.5, db=-28, p=dict(vowel='o')),
-              T('lead', 'lead', 'cowbell', rev=0.2, dly=0.2, db=-17)],
-      master=dict(lufs=-8.0, air=1.0, low=2.0, lofi=False))
+      gm_hint='Distorted 808 cowbell (detuned pair); Clipped 808 with long slides; Hard trap kit; Memphis vocal chops; dark pad',
+      tracks=[T('kick', 'kick', 'kick', db=-12, drive=0.4), T('snare', 'snare', 'snare', rev=0.15, db=-16), T('clap', 'snare', 'clap', db=-18),
+              T('chat', 'top', 'chat', pan=0.2, db=-25), T('cowbell808', 'top', 'cowbell808', pan=-0.2, db=-30),
+              T('bass', 'bass', '808', sc=0.55, db=-11, p=dict(drive=9.0, decay=0.35)),
+              T('chords', 'chords', 'warmpad', rev=0.5, db=-29, p=dict(cut=700)),
+              T('pad', 'pad', 'choir', rev=0.5, db=-29, p=dict(vowel='o')),
+              T('arp', 'arp', 'vox', rev=0.3, dly=0.25, db=-24),
+              T('lead', 'lead', 'phonkbell', rev=0.25, dly=0.2, db=-16)],
+      master=dict(lufs=-7.0, air=0.6, low=2.5, drive=0.35))
 
 style('ukgarage', 'Electronic', 'UK garage / 2-step: skippy shuffled drums, organ stabs, vocal chops, sub bass',
       bpm=(130, 134), scales=['minor', 'dorian'], swing=0.6, human=0.004,
@@ -1334,11 +1343,12 @@ POOLS = {
                       arp=['pluck_saw', 'bell'], lead=['supersaw_lead', 'hoover', 'leadsaw']),
     'future_bass': dict(chords=['supersaw', 'pluck_saw', 'stab', 'epiano'], pad=['warmpad', 'vox', 'choir'],
                         arp=['bell', 'pluck_saw', 'chip', 'kalimba'], lead=['vox', 'supersaw_lead', 'bell', 'pluck', 'chip']),
-    'dubstep': dict(bass=['wobble', 'reese', 'fmbass'], chords=['warmpad', 'supersaw', 'strings'], pad=['choir', 'warmpad', 'strings'],
+    'dubstep': dict(bass=['wobble', 'reese', 'growl'], chords=['warmpad', 'supersaw', 'strings'], pad=['choir', 'warmpad', 'strings'],
                     arp=['bell', 'pluck_saw', 'celesta'], lead=['hoover', 'leadsaw', 'vox', 'bell', 'supersaw_lead']),
     'trap': dict(chords=['pluck', 'piano', 'epiano', 'harp', 'strings', 'sf:nylon'], pad=['warmpad', 'strings', 'choir', 'vox'],
                  lead=['bell', 'piano', 'pluck', 'flute', 'celesta', 'vox', 'violin']),
-    'phonk': dict(chords=['warmpad', 'organ', 'strings'], pad=['choir', 'warmpad'], lead=['cowbell', 'bell', 'vox', 'leadsaw']),
+    'phonk': dict(chords=['warmpad', 'organ', 'strings'], pad=['choir', 'warmpad', 'glasspad'], arp=['vox', 'phonkbell'],
+                  lead=['phonkbell', 'phonkbell', 'cowbell']),      # the cowbell IS the genre
     'ukgarage': dict(bass=['sinebass', 'reese', 'fmbass'], chords=['organ', 'epiano', 'stab', 'piano'], pad=['warmpad', 'strings'],
                      arp=['epiano', 'bell', 'marimba'], lead=['vox', 'pluck', 'bell', 'epiano']),
     'dnb': dict(bass=['reese', 'sawbass', 'sinebass', 'fmbass'], chords=['epiano', 'warmpad', 'piano', 'strings', 'stab'],
@@ -1484,7 +1494,7 @@ style('soul_ballad', 'Classic', 'Soul / doo-wop ballad (12/8): triplet piano, sl
              'ride': ['x..x..x..x..']}, snare_tracks=['snare'],
       bass=['R.....R..F..', 'R..R..F..A..', 'R.....F.....'], bass_lo=31,
       chord_rh=['xxxxxxxxxxxx', 'x..x..x..x..', 'x.xx.xx.xx.x'], chord_center=62,
-      lead_rh=['x--x--x-----', 'x-xx-xx-x---', 'x-----x-xx-x', 'x--x-xx-----'], fill=True,
+      lead_rh=['x--x--x--...', 'x-xx-xx-x...', 'x-----x-xx..', 'x--x-xx-....'], fill=True,
       gm_hint='Piano (triplets); Hammond organ; Strings; Saxophone or vocal lead; Bass guitar',
       tracks=[T('kick', 'kick', 'kick', db=-19), T('snare', 'snare', 'snare', rev=0.35, db=-19), T('chat', 'top', 'chat', db=-30),
               T('ride', 'top', 'ride', db=-31), T('bass', 'bass', 'pluck', db=-16, p=dict(bright=1200)),
@@ -1518,7 +1528,7 @@ style('country', 'Classic', 'Country: train-beat drums, boom-chick bass, strumme
       snare_tracks=['snare'], bass=['R...F...R...F...', 'R...F...R.F.A...', 'R.......F.......'], bass_lo=31,
       chord_rh=['x.x.x.x.x.x.x.x.', 'x...x.x.x...x.x.', 'x---x---x---x---'], chord_center=57,
       arp=dict(rate=2, mode='updown', oct=4, prob=0.5),
-      lead_rh=['x-x-x---x-x-x---', 'x---x-x-x-------', 'x-x-x-x-x---x---', '..x-x-x-x-------'], fill=True,
+      lead_rh=['x-x-x---x-x-....', 'x---x-x-x---....', 'x-x-x-x-x---x...', '..x-x-x-x---....'], fill=True,
       gm_hint='Acoustic steel guitar (strum); Telecaster licks; Fiddle; Pedal steel; Upright / electric bass',
       tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.25, db=-19), T('chat', 'top', 'chat', db=-28),
               T('bass', 'bass', 'pluck', db=-16, p=dict(bright=1300, damp=0.996)),
@@ -1854,3 +1864,407 @@ POOLS.update({
     'jersey_club': dict(chords=['warmpad', 'piano', 'strings', 'pluck_saw'], lead=['vox', 'pluck', 'bell', 'chip']),
     'baile_funk': dict(chords=['brass', 'stab', 'organ', 'pluck_saw'], lead=['vox', 'brass', 'leadsaw', 'flute', 'cowbell']),
 })
+
+# song lengths that match how each genre is usually released (half-time forms at 140-170 BPM run short otherwise)
+for _n, _k in {'future_bass': 1.5, 'dubstep': 1.75, 'hyperpop': 1.25, 'jersey_club': 1.25, 'jazz': 1.75, 'swing': 1.5,
+               'waltz': 1.5, 'rnb': 0.75}.items():
+    STYLES[_n]['form_scale'] = _k
+
+
+# ----------------------------------------------------------------------------- v1.11: new instruments in the genres
+# Upright bass is the real sound of these genres (was a generic plucked string)
+for _n in ('jazz', 'swing', 'bluegrass', 'bossa_nova', 'folk', 'holiday', 'celtic_jig', 'western'):
+    for _t in STYLES[_n]['tracks']:
+        if _t['layer'] == 'bass' and _t['inst'] == 'pluck':
+            _t.update(inst='upright', p={})
+    _pool = POOLS[_n].get('bass')
+    if _pool and _pool[0] == 'pluck':
+        _pool[0] = 'upright'
+        if 'pluck' not in _pool:
+            _pool.append('pluck')
+# country: pedal-steel swells under the band
+STYLES['country']['tracks'].insert(-1, T('pad', 'pad', 'pedalsteel', rev=0.4, pan=0.2, db=-25))
+POOLS['country']['pad'] = ['pedalsteel', 'organ', 'strings']
+STYLES['country']['gm_hint'] += '; Pedal steel swells'
+
+_ADD = {   # genre -> part -> instruments that belong in that genre's sound
+    'synthwave': dict(bass=['moogbass'], chords=['polysynth', 'synthbrass'], pad=['solina', 'polysynth', 'glasspad'], lead=['synthbrass', 'polysynth']),
+    'synthpop': dict(bass=['moogbass'], chords=['polysynth', 'synthbrass'], pad=['solina', 'glasspad'], lead=['synthbrass']),
+    'city_pop': dict(bass=['moogbass'], chords=['polysynth', 'wurli', 'synthbrass'], pad=['solina'], arp=['mutedgtr', 'vibes'], lead=['synthbrass', 'trumpet']),
+    'vaporwave': dict(chords=['polysynth', 'wurli'], pad=['solina', 'glasspad'], lead=['vibes', 'polysynth']),
+    'house': dict(bass=['moogbass'], chords=['polysynth'], pad=['glasspad', 'solina']),
+    'deep_house': dict(chords=['wurli', 'polysynth'], pad=['glasspad'], arp=['vibes']),
+    'progressive_house': dict(pad=['glasspad'], chords=['polysynth']),
+    'trance': dict(pad=['glasspad']), 'melodic_techno': dict(bass=['moogbass'], pad=['glasspad']),
+    'future_bass': dict(chords=['polysynth'], pad=['glasspad']), 'ambient': dict(pad=['glasspad', 'solina'], arp=['vibes']),
+    'downtempo': dict(chords=['wurli', 'polysynth'], pad=['glasspad'], arp=['vibes']),
+    'lofi': dict(chords=['wurli'], lead=['vibes']), 'boombap': dict(chords=['wurli', 'vibes']),
+    'dnb': dict(pad=['glasspad'], chords=['wurli']), 'kpop': dict(bass=['moogbass'], chords=['polysynth', 'synthbrass'], pad=['glasspad'], arp=['mutedgtr']),
+    'eurodance': dict(chords=['polysynth'], pad=['solina']), 'electro': dict(bass=['moogbass'], chords=['synthbrass', 'polysynth']),
+    'disco': dict(bass=['moogbass'], pad=['solina', 'synthbrass'], arp=['mutedgtr'], lead=['trumpet']),
+    'funk': dict(bass=['moogbass'], chords=['mutedgtr', 'wurli'], pad=['synthbrass'], lead=['trumpet', 'synthbrass']),
+    'jazz': dict(chords=['vibes', 'wurli'], arp=['vibes'], lead=['trumpet', 'vibes']),
+    'swing': dict(arp=['vibes'], lead=['trumpet', 'vibes']), 'bossa_nova': dict(chords=['vibes', 'wurli'], arp=['vibes'], lead=['vibes']),
+    'rnb': dict(bass=['moogbass'], chords=['wurli', 'polysynth'], pad=['glasspad']), 'soul_ballad': dict(chords=['wurli'], lead=['trumpet']),
+    'gospel': dict(chords=['wurli']), 'motown': dict(chords=['wurli'], arp=['mutedgtr', 'vibes'], lead=['trumpet']),
+    'blues': dict(lead=['harmonica'], chords=['wurli']), 'country': dict(lead=['pedalsteel', 'harmonica']),
+    'folk': dict(lead=['harmonica']), 'western': dict(lead=['harmonica', 'trumpet'], pad=['pedalsteel']), 'bluegrass': dict(lead=['harmonica']),
+    'ska': dict(chords=['mutedgtr'], lead=['trumpet']), 'salsa': dict(lead=['trumpet'], arp=['vibes']), 'cumbia': dict(chords=['mutedgtr'], lead=['trumpet']),
+    'reggae': dict(arp=['mutedgtr'], lead=['trumpet', 'harmonica']), 'afrobeats': dict(chords=['mutedgtr'], arp=['vibes']),
+    'dancehall': dict(chords=['mutedgtr']), 'indie_rock': dict(chords=['wurli'], pad=['solina', 'polysynth']),
+    'holiday': dict(arp=['vibes'], lead=['trumpet', 'vibes']), 'chamber_pop': dict(arp=['vibes'], lead=['trumpet']),
+    'pop': dict(chords=['polysynth', 'wurli'], pad=['glasspad']), 'hyperpop': dict(chords=['polysynth']),
+    'cinematic': dict(lead=['trumpet']), 'adventure': dict(lead=['trumpet']), 'baroque': dict(lead=['trumpet']),
+}
+for _n, _parts in _ADD.items():
+    for _l, _insts in _parts.items():
+        if not any(t['layer'] == _l for t in STYLES[_n]['tracks']):
+            continue
+        _pool = POOLS[_n].setdefault(_l, [next(t['inst'] for t in STYLES[_n]['tracks'] if t['layer'] == _l)])
+        for _i in _insts:
+            if _i not in _pool:
+                _pool.append(_i)
+
+
+# ============================== v1.11: braindance + hauntology ==============
+style('braindance', 'Electronic', 'Braindance / IDM: hyperactive chopped breakbeats with ratchets and ghost notes, squelchy acid bass, '
+      'music-box melodies over warm detuned pads, odd modes',
+      bpm=(120, 168), scales=['minor', 'lydian', 'phrygian', 'dorian'], human=0.002, kit='punchy', form='groove', ghosts=True, fill=True,
+      progs={'minor': [[0, 5, 3, 6], [0, 0, 6, 5], [0, 3, 6, 2]], 'lydian': [[0, 1, 0, 1], [0, 1, 4, 5]],
+             'phrygian': [[0, 1, 0, 6]], 'dorian': [[0, 3, 0, 6], [0, 6, 3, 3]]}, chord_size=4,
+      drums={'kick': ['X..X.X....X..X..', 'X.X...X..X.X....', 'XX....X...X.X..X'],
+             'snare': ['....X..x.x.xX..x', '..x.X.....x.X.xx', '....X.x..X..X.X.'],
+             'chat': ['xxxxxxxxxxxxxxxx', 'x.xxx.xxxx.xx.xx'], 'snap': ['...x.....x..x...', '.x.....x...x..x.'], 'ohat': ['..x.......x.....']},
+      snare_tracks=['snare', 'snap'], bass=['R..R..R.R.R...R.', 'R-..R...R.R.R...', 'R...R.RR..R.R...'], bass_lo=28, bass_gate=0.7,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=62, arp=dict(rate=1, mode='random', oct=6, prob=0.7),
+      lead_rh=['x..x..x.x..x.x..', 'x.x...x.xx..x...', 'x---x-x-x--x----', 'x.xx.x...x.x.x..'],
+      gm_hint='Acid bass (303); Detuned analog pads (Juno / CS-80 style); Music-box / celesta; Chopped breakbeats',
+      tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.15, db=-16), T('snap', 'snare', 'snap', db=-24),
+              T('chat', 'top', 'chat', pan=0.2, db=-27), T('ohat', 'top', 'ohat', db=-29),
+              T('bass', 'bass', 'acid', db=-16), T('chords', 'chords', 'polysynth', rev=0.4, db=-23, p=dict(a=0.25, r=0.8, cut=1400)),
+              T('pad', 'pad', 'glasspad', rev=0.5, db=-27), T('arp', 'arp', 'celesta', rev=0.35, dly=0.3, pan=-0.25, db=-24),
+              T('lead', 'lead', 'bell', rev=0.35, dly=0.25, db=-19)],
+      master=dict(lufs=-10.0, air=1.4, low=1.2))
+
+style('hauntology', 'Electronic', 'Hauntology: warped-tape analog synths, slow dusty hip-hop breaks, nostalgic melodies and '
+      'string-machine haze, all drifting like an old cassette',
+      bpm=(78, 96), scales=['major', 'dorian', 'mixolydian', 'minor'], swing=0.56, human=0.012, kit='soft', form='lofi', chord_size=4,
+      progs={'major': [[0, 3, 0, 3], [0, 5, 3, 4], [3, 0, 3, 0], [0, 2, 3, 0]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]],
+             'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'minor': [[0, 5, 6, 0], [0, 3, 0, 3]]}, chord_bars=1, voicing='open',
+      drums={'kick': ['X.......X.x.....', 'X......XX.......', 'X.....x...X.....'], 'snare': [BACKBEAT],
+             'chat': ['x.x.x.x.x.x.x.x.', 'x...x...x...x...']}, snare_tracks=['snare'],
+      bass=['R-------R---....', 'R-----..R-......', 'R-------F-------'], bass_lo=31,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=60, arp=dict(rate=2, mode='updown', oct=5, prob=0.6),
+      lead_rh=['x-------x---x---', 'x---x---x-------', 'x-----x-x-------', 'x---------------'], reverb=3.4,
+      gm_hint='Detuned analog poly (Prophet / Juno); String machine; Sine lead or vocal sample; Dusty drum break; tape + vinyl',
+      tracks=[T('kick', 'kick', 'kick', db=-16), T('snare', 'snare', 'snare', rev=0.35, db=-19), T('chat', 'top', 'chat', db=-30),
+              T('bass', 'bass', 'sinebass', db=-15, p=dict(cut=450)),
+              T('chords', 'chords', 'polysynth', rev=0.45, dly=0.15, db=-22, p=dict(a=0.3, r=1.0, cut=1200)),
+              T('pad', 'pad', 'solina', rev=0.5, db=-25),
+              T('arp', 'arp', 'polysynth', rev=0.4, dly=0.3, pan=0.25, db=-26, p=dict(a=0.004, d=0.3, s=0.15, r=0.4, cut=2200)),
+              T('lead', 'lead', 'softlead', rev=0.45, dly=0.3, db=-19), T('vinyl', 'fx', 'vinyl', db=-40)],
+      master=dict(lufs=-12.5, air=-1.5, low=1.5, lofi=True, wobble=3.0))
+
+LABELS.update({'braindance': 'Braindance / IDM', 'hauntology': 'Hauntology'})
+POOLS.update({
+    'braindance': dict(bass=['acid', 'reese', 'moogbass', 'sawbass', 'fmbass'], chords=['polysynth', 'warmpad', 'glasspad', 'epiano', 'solina'],
+                       pad=['glasspad', 'warmpad', 'solina', 'choir', 'strings'], arp=['celesta', 'bell', 'chip', 'vibes', 'marimba', 'pluck_saw'],
+                       lead=['bell', 'acid', 'celesta', 'leadsaw', 'piano', 'chip', 'polysynth']),
+    'hauntology': dict(bass=['sinebass', 'moogbass', 'fmbass'], chords=['polysynth', 'solina', 'wurli', 'epiano', 'warmpad'],
+                       pad=['solina', 'warmpad', 'glasspad', 'choir', 'strings'], arp=['polysynth', 'vibes', 'bell', 'celesta'],
+                       lead=['softlead', 'vox', 'polysynth', 'flute', 'vibes']),
+})
+
+
+# ============================== v1.11: styles after well-known sounds (named for the style, not the artist)
+style('uplifting_trance', 'Electronic', 'Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw leads and '
+      'plucky arps, a long piano / pad breakdown that explodes into the drop',
+      bpm=(132, 138), scales=['minor'], kit='909', form='edm', sc_depth=0.55, chord_size=4,
+      progs=[[5, 3, 0, 4], [0, 5, 2, 6], [0, 5, 3, 4], [5, 6, 0, 0], [0, 3, 5, 4]],
+      drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'chat': ['x.x.x.x.x.x.x.x.'], 'ride': ['x.x.x.x.x.x.x.x.']},
+      snare_tracks=['clap'], bass=['.RRR.RRR.RRR.RRR', '..R...R...R...R.'], bass_lo=31, bass_gate=0.6, fill=True,
+      chord_rh=['x---------------', '..x...x...x...x.'], chord_center=64, arp=dict(rate=1, mode='updown', oct=5),
+      lead_rh=['x-x-x-x-x---x---', 'x--x--x-x-------', 'x-x-x---x-x-x---', 'x-------x---x---'],
+      gm_hint='Supersaw lead; Plucky arp (gated); Rolling off-beat bass; Piano (breakdown); Wide pads; Vocal',
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('clap', 'snare', 'clap', rev=0.3, db=-19), T('ohat', 'top', 'ohat', db=-26),
+              T('chat', 'top', 'chat', db=-29), T('ride', 'top', 'ride', db=-32),
+              T('bass', 'bass', 'sawbass', sc=0.7, db=-15, p=dict(cut=1100, d=0.1, s=0.3)),
+              T('chords', 'chords', 'supersaw', sc=0.8, rev=0.4, db=-22), T('pad', 'pad', 'strings', sc=0.6, rev=0.5, db=-26),
+              T('arp', 'arp', 'pluck_saw', sc=0.5, dly=0.35, db=-24), T('lead', 'lead', 'supersaw_lead', sc=0.4, rev=0.4, dly=0.25, db=-18)],
+      master=dict(lufs=-8.5, air=2.0, low=1.0))
+
+style('melodic_house', 'Electronic', 'Melodic deep house: warm rolling bassline, organic shakers and congas, emotive piano and plucked '
+      'melodies over lush pads, gentle and euphoric',
+      bpm=(116, 122), scales=['minor', 'major', 'dorian'], swing=0.53, kit='soft', form='groove', sc_depth=0.35, chord_size=4,
+      progs={'minor': [[0, 5, 2, 6], [0, 6, 5, 3], [5, 3, 0, 4]], 'major': [[0, 4, 5, 3], [3, 0, 4, 5], [5, 3, 0, 4]],
+             'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]},
+      drums={'kick': [FOUR], 'clap': [BACKBEAT], 'shaker': ['x.xxx.xxx.xxx.xx'], 'conga': ['......o.......o.', '..o.....o.o.....'],
+             'ohat': [OFFHAT], 'rim': ['...x......x.....']}, snare_tracks=['clap'],
+      bass=['R..R..R.R..R..R.', '..R...R...R..R..', 'R-..R-..R-..R-..'], bass_lo=31, bass_gate=0.65,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=62, arp=dict(rate=2, mode='updown', oct=5),
+      lead_rh=['x-x-x---x-x-x---', 'x---x-x-x-------', '..x-x-x-x---x---', 'x--x--x-x-------'],
+      gm_hint='Felt / grand piano; Plucked guitar or harp; Lush pads; Rolling bass; Shakers, congas; field-recording textures',
+      tracks=[T('kick', 'kick', 'kick', db=-13), T('clap', 'snare', 'clap', rev=0.35, db=-21), T('shaker', 'top', 'shaker', pan=0.3, db=-27),
+              T('conga', 'top', 'conga', pan=-0.25, db=-26), T('ohat', 'top', 'ohat', db=-28), T('rim', 'top', 'rim', pan=0.2, db=-29),
+              T('bass', 'bass', 'moogbass', sc=0.6, db=-15, p=dict(cut=450)),
+              T('chords', 'chords', 'warmpad', sc=0.5, rev=0.5, db=-24), T('pad', 'pad', 'glasspad', sc=0.5, rev=0.5, db=-27),
+              T('arp', 'arp', 'harp', rev=0.4, dly=0.3, pan=0.25, db=-25), T('lead', 'lead', 'piano', rev=0.4, dly=0.2, db=-18),
+              T('texture', 'fx', 'texture', rev=0.5, db=-38)],
+      master=dict(lufs=-9.5, air=1.6, low=1.3))
+
+style('jam_band', 'Classic', 'Jam band / psychedelic Americana: noodling clean lead guitar, melodic wandering bass, organ, '
+      'loose two-drummer groove, long improvised sections',
+      bpm=(100, 132), scales=['mixolydian', 'major', 'dorian'], swing=0.54, human=0.012, kit='acoustic', form='jazz', form_scale=1.5,
+      progs={'mixolydian': [[0, 6, 3, 0], [0, 3, 0, 6], [0, 6, 0, 3]], 'major': [[0, 4, 3, 0], [0, 3, 4, 3], [0, 5, 3, 4]],
+             'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]},
+      drums={'kick': ['X.......X.x.....', 'X...X.....X.X...'], 'snare': [BACKBEAT], 'ride': ['x.x.x.x.x.x.x.x.'],
+             'chat': ['x.x.x.x.x.x.x.x.'], 'tom': ['.............x.x', '................']}, snare_tracks=['snare'], ghosts=True, fill=True,
+      bass=['R.R.F.A.R..RF.A.', 'R...F.R.A..RF...', 'R.FA.R..F.A.R.F.'], bass_lo=28,
+      chord_rh=['x.x.x.x.x.x.x.x.', 'x---x---x---x---', '..x...x...x...x.'], chord_center=60,
+      arp=dict(rate=2, mode='random', oct=5, prob=0.4),
+      lead_rh=['x.x.x.x.x-x-x---', 'x.xx.x.xx.x.x...', 'x-x-x.x.x.x-x---', '..x.x-x.x.x.x.x.'],
+      gm_hint='Clean electric guitars (lead + rhythm); Bass guitar (melodic); Hammond organ; Piano; two drummers',
+      tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.3, db=-18), T('ride', 'top', 'ride', pan=0.25, db=-26),
+              T('chat', 'top', 'chat', pan=-0.25, db=-29), T('tom', 'top', 'tom', rev=0.3, db=-24),
+              T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1400, damp=0.997)),
+              T('chords', 'chords', 'guitar', pan=-0.25, rev=0.3, db=-22, p=dict(bright=5500)),
+              T('pad', 'pad', 'organ', pan=0.25, rev=0.3, db=-26), T('arp', 'arp', 'piano', rev=0.3, db=-27),
+              T('lead', 'lead', 'guitar', rev=0.35, dly=0.2, db=-18, p=dict(dist=4, bright=5000))],
+      master=dict(lufs=-12.0, air=1.2, low=0.9))
+
+style('teen_pop', 'Electronic', "Late-90s teen pop: punchy dance-pop drums, dramatic minor chords, muted-guitar and synth-pluck "
+      'riffs, string stabs, call-and-response hooks and a last-chorus key change',
+      bpm=(92, 112), scales=['minor', 'major'], kit='punchy', form='song_b', sc_depth=0.25, chord_size=4, ghosts=True,
+      progs={'minor': [[0, 5, 2, 6], [0, 3, 5, 4], [5, 3, 0, 4], [0, 5, 3, 4]], 'major': [[0, 4, 5, 3], [5, 3, 0, 4], [3, 4, 2, 5]]},
+      drums={'kick': ['X.....X.X.......', 'X..X..X...X.....', 'X.....X...X..X..'], 'snare': [BACKBEAT], 'clap': [BACKBEAT],
+             'chat': ['x.xxx.x.x.xxx.x.', 'xxxxxxxxxxxxxxxx'], 'tamb': ['....x.......x...']}, snare_tracks=['snare', 'clap'], fill=True,
+      bass=['R..R..R.R.R...R.', 'R...R..RR...R.R.', 'R.R...R.R.R...A.'], bass_lo=28, bass_gate=0.7,
+      chord_rh=['x..x..x.x..x..x.', 'x---x---x---x---', 'x.x...x.x.x...x.'], chord_center=63,
+      arp=dict(rate=2, mode='updown', oct=5, prob=0.8),
+      lead_rh=['x.x.x..x..x.x...', 'x-x-x---x-x-x---', '..x.x.x.x..x....', 'x--x--x-x-------'],
+      gm_hint='Muted / funk guitar; Synth plucks & piano; String stabs; Punchy drum machine; Vocal-style lead with harmonies',
+      tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.25, db=-16), T('clap', 'snare', 'clap', db=-20),
+              T('chat', 'top', 'chat', db=-27), T('tamb', 'top', 'tamb', pan=0.3, db=-29),
+              T('bass', 'bass', 'moogbass', sc=0.4, db=-14),
+              T('chords', 'chords', 'pluck_saw', sc=0.3, rev=0.25, db=-22), T('pad', 'pad', 'strings', rev=0.35, db=-25),
+              T('arp', 'arp', 'mutedgtr', pan=-0.3, db=-24), T('lead', 'lead', 'vox', rev=0.3, dly=0.15, db=-18)],
+      master=dict(lufs=-9.0, air=1.8, low=1.2))
+
+style('soft_rock', 'Classic', '70s soft rock (California): steady groove, round melodic bass, strummed acoustic and clean electric '
+      'guitars, Rhodes and organ, a smooth vocal-style lead',
+      bpm=(100, 126), scales=['major', 'dorian', 'mixolydian', 'minor'], human=0.008, kit='soft', form='song_b', chord_size=4, strum=0.01,
+      progs={'major': [[0, 4, 5, 3], [3, 0, 4, 0], [0, 3, 0, 4], [5, 3, 0, 4]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 3]],
+             'mixolydian': [[0, 6, 3, 0]], 'minor': [[0, 6, 5, 6], [5, 6, 0, 0]]},
+      drums={'kick': ['X.......X.......', 'X.....X.X.......'], 'snare': [BACKBEAT], 'chat': ['x.x.x.x.x.x.x.x.', 'xxxxxxxxxxxxxxxx'],
+             'tom': ['............x.x.', '................'], 'tamb': ['....x.......x...']}, snare_tracks=['snare'], fill=True,
+      bass=['R.....R.R...F...', 'R...R...F...A...', 'R.......R.R.F...'], bass_lo=28,
+      chord_rh=['x.x.x.x.x.x.x.x.', 'x---x---x---x---', 'x..x..x.x.x.x...'], chord_center=60,
+      arp=dict(rate=2, mode='updown', oct=5, prob=0.6),
+      lead_rh=['x-x-x---x-x-....', 'x---x-x-x---....', '..x-x-x-x---x...', 'x-x-x-x-x-------'],
+      gm_hint='Acoustic + clean electric guitars; Fender Rhodes; Hammond organ; Bass guitar (melodic); soft drums with tom fills',
+      tracks=[T('kick', 'kick', 'kick', db=-16), T('snare', 'snare', 'snare', rev=0.35, db=-18), T('chat', 'top', 'chat', db=-28),
+              T('tom', 'top', 'tom', rev=0.35, db=-23), T('tamb', 'top', 'tamb', pan=0.3, db=-30),
+              T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1200, damp=0.997)),
+              T('chords', 'chords', 'guitar', pan=-0.25, rev=0.25, p=dict(bright=5500)), T('pad', 'pad', 'organ', pan=0.25, rev=0.3, db=-27),
+              T('arp', 'arp', 'epiano', rev=0.3, pan=0.2, db=-25), T('lead', 'lead', 'guitar', rev=0.35, dly=0.2, db=-18, p=dict(dist=3, bright=5000))],
+      master=dict(lufs=-11.0, air=1.3, low=1.0))
+
+style('luxury_rap', 'Electronic', 'Luxury rap: majestic soul and orchestral samples - lush strings, choir, horn stabs and piano - over '
+      'booming 808s and crisp trap drums, slow and triumphant',
+      bpm=(136, 152), scales=['minor', 'major', 'harmonic_minor'], kit='808', form='trap', trap_hats=True, sc_depth=0.15, chord_size=4,
+      progs={'minor': [[0, 5, 3, 4], [0, 6, 5, 6], [0, 3, 5, 4]], 'major': [[0, 4, 5, 3], [3, 4, 0, 5]], 'harmonic_minor': [[0, 5, 3, 4]]},
+      drums={'kick': ['X.........X.....', 'X.....X...X.....', 'X......X..X.....'], 'snare': [HALF], 'clap': [HALF],
+             'ohat': ['......x.......x.']}, snare_tracks=['snare', 'clap'], bass_mode='808', bass_lo=26,
+      chord_rh=['x-------x-------', 'x---------------', 'x--x--x-x-------'], chord_center=62,
+      arp=dict(rate=2, mode='updown', oct=5, prob=0.5),
+      lead_rh=['x-------x---x---', 'x---x---x-------', 'x-x-x---x-------', 'x---------------'],
+      gm_hint='Soul / orchestral sample: lush strings, choir, horn stabs, piano; booming 808; trap drums',
+      tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.3, db=-16), T('clap', 'snare', 'clap', db=-20),
+              T('ohat', 'top', 'ohat', db=-28), T('bass', 'bass', '808', db=-12, p=dict(decay=0.45, drive=3.5)),
+              T('chords', 'chords', 'piano', rev=0.35, db=-21), T('pad', 'pad', 'strings', rev=0.45, db=-23),
+              T('arp', 'arp', 'harp', rev=0.4, db=-27), T('lead', 'lead', 'brass', rev=0.35, db=-18)],
+      master=dict(lufs=-8.5, air=1.4, low=2.0))
+
+LABELS.update({'uplifting_trance': 'Uplifting Trance', 'melodic_house': 'Melodic Deep House', 'jam_band': 'Jam Band',
+               'teen_pop': "Teen Pop ('99)", 'soft_rock': '70s Soft Rock', 'luxury_rap': 'Luxury Rap'})
+ACOUSTIC_MAP.update({'jam_band': {'bass': 'fingerbass', 'chords': 'cleanguitar', 'lead': 'cleanguitar'},
+                     'soft_rock': {'bass': 'fingerbass', 'chords': 'steelguitar', 'lead': 'cleanguitar'}})
+ACOUSTIC_KIT.update({'jam_band': 'room', 'soft_rock': 'room'})
+POOLS.update({
+    'uplifting_trance': dict(bass=['sawbass', 'fmbass', 'moogbass'], chords=['supersaw', 'stab', 'pluck_saw', 'piano', 'polysynth'],
+                             pad=['strings', 'warmpad', 'choir', 'glasspad', 'supersaw'], arp=['pluck_saw', 'bell', 'pluck', 'piano'],
+                             lead=['supersaw_lead', 'leadsaw', 'pluck_saw', 'piano', 'vox']),
+    'melodic_house': dict(bass=['moogbass', 'sinebass', 'sawbass'], chords=['warmpad', 'piano', 'polysynth', 'epiano', 'strings'],
+                          pad=['glasspad', 'strings', 'warmpad', 'choir', 'solina'], arp=['harp', 'pluck', 'guitar', 'marimba', 'kalimba', 'bell'],
+                          lead=['piano', 'pluck', 'guitar', 'sf:nylon', 'violin', 'flute', 'vox']),
+    'jam_band': dict(bass=['pluck', 'sf:fingerbass', 'upright'], chords=['guitar', 'sf:cleanguitar', 'piano', 'organ'],
+                     pad=['organ', 'wurli', 'pedalsteel'], arp=['piano', 'guitar', 'wurli'],
+                     lead=['guitar', 'sf:cleanguitar', 'organ', 'piano', 'pedalsteel', 'harmonica']),
+    'teen_pop': dict(bass=['moogbass', 'fmbass', 'sawbass', 'sf:fingerbass'], chords=['pluck_saw', 'piano', 'mutedgtr', 'stab', 'guitar', 'polysynth'],
+                     pad=['strings', 'polysynth', 'warmpad', 'choir'], arp=['mutedgtr', 'pluck', 'bell', 'guitar', 'harp'],
+                     lead=['vox', 'pluck', 'guitar', 'strings', 'flute', 'synthbrass']),
+    'soft_rock': dict(bass=['pluck', 'sf:fingerbass', 'moogbass'], chords=['guitar', 'sf:steelguitar', 'sf:cleanguitar', 'epiano', 'piano', 'wurli'],
+                      pad=['organ', 'strings', 'solina', 'polysynth', 'pedalsteel'], arp=['epiano', 'guitar', 'piano', 'vibes'],
+                      lead=['guitar', 'sf:cleanguitar', 'vox', 'epiano', 'pedalsteel', 'flute', 'sax']),
+    'luxury_rap': dict(chords=['piano', 'strings', 'epiano', 'brass', 'harp'], pad=['strings', 'choir', 'horn', 'solina', 'sf:slowstrings'],
+                       arp=['harp', 'bell', 'celesta', 'pizz', 'vibes'], lead=['brass', 'horn', 'violin', 'choir', 'sax', 'trumpet', 'piano']),
+})
+for _n, _k in {'uplifting_trance': 1.75, 'luxury_rap': 1.4}.items():
+    STYLES[_n]['form_scale'] = _k
+POOLS['jam_band']['lead'] = ['guitar', 'sf:cleanguitar', 'guitar', 'organ', 'pedalsteel', 'harmonica', 'piano']
+
+
+# ============================== v1.11: bass-music & phonk families, trance arrangement (after the genre reference guides)
+TRANCE_FORM = [   # DJ intro, a long beatless breakdown as the emotional peak, then the climax
+    ('intro', 16, {'kick', 'top', 'bass'}, {'filter_in': True}),
+    ('verse', 16, {'kick', 'top', 'snare', 'bass', 'chords', 'arp'}, {'crash': True}),
+    ('break', 24, {'pad', 'chords', 'lead', 'arp', 'fx'}, {'alt': True, 'crash': True}),
+    ('build', 8, {'chords', 'arp', 'top', 'pad', 'lead'}, {'build': True}),
+    ('drop', 32, ALL, {'drop': True}),
+    ('break', 8, {'pad', 'lead', 'fx'}, {'alt': True}),
+    ('drop', 16, ALL, {'drop': True}),
+    ('outro', 16, {'kick', 'top', 'bass'}, {}),
+]
+FORMS['trance'] = TRANCE_FORM
+for _n in ('trance', 'uplifting_trance'):
+    STYLES[_n]['form'] = 'trance'
+STYLES['uplifting_trance']['form_scale'] = 1.25
+STYLES['trance']['bpm'] = (132, 140)
+for _n in ('dnb', 'jungle'):
+    STYLES[_n]['sub_layer'] = True
+STYLES['phonk']['bpm'] = (135, 155)                          # drift phonk: 140-160 with a half-time feel
+
+style('brostep', 'Electronic', 'Brostep: festival dubstep - snarling growls, wobbles and FM stabs trading bars in the drop over a '
+      'clean sub, aggressive half-time drums, pitch dives, risers and hard stops',
+      bpm=(140, 150), scales=['minor', 'phrygian', 'harmonic_minor'], progs=[[0, 0, 5, 6], [0, 0, 1, 0], [0, 6, 5, 6]],
+      sc_depth=0.65, sc_release=0.25, reverb=2.2, kit='hard', form='halftime', sub_layer=True, fill=True,
+      bass_switch=['wobble', 'fmbass'], switch_bars=1,
+      kit_override=dict(kick=dict(drive=3.5, punch=220, decay=6), snare=dict(snap=2.0, decay=9, drive=1.5)),
+      drums={'kick': ['X.........X.....', 'X.....X...X..X..', 'X..X......X.....'], 'snare': [HALF],
+             'chat': ['x.x.x.x.x.x.x.x.', 'xxxxxxxxxxxxxxxx'], 'crash': ['X...............'], 'clap': [HALF]},
+      snare_tracks=['snare', 'clap'], bass_mode='wobble', bass_lo=26, chord_rh=['x---------------'],
+      arp=dict(rate=2, mode='random', oct=5, prob=0.3),
+      lead_rh=['x-------x-------', 'x.x.x...x.......', 'x---x---x-------', 'x---------------'], lead_oct=5,
+      gm_hint='Growl / FM / wobble mid-basses (Serum / Vital style) over a mono sine sub; hard half-time drums; risers, impacts',
+      tracks=[T('kick', 'kick', 'kick', db=-11), T('snare', 'snare', 'snare', rev=0.25, db=-13), T('clap', 'snare', 'clap', db=-19),
+              T('chat', 'top', 'chat', pan=0.2, db=-27), T('crash', 'top', 'crash', db=-27),
+              T('bass', 'bass', 'growl', sc=0.7, db=-13),
+              T('chords', 'chords', 'warmpad', sc=0.6, rev=0.5, db=-27), T('pad', 'pad', 'choir', sc=0.6, rev=0.5, db=-28),
+              T('arp', 'arp', 'bell', dly=0.4, rev=0.3, db=-28), T('lead', 'lead', 'hoover', sc=0.4, rev=0.3, db=-21)],
+      master=dict(lufs=-6.5, air=1.6, low=2.0, drive=0.25))
+
+style('melodic_dubstep', 'Electronic', 'Melodic dubstep: emotional chords and a big supersaw theme over half-time drums - the drop '
+      'carries the melody, with piano, strings and vocal chops and a heavy but musical bass',
+      bpm=(140, 150), scales=['minor', 'major'], sc_depth=0.6, sc_release=0.3, reverb=2.6, kit='hard', form='halftime',
+      sub_layer=True, chord_size=4, fill=True,
+      progs={'minor': [[5, 3, 0, 4], [0, 5, 2, 6], [0, 5, 3, 4]], 'major': [[3, 4, 5, 0], [0, 4, 5, 3], [5, 3, 0, 4]]},
+      drums={'kick': ['X.........X.....', 'X.....X...X.....'], 'snare': [HALF], 'clap': [HALF], 'chat': ['x.x.x.x.x.x.x.x.'],
+             'crash': ['X...............']}, snare_tracks=['snare', 'clap'],
+      bass=['R-------R-------', 'R---R---R-R-R---', 'R-------R---R---'], bass_lo=26, bass_gate=0.9,
+      chord_rh=['x---------------', 'x.xx.x.xx.x.xx.x', 'x--x--x-x--x--x-'], chord_center=64,
+      arp=dict(rate=2, mode='updown', oct=5, prob=0.7),
+      lead_rh=['x-x-x---x-x-x---', 'x--x--x-x-------', 'x-x-x-x-x---x---', 'x-------x---x---'],
+      gm_hint='Supersaw chords + lead; Piano; Strings; Vocal chops; Reese / growl mid-bass over a sine sub',
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.3, db=-14), T('clap', 'snare', 'clap', db=-20),
+              T('chat', 'top', 'chat', db=-28), T('crash', 'top', 'crash', db=-28),
+              T('bass', 'bass', 'reese', sc=0.8, db=-15, p=dict(cut=900)),
+              T('chords', 'chords', 'supersaw', sc=0.9, rev=0.4, db=-22), T('pad', 'pad', 'strings', sc=0.6, rev=0.5, db=-25),
+              T('arp', 'arp', 'vox', rev=0.3, dly=0.3, db=-25), T('lead', 'lead', 'supersaw_lead', sc=0.5, rev=0.4, dly=0.25, db=-18)],
+      master=dict(lufs=-7.5, air=2.0, low=1.5))
+
+style('liquid_dnb', 'Electronic', 'Liquid drum & bass: rolling, swung two-step breaks at 174, warm melodic bass over a sine sub, '
+      'Rhodes and jazzy 7th chords, lush pads, soulful leads',
+      bpm=(170, 176), scales=['minor', 'dorian', 'major'], swing=0.53, ghosts=True, kit='punchy', form='dnb', form_scale=2,
+      sub_layer=True, chord_size=4, sc_depth=0.45, fill=True,
+      progs={'minor': [[0, 5, 3, 4], [0, 3, 6, 5], [5, 3, 0, 4]], 'dorian': [[0, 3, 0, 3], [0, 3, 6, 2]], 'major': [[1, 4, 0, 5], [3, 2, 1, 4]]},
+      drums={'kick': ['X.........X.....', 'X.........X..x..'], 'snare': [BACKBEAT], 'chat': ['x.xxx.x.x.xxx.x.', 'x.x.x.x.x.x.x.x.'],
+             'ride': ['x...x...x...x...'], 'shaker': ['xxxxxxxxxxxxxxxx']}, snare_tracks=['snare'],
+      bass=['R-------R-----..', 'R-----R---R-----', 'R---..R---R-....'], bass_lo=28,
+      chord_rh=['x-------x-------', 'x---------------'], chord_center=62, arp=dict(rate=2, mode='updown', oct=5, prob=0.6),
+      lead_rh=['x-x-x---x-x-....', 'x---x-x-x---....', '..x-x-x-x---x...', 'x-------x---....'],
+      gm_hint='Rhodes / piano 7th chords; Warm melodic bass + sine sub; Strings & pads; Vocal or flute lead; rolling breaks',
+      tracks=[T('kick', 'kick', 'kick'), T('snare', 'snare', 'snare', rev=0.25, db=-17), T('chat', 'top', 'chat', pan=0.2, db=-27),
+              T('ride', 'top', 'ride', pan=-0.25, db=-32), T('shaker', 'top', 'shaker', db=-32),
+              T('bass', 'bass', 'moogbass', sc=0.8, db=-15, p=dict(cut=600)),
+              T('chords', 'chords', 'epiano', sc=0.5, rev=0.35, db=-22), T('pad', 'pad', 'strings', sc=0.6, rev=0.5, db=-25),
+              T('arp', 'arp', 'vibes', rev=0.35, dly=0.3, pan=0.25, db=-27), T('lead', 'lead', 'vox', rev=0.4, dly=0.25, db=-19)],
+      master=dict(lufs=-8.5, air=1.6, low=1.2))
+
+style('neurofunk', 'Electronic', 'Neurofunk: tight, technical two-step at 174, dark and mechanical - growls, reese and FM stabs '
+      'trading every bar over a sine sub, cold stabs and sparse atmospheres',
+      bpm=(172, 176), scales=['minor', 'phrygian'], ghosts=True, kit='hard', form='dnb', form_scale=2, sub_layer=True,
+      bass_switch=['reese', 'fmbass'], switch_bars=1, sc_depth=0.6, fill=True,
+      progs={'minor': [[0, 0, 0, 0], [0, 0, 5, 6], [0, 6, 0, 5]], 'phrygian': [[0, 1, 0, 0], [0, 0, 1, 0]]},
+      drums={'kick': ['X.........X.....', 'X.X.......X..x..', 'X.........XX....'], 'snare': [BACKBEAT, '....X.......X..x'],
+             'chat': ['x.xxx.x.x.xxx.x.', 'xxxxxxxxxxxxxxxx'], 'rim': ['......x.......x.']}, snare_tracks=['snare'],
+      bass=['R..R..R...R.R...', 'R-.R..R.R..R....', 'RR..R...R.R.R...'], bass_lo=26, bass_gate=0.7,
+      chord_rh=['x...............', '......x.......x.'], chord_center=62, arp=dict(rate=2, mode='random', oct=5, prob=0.25),
+      lead_rh=['x-------........', 'x---x-----......', '........x-------', 'x.x.............'],
+      gm_hint='Neuro / growl / reese mid-basses (resampled, distorted) over a mono sub; tight punchy breaks; cold stabs',
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.15, db=-14), T('chat', 'top', 'chat', pan=0.2, db=-26),
+              T('rim', 'top', 'rim', pan=-0.2, db=-28), T('bass', 'bass', 'growl', sc=0.8, db=-13),
+              T('chords', 'chords', 'stab', sc=0.5, rev=0.3, db=-25), T('pad', 'pad', 'warmpad', sc=0.5, rev=0.5, db=-29, p=dict(cut=800)),
+              T('arp', 'arp', 'bell', rev=0.3, dly=0.3, db=-29), T('lead', 'lead', 'leadsaw', sc=0.4, rev=0.35, db=-22)],
+      master=dict(lufs=-7.0, air=1.4, low=1.6, drive=0.2))
+
+style('house_phonk', 'Electronic', 'House phonk: four-on-the-floor phonk - distorted detuned cowbell hooks, punchy 808 bass on '
+      'the offbeat, hard claps and Memphis vocal chops at club tempo',
+      bpm=(128, 142), scales=['phrygian', 'minor', 'phrygian_dominant'], kit='808', form='edm', sc_depth=0.55, sc_release=0.25,
+      progs={'phrygian': [[0, 0, 1, 0], [0, 1, 0, 6]], 'minor': [[0, 0, 5, 6], [0, 5, 0, 6]], 'phrygian_dominant': [[0, 1, 0, 1], [0, 3, 1, 0]]},
+      kit_override=dict(kick=dict(drive=5.0), clap=dict(drive=2.0)),
+      drums={'kick': [FOUR], 'clap': [BACKBEAT], 'chat': ['x.x.x.x.x.x.x.x.', 'x.xxx.x.x.xxx.x.'], 'ohat': [OFFHAT],
+             'cowbell808': ['..x.......x.....']}, snare_tracks=['clap'],
+      bass=['..R...R...R...R.', '..R..RR...R..RR.', '.RR..RR..RR..RR.'], bass_lo=28, bass_gate=0.6,
+      chord_rh=['x---------------'], arp=dict(rate=4, mode='random', oct=5, prob=0.35),
+      lead_rh=['x.x.x.x.x.x.x.x.', 'x.xxx.x.x.xxx.x.', 'x..x..x.x..x..x.'],
+      gm_hint='Distorted phonk cowbell; offbeat distorted bass; hard four-on-the-floor kick; Memphis vocal chops',
+      tracks=[T('kick', 'kick', 'kick', db=-12, drive=0.3), T('clap', 'snare', 'clap', rev=0.2, db=-17), T('chat', 'top', 'chat', db=-27),
+              T('ohat', 'top', 'ohat', db=-27), T('cowbell808', 'top', 'cowbell808', pan=-0.2, db=-31),
+              T('bass', 'bass', 'fmbass', sc=0.8, db=-13, drive=0.5),
+              T('chords', 'chords', 'warmpad', sc=0.6, rev=0.4, db=-29, p=dict(cut=800)),
+              T('arp', 'arp', 'vox', rev=0.3, dly=0.25, db=-24), T('lead', 'lead', 'phonkbell', sc=0.3, rev=0.2, dly=0.2, db=-16)],
+      master=dict(lufs=-7.0, air=0.8, low=2.2, drive=0.3))
+
+style('memphis_phonk', 'Electronic', 'Memphis phonk: the original - slow, dusty and lo-fi, eerie cowbell and piano loops, rattling '
+      '808 hats and cowbells, chopped vocal shouts, cassette grit',
+      bpm=(66, 88), scales=['minor', 'phrygian', 'harmonic_minor'], kit='808', form='lofi', human=0.006, trap_hats=False, sc_depth=0.2,
+      progs={'minor': [[0, 0, 5, 5], [0, 6, 5, 6], [0, 0, 0, 5]], 'phrygian': [[0, 1, 0, 0]], 'harmonic_minor': [[0, 0, 4, 4]]},
+      kit_override=dict(kick=dict(drive=3.0)),
+      drums={'kick': ['X.....X...X.....', 'X..X......X.....'], 'snare': [BACKBEAT], 'clap': [BACKBEAT],
+             'chat': ['x.xxx.xxx.xxx.xx', 'xxx.xxx.xxx.xxx.'], 'cowbell808': ['x.....x...x.....', '..x...x...x...x.']},
+      snare_tracks=['snare', 'clap'], bass_mode='808', bass_lo=26,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=60, arp=dict(rate=4, mode='random', oct=5, prob=0.4),
+      lead_rh=['x...x...x...x...', 'x.x...x.x.x.....', 'x---x---x-------', 'x..x..x.........'],
+      gm_hint='808 kit (rattling hats, cowbell); eerie piano or bell loop; pitched-down Memphis vocal chops; tape hiss',
+      tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.2, db=-17), T('clap', 'snare', 'clap', db=-21),
+              T('chat', 'top', 'chat', pan=0.2, db=-26), T('cowbell808', 'top', 'cowbell808', pan=-0.25, db=-26),
+              T('bass', 'bass', '808', db=-12, p=dict(drive=4.0, decay=0.5)),
+              T('chords', 'chords', 'piano', rev=0.3, db=-23), T('arp', 'arp', 'vox', rev=0.3, dly=0.3, db=-23),
+              T('lead', 'lead', 'phonkbell', rev=0.25, dly=0.2, db=-17, p=dict(drive=2.5)), T('vinyl', 'fx', 'vinyl', db=-38)],
+      master=dict(lufs=-9.0, air=-1.0, low=2.0, lofi=True, wobble=0.8))
+
+LABELS.update({'dubstep': 'Dubstep (Dark / UK)', 'brostep': 'Brostep', 'melodic_dubstep': 'Melodic Dubstep', 'liquid_dnb': 'Liquid DnB',
+               'neurofunk': 'Neurofunk', 'house_phonk': 'House Phonk', 'memphis_phonk': 'Memphis Phonk', 'phonk': 'Drift Phonk'})
+STYLES['phonk']['scales'] = ['phrygian', 'minor', 'phrygian_dominant']
+STYLES['phonk']['progs']['phrygian_dominant'] = [[0, 1, 0, 1], [0, 3, 1, 0], [0, 0, 1, 0]]
+POOLS.update({
+    'brostep': dict(bass=['growl', 'wobble', 'fmbass', 'reese'], chords=['warmpad', 'supersaw', 'strings'], pad=['choir', 'warmpad', 'glasspad'],
+                    arp=['bell', 'pluck_saw', 'chip'], lead=['hoover', 'leadsaw', 'supersaw_lead', 'vox']),
+    'melodic_dubstep': dict(bass=['reese', 'growl', 'fmbass', 'sawbass'], chords=['supersaw', 'piano', 'polysynth', 'stab'],
+                            pad=['strings', 'choir', 'glasspad', 'warmpad'], arp=['vox', 'bell', 'pluck_saw', 'piano', 'celesta'],
+                            lead=['supersaw_lead', 'leadsaw', 'vox', 'piano', 'pluck_saw']),
+    'liquid_dnb': dict(bass=['moogbass', 'sinebass', 'reese', 'sf:fingerbass'], chords=['epiano', 'piano', 'wurli', 'polysynth', 'strings'],
+                       pad=['strings', 'glasspad', 'warmpad', 'choir', 'solina'], arp=['vibes', 'bell', 'piano', 'harp', 'celesta'],
+                       lead=['vox', 'flute', 'softlead', 'sax', 'piano', 'guitar']),
+    'neurofunk': dict(bass=['growl', 'reese', 'fmbass', 'wobble'], chords=['stab', 'warmpad', 'bell'], pad=['warmpad', 'glasspad', 'choir'],
+                      arp=['bell', 'chip', 'pluck_saw'], lead=['leadsaw', 'stab', 'hoover', 'bell']),
+    'house_phonk': dict(bass=['fmbass', '808', 'sawbass'], chords=['warmpad', 'organ'], arp=['vox', 'phonkbell'],
+                        lead=['phonkbell', 'phonkbell', 'cowbell']),
+    'memphis_phonk': dict(chords=['piano', 'organ', 'warmpad', 'epiano'], arp=['vox', 'phonkbell', 'bell'],
+                          lead=['phonkbell', 'cowbell', 'bell', 'piano']),
+})
+STYLES['dubstep']['progs'] = {'minor': [[0, 0, 5, 6], [0, 5, 0, 6], [0, 0, 0, 6]], 'phrygian': [[0, 0, 1, 0], [0, 1, 0, 6], [0, 0, 0, 1]]}
+STYLES['brostep']['progs'] = {'minor': [[0, 0, 5, 6], [0, 6, 5, 6]], 'phrygian': [[0, 0, 1, 0], [0, 1, 0, 6]],
+                              'harmonic_minor': [[0, 0, 5, 4], [0, 5, 0, 4]]}
+for _n in ('brostep', 'melodic_dubstep'):
+    STYLES[_n]['form_scale'] = 1.75

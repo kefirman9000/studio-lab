@@ -13,7 +13,7 @@ GENRE_DEVICES = {
     'techno': ['ostinato'], 'minimal': ['ostinato'], 'tech_house': ['ostinato', 'chops'], 'acid_house': ['ostinato'],
     'psytrance': ['ostinato', 'arp'], 'house': ['chops', 'hook'], 'deep_house': ['chops', 'call'], 'ukgarage': ['chops', 'call'],
     'rock': ['riff', 'hook'], 'metal': ['riff'], 'funk': ['riff', 'call'], 'blues': ['riff', 'call'], 'disco': ['hook', 'chops'],
-    'trap': ['bell'], 'phonk': ['bell', 'riff'], 'uk_drill': ['bell'], 'boombap': ['hook', 'bell'], 'lofi': ['hook', 'bell'],
+    'trap': ['bell'], 'phonk': ['bell', 'bell', 'riff'], 'uk_drill': ['bell'], 'boombap': ['hook', 'bell'], 'lofi': ['hook', 'bell'],
     'afrobeats': ['call', 'hook'], 'amapiano': ['call', 'chops'], 'reggaeton': ['call', 'hook'], 'moombahton': ['call', 'chops'],
     'reggae': ['call', 'hook'], 'dnb': ['hook', 'chops'], 'jungle': ['chops', 'hook'], 'dubstep': ['hook', 'riff'],
     'breakcore': ['arp', 'chops'], 'downtempo': ['hook', 'call'], 'vaporwave': ['hook', 'chops'], 'city_pop': ['hook', 'call'],
@@ -27,6 +27,11 @@ GENRE_DEVICES = {
     'afro_house': ['hook', 'call', 'ostinato'], 'melodic_techno': ['ostinato', 'arp', 'hook'], 'kpop': ['hook', 'call', 'chops'],
     'jersey_club': ['chops', 'hook', 'call'], 'baile_funk': ['call', 'chops', 'hook'],
     'waltz': ['hook'], 'celtic_jig': ['hook'], 'soul_ballad': ['hook'],
+    'braindance': ['arp', 'hook', 'chops'], 'hauntology': ['hook', 'hook', 'call'],
+    'brostep': ['hook', 'chops'], 'melodic_dubstep': ['hook', 'hook', 'chops'], 'liquid_dnb': ['hook', 'call'], 'neurofunk': ['hook', 'chops'],
+    'house_phonk': ['bell'], 'memphis_phonk': ['bell', 'riff'],
+    'uplifting_trance': ['hook', 'arp'], 'melodic_house': ['hook', 'call'], 'jam_band': ['hook', 'riff'],
+    'teen_pop': ['hook', 'call', 'chops'], 'soft_rock': ['hook'], 'luxury_rap': ['hook', 'bell'],
 }
 DEVICES = ['hook', 'arp', 'riff', 'ostinato', 'bell', 'call', 'chops']
 
@@ -114,6 +119,8 @@ def bell(key, prog, cb, st, rnd, cx):
     """Trap / drill: a short motif in a narrow minor-pentatonic range, repeated three times, the fourth bar answers."""
     bars = 2 * len(prog) * cb
     pent = [0, 3, 5, 7, 10]
+    if st.get('name') in ('phonk', 'house_phonk', 'memphis_phonk') or (st.get('melody_lang') == 'phonk'):
+        pent = {'phrygian': [0, 1, 3, 7, 8], 'phrygian_dominant': [0, 1, 4, 7, 8]}.get(key.scale_name, [0, 3, 7, 8, 10])   # b2 / b6
     base = 12 * (st['lead_oct'] + 1) + key.root
     rhs = ['x.x.x...x.x.x...', 'x..x..x.x.x.x...', 'x.xx.x..x.xx.x..', 'x...x.x.x...x.x.', 'x.x.x.x.x..x..x.']
     rh = _rh(rnd.choice(rhs))

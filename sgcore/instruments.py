@@ -400,7 +400,7 @@ def i_wobble(m, dur, p, glide=None, mod=None):
     cut = 120 + p.get('cut', 2600) * lfo ** 1.5
     y = svf_sweep(x, cut, q=4.0)
     y = soft(y * 2.5, 2.0) * 0.5
-    sub = sine(f / 2 if f > 70 else f, n) * 0.8
+    sub = sine(f / 2 if f > 70 else f, n) * p.get('sub', 0.8)
     return (y + sub) * env
 
 
@@ -997,3 +997,243 @@ ROLE_CHOICES['arp'] += ['banjo', 'accordion']
 ROLE_CHOICES['lead'] += ['accordion', 'banjo']
 ROLE_CHOICES['pad'] += ['accordion']
 GM_PROGRAM.update({'accordion': 21, 'banjo': 105})
+
+
+# =============================================================================
+#  v1.11: classic synths and missing band instruments
+# =============================================================================
+
+def i_polysynth(m, dur, p, glide=None, mod=None):
+    """Juno-style poly synth: one saw + sub pulse through a warm low-pass, with the famous lush chorus. 80s pop chords,
+    synthwave, city pop, house stabs."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, p.get('a', 0.006), p.get('d', 0.35), p.get('s', 0.7), p.get('r', 0.35))
+    n = len(env)
+    t = np.arange(n) / SR
+    x = saw(f, n, _rng().random()) + 0.55 * square(f * 0.5, n, pw=0.5) + 0.03 * noise(n)
+    fe = np.exp(-t / max(0.05, p.get('fdecay', 0.4)))
+    y = filt_env(x, p.get('cut', 1800) * 0.45, p.get('cut', 1800) * 1.6, fe)
+    y = hp(y, 70)
+    d1 = int(0.0045 * SR + 0.0016 * SR * np.sin(2 * np.pi * 0.5 * t).mean())   # chorus: two delayed, modulated copies
+    lfo = 0.0016 * SR * np.sin(2 * np.pi * 0.513 * t)
+    idx = np.arange(n)
+    L = y + 0.7 * np.interp(idx - (d1 + lfo), idx, y, left=0)
+    Rt = y + 0.7 * np.interp(idx - (d1 - lfo), idx, y, left=0)
+    return np.vstack([L, Rt]) * env * 0.32
+
+
+def i_synthbrass(m, dur, p, glide=None, mod=None):
+    """Prophet / OB-style synth brass: two detuned saws, a filter that blooms open on every note - 80s anthems, synthwave."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, p.get('a', 0.05), 0.4, 0.8, 0.25)
+    n = len(env)
+    t = np.arange(n) / SR
+    x = saw(f * 2 ** (-7 / 1200), n, _rng().random()) + saw(f * 2 ** (7 / 1200), n, _rng().random()) + 0.4 * saw(f * 0.5, n)
+    fe = np.clip(t / 0.08, 0, 1) * (0.55 + 0.45 * np.exp(-t * 3))
+    y = filt_env(x, 300, p.get('cut', 3200), fe)
+    y = eq(hp(y, 90), 'peak', 1200, 1.0, 3)
+    return np.vstack([y, y]) * env * 0.3
+
+
+def i_moogbass(m, dur, p, glide=None, mod=None):
+    """Moog-style bass: fat saw + square through a 24 dB ladder-ish filter with a punchy envelope - funk, disco, synthwave."""
+    f = float(mtof(m))
+    gate = dur * SR
+    env = adsr(gate, 0.002, p.get('d', 0.25), p.get('s', 0.7), 0.06)
+    n = len(env)
+    t = np.arange(n) / SR
+    x = saw(f, n) + 0.8 * square(f * 2 ** (-4 / 1200), n, pw=0.5) + 0.5 * square(f * 0.5, n)
+    fe = np.exp(-t / 0.12)
+    y = filt_env(x, p.get('cut', 500) * 0.6, p.get('cut', 500) * 4.5, fe)
+    y = lp(y, p.get('cut', 500) * 5)
+    y = soft(y * 1.6, 1.4)
+    return hp(y, 30) * env * 0.55
+
+
+def i_glasspad(m, dur, p, glide=None, mod=None):
+    """Glass pad: bell-like FM partials over a soft sine bed, slow shimmer - ambient, future bass, melodic techno."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, p.get('a', 0.6), 0.8, 0.85, p.get('r', 1.4))
+    n = len(env)
+    t = np.arange(n) / SR
+    mod_ = np.sin(2 * np.pi * f * 3.5 * t) * (1.2 + 0.6 * np.sin(2 * np.pi * 0.21 * t))
+    a = np.sin(2 * np.pi * f * t + mod_ * 0.6)
+    b = np.sin(2 * np.pi * f * 2 ** (6 / 1200) * 2 * t + 0.4 * np.sin(2 * np.pi * f * 5 * t))
+    bed = sine(f, n) * 0.6
+    L = 0.5 * a + 0.25 * b + bed
+    Rt = 0.5 * np.roll(a, 300) + 0.25 * np.roll(b, 170) + bed
+    return lp(np.vstack([L, Rt]), p.get('cut', 7000)) * env * 0.22
+
+
+def i_solina(m, dur, p, glide=None, mod=None):
+    """String machine (Solina / ARP): buzzy divide-down strings with a deep ensemble chorus - disco, 70s/80s, synthwave."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, p.get('a', 0.12), 0.3, 0.95, p.get('r', 0.5))
+    n = len(env)
+    t = np.arange(n) / SR
+    x = saw(f, n) + 0.5 * saw(f * 2, n)
+    y = eq(bp(x, 300, 5000), 'peak', 2200, 0.8, 3)
+    voices = []
+    for k, (rate, dep) in enumerate(((0.63, 0.0016), (5.7, 0.00014), (0.91, 0.0011))):   # ~6 cents of ensemble wobble
+        dly = (0.006 + dep * np.sin(2 * np.pi * rate * t + k)) * SR
+        idx = np.arange(n)
+        voices.append(np.interp(idx - dly, idx, y, left=0))
+    L = voices[0] + 0.6 * voices[1]
+    Rt = voices[2] + 0.6 * voices[1]
+    return np.vstack([L, Rt]) * env * 0.22
+
+
+def i_wurli(m, dur, p, glide=None, mod=None):
+    """Wurlitzer electric piano: reedy, a little barky when played hard, with amp tremolo - soul, R&B, lo-fi, indie."""
+    f = float(mtof(m))
+    gate = int(dur * SR)
+    n = gate + int(0.3 * SR)
+    t = np.arange(n) / SR
+    idx = 0.9 * np.exp(-t * 6) + 0.35
+    y = np.sin(2 * np.pi * f * t + idx * np.sin(2 * np.pi * f * 2 * t)) + 0.25 * np.sin(2 * np.pi * f * 3 * t) * np.exp(-t * 8)
+    y = soft(y * 1.4, 1.2)
+    amp = np.exp(-t * p.get('decay', 1.4))
+    amp[gate:] *= np.exp(-np.arange(n - gate) / (0.07 * SR))
+    y *= amp * np.minimum(t / 0.003, 1)
+    trem = 0.22 * np.sin(2 * np.pi * p.get('trem', 5.5) * t)
+    return lp(np.vstack([y * (1 + trem), y * (1 - trem)]), 4500) * 0.55
+
+
+def i_vibes(m, dur, p, glide=None, mod=None):
+    """Vibraphone: metal bars with motor tremolo and a long ring - jazz, bossa, lo-fi, cool lounge."""
+    f = float(mtof(m))
+    n = int((max(dur, 0.5) + 2.0) * SR)
+    t = np.arange(n) / SR
+    y = sine(f, n) * np.exp(-t * 1.1) + 0.3 * sine(f * 4, n) * np.exp(-t * 6) + 0.1 * sine(f * 10, n) * np.exp(-t * 18)
+    y *= np.minimum(t / 0.002, 1)
+    damp = int((dur + 0.6) * SR)                      # the pedal lets go a little after the note
+    if damp < n:
+        y[damp:] *= np.exp(-np.arange(n - damp) / (0.25 * SR))
+    motor = 1 + p.get('motor', 0.28) * np.sin(2 * np.pi * 5.0 * t)
+    return np.vstack([y * motor, y * (2 - motor)]) * 0.45
+
+
+def i_upright(m, dur, p, glide=None, mod=None):
+    """Upright (double) bass: a woody pluck with a soft thump and quick body decay - jazz, swing, bluegrass, folk."""
+    y = i_pluck(m, max(0.3, min(dur, 2.0)), dict(bright=p.get('bright', 900), damp=0.995, r=0.12))
+    n = len(y)
+    t = np.arange(n) / SR
+    f = float(mtof(m))
+    thump = 0.6 * sine(f, n) * np.exp(-t * 7) * np.minimum(t / 0.004, 1)
+    y = y + thump
+    y = eq(eq(y, 'peak', 110, 1.0, 4), 'peak', 700, 1.2, 2.5)
+    return lp(hp(y, 35), 3000) * 1.1
+
+
+def i_mutedgtr(m, dur, p, glide=None, mod=None):
+    """Palm-muted electric guitar: short, percussive 'chk' notes - funk, afrobeats, disco, highlife."""
+    y = i_pluck(m, 0.25, dict(bright=p.get('bright', 4000), damp=0.95, r=0.04))
+    n = len(y)
+    t = np.arange(n) / SR
+    y = eq(hp(y, 180), 'peak', 2500, 1.2, 4) * np.exp(-t * 14)
+    return y * 1.4
+
+
+def i_harmonica(m, dur, p, glide=None, mod=None):
+    """Harmonica: breathy free reed with bends into the note - blues, country, folk."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.03, 0.2, 0.9, 0.12)
+    n = len(env)
+    t = np.arange(n) / SR
+    bend = 2 ** ((-60 * np.exp(-t * 18)) / 1200)                # a small scoop up into the pitch
+    fv = vibrato(f, n, rate=5.2, cents=p.get('vib', 12), delay=0.3) * bend
+    x = square(fv, n, pw=0.3) * 0.6 + saw(fv, n) * 0.4
+    y = bp(x, 400, 4000) + 0.12 * bp(noise(n), 1500, 5000)
+    y = eq(y, 'peak', 1700, 1.4, 5)
+    return y * env * 0.4
+
+
+def i_trumpet(m, dur, p, glide=None, mod=None):
+    """Solo trumpet: bright, brassy and singing, with a lip attack and late vibrato - jazz, salsa, ska, mariachi, western."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.025, 0.15, 0.85, 0.12)
+    n = len(env)
+    t = np.arange(n) / SR
+    fv = vibrato(f, n, rate=5.6, cents=p.get('vib', 14), delay=0.35) * 2 ** ((-30 * np.exp(-t * 30)) / 1200)
+    x = saw(fv, n)
+    bright = np.clip(t / 0.06, 0, 1) * (0.7 + 0.3 * np.exp(-t * 2))
+    y = filt_env(x, 600, p.get('cut', 5200), bright)
+    y = eq(eq(y, 'peak', 1400, 1.0, 5), 'peak', 3000, 1.5, 3)
+    return hp(y, 160) * env * 0.4
+
+
+def i_pedalsteel(m, dur, p, glide=None, mod=None):
+    """Pedal steel guitar: sweet, sustained notes that swell in with the volume pedal and slide up into pitch - country."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, p.get('a', 0.18), 0.5, 0.85, 0.6)
+    n = len(env)
+    t = np.arange(n) / SR
+    slide = 2 ** ((-150 * np.exp(-t * 9)) / 1200)                # the steel bar sliding up into the note
+    fv = vibrato(f, n, rate=4.6, cents=8, delay=0.5) * slide
+    x = saw(fv, n) * 0.5 + 0.5 * sine(fv, n) + 0.25 * sine(fv * 2, n)
+    y = lp(x, p.get('cut', 3000))
+    y = eq(y, 'peak', 900, 1.0, 2)
+    return np.vstack([y, np.roll(y, 220)]) * env * 0.35
+
+
+INSTRUMENTS.update({'polysynth': i_polysynth, 'synthbrass': i_synthbrass, 'moogbass': i_moogbass, 'glasspad': i_glasspad,
+                    'solina': i_solina, 'wurli': i_wurli, 'vibes': i_vibes, 'upright': i_upright, 'mutedgtr': i_mutedgtr,
+                    'harmonica': i_harmonica, 'trumpet': i_trumpet, 'pedalsteel': i_pedalsteel})
+INSTRUMENT_INFO.update({'polysynth': 'Juno-style poly synth', 'synthbrass': 'Synth brass (Prophet / OB)', 'moogbass': 'Moog-style bass',
+                        'glasspad': 'Glass pad', 'solina': 'String machine (Solina)', 'wurli': 'Wurlitzer electric piano',
+                        'vibes': 'Vibraphone', 'upright': 'Upright bass', 'mutedgtr': 'Palm-muted guitar', 'harmonica': 'Harmonica',
+                        'trumpet': 'Trumpet', 'pedalsteel': 'Pedal steel guitar'})
+ROLE_CHOICES['bass'] += ['moogbass', 'upright']
+ROLE_CHOICES['chords'] += ['polysynth', 'synthbrass', 'wurli', 'solina', 'vibes', 'mutedgtr']
+ROLE_CHOICES['pad'] += ['glasspad', 'solina', 'polysynth', 'synthbrass', 'pedalsteel']
+ROLE_CHOICES['arp'] += ['polysynth', 'vibes', 'mutedgtr', 'wurli']
+ROLE_CHOICES['lead'] += ['synthbrass', 'polysynth', 'vibes', 'harmonica', 'trumpet', 'pedalsteel', 'wurli']
+GM_PROGRAM.update({'polysynth': 90, 'synthbrass': 62, 'moogbass': 38, 'glasspad': 92, 'solina': 50, 'wurli': 4, 'vibes': 11,
+                   'upright': 32, 'mutedgtr': 28, 'harmonica': 22, 'trumpet': 56, 'pedalsteel': 26})
+
+
+def i_phonkbell(m, dur, p, glide=None, mod=None):
+    """Phonk cowbell: two 808 cowbells tuned a little apart (the detuned, sour sound) driven into heavy distortion,
+    with a ring that's long enough to carry a melody - the signature of drift phonk."""
+    f = float(mtof(m))
+    n = int(min(dur + 0.5, 1.8) * SR)
+    t = np.arange(n) / SR
+    det = 2 ** (p.get('detune', 22) / 1200)
+    x = (square(f, n) + square(f * 1.48, n, 0.3)) + 0.8 * (square(f * det, n, 0.1) + square(f * 1.48 * det, n, 0.6))
+    y = bp(x, f * 0.85, f * 5) * (0.65 * np.exp(-t * 11) + 0.35 * np.exp(-t * 3.2))
+    y = soft(y * p.get('drive', 4.0), 2.2)                          # crushed and saturated
+    y = eq(lp(y, 7000), 'peak', 1400, 1.0, 3)
+    return np.vstack([y, np.roll(y, 90)]) * fade_out(np.ones(n), 0.03) * 0.42
+
+
+INSTRUMENTS['phonkbell'] = i_phonkbell
+INSTRUMENT_INFO['phonkbell'] = 'Phonk cowbell (detuned, distorted)'
+ROLE_CHOICES['lead'] += ['phonkbell']
+ROLE_CHOICES['arp'] += ['phonkbell']
+GM_PROGRAM['phonkbell'] = 113
+
+
+
+def i_growl(m, dur, p, glide=None, mod=None):
+    """Growl bass: FM-modulated saw through moving vowel formants (yoy / ow / ah) and heavy distortion - the talking,
+    snarling mid-bass of brostep and neurofunk. Movement is synced to the beat (mod = cycle length in beats)."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.004, 0.1, 1.0, 0.04)
+    n = len(env)
+    t = np.arange(n) / SR
+    hz = 1.0 / ((mod or 0.5) * p.get('spb', 0.43))
+    lfo = 0.5 - 0.5 * np.cos(2 * np.pi * hz * t)
+    idx = 1.5 + 5.0 * lfo                                      # FM depth swells with the LFO
+    ph = 2 * np.pi * np.cumsum(np.full(n, f)) / SR
+    x = np.sin(ph + idx * np.sin(ph * 2.0)) + 0.3 * (saw(f * 1.003, n) + saw(f * 0.997, n, 0.4))
+    x = soft(x * 2.2, 1.8)
+    f1 = 300 + 500 * lfo                                       # vowel: 'oo' -> 'ah'
+    f2 = 900 + 900 * lfo
+    y = svf_sweep(x, f1, q=6.0) + 0.8 * svf_sweep(x, f2, q=7.0) + 0.25 * x
+    y = soft(hp(y, 90) * 2.5, 2.2) * 0.45
+    return y * env
+
+INSTRUMENTS['growl'] = i_growl
+INSTRUMENT_INFO['growl'] = 'Growl bass (FM + formant)'
+ROLE_CHOICES['bass'] += ['growl']
+GM_PROGRAM['growl'] = 39
