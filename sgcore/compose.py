@@ -412,7 +412,8 @@ def resolve_style(opts, rnd=None, mood=None):
         t = dict(t)
         t['p'] = dict(t['p'])
         new = opts.instruments.get(t['layer']) if t['layer'] in MELODIC_ROLES else None
-        if new and (new in INSTRUMENTS or new.startswith('user:')) and new != t['inst']:
+        if new and (new in INSTRUMENTS or new.startswith('user:') or new.startswith('vst:')) and new != t['inst']:
+            t['fallback'] = t['inst']
             t['inst'] = new
             t['p'] = {}
             t['db'] = None

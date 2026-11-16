@@ -9,7 +9,7 @@ import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG = os.path.join(ROOT, 'update.json')
-KEEP = {'songs', 'presets', 'update.json', '.git', 'settings.json', '__pycache__', 'user_sounds', 'ratings.json'}
+KEEP = {'songs', 'presets', 'update.json', '.git', 'settings.json', '__pycache__', 'user_sounds', 'ratings.json', 'plugins', 'vst_sounds'}
 
 
 def _config():

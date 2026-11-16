@@ -1,6 +1,7 @@
 """Local web app: a tiny HTTP server (standard library only) + a single-page UI that opens in your browser."""
 import hmac
 import json
+import re
 import mimetypes
 import secrets
 import os
@@ -15,6 +16,8 @@ import uuid
 import webbrowser
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, unquote
+
+import numpy as np
 
 from . import updater, plugins
 from .api import generate, have_ffmpeg
@@ -165,8 +168,28 @@ def submit(items):
 
 
 def user_insts():
-    from . import usersounds
-    return [dict(id='user:' + n, name='My sound: ' + n) for n in usersounds.listing()['inst']]
+    from . import usersounds, vsthost
+    return ([dict(id='user:' + n, name='My sound: ' + n) for n in usersounds.listing()['inst']] +
+            [dict(id='vst:' + v['id'], name='VST: ' + v['name']) for v in vsthost.list_sounds() if v['ok']])
+
+
+def bg_job(fn):
+    """Run a non-render task (install, plugin window, preview) in the background with the same job API."""
+    jid = uuid.uuid4().hex[:10]
+    job = dict(id=jid, status='running', progress=0.0, log=[], results=[], items=[], error=None, current=0)
+    JOBS[jid] = job
+
+    def run():
+        try:
+            res = fn(lambda *a: job['log'].append(' '.join(str(x) for x in a)))
+            job['results'].append(res if isinstance(res, dict) else {'value': res})
+            job['status'] = 'done'
+        except Exception as e:
+            job['status'] = 'error'
+            job['error'] = str(e)
+        job['progress'] = 1.0
+    threading.Thread(target=run, daemon=True).start()
+    return jid
 
 
 def meta():
@@ -205,6 +228,15 @@ def library():
         if len(items) >= 60:
             break
     return items
+
+
+def open_dir(p):
+    if sys.platform.startswith('win'):
+        os.startfile(p)
+    elif sys.platform == 'darwin':
+        subprocess.Popen(['open', p])
+    else:
+        subprocess.Popen(['xdg-open', p])
 
 
 def open_path(p):
@@ -384,7 +416,6 @@ class Handler(BaseHTTPRequestHandler):
     def _post(self, p, body):
         if p.startswith('/api/upload/'):
             from urllib.parse import parse_qs
-            import numpy as np
             q = {k: v[0] for k, v in parse_qs(urlparse(self.path).query).items()}
             try:
                 raw = self._raw()
@@ -418,6 +449,41 @@ class Handler(BaseHTTPRequestHandler):
                 oi = dict(o, seed=base + i if n > 1 else base)
                 items.append(dict(options=oi, outputs=outputs, preview=preview, section=section))
             return self._json({'job': submit(items)})
+        if p == '/api/open' and body.get('path') == 'plugins':
+            from .vsthost import PLUGIN_DIR
+            os.makedirs(PLUGIN_DIR, exist_ok=True)
+            open_dir(PLUGIN_DIR)
+            return self._json({'ok': True})
+        if p == '/api/vst':
+            from . import vsthost
+            return self._json(dict(available=vsthost.available(), plugins=vsthost.find_plugins(), sounds=vsthost.list_sounds(),
+                                   folder=vsthost.PLUGIN_DIR, python=sys.executable))
+        if p == '/api/vst/install':
+            from . import vsthost
+            return self._json({'job': bg_job(lambda log: {'ok': vsthost.install(log)})})
+        if p == '/api/vst/create':
+            from . import vsthost
+            path, name = str(body.get('path', '')), str(body.get('name', 'My sound'))[:60]
+            existing = body.get('existing')
+            return self._json({'job': bg_job(lambda log: vsthost.create_sound(path, name, existing))})
+        if p == '/api/vst/delete':
+            from . import vsthost
+            vsthost.delete_sound(str(body.get('id', '')))
+            return self._json({'ok': True})
+        if p == '/api/vst/preview':
+            from . import vsthost
+            sid = str(body.get('id', ''))
+
+            def job(log):
+                from .dsp import write_wav
+                a = vsthost.preview(sid)
+                d = os.path.join(out_dir(), 'previews')
+                os.makedirs(d, exist_ok=True)
+                fn = os.path.join(d, f'vst_{re.sub(r"[^A-Za-z0-9_-]", "", sid)}_{int(time.time())}.wav')
+                peak = float(np.max(np.abs(a))) or 1.0
+                write_wav(fn, a / max(peak, 1.0))
+                return {'url': '/files/' + os.path.relpath(fn, out_dir()).replace(os.sep, '/')}
+            return self._json({'job': bg_job(job)})
         if p == '/api/open':
             target = body.get('path') or out_dir()
             if not os.path.isabs(target):
@@ -435,6 +501,8 @@ class Handler(BaseHTTPRequestHandler):
             with open(os.path.join(PRESETS, name + '.json'), 'w') as f:
                 json.dump(body.get('options', {}), f, indent=2)
             return self._json({'ok': True})
+        if p == '/api/meta':
+            return self._json(meta())
         if p == '/api/plugins':
             upd = {k: body[k] for k in ('plugins_owned', 'daws', 'os') if k in body}
             save_settings(upd)

@@ -105,6 +105,11 @@ class Renderer:
             buf[0] = fx_texture(self.length)
             buf[1] = fx_texture(self.length)
             return buf
+        if tcfg['inst'].startswith('vst:'):
+            out = self._render_vst(tcfg, evs)
+            if out is not None:
+                return out
+            tcfg = dict(tcfg, inst=tcfg.get('fallback') or 'pluck_saw', p={})
         is_drum = tcfg['inst'] in DRUMS
         p = None if is_drum else self._params(tcfg)
         kick = self.st.get('kick_track', 'kick')
@@ -115,6 +120,27 @@ class Renderer:
         if tcfg.get('drive'):
             buf = (soft(buf * (1 + tcfg['drive'] * 3), 1.5) / (1 + tcfg['drive'])).astype(np.float32)
         return buf
+
+    def _render_vst(self, tcfg, evs):
+        """Play this part through one of your own VST3/AU instruments (falls back to the built-in sound on failure)."""
+        from . import vsthost
+        sid = tcfg['inst'][4:]
+        events = [(self.t_of(e.beat, human=True), max(0.02, e.dur * self.spb), int(e.midi), int(max(1, min(127, e.vel * 110))))
+                  for e in evs if e.midi is not None]
+        try:
+            t0 = time.time()
+            audio = vsthost.render(sid, events, self.length / SR)
+            buf = np.zeros((2, self.length), dtype=np.float32)
+            n = min(self.length, audio.shape[1])
+            buf[:, :n] = audio[:2, :n] if audio.shape[0] >= 2 else np.vstack([audio[0, :n], audio[0, :n]])
+            if np.max(np.abs(buf)) < 1e-6:
+                raise RuntimeError('the plugin produced silence')
+            self.log(f'   {tcfg["name"]}: rendered with your plugin ({time.time() - t0:.1f}s)')
+            return buf
+        except Exception as e:
+            self.log(f'   {tcfg["name"]}: plugin failed ({e}) - using the built-in sound instead')
+            self.vst_failures = getattr(self, 'vst_failures', []) + [f'{tcfg["name"]}: {e}']
+            return None
 
     def kick_times(self):
         kn = self.st.get('kick_track', 'kick')

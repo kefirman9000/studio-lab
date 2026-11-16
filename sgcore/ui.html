@@ -142,6 +142,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
   <div class="logo"><div class="mark"></div>Studio Lab</div>
   <div class="ver" id="ver"></div>
   <div class="sp"></div>
+  <button class="hbtn" id="vstBtn" title="Play parts with your own VST3 / AU instruments (experimental)">🎹 VST</button>
   <button class="hbtn" id="soundsBtn" title="Use your own drum samples and sounds">🎛 My sounds</button>
   <button class="hbtn" id="plugBtn" title="Tell Studio Lab which plugins you have">🔌 My plugins</button>
   <button class="hbtn" id="presetBtn" title="Save or load your favourite settings">★ Presets</button>
@@ -410,6 +411,7 @@ function addResult(r, target){
       <span style="margin-left:auto"></span><button class="rate" data-r="1" title="I like this">👍</button><button class="rate" data-r="-1" title="Not for me">👎</button></div>
     <div class="tl" title="Click a section to edit it"></div><div class="sedbox"></div>
     <div class="dragrow rr"></div>
+    ${r.warnings&&r.warnings.length?`<div class="hint" style="color:#ffb547;margin-top:6px">⚠ ${r.warnings.map(esc).join('<br>⚠ ')}</div>`:''}
     <div class="plugrec"></div>
     <div class="files"></div>`;
   const files=el.querySelector('.files');
@@ -578,6 +580,43 @@ async function soundsModal(data){
     }catch(e){ alert('Could not read that file: '+e.message) } };
   $('#modal').classList.add('on');
 }
+// ------------------------------------------------------------- VST instruments (experimental)
+function pollJob(jid, onDone, onLog){
+  const t=async()=>{ const j=await api('/api/job/'+jid); if(onLog) onLog((j.log||[]).join('\n'));
+    if(j.status==='done'||j.status==='error') onDone(j); else setTimeout(t,700); }; t();
+}
+async function vstModal(){
+  const V=await api('/api/vst',{});
+  $('#modalBox').className='box wide';
+  const plug=V.plugins.map((p,i)=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(p.name)}</span> <span class="tag inst">${p.format.toUpperCase()}</span><div class="m">${esc(p.folder)}</div></div>
+      <div class="row"><input type="text" data-nm="${i}" placeholder="name this sound" style="width:150px"><button class="mini acc" data-cr="${i}" ${V.available?'':'disabled'}>Create sound…</button></div></div>`).join('');
+  const snd=V.sounds.map(s=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(s.name)}</span> <span class="m">${esc(s.plugin)}</span>${s.ok?'':' <span class="tag no">plugin missing</span>'}</div>
+      <div class="row"><button class="mini" data-tst="${esc(s.id)}">▶ Test</button><button class="mini" data-ed="${esc(s.id)}" data-path="${esc(s.path)}" data-name="${esc(s.name)}">✎ Edit</button><button class="mini" data-dl="${esc(s.id)}">✕</button></div></div>`).join('');
+  $('#modalBox').innerHTML=`<h3>VST instruments <span class="tag paid">EXPERIMENTAL</span></h3>
+    <p class="hint">Play any part with your own <b>VST3</b> or <b>Audio Unit</b> (Mac) instruments — e.g. Vital, Surge XT, Spitfire LABS. Create a sound (the plugin's own window opens; pick a preset, then close it),
+     then choose it under <b>Sound</b> as “VST: …”. Each plugin runs in its own process, so if one misbehaves that part simply falls back to the built-in sound. VST2-only plugins (.dll) aren't supported by the plugin engine.</p>
+    ${V.available?'<p><span class="tag ok">VST support installed</span></p>':`<div class="sel"><b>One-time setup:</b> VST support needs the free <i>pedalboard</i> library (by Spotify).<div class="row" style="margin-top:8px"><button class="btn p" id="vInst">Install VST support</button><span class="hint">needs internet · about 30 MB</span></div><pre id="vLog" class="hint" style="max-height:140px;overflow:auto"></pre></div>`}
+    <div class="row" style="margin:10px 0"><button class="mini" id="vFolder">📁 Open my plugins folder</button><button class="mini" id="vRescan">⟳ Rescan</button><span class="hint">Drop .vst3 files there, or install plugins normally - system folders are scanned too.</span></div>
+    <div id="vMsg" class="hint"></div>
+    <h3 style="margin-top:12px">My VST sounds</h3>${snd||'<div class="hint">None yet — create one from a plugin below.</div>'}<div id="vPlay"></div>
+    <h3 style="margin-top:16px">Plugins found (${V.plugins.length})</h3>${plug||'<div class="hint">No VST3/AU plugins found. Install some (see 🔌 My plugins for free ones) or drop them in your plugins folder.</div>'}
+    <div style="text-align:right;margin-top:14px"><button class="btn p" onclick="closeModal()">Done</button></div>`;
+  const refreshMeta=async()=>{META=await api('/api/meta');renderSelected()};
+  if($('#vInst')) $('#vInst').onclick=async()=>{ $('#vInst').disabled=true; $('#vInst').textContent='Installing…'; const {job}=await api('/api/vst/install',{});
+    pollJob(job, async j=>{ $('#vLog').textContent+=(j.results[0]&&j.results[0].ok)?'\nDone! VST support is installed.':'\nInstall failed - see above. You can also run:  python -m pip install pedalboard'; if(j.results[0]&&j.results[0].ok) setTimeout(vstModal,1200); }, l=>$('#vLog').textContent=l); };
+  $('#vFolder').onclick=()=>api('/api/open',{path:'plugins'});
+  $('#vRescan').onclick=()=>vstModal();
+  $$('#modalBox [data-cr]').forEach(b=>b.onclick=async()=>{ const p=V.plugins[+b.dataset.cr]; const nm=($(`[data-nm="${b.dataset.cr}"]`).value||p.name).trim();
+    $('#vMsg').innerHTML='<b>The plugin window is opening on your screen</b> - pick a preset or design a sound, then <b>close the plugin window</b> to save it.';
+    const {job}=await api('/api/vst/create',{path:p.path,name:nm});
+    pollJob(job, async j=>{ const r=j.results[0]||{}; if(r.ok){await refreshMeta(); vstModal();} else $('#vMsg').textContent='Could not use that plugin: '+(r.error||j.error||'unknown error'); }); });
+  $$('#modalBox [data-ed]').forEach(b=>b.onclick=async()=>{ $('#vMsg').innerHTML='<b>Plugin window opening</b> - adjust the sound, then close the window.';
+    const {job}=await api('/api/vst/create',{path:b.dataset.path,name:b.dataset.name,existing:b.dataset.ed}); pollJob(job, j=>{ const r=j.results[0]||{}; $('#vMsg').textContent=r.ok?'Saved.':'Failed: '+(r.error||j.error); }); });
+  $$('#modalBox [data-dl]').forEach(b=>b.onclick=async()=>{ await api('/api/vst/delete',{id:b.dataset.dl}); await refreshMeta(); vstModal(); });
+  $$('#modalBox [data-tst]').forEach(b=>b.onclick=async()=>{ $('#vPlay').innerHTML='<div class="hint">Rendering a test phrase through the plugin…</div>'; const {job}=await api('/api/vst/preview',{id:b.dataset.tst});
+    pollJob(job, j=>{ const r=j.results[0]; $('#vPlay').innerHTML=(j.status==='done'&&r&&r.url)?`<audio controls autoplay src="${r.url}" style="width:100%"></audio>`:`<div class="hint">Plugin failed: ${esc(j.error||'')}</div>`; }); });
+  $('#modal').classList.add('on');
+}
 // ------------------------------------------------------------- taste
 let TASTE=null;
 let PLUG=null;
@@ -669,6 +708,7 @@ async function init(){
   $('#presetBtn').onclick=presetsModal;
   $('#plugBtn').onclick=()=>plugModal();
   $('#soundsBtn').onclick=()=>soundsModal();
+  $('#vstBtn').onclick=()=>vstModal();
   $('#refBtn').onclick=()=>$('#refFile').click();
   $('#refFile').onchange=()=>{const f=$('#refFile').files[0]; if(f) onReference(f)};
   api('/api/taste',{}).then(t=>TASTE=t);

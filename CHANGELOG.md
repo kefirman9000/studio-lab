@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0
+- **🎹 VST instruments (experimental):** play any part with your own VST3 / Audio Unit instruments. One-click setup, then create sounds from the plugin's own window and pick them under *Sound* as "VST: …".
+- Plugins run in a separate process — if one crashes or misbehaves, that part falls back to the built-in sound and the result card shows a warning.
+- Drop `.vst3` files into the `plugins` folder, or just install them normally (system plugin folders are scanned).
+- Waveform projects get the VST-rendered audio in the stems; LMMS projects use the closest built-in patch for those parts.
+- Instrument names on result cards are now friendlier.
+
 ## 1.2.0
 - **Section editor:** click any section on a song's timeline to re-roll it (whole section, or just drums/bass/chords/melody), make a subtle variation, change its length, move, duplicate or remove it, or mute parts inside it. Hear just that section, then render the full song. Everything else stays exactly the same.
 - **Much more variety:** a bigger chord-progression library, separate verse, drop and break progressions, chord colours (7ths, add9, sus, 6ths), varied melody phrasing and occasional key changes. Each song also picks its own instruments, tones, groove patterns, drum kit and arrangement. A new **Variety** slider controls how adventurous this gets.

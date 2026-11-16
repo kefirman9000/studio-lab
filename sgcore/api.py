@@ -31,13 +31,26 @@ def describe(song):
                 duration=f"{int(dur // 60)}:{int(dur % 60):02d}", seconds=round(dur, 1), seed=song['seed'],
                 form=' > '.join(f"{s['name']}({s['bars']})" for s in song['sections']),
                 chords=k.roman(song['prog_main']), chords_alt=k.roman(song['prog_alt']),
-                instruments={t['layer']: t['inst'] for t in song['st']['tracks']
+                instruments={t['layer']: _inst_label(t['inst']) for t in song['st']['tracks']
                              if t['layer'] in ('bass', 'chords', 'pad', 'arp', 'lead')},
                 fusion=song['st'].get('fusion') if song['opts'].blend or song['opts'].blend_parts else None,
                 sections=[dict(index=x['index'], name=x['name'], bar=x['bar'], bars=x['bars'], src=x['src'], copy=x['copy'],
                                layers=x['layers'], edited=x.get('edited', False),
                                start=round(x['bar'] * 4 * 60 / song['bpm'], 2)) for x in song['sections']],
                 mood=song['opts'].mood)
+
+
+def _inst_label(name):
+    if isinstance(name, str) and name.startswith('vst:'):
+        try:
+            from . import vsthost
+            snd = vsthost.get_sound(name[4:])
+            return 'VST: ' + (snd or {}).get('name', name[4:])
+        except Exception:
+            return name
+    if isinstance(name, str) and name.startswith('user:'):
+        return 'my sample: ' + name[5:]
+    return name
 
 
 def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=None, prefs=None, section=None):
@@ -115,6 +128,8 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
         files.pop('wav')
     if not preview and song.get('plugin_recs'):
         info['plugins'] = {k: v['picks'] for k, v in song['plugin_recs'].items()}
+    if getattr(r, 'vst_failures', None):
+        info['warnings'] = r.vst_failures
     info.update(files=files, loudness=round(loud, 1), peak=round(peak, 1), render_seconds=round(time.time() - t0, 1),
                 preview=preview)
     log(f'   done in {time.time() - t0:.0f}s')

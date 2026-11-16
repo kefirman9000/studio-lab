@@ -320,6 +320,8 @@ def write_lmms(path, song):
            '    <trackcontainer width="600" x="5" y="5" maximized="0" height="300" visible="1" type="song" minimized="0">']
     for i, t in enumerate(tracks):
         ch = i + 1
+        if t['inst'].startswith('vst:'):          # LMMS can't load VST3 - use the matching built-in patch
+            t = dict(t, inst=t.get('fallback') or 'pluck_saw')
         ixml, patch = _instrument_xml(t, kit, spb)
         vol = _lmms_vol(t)
         out.append(f'      <track muted="0" type="0" name={quoteattr(t["name"] + " - " + t["inst"])} solo="0">')
