@@ -10,7 +10,7 @@ from . import dsp
 from .dsp import (SR, hp, lp, eq, soft, compressor, limiter, lufs, active_rms_db, make_ir, reverb, pingpong,
                   sweep_region, write_wav_float)
 from .instruments import INSTRUMENTS, DRUMS, fx_riser, fx_impact, fx_vinyl, fx_texture
-from .compose import SECTION_ENERGY
+from .compose import SECTION_ENERGY, GROOVES
 
 ROLE_DB = {'kick': -13, 'snare': -17, 'top': -25, 'bass': -15, 'chords': -21, 'pad': -23, 'arp': -25, 'lead': -19, 'fx': -26}
 CUT_KEYS = ('cut', 'bright')
@@ -29,9 +29,15 @@ class Renderer:
         self.bright = 2 ** (float(self.opts.brightness) * 1.2)
         self.track_gains = {}
 
-    def t_of(self, beat, human=True):
+    def t_of(self, beat, human=True, layer=None):
         st = self.st
         b = beat
+        g = GROOVES.get(st.get('groove')) if layer else None
+        if g and layer in g:                            # genre timing feel (e.g. Dilla-late snares, pushed Afro hats)
+            q16 = beat * 4
+            if abs(q16 - round(q16)) < 1e-6:
+                amt = min(1.5, max(0.0, float(getattr(self.opts, 'humanize', 1.0))))
+                b += g[layer][int(round(q16)) % 16] * 0.25 * amt
         unit = st.get('swing_unit', 16)
         q = beat * (4 if unit == 16 else 2)
         if abs(q - round(q)) < 1e-6 and int(round(q)) % 2 == 1:
@@ -125,7 +131,8 @@ class Renderer:
             if user is not None:
                 sig = user
             else:
-                kitp = self.st.get('kitparams', {}).get(inst, {})
+                kitp = dict(self.st.get('kitparams', {}).get(inst, {}))
+                kitp.update(self.st.get('drum_voice', {}).get(name, {}))     # e.g. high / mid / low toms
                 sig = DRUMS[inst](kitp)
             sig = (sig / (np.max(np.abs(sig)) + 1e-9)).astype(np.float32)
             self.cache[('drum', name)] = sig
@@ -163,7 +170,7 @@ class Renderer:
         p = None if is_drum else self._params(tcfg)
         kick = self.st.get('kick_track', 'kick')
         for ev in evs:
-            s = int(self.t_of(ev.beat, human=(tcfg['name'] != kick)) * SR)
+            s = int(self.t_of(ev.beat, human=(tcfg['name'] != kick), layer=tcfg['layer']) * SR)
             sig = self._drum(tcfg['name'], tcfg['inst']) if is_drum else self._note(tcfg, ev, p)
             self._add(buf, sig * ev.vel, s)
         if tcfg.get('drive'):
@@ -174,7 +181,7 @@ class Renderer:
         """Play this part through one of your own VST3/AU instruments (falls back to the built-in sound on failure)."""
         from . import vsthost
         sid = tcfg['inst'][4:]
-        events = [(self.t_of(e.beat, human=True), max(0.02, e.dur * self.spb), int(e.midi), int(max(1, min(127, e.vel * 110))))
+        events = [(self.t_of(e.beat, human=True, layer=tcfg['layer']), max(0.02, e.dur * self.spb), int(e.midi), int(max(1, min(127, e.vel * 110))))
                   for e in evs if e.midi is not None]
         try:
             t0 = time.time()
@@ -254,6 +261,18 @@ class Renderer:
                 continue
             t0 = time.time()
             buf = self.render_track(tcfg, evs)
+            fxname = (getattr(opts, 'part_fx', None) or {}).get(tcfg['layer'])
+            if fxname and tcfg['layer'] != 'fx' and np.any(buf):
+                try:                                      # your effect plugin on this part (own process)
+                    from . import vsthost
+                    y = vsthost.process([fxname], buf)
+                    n = min(buf.shape[1], y.shape[1])
+                    buf = np.zeros_like(buf)
+                    buf[:, :n] = y[:, :n]
+                    self.log(f'   {name}: through {fxname}')
+                except Exception as e:
+                    self.log(f'   {name}: effect {fxname} failed ({e}) - left dry')
+                    self.vst_failures = getattr(self, 'vst_failures', []) + [f'{name} effect {fxname}: {e}']
             if tcfg['layer'] == 'fx':
                 g = np.zeros(L, dtype=np.float32)
                 for sec in song['sections']:
@@ -314,6 +333,10 @@ class Renderer:
                     self._add(fxbuf, fx_impact().astype(np.float32) * 0.8, s)
                 elif kind == 'riser' and d > 0:
                     self._add(fxbuf, fx_riser(d * self.spb).astype(np.float32) * 0.6, s)
+                elif kind == 'swell' and d > 0:               # reverse cymbal leading into the next section
+                    c = self._drum('crash')[::-1]
+                    n = min(len(c), int(d * self.spb * SR))
+                    self._add(fxbuf, c[-n:] * np.linspace(0.2, 0.55, n, dtype=np.float32), s + int(d * self.spb * SR) - n)
         if np.any(fxbuf):
             cur = active_rms_db(fxbuf)
             fxbuf *= np.float32(10 ** ((ROLE_DB['fx'] + 3 - cur) / 20))

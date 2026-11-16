@@ -29,6 +29,11 @@ def test_pick_asset():
     assert vstpacks.pick_asset(surge, rels, 'windows')['name'] == 'surge-xt-win64-1.3.4-pluginsonly.zip'   # stable beats nightly
     assert vstpacks.pick_asset(surge, rels, 'mac')['name'].endswith('.dmg')
     assert vstpacks.pick_asset(surge, rels, 'linux')['name'].endswith('.tar.gz')
+    dg = [dict(tag_name='v1', prerelease=False, draft=False, assets=[
+        dict(name='jc303-win64-plugins.zip', browser_download_url='https://github.com/a', size=1, digest='sha256:' + 'ab' * 32),
+        dict(name='jc303-win64-plugins.zip.sha256', browser_download_url='https://github.com/b', size=1)])]
+    pa = vstpacks.pick_asset(vstpacks.BY_ID['jc303'], dg, 'windows')
+    assert pa['sha256'] == 'ab' * 32 and pa['sha256_url'] == 'https://github.com/b'
     only_exe = [rel('1.3.4', ['surge-xt-win64-1.3.4-setup.exe'])]
     assert vstpacks.pick_asset(surge, only_exe, 'windows') is None              # installers are never picked
     jc = [rel('v0.12.3', ['jc303-win64-plugins.zip', 'jc303-macos-universal-plugins.zip', 'jc303-linux64-plugins.zip'])]
@@ -109,8 +114,18 @@ def test_install_flow(tmp):
     old = (vstpacks.PLUGIN_DIR, vstpacks.RECORD, vstpacks.resolve, vstpacks.download)
     try:
         vstpacks.PLUGIN_DIR, vstpacks.RECORD = plug, os.path.join(plug, '.packs.json')
-        vstpacks.resolve = lambda pid, osname=None: dict(url='https://github.com/x', name='jc303-win64-plugins.zip', size=1, version='v9')
+        good = vstpacks.sha256_of(src)
         vstpacks.download = lambda url, dst, progress=None, expected=0: shutil.copy(src, dst)
+        vstpacks.resolve = lambda pid, osname=None: dict(url='https://github.com/x', name='jc303-win64-plugins.zip', size=1, version='v9',
+                                                         sha256='0' * 64)
+        try:
+            vstpacks.install('jc303', log=lambda *a: None)
+            raise AssertionError('a file with the wrong checksum was installed')
+        except RuntimeError as e:
+            assert 'checksum' in str(e)
+        assert not os.path.exists(os.path.join(plug, 'JC303.vst3'))
+        vstpacks.resolve = lambda pid, osname=None: dict(url='https://github.com/x', name='jc303-win64-plugins.zip', size=1, version='v9',
+                                                         sha256=good)
         r = vstpacks.install('jc303', log=lambda *a: None)
         assert not os.path.exists(os.path.join(plug, 'JC303.clap'))
         assert r['ok'] and os.path.isfile(os.path.join(plug, 'JC303.vst3')), r

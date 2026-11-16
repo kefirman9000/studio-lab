@@ -114,6 +114,11 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 .rtabs{display:flex;gap:4px;margin-bottom:12px}
 .hint{font-size:11.5px;color:var(--muted)}
 .modal .box.wide{width:min(860px,95vw)}
+.pp{display:inline-flex;align-items:center;gap:1px;margin-right:6px;font-size:12px;color:var(--muted,#9aa)}
+.ico{background:none;border:0;cursor:pointer;opacity:.45;font-size:12px;padding:0 2px}.ico.on,.ico:hover{opacity:1}.ico.on[data-lv]{color:#ff6b8a}
+.res.ab{outline:2px solid #7c6cff}.abbar,.locks{gap:6px;align-items:center;margin-bottom:8px}.abbar .btn.p{outline:2px solid #fff3}
+.locks a{color:var(--muted,#9aa);text-decoration:none}
+.fxsel{margin-top:4px;font-size:12px;opacity:.85}
 .levels{display:grid;grid-template-columns:repeat(6,1fr);gap:6px 12px}.levels .lv{font-size:12px;color:var(--mut,#9aa)}.levels .lv b{float:right;font-weight:600}.levels input{width:100%}
 .pl{display:grid;grid-template-columns:22px 1fr auto;gap:4px 10px;align-items:center;padding:8px 6px;border-bottom:1px solid var(--line)}
 .pl:hover{background:var(--panel2)}
@@ -174,13 +179,13 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f"><label>Tempo <span class="auto"><input type="checkbox" id="bpmAuto" checked>auto</span></label>
         <div class="row"><input type="range" id="bpm" min="55" max="200" value="120" disabled><b id="bpmV" style="min-width:34px;font-family:var(--mono);font-size:12px">auto</b></div></div>
       <div class="f"><label>Seed <span class="hint">same seed = same song</span></label>
-        <div class="row"><input type="number" id="seed" min="1" value="1"><button class="ibtn" id="dice" title="Random seed">🎲</button></div></div>
+        <div class="row"><input type="number" id="seed" min="1" value="1"><button class="ibtn" id="dice" title="Random seed">🎲</button><label class="auto" title="Keep this seed: pressing Preview again re-renders the same song (handy while you tweak settings)"><input type="checkbox" id="seedLock">🔒</label></div></div>
       <div class="f"><label>Key</label><select id="key"></select></div>
       <div class="f"><label>Scale</label><select id="scale"></select></div>
       <div class="f"><label>Length</label><div class="seg" id="length"></div></div>
       <div class="f"><label>Structure</label><div class="seg" id="structure"></div></div>
       <div class="f wide"><label>Reference track <span class="hint">match tempo, key, loudness &amp; brightness of a song you like</span></label>
-        <div class="row"><button class="ibtn" id="refBtn">🎯 Match a reference…</button><input type="file" id="refFile" accept="audio/*" hidden><span class="hint" id="refRes"></span></div></div>
+        <div class="row"><button class="ibtn" id="refBtn" title="An audio file, a MIDI file, MusicXML (MuseScore, Sibelius, Dorico...) or Studio Lab settings">🎯 Match a reference…</button><input type="file" id="refFile" accept="audio/*,.mid,.midi,.kar,.musicxml,.xml,.mxl,.json" hidden><span class="hint" id="refRes"></span></div></div>
       <div class="f wide"><label>Chord progression <span class="hint">optional • e.g. i-VI-III-VII or 1-5-6-4</span></label><input type="text" id="prog" placeholder="auto"></div>
     </div></details>
 
@@ -190,6 +195,10 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f"><label>Swing <span class="auto"><input type="checkbox" id="swingAuto" checked>style</span></label><input type="range" id="swing" min="50" max="75" value="55" disabled></div>
       <div class="f"><label>Humanize <b id="humanizeV"></b></label><input type="range" id="humanize" min="0" max="200" value="100"></div>
       <div class="f wide"><label>Variety <span class="hint">how much each song re-imagines its style: instruments, tones, grooves, arrangement</span><b id="varietyV"></b></label><input type="range" id="variety" min="0" max="100" value="55"></div>
+      <div class="f"><label>Groove feel <span class="hint">timing of each part</span></label><select id="groove"><option value="">Genre feel</option><option value="straight">Straight (on the grid)</option><option value="dilla">Lazy hip-hop (J Dilla)</option><option value="laidback">Laid back (reggae)</option><option value="afro">Afro swing</option><option value="dembow">Dembow push</option><option value="jazz">Jazz (ride on top)</option><option value="house">House (late hats)</option><option value="funk">Funk (pushed 16ths)</option></select></div>
+      <div class="f"><label>Bass rhythm</label><select id="bassRhythm"><option value="">Style's bassline</option><option value="kick">Follow the kick drum</option></select></div>
+      <div class="f"><label>Ending</label><select id="ending"><option value="auto">Genre default</option><option value="hit">Final chord + crash</option><option value="fade">Fade out</option></select></div>
+      <div class="f"><label>Vocal guide <span class="hint">a singable melody - always in MIDI exports</span></label><label class="auto" style="margin-top:6px"><input type="checkbox" id="vocalGuide"> hear it in the song</label></div>
     </div></details>
 
     <details class="card" open><summary>Sound</summary><div class="body" id="soundBody">
@@ -219,6 +228,8 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
     </div></details>
 
     <div class="bar">
+      <div class="locks rr" id="locks" style="display:none"></div>
+      <div class="abbar rr" id="abBar" style="display:none"></div>
       <div class="actions">
         <button class="btn p" id="prevBtn">▶ Preview</button>
         <button class="btn s" id="varBtn" title="Four previews with different seeds">⧉ 4 Variations</button>
@@ -245,10 +256,10 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const LEVELS=[['drums','Drums',['kick','snare','top']],['bass','Bass',['bass']],['chords','Chords',['chords']],['pad','Pad',['pad']],['arp','Arp',['arp']],['lead','Lead',['lead']]];
-let META=null, state={style:'house', blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
+let META=null, state={style:'house', part_fx:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
   muted:[], instruments:{}, blend_parts:{}, outputs:['mp3','midi','lmms','waveform']};
 const LAYERS=[['kick','Kick'],['snare','Snare/Clap'],['top','Hats & Perc'],['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead'],['fx','FX']];
-const OUTS=[['mp3','MP3'],['wav','WAV'],['midi','MIDI'],['stems','Stems'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack']];
+const OUTS=[['mp3','MP3'],['wav','WAV'],['midi','MIDI'],['stems','Stems'],['daw','DAW pack (Ableton, FL, Logic, Reaper)'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack']];
 const ROLES=[['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead']];
 let audio=new Audio(), playingId=null;
 
@@ -321,8 +332,11 @@ function renderSelected(){
     const opts=Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${state.instruments[r]===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('');
     const dn=defs[r]?(META.roles[r].find(i=>i.id===defs[r])||{name:defs[r]}).name:'none';
     const dl=state.blend.length?'Auto (from the fused styles)':`Style default (${dn})`;
-    w.innerHTML=`<label>${label}</label><select><option value="">${dl}</option>${opts}</select>`;
+    const fxs=(META.effects||[]);
+    w.innerHTML=`<label>${label}</label><select><option value="">${dl}</option>${opts}</select>`+
+      (fxs.length?`<select class="fxsel" title="Run this part through one of your effect plugins"><option value="">no effect plugin</option>${fxs.map(f=>`<option ${state.part_fx[r]===f?'selected':''}>${esc(f)}</option>`).join('')}</select>`:'');
     w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else delete state.instruments[r]; };
+    if(w.querySelector('.fxsel')) w.querySelector('.fxsel').onchange=e=>{ if(e.target.value) state.part_fx[r]=e.target.value; else delete state.part_fx[r]; };
     $('#soundBody').appendChild(w);
   });
 }
@@ -358,7 +372,13 @@ function options(){
   if(!$('#loudAuto').checked) o.loudness=+$('#loud').value;
   if($('#kit').value) o.kit=$('#kit').value;
   if($('#userDrums').checked) o.user_drums=true;
+  if(Object.keys(state.part_fx).length) o.part_fx=Object.assign({},state.part_fx);
+  if(Object.keys(LOCKS).length) o.part_seeds=Object.fromEntries(Object.entries(LOCKS).map(([p,l])=>[p,l.seed]));
   if($('#melStyle').value) o.melody_style=$('#melStyle').value;
+  if($('#groove').value) o.groove=$('#groove').value;
+  if($('#bassRhythm').value) o.bass_rhythm=$('#bassRhythm').value;
+  if($('#ending').value!=='auto') o.ending=$('#ending').value;
+  if($('#vocalGuide').checked) o.vocal_guide=true;
   if($('#voicing').value) o.voicing=$('#voicing').value;
   if($('#chordColor').value) o.chord_color=$('#chordColor').value;
   const lv={}; LEVELS.forEach(([k,n,layers])=>{ const v=+$('#lv_'+k).value; if(v) layers.forEach(l=>lv[l]=v); }); if(Object.keys(lv).length) o.part_levels=lv;
@@ -366,6 +386,7 @@ function options(){
 }
 function applyOptions(o){
   state.style=o.style; state.blend=o.blend||[]; state.blend_parts=o.blend_parts||{}; state.mood=o.mood||null;
+  state.part_fx=Object.assign({},o.part_fx||{});
   state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
   $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
   $('#brightness').value=(o.brightness||0)*100; $('#reverb').value=(o.reverb??1)*100; $('#delay').value=(o.delay??1)*100; $('#width').value=(o.width??1)*100;
@@ -374,6 +395,7 @@ function applyOptions(o){
   $('#swingAuto').checked=o.swing==null; if(o.swing!=null)$('#swing').value=o.swing*100;
   $('#scAuto').checked=o.sidechain==null; if(o.sidechain!=null)$('#sidechain').value=o.sidechain*100;
   $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#userDrums').checked=!!o.user_drums;
+  $('#groove').value=o.groove||''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#vocalGuide').checked=!!o.vocal_guide;
   $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';
   LEVELS.forEach(([k,n,layers])=>{ $('#lv_'+k).value=(o.part_levels||{})[layers[0]]||0; });
   const cat=Object.entries(META.categories).find(([c,l])=>l.some(s=>s.id===o.style)); if(cat) state.cat=cat[0];
@@ -413,7 +435,7 @@ function setBusy(b){['#prevBtn','#varBtn','#fullBtn','#surpriseBtn'].forEach(s=>
 
 function addResult(r, target){
   $('#emptyS')&&($('#emptyS').style.display='none');
-  const el=document.createElement('div');el.className='res new';
+  const el=document.createElement('div');el.className='res new'; el.dataset.rid=r.id;
   const url=r.urls.mp3||r.urls.wav;
   const title=styleName(r.style)+(r.preview?'':' — full song');
   const inst=Object.entries(r.instruments||{}).map(([k,v])=>`${k}: <span>${v}</span>`).join(' · ');
@@ -423,6 +445,8 @@ function addResult(r, target){
     <canvas class="wave"></canvas>
     <div class="info">Chords <span>${r.chords}</span> · alt <span>${r.chords_alt}</span><br>${inst}${fusion?'<br>Fusion '+fusion:''}</div>
     <div class="rr"><span class="lbl">Re-roll</span>${['drums','bass','chords','melody','harmony'].map(p=>`<button class="mini" data-p="${p}">${p}</button>`).join('')}</div>
+    <div class="rr"><span class="lbl" title="🔒 keep this part in your next previews · ♥ you like this part (Surprise me learns from it)">Parts</span>${PARTSEED.map(([p])=>`<span class="pp">${p}<button class="ico" data-lk="${p}" title="Keep this ${p} part in new previews">🔒</button><button class="ico" data-lv="${p}" title="I like this ${p} part">♥</button></span>`).join('')}
+      <span style="margin-left:auto"></span><button class="mini" data-a="ab" title="Compare two results back to back at matched loudness">A/B</button></div>
     <div class="rr"><button class="mini acc" data-a="full">⬇ Full song from this</button><button class="mini" data-a="use">Use settings</button><button class="mini" data-a="save">★ Save preset</button>
       <span style="margin-left:auto"></span><button class="rate" data-r="1" title="I like this">👍</button><button class="rate" data-r="-1" title="Not for me">👎</button></div>
     <div class="tl" title="Click a section to edit it"></div><div class="sedbox"></div>
@@ -456,11 +480,48 @@ function addResult(r, target){
   cv.onclick=e=>{ if(playingId!==r.id) togglePlay(r.id,url,btn,cv); const f=e.offsetX/cv.clientWidth; const seek=()=>{audio.currentTime=f*audio.duration}; audio.readyState>0?seek():audio.addEventListener('loadedmetadata',seek,{once:true}); };
   drawWave(cv,url);
   el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ const o=JSON.parse(JSON.stringify(r.options)); o.part_seeds=Object.assign({},o.part_seeds||{}); o.part_seeds[b.dataset.p]=Math.floor(Math.random()*1e6); run(true,1,o); });
+  const partSeed=p=>{ const k=Object.fromEntries(PARTSEED)[p]; const ps=(r.options&&r.options.part_seeds)||{}; return ps[p]!=null?ps[p]:(r.seed*1009+k); };
+  el.querySelectorAll('[data-lk]').forEach(b=>b.onclick=()=>{ const p=b.dataset.lk;
+    if(LOCKS[p]&&LOCKS[p].from===r.id){ delete LOCKS[p]; } else { LOCKS[p]={seed:partSeed(p),from:r.id,style:r.style}; if(p==='melody'&&!LOCKS.harmony) LOCKS.harmony={seed:partSeed('harmony'),from:r.id,style:r.style,auto:true}; }
+    renderLocks(); });
+  el.querySelectorAll('[data-lv]').forEach(b=>b.onclick=async()=>{ b.classList.toggle('on'); const p=b.dataset.lv; const role=p==='melody'?'lead':p;
+    TASTE=await api('/api/rate',{options:r.options,rating:1,part:p,part_seed:partSeed(p),inst:(r.instruments||{})[role]});
+    $('#status').textContent=`Noted - you like this ${p} part.`; });
+  el.querySelector('[data-a=ab]').onclick=()=>abPick(r, el);
   el.querySelector('[data-a=full]').onclick=()=>run(false,1,r.options);
   el.querySelector('[data-a=use]').onclick=()=>applyOptions(r.options);
   el.querySelector('[data-a=save]').onclick=()=>savePreset(r.options);
   (target||$('#session')).insertBefore(el,(target||$('#session')).querySelector('.res'));
   if(!target && r.preview) togglePlay(r.id,url,btn,cv);
+}
+const PARTSEED=[['harmony',1],['melody',2],['drums',3],['bass',4],['chords',5]];
+const LOCKS={};
+function renderLocks(){
+  const box=$('#locks'); const k=Object.keys(LOCKS);
+  box.style.display=k.length?'':'none';
+  box.innerHTML='<span class="lbl">Keeping</span>'+k.map(p=>`<span class="chip on">🔒 ${p}${LOCKS[p].auto?' <span class="hint">(for the melody)</span>':''} <a href="#" data-ul="${p}">✕</a></span>`).join('')+
+    ' <span class="hint">in new previews - works best with the same style</span> <a href="#" data-ul="*">clear</a>';
+  box.querySelectorAll('[data-ul]').forEach(a=>a.onclick=e=>{ e.preventDefault(); if(a.dataset.ul==='*') Object.keys(LOCKS).forEach(x=>delete LOCKS[x]); else delete LOCKS[a.dataset.ul]; renderLocks(); });
+  $$('.res [data-lk]').forEach(b=>{ const l=LOCKS[b.dataset.lk]; b.classList.toggle('on', !!l && l.from===b.closest('.res').dataset.rid); });
+}
+let AB=[];
+function abPick(r, el){
+  if(AB.find(x=>x.r.id===r.id)){ AB=AB.filter(x=>x.r.id!==r.id); } else { AB.push({r,el}); if(AB.length>2) AB.shift(); }
+  $$('.res').forEach(x=>x.classList.toggle('ab', !!AB.find(a=>a.el===x)));
+  const bar=$('#abBar');
+  if(AB.length<2){ bar.style.display=AB.length?'':'none'; bar.innerHTML=AB.length?'<span class="hint">A/B: pick one more result to compare</span>':''; return; }
+  const name=x=>`${esc(styleName(x.r.style))} · seed ${x.r.seed}`;
+  bar.style.display='';
+  bar.innerHTML=`<b>A/B</b><button class="btn s" data-ab="0">A · ${name(AB[0])}</button><button class="btn s" data-ab="1">B · ${name(AB[1])}</button><span class="hint">loudness matched · keeps your place</span><button class="mini" data-ab="x">✕</button>`;
+  const lo=Math.min(...AB.map(x=>x.r.loudness??-10));
+  bar.querySelectorAll('[data-ab]').forEach(b=>b.onclick=()=>{
+    if(b.dataset.ab==='x'){ AB=[]; $$('.res').forEach(x=>x.classList.remove('ab')); bar.style.display='none'; audio.volume=1; return; }
+    const x=AB[+b.dataset.ab], url=x.r.urls.mp3||x.r.urls.wav, t=(playingId&&!audio.paused)?audio.currentTime:0;
+    bar.querySelectorAll('[data-ab]').forEach(y=>y.classList.toggle('p', y===b));
+    audio.volume=Math.min(1, Math.pow(10,(lo-(x.r.loudness??lo))/20));
+    togglePlay(x.r.id, url, x.el.querySelector('.play'), x.el.querySelector('canvas'));
+    const seek=()=>{ try{ audio.currentTime=Math.min(t, (audio.duration||t)-0.1); }catch(e){} }; audio.readyState>0?seek():audio.addEventListener('loadedmetadata',seek,{once:true});
+  });
 }
 function togglePlay(id,url,btn,cv){
   if(playingId===id && !audio.paused){audio.pause();btn.textContent='▶';return}
@@ -561,14 +622,38 @@ async function decodeFile(file, rate){
 }
 async function onReference(file){
   $('#refRes').textContent='Analyzing '+file.name+'…';
-  try{ const pcm=await decodeFile(file,22050); const a=await upload('/api/upload/reference?sr=22050',new Blob([pcm.buffer]));
+  const ext=(file.name.split('.').pop()||'').toLowerCase();
+  try{
+    let a;
+    if(['mid','midi','kar','musicxml','xml','mxl','json'].includes(ext)){
+      a=await upload('/api/upload/reffile?name='+encodeURIComponent(file.name), new Blob([await file.arrayBuffer()]));
+    } else {
+      const pcm=await decodeFile(file,22050); a=await upload('/api/upload/reference?sr=22050',new Blob([pcm.buffer]));
+    }
     if(a.error){$('#refRes').textContent=a.error;return}
-    const keyName=a.key; $('#refRes').innerHTML=`<b>${a.bpm} BPM</b> <button class="mini" id="refHalf">÷2</button><button class="mini" id="refDbl">×2</button> · key <b>${keyName}</b> · ${a.loudness} LUFS · brightness ${a.brightness>0?'+':''}${a.brightness} <button class="mini acc" id="refApply">Apply</button>`;
-    $('#refHalf').onclick=()=>{a.bpm=Math.round(a.bpm/2);onRefShow(a)}; $('#refDbl').onclick=()=>{a.bpm=Math.min(200,a.bpm*2);onRefShow(a)};
-    $('#refApply').onclick=()=>{ $('#bpmAuto').checked=false; $('#bpm').value=a.bpm; $('#key').value=a.key; $('#loudAuto').checked=false; $('#loud').value=a.loudness;
-      $('#brightness').value=Math.round(a.brightness*100); $('#energy').value=Math.round(a.energy*100); syncAutos(); $$('input[type=range]').forEach(e=>e.oninput&&e.oninput()); $('#status').textContent='Reference applied — press Preview.'; };
+    if(a.source==='settings'){ $('#refRes').innerHTML=`Studio Lab settings: <b>${esc(styleName(a.options.style))}</b> <button class="mini acc" id="refApply">Load</button>`;
+      $('#refApply').onclick=()=>{ applyOptions(a.options); $('#status').textContent='Settings loaded - press Preview.'; }; return; }
+    const show=()=>{ const bits=[`<b>${a.bpm} BPM</b> <button class="mini" id="refHalf">÷2</button><button class="mini" id="refDbl">×2</button>`, `key <b>${esc(a.key)}</b>${a.scale&&!['major','minor'].includes(a.scale)?' '+esc(a.scale):''}`];
+      if(a.progression) bits.push(`chords <b>${esc(a.progression)}</b>`);
+      if(a.swing) bits.push(`swing <b>${Math.round(a.swing*100)}%</b>`);
+      if(a.timesig&&a.timesig!=='4/4') bits.push(`<span class="hint">${esc(a.timesig)} (played in 4/4)</span>`);
+      if(a.loudness!=null) bits.push(`${a.loudness} LUFS`);
+      if(a.brightness!=null) bits.push(`brightness ${a.brightness>0?'+':''}${a.brightness}`);
+      $('#refRes').innerHTML=bits.join(' · ')+' <button class="mini acc" id="refApply">Apply</button>';
+      $('#refHalf').onclick=()=>{a.bpm=Math.max(40,Math.round(a.bpm/2));show()}; $('#refDbl').onclick=()=>{a.bpm=Math.min(200,a.bpm*2);show()};
+      $('#refApply').onclick=()=>{ $('#bpmAuto').checked=false; $('#bpm').value=a.bpm; $('#key').value=a.key;
+        if(a.scale && [...$('#scale').options].some(o=>o.value===a.scale)) $('#scale').value=a.scale;
+        if(a.progression) $('#prog').value=a.progression;
+        if(a.swing){ $('#swingAuto').checked=false; $('#swing').value=Math.round(a.swing*100); }
+        if(a.loudness!=null){ $('#loudAuto').checked=false; $('#loud').value=a.loudness; }
+        if(a.brightness!=null) $('#brightness').value=Math.round(a.brightness*100);
+        if(a.energy!=null) $('#energy').value=Math.round(a.energy*100);
+        if(a.complexity!=null) $('#complexity').value=Math.round(a.complexity*100);
+        syncAutos(); $$('input[type=range]').forEach(e=>e.oninput&&e.oninput());
+        $('#status').textContent='Reference applied'+(a.progression?' (including its chord progression)':'')+' - press Preview.'; };
+    };
+    show();
   }catch(e){ $('#refRes').textContent='Could not read that file ('+e.message+')'; }
-  function onRefShow(a){ $('#refRes').querySelector('b').textContent=a.bpm+' BPM'; }
 }
 // ------------------------------------------------------------- my sounds
 async function soundsModal(data){
@@ -768,9 +853,14 @@ async function init(){
   $('#bpm').oninput=syncAutos; ['bpmAuto','swingAuto','scAuto','loudAuto'].forEach(a=>$('#'+a).onchange=syncAutos);
   $('#search').oninput=renderStyles;
   $('#dice').onclick=()=>$('#seed').value=Math.floor(Math.random()*999999)+1;
-  $('#prevBtn').onclick=()=>run(true,1);
-  $('#varBtn').onclick=()=>run(true,4);
-  $('#fullBtn').onclick=()=>run(false,1);
+  // pressing a generate button again makes a new song; Full song right after a preview renders that preview's song
+  let lastRun=null;
+  const freshSeed=(preview)=>{ const cur=+$('#seed').value||1;
+    if(!$('#seedLock').checked && lastRun && lastRun.seed===cur && (preview || !lastRun.preview)) $('#seed').value=Math.floor(Math.random()*999999)+1;
+    lastRun={seed:+$('#seed').value||1, preview}; };
+  $('#prevBtn').onclick=()=>{ freshSeed(true); run(true,1); };
+  $('#varBtn').onclick=()=>{ freshSeed(true); run(true,4); if(!$('#seedLock').checked) lastRun.seed=(+$('#seed').value||1); };
+  $('#fullBtn').onclick=()=>{ freshSeed(false); run(false,1); };
   $('#surpriseBtn').onclick=()=>{
     const all=Object.values(META.categories).flat().map(s=>s.id), pick=a=>a[Math.floor(Math.random()*a.length)];
     const wpick=(a,w)=>{const ws=a.map(x=>Math.max(0.2,1+(w&&w[x]||0)));let t=Math.random()*ws.reduce((p,c)=>p+c,0);for(let i=0;i<a.length;i++){t-=ws[i];if(t<=0)return a[i]}return a[a.length-1]};
@@ -780,7 +870,12 @@ async function init(){
     $('#energy').value=Math.max(5,Math.min(95,te+(Math.random()-.5)*40)); $('#complexity').value=Math.max(5,Math.min(95,tc+(Math.random()-.5)*40));
     $('#seed').value=Math.floor(Math.random()*999999)+1;
     const cat=Object.entries(META.categories).find(([c,l])=>l.some(s=>s.id===state.style)); state.cat=cat[0];
-    renderTabs(); renderMoods(); refresh(); $$('input[type=range]').forEach(e=>e.oninput&&e.oninput()); run(true,1);
+    const il=(TASTE&&TASTE.inst_likes)||{};                          // instruments you liked, per part
+    Object.entries(il).forEach(([role,w])=>{ const ok=Object.keys(w).filter(i=>(META.roles[role]||[]).some(x=>x.id===i)); if(ok.length&&Math.random()<.35) state.instruments[role]=wpick(ok,w); });
+    renderTabs(); renderMoods(); refresh(); $$('input[type=range]').forEach(e=>e.oninput&&e.oninput());
+    const o=options(); const pl=((TASTE&&TASTE.part_likes)||{})[state.style]||{};   // a part you loved in this style
+    Object.entries(pl).forEach(([p,seeds])=>{ const sd=seeds.filter(x=>x!=null); if(sd.length&&Math.random()<.5){ o.part_seeds=Object.assign({},o.part_seeds||{}); o.part_seeds[p]=pick(sd); } });
+    run(true,1,o);
   };
   $('#folderBtn').onclick=()=>api('/api/open',{});
   $('#presetBtn').onclick=presetsModal;
@@ -788,6 +883,12 @@ async function init(){
   $('#soundsBtn').onclick=()=>soundsModal();
   $('#vstBtn').onclick=()=>vstModal();
   $('#rigBtn').onclick=()=>rigModal();
+  (function watchPlugins(){ let seen=false;
+    const t=async()=>{ let st; try{ st=await api('/api/vststatus',{}); }catch(e){ return; }
+      if(st.running){ seen=true; if(!busy) $('#status').textContent=`Checking your plugins ${st.done+1}/${st.total}: ${st.current}…`; setTimeout(t,1500); }
+      else if(seen){ META=await api('/api/meta'); renderSelected(); if(!busy) $('#status').textContent='Plugins checked - your instruments and effects are in the Sound menus.'; }
+      else if(Date.now()-T0<20000) setTimeout(t,2500); };
+    const T0=Date.now(); setTimeout(t,1200); })();
 
   $('#libBtn').onclick=()=>libModal();
   api('/api/soundlib',{}).then(r=>{ if(r.installed) $('#libBtn').textContent='🎻 Real instruments ✓'; });

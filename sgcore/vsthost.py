@@ -105,16 +105,107 @@ def instrument_names():
                    and pr[p['path']].get('sig') == _sig(p['path']) and p['path'] not in broken()})
 
 
+PROBE_STATUS = {'running': False, 'done': 0, 'total': 0, 'current': ''}
+
+
+def effect_names():
+    """Installed plugins checked to be effects (reverbs, delays, EQs ...), for the per-part FX menus."""
+    pr = _probes()
+    bad = broken()
+    return sorted({p['name'] for p in find_plugins() if pr.get(p['path'], {}).get('ok') and not pr[p['path']].get('inst')
+                   and pr[p['path']].get('sig') == _sig(p['path']) and p['path'] not in bad})
+
+
+def path_of(name):
+    bad = broken()
+    hits = [p['path'] for p in find_plugins() if p['name'] == name and p['path'] not in bad]
+    hits.sort(key=lambda x: (not x.startswith(PLUGIN_DIR), len(x)))
+    return hits[0] if hits else None
+
+
+def process(names, audio, sr=44100, timeout=600):
+    """Run rendered audio (2, n) through effect plugins, in their own process. Raises RuntimeError on failure."""
+    paths = [path_of(n) for n in names]
+    if not all(paths):
+        raise RuntimeError('effect plugin not found: ' + ', '.join(n for n, p in zip(names, paths) if not p))
+    d = tempfile.mkdtemp(prefix='sl_fx_')
+    try:
+        np.save(os.path.join(d, 'in.npy'), audio.astype(np.float32))
+        res, _ = _run(dict(mode='process', paths=paths, sr=sr, **{'in': os.path.join(d, 'in.npy')}, out=os.path.join(d, 'out.npy')),
+                      timeout=timeout)
+        if not res.get('ok'):
+            err = res.get('error', 'effect failed')
+            for p in paths:
+                if any(k in err for k in LOAD_FAIL) and os.path.basename(p) in err:
+                    mark_broken(p, err)
+            raise RuntimeError(err)
+        y = np.load(os.path.join(d, 'out.npy'))
+    finally:
+        shutil.rmtree(d, ignore_errors=True)
+    return y[:2]
+
+
+# ----------------------------------------------------------------------------- .vstpreset files
+def preset_dirs():
+    home = os.path.expanduser('~')
+    if sys.platform.startswith('win'):
+        return [os.path.join(home, 'Documents', 'VST3 Presets'),
+                os.path.join(os.environ.get('PROGRAMDATA', r'C:\ProgramData'), 'VST3 Presets')]
+    if sys.platform == 'darwin':
+        return [os.path.join(home, 'Library', 'Audio', 'Presets'), '/Library/Audio/Presets']
+    return [os.path.join(home, '.vst3', 'presets'), '/usr/share/vst3/presets', '/usr/local/share/vst3/presets']
+
+
+def _key(name):
+    return re.sub(r'[^a-z0-9]', '', re.sub(r'\(?(64|32)[ _-]*bit\)?', '', name.lower()))
+
+
+def presets(limit_per_plugin=60):
+    """{preset_id: dict(plugin, path, preset, name)} for .vstpreset files of installed plugins (folder = plugin name)."""
+    installed = {}
+    for p in find_plugins():
+        installed.setdefault(_key(p['name']), p)
+    out = {}
+    for base in preset_dirs():
+        if not os.path.isdir(base):
+            continue
+        for root, dirs, files in os.walk(base):
+            fs = sorted(f for f in files if f.lower().endswith('.vstpreset'))[:limit_per_plugin]
+            if not fs:
+                continue
+            owner = next((installed[_key(seg)] for seg in reversed(os.path.relpath(root, base).split(os.sep)) if _key(seg) in installed), None)
+            if not owner:
+                continue
+            for f in fs:
+                fp = os.path.join(root, f)
+                pid = hashlib.sha1(fp.encode()).hexdigest()[:12]
+                out[pid] = dict(plugin=owner['name'], path=owner['path'], preset=fp, name=os.path.splitext(f)[0])
+    return out
+
+
+def ensure_preset_sound(pid):
+    pr = presets().get(pid)
+    if not pr:
+        return None
+    sid = 'auto_preset_' + pid
+    os.makedirs(SOUNDS, exist_ok=True)
+    with open(os.path.join(SOUNDS, sid + '.json'), 'w') as f:
+        json.dump(dict(name=f"{pr['plugin']} · {pr['name']}", path=pr['path'], plugin_label=pr['plugin'], auto=True,
+                       state={'preset': pr['preset']}), f)
+    return sid
+
+
 def probe_all(log=None, limit=200):
     """Check each installed plugin once (in its own process): instrument or effect? Cached by plugin fingerprint."""
-    if not available():
+    if not available() or PROBE_STATUS['running']:
         return 0
     pr = _probes()
     n = 0
-    for p in find_plugins()[:limit]:
+    todo = [p for p in find_plugins()[:limit] if pr.get(p['path'], {}).get('sig') != _sig(p['path'])]
+    PROBE_STATUS.update(running=bool(todo), done=0, total=len(todo), current='')
+    for p in todo:
+        PROBE_STATUS.update(current=p['name'])
         sig = _sig(p['path'])
-        if pr.get(p['path'], {}).get('sig') == sig:
-            continue
         r = probe(p['path'])
         pr[p['path']] = dict(sig=sig, inst=bool(r.get('ok') and r.get('is_instrument')), ok=bool(r.get('ok')))
         if not r.get('ok') and any(k in str(r.get('error')) for k in LOAD_FAIL):
@@ -123,8 +214,10 @@ def probe_all(log=None, limit=200):
         os.makedirs(SOUNDS, exist_ok=True)
         with open(PROBES, 'w') as f:
             json.dump(pr, f)
+        PROBE_STATUS['done'] = n
         if log:
             log(f"   checked {p['name']}: {'instrument' if pr[p['path']]['inst'] else 'effect / not loadable'}")
+    PROBE_STATUS.update(running=False, current='')
     return n
 
 

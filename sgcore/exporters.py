@@ -37,6 +37,11 @@ def write_midi(path, song):
     chunks = []
     tempo = int(60_000_000 / song['bpm'])
     meta = [(0, 0, b'\xff\x51\x03' + tempo.to_bytes(3, 'big')), (0, 0, b'\xff\x58\x04\x04\x02\x18\x08')]
+    k = song['key']                                   # key signature: home note + major/minor quality (DAWs show it)
+    minor = (k.scale[2] - k.scale[0]) % 12 == 3
+    sf = (((k.root + 3) % 12 if minor else k.root) * 7) % 12
+    sf = sf - 12 if sf > 6 else sf
+    meta.append((0, 0, b'\xff\x59\x02' + struct.pack('bB', sf, 1 if minor else 0)))
     for s in song['sections']:
         txt = s['name'].encode()
         meta.append((int(s['bar'] * 4 * ppq), 0, b'\xff\x06' + _vlq(len(txt)) + txt))
@@ -76,6 +81,18 @@ def write_midi(path, song):
         ch += 1
     if drum_evs:
         chunks.append(_track_chunk(drum_evs, 'Drums'))
+    vocal = song.get('vocal') or []
+    if vocal and 'vocal' not in tcfgs:              # guide melody for a singer (General MIDI "Voice Oohs")
+        chn = ch % 16 if ch % 16 != 9 else 10
+        out = [(0, 0, bytes([0xC0 | chn, 53]))]
+        for e in vocal:
+            tk = int(round(e.beat * ppq))
+            te = tk + max(1, int(round(e.dur * ppq)))
+            v = max(1, min(127, int(e.vel * 110)))
+            out.append((tk, 0, b'\xff\x05\x02la'))          # lyric placeholder, shown by most DAWs
+            out.append((tk, 1, bytes([0x90 | chn, int(e.midi), v])))
+            out.append((te, 0, bytes([0x80 | chn, int(e.midi), 0])))
+        chunks.append(_track_chunk(out, 'Vocal guide (sing this)'))
     with open(path, 'wb') as f:
         f.write(b'MThd' + struct.pack('>IHHH', 6, 1, len(chunks), ppq))
         for c in chunks:
@@ -102,6 +119,11 @@ def write_part_midis(folder, song):
         path = os.path.join(folder, f"{song['style']}_{song['bpm']}bpm_{label}.mid")
         write_midi(path, sub)
         out[label] = path
+    if song.get('vocal') and 'vocal' not in parts:
+        sub = dict(song, events=[], st=dict(st, tracks=[]))
+        path = os.path.join(folder, f"{song['style']}_{song['bpm']}bpm_vocal_guide.mid")
+        write_midi(path, sub)
+        out['vocal guide'] = path
     return out
 
 
@@ -557,3 +579,92 @@ def write_waveform(folder, song, renderer, mastered_wav):
                 'audio twin to replace a sound, or drop any plugin/instrument onto it.\n'
                 'The muted "Mastered reference" track is the finished master for A/B comparison.\n')
     return path
+
+
+# ----------------------------------------------------------------------------- DAW pack (Ableton, FL Studio, Logic, Reaper ...)
+DAW_GUIDE = """{title}
+{style} · {key} · {bpm} BPM · 4/4 · {bars} bars
+
+This folder works in any DAW: every audio stem starts at bar 1 and is the full length of the song, so they line up
+when dropped at the start of the timeline. Set your project to {bpm} BPM first.
+
+  Audio/      one WAV per part (32-bit float, 44.1 kHz) - drag them ALL in and you have the whole song
+  Audio/Extras  the finished mix (to compare against) and the drums as one processed bus
+              (use the bus INSTEAD of the separate drum stems if you prefer)
+  MIDI/       one MIDI file per part, the whole song as one MIDI file, and a vocal guide melody
+  {title}.rpp a ready-made REAPER project (open it in REAPER)
+
+ABLETON LIVE
+  1. New Live Set, set tempo to {bpm}.
+  2. Select all files in Audio/ and drag them into the Arrangement View at bar 1 - each becomes its own track.
+     (Hold Cmd/Ctrl while dropping to put them on separate tracks if Live stacks them.) Turn Warp OFF for the stems.
+  3. Drag files from MIDI/ onto MIDI tracks with your own instruments.
+
+FL STUDIO
+  1. Set the tempo to {bpm}.
+  2. Drag the files from Audio/ into the Playlist at bar 1 (one per track), or into the Channel Rack as Audio Clips.
+  3. Drag MIDI files onto a channel / plugin (File > Import > MIDI file for the whole song).
+
+LOGIC PRO / GARAGEBAND
+  1. Set the tempo to {bpm}. Drag all files from Audio/ to the track area at bar 1 - choose "Create new tracks".
+  2. Drag MIDI files to the track area for software-instrument tracks.
+
+CUBASE / STUDIO ONE / BITWIG
+  Set the tempo, then drag the Audio/ files to bar 1 (one track each) and the MIDI files to instrument tracks.
+
+The vocal guide (MIDI/…vocal_guide.mid) is a melody to sing over - load a piano or choir on it while you write lyrics.
+"""
+
+
+def _rpp(title, bpm, stems, length_s):
+    """A minimal REAPER project with one track per stem, all starting at 0."""
+    lines = ['<REAPER_PROJECT 0.1 "6.0"', f'  TEMPO {bpm} 4 4', '  SAMPLERATE 44100 0 0']
+    for st in stems:
+        name = os.path.splitext(os.path.basename(st))[0]
+        lines += ['  <TRACK', f'    NAME "{name}"', '    <ITEM', '      POSITION 0', f'      LENGTH {length_s:.3f}',
+                  f'      NAME "{name}"', '      <SOURCE WAVE', f'        FILE "Audio/{os.path.basename(st)}"', '      >', '    >', '  >']
+    lines.append('>')
+    return '\n'.join(lines) + '\n'
+
+
+def write_daw_pack(folder, song, renderer, mix_wav, log=print):
+    """Stems + per-part MIDI + full MIDI + vocal guide + import guide + REAPER project, zipped. Returns the zip path."""
+    import shutil
+    import zipfile
+    title = os.path.basename(folder.rstrip('/\\'))
+    audio, midi = os.path.join(folder, 'Audio'), os.path.join(folder, 'MIDI')
+    os.makedirs(audio, exist_ok=True)
+    os.makedirs(midi, exist_ok=True)
+    copied = []
+    n = 0
+    for st in getattr(renderer, 'stems', []) or []:
+        if not os.path.exists(st['path']):
+            continue
+        if st.get('bus'):                               # the processed drum sum: an alternative, not an extra layer
+            os.makedirs(os.path.join(audio, 'Extras'), exist_ok=True)
+            shutil.copy2(st['path'], os.path.join(audio, 'Extras', 'Drum bus (all drums processed - use INSTEAD of the drum stems).wav'))
+            continue
+        n += 1
+        dst = os.path.join(audio, f"{n:02d} {st['name'].replace('_', ' ').title()}.wav")
+        shutil.copy2(st['path'], dst)
+        copied.append(dst)
+    if mix_wav and os.path.exists(mix_wav):
+        os.makedirs(os.path.join(audio, 'Extras'), exist_ok=True)
+        dst = os.path.join(audio, 'Extras', 'Full mix (reference).wav')
+        shutil.copy2(mix_wav, dst)
+    write_midi(os.path.join(midi, f'{title} - full song.mid'), song)
+    write_part_midis(midi, song)
+    k = song['key']
+    with open(os.path.join(folder, 'HOW TO OPEN IN YOUR DAW.txt'), 'w', encoding='utf-8') as f:
+        f.write(DAW_GUIDE.format(title=title, style=song['style'], key=k.name(), bpm=song['bpm'], bars=song['total_bars']))
+    length = song['total_bars'] * 4 * 60 / song['bpm'] + 4
+    with open(os.path.join(folder, title + '.rpp'), 'w', encoding='utf-8') as f:
+        f.write(_rpp(title, song['bpm'], copied, length))
+    zpath = folder.rstrip('/\\') + '.zip'
+    with zipfile.ZipFile(zpath, 'w', zipfile.ZIP_DEFLATED) as z:
+        for root, dirs, files in os.walk(folder):
+            for fn in files:
+                fp = os.path.join(root, fn)
+                z.write(fp, os.path.join(title, os.path.relpath(fp, folder)))
+    log(f'   DAW pack: {len(copied)} stems, MIDI, guide -> {os.path.basename(zpath)}')
+    return zpath

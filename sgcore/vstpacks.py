@@ -87,11 +87,14 @@ def pick_asset(pack, releases, osname=None):
             if stable_only and rel.get('prerelease'):
                 continue
             names = [a for a in rel.get('assets', []) if not a['name'].lower().endswith(('.sha256', '.sig', '.asc', '.txt'))]
+            sums = {a['name'][:-7]: a['browser_download_url'] for a in rel.get('assets', []) if a['name'].lower().endswith('.sha256')}
             for pat in pats:
                 for a in names:
                     if pat.search(a['name']):
+                        dg = a.get('digest') or ''
                         return dict(url=a['browser_download_url'], name=a['name'], size=a.get('size', 0),
-                                    version=rel.get('tag_name', ''))
+                                    version=rel.get('tag_name', ''), sha256=dg[7:].lower() if dg.startswith('sha256:') else None,
+                                    sha256_url=sums.get(a['name']))
     return None
 
 
@@ -105,6 +108,30 @@ def resolve(pack_id, osname=None):
 def _host_ok(url):
     u = urllib.parse.urlparse(url)
     return u.scheme == 'https' and (u.hostname or '') in ALLOWED_HOSTS
+
+
+def expected_sha256(asset):
+    """The checksum GitHub publishes for the file, or the project's own .sha256 file next to it."""
+    if asset.get('sha256'):
+        return asset['sha256']
+    if asset.get('sha256_url') and _host_ok(asset['sha256_url']):
+        try:
+            req = urllib.request.Request(asset['sha256_url'], headers={'User-Agent': 'StudioLab'})
+            with urllib.request.urlopen(req, timeout=20) as r:
+                m = re.search(r'\b[0-9a-fA-F]{64}\b', r.read(4096).decode('utf-8', 'replace'))
+                return m.group(0).lower() if m else None
+        except Exception:
+            return None
+    return None
+
+
+def sha256_of(path):
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        for b in iter(lambda: f.read(1 << 20), b''):
+            h.update(b)
+    return h.hexdigest()
 
 
 def download(url, dst, progress=None, expected=0):
@@ -379,6 +406,13 @@ def install(pack_id, log=print, progress=None):
     try:
         fn = os.path.join(work, re.sub(r'[^A-Za-z0-9._-]', '_', asset['name']))
         download(asset['url'], fn, progress, asset.get('size', 0))
+        want = expected_sha256(asset)
+        if want:
+            if sha256_of(fn) != want:
+                raise RuntimeError(f"{asset['name']} failed its checksum check (it isn't the file the project published) - not installed")
+            log('   checksum verified (SHA-256)')
+        else:
+            log('   (the project publishes no checksum for this file)')
         os.makedirs(PLUGIN_DIR, exist_ok=True)
         copied = []
         log('Unpacking ...')

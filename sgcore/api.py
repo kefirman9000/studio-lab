@@ -13,7 +13,7 @@ from .compose import Options, compose, preview_window, section_window, loop_wind
 from .render import Renderer, master
 from .styles import STYLES
 
-OUTPUTS = ('wav', 'mp3', 'midi', 'stems', 'lmms', 'waveform', 'pack')
+OUTPUTS = ('wav', 'mp3', 'midi', 'stems', 'lmms', 'waveform', 'pack', 'daw')
 
 
 def have_ffmpeg():
@@ -78,7 +78,7 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
         log('   fusion: ' + ', '.join(f'{p}<-{s}' for p, s in info['fusion'].items()))
     stems_dir = None
     outputs = set(outputs)
-    if not preview and ({'stems', 'waveform'} & outputs):
+    if not preview and ({'stems', 'waveform', 'daw'} & outputs):
         stems_dir = os.path.join(outdir, title + '_stems')
         os.makedirs(stems_dir, exist_ok=True)
     r = Renderer(song, log=log)
@@ -113,6 +113,8 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
             files['lmms'] = exporters.write_lmms(os.path.join(outdir, title + '.mmp'), full)
         if 'waveform' in outputs:
             files['waveform'] = exporters.write_waveform(os.path.join(outdir, title + '_waveform'), full, r, wav)
+        if 'daw' in outputs:
+            files['daw'] = exporters.write_daw_pack(os.path.join(outdir, title + '_DAW'), full, r, wav, log=log)
         if stems_dir and 'stems' in outputs:
             files['stems'] = stems_dir
         elif stems_dir:

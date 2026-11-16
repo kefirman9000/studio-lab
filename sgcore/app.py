@@ -124,7 +124,16 @@ def taste():
     """What you tend to like: weights for styles and moods, preferred energy/complexity."""
     rs = load_ratings()
     styles, moods, en, cx = {}, {}, [], []
+    part_likes, inst_likes = {}, {}
     for r in rs:
+        if r.get('part'):                              # "I like this drum part" etc.
+            o = r.get('options', {})
+            if r.get('rating', 0) > 0:
+                part_likes.setdefault(o.get('style'), {}).setdefault(r['part'], []).append(r.get('part_seed'))
+                role = {'melody': 'lead', 'drums': None}.get(r['part'], r['part'])
+                if role and r.get('inst') and not str(r['inst']).startswith(('VST', 'my sample')):
+                    inst_likes.setdefault(role, {})[r['inst']] = inst_likes.get(role, {}).get(r['inst'], 0) + 1
+            continue
         o, v = r.get('options', {}), r.get('rating', 0)
         for sname in [o.get('style')] + list(o.get('blend') or []):
             if sname:
@@ -136,7 +145,8 @@ def taste():
             cx.append(o.get('complexity', 0.5))
     return dict(count=len(rs), styles=styles, moods=moods,
                 energy=round(sum(en) / len(en), 2) if en else None, complexity=round(sum(cx) / len(cx), 2) if cx else None,
-                liked=sorted([k for k, v in styles.items() if v > 0], key=lambda k: -styles[k])[:5])
+                liked=sorted([k for k, v in styles.items() if v > 0], key=lambda k: -styles[k])[:5],
+                part_likes={k: {p: v[-5:] for p, v in d.items()} for k, d in part_likes.items()}, inst_likes=inst_likes)
 
 
 def out_dir():
@@ -215,12 +225,39 @@ def user_insts():
              if v['ok'] and not v.get('auto')])
 
 
+_PRESETS = {'t': 0.0, 'v': {}}
+
+
+def plugin_presets():
+    from . import vsthost
+    if time.time() - _PRESETS['t'] > 120:
+        try:
+            _PRESETS['v'] = vsthost.presets()
+        except Exception:
+            _PRESETS['v'] = {}
+        _PRESETS['t'] = time.time()
+    return _PRESETS['v']
+
+
 def vst_insts(role):
     try:
         from . import vsthost, vstrigs
         if not vsthost.available():
             return []
-        return vstrigs.layer_choices(role, instruments=vsthost.instrument_names())
+        insts = vsthost.instrument_names()
+        out = vstrigs.layer_choices(role, instruments=insts)
+        pr = sorted(plugin_presets().items(), key=lambda kv: (kv[1]['plugin'].lower(), kv[1]['name'].lower()))
+        out += [dict(id='vstq:' + pid, name=f"{p['plugin']} · {p['name']}", group='Plugin presets')
+                for pid, p in pr if p['plugin'] in insts][:300]
+        return out
+    except Exception:
+        return []
+
+
+def vst_effects():
+    try:
+        from . import vsthost
+        return vsthost.effect_names() if vsthost.available() else []
     except Exception:
         return []
 
@@ -253,7 +290,7 @@ def meta():
         categories=by_cat, moods=list(MOODS), scales=list(SCALES), keys=NOTE_NAMES,
         roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Built-in') for i in lst] + vst_insts(r) + user_insts()
                for r, lst in ROLE_CHOICES.items()},
-        voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
+        effects=vst_effects(), voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
         kits=list(KITS), parts=[dict(id=p, name=PART_LABELS[p]) for p in FUSION_PARTS],
         labels={k: label(k) for k in STYLES},
         style_defaults={k: {t['layer']: t['inst'] for t in v['tracks'] if t['layer'] in ROLE_CHOICES} for k, v in STYLES.items()},
@@ -473,6 +510,14 @@ class Handler(BaseHTTPRequestHandler):
             q = {k: v[0] for k, v in parse_qs(urlparse(self.path).query).items()}
             try:
                 raw = self._raw()
+                if p == '/api/upload/reffile':          # MIDI / MusicXML / settings reference
+                    from .refparse import analyze_file
+                    try:
+                        return self._json(analyze_file(q.get('name', ''), raw))
+                    except ValueError:
+                        raise
+                    except Exception as e:
+                        raise ValueError(f'could not read that file ({type(e).__name__})')
                 if len(raw) % 4:
                     raise ValueError('bad audio data')
                 pcm = np.frombuffer(raw, dtype='<f4')
@@ -526,6 +571,9 @@ class Handler(BaseHTTPRequestHandler):
             from . import vsthost
             vsthost.delete_sound(str(body.get('id', '')))
             return self._json({'ok': True})
+        if p == '/api/vststatus':
+            from . import vsthost
+            return self._json(dict(vsthost.PROBE_STATUS))
         if p == '/api/vstpacks':
             from . import vstpacks, vsthost
             return self._json(dict(vstpacks.status(), available=vsthost.available()))
@@ -614,7 +662,10 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(out)
         if p == '/api/rate':
             rs = load_ratings()
-            rs.append(dict(options=body.get('options', {}), rating=1 if body.get('rating', 0) > 0 else -1, t=int(time.time())))
+            rec = dict(options=body.get('options', {}), rating=1 if body.get('rating', 0) > 0 else -1, t=int(time.time()))
+            if body.get('part') in ('drums', 'bass', 'chords', 'melody', 'harmony'):
+                rec.update(part=body['part'], part_seed=body.get('part_seed'), inst=body.get('inst'))
+            rs.append(rec)
             with open(RATINGS, 'w') as f:
                 json.dump(rs[-500:], f)
             return self._json(taste())

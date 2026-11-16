@@ -97,6 +97,8 @@ def _load(job):
             setattr(plugin, k, v)
         except Exception:
             pass
+    if st.get('preset') and hasattr(plugin, 'load_preset'):
+        plugin.load_preset(st['preset'])                  # a .vstpreset file shipped with / saved for the plugin
     if st.get('recipe'):
         job['_applied'] = apply_recipe(plugin, st['recipe'])
     return plugin
@@ -124,6 +126,21 @@ def main(path):
         job = json.load(f)
     out = {'ok': False}
     try:
+        if job['mode'] == 'process':                     # effect chain on already-rendered audio
+            import numpy as np
+            from pedalboard import Pedalboard, load_plugin
+            audio = np.load(job['in']).astype(np.float32)
+            board = Pedalboard([load_plugin(p) for p in job['paths']])
+            y = board(audio, float(job.get('sr', 44100)))
+            if y.ndim == 1:
+                y = np.vstack([y, y])
+            if not np.isfinite(y).all():
+                raise RuntimeError('effect produced invalid audio')
+            np.save(job['out'], y.astype(np.float32))
+            out = {'ok': True}
+            with open(path + '.result', 'w') as f:
+                json.dump(out, f)
+            return
         plugin = _load(job)
         mode = job['mode']
         if mode == 'probe':

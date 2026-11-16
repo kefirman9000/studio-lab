@@ -52,6 +52,17 @@ python studiolab.py generate --style house --melody blues --voicing drop2 --leve
 
 Each part's **Sound** menu lists your installed plugins too, so you can put any instrument on any part.
 
+## Tips
+
+- Press **▶ Preview** again for a new song; tick 🔒 next to the seed to keep one while you tweak.
+- On a result, 🔒 keeps a part (drums, bass, chords, melody) for your next previews, ♥ teaches *Surprise me* what you like, and **A/B** compares two results.
+- **🎯 Match a reference** takes audio, MIDI, MusicXML or a Studio Lab settings file.
+- Export a **DAW pack** for Ableton Live, FL Studio, Logic, Reaper and others.
+
+```
+python studiolab.py generate --style rock --reference song.mid --groove laidback --ending hit --formats wav,daw
+```
+
 ## Works with
 
 - [LMMS](https://lmms.io) (free)

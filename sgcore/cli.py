@@ -34,6 +34,11 @@ def main(argv=None):
     ap.add_argument('--melody', choices=['diatonic', 'pentatonic', 'blues', 'bebop'], help='how the lead phrases (default: genre)')
     ap.add_argument('--voicing', choices=['close', 'open', 'drop2', 'rootless', 'power'], help='chord voicing (default: genre)')
     ap.add_argument('--chord-color', choices=['triad', '7', 'add9', '9', '6', 'sus2', 'sus4'])
+    ap.add_argument('--groove', choices=['straight', 'dilla', 'laidback', 'afro', 'dembow', 'jazz', 'house', 'funk'])
+    ap.add_argument('--bass-rhythm', choices=['kick'], help='kick = bass plays with the kick drum')
+    ap.add_argument('--ending', choices=['auto', 'hit', 'fade'])
+    ap.add_argument('--vocal-guide', action='store_true', help='also play the vocal guide melody (always in MIDI exports)')
+    ap.add_argument('--fx', action='append', default=[], help='effect plugin on a part, e.g. --fx lead=ValhallaSupermassive')
     ap.add_argument('--level', action='append', default=[], help='part level in dB, e.g. --level lead=-3 --level bass=+2')
     ap.add_argument('--mute', default='', help='comma-separated layers to drop: kick,snare,top,bass,chords,pad,arp,lead,fx')
     ap.add_argument('--no-vst-rig', action='store_true', help="don't play parts through your installed plugins")
@@ -41,6 +46,7 @@ def main(argv=None):
     ap.add_argument('--out', default='songs')
     ap.add_argument('--formats', default='wav', help='comma list of: ' + ','.join(OUTPUTS))
     ap.add_argument('--options', help='JSON file with saved settings (from a *_settings.json)')
+    ap.add_argument('--reference', help='match a reference: .mid, .musicxml/.mxl, settings .json or .wav (tempo, key, chords, feel)')
     ap.add_argument('--list', action='store_true')
     a = ap.parse_args(argv)
     if a.list:
@@ -53,6 +59,8 @@ def main(argv=None):
         with open(a.options) as f:
             d = json.load(f)
         base = d.get('options', d)
+    if a.reference:
+        base.update(reference_options(a.reference))
     seed = a.seed if a.seed is not None else base.get('seed') or random.randrange(1, 10 ** 6)
     styles = list(STYLES) if a.style == 'all' else [a.style]
     for si, st in enumerate(styles):
@@ -73,7 +81,12 @@ def main(argv=None):
             if a.inst:
                 o['instruments'] = dict(p.split('=', 1) for p in a.inst)
             o.setdefault('vst_rig', not a.no_vst_rig)
-            for k, v in (('melody_style', a.melody), ('voicing', a.voicing), ('chord_color', a.chord_color)):
+            if a.vocal_guide:
+                o['vocal_guide'] = True
+            if a.fx:
+                o['part_fx'] = dict(x.split('=', 1) for x in a.fx)
+            for k, v in (('melody_style', a.melody), ('voicing', a.voicing), ('chord_color', a.chord_color), ('groove', a.groove),
+                         ('bass_rhythm', a.bass_rhythm), ('ending', a.ending)):
                 if v:
                     o[k] = v
             if a.level:
@@ -81,6 +94,30 @@ def main(argv=None):
             if a.mute:
                 o['muted'] = [m.strip() for m in a.mute.split(',') if m.strip()]
             generate(Options.from_dict(o), a.out, outputs=[f.strip() for f in a.formats.split(',')], preview=a.preview)
+
+
+def reference_options(path):
+    """Settings taken from a reference file."""
+    if path.lower().endswith(('.wav', '.wave')):
+        from scipy.io import wavfile
+        import numpy as np
+        from .analysis import analyze
+        sr, x = wavfile.read(path)
+        x = x.astype('float64')
+        x = (x.mean(axis=1) if x.ndim > 1 else x) / (np.max(np.abs(x)) + 1e-9)
+        a = analyze(x, sr)
+    else:
+        from .refparse import analyze_file
+        with open(path, 'rb') as f:
+            a = analyze_file(path, f.read())
+        if a.get('source') == 'settings':
+            return a['options']
+    o = dict(bpm=a['bpm'], key=a['key'], energy=a['energy'])
+    for k in ('scale', 'progression', 'swing', 'complexity', 'loudness', 'brightness'):
+        if a.get(k) is not None:
+            o[k] = a[k]
+    print('reference:', ', '.join(f'{k}={v}' for k, v in o.items()))
+    return o
 
 
 def vsts_main(argv=None):
