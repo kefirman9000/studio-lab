@@ -342,7 +342,7 @@ def meta():
         kits=__import__('sgcore.drumkits', fromlist=['menu']).menu() + [dict(id=k, group='Other synth kits', label=k.title())
                                                                          for k in KITS if k not in ('default',) and k not in
                                                                          __import__('sgcore.drumkits', fromlist=['MENU']).MENU],
-        window=load_settings().get('window', 'app'), genre_kits=__import__('sgcore.drumkits', fromlist=['GENRE_KIT']).GENRE_KIT, parts=[dict(id=p, name=PART_LABELS[p]) for p in FUSION_PARTS],
+        window=load_settings().get('window', 'app'), genre_kits=__import__('sgcore.drumkits', fromlist=['GENRE_KIT']).GENRE_KIT, journey_presets=__import__('sgcore.journey', fromlist=['PRESETS']).PRESETS, journey_parts=[dict(id=n, name=l, layer=next(t['layer'] for t in STYLES['cinematic_journey']['tracks'] if t['name'] == n), inst=next(t['inst'] for t in STYLES['cinematic_journey']['tracks'] if t['name'] == n)) for n, l in __import__('sgcore.journey', fromlist=['PLAYERS']).PLAYERS], parts=[dict(id=p, name=PART_LABELS[p]) for p in FUSION_PARTS],
         labels={k: label(k) for k in STYLES},
         style_defaults={k: {t['layer']: t['inst'] for t in v['tracks'] if t['layer'] in ROLE_CHOICES} for k, v in STYLES.items()},
     )

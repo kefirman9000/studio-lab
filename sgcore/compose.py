@@ -727,7 +727,10 @@ def resolve_style(opts, rnd=None, mood=None):
     for t in st['tracks']:
         t = dict(t)
         t['p'] = dict(t['p'])
-        new = opts.instruments.get(t['layer']) if t['layer'] in MELODIC_ROLES else None
+        if st.get('composer'):                          # through-composed scores: every player has its own pick
+            new = opts.instruments.get(t['name']) if t['layer'] in MELODIC_ROLES else None
+        else:
+            new = opts.instruments.get(t['layer']) if t['layer'] in MELODIC_ROLES else None
         if isinstance(new, str) and new.startswith(('vstp:', 'vstd:', 'vstq:')):
             new = _installed_vst(new, opts)             # a plugin picked in the Sound dropdown -> playable sound
         if new and (new in INSTRUMENTS or new.startswith(('user:', 'vst:', 'sf:', 'real:'))) and new != t['inst']:

@@ -194,12 +194,18 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
   <!-- CENTER: controls -->
   <div class="col c">
     <details class="card" id="journeyCard" open style="display:none"><summary>🎬 Cinematic Journey</summary><div class="body">
-      <div class="f wide"><label>The story <span class="hint">click an act to leave it out · tempo, dynamics and orchestration follow the story</span></label><div class="chips" id="jActs"></div></div>
+      <div class="f wide"><label>Story preset</label><div class="chips" id="jPresets"></div></div>
+      <div class="f wide"><label>The story <span class="hint">click an act to add or leave it out · tempo, dynamics and orchestration follow the story</span></label><div class="chips" id="jActs"></div></div>
       <div class="f"><label title="How much the solo piano leads: icy low notes, the sorrow theme, cascading arpeggios in the climax">Piano focus <b id="jPianoV"></b></label><input type="range" id="jPiano" min="0" max="100" value="60"></div>
       <div class="f"><label title="Phrase-by-phrase push and pull of the tempo (on top of the story's accelerando, allargando and final ritardando)">Rubato <b id="jRubatoV"></b></label><input type="range" id="jRubato" min="0" max="100" value="50"></div>
       <div class="f"><label title="From near-silence to room-shaking fortissimo">Dynamic range <b id="jDynV"></b></label><input type="range" id="jDyn" min="0" max="100" value="75"></div>
       <div class="f"><label>Final chord</label><select id="jEnd"><option value="major">Bittersweet major (luminous)</option><option value="minor">Dark minor</option></select></div>
+      <div class="f"><label>Climax</label><select id="jGlory"><option value="concert">Concert hall (timpani, bass drum, cymbals)</option><option value="battle">Trailer (+ taiko ensemble, snare rolls, anvils)</option></select></div>
       <div class="f"><label><input type="checkbox" id="jWinds" checked> Woodwind counter-melodies</label></div>
+      <div class="f"><label><input type="checkbox" id="jChoir" checked> Choir (aah / ooh)</label></div>
+      <div class="f"><label title="The second half of the climax lifts a whole step"><input type="checkbox" id="jLift" checked> Key change in the climax</label></div>
+      <div class="f"><label title="A low sub boom under the biggest hits"><input type="checkbox" id="jHybrid"> Hybrid sub booms</label></div>
+      <div class="f wide"><div class="hint" id="jHall"></div></div>
       <div class="f wide"><label><input type="checkbox" id="jBbc"> Play it on my orchestra plugin (BBC Symphony Orchestra / LABS)</label>
         <div class="hint">Off: the free real orchestra in 🎻 Real instruments plays every section, no setup. On: sections you saved in <a href="#" id="jBbcSet">Set up my orchestra…</a> are used (violins, celli, horns, trumpets, low brass, timpani…), with mod-wheel dynamics; anything not set up uses the real orchestra.</div></div>
     </div></details>
@@ -370,15 +376,18 @@ function renderSelected(){
   // instrument selectors (defaults come from the style)
   $$('#soundBody .inst').forEach(e=>e.remove());
   const defs=META.style_defaults[state.style]||{};
-  ROLES.forEach(([r,label])=>{
+  const jParts=(state.style==='cinematic_journey'&&!state.blend.length)?(META.journey_parts||[]):null;
+  const rows=jParts?jParts.map(p=>[p.id,p.name,p.layer,p.inst]):ROLES.map(([r,l])=>[r,l,r,defs[r]]);
+  if(jParts){ const h=document.createElement('div'); h.className='f wide inst'; h.innerHTML='<div class="hint">🎬 Cinematic Journey: every player has its own sound. Leave on <b>Score default</b> for the real orchestra / your orchestra plugin.</div>'; $('#soundBody').appendChild(h); }
+  rows.forEach(([r,label,role,defInst])=>{
     const w=document.createElement('div');w.className='f inst';
-    const groups={}; META.roles[r].forEach(i=>{(groups[i.group||'Built-in']=groups[i.group||'Built-in']||[]).push(i)});
+    const groups={}; (META.roles[role]||[]).forEach(i=>{(groups[i.group||'Built-in']=groups[i.group||'Built-in']||[]).push(i)});
     const opts=Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${state.instruments[r]===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('');
-    const dn=defs[r]?(META.roles[r].find(i=>i.id===defs[r])||{name:defs[r]}).name:'none';
-    const dl=state.blend.length?'Auto (from the fused styles)':`Style default (${dn})`;
+    const dn=defInst?((META.roles[role]||[]).find(i=>i.id===defInst)||{name:defInst}).name:'none';
+    const dl=state.blend.length?'Auto (from the fused styles)':jParts?`Score default (${dn})`:`Style default (${dn})`;
     const fxs=(META.effects||[]);
     w.innerHTML=`<label>${label}</label><select><option value="">${dl}</option>${opts}</select>`+
-      (fxs.length?`<select class="fxsel" title="Run this part through one of your effect plugins"><option value="">no effect plugin</option>${fxs.map(f=>`<option ${state.part_fx[r]===f?'selected':''}>${esc(f)}</option>`).join('')}</select>`:'');
+      (fxs.length&&!jParts?`<select class="fxsel" title="Run this part through one of your effect plugins"><option value="">no effect plugin</option>${fxs.map(f=>`<option ${state.part_fx[r]===f?'selected':''}>${esc(f)}</option>`).join('')}</select>`:'');
     w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else delete state.instruments[r]; };
     if(w.querySelector('.fxsel')) w.querySelector('.fxsel').onchange=e=>{ if(e.target.value) state.part_fx[r]=e.target.value; else delete state.part_fx[r]; };
     $('#soundBody').appendChild(w);
@@ -399,10 +408,22 @@ function renderOuts(){
     const c=document.createElement('span');const on=state.outputs.includes(k);c.className='chip'+(on?' on':'');c.textContent=n;
     c.onclick=()=>{state.outputs=on?state.outputs.filter(x=>x!==k):[...state.outputs,k];renderOuts()};o.appendChild(c)});
 }
-const J_ACTS=[['tension','Tension'],['sorrow','Sorrow'],['resolve','Resolve'],['glory','Glory'],['reflection','Reflection'],['resolution','Resolution']];
+const J_ACTS=[['tension','Tension'],['sorrow','Sorrow'],['resolve','Resolve'],['battle','Battle'],['glory','Glory'],['reflection','Reflection'],['resolution','Resolution']];
+const J_PRESETS=[['hero','🦸 Hero\'s journey'],['tragedy','🥀 Tragedy'],['triumph','🏆 Triumph'],['elegy','🕯️ Elegy']];
+function applyJPreset(id){ const P=(META.journey_presets||{})[id]; if(!P) return; state.jPreset=id;
+  state.jOff=J_ACTS.map(a=>a[0]).filter(a=>!(P.acts||[]).includes(a));
+  $('#jPiano').value=(P.piano??.6)*100; $('#jRubato').value=(P.rubato??.5)*100; $('#jDyn').value=(P.dynamics??.75)*100;
+  $('#jEnd').value=P.ending||'major'; $('#jGlory').value=P.glory_style||'concert'; $('#jChoir').checked=P.choir!==false; $('#jLift').checked=P.lift!==false;
+  $('#jHybrid').checked=!!P.hybrid; $('#jWinds').checked=P.woodwinds!==false; ['jPiano','jRubato','jDyn'].forEach(k=>$('#'+k).oninput&&$('#'+k).oninput()); renderJourney(); }
+let J_HALL=null;
 function renderJourney(){
   const on=state.style==='cinematic_journey'&&!state.blend.length; $('#journeyCard').style.display=on?'':'none'; if(!on) return;
-  state.jOff=state.jOff||[];
+  if(!state.jOff) state.jOff=['battle'];
+  $('#jPresets').innerHTML=J_PRESETS.map(([id,n])=>`<span class="chip ${state.jPreset===id?'on':''}" data-jp="${id}">${n}</span>`).join('');
+  $$('#jPresets [data-jp]').forEach(c=>c.onclick=()=>applyJPreset(c.dataset.jp));
+  if(J_HALL===null){ J_HALL=''; api('/api/vstpacks',{}).then(S=>{ const d=(S.packs||[]).find(p=>p.id==='dragonfly'); J_HALL=d&&d.installed?'✓ Concert hall: Dragonfly Hall Reverb is installed and used.':
+      'For the real concert-hall sound, download <b>Dragonfly Reverb</b> in Genre VSTs (free) - the Journey uses its hall automatically.'; $('#jHall').innerHTML=J_HALL; }).catch(()=>{}); }
+  $('#jHall').innerHTML=J_HALL||'';
   $('#jActs').innerHTML=J_ACTS.map(([id,n],i)=>`<span class="chip ${state.jOff.includes(id)?'off':'on'}" data-act="${id}">${i+1}. ${n}</span>`).join('');
   $$('#jActs [data-act]').forEach(c=>c.onclick=()=>{ const a=c.dataset.act; if(state.jOff.includes(a)) state.jOff=state.jOff.filter(x=>x!==a);
     else if(state.jOff.length<J_ACTS.length-1) state.jOff.push(a); renderJourney(); });
@@ -437,8 +458,10 @@ function options(){
   if($('#vinyl').value) o.vinyl=$('#vinyl').value==='on';
   if(state.orch_plugin) o.orch_plugin=true;
   if(state.style==='cinematic_journey'&&!state.blend.length){
-    o.journey={acts:J_ACTS.map(a=>a[0]).filter(a=>!(state.jOff||[]).includes(a)), piano:+$('#jPiano').value/100, rubato:+$('#jRubato').value/100,
-      dynamics:+$('#jDyn').value/100, ending:$('#jEnd').value, woodwinds:$('#jWinds').checked};
+    o.journey={acts:J_ACTS.map(a=>a[0]).filter(a=>!(state.jOff||['battle']).includes(a)), piano:+$('#jPiano').value/100, rubato:+$('#jRubato').value/100,
+      dynamics:+$('#jDyn').value/100, ending:$('#jEnd').value, woodwinds:$('#jWinds').checked, choir:$('#jChoir').checked, lift:$('#jLift').checked,
+      hybrid:$('#jHybrid').checked, glory_style:$('#jGlory').value};
+    if(state.jPreset) o.journey.preset=state.jPreset;
   }
   if($('#bassRhythm').value) o.bass_rhythm=$('#bassRhythm').value;
   if($('#ending').value!=='auto') o.ending=$('#ending').value;
@@ -466,7 +489,8 @@ function applyOptions(o){
   $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';
   LEVELS.forEach(([k,n,layers])=>{ $('#lv_'+k).value=(o.part_levels||{})[layers[0]]||0; });
   if(o.journey){ const j=o.journey; state.jOff=J_ACTS.map(a=>a[0]).filter(a=>j.acts&&!j.acts.includes(a)); $('#jPiano').value=(j.piano??.6)*100; $('#jRubato').value=(j.rubato??.5)*100;
-    $('#jDyn').value=(j.dynamics??.75)*100; $('#jEnd').value=j.ending||'major'; $('#jWinds').checked=j.woodwinds!==false; }
+    $('#jDyn').value=(j.dynamics??.75)*100; $('#jEnd').value=j.ending||'major'; $('#jWinds').checked=j.woodwinds!==false;
+    $('#jChoir').checked=j.choir!==false; $('#jLift').checked=j.lift!==false; $('#jHybrid').checked=!!j.hybrid; $('#jGlory').value=j.glory_style||'concert'; state.jPreset=j.preset||null; }
   const cat=Object.entries(META.categories).find(([c,l])=>l.some(s=>s.id===o.style)); if(cat) state.cat=cat[0];
   syncAutos(); initSegs(); renderMoods(); renderLayers(); renderTabs(); refresh(); $$('input[type=range]').forEach(e=>e.oninput&&e.oninput());
 }
@@ -915,7 +939,9 @@ const ORCH_SECTIONS=[['strings legato','long string pads and melodies'],['string
   ['strings tremolo','suspense and shimmer'],['strings pizzicato','plucked strings'],['violins','violin melodies'],['celli','cello lines and bass'],
   ['horns','French horn themes and swells'],['trumpets','fanfares and brass leads'],['low brass','trombones / tuba, trailer braams'],
   ['flute','flute melodies'],['clarinet','clarinet lines'],['oboe','oboe solos'],['harp','harp arpeggios'],['celeste','celesta / glockenspiel sparkle'],
-  ['timpani','timpani'],['choir','choir pads']];
+  ['timpani','timpani'],['choir','choir pads'],['violins legato','Cinematic Journey: soaring 1st violins'],['violas','viola lines'],
+  ['basses','double basses'],['trombones','sustained low brass'],['low brass marcato','short, punchy trombone hits'],['tuba','tuba'],
+  ['bassoon','bassoon / contrabassoon']];
 function orchModal(V){
   const plugs=V.plugins.filter(p=>!p.is_effect);
   const guess=plugs.findIndex(p=>/bbc|labs|spitfire|orchestr|kontakt/i.test(p.name));

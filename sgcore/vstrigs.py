@@ -225,11 +225,15 @@ SOUND_WORDS = {
     'mutedgtr': ['muted guitar', 'palm mute', 'palm muted'], 'polysynth': ['juno', 'polysynth', 'poly synth'],
     'synthbrass': ['synth brass', 'prophet brass', 'ob brass'], 'moogbass': ['moog', 'minimoog', 'model d'],
     'glasspad': ['glass pad'], 'solina': ['solina', 'string machine', 'string ensemble synth'],
+    'violins': ['violins legato', 'violins 1', 'violins', 'violin', 'strings legato', 'strings'],
+    'violas': ['violas', 'viola', 'strings'], 'bassoon': ['contrabassoon', 'bassoons', 'bassoon', 'woodwind'],
+    'trombone_marcato': ['low brass marcato', 'trombones marcato', 'brass marcato', 'marcato', 'trombones', 'trombone', 'low brass'],
     'tuba': ['tuba', 'low brass'], 'braam': ['braam', 'low brass', 'trombone', 'trombones', 'tuba', 'brass', 'horns', 'horn'],
 }
 # articulation words: a long-note part never picks a short-note sound (and the reverse) while a better one exists
 SHORT_WORDS = ('spiccato', 'staccato', 'short', 'pizz', 'pizzicato', 'marcato', 'ostinato')
-LONG_ROLES = {'strings', 'violin', 'slowstrings', 'cello', 'viola', 'contrabass', 'tremolo', 'horn', 'brass', 'choir', 'vox', 'braam'}
+LONG_ROLES = {'strings', 'violin', 'slowstrings', 'cello', 'viola', 'contrabass', 'tremolo', 'horn', 'brass', 'choir', 'vox', 'braam',
+              'violins', 'violas', 'trombone', 'tuba', 'trumpet', 'bassoon'}
 SAMPLER_ROLES = {k for k in SOUND_WORDS if k in ('strings', 'violin', 'pizz', 'horn', 'brass', 'harp', 'timpani', 'celesta',
                                                     'choir', 'vox', 'flute', 'piano', 'spiccato', 'tremolo', 'slowstrings',
                                                     'cello', 'viola', 'contrabass', 'harpsichord', 'clarinet', 'oboe',
@@ -386,7 +390,7 @@ def _user_sounds(role, sounds):
         short = any(_has(w, n) for w in SHORT_WORDS)
         if role in LONG_ROLES and short:
             rank += 50
-        elif role in ('spiccato', 'pizz') and not short and not _has(words[0], n):
+        elif role in ('spiccato', 'pizz', 'trombone_marcato') and not short and not _has(words[0], n):
             rank += 20
         if role == 'spiccato' and (_has('pizz', n) or _has('pizzicato', n)):
             rank += 30                                         # plucked is a different sound from bowed-short
@@ -469,7 +473,11 @@ def assign(st, opts, log=None):
         part = {'bass': 'bass', 'lead': 'melody', 'arp': 'melody'}.get(t['layer'], 'chords')
         sd = ps.get(part) if ps.get(part) is not None else seed
         rng = random.Random(f"{sd}-{t['layer']}-{base}-{style}-rig")
-        pick = choose(base, style, cat, plugins, sounds, rng)
+        pick = None
+        if t.get('rig_role'):                              # a specific articulation (e.g. low brass marcato) first
+            s_ = _user_sound(t['rig_role'], sounds, rng)
+            pick = ('user', s_['id'], s_['name']) if s_ else None
+        pick = pick or choose(base, style, cat, plugins, sounds, rng)
         if not pick:
             continue
         kind, ident, extra = pick
@@ -484,7 +492,7 @@ def assign(st, opts, log=None):
     return used
 
 
-ORCH_PARTS = {'strings', 'slowstrings', 'spiccato', 'tremolo', 'pizz', 'violin', 'viola', 'cello', 'contrabass', 'horn',
+ORCH_PARTS = {'strings', 'slowstrings', 'spiccato', 'tremolo', 'pizz', 'violin', 'viola', 'cello', 'contrabass', 'horn', 'violins', 'violas',
               'brass', 'trumpet', 'trombone', 'tuba', 'timpani', 'harp', 'choir', 'flute', 'oboe', 'clarinet', 'bassoon'}
 
 

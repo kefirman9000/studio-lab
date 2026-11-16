@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.24.0
+Cinematic Journey, more epic:
+- **Key change in the climax**: the second half of Glory lifts a whole step (switchable).
+- **Grand pause**: a suspended-cymbal roll swells to the edge, one beat of total silence (just the hall ringing), then the climax hits with everything.
+- **Choir**: "ooh" entering under the second half of Resolve, full "aah" in Glory, a held "ooh" in the final chord (your orchestra plugin's choir if you saved one, otherwise the General MIDI or built-in choir).
+- **Brass rips** into the climax's phrases and **trombone falls** at their ends; trombone marcato hits are now their own part.
+- **Deeper low end**: contrabassoon and contrabass trombone under the tuba; optional **hybrid sub booms**.
+- **Harp glissandi** sweeping into the Resolve, out of the grand pause and down into the Reflection; **suspended-cymbal swells** into each act.
+- **Theme development**: the trombones foreshadow the theme (twice as slow, pianissimo) in Tension; in Resolve the horns answer the violins in canon.
+- **New Battle act** (optional, between Resolve and Glory): spiccato strings, staccato brass, the theme as a battle cry, taiko, snare rolls, anvils, timpani.
+- **Climax style**: Concert hall or Trailer (adds the taiko ensemble, snare rolls and anvils).
+- **Story presets**: Hero's journey, Tragedy (no glory, dark ending), Triumph (short tension, long trailer climax), Elegy (piano, strings, reflection).
+- **Every player has its own Sound dropdown** for the Journey (25 parts: violins I, violas, celli, basses, each horn/brass/woodwind section, harp, choir, timpani ...), so nothing is locked.
+- **BBC SO articulations**: new sections in Set up my orchestra (violins legato, violas, basses, trombones, low brass marcato, tuba, bassoon) - each passage uses the matching patch.
+- The Journey card shows whether the Dragonfly concert-hall reverb is installed.
+
 ## 1.23.0
 - **🎬 Cinematic Journey - the ultimate orchestral generator** (top of the Orchestral tab). A through-composed score for full symphony orchestra and solo piano, written act by act instead of from loops:
   - **Tension**: double basses on a dark pedal, celli (then violas) in muted creeping ostinatos, soft timpani rolls, icy notes at the bottom of the piano, a barely-there tremolo.

@@ -63,6 +63,21 @@ def test_journey():
     assert fin.dur >= 12 and {(m - s['key'].root) % 12 for m in [e.midi for e in last if e.beat == fin.beat]} >= {0, 4, 7}
     d = describe(s)
     assert 180 < d['seconds'] < 330 and d['tempo_range'][0] < d['tempo_range'][1]
+    g = next(x for x in s['sections'] if x['name'] == 'Glory')
+    assert g.get('key_change') == 2 and ('gap', g['bar'] * 4 - 1, 1) in s['fx']                  # lift + grand pause
+    assert any(k == 'cymroll' for k, _, _ in s['fx'])
+    for t in ('choir', 'choir_oo', 'harp', 'cbsn', 'cbtbn', 'tbn_marc'):
+        assert t in tracks, t
+    hi = [e for e in s['events'] if e.track == 'vn1' and e.beat >= (g['bar'] + g['bars'] // 2) * 4 and e.beat < (g['bar'] + g['bars']) * 4]
+    assert hi
+    tri = compose(Options(style='cinematic_journey', seed=5, journey={'preset': 'triumph'}))
+    assert [x['name'] for x in tri['sections']] == ['Tension', 'Resolve', 'Battle', 'Glory', 'Resolution']
+    tb = {e.track for e in tri['events']}
+    assert {'taiko', 'snare', 'anvil'} <= tb
+    tg = compose(Options(style='cinematic_journey', seed=5, journey={'preset': 'tragedy'}))
+    assert 'Glory' not in [x['name'] for x in tg['sections']] and not tg['sections'][-1].get('picardy')
+    el = compose(Options(style='cinematic_journey', seed=5, journey={'preset': 'elegy', 'piano': 0.2}))
+    assert [x['name'] for x in el['sections']] == ['Sorrow', 'Reflection', 'Resolution'] and 'choir_oo' not in {e.track for e in el['events']}
     m = compose(Options(style='cinematic_journey', seed=5, journey={'acts': ['sorrow', 'glory'], 'ending': 'minor'}))
     assert [x['name'] for x in m['sections']] == ['Sorrow', 'Glory']
     b = compose(Options(style='cinematic_journey', seed=5, blend=['trance']))

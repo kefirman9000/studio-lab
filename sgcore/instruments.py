@@ -1363,3 +1363,17 @@ ROLE_CHOICES['lead'] += ['violins', 'violas', 'trombone']
 ROLE_CHOICES['pad'] += ['violins', 'violas', 'trombone']
 ROLE_CHOICES['arp'] += ['violins']
 GM_PROGRAM.update({'violins': 40, 'violas': 41, 'contrabass': 43, 'trombone': 57, 'tuba': 58, 'bassoon': 70, 'tubular': 14})
+
+
+def d_anvil(p):
+    """Trailer anvil / metal hit: bright inharmonic partials with a hard strike."""
+    n = int(1.4 * SR)
+    t = np.arange(n) / SR
+    y = np.zeros(n)
+    for f, a, d in ((1180, 1.0, 9), (1960, 0.7, 11), (2745, 0.55, 13), (3620, 0.4, 16), (5130, 0.3, 20)):
+        y += a * np.sin(2 * np.pi * f * t) * np.exp(-t * d)
+    y += 0.5 * hp(noise(n), 3000) * np.exp(-t * 60)
+    return fade_out(y * 0.5, 0.1)
+
+
+DRUMS['anvil'] = d_anvil

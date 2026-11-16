@@ -508,6 +508,8 @@ class Renderer:
                     self._add(fxbuf, fx_impact().astype(np.float32) * 0.8, s)
                 elif kind == 'riser' and d > 0:
                     self._add(fxbuf, fx_riser(d * self.spb).astype(np.float32) * 0.6, s)
+                elif kind == 'cymroll' and d > 0:             # suspended cymbal roll (soft mallets), swelling to the edge
+                    self._add(fxbuf, fx_cymroll(max(0.5, self._bt(b + d) - self._bt(b))), s)
                 elif kind == 'swell' and d > 0:               # reverse cymbal leading into the next section
                     c = self._drum('crash')[::-1]
                     n = min(len(c), int(d * self.spb * SR))
@@ -568,6 +570,21 @@ class Renderer:
         self.stems = stems
         self.stem_env = env
         return mix
+
+
+def fx_cymroll(sec):
+    """A suspended-cymbal roll: bright noise with the flutter of two soft mallets, growing to a peak at the end."""
+    n = int(sec * SR)
+    t = np.arange(n) / SR
+    x = np.random.default_rng(11).standard_normal((2, n))
+    x = hp(lp(x, 13000), 2800)
+    rate = 10 + 4 * t / max(sec, 0.1)
+    flutter = 1 + 0.3 * np.sin(2 * np.pi * np.cumsum(rate) / SR)
+    env = (t / max(sec, 0.1)) ** 2.4
+    tail = np.ones(n)
+    k = min(n, int(0.04 * SR))
+    tail[-k:] = np.linspace(1, 0, k)
+    return (x * env * flutter * tail * 0.6).astype(np.float32)
 
 
 def tape_wobble(x, depth=1.0):

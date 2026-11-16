@@ -21,10 +21,30 @@ import random
 
 from .compose import Ev, Key
 
-ACTS = [('tension', 'Tension', 16), ('sorrow', 'Sorrow', 16), ('resolve', 'Resolve', 16), ('glory', 'Glory', 16),
-        ('reflection', 'Reflection', 8), ('resolution', 'Resolution', 8)]
+ACTS = [('tension', 'Tension', 16), ('sorrow', 'Sorrow', 16), ('resolve', 'Resolve', 16), ('battle', 'Battle', 8),
+        ('glory', 'Glory', 16), ('reflection', 'Reflection', 8), ('resolution', 'Resolution', 8)]
 ACT_IDS = [a[0] for a in ACTS]
-DEFAULTS = dict(acts=ACT_IDS, piano=0.6, rubato=0.5, dynamics=0.75, ending='major', woodwinds=True)
+HERO = ['tension', 'sorrow', 'resolve', 'glory', 'reflection', 'resolution']
+DEFAULTS = dict(acts=HERO, piano=0.6, rubato=0.5, dynamics=0.75, ending='major', woodwinds=True, lift=True, choir=True,
+                hybrid=False, glory_style='concert', lengths={}, preset='hero')
+# one-click story arcs (the Journey card's presets); any setting you change afterwards wins
+PRESETS = {
+    'hero': dict(acts=HERO, ending='major'),
+    'tragedy': dict(acts=['tension', 'sorrow', 'resolve', 'battle', 'reflection', 'resolution'], ending='minor', piano=0.7,
+                    dynamics=0.85, lift=False, lengths={'reflection': 1.5}),
+    'triumph': dict(acts=['tension', 'resolve', 'battle', 'glory', 'resolution'], ending='major', piano=0.4, dynamics=0.7,
+                    glory_style='battle', lengths={'tension': 0.5, 'glory': 1.5}),
+    'elegy': dict(acts=['sorrow', 'reflection', 'resolution'], ending='major', piano=0.95, dynamics=0.45, rubato=0.75,
+                  choir=False, lengths={'sorrow': 1.5, 'reflection': 1.5}),
+}
+UNPITCHED = {'bdrum', 'cym', 'taiko', 'snare', 'anvil'}
+# every player, for the Sound panel (track name -> label)
+PLAYERS = [('piano', 'Solo piano'), ('vn1', 'Violins I (melody)'), ('vn_hi', 'High strings / harmonics'), ('va', 'Violas'),
+           ('vc', 'Celli'), ('cb', 'Double basses'), ('pad', 'String section (sustain)'), ('trem', 'Strings tremolo'),
+           ('spicc_lo', 'Low string ostinato'), ('spicc_hi', 'High string runs'), ('horns', 'French horns'), ('tpt', 'Trumpets'),
+           ('tbn', 'Trombones (sustain)'), ('tbn_marc', 'Trombones (marcato hits)'), ('tuba', 'Tuba'), ('cbtbn', 'Contrabass trombone'),
+           ('cbsn', 'Contrabassoon'), ('flute', 'Flute'), ('oboe', 'Oboe'), ('clar', 'Clarinet'), ('harp', 'Harp'),
+           ('choir', 'Choir "aah"'), ('choir_oo', 'Choir "ooh"'), ('timp', 'Timpani'), ('sub', 'Hybrid sub boom')]
 
 SC = [0, 2, 3, 5, 7, 8, 10]                     # natural minor; the V chord and a major ending raise notes as needed
 QUAL = {'m': (0, 3, 7), 'M': (0, 4, 7), 'sus4': (0, 5, 7), 'sus2': (0, 2, 7)}
@@ -40,10 +60,12 @@ PROGS = {
     'glory': [[(3, 'M'), (10, 'M'), (0, 'm'), (8, 'M'), (3, 'M'), (10, 'M'), (8, 'M'), (10, 'M')],
               [(8, 'M'), (10, 'M'), (3, 'M'), (0, 'm'), (8, 'M'), (10, 'M'), (3, 'M'), (3, 'M')]],
     'reflection': [[(0, 'm'), (8, 'M'), (5, 'm'), (0, 'm'), (8, 'M'), (3, 'M'), (5, 'm'), (7, 'sus4')]],
+    'battle': [[(0, 'm'), (0, 'm'), (1, 'M'), (0, 'm'), (8, 'M'), (10, 'M'), (1, 'M'), (7, 'M')],
+               [(0, 'm'), (8, 'M'), (1, 'M'), (7, 'M'), (0, 'm'), (8, 'M'), (10, 'M'), (7, 'M')]],
 }
 # (level dB at start, at end, tempo factor at start, at end)  - dB is scaled by the Dynamics setting
 SHAPE = {'tension': (-17, -12, 0.93, 0.92), 'sorrow': (-12, -9.5, 0.96, 0.95), 'resolve': (-9, -3, 0.98, 1.05),
-         'glory': (-1, 0, 1.07, 1.07), 'reflection': (-14, -15.5, 0.87, 0.82), 'resolution': (-8, -9, 0.84, 0.64)}
+         'glory': (-1, 0, 1.07, 1.07), 'battle': (-4, -1.5, 1.12, 1.15), 'reflection': (-14, -15.5, 0.87, 0.82), 'resolution': (-8, -9, 0.84, 0.64)}
 
 RH = [[(0, 2), (2, 1), (3, 1)], [(0, 1.5), (1.5, 0.5), (2, 2)], [(0, 3), (3, 1)], [(0, 1), (1, 1), (2, 2)],
       [(0, 2), (2, 2)], [(0, 1), (1, 0.5), (1.5, 0.5), (2, 2)], [(0, 2.5), (2.5, 0.5), (3, 1)]]
@@ -103,6 +125,30 @@ def spread(ch, root, lo, hi, n):
         return ts
     idx = sorted({round(i * (len(ts) - 1) / (n - 1)) for i in range(n)})
     return [ts[i] for i in idx]
+
+
+def gliss(S, track, beat, beats, ch, lo, hi, up=True, v0=0.35, v1=0.7):
+    """Harp glissando: every scale note between lo and hi, spread evenly over `beats` starting at `beat`."""
+    r = S.root
+    cp = cpcs(ch, r)
+    ms = [m for m in range(lo, hi + 1) if (m - r) % 12 in SC or m % 12 in cp]
+    ms = [m for m in ms if not ((m - r) % 12 == 10 and (r + 11) % 12 in cp)]
+    if not up:
+        ms = ms[::-1]
+    k_n = len(ms)
+    for k, m in enumerate(ms):
+        S.add(track, beat + beats * k / k_n, 1.2 if k == k_n - 1 else 0.5, m, _ramp(v0, v1, k / max(1, k_n - 1)))
+
+
+def rip(S, track, beat, target, ch, vel=0.9, span=0.4):
+    """Brass rip: a fast run up the scale into `target`, landing on `beat`."""
+    ms = []
+    m = target - 10
+    while m < target:
+        ms.append(m)
+        m = scale_above(m, S.root, ch)
+    for k, m in enumerate(ms):
+        S.add(track, beat - span + span * k / len(ms), span / len(ms) * 1.3, m, _ramp(0.35, vel, k / max(1, len(ms) - 1)))
 
 
 # ----------------------------------------------------------------------------- the theme
@@ -197,6 +243,13 @@ def act_tension(S, b0, n, prog, theme, cfg):
                 S.add('trem', beat, 4.05, m, _ramp(0.12, 0.3, (bar - n // 2) / max(1, n // 2)))
         if bar >= n - 4:
             S.add('vn_hi', beat, 4.05, near((r + ch[0] + 7) % 12, 86), 0.18)
+    # foreshadowing: the trombones hint at the theme, twice as slow, pianissimo
+    start = n // 2
+    span = n - start
+    if span >= 4:
+        aug = [prog[(start + 2 * k) % len(prog)] for k in range(8)]
+        for (b, d, m, acc) in realize(theme, aug, r, 3, 0, max(1, span // 2), 0.0):
+            S.add('tbn', b0 + start * 4 + b * 2, d * 2 + 0.1, m, 0.24 + 0.08 * acc)
 
 
 def act_sorrow(S, b0, n, prog, theme, cfg):
@@ -224,6 +277,8 @@ def act_sorrow(S, b0, n, prog, theme, cfg):
                 S.add('horns', beat, 7.5, m, _ramp(0.28, 0.42, x))
         if cfg['woodwinds'] and bar >= n - 4 and bar % 2 == 1:           # a clarinet sighs back at the piano
             S.add('clar', beat + 2, 2, chord_tone(ch, r, 62), 0.3)
+        if bar == n - 1:                                                 # harp sweeps up into what comes next
+            gliss(S, 'harp', beat + 3, 1, ch, 43, 84, True, 0.3, 0.6)
 
 
 def _ostinato(S, track, beat, ch, r, lo, vel):
@@ -250,6 +305,12 @@ def act_resolve(S, b0, n, prog, theme, cfg):
             x = (rep * 32 + b) / (n * 4)
             S.add('vn1', b0 + rep * 32 + b, d, m, _ramp(0.55, 0.85, x) * acc)
             S.add('va', b0 + rep * 32 + b, d, m - 12, _ramp(0.5, 0.75, x) * acc)
+    if n >= 16:                                              # second time round the horns answer in canon, 2 bars behind
+        sh = [prog[(k + 2) % len(prog)] for k in range(8)]
+        for (b, d, m, acc) in realize(theme, sh, r, 4, 0, 6, 0.12):
+            beat = b0 + 32 + 8 + b
+            if beat < b0 + n * 4 - 1:
+                S.add('horns', beat, d, m, 0.72 * acc)
     prev = None
     for bar in range(n):
         ch = prog[bar % len(prog)]
@@ -263,9 +324,13 @@ def act_resolve(S, b0, n, prog, theme, cfg):
         S.add('cb', beat, 4.08, 28 + (r + ch[0] - 4) % 12, _ramp(0.45, 0.75, x))
         hv = [chord_tone(ch, r, x) for x in prev] if prev else spread(ch, r, 55, 67, 2)
         prev = hv
-        for h in (0, 2):                                     # horns: noble, sustained
-            for m in hv:
-                S.add('horns', beat + h, 2.05, m, _ramp(0.5, 0.78, x))
+        if bar < n // 2 or n < 16:
+            for h in (0, 2):                                 # horns: noble, sustained
+                for m in hv:
+                    S.add('horns', beat + h, 2.05, m, _ramp(0.5, 0.78, x))
+        elif cfg['choir']:
+            for m in spread(ch, r, 55, 72, 3):               # the choir enters, softly, on "oo"
+                S.add('choir_oo', beat, 4.08, m, _ramp(0.3, 0.55, x))
         if bar >= n // 2:
             y = (bar - n // 2) / max(1, n // 2 - 1)
             S.add('tpt', beat, 4.05, chord_tone(ch, r, 72), _ramp(0.5, 0.78, y))
@@ -276,14 +341,19 @@ def act_resolve(S, b0, n, prog, theme, cfg):
             else:                                            # ... and short marcato statements
                 for (o, d, v) in ((0, 0.5, 0.95), (0.75, 0.25, 0.8), (2, 1.4, 0.92)):
                     for m in low:
-                        S.add('tbn', beat + o, d, m, v)
+                        S.add('tbn_marc', beat + o, d, m, v)
             S.add('tuba', beat, 4.05, 24 + (r + ch[0] - 0) % 12 + (12 if (r + ch[0]) % 12 < 4 else 0), _ramp(0.55, 0.8, y))
+            S.add('cbtbn', beat, 4.05, low_root(ch, r, 28), _ramp(0.45, 0.7, y))
         tm = near((r + ch[0]) % 12, 45)
         if bar < n - 1:
             S.add('timp', beat, 1.0, tm, _ramp(0.35, 0.6, x))
         else:                                                # the roll that throws the door open
             for k in range(32):
                 S.add('timp', beat + k * 0.125, 0.2, tm, 0.25 + 0.6 * k / 31)
+
+
+def low_root(ch, r, lo):
+    return lo + (r + ch[0] - lo) % 12
 
 
 def act_glory(S, b0, n, prog, theme, cfg):
@@ -313,9 +383,26 @@ def act_glory(S, b0, n, prog, theme, cfg):
         for (o, d, m) in ((0, 1.5, five), (1.5, 0.5, five), (2, 0.33, five), (2.33, 0.33, five), (2.67, 0.33, five), (3, 1, top)):
             S.add('tpt', beat + o, d, m, 0.9 if o in (0, 3) else 0.78)   # blazing fanfare
         low = spread(ch, r, 38, 55, 3)
+        fall = bar % 8 == 7 and bar < n - 1
         for m in low:
-            S.add('tbn', beat, 0.6, m, 0.98)                 # sforzando ...
-            S.add('tbn', beat + 0.6, 3.45, m, 0.72)          # ... into a weighty sustain
+            S.add('tbn_marc', beat, 0.6, m, 0.98)            # sforzando ...
+            S.add('tbn', beat + 0.6, 2.7 if fall else 3.45, m, 0.72)   # ... into a weighty sustain
+        if fall:                                             # trombone fall at the end of the phrase
+            top = max(low)
+            for k in range(6):
+                S.add('tbn', beat + 3.3 + k * 0.1, 0.14, top - 1 - k, 0.75 - 0.08 * k)
+        if bar % 4 == 0 and bar > 0:                         # horn rip into the phrase
+            cur = [m for (b, d, m) in mel if b <= beat < b + d]
+            rip(S, 'horns', beat, (cur[0] - 24) if cur else chord_tone(ch, r, 65), ch)
+        S.add('cbsn', beat, 4.05, low_root(ch, r, 22), 0.7)
+        S.add('cbtbn', beat, 4.05, low_root(ch, r, 28), 0.85)
+        if cfg['choir']:
+            for m in spread(ch, r, 55, 79, 4):               # full choir, "aah"
+                S.add('choir', beat, 4.08, m, 0.75)
+        if cfg['hybrid'] and bar % 2 == 0:
+            S.add('sub', beat, 2.0, low_root(ch, r, 24), 0.9)
+        if cfg['glory_style'] == 'battle':
+            percussion(S, beat, bar, n, 0.95)
         S.add('tuba', beat, 4.05, 24 + rt + (12 if rt < 4 else 0), 0.85)
         S.add('cb', beat, 4.05, 28 + (rt - 4) % 12, 0.85)
         # cascading piano arpeggios cut through the tutti
@@ -334,6 +421,8 @@ def act_glory(S, b0, n, prog, theme, cfg):
                 S.add('oboe', beat + h, 2.02, c - 12, 0.55)
             for k in range(8):
                 S.add('clar', beat + k * 0.5, 0.45, arp[(k * 2) % len(arp)] if arp else 60, 0.42)
+        if bar == 0:                                         # harp glissando sweeping up out of the silence
+            gliss(S, 'harp', beat, 1, ch, 48, 91, True, 0.5, 0.85)
         tm, t5 = near(rt, 45), near((rt + 7) % 12, 45)
         for (o, m, v) in ((0, tm, 0.98), (1.5, t5, 0.7), (2, tm, 0.88), (3.5, t5, 0.72)):
             S.add('timp', beat + o, 0.8, m, v)
@@ -347,8 +436,67 @@ def act_glory(S, b0, n, prog, theme, cfg):
             S.hit('cym', beat, 0.9)
 
 
+TAIKO = ['X..x..x.X.x.x...', 'X.x.X..xX.x.Xxxx']
+
+
+def percussion(S, beat, bar, n, v):
+    """Trailer percussion ensemble: taiko patterns, snare rolls into each phrase, anvil on the backbeat."""
+    pat = TAIKO[1] if bar % 4 == 3 else TAIKO[0]
+    for k, c in enumerate(pat):
+        if c != '.':
+            S.hit('taiko', beat + k * 0.25, v * (1.0 if c == 'X' else 0.72))
+    if bar % 2 == 1:
+        S.hit('anvil', beat + 1, v * 0.7)
+        S.hit('anvil', beat + 3, v * 0.75)
+    if bar % 4 == 3 or bar == n - 1:
+        for k in range(16):                                  # snare roll, crescendo
+            S.hit('snare', beat + 2 + k * 0.125, v * (0.35 + 0.6 * k / 15))
+    else:
+        for o in (1, 3):
+            S.hit('snare', beat + o, v * 0.55)
+
+
+def act_battle(S, b0, n, prog, theme, cfg):
+    r = S.root
+    for (b, d, m, acc) in realize(theme, prog, r, 4, 0, min(n, 4), 0.05):      # the theme, now a battle cry
+        for rep_ in range(max(1, n // 4)):
+            if b0 + rep_ * 16 + b < b0 + n * 4:
+                S.add('horns', b0 + rep_ * 16 + b, d, m, 0.85 * acc)
+    for bar in range(n):
+        ch = prog[bar % len(prog)]
+        beat = b0 + bar * 4
+        x = bar / max(1, n - 1)
+        _ostinato(S, 'spicc_lo', beat, ch, r, 36, _ramp(0.8, 0.95, x))
+        hi = spread(ch, r, 62, 79, 3)
+        for k in range(16):
+            S.add('spicc_hi', beat + k * 0.25, 0.2, hi[k % len(hi)] if k % 4 else hi[0], _ramp(0.6, 0.85, x))
+        low = spread(ch, r, 38, 55, 3)
+        for (o, v) in ((0, 0.98), (0.75, 0.8), (1.5, 0.9), (2.5, 0.85), (3, 0.92), (3.5, 0.85)):   # staccato brass
+            for m in low:
+                S.add('tbn_marc', beat + o, 0.25, m, v)
+        for o in (1.5, 3.5):
+            S.add('tpt', beat + o, 0.3, chord_tone(ch, r, 74), 0.85)
+        S.add('tuba', beat, 1.5, low_root(ch, r, 28), 0.85)
+        S.add('tuba', beat + 2, 1.5, low_root(ch, r, 28), 0.8)
+        S.add('cbtbn', beat, 1.0, low_root(ch, r, 28), 0.85)
+        S.add('cb', beat, 4.05, 28 + (r + ch[0] - 4) % 12, 0.8)
+        tm = near((r + ch[0]) % 12, 45)
+        for k in range(8):
+            S.add('timp', beat + k * 0.5, 0.4, tm if k % 2 == 0 else near((r + ch[0] + 7) % 12, 45), 0.85 if k % 4 == 0 else 0.6)
+        if cfg['choir']:
+            for m in spread(ch, r, 50, 67, 3):
+                S.add('choir_oo', beat, 4.08, m, 0.7)
+        if cfg['hybrid']:
+            S.add('sub', beat, 1.5, low_root(ch, r, 24), 0.9)
+        percussion(S, beat, bar, n, 0.9)
+        S.hit('bdrum', beat, 0.9)
+        if bar % 4 == 0:
+            S.hit('cym', beat, 0.8)
+
+
 def act_reflection(S, b0, n, prog, theme, cfg):
     r = S.root
+    gliss(S, 'harp', b0, 1.5, prog[0], 60, 91, False, 0.35, 0.18)        # a soft harp sweep down into the stillness
     frag = realize(theme, prog, r, 5, 0, min(4, n), 0.1)
     for (b, d, m, acc) in frag:
         S.add('piano', b0 + b, d, m, 0.4 * acc * cfg['piano_v'])
@@ -401,19 +549,25 @@ def act_resolution(S, b0, n, prog, theme, cfg):
     for m in spread(final, r, 53, 67, 2):
         S.add('horns', beat, L, m, 0.45)
     S.add('piano', beat + 1, 8, chord_tone(final, r, 84), 0.3 * cfg['piano_v'])
+    S.add('cbsn', beat, L, 22 + (r - 22) % 12, 0.4)
+    if cfg['choir']:
+        for m in spread(final, r, 55, 76, 4):                # the choir's last, held "oo"
+            S.add('choir_oo', beat, L, m, 0.4)
     tm = near(r, 45)
     for k in range(int(min(L, 12) / 0.125)):                 # a whisper of timpani under it, dying away
         S.add('timp', beat + k * 0.125, 0.2, tm, 0.2 * (1 - k / (min(L, 12) / 0.125)))
 
 
-WRITERS = {'tension': act_tension, 'sorrow': act_sorrow, 'resolve': act_resolve, 'glory': act_glory,
+WRITERS = {'tension': act_tension, 'sorrow': act_sorrow, 'resolve': act_resolve, 'battle': act_battle, 'glory': act_glory,
            'reflection': act_reflection, 'resolution': act_resolution}
 
 
 def settings(opts):
     cfg = dict(DEFAULTS)
-    cfg.update({k: v for k, v in (getattr(opts, 'journey', None) or {}).items() if k in DEFAULTS})
-    acts = [a for a in ACT_IDS if a in (cfg.get('acts') or ACT_IDS)] or ACT_IDS
+    user = getattr(opts, 'journey', None) or {}
+    cfg.update(PRESETS.get(user.get('preset'), {}))
+    cfg.update({k: v for k, v in user.items() if k in DEFAULTS})
+    acts = [a for a in ACT_IDS if a in (cfg.get('acts') or HERO)] or HERO
     cfg['acts'] = acts
     for k in ('piano', 'rubato', 'dynamics'):
         try:
@@ -422,6 +576,11 @@ def settings(opts):
             cfg[k] = DEFAULTS[k]
     cfg['ending'] = 'minor' if cfg.get('ending') == 'minor' else 'major'
     cfg['woodwinds'] = bool(cfg.get('woodwinds', True))
+    for k in ('lift', 'choir', 'hybrid'):
+        cfg[k] = bool(cfg.get(k))
+    cfg['glory_style'] = 'battle' if cfg.get('glory_style') == 'battle' else 'concert'
+    ln = cfg.get('lengths') if isinstance(cfg.get('lengths'), dict) else {}
+    cfg['lengths'] = {a: max(0.25, min(3.0, float(v))) for a, v in ln.items() if a in ACT_IDS and isinstance(v, (int, float))}
     cfg['piano_v'] = 0.55 + 0.6 * cfg['piano']
     return cfg
 
@@ -441,11 +600,19 @@ def compose_journey(st, opts, key, bpm, rng):
     picks = {a: random.Random(f'{opts.seed}-{a}').randrange(len(PROGS.get(a, [[0]]))) for a in ACT_IDS}
     for i, act in enumerate(cfg['acts']):
         base = dict((a, b) for a, _, b in ACTS)[act]
-        n = int(max(4, round(base * scale / 4) * 4))
+        n = int(max(4, round(base * scale * cfg['lengths'].get(act, 1.0) / 4) * 4))
         if act in ('resolve', 'glory', 'sorrow'):
             n = max(8, int(round(n / 8) * 8))
         prog = PROGS[act][picks[act]] if act in PROGS else None
+        mark = len(S.evs)
         WRITERS[act](S, bar * 4, n, prog, theme, cfg)
+        lifted = 0
+        if act == 'glory' and cfg['lift'] and n >= 8:          # the last half of the climax lifts a whole step
+            half = (bar + n // 2) * 4
+            for e in S.evs[mark:]:
+                if e.beat >= half and e.track not in UNPITCHED:
+                    e.midi += 2
+            lifted = 2
         l0, l1, f0, f1 = SHAPE[act]
         lv0, lv1 = 10 ** (l0 * dyn / 20), 10 ** (l1 * dyn / 20)
         label = dict((a, l) for a, l, _ in ACTS)[act]
@@ -453,22 +620,30 @@ def compose_journey(st, opts, key, bpm, rng):
         if act == 'glory':
             o.update(drop=True, crash=True)
             fx.append(('impact', bar * 4, 0))
+            if lifted:
+                o['key_change_at'] = bar + n // 2
         if act == 'tension':
             o['filter_in'] = False
         sections.append(dict(name=label, bar=bar, bars=n, layers=sorted({'bass', 'pad', 'lead', 'chords', 'arp', 'kick', 'top'}),
-                             opts=o, index=i, src=i, copy=False, act=act))
+                             opts=o, index=i, src=i, copy=False, act=act, key_change=lifted or None))
         b0 = bar * 4
         tempo.append((b0, bpm * f0))
         if act == 'glory':                                   # broaden into the last bars (allargando)
             tempo.append((b0 + (n - 2) * 4, bpm * f1))
             tempo.append((b0 + n * 4 - 0.01, bpm * 0.9))
-        elif act == 'resolve':                               # drive forward, then one held breath before the climax
+        elif act in ('resolve', 'battle'):                   # drive forward, then one held breath before the climax
             tempo.append((b0 + (n - 1) * 4, bpm * f1))
             tempo.append((b0 + n * 4 - 0.01, bpm * 0.93))
         else:
             tempo.append((b0 + n * 4 - 0.01, bpm * f1))
-        if act == 'resolve' and i + 1 < len(cfg['acts']) and cfg['acts'][i + 1] == 'glory':
-            fx.append(('swell', b0 + (n - 1) * 4, 4))
+        nxt = cfg['acts'][i + 1] if i + 1 < len(cfg['acts']) else None
+        if nxt == 'glory':
+            # suspended-cymbal roll swelling to the edge ... one beat of total silence ... then everything at once
+            fx.append(('cymroll', b0 + (n - 2) * 4, 7))
+            fx.append(('gap', b0 + n * 4 - 1, 1))
+        elif nxt in ('resolve', 'battle', 'resolution'):
+            fx.append(('cymroll', b0 + (n - 1) * 4, 4))      # a cymbal swell into the next act
+            S.hit('cym', b0 + n * 4, 0.55 if nxt == 'resolution' else 0.75)
         expr_pts.append((b0, lv0))
         expr_pts.append((b0 + n * 4 - 0.5, lv1))
         bar += n

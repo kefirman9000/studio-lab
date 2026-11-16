@@ -2845,7 +2845,17 @@ style('cinematic_journey', 'Orchestral', 'The ultimate orchestral generator - an
               T('clar', 'chords', 'clarinet', rev=0.5, pan=0.1, db=-26),
               T('timp', 'bass', 'timpani', rev=0.5, pan=0.08, db=-18),
               T('bdrum', 'kick', 'taiko', rev=0.5, db=-17),
-              T('cym', 'top', 'crash', real='orchcrash', rev=0.6, pan=0.15, db=-24)],
+              T('cym', 'top', 'crash', real='orchcrash', rev=0.6, pan=0.15, db=-24),
+              T('tbn_marc', 'bass', 'trombone', rev=0.5, pan=0.22, db=-19, rig_role='trombone_marcato'),
+              T('cbsn', 'bass', 'bassoon', rev=0.45, pan=0.15, db=-24),
+              T('cbtbn', 'bass', 'trombone', rev=0.5, pan=0.28, db=-21, rig_role='trombone'),
+              T('choir', 'pad', 'choir', rev=0.65, db=-21, swell=0.25, p=dict(vowel='a')),
+              T('choir_oo', 'pad', 'choir', rev=0.65, db=-23, swell=0.35, p=dict(vowel='o')),
+              T('harp', 'arp', 'harp', rev=0.55, pan=-0.3, db=-22),
+              T('sub', 'bass', 'sinebass', rev=0.0, db=-18),
+              T('taiko', 'kick', 'taiko', rev=0.4, pan=-0.1, db=-15),
+              T('snare', 'snare', 'snare', rev=0.45, pan=0.1, db=-22),
+              T('anvil', 'top', 'anvil', rev=0.45, pan=0.3, db=-27)],
       master=dict(lufs=-16.0, air=1.2, low=1.6, gentle=True))
 LABELS['cinematic_journey'] = 'Cinematic Journey (ultimate orchestral)'
 
