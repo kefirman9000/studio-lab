@@ -140,9 +140,44 @@ HALFTIME_FORM_B = [
     ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'drop': True}),
     ('outro', 8, {'chords', 'pad'}, {'fade': True}),
 ]
+GROOVE_FORM = [  # DJ-style: parts enter one by one, a long filtered breakdown, no snare-roll build
+    ('intro', 16, {'kick', 'top'}, {'filter_in': True}),
+    ('verse', 16, {'kick', 'top', 'snare', 'bass'}, {}),
+    ('verse', 16, {'kick', 'top', 'snare', 'bass', 'arp'}, {'crash': True}),
+    ('break', 16, {'top', 'pad', 'chords', 'arp'}, {'build': True}),
+    ('drop', 32, {'kick', 'top', 'snare', 'bass', 'chords', 'arp', 'lead'}, {'drop': True}),
+    ('outro', 16, {'kick', 'top', 'bass'}, {'fade': True}),
+]
+DNB_FORM = [  # bar counts (except build-ups) are doubled at drum & bass tempos
+    ('intro', 8, {'top', 'pad', 'chords'}, {'filter_in': True}),
+    ('build', 8, {'top', 'snare', 'pad', 'chords', 'arp'}, {'build': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad'}, {'drop': True}),
+    ('break', 8, {'pad', 'chords', 'lead', 'top'}, {'alt': True, 'crash': True}),
+    ('build', 8, {'top', 'snare', 'chords', 'arp'}, {'build': True, 'alt': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'drop': True}),
+    ('outro', 8, {'kick', 'snare', 'top', 'bass'}, {'fade': True}),
+]
+AMAPIANO_FORM = [
+    ('intro', 16, {'top', 'chords', 'pad'}, {'filter_in': True}),
+    ('verse', 16, {'kick', 'top', 'snare', 'chords', 'pad'}, {}),
+    ('drop', 16, {'kick', 'top', 'snare', 'bass', 'chords', 'pad', 'lead'}, {'drop': True}),
+    ('break', 8, {'top', 'chords', 'pad'}, {'build': True}),
+    ('drop', 16, {'kick', 'top', 'snare', 'bass', 'chords', 'pad', 'lead', 'arp'}, {'drop': True}),
+    ('verse', 16, {'kick', 'top', 'bass', 'chords', 'arp'}, {}),
+    ('outro', 16, {'kick', 'top', 'chords'}, {'fade': True}),
+]
+GARAGE_FORM = [
+    ('intro', 8, {'top', 'chords', 'pad'}, {'filter_in': True}),
+    ('verse', 16, {'kick', 'snare', 'top', 'bass', 'chords'}, {}),
+    ('hook', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad'}, {'crash': True}),
+    ('verse', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {}),
+    ('break', 4, {'top', 'chords'}, {'build': True}),
+    ('hook', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad', 'arp'}, {'drop': True}),
+    ('outro', 8, {'kick', 'snare', 'top', 'chords'}, {'fade': True}),
+]
 FORM_VARIANTS = {'edm': ['edm_b', 'edm_c'], 'song': ['song_b'], 'halftime': ['halftime_b'], 'trap': ['halftime_b']}
 
-FORMS = {'edm_b': EDM_FORM_B, 'edm_c': EDM_FORM_C, 'song_b': SONG_FORM_B, 'halftime_b': HALFTIME_FORM_B, 'edm': EDM_FORM, 'halftime': HALFTIME_FORM, 'trap': TRAP_FORM, 'lofi': LOFI_FORM, 'ambient': AMBIENT_FORM,
+FORMS = {'groove': GROOVE_FORM, 'dnb': DNB_FORM, 'amapiano': AMAPIANO_FORM, 'garage': GARAGE_FORM, 'edm_b': EDM_FORM_B, 'edm_c': EDM_FORM_C, 'song_b': SONG_FORM_B, 'halftime_b': HALFTIME_FORM_B, 'edm': EDM_FORM, 'halftime': HALFTIME_FORM, 'trap': TRAP_FORM, 'lofi': LOFI_FORM, 'ambient': AMBIENT_FORM,
          'chip': CHIP_FORM, 'song': SONG_FORM, 'jazz': JAZZ_FORM, 'cinematic': CINEMATIC_FORM, 'orchestral': ORCH_FORM}
 
 FOUR = 'X...X...X...X...'
@@ -1028,3 +1063,10 @@ def styles_by_category():
     for k, v in STYLES.items():
         out[v['category']].append(k)
     return out
+
+
+# arrangements that fit the genre better than the generic EDM build/drop form
+for _n, _f in {'techno': 'groove', 'minimal': 'groove', 'tech_house': 'groove', 'acid_house': 'groove',
+               'dnb': 'dnb', 'jungle': 'dnb', 'amapiano': 'amapiano', 'ukgarage': 'garage'}.items():
+    if _n in STYLES:
+        STYLES[_n]['form'] = _f

@@ -68,6 +68,8 @@ class Options:
     ending: str = 'auto'          # auto | hit (final chord + crash) | fade
     vocal_guide: bool = False     # also play the vocal guide melody (it is always in the MIDI export)
     bass_rhythm: str = None       # None = style | kick (bass plays with the kick drum)
+    lead_style: str = None        # None = genre | hook | arp | riff | ostinato | bell | call | chops
+    build_style: str = None       # None = genre | roll | triplet | kick_roll | filter | stutter | pause | lift | swell
     groove: str = None            # None = genre feel | straight | dilla | laidback | afro | dembow | jazz | house | funk
     mood: str = None              # dark | happy | chill | epic | dreamy | aggressive | melancholic | energetic | mysterious | romantic
 
@@ -566,6 +568,10 @@ def resolve_style(opts, rnd=None, mood=None):
 
 
 def gen_melody(key, prog, chord_bars, st, rnd, complexity):
+    from .leads import GENERATORS
+    dev = st.get('lead_device', 'hook')
+    if dev in GENERATORS:                              # genre lead device (arpeggio, riff, ostinato, bell, call, chops)
+        return GENERATORS[dev](key, prog, chord_bars, st, rnd, complexity)
     phrase_bars = 2 * len(prog) * chord_bars
     extra = rnd.sample(EXTRA_RHYTHMS, 3)
     rhs = sorted((parse_rhythm(r) for r in list(st['lead_rh']) + extra), key=len)
@@ -580,9 +586,14 @@ def gen_melody(key, prog, chord_bars, st, rnd, complexity):
     rr = [pool[idx[i % len(idx)]] for i in range(4)]
     plan8 = [rr[i] for i in rnd.choice(PHRASE_PLANS)]
     lo, hi = -3, 10
-    d = prog[0] + rnd.choice([0, 2, 4])
+    d = prog[0] + rnd.choice([0, 2, 4, 4, 7])
     while d > hi:
         d -= 7
+    contour = rnd.choice(['arch', 'rise', 'fall', 'wave', 'valley', 'arch'])   # the phrase's overall shape
+    shape = {'arch': lambda x: 0.3 + 0.6 * math.sin(math.pi * x), 'rise': lambda x: 0.2 + 0.7 * x, 'fall': lambda x: 0.85 - 0.6 * x,
+             'wave': lambda x: 0.5 + 0.3 * math.sin(4 * math.pi * x), 'valley': lambda x: 0.8 - 0.6 * math.sin(math.pi * x)}[contour]
+    seq_shift = rnd.choice([0, 1, 2, 2, -1, 3])          # bars 3-4 restate bars 1-2 a step or two higher (a sequence)
+    prev = None
     motif = {}
     notes = []
     lang = st.get('melody_lang') or 'diatonic'
@@ -600,9 +611,12 @@ def gen_melody(key, prog, chord_bars, st, rnd, complexity):
         src = b8 % 2
         for i, (step, l, c) in enumerate(rh):
             if reuse and (src, i) in motif:
-                d = motif[(src, i)]
+                d = motif[(src, i)] + (seq_shift if b8 in (2, 3) else 0)
             else:
                 d += rnd.choices(steps, w)[0]
+                target = lo + (hi - lo) * shape((bar + step / 16) / phrase_bars)
+                if abs(d - target) > 2 and rnd.random() < 0.45:   # follow the contour
+                    d += 1 if target > d else -1
                 if d > hi:
                     d = hi - (d - hi)
                 if d < lo:
@@ -610,13 +624,19 @@ def gen_melody(key, prog, chord_bars, st, rnd, complexity):
             strong = step % 4 == 0
             if strong and (reuse or rnd.random() < 0.8):
                 d = min(ct, key=lambda x: (abs(x - d), x))
+                if d == prev and len(ct) > 1 and rnd.random() < 0.65:   # don't hammer the same note
+                    d = min((x for x in ct if x != prev), key=lambda x: abs(x - d))
             if b8 < 2 and (bar < 8 or phrase_bars <= 8):
                 motif[(b8, i)] = d
             last = (b8 == 7 and i == len(rh) - 1)
+            half = (b8 == 3 and i == len(rh) - 1)
             ln = l
             if last:
                 d = min([x for x in ct if (x - chord) % 7 == 0] or ct, key=lambda x: abs(x - d))
                 ln = max(l, 16 - step)
+            elif half:                                      # mid-phrase: leave it open on the 3rd or 5th
+                d = min([x for x in ct if (x - chord) % 7 in (2, 4)] or ct, key=lambda x: abs(x - d))
+            prev = d
             vel = (0.95 if strong else 0.78) * rnd.uniform(0.9, 1.05)
             if avoid and d % 7 in avoid and not (strong and d in ct):      # pentatonic: step off the avoid notes
                 d = d + 1 if (d + 1) % 7 not in avoid and d + 1 <= hi else d - 1
@@ -735,6 +755,11 @@ def compose(opts):
     if getattr(opts, 'voicing', None) in VOICINGS:
         st['voicing'] = opts.voicing
     st['melody_lang'] = opts.melody_style if getattr(opts, 'melody_style', None) in MELODY_STYLES else GENRE_MELODY.get(sname, 'diatonic')
+    from .leads import pick_device
+    st['lead_device'] = pick_device(sname, opts.seed, getattr(opts, 'lead_style', None))
+    bsel = getattr(opts, 'build_style', None)
+    st['build_style'] = bsel if bsel in BUILD_STYLES else GENRE_BUILD.get(sname) or \
+        {'Classic': 'lift', 'Orchestral': 'swell'}.get(st.get('category'), 'roll')
     g = getattr(opts, 'groove', None)
     st['groove'] = None if g == 'straight' else (g if g in GROOVES else STYLE_GROOVE.get(sname))
     pad_voicing = rnd.choice(['close', 'close', 'open'])
@@ -813,6 +838,14 @@ def compose(opts):
         mel, ph = (mel_alt, ph_alt) if opts_s.get('alt') else ((mel_verse, ph_verse) if is_verse else (mel_main, ph_bars))
         if (ed.get('seeds') or {}).get('melody') is not None:
             mel, ph = gen_melody(key, prog, cb, st, random.Random(f"{ed['seeds']['melody']}-melody-edit"), cx)
+        if opts_s.get('build'):
+            bs = st.get('build_style', 'roll')
+            if bs in ('filter', 'kick_roll'):
+                layers |= {'kick', 'snare', 'top'} if bs == 'filter' else {'kick'}
+            elif bs == 'pause':
+                layers -= {'kick', 'snare', 'bass'}
+            elif bs == 'lift':
+                layers |= {'kick', 'snare'}
         sec_start = bar0 * 4
         sections.append(dict(name=sname, bar=bar0, bars=nbars, layers=sorted(layers), opts=opts_s, src=src, prog=list(prog),
                              copy=int(ed.get('copy', 0)), index=si, edited=bool(ed.get('seeds') or ed.get('vary') or ed.get('mute') or ed.get('bars'))))
@@ -854,14 +887,8 @@ def compose(opts):
                 s = snares[0]
                 for k, step in enumerate(rnd_d.choice([[13, 14, 15], [12, 13, 14, 15], [10, 13, 14, 15], [14, 15]])):
                     evs.append(Ev(s, beat0 + step / 4, 0.25, None, 0.55 + 0.1 * k))
-            if opts_s.get('build') and snares:
-                pb = b / max(1, nbars - 1)
-                div = 1 if pb < 0.5 else (2 if pb < 0.75 else (4 if b < nbars - 1 else 8))
-                for k in range(4 * div):
-                    pos = k / div
-                    if b == nbars - 1 and pos >= 3.5:
-                        break
-                    evs.append(Ev(snares[0], beat0 + pos, 0.25, None, 0.35 + 0.6 * (b + pos / 4) / nbars))
+            if opts_s.get('build'):
+                add_build_drums(evs, st, tracks, snares, kick_name, b, nbars, beat0, rnd_d)
             # ---------------- bass
             if 'bass' in layers and 'bass' in tracks:
                 lo = st['bass_lo']
@@ -993,9 +1020,7 @@ def compose(opts):
                             continue
                         evs.append(Ev('lead', beat, du, m, v * soft_lead))
         if opts_s.get('build'):
-            fx.append(('riser', sec_start, nbars * 4))
-            fx.append(('gap', sec_start + nbars * 4 - 0.5, 0.5))
-            fx.append(('hpsweep', sec_start, nbars * 4))
+            add_build_fx(fx, st.get('build_style', 'roll'), sec_start, nbars)
         if opts_s.get('drop'):
             fx.append(('crash', sec_start, 0))
             fx.append(('impact', sec_start, 0))
@@ -1077,6 +1102,13 @@ def apply_variation(evs, b0, b1, seed, key, st, tracks):
     return out + [a for a in added if b0 <= a.beat < b1]
 
 
+BUILD_STYLES = ['roll', 'triplet', 'kick_roll', 'filter', 'stutter', 'pause', 'lift', 'swell']
+GENRE_BUILD = {'trance': 'roll', 'bigroom': 'roll', 'progressive_house': 'roll', 'electro': 'roll', 'eurodance': 'roll',
+               'moombahton': 'roll', 'dnb': 'roll', 'jungle': 'stutter', 'hardstyle': 'kick_roll', 'future_bass': 'triplet',
+               'hyperpop': 'triplet', 'dubstep': 'stutter', 'breakcore': 'stutter', 'house': 'filter', 'deep_house': 'filter',
+               'tech_house': 'filter', 'techno': 'filter', 'minimal': 'filter', 'acid_house': 'filter', 'psytrance': 'filter',
+               'ukgarage': 'pause', 'amapiano': 'pause', 'afrobeats': 'pause', 'reggaeton': 'pause', 'synthwave': 'lift',
+               'synthpop': 'lift', 'chiptune': 'lift'}
 BIG_SECTIONS = {'chorus', 'hook', 'climax', 'theme', 'drop'}
 HIT_FORMS = {'song', 'song_b', 'jazz', 'orchestral', 'cinematic', 'trap', 'halftime', 'halftime_b', 'chip'}
 
@@ -1164,6 +1196,69 @@ STYLE_GROOVE = {'boombap': 'dilla', 'lofi': 'dilla', 'phonk': 'dilla', 'reggae':
                 'afrobeats': 'afro', 'amapiano': 'afro', 'reggaeton': 'dembow', 'moombahton': 'dembow', 'jazz': 'jazz',
                 'house': 'house', 'deep_house': 'house', 'tech_house': 'house', 'ukgarage': 'house',
                 'funk': 'funk', 'disco': 'funk', 'city_pop': 'funk'}
+
+
+def add_build_drums(evs, st, tracks, snares, kick, b, nbars, beat0, rnd):
+    """The build-up's drums, in the genre's idiom."""
+    bs = st.get('build_style', 'roll')
+    last = b == nbars - 1
+    pb = b / max(1, nbars - 1)
+    snare = snares[0] if snares else None
+
+    def roll(track, divs):
+        div = divs[0] if pb < 0.5 else (divs[1] if pb < 0.75 else (divs[2] if not last else divs[3]))
+        for k in range(int(4 * div)):
+            pos = k / div
+            if last and pos >= 3.5:
+                break
+            evs.append(Ev(track, beat0 + pos, 0.25, None, 0.35 + 0.6 * (b + pos / 4) / nbars))
+    if bs == 'roll' and snare:
+        roll(snare, (1, 2, 4, 8))
+    elif bs == 'triplet' and snare:
+        roll(snare, (1, 1.5, 3, 6))                     # triplet subdivisions
+    elif bs == 'kick_roll' and kick in tracks:
+        roll(kick, (1, 2, 4, 4))
+    elif bs == 'stutter' and snare:
+        if b >= nbars - 2:                              # chopped, stuttering last two bars
+            for k in range(16 if not last else 12):
+                if rnd.random() < 0.85:
+                    evs.append(Ev(snare, beat0 + k / 4, 0.12, None, 0.5 + 0.4 * k / 16))
+        else:
+            for pos in (1, 3):
+                evs.append(Ev(snare, beat0 + pos, 0.25, None, 0.7))
+    elif bs == 'filter' and last and snare and rnd.random() < 0.6:
+        for k in range(4):                              # a little clap/snare push into the drop
+            evs.append(Ev(snare, beat0 + 2 + k / 2, 0.25, None, 0.5 + 0.12 * k))
+    elif bs == 'lift' and last and snare:
+        for k in range(8):
+            evs.append(Ev(snare, beat0 + k / 2, 0.25, None, 0.4 + 0.07 * k))
+        for k in range(4):
+            evs.append(Ev(snare, beat0 + 3 + k / 4, 0.25, None, 0.85))
+    elif bs == 'swell' and snare and b >= nbars - 2:
+        for k in range(16 if not last else 14):
+            evs.append(Ev(snare, beat0 + k / 4, 0.25, None, 0.25 + 0.6 * ((b - nbars + 2) * 16 + k) / 32))
+    if bs in ('filter', 'kick_roll', 'lift') and last:   # kick drops out on the final beat
+        evs[:] = [e for e in evs if not (e.track == kick and e.beat >= beat0 + 3)]
+
+
+def add_build_fx(fx, bs, start, nbars):
+    end = start + nbars * 4
+    if bs in ('roll', 'triplet', 'kick_roll', 'stutter'):
+        fx.append(('riser', start, nbars * 4))
+        fx.append(('hpsweep', start, nbars * 4))
+        fx.append(('gap', end - (1.0 if bs == 'stutter' else 0.5), 1.0 if bs == 'stutter' else 0.5))
+    elif bs == 'filter':                                # long filter, short riser, kick-out
+        fx.append(('hpsweep', start, nbars * 4))
+        fx.append(('riser', end - 8, 8))
+        fx.append(('gap', end - 1, 1))
+    elif bs == 'pause':                                 # the band drops out, a swell, straight back in
+        fx.append(('swell', end - 4, 4))
+        fx.append(('gap', end - 0.5, 0.5))
+    elif bs == 'lift':
+        fx.append(('swell', end - 4, 4))
+    elif bs == 'swell':
+        fx.append(('riser', start, nbars * 4))
+        fx.append(('swell', end - 4, 4))
 
 
 def add_transitions(sections, evs, fx, tracks, st, opts):

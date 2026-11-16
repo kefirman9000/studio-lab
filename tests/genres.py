@@ -31,7 +31,7 @@ def main():
     assert sum(1 for e in ev if e.midi % 12 not in pcs(jazz)) > 3                # chromatic approach notes
     folk = compose(Options(style='folk', seed=4, variety=0))
     assert folk['st']['melody_lang'] == 'pentatonic'
-    blues = compose(Options(style='blues', seed=4))
+    blues = compose(Options(style='blues', seed=4, lead_style='hook'))
     assert sum(1 for e in lead(blues) if e.dur < 0.15) > 0                      # blues slides
     house = compose(Options(style='house', seed=4, melody_style='bebop', voicing='rootless', chord_color='9'))
     assert house['st']['voicing'] == 'rootless' and house['st']['melody_lang'] == 'bebop'
@@ -62,6 +62,25 @@ def main():
     assert compose(Options(style='house', seed=21))['sections'][-1].get('ending') is None   # club tracks keep the fade
     assert compose(Options(style='rock', seed=21, ending='fade'))['sections'][-1].get('ending') is None
     print('ok  fills, swells, endings')
+
+    # ---- genre build-ups and lead devices
+    from sgcore.leads import GENRE_DEVICES
+    want = {'trance': 'roll', 'techno': 'filter', 'hardstyle': 'kick_roll', 'dubstep': 'stutter', 'amapiano': 'pause', 'pop': 'lift'}
+    for name, bs in want.items():
+        assert compose(Options(style=name, seed=5))['st']['build_style'] == bs, name
+    techno = compose(Options(style='techno', seed=5))
+    assert techno['st']['form'] == 'groove' and not any(f[0] == 'riser' and f[2] > 8 for f in techno['fx'])   # no long EDM riser
+    pop = compose(Options(style='pop', seed=5, structure='auto'))
+    assert not any(f[0] == 'riser' for f in pop['fx'])                                # pop pre-choruses don't get EDM risers
+    for name in GENRE_DEVICES:
+        assert name in STYLES, name
+    for dev in ('arp', 'riff', 'ostinato', 'bell', 'call', 'chops', 'hook'):
+        song = compose(Options(style='house', seed=7, lead_style=dev))
+        assert song['st']['lead_device'] == dev and len(lead(song)) > 20, dev
+    a = {round(e.beat, 2) for e in lead(compose(Options(style='house', seed=7, lead_style='chops')))}
+    b = {round(e.beat, 2) for e in lead(compose(Options(style='house', seed=7, lead_style='arp')))}
+    assert len(a & b) / len(a | b) < 0.6                                             # devices really differ
+    print('ok  genre build-ups and lead devices')
 
     # ---- groove + bass
     bb = compose(Options(style='boombap', seed=3))
