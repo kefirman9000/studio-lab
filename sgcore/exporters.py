@@ -227,6 +227,10 @@ LMMS_PATCH = {
     'vox':      dict(osc=[(2, 70, 0, -4, 4, 0), (6, 6, 0, 0, 0, 0), (0, 0, 0, 0, 0, 0)], env=(0.012, 0.15, 0.75, 0.08), filt=(14, 1000, 0.5)),
     'choir':    dict(osc=[(2, 50, 0, -10, 10, -40), (2, 50, 0, 10, -10, 40), (6, 4, 0, 0, 0, 0)], env=(0.4, 0.5, 0.9, 0.9), filt=(14, 1000, 0.5)),
     'cowbell':  dict(osc=[(3, 60, 0, 0, 0, 0), (3, 60, 7, 0, 0, 0), (0, 0, 0, 0, 0, 0)], env=(0.001, 0.25, 0.0, 0.1), filt=(2, 1200, 1.5)),
+    'cowbell_808': dict(osc=[(3, 60, 0, 0, 0, 0), (3, 60, 7, 0, 0, 0), (0, 0, 0, 0, 0, 0)], env=(0.001, 0.15, 0.0, 0.08), filt=(2, 1200, 1.5)),
+    'cowbell_long': dict(osc=[(3, 60, 0, 0, 0, 0), (3, 60, 7, 0, 0, 0), (3, 40, 0, 6, 0, 0)], env=(0.001, 0.6, 0.0, 0.3), filt=(2, 1200, 1.5)),
+    'cowbell_dist': dict(osc=[(3, 60, 0, 0, 0, 0), (3, 60, 7, 0, 0, 0), (0, 0, 0, 0, 0, 0)], env=(0.001, 0.35, 0.0, 0.15), filt=(2, 1600, 2.5)),
+    'cowbell_crushed': dict(osc=[(3, 60, 0, 0, 0, 0), (3, 60, 7, 0, 0, 0), (0, 0, 0, 0, 0, 0)], env=(0.001, 0.35, 0.0, 0.15), filt=(2, 1600, 2.5)),
     'leadsaw':  dict(osc=[(2, 50, 0, -6, 6, 0), (2, 50, 0, 6, -6, 0), (3, 25, -12, 0, 0, 0)], env=(0.008, 0.3, 0.7, 0.18), filt=(0, 4500, 1.0)),
     'hoover':   dict(osc=[(2, 45, 0, -25, 25, -40), (2, 45, 0, 25, -25, 40), (3, 30, -12, 0, 0, 0)], env=(0.01, 0.3, 0.85, 0.2), filt=(0, 4500, 0.8)),
     'softlead': dict(osc=[(1, 80, 0, 0, 0, 0), (0, 30, 12, 0, 0, 0), (0, 0, 0, 0, 0, 0)], env=(0.07, 0.5, 0.8, 0.4)),
@@ -255,7 +259,7 @@ LMMS_SAMPLES = {
     '909': dict(snare='drumsynth/tr909/Snare.ds', clap='drumsynth/tr909/Clap.ds', chat='drumsynth/tr909/Hat-c.ds', ohat='drumsynth/tr909/Hat-o.ds'),
 }
 # measured RMS (dBFS) of each LMMS patch at vol=50, rendered in LMMS 1.2.2 - used to level-match tracks
-LMMS_CAL = {'sawbass': -19.4, 'reese': -13.5, '808': -11.5, 'sinebass': -11.5, 'chipbass': -11.5, 'wobble': -5.4, 'fmbass': -14.7, 'supersaw': -18.5, 'supersaw_lead': -18.5, 'warmpad': -34.1, 'strings': -19.3, 'stab': -24.5, 'pluck_saw': -25.7, 'epiano': -12.3, 'piano': -16.6, 'organ': -10.8, 'pluck': -26.3, 'guitar': -20.4, 'bell': -11.5, 'celesta': -11.2, 'brass': -16.9, 'horn': -16.1, 'vox': -37.0, 'choir': -35.0, 'cowbell': -23.2, 'leadsaw': -16.3, 'hoover': -15.7, 'softlead': -13.8, 'chip': -13.6, 'violin': -14.6, 'harp': -13.7, 'pizz': -25.3, 'timpani': -12.0, 'acid': -13.7, 'kick': -18.1, 'chipkick': -20.1, 'snare': -25.9, 'clap': -28.5, 'chat': -31.8, 'ohat': -22.3, 'shaker': -32.5, 'ride': -24.7, 'rim': -27.1, 'tom': -22.3, 'cowbell808': -32.1, 'conga': -27.9, 'taiko': -25.7, 'timp': -24.6, 'chipsnare': -27.1, 'chiphat': -25.9, 'crash': -31.3}
+LMMS_CAL = {'sawbass': -19.4, 'reese': -13.5, '808': -11.5, 'sinebass': -11.5, 'chipbass': -11.5, 'wobble': -5.4, 'fmbass': -14.7, 'supersaw': -18.5, 'supersaw_lead': -18.5, 'warmpad': -34.1, 'strings': -19.3, 'stab': -24.5, 'pluck_saw': -25.7, 'epiano': -12.3, 'piano': -16.6, 'organ': -10.8, 'pluck': -26.3, 'guitar': -20.4, 'bell': -11.5, 'celesta': -11.2, 'brass': -16.9, 'horn': -16.1, 'vox': -37.0, 'choir': -35.0, 'cowbell': -23.2, 'cowbell_808': -23.2, 'cowbell_long': -23.2, 'cowbell_dist': -23.2, 'cowbell_crushed': -23.2, 'leadsaw': -16.3, 'hoover': -15.7, 'softlead': -13.8, 'chip': -13.6, 'violin': -14.6, 'harp': -13.7, 'pizz': -25.3, 'timpani': -12.0, 'acid': -13.7, 'kick': -18.1, 'chipkick': -20.1, 'snare': -25.9, 'clap': -28.5, 'chat': -31.8, 'ohat': -22.3, 'shaker': -32.5, 'ride': -24.7, 'rim': -27.1, 'tom': -22.3, 'cowbell808': -32.1, 'conga': -27.9, 'taiko': -25.7, 'timp': -24.6, 'chipsnare': -27.1, 'chiphat': -25.9, 'crash': -31.3}
 LMMS_LAYER_DB = {'kick': 0, 'snare': -3, 'top': -9, 'bass': -1, 'chords': -6, 'pad': -8, 'arp': -9, 'lead': -4, 'fx': -12}
 
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.19.1
+- **The classic phonk cowbell is back.** The phonk lead no longer has forced overdrive, bit-crushing or an added echo on it: by default it's the classic pitched 808 cowbell with light saturation. Each song picks from five cowbells - classic (most often), raw 808 (dry, short), long ring (sustained with a slight chorus), distorted and crushed - and you can choose any of them as the Lead instrument.
+
 ## 1.19.0
 - **🩺 Report a problem** (header button): saves one text file - or copies it to the clipboard - with Studio Lab's version, Python / OS and library versions, your settings, sound libraries, every plugin found and why any failed to load, the genre VST packs, recent songs and installs with their errors and warnings, and the recent log. API keys, your user name, home folder and e-mail addresses are removed automatically. Add a note about what happened and send the file for help.
 - **Everything the app prints is now kept in `logs/studiolab.log`** (rotates at 2 MB), so errors are still there after the window closes.

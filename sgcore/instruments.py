@@ -513,13 +513,20 @@ def i_vox(m, dur, p, glide=None, mod=None):
 
 
 def i_cowbell(m, dur, p, glide=None, mod=None):
-    """Pitched 808-style cowbell (phonk melodies)."""
+    """Pitched 808-style cowbell (phonk melodies). The classic sound: the 808's two square oscillators a fifth-ish apart
+    (ratio 1.48) through a band-pass, a fast attack decay into a shorter ring, and light saturation for punch."""
     f = float(mtof(m))
-    n = int(min(dur + 0.4, 1.5) * SR)
+    p = p or {}
+    ring = float(p.get('ring', 5.0))                    # lower = longer tail
+    n = int(min(dur + (0.4 if ring >= 4 else 1.0), 2.2) * SR)
     t = np.arange(n) / SR
     x = square(f, n) + square(f * 1.48, n, 0.3)
-    y = bp(x, f * 0.9, f * 4) * (0.7 * np.exp(-t * 18) + 0.3 * np.exp(-t * 5))
-    p = p or {}
+    if p.get('chorus'):                                 # a second, slightly detuned cowbell for width
+        x = x + 0.6 * (square(f * 1.006, n, 0.1) + square(f * 1.48 * 1.006, n, 0.4))
+    y = bp(x, f * 0.9, f * 4) * (0.7 * np.exp(-t * float(p.get('attack_decay', 18))) + 0.3 * np.exp(-t * ring))
+    if p.get('sat', 1.6) and not p.get('drive'):        # light saturation: punchy, still clearly a cowbell
+        k = float(p.get('sat', 1.6))
+        y = soft(y / (np.max(np.abs(y)) + 1e-9) * k, 1.0) / soft(np.array([k]), 1.0)[0]
     if p.get('drive'):                       # phonk: overdriven until it cuts like a synth lead, ring held up by the clipping
         d = float(p['drive'])
         y = soft(y / (np.max(np.abs(y)) + 1e-9) * d, 1.0) / soft(np.array([d]), 1.0)[0]
@@ -531,6 +538,26 @@ def i_cowbell(m, dur, p, glide=None, mod=None):
         hold = max(1, int(1 + 5 * c))
         y = np.repeat(y[::hold], hold)[:len(y)]
     return fade_out(y, 0.03) * 0.6
+
+
+def i_cowbell_808(m, dur, p, glide=None, mod=None):
+    """Raw 808 cowbell: dry, short and clean - straight off the drum machine."""
+    return i_cowbell(m, dur, dict(p or {}, sat=0.0, ring=9.0, attack_decay=22))
+
+
+def i_cowbell_long(m, dur, p, glide=None, mod=None):
+    """Long-ringing cowbell with a slight chorus - the sustained drift-phonk lead."""
+    return i_cowbell(m, dur, dict(p or {}, ring=2.2, chorus=True, sat=2.2))
+
+
+def i_cowbell_dist(m, dur, p, glide=None, mod=None):
+    """Overdriven cowbell that cuts like a synth lead."""
+    return i_cowbell(m, dur, dict(p or {}, drive=5.0, ring=3.5))
+
+
+def i_cowbell_crushed(m, dur, p, glide=None, mod=None):
+    """Distorted and bit-crushed - the broken, lo-fi cowbell."""
+    return i_cowbell(m, dur, dict(p or {}, drive=6.0, crush=0.35, ring=3.5))
 
 
 def i_hoover(m, dur, p, glide=None, mod=None):
@@ -581,7 +608,8 @@ INSTRUMENTS = {
     'acid': i_acid, 'wobble': i_wobble, 'fmbass': i_fmbass,
     'supersaw': i_supersaw, 'warmpad': i_warmpad, 'strings': i_strings,
     'stab': i_stab, 'pluck_saw': i_pluck_saw, 'epiano': i_epiano, 'piano': i_piano, 'organ': i_organ,
-    'pluck': i_pluck, 'guitar': i_guitar, 'bell': i_bell, 'brass': i_brass, 'vox': i_vox, 'cowbell': i_cowbell,
+    'pluck': i_pluck, 'guitar': i_guitar, 'bell': i_bell, 'brass': i_brass, 'vox': i_vox, 'cowbell': i_cowbell, 'cowbell_808': i_cowbell_808,
+    'cowbell_long': i_cowbell_long, 'cowbell_dist': i_cowbell_dist, 'cowbell_crushed': i_cowbell_crushed,
     'leadsaw': i_leadsaw, 'softlead': i_softlead, 'chip': i_chip, 'hoover': i_hoover, 'supersaw_lead': i_supersaw_lead,
 }
 
@@ -591,7 +619,8 @@ INSTRUMENT_INFO = {
     'fmbass': 'FM grit bass', 'supersaw': 'Supersaw chords', 'warmpad': 'Warm analog pad', 'strings': 'String ensemble',
     'stab': 'Chord stab', 'pluck_saw': 'Saw pluck', 'epiano': 'Electric piano (Rhodes)', 'piano': 'Acoustic piano',
     'organ': 'Drawbar organ', 'pluck': 'Plucked string', 'guitar': 'Electric guitar', 'bell': 'FM bell',
-    'brass': 'Synth brass', 'vox': 'Vocal chop', 'cowbell': 'Pitched cowbell', 'leadsaw': 'Saw lead',
+    'brass': 'Synth brass', 'vox': 'Vocal chop', 'cowbell': 'Pitched cowbell (classic phonk)', 'cowbell_808': 'Pitched cowbell - raw 808',
+    'cowbell_long': 'Pitched cowbell - long ring', 'cowbell_dist': 'Pitched cowbell - distorted', 'cowbell_crushed': 'Pitched cowbell - crushed', 'leadsaw': 'Saw lead',
     'softlead': 'Soft flute-like lead', 'chip': '8-bit pulse', 'hoover': 'Rave hoover', 'supersaw_lead': 'Supersaw lead',
 }
 
@@ -600,7 +629,7 @@ ROLE_CHOICES = {
     'chords': ['stab', 'supersaw', 'epiano', 'piano', 'organ', 'pluck', 'guitar', 'strings', 'brass', 'pluck_saw', 'warmpad', 'bell', 'chip'],
     'pad': ['supersaw', 'warmpad', 'strings', 'organ', 'vox'],
     'arp': ['pluck_saw', 'bell', 'pluck', 'chip', 'epiano', 'piano', 'acid', 'supersaw_lead'],
-    'lead': ['leadsaw', 'supersaw_lead', 'pluck', 'bell', 'softlead', 'chip', 'hoover', 'vox', 'brass', 'piano', 'epiano', 'cowbell', 'acid', 'organ'],
+    'lead': ['leadsaw', 'supersaw_lead', 'pluck', 'bell', 'softlead', 'chip', 'hoover', 'vox', 'brass', 'piano', 'epiano', 'cowbell', 'cowbell_808', 'cowbell_long', 'cowbell_dist', 'cowbell_crushed', 'acid', 'organ'],
 }
 
 
@@ -753,7 +782,7 @@ GM_PROGRAM = {
     'sawbass': 38, 'reese': 39, '808': 38, 'sinebass': 38, 'chipbass': 38, 'acid': 38, 'wobble': 39, 'fmbass': 39,
     'violin': 40, 'strings': 48, 'pizz': 45, 'harp': 46, 'timpani': 47, 'choir': 52, 'vox': 54,
     'brass': 61, 'horn': 60, 'softlead': 73, 'leadsaw': 81, 'supersaw_lead': 81, 'hoover': 81, 'chip': 80,
-    'supersaw': 90, 'warmpad': 89, 'stab': 62, 'pluck_saw': 84, 'cowbell': 113,
+    'supersaw': 90, 'warmpad': 89, 'stab': 62, 'pluck_saw': 84, 'cowbell': 113, 'cowbell_808': 113, 'cowbell_long': 113, 'cowbell_dist': 113, 'cowbell_crushed': 113,
 }
 
 

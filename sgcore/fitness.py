@@ -4,6 +4,7 @@ Each check measures the finished song (not the settings that made it): tempo, wh
 sections, swing, the low end, signature sounds. Profiles follow common production practice (tempo ranges and rhythmic
 skeletons from the genre reference guides); genres without their own profile are checked against their family's rules.
 """
+COWBELLS = {'phonkbell', 'cowbell', 'cowbell_808', 'cowbell_long', 'cowbell_dist', 'cowbell_crushed'}
 from collections import Counter
 
 # tempo ranges (BPM) per genre, from production practice
@@ -36,8 +37,8 @@ SWUNG = {'jazz', 'swing', 'boombap', 'lofi', 'rnb', 'hauntology', 'gospel'}
 SUB_BASS = {'dubstep', 'brostep', 'melodic_dubstep', 'dnb', 'liquid_dnb', 'neurofunk', 'jungle'}
 SLIDING_808 = {'trap', 'phonk', 'brazilian_phonk', 'uk_drill', 'memphis_phonk', 'luxury_rap', 'orchestral_hiphop'}
 SIGNATURE = {   # genre -> (part, instruments, label): the sound that defines it
-    'phonk': ('lead', {'phonkbell', 'cowbell'}, 'cowbell melody'), 'house_phonk': ('lead', {'phonkbell', 'cowbell'}, 'cowbell melody'), 'brazilian_phonk': ('lead', {'phonkbell', 'cowbell'}, 'cowbell melody'),
-    'memphis_phonk': ('lead', {'phonkbell', 'cowbell', 'bell', 'piano'}, 'eerie bell / cowbell loop'),
+    'phonk': ('lead', COWBELLS, 'cowbell melody'), 'house_phonk': ('lead', COWBELLS, 'cowbell melody'), 'brazilian_phonk': ('lead', COWBELLS, 'cowbell melody'),
+    'memphis_phonk': ('lead', COWBELLS | {'bell', 'piano'}, 'eerie bell / cowbell loop'),
     'acid_house': ('bass', {'acid'}, '303 acid bass'), 'dubstep': ('bass', {'wobble', 'growl', 'reese'}, 'modulated mid-bass'),
     'brostep': ('bass', {'growl', 'wobble', 'fmbass', 'reese'}, 'aggressive mid-bass'),
     'neurofunk': ('bass', {'growl', 'reese', 'fmbass', 'wobble'}, 'neuro / reese bass'),

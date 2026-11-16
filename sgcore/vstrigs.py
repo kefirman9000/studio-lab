@@ -188,7 +188,7 @@ ROLE_PATCHES = {
     'piano': ['dexed.piano'], 'harpsichord': ['dexed.harpsichord'], 'flute': ['dexed.flute'],
     'epiano': ['dexed.epiano'], 'clav': ['dexed.clav'], 'marimba': ['dexed.marimba'], 'bell': ['dexed.bells', 'dexed.chime', 'dexed.vibes'],
     'celesta': ['dexed.chime', 'dexed.vibes'],
-    'steeldrum': ['dexed.steeldrum'], 'kalimba': ['dexed.koto'], 'cowbell': [], 'organ': ['dexed.organ'],
+    'steeldrum': ['dexed.steeldrum'], 'kalimba': ['dexed.koto'], 'cowbell': [], 'cowbell_808': [], 'cowbell_long': [], 'cowbell_dist': [], 'cowbell_crushed': [], 'organ': ['dexed.organ'],
     'polysynth': ['tal.pluck', 'tal.analog_pad', 'surge.pluck'], 'synthbrass': ['tal.brass_stab', 'dexed.brass'],
     'moogbass': ['tal.fat_bass', 'tal.saw_bass', 'surge.saw_bass'], 'glasspad': ['surge.wide_pad', 'dexed.chime'],
     'solina': ['tal.strings'], 'wurli': ['dexed.epiano'], 'vibes': ['dexed.vibes'],

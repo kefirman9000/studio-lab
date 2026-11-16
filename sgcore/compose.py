@@ -564,7 +564,8 @@ def apply_variety(st, opts, rnd):
             t['p']['res'] *= rr.uniform(1 - 0.2 * v, 1 + 0.15 * v)
         if t['rev']:
             t['rev'] *= rnd.uniform(1 - 0.4 * v, 1 + 0.4 * v)
-        if t['dly'] or (role in ('lead', 'arp') and rnd.random() < 0.3 * v):
+        dry_cowbell = role == 'lead' and t['inst'].startswith('cowbell')     # the phonk cowbell stays dry: no added echo
+        if not dry_cowbell and (t['dly'] or (role in ('lead', 'arp') and rnd.random() < 0.3 * v)):
             t['dly'] = max(t['dly'], 0.2) * rnd.uniform(0.7, 1.3)
         tracks.append(t)
     st['tracks'] = tracks
