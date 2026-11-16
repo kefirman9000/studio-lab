@@ -278,7 +278,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const LEVELS=[['drums','Drums',['kick','snare','top']],['bass','Bass',['bass']],['chords','Chords',['chords']],['pad','Pad',['pad']],['arp','Arp',['arp']],['lead','Lead',['lead']]];
-let META=null, state={style:'house', part_fx:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
+let META=null, state={orch_plugin:(()=>{try{return !!localStorage.getItem('sl_orch_plugin')}catch(_){return false}})(), style:'house', part_fx:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
   muted:[], instruments:{}, blend_parts:{}, outputs:['mp3','midi','lmms','waveform']};
 const LAYERS=[['kick','Kick'],['snare','Snare/Clap'],['top','Hats & Perc'],['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead'],['fx','FX']];
 const OUTS=[['mp3','MP3'],['wav','WAV'],['midi','MIDI'],['stems','Stems'],['daw','DAW pack (Ableton, FL, Logic, Reaper)'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack']];
@@ -404,6 +404,7 @@ function options(){
   if($('#leadStyle').value) o.lead_style=$('#leadStyle').value;
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
   if($('#vinyl').value) o.vinyl=$('#vinyl').value==='on';
+  if(state.orch_plugin) o.orch_plugin=true;
   if($('#bassRhythm').value) o.bass_rhythm=$('#bassRhythm').value;
   if($('#ending').value!=='auto') o.ending=$('#ending').value;
   if($('#counter').value) o.counter=$('#counter').value;
@@ -802,7 +803,10 @@ async function vstModal(){
     <p class="hint">Play any part with your own <b>VST3</b> or <b>Audio Unit</b> (Mac) instruments — e.g. Vital, Surge XT, Spitfire LABS. Create a sound (the plugin's own window opens; pick a preset, then close it),
      then choose it under <b>Sound</b> as “VST: …”. Each plugin runs in its own process, so if one misbehaves that part simply falls back to the built-in sound. VST2-only plugins (.dll) aren't supported by the plugin engine.</p>
     ${V.available?'<p><span class="tag ok">VST support installed</span></p>':`<div class="sel"><b>One-time setup:</b> VST support needs the free <i>pedalboard</i> library (by Spotify).<div class="row" style="margin-top:8px"><button class="btn p" id="vInst">Install VST support</button><span class="hint">needs internet · about 30 MB</span></div><pre id="vLog" class="hint" style="max-height:140px;overflow:auto"></pre></div>`}
-    <div class="sel" style="margin:10px 0"><b>🎻 Orchestra plugin?</b> BBC Symphony Orchestra, LABS, Kontakt … - set up one sound per section and articulation and every genre uses them. <button class="mini acc" id="vOrch" ${V.available?'':'disabled'}>Set up my orchestra…</button></div>
+    <div class="sel" style="margin:10px 0"><b>🎻 Orchestra:</b> the easiest real orchestra is the free one in <a href="#" id="vReal">🎻 Real instruments</a> - download Strings and Brass &amp; woodwinds once and every section is used automatically, no setup.
+      <div class="hint" style="margin-top:6px">Prefer your own orchestra plugin (BBC Symphony Orchestra, LABS, Kontakt …)? Save one sound per section, then tick
+      <label><input type="checkbox" id="vOrchUse" ${(state.orch_plugin?'checked':'')}> use my orchestra plugin instead</label>
+      <button class="mini" id="vOrch" ${V.available?'':'disabled'}>Set up my orchestra…</button></div></div>
     <div class="row" style="margin:10px 0"><button class="mini" id="vFolder">📁 Open my plugins folder</button><button class="mini" id="vRescan">⟳ Rescan</button><span class="hint">Drop .vst3 files there, or install plugins normally - system folders are scanned too.</span></div>
     <div id="vMsg" class="hint"></div>
     <h3 style="margin-top:12px">My VST sounds</h3>${snd||'<div class="hint">None yet — create one from a plugin below.</div>'}<div id="vPlay"></div>
@@ -814,6 +818,8 @@ async function vstModal(){
   $('#vFolder').onclick=()=>api('/api/open',{path:'plugins'});
   $('#vRescan').onclick=()=>vstModal();
   $('#vOrch').onclick=()=>orchModal(V);
+  $('#vReal').onclick=e=>{ e.preventDefault(); libModal(); };
+  $('#vOrchUse').onchange=e=>{ state.orch_plugin=e.target.checked; try{ localStorage.setItem('sl_orch_plugin', state.orch_plugin?'1':'') }catch(_){} };
   $$('#modalBox [data-cr]').forEach(b=>b.onclick=async()=>{ const p=V.plugins[+b.dataset.cr]; const nm=($(`[data-nm="${b.dataset.cr}"]`).value||p.name).trim();
     $('#vMsg').innerHTML='<b>The plugin window is opening on your screen</b> - pick a preset or design a sound, then <b>close the plugin window</b> to save it.';
     const {job}=await api('/api/vst/create',{path:p.path,name:nm});

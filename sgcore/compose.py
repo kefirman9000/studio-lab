@@ -63,6 +63,7 @@ class Options:
     sections: list = None         # section editor: [{src, copy, bars, seeds{part:int}, vary:int, mute:[layers]}]
     engine: str = 'auto'          # auto | sampled | synth  (sampled = real recorded instruments when the library is installed)
     vst_rig: bool = False         # play parts through genre-matched plugins (sgcore.vstrigs) when they're installed
+    orch_plugin: bool = False     # orchestral parts on your orchestra plugin (BBC SO / LABS) instead of the free real orchestra
     melody_style: str = None      # None = genre default | diatonic | pentatonic | blues | bebop
     voicing: str = None           # None = genre default | close | open | drop2 | rootless | power
     chord_color: str = None       # None = varies per song | triad | 7 | add9 | 9 | 6 | sus2 | sus4

@@ -450,11 +450,18 @@ def assign(st, opts, log=None):
     import random
     seed = int(getattr(opts, 'seed', 0) or 0)
     ps = getattr(opts, 'part_seeds', None) or {}
+    try:                                                 # the free real orchestra beats an orchestra plugin unless you ask for it
+        from . import samplelibs
+        real_orch = (samplelibs.installed('strings') or samplelibs.installed('winds')) and not getattr(opts, 'orch_plugin', False)
+    except Exception:
+        real_orch = False
     for t in st['tracks']:
         inst = t['inst']
         if t['layer'] not in MELODIC_ROLES or t.get('user_pick') or inst.startswith(('vst:', 'user:')):
             continue
         base = inst[3:] if inst.startswith('sf:') else inst
+        if real_orch and base in ORCH_PARTS:
+            continue
         part = {'bass': 'bass', 'lead': 'melody', 'arp': 'melody'}.get(t['layer'], 'chords')
         sd = ps.get(part) if ps.get(part) is not None else seed
         rng = random.Random(f"{sd}-{t['layer']}-{base}-{style}-rig")
@@ -487,19 +494,17 @@ def orchestra_note(st, plugins, cat, used):
     if not parts:
         return None
     parts = sorted(set(parts))
-    have = [PLAYERS[p]['name'] for p in ('bbcso', 'labs') if plugins and player_path(p, plugins)]
+
     what = ', '.join(parts)
     try:
         from . import samplelibs
         real = samplelibs.installed('strings') or samplelibs.installed('winds')
     except Exception:
         real = True
-    if not real and not have:
-        return (f'Orchestral parts ({what}) used the built-in General MIDI library. Install the free real orchestra '
-                '(🎻 Real instruments → Strings / Brass & woodwinds) for multi-sampled sections, or set up BBC Symphony Orchestra / LABS.')
-    if have:
-        return (f'Orchestral parts ({what}) used the built-in library - {have[0]} is installed but has no saved sounds yet. '
-                'Open VST instruments → "Set up my orchestra…" (about 2 minutes) and every song will use it.')
+    if not real:
+        return (f'Orchestral parts ({what}) used the built-in General MIDI library. For a real orchestra with no setup, download the '
+                'free Strings and Brass & woodwinds libraries in 🎻 Real instruments - every section is used automatically.')
+    return None                                         # the real libraries play the orchestra; a plugin stays optional
     if cat == 'Orchestral' or len(parts) >= 2:
         return (f'Orchestral parts ({what}) used the built-in General MIDI library. For real orchestra sounds install the free '
                 'BBC Symphony Orchestra Discover or Spitfire LABS, then "Set up my orchestra…" in VST instruments.')

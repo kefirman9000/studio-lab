@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.18.1
+- **A real orchestra with no setup.** When the free Strings and Brass & woodwinds libraries (🎻 Real instruments) are installed, they play every orchestral part automatically - no plugin, no saving sounds per section. Your orchestra plugin (BBC Symphony Orchestra, LABS ...) is only used if you tick "use my orchestra plugin instead" in VST instruments. Songs whose orchestral parts fell back to General MIDI now point to the one-click download instead of the plugin setup.
+
 ## 1.18.0
 Genres checked against the electronic and multi-genre production bibles (tempo, feel, rhythm grid, sound, arrangement).
 - **13 new genres:**
