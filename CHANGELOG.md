@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.21.0
+- **Two new free real-instrument libraries** (🎻 Real instruments, CC0 / public domain, Versilian Community Sample Library):
+  - *Pianos & keys* (433 MB): a **Steinway grand piano** that now plays every genre's piano part, a **Yamaha upright** for lo-fi, boom bap, blues, soul and other vintage styles, a Flemish **harpsichord**, a **pipe organ** for baroque and film styles, and a Yamaha TX81Z FM piano.
+  - *Harp, mallets, sax & more* (398 MB): **concert harp, marimba, vibraphone, xylophone, glockenspiel, tubular bells, kalimba, tenor sax** (sustain + staccato), **harmonica, ocarina** and **sleigh bells** - used automatically wherever a genre plays them, and all selectable in the Sound dropdowns.
+- **Dragonfly Reverb** (GPL-3, Michael Willis) is a new Genre VSTs pack - same safety checks as the others (official GitHub release, checksum, Defender, VirusTotal, no installers). When it's installed, each genre's reverb runs through the right one: **hall** for orchestral, trance, ambient and other big spaces, **plate** for pop, soul, R&B and the 80s styles, **room** for rock, funk, jazz, boom bap and acoustic bands. Level-matched to the built-in reverb, which is still used if the plugin ever fails.
+- **CHOW Tape Model and BYOD** are recognised: they're only offered with installers (which Studio Lab never runs), so install them yourself from chowdsp.com and pick them as part effects.
+- Plugin effects can now be given settings (used for the genre reverbs).
+
 ## 1.20.0
 Every genre checked against the full Studio Lab genre bible (all 114). Most already matched; these changed:
 - **Salsa** gets the real Afro-Cuban section: clave on claves, bongó martillo, güiro, timbale cáscara and a campana (real recordings when the percussion library is installed). **Cumbia** gets its guira scrape.

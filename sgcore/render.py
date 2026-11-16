@@ -514,6 +514,15 @@ class Renderer:
         if np.any(rev_send):
             ir = make_ir(st['reverb'])
             rv = eq(reverb(rev_send.astype(np.float64), ir), 'lowshelf', 300, 0.7, -4.0)
+            if st.get('fx_reverb'):                      # the genre's reverb plugin (Dragonfly), level-matched to the built-in
+                from . import fxrig
+                pv = fxrig.run_reverb(st, rev_send, self.log)
+                if pv is not None and pv.shape[1] >= rv.shape[1] // 2:
+                    pv = np.asarray(pv, dtype=np.float64)[:, :rv.shape[1]]
+                    if pv.shape[1] < rv.shape[1]:
+                        pv = np.pad(pv, ((0, 0), (0, rv.shape[1] - pv.shape[1])))
+                    a, b = float(np.sqrt(np.mean(rv ** 2)) + 1e-12), float(np.sqrt(np.mean(pv ** 2)) + 1e-12)
+                    rv = eq(pv * (a / b), 'lowshelf', 300, 0.7, -3.0)
             if duck is not None:
                 rv *= (1 - duck * sc_depth * 0.7)[None, :]
             returns += rv * 0.55

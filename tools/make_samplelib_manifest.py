@@ -41,7 +41,10 @@ def parse(name):
     dyn = int(v.group(1)) if v else None
     if dyn is None:
         w = re.search(r'_(pp|p|mp|mf|f|ff)(?:\d)?(?=_|$)', base)
-        dyn = DYN_WORDS[w.group(1)] if w else 1
+        dyn = DYN_WORDS[w.group(1)] if w else None
+    if dyn is None:
+        w = re.search(r'_(soft|med|loud)(?=_|$)', base, re.I)
+        dyn = {'soft': 1, 'med': 3, 'loud': 5}[w.group(1).lower()] if w else 1
     r = re.search(r'_rr(\d+)', base, re.I)
     rr = int(r.group(1)) if r else 1
     if not r:
@@ -100,6 +103,30 @@ def vdrums(mic):
     ]
 
 
+Z = 'Chordophones/Zithers/'
+KEYS = [
+    ('grand', 'sus', r'^' + Z + 'Grand Piano, Steinway B/NoSus/', r'', 1),
+    ('upright_piano', 'sus', r'^' + Z + 'Upright Piano, Yamaha/Sustains/', r'', 1),
+    ('harpsichord', 'sus', r'^' + Z + 'Harpsichord, Flemish/Sustains/', r'', 1),
+    ('pipeorgan', 'sus', r'^Aerophones/Edge-blown Aerophones/Pipe Organ/Loud/', r'', 1),
+    ('fmpiano', 'sus', r'^Electrophones/TX81Z/FM Piano/', r'', 1),
+]
+I = 'Idiophones/Struck Idiophones/'
+COLORS = [
+    ('harp', 'ring', r'^Chordophones/Composite Chordophones/Concert Harp/', r'', 2),
+    ('marimba', 'ring', r'^' + I + 'Marimba/', r'', 1),
+    ('vibes', 'ring', r'^' + I + 'Vibraphone/Soft Mallets/', r'', 1),
+    ('xylophone', 'ring', r'^' + I + 'Xylophone/Medium Mallets/', r'', 1),
+    ('glock', 'ring', r'^' + I + 'Glockenspiel/', r'', 1),
+    ('tubular', 'ring', r'^' + I + 'Tubular Bells 1/', r'', 1),
+    ('kalimba', 'ring', r'^Idiophones/Plucked Idiophones/Kalimba, Tanzania/', r'', 2),
+    ('sax', 'sus', r'^Aerophones/Reed Aerophones/Tenor Saxophone/Non-Vibrato/', r'', 1),
+    ('sax', 'short', r'^Aerophones/Reed Aerophones/Tenor Saxophone/Staccato/', r'', 1),
+    ('harmonica', 'sus', r'^Aerophones/Free Aerophones/Harmonica-Hohner-Special20-C/Sustains/', r'', 1),
+    ('ocarina', 'sus', r'^Aerophones/Edge-blown Aerophones/Ocarina, Typical/Sustains/', r'', 1),
+    ('sleigh', 'hit', r'^' + I + 'Sleigh Bells/', r'Sleighbells_Hit', 3),
+]
+THIN = {'grand': ({2, 4}, 2), 'upright_piano': ({1, 3}, None), 'harpsichord': (None, 2)}
 STRINGS = {'violins', 'violas', 'celli', 'basses', 'violin'}
 LIBS = {
     'strings': dict(repo='sgossner/VSCO-2-CE', dir='vsco-2-ce', title='Orchestral strings (VSCO 2 Community Edition)',
@@ -108,6 +135,10 @@ LIBS = {
                   by='Versilian Studios', rules=[('', r) for r in VSCO if r[0] not in STRINGS], ext='.wav'),
     'percussion': dict(repo='sgossner/VCSL', dir='vcsl', title='Percussion (Versilian Community Sample Library)',
                        by='Versilian Studios', rules=[('', r) for r in VCSL], ext='.wav'),
+    'keys': dict(repo='sgossner/VCSL', dir='vcsl', title='Pianos & keys (Versilian Community Sample Library)',
+                 by='Versilian Studios', rules=[('', r) for r in KEYS], ext='.wav'),
+    'colors': dict(repo='sgossner/VCSL', dir='vcsl', title='Harp, mallets, sax & more (Versilian Community Sample Library)',
+                   by='Versilian Studios', rules=[('', r) for r in COLORS], ext='.wav'),
     'drums': dict(repo='sfzinstruments/virtuosity_drums', dir='vdrums', title='Acoustic drum kits (Virtuosity Drums)',
                   by='Versilian Studios & Karoryfer', rules=[('studio', r) for r in vdrums('mid')] + [('lofi', r) for r in vdrums('lofi')] + [('room', r) for r in vdrums('room')],
                   ext='.flac'),
@@ -139,6 +170,13 @@ def main(root):
                 elif inst == 'timpani':
                     f['n'] = None
                 files.append(f)
+        for inst, (layers, step) in THIN.items():       # keep downloads reasonable: fewer layers / every n-th recorded note
+            mine = [f for f in files if f['i'] == inst]
+            if not mine:
+                continue
+            notes = sorted({f['n'] for f in mine if f.get('n') is not None})
+            keep_n = set(notes[::step]) if step else set(notes)
+            files = [f for f in files if f['i'] != inst or ((layers is None or f['v'] in layers) and f.get('n') in keep_n)]
         with ThreadPoolExecutor(16) as ex:
             sizes = list(ex.map(lambda f: size_of(cfg['repo'], commit, f['p']), files))
         for f, s in zip(files, sizes):

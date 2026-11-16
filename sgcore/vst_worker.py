@@ -130,7 +130,14 @@ def main(path):
             import numpy as np
             from pedalboard import Pedalboard, load_plugin
             audio = np.load(job['in']).astype(np.float32)
-            board = Pedalboard([load_plugin(p) for p in job['paths']])
+            plugs = [load_plugin(p) for p in job['paths']]
+            for pl, prm in zip(plugs, job.get('params') or []):
+                for k, v in (prm or {}).items():          # e.g. {'decay_s': 2.4, 'dry_level': 0}
+                    try:
+                        setattr(pl, k, v)
+                    except Exception:
+                        pass
+            board = Pedalboard(plugs)
             y = board(audio, float(job.get('sr', 44100)))
             if y.ndim == 1:
                 y = np.vstack([y, y])

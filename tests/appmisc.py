@@ -18,6 +18,14 @@ def main():
                  'ERROR: boom', 'trance seed 3', 'warning: lead: plugin failed', '=== Recent log'):
         assert want in r, want
     appwindow.find_browser()                     # never raises, whatever is installed
+    from sgcore import fxrig
+    assert fxrig.reverb_kind('orchestral', 'Orchestral') == 'hall' and fxrig.reverb_kind('trance', 'Electronic') == 'hall'
+    assert fxrig.reverb_kind('rock', 'Classic') == 'room' and fxrig.reverb_kind('pop', 'Classic') == 'plate'
+    for k in ('hall', 'plate', 'room'):
+        prm = fxrig.reverb_params(k, 3.0)
+        assert prm['dry_level'] == 0.0 and 0.1 <= prm['decay_s'] <= 10.0
+    st = {'category': 'Classic', 'reverb': 2.0}
+    assert fxrig.run_reverb(st, None) is None    # no plugin planned -> built-in reverb
     print('ok  problem report + redaction, app window helpers')
     print('all good')
 

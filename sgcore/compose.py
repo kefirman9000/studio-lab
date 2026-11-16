@@ -648,9 +648,17 @@ def apply_real(st, opts):
         if t['layer'] not in MELODIC_ROLES or inst.startswith(('user:', 'vst:', 'real:')):
             continue
         base = inst[3:] if inst.startswith('sf:') else inst
+        orig_base = base
+        style_ = st.get('name') or opts.style
+        if base == 'piano' and style_ in sl.UPRIGHT_STYLES and sl.plays('upright_piano'):
+            base = 'upright_piano'                         # lo-fi / vintage styles: a worn upright, not a concert grand
+        elif base == 'organ' and (style_ in sl.PIPE_ORGAN_STYLES or st.get('category') == 'Orchestral') and sl.plays('pipeorgan'):
+            base = 'pipeorgan'                             # church / film organ, not a Hammond
+        elif base in ('tenorsax', 'altosax'):
+            base = 'sax'
         if base in sl.ORCH and sl.plays(base):
             from . import soundfont as sfm
-            t['fallback'] = t.get('fallback') or sfm.fallback_for(base)
+            t['fallback'] = t.get('fallback') or (orig_base if orig_base in INSTRUMENTS else sfm.fallback_for(orig_base))
             t['real_from'] = inst
             t['inst'] = 'real:' + base
     if getattr(opts, 'user_drums', False):
@@ -1039,6 +1047,8 @@ def compose(opts):
     add_section_switch_tracks(st, opts, random.Random(f'{opts.seed}-rotation-{opts.style}'))
     debell(st, opts)
     apply_sampled(st, opts)
+    from . import fxrig
+    fxrig.plan(st, opts.style, bool(getattr(opts, 'vst_rig', False)))
     by_name = {t['name']: t for t in st['tracks']}
     st['tracks'] = [t for t in st['tracks'] if not (t.get('double_of') and by_name.get(t['double_of'], {}).get('inst') == t['inst'])]
     energy = float(opts.energy)

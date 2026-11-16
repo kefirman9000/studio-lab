@@ -33,6 +33,10 @@ PLAYERS = {
     'kars': dict(name='Kars', match=_matcher('kars'), kind='synth', pack=None),
     'bbcso': dict(name='BBC Symphony Orchestra', match=_matcher('bbc symphony orchestra'), kind='sampler', pack=None),
     'labs': dict(name='Spitfire LABS', match=_matcher('labs', exclude=('kilohearts',)), kind='sampler', pack=None),
+    # effects (used by sgcore.fxrig, never as instruments)
+    'dragonfly': dict(name='Dragonfly Reverb', match=_matcher('dragonfly'), kind='fx', pack='dragonfly'),
+    'chowtape': dict(name='CHOW Tape Model', match=_matcher('chowtapemodel', 'chow tape'), kind='fx', pack=None),
+    'byod': dict(name='BYOD', match=_matcher('byod'), kind='fx', pack=None),
 }
 
 OFF, ON = 0.0, 1.0

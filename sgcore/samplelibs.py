@@ -35,7 +35,7 @@ from . import updater
 ROOT = updater.ROOT
 REAL_DIR = os.path.join(ROOT, 'sound_library', 'real')
 MANIFEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'samplelibs.json')
-LIB_ORDER = ['drums', 'percussion', 'strings', 'winds']
+LIB_ORDER = ['drums', 'percussion', 'strings', 'winds', 'keys', 'colors']
 BLURB = {
     'drums': 'A real acoustic drum kit (kick, snare, hats, ride, crash, toms) with 3 mic sounds: clean studio, big rock room and '
              'vintage lo-fi. Plays the rock, funk, disco, jazz and soul kits and the re-played breaks (Amen, Think, Funky Drummer ...).',
@@ -44,8 +44,12 @@ BLURB = {
     'strings': 'A real string orchestra: violin, viola, cello and bass sections that play sustain, spiccato, pizzicato and tremolo, '
                'plus a solo violin. Replaces the General MIDI strings everywhere.',
     'winds': 'Real French horn, trumpet, trombone, tuba, flute, oboe, clarinet, bassoon and piccolo (sustain + staccato) and timpani.',
+    'keys': 'A real Steinway grand piano (every genre that plays piano), a Yamaha upright for lo-fi / boom-bap / vintage styles, '
+            'a Flemish harpsichord, a pipe organ for orchestral and baroque styles, and a Yamaha TX81Z FM piano.',
+    'colors': 'Concert harp, marimba, vibraphone, xylophone, glockenspiel, tubular bells, kalimba, tenor sax (sustain + staccato), '
+              'harmonica, ocarina and sleigh bells - recorded, used wherever a genre plays them.',
 }
-MAX_LEN = {'sus': 7.0, 'trem': 6.0, 'hit': 4.0, 'slap': 2.0, 'short': 2.0, 'pizz': 2.5}
+MAX_LEN = {'ring': 4.5, 'sus': 7.0, 'trem': 6.0, 'hit': 4.0, 'slap': 2.0, 'short': 2.0, 'pizz': 2.5}
 _lock = threading.Lock()
 _man = None
 _idx = {}
@@ -364,6 +368,12 @@ def note(inst, art, midi, dur, vel=0.8, rr_key='0', release=0.25):
         near = [e for e in pitched if abs(e['n'] - midi) == best]
         f = _pick(near, vel, rr_key)
         x = _repitch(_load(lib, f), midi - f['n'])
+        if art == 'ring':                                    # plucked / struck: let it ring, damp after a while
+            n = min(x.shape[1], int(max(dur + 1.2, 1.4) * SR))
+            x = x[:, :n].copy()
+            rl = min(n, int(0.12 * SR))
+            x[:, -rl:] *= np.linspace(1, 0, rl, dtype=np.float32)
+            return x.astype(np.float32)
         if art in ('sus', 'trem'):
             n = min(x.shape[1], int((dur + release) * SR))
             x = x[:, :n].copy()
@@ -391,7 +401,16 @@ ORCH = {
     'brass': ('brass', 'sus'), 'trumpetsection': ('brass', 'sus'), 'horn': ('solo', 'horn'), 'trumpet': ('solo', 'trumpet'),
     'trombone': ('solo', 'trombone'), 'tuba': ('solo', 'tuba'), 'flute': ('solo', 'flute'), 'oboe': ('solo', 'oboe'),
     'clarinet': ('solo', 'clarinet'), 'bassoon': ('solo', 'bassoon'), 'piccolo': ('solo', 'piccolo'),
+    # keys & colours
+    'piano': ('solo', 'grand'), 'upright_piano': ('solo', 'upright_piano'), 'harpsichord': ('solo', 'harpsichord'),
+    'pipeorgan': ('solo', 'pipeorgan'), 'fmpiano': ('solo', 'fmpiano'),
+    'harp': ('ring', 'harp'), 'marimba': ('ring', 'marimba'), 'vibes': ('ring', 'vibes'), 'xylophone': ('ring', 'xylophone'),
+    'glock': ('ring', 'glock'), 'tubular': ('ring', 'tubular'), 'kalimba': ('ring', 'kalimba'),
+    'sax': ('solo', 'sax'), 'tenorsax': ('solo', 'sax'), 'harmonica': ('solo', 'harmonica'), 'ocarina': ('solo', 'ocarina'),
 }
+# styles whose piano is a worn upright rather than a concert grand
+UPRIGHT_STYLES = {'lofi', 'boombap', 'hauntology', 'vaporwave', 'memphis_phonk', 'blues', 'soul_ballad', 'folk', 'western', 'motown'}
+PIPE_ORGAN_STYLES = {'baroque', 'cinematic', 'tension', 'hybrid_trailer', 'symphonic_metal', 'adventure', 'romantic'}
 SHORT_NOTE = 0.24          # seconds: notes this short are played with the short articulation (spiccato / staccato)
 
 
@@ -405,6 +424,8 @@ def plays(name):
         return has('violins', what) and has('celli', what)
     if kind == 'brass':
         return has('trumpet', 'sus') and has('trombone', 'sus')
+    if kind == 'ring':
+        return has(what, 'ring')
     return has(what, 'sus')
 
 
@@ -415,6 +436,8 @@ def orch_note(name, midi, dur, vel, rr_key):
         art = what if kind == 'section' else 'sus'
         order = [i for lo, i in table if midi >= lo] + [i for lo, i in reversed(table) if midi < lo]
         inst = next((i for i in order if has(i, art)), order[0])        # the section for this register, else the nearest one
+    elif kind == 'ring':
+        inst, art = what, 'ring'
     else:
         inst, art = what, 'sus'
     if art == 'sus' and dur < SHORT_NOTE and has(inst, 'short'):
@@ -436,7 +459,7 @@ def orch_note(name, midi, dur, vel, rr_key):
 
 # which real drum kit plays a style's drums
 LOFI_KIT_STYLES = {'lofi', 'boombap', 'hauntology', 'vaporwave', 'soul_ballad', 'jazzhop'}
-PERC = {'claves': 'claves', 'bongo': 'bongo', 'guiro': 'guiro', 'conga': 'conga', 'shaker': 'shaker', 'tamb': 'tamb', 'cowbell': 'cowbell', 'claves': 'claves', 'guiro': 'guiro',
+PERC = {'sleigh': 'sleigh', 'claves': 'claves', 'bongo': 'bongo', 'guiro': 'guiro', 'conga': 'conga', 'shaker': 'shaker', 'tamb': 'tamb', 'cowbell': 'cowbell', 'claves': 'claves', 'guiro': 'guiro',
         'woodblock': 'woodblock', 'triangle': 'triangle', 'cabasa': 'cabasa', 'bongo': 'bongo', 'agogo': 'agogo'}
 KIT_PARTS = {'kick': 'kick', 'snare': 'snare', 'rim': 'rim', 'chat': 'chat', 'ohat': 'ohat', 'ride': 'ride', 'crash': 'crash',
              'tom': 'tom', 'clap': 'clap', 'cymbal': 'crash'}
@@ -463,6 +486,21 @@ CHOICES = [
     ('oboe', 'Oboe', 'winds', ('lead',)),
     ('clarinet', 'Clarinet', 'winds', ('lead', 'arp', 'chords')),
     ('bassoon', 'Bassoon', 'winds', ('bass', 'lead')),
+    ('piano', 'Grand piano (Steinway)', 'keys', ('chords', 'lead', 'arp', 'pad', 'bass')),
+    ('upright_piano', 'Upright piano', 'keys', ('chords', 'lead', 'arp')),
+    ('harpsichord', 'Harpsichord', 'keys', ('chords', 'arp', 'lead')),
+    ('pipeorgan', 'Pipe organ', 'keys', ('chords', 'pad', 'lead')),
+    ('fmpiano', 'FM piano (TX81Z)', 'keys', ('chords', 'arp', 'lead')),
+    ('harp', 'Concert harp', 'colors', ('arp', 'chords', 'lead')),
+    ('marimba', 'Marimba', 'colors', ('arp', 'lead', 'chords')),
+    ('vibes', 'Vibraphone', 'colors', ('arp', 'lead', 'chords')),
+    ('xylophone', 'Xylophone', 'colors', ('arp', 'lead')),
+    ('glock', 'Glockenspiel', 'colors', ('arp', 'lead')),
+    ('tubular', 'Tubular bells', 'colors', ('lead', 'arp')),
+    ('kalimba', 'Kalimba', 'colors', ('arp', 'lead')),
+    ('sax', 'Tenor sax', 'colors', ('lead',)),
+    ('harmonica', 'Harmonica', 'colors', ('lead',)),
+    ('ocarina', 'Ocarina', 'colors', ('lead',)),
 ]
 
 

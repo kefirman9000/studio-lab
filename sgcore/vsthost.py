@@ -123,16 +123,17 @@ def path_of(name):
     return hits[0] if hits else None
 
 
-def process(names, audio, sr=44100, timeout=600):
-    """Run rendered audio (2, n) through effect plugins, in their own process. Raises RuntimeError on failure."""
+def process(names, audio, sr=44100, timeout=600, params=None):
+    """Run rendered audio (2, n) through effect plugins, in their own process. Raises RuntimeError on failure.
+    params: one {parameter: value} dict per plugin (optional)."""
     paths = [path_of(n) for n in names]
     if not all(paths):
         raise RuntimeError('effect plugin not found: ' + ', '.join(n for n, p in zip(names, paths) if not p))
     d = tempfile.mkdtemp(prefix='sl_fx_')
     try:
         np.save(os.path.join(d, 'in.npy'), audio.astype(np.float32))
-        res, _ = _run(dict(mode='process', paths=paths, sr=sr, **{'in': os.path.join(d, 'in.npy')}, out=os.path.join(d, 'out.npy')),
-                      timeout=timeout)
+        res, _ = _run(dict(mode='process', paths=paths, sr=sr, params=params or [], **{'in': os.path.join(d, 'in.npy')},
+                           out=os.path.join(d, 'out.npy')), timeout=timeout)
         if not res.get('ok'):
             err = res.get('error', 'effect failed')
             for p in paths:

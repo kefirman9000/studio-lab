@@ -68,6 +68,13 @@ PACKS = [
          plays='morphing mono synth: fat basses, sequenced leads, acid-ish lines',
          bundles=[r'^monique$'],
          assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.(dmg|zip)$'], 'linux': [r'linux.*{arch}.*\.(zip|tar\.gz)$', r'linux.*\.(zip|tar\.gz)$']}),
+    dict(id='dragonfly', name='Dragonfly Reverb', maker='Michael Willis', license='GPL-3.0', repo='michaelwillis/dragonfly-reverb',
+         page='https://michaelwillis.github.io/dragonfly-reverb/', size='~10 MB', kind='effect',
+         plays='hall, plate and room reverbs - each genre\'s reverb runs through the right one (hall for orchestral & trance, '
+               'plate for pop & soul, room for rock, funk & jazz)',
+         bundles=[r'^dragonfly ?hall ?reverb$', r'^dragonfly ?room ?reverb$', r'^dragonfly ?plate ?reverb$'],
+         assets={'windows': [r'win64.*\.zip$', r'windows.*64.*\.zip$'], 'mac': [r'mac.*\.zip$'],
+                 'linux': [r'linux.*{arch}.*\.zip$', r'linux.*\.zip$']}),
 ]
 BY_ID = {p['id']: p for p in PACKS}
 
@@ -79,6 +86,10 @@ KNOWN = [
          plays='real orchestra - save a sound per section (e.g. "BBC strings", "BBC horns") and orchestral styles use it'),
     dict(id='labs', name='Spitfire LABS', url='https://labs.spitfireaudio.com',
          plays='sampled pianos, strings, choir - save a sound (e.g. "LABS soft piano") and matching parts use it'),
+    dict(id='chowtape', name='CHOW Tape Model', url='https://chowdsp.com/products.html',
+         plays='analog tape saturation - pick it as an effect on any part (only offered with an installer, so install it yourself)'),
+    dict(id='byod', name='BYOD (Build Your Own Distortion)', url='https://chowdsp.com/products.html',
+         plays='guitar distortion - pick it as an effect on guitar parts (only offered with an installer, so install it yourself)'),
 ]
 
 
