@@ -15,7 +15,7 @@ ROOM_STYLES = {'rock', 'punk', 'metal', 'indie_rock', 'jam_band', 'funk', 'blues
                'fusion', 'boombap', 'lofi', 'folk', 'bluegrass', 'celtic_jig', 'ska', 'salsa', 'cumbia', 'bossa_nova', 'tango',
                'memphis_phonk', 'chamber'}
 HALL_STYLES = {'trance', 'uplifting_trance', 'progressive_trance', 'ambient', 'downtempo', 'melodic_dubstep', 'progressive_house',
-               'melodic_techno', 'liquid_dnb', 'organic_house', 'deep_dubstep', 'dubstep', 'hauntology', 'vaporwave'}
+               'melodic_techno', 'liquid_dnb', 'organic_house', 'deep_dubstep', 'dubstep', 'hauntology', 'vaporwave', 'hauntology_sunlit', 'hauntology_dark', 'alt_rnb'}
 PLUGIN = {'hall': 'DragonflyHallReverb', 'plate': 'DragonflyPlateReverb', 'room': 'DragonflyRoomReverb'}
 
 

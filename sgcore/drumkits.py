@@ -81,6 +81,8 @@ MENU = {k[0]: k for k in KIT_MENU}
 GENRE_KIT = {
     'jungle': 'amen', 'breakcore': 'amen', 'dnb': 'amen', 'liquid_dnb': 'think',
     'boombap': 'funky_drummer', 'downtempo': 'back_to_life', 'hauntology': 'vintage', 'vaporwave': 'vintage', 'lofi': 'vintage',
+    'hauntology_sunlit': 'vintage', 'hauntology_dark': 'vintage', 'neo_soul': 'funky_drummer', 'g_funk': '808', 'new_jack_swing': 'linn',
+    'alt_rnb': '808', 'rage': '808', 'plugg': '808',
     'trap': '808', 'uk_drill': '808', 'luxury_rap': '808', 'orchestral_hiphop': '808', 'reggaeton': '808', 'jersey_club': '808',
     'house': '909', 'tech_house': '909', 'acid_house': '909', 'progressive_house': '909', 'eurodance': '909',
     'techno': 'techno', 'minimal': 'techno', 'melodic_techno': 'techno',

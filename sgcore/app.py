@@ -263,6 +263,17 @@ def real_insts(role):
         return []
 
 
+def other_insts(role, suited):
+    """Every other sound, listed under the ones that suit the part: any instrument can play any part if you want it to."""
+    from .instruments import INSTRUMENTS, DRUMS
+    seen = set(suited)
+    out = [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Other built-in sounds (any part)')
+           for i in sorted(INSTRUMENTS, key=lambda x: INSTRUMENT_INFO.get(x, x).lower()) if i not in seen and i not in DRUMS]
+    mine = {x['id'] for x in real_insts(role)}
+    out += [dict(x, group='Other real instruments (any part)') for x in real_insts(None) if x['id'] not in mine]
+    return out
+
+
 def user_insts():
     from . import usersounds, vsthost
     return ([dict(id='user:' + n, name='My sound: ' + n, group='My sounds') for n in usersounds.listing()['inst']] +
@@ -336,8 +347,8 @@ def meta():
     return dict(
         version=updater.local_version(), repo=updater.repo(), ffmpeg=have_ffmpeg(), output_dir=out_dir(),
         categories=by_cat, moods=list(MOODS), scales=list(SCALES), keys=NOTE_NAMES,
-        roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Built-in') for i in lst] + real_insts(r) + vst_insts(r) + user_insts()
-               for r, lst in ROLE_CHOICES.items()},
+        roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Built-in (suits this part)') for i in lst] + real_insts(r) + vst_insts(r) + user_insts()
+               + other_insts(r, lst) for r, lst in ROLE_CHOICES.items()},
         effects=vst_effects(), voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
         kits=__import__('sgcore.drumkits', fromlist=['menu']).menu() + [dict(id=k, group='Other synth kits', label=k.title())
                                                                          for k in KITS if k not in ('default',) and k not in

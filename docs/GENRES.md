@@ -1,14 +1,15 @@
-# Studio Lab genres (121)
+# Studio Lab genres (129)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (62)
+## Electronic (67)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Acid House | `acid_house` | 122-128 | Acid house: squelching 303 lines, raw 909 drums, rave stabs |
 | Afro House | `afro_house` | 118-124 | Afro house: four-on-the-floor with rolling congas and shakers, deep bass, kalimba & marimba hooks, chants |
 | Afrobeats | `afrobeats` | 100-116 | Afrobeats: bouncy syncopated percussion, warm guitar chops, marimba hooks |
+| Alternative R&B (dark) | `alt_rnb` | 60-78 | Alternative / dark R&B (The Weeknd, PARTYNEXTDOOR, Brent Faiyaz): slow half-time trap drums, deep gliding 808, washed-out reverb e-piano, airy pads and a lonely guitar or synth line |
 | Amapiano | `amapiano` | 108-116 | Amapiano: log-drum basslines, jazzy piano chords, rolling shakers, deep groove |
 | Ambient | `ambient` | 66-80 | Ambient: slow evolving pads, glassy bells, soft lead, huge reverbs, no drums |
 | Baile Funk | `baile_funk` | 126-134 | Baile funk (Brazilian funk carioca): tamborzao beat, booming 808, chanted vocal hooks, horn stabs |
@@ -33,6 +34,8 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hardcore / Gabber | `gabber` | 170-195 | Hardcore / gabber (90s Rotterdam): 170-200 BPM four-on-the-floor of heavily distorted, pitched "gabber" kicks, screeching leads, hoovers and raw, confrontational energy |
 | Hardstyle | `hardstyle` | 148-154 | Hardstyle: distorted pitched kicks, screeching leads, euphoric supersaw melodies |
 | Hauntology | `hauntology` | 78-96 | Hauntology: warped-tape analog synths, slow dusty hip-hop breaks, nostalgic melodies and string-machine haze, all drifting like an old cassette |
+| Hauntology II (sunlit tape) | `hauntology_sunlit` | 84-100 | Hauntology II - sunlit tape (Boards of Canada, "Music Has the Right to Children"): warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
+| Hauntology III (dark film haze) | `hauntology_dark` | 66-84 | Hauntology III - dark film haze (Boards of Canada, "Geogaddi"): slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
 | House | `house` | 120-127 | Classic/deep house: four-on-the-floor, offbeat bass, chord stabs, pumping sidechain |
 | House Phonk | `house_phonk` | 128-142 | House phonk: four-on-the-floor phonk - distorted detuned cowbell hooks, punchy 808 bass on the offbeat, hard claps and Memphis vocal chops at club tempo |
 | Hyperpop | `hyperpop` | 150-170 | Hyperpop: maximal, bright and glitchy - distorted 808s, supersaws, chiptune sparkle |
@@ -53,9 +56,11 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | New Beat | `new_beat` | 100-116 | New beat (late-80s Belgium): slow, heavy, stomping four-on-the-floor at ~100-115 BPM, industrial EBM drums, dark acid-tinged bass and sampled stabs - hypnotic and menacing |
 | Orchestral Hip Hop | `orchestral_hiphop` | 132-145 | Orchestral hip hop / drill: dramatic string stabs, choir, pizzicato, sliding 808s, rolling hats |
 | Organic Melodic House | `organic_house` | 120-124 | Organic melodic deep house: warm four-on-the-floor with shakers and congas, piano, flute and soft strings, nature-like atmosphere - spacious, hypnotic and simple, no big drops |
+| Plugg / Pluggnb | `plugg` | 140-160 | Plugg / pluggnb (MexikoDro, Summrs, Autumn!): dreamy major-key synth chords and soft bells, simple sliding 808s, sparse bouncy trap drums - floaty and sweet |
 | Progressive House | `progressive_house` | 122-130 | Progressive house: emotive plucks, wide supersaws, long builds and big drops |
 | Progressive Trance (emotional) | `progressive_trance` | 128-136 | Emotional progressive trance / melodic progressive house: simple emotive chords, a big singable lead, long builds, a piano breakdown and a clean, wide drop - melody over complexity |
 | Psytrance | `psytrance` | 140-148 | Psytrance: relentless kick-bass rolls, acid squelches, hypnotic phrygian riffs |
+| Rage | `rage` | 150-165 | Rage (Playboi Carti, Trippie Redd, F1lthy-style): huge detuned supersaw synth leads and arps, distorted booming 808s, hard trap drums at 150+ - loud, bright and euphoric |
 | Reggaeton | `reggaeton` | 88-100 | Reggaeton: dembow rhythm, deep 808s, plucky synths, latin percussion |
 | Synth-pop | `synthpop` | 110-122 | Synth-pop: punchy LinnDrum-style beats, bright plucks, string pads, catchy leads |
 | Synthwave | `synthwave` | 90-112 | 80s synthwave/retrowave: gated-reverb snares, pulsing octave bass, supersaws, saw lead |
@@ -69,7 +74,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Uplifting Trance | `uplifting_trance` | 134-140 | Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw leads and plucky arps, a long piano / pad breakdown that explodes into the drop |
 | Vaporwave | `vaporwave` | 60-80 | Vaporwave: slowed 80s nostalgia - lush Rhodes, sax, chorused pads, tape haze |
 
-## Classic (37)
+## Classic (40)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -78,7 +83,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Big Band Swing | `swing` | 132-196 | Big-band swing: walking bass, ride and hi-hat on 2 & 4, brass section shouts, a sax solo |
 | Bluegrass | `bluegrass` | 112-150 | Bluegrass: banjo rolls, fiddle breakdowns, mandolin chop on the offbeat, driving upright bass |
 | Blues | `blues` | 80-120 | Blues shuffle: 12-bar form, swung grooves, piano, organ and expressive lead guitar |
-| Boom Bap | `boombap` | 84-96 | Boom bap hip hop: dusty swung drums, chopped piano loops, deep bass |
+| Boom Bap | `boombap` | 84-96 | Boom bap hip hop: dusty swung drums, chopped piano loops, jazzy horn lines, deep bass doubled by upright |
 | Bossa Nova | `bossa_nova` | 120-140 | Bossa nova: gentle syncopated nylon guitar, rim clicks, soft bass and flute |
 | Celtic Jig (6/8) | `celtic_jig` | 104-124 | Celtic jig (6/8): fiddle and tin whistle tunes, bodhran pulse, bouncing guitar and bass |
 | Chamber Pop | `chamber_pop` | 90-124 | Chamber / orchestral pop: pop drums & piano with a string section, horns, pizzicato and glockenspiel |
@@ -90,6 +95,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Disco Funk (70s) | `disco_funk` | 112-122 | 70s disco-funk: punchy dry four-on-the-floor, a syncopated electric-bass hook, chicken-scratch guitar, tight horn-section riffs, claps, congas and tambourine - bright, catchy party music |
 | Folk | `folk` | 80-116 | Folk / acoustic: strummed guitar, warm piano, gentle percussion, flute melody |
 | Funk | `funk` | 96-112 | Funk: syncopated grooves, slap-style bass, clavinet chops, horn section |
+| G-Funk (West Coast) | `g_funk` | 88-100 | G-funk (West Coast, early-90s Dre / Warren G): laid-back swung 16ths, fat Moog bass, Rhodes and string-pad chords, and the whiny high portamento synth lead floating over everything |
 | Gospel | `gospel` | 70-120 | Gospel: Hammond organ and piano, choir, hand claps, swinging backbeat and a preaching lead |
 | Holiday | `holiday` | 100-140 | Holiday / Christmas: sleigh bells, celesta, pizzicato, warm strings, brass and a cosy swing |
 | Indie Rock | `indie_rock` | 108-140 | Indie rock: jangly clean guitars in 8ths, melodic bass, straight-ahead drums, a hooky guitar lead |
@@ -98,9 +104,11 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Jazz Fusion | `fusion` | 96-140 | Jazz fusion / jazz-rock: straight 16th-note grooves, electric bass, Rhodes and synth leads, overdriven guitar, extended chords and virtuosic unison lines over a rock / funk rhythm section |
 | Metal | `metal` | 140-180 | Metal: palm-muted power chords, double-kick drums, shredding lead guitar |
 | Motown / 60s Soul | `motown` | 100-126 | Motown / 60s soul: tambourine on every backbeat, melodic bass, piano and guitar chops, strings and horns |
+| Neo-Soul | `neo_soul` | 72-92 | Neo-soul (D'Angelo, Erykah Badu, J Dilla): drunk, behind-the-beat drums, lush Rhodes 9th and 11th chords, warm finger bass, soft guitar and flute answers |
+| New Jack Swing / 90s R&B | `new_jack_swing` | 100-114 | New jack swing / 90s R&B (Teddy Riley, Bell Biv DeVoe): hard swung 16th drums, big snare + clap backbeat, punchy synth-brass and stab chords, FM bass, bright electric piano |
 | Pop | `pop` | 95-122 | Pop: four-chord hooks, piano & guitar, punchy drums, sing-along lead line |
 | Punk | `punk` | 160-200 | Punk rock: fast down-picked power chords, driving 8th-note bass, pounding drums, shouty guitar hooks |
-| R&B / Neo-soul | `rnb` | 66-98 | R&B / neo-soul: lazy swung drums, Rhodes 9th chords, deep sub bass, finger snaps and silky leads |
+| R&B / Neo-soul | `rnb` | 66-98 | R&B: lazy swung drums, Rhodes 9th chords, deep sub bass, finger snaps and clean guitar licks |
 | Reggae | `reggae` | 70-90 | Reggae one-drop: offbeat skank chords, melodic bass, laid-back drums |
 | Rock | `rock` | 110-140 | Rock: driving drums, distorted power-chord guitars, solid bass, lead guitar |
 | Salsa | `salsa` | 160-200 | Salsa: clave and cowbell, conga tumbao, piano montuno, anticipated bass and a blazing trumpet section |

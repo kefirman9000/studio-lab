@@ -368,7 +368,7 @@ SAMPLED_ONLY = ['nylon', 'cleanguitar', 'muted', 'odguitar', 'distguitar', 'acba
                 'bassoon', 'piccolo', 'tenorsax']
 # built-in synth stand-ins for when the library is missing (or a sample can't be played)
 FALLBACK = {'nylon': 'guitar', 'cleanguitar': 'guitar', 'muted': 'mutedgtr', 'odguitar': 'guitar', 'distguitar': 'guitar',
-            'acbass': 'upright', 'fingerbass': 'pluck', 'pickbass': 'pluck', 'slapbass': 'fmbass', 'viola': 'violin',
+            'acbass': 'upright', 'fingerbass': 'moogbass', 'pickbass': 'pluck', 'slapbass': 'fmbass', 'viola': 'violin',
             'contrabass': 'cello', 'slowstrings': 'strings', 'bandoneon': 'accordion', 'steelguitar': 'guitar', 'fiddle': 'violin', 'trumpetsection': 'brass',
             'mutedtrumpet': 'trumpet', 'trombone': 'horn', 'tuba': 'horn', 'bassoon': 'clarinet', 'piccolo': 'flute', 'tenorsax': 'sax', 'taikodrum': 'timpani'}
 # electronic genres only swap instruments that are obviously acoustic

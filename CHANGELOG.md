@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.27.0
+Rap, hip-hop and R&B overhaul, plus Boards of Canada-style hauntology:
+- **Fixed sounds**: Boom Bap's melody is a jazzy sax/flute/horn line (was a synth string pad) over sine bass doubled by upright; R&B's lead is clean guitar (was a robotic vowel synth); Trap's chords are dark piano (was a pluck). The vowel-synth "vox" is gone from Trap and R&B pools.
+- **Signature sounds stay put**: in rap / hip-hop / R&B genres the variety setting now keeps each genre's own sound most of the time (it used to swap it ~75% of the time), section rotation leaves the lead/hook alone, and Boom Bap no longer pulls in orchestral strings, horns or harp.
+- When a bell has to be replaced, a genre now gets its own sound for that part instead of a generic category synth (no more random saw leads in trap).
+- **New genres**: G-Funk (West Coast), Neo-Soul, New Jack Swing / 90s R&B, Alternative R&B (dark), Rage, Plugg / Pluggnb.
+- **Hauntology II (sunlit tape)** and **Hauntology III (dark film haze)**: Boards of Canada-inspired variations. The original Hauntology is unchanged.
+- **Every Sound dropdown now lists every sound**: the ones that suit the part first, then "Other built-in sounds (any part)" and "Other real instruments (any part)".
+
 ## 1.26.0
 - **Every song has a name**, at the front of every exported file before the technical tag - e.g. `Ashes-of-the-North_cinematic_journey_D-minor_88bpm_seed3.mp3` (MP3, WAV, MIDI, parts, stems, DAW packs, settings and guides).
   - Type your own in **Basics → Song name**, or leave it empty for an invented name that fits the genre and mood (the same settings always give the same name, so a preview and its full song match).
