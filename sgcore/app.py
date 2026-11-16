@@ -470,6 +470,16 @@ class Handler(BaseHTTPRequestHandler):
             from . import vsthost
             vsthost.delete_sound(str(body.get('id', '')))
             return self._json({'ok': True})
+        if p == '/api/soundlib':
+            from . import soundfont
+            return self._json({'installed': soundfont.installed(), 'path': soundfont.library_path()})
+        if p == '/api/soundlib/install':
+            from . import soundfont
+
+            def job(log):
+                soundfont.download(log)
+                return {'ok': True}
+            return self._json({'job': bg_job(job)})
         if p == '/api/vst/preview':
             from . import vsthost
             sid = str(body.get('id', ''))

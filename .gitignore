@@ -10,3 +10,4 @@ ratings.json
 plugins/*
 !plugins/README.txt
 vst_sounds/
+sound_library/

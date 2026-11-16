@@ -58,6 +58,7 @@ class Options:
     variety: float = 0.5          # 0..1 how adventurous each song's sound palette, grooves and arrangement get
     user_drums: bool = False      # use the drum samples you loaded instead of the built-in kit
     sections: list = None         # section editor: [{src, copy, bars, seeds{part:int}, vary:int, mute:[layers]}]
+    engine: str = 'auto'          # auto | sampled | synth  (sampled = real recorded instruments when the library is installed)
     mood: str = None              # dark | happy | chill | epic | dreamy | aggressive | melancholic | energetic | mysterious | romantic
 
     def to_dict(self):
@@ -396,6 +397,47 @@ def apply_variety(st, opts, rnd):
     return st
 
 
+def apply_sampled(st, opts):
+    """Swap synthesised stand-ins for real recorded instruments (if the sound library is installed)."""
+    from . import soundfont as sfm
+    from .styles import ACOUSTIC_MAP, ACOUSTIC_KIT, POWER_CHORDS, GENTLE_MASTER
+    name, cat = opts.style, st.get('category')
+    if name in POWER_CHORDS:
+        st['voicing'] = 'power'
+    if cat == 'Orchestral' or name in GENTLE_MASTER:
+        st['master'] = {**st['master'], 'gentle': True}
+    engine = getattr(opts, 'engine', 'auto') or 'auto'
+    on = engine != 'synth' and sfm.installed()
+    for t in st['tracks']:
+        inst = t['inst']
+        if inst.startswith('sf:'):
+            if not on:                                         # library missing / synth engine: use a stand-in
+                t['inst'] = sfm.fallback_for(inst[3:])
+            elif not t.get('fallback'):
+                t['fallback'] = sfm.fallback_for(inst[3:])
+            continue
+        if not on or inst.startswith(('user:', 'vst:')) or t['layer'] not in MELODIC_ROLES:
+            continue
+        user_pick = bool(t.get('fallback'))
+        mapped = None if user_pick else ACOUSTIC_MAP.get(name, {}).get(t['layer'])
+        if mapped:
+            target = mapped
+        elif inst in sfm.ACOUSTIC and (cat in ('Orchestral', 'Classic') or engine == 'sampled' or inst in sfm.ELECTRONIC_SWAP):
+            target = inst
+        else:
+            continue
+        t['fallback'] = t.get('fallback') or inst
+        t['inst'] = 'sf:' + target
+    if on and not getattr(opts, 'user_drums', False):
+        kit = ACOUSTIC_KIT.get(name) or ('orchestra' if cat == 'Orchestral' else None)
+        if opts.kit == 'acoustic':
+            kit = kit or 'acoustic'
+        elif opts.kit:
+            kit = None
+        if kit:
+            st['sampled_kit'] = kit
+
+
 def resolve_style(opts, rnd=None, mood=None):
     """Fuse styles if requested, then apply instrument / kit / mute / mix / mood overrides."""
     rnd = rnd or random.Random(opts.seed)
@@ -412,13 +454,14 @@ def resolve_style(opts, rnd=None, mood=None):
         t = dict(t)
         t['p'] = dict(t['p'])
         new = opts.instruments.get(t['layer']) if t['layer'] in MELODIC_ROLES else None
-        if new and (new in INSTRUMENTS or new.startswith('user:') or new.startswith('vst:')) and new != t['inst']:
+        if new and (new in INSTRUMENTS or new.startswith(('user:', 'vst:', 'sf:'))) and new != t['inst']:
             t['fallback'] = t['inst']
             t['inst'] = new
             t['p'] = {}
             t['db'] = None
         tracks.append(t)
     st['tracks'] = tracks
+    apply_sampled(st, opts)
     kit = dict(KITS.get(opts.kit or st['kit'], {}))
     if not opts.kit:
         for k, v in st.get('kit_override', {}).items():
@@ -547,6 +590,7 @@ def compose(opts):
     rnd_c = prng('chords', 5)         # chord rhythms, arps, voicing choices
     st = resolve_style(opts, random.Random(opts.seed * 7 + 3), mood)
     st = apply_variety(st, opts, random.Random(opts.seed * 7919 + 17))
+    apply_sampled(st, opts)
     energy = float(opts.energy)
     cx = float(opts.complexity)
     bpm = opts.bpm or rnd.randint(*st['bpm'])

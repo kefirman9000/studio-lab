@@ -56,6 +56,8 @@ class Renderer:
 
     def _note(self, tcfg, ev, p):
         dur = round(ev.dur * self.spb, 3)
+        if tcfg['inst'].startswith('sf:'):
+            return self._sampled(tcfg, ev, dur, p)
         key = (tcfg['name'], ev.midi, dur, ev.glide, ev.mod)
         sig = self.cache.get(key)
         if sig is None:
@@ -67,6 +69,49 @@ class Renderer:
             self.cache[key] = sig
         return sig
 
+    def _sampled(self, tcfg, ev, dur, p):
+        """Real recorded instrument from the sound library; velocity changes the tone, not just the level."""
+        from . import soundfont as sfm
+        vel = int(min(127, max(24, round((30 + 92 * min(1.1, ev.vel)) / 12) * 12)))
+        key = (tcfg['name'], ev.midi, dur, vel)
+        sig = self.cache.get(key)
+        if sig is None:
+            name = tcfg['inst'][3:]
+            try:
+                sig = sfm.sampled_note(name, ev.midi, dur, vel)
+                a = (p or {}).get('a', 0) if (p or {}).get('a', 0) > 0.04 else 0
+                if a:
+                    n = min(sig.shape[1], int(a * SR))
+                    sig[:, :n] *= np.linspace(0, 1, n, dtype=np.float32) ** 1.5
+                sig = sig.astype(np.float32)
+            except Exception as e:
+                fb = tcfg.get('fallback') or sfm.fallback_for(name)
+                if not getattr(self, '_sf_warned', False):
+                    self.log(f'   sampled instrument unavailable ({e}) - using built-in sounds')
+                    self._sf_warned = True
+                fn = INSTRUMENTS.get(fb) or INSTRUMENTS['pluck_saw']
+                sig = fn(ev.midi, dur, self._params(dict(tcfg, inst=fb, p={})), ev.glide, ev.mod).astype(np.float32)
+            self.cache[key] = sig
+        return sig
+
+    def _sampled_drum(self, inst):
+        kit = self.st.get('sampled_kit')
+        if not kit:
+            return None
+        from . import soundfont as sfm
+        try:
+            if inst in ('timp', 'timpani'):
+                root = self.song['key'].root
+                m = 41 + ((root - 41) % 12)                    # tonic, in the timpani's range
+                return sfm.sampled_note('timpani', m, 1.2, 112).mean(axis=0)
+            if inst == 'taiko':
+                return sfm.sampled_note('taikodrum', 40, 1.2, 120).mean(axis=0)
+            if inst == 'crash' and kit == 'orchestra':
+                return sfm.sampled_drum('crash', 'orchestra')
+            return sfm.sampled_drum(inst, kit)
+        except Exception:
+            return None
+
     def _drum(self, name, inst=None):
         inst = inst or name
         sig = self.cache.get(('drum', name))
@@ -75,6 +120,8 @@ class Renderer:
             if getattr(self.opts, 'user_drums', False):
                 from .usersounds import drum
                 user = drum(inst)
+            if user is None:
+                user = self._sampled_drum(inst)
             if user is not None:
                 sig = user
             else:
@@ -104,6 +151,8 @@ class Renderer:
         if tcfg['inst'] == 'texture':
             buf[0] = fx_texture(self.length)
             buf[1] = fx_texture(self.length)
+            return buf
+        if tcfg['inst'].startswith('vst:') and not evs:
             return buf
         if tcfg['inst'].startswith('vst:'):
             out = self._render_vst(tcfg, evs)
@@ -324,19 +373,25 @@ def master(x, cfg, log=print):
     l0 = lufs(x)
     x *= 10 ** ((-18 - l0) / 20)
     x = eq(x, 'lowshelf', 90, 0.7, cfg.get('low', 1.0))
-    x = eq(x, 'peak', 320, 1.0, -1.5)
+    gentle = cfg.get('gentle')
+    if not gentle:
+        x = eq(x, 'peak', 320, 1.0, -1.5)
     x = eq(x, 'peak', 3000, 0.8, 0.5)
     x = eq(x, 'highshelf', 9000, 0.7, cfg.get('air', 1.5))
     if cfg.get('lofi'):
         x = lp(x, 9500)
         x = tape_wobble(x)
         x = soft(x * 1.4, 1.3) / 1.4
-    x = compressor(x, thresh=-20, ratio=2.0, attack=0.025, release=0.2, win=0.02)
+    if gentle:     # acoustic / orchestral: keep the dynamics, no pumping glue
+        x = compressor(x, thresh=-24, ratio=1.3, attack=0.05, release=0.4, win=0.03)
+    else:
+        x = compressor(x, thresh=-20, ratio=2.0, attack=0.025, release=0.2, win=0.02)
     mid = (x[0] + x[1]) / 2
     side = hp((x[0] - x[1]) / 2, 120, 2) * 1.15 * cfg.get('width', 1.0)
     x = np.vstack([mid + side, mid - side])
     drv = 1.05 + 2.0 * cfg.get('drive', 0.0)
-    x = soft(x * 1.1, drv) / 1.1
+    if not gentle or cfg.get('drive', 0) > 0:
+        x = soft(x * 1.1, drv) / 1.1
     target = cfg.get('lufs', -10)
     g_db = target - lufs(x)
     y = x

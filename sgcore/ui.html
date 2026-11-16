@@ -142,6 +142,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
   <div class="logo"><div class="mark"></div>Studio Lab</div>
   <div class="ver" id="ver"></div>
   <div class="sp"></div>
+  <button class="hbtn" id="libBtn" title="Real recorded instruments for orchestral & acoustic styles">🎻 Real instruments</button>
   <button class="hbtn" id="vstBtn" title="Play parts with your own VST3 / AU instruments (experimental)">🎹 VST</button>
   <button class="hbtn" id="soundsBtn" title="Use your own drum samples and sounds">🎛 My sounds</button>
   <button class="hbtn" id="plugBtn" title="Tell Studio Lab which plugins you have">🔌 My plugins</button>
@@ -580,6 +581,23 @@ async function soundsModal(data){
     }catch(e){ alert('Could not read that file: '+e.message) } };
   $('#modal').classList.add('on');
 }
+// ------------------------------------------------------------- sampled sound library
+async function libModal(){
+  const L=await api('/api/soundlib',{});
+  $('#modalBox').className='box';
+  $('#modalBox').innerHTML=`<h3>Real instruments</h3>
+    <p class="hint">Download a free library of <b>recorded</b> instruments (GeneralUser GS by S. Christian Collins, ~31 MB, free for any music).
+    Once installed, Studio Lab plays orchestral strings, brass, woodwinds, timpani, pianos, guitars, basses and acoustic drum kits
+    from real recordings in previews and full songs - automatically for Orchestral & Classic styles, and for obviously acoustic parts (piano, guitar, flute...) in electronic styles.
+    LMMS projects use the same library through LMMS's built-in SoundFont player.</p>
+    ${L.installed?'<p><span class="tag ok">Installed</span></p>':'<div class="row"><button class="btn p" id="libGo">Download real instruments</button><span class="hint">needs internet</span></div><pre id="libLog" class="hint"></pre>'}
+    <div style="text-align:right;margin-top:14px"><button class="btn p" onclick="closeModal()">Done</button></div>`;
+  if($('#libGo')) $('#libGo').onclick=async()=>{ $('#libGo').disabled=true; $('#libGo').textContent='Downloading…';
+    const {job}=await api('/api/soundlib/install',{});
+    pollJob(job, j=>{ if(j.status==='done'){ $('#libLog').textContent+='\nDone! New songs will use real instruments.'; $('#libBtn').textContent='🎻 Real instruments ✓'; }
+      else $('#libLog').textContent+='\nDownload failed: '+(j.error||''); }, l=>$('#libLog').textContent=l); };
+  $('#modal').classList.add('on');
+}
 // ------------------------------------------------------------- VST instruments (experimental)
 function pollJob(jid, onDone, onLog){
   const t=async()=>{ const j=await api('/api/job/'+jid); if(onLog) onLog((j.log||[]).join('\n'));
@@ -709,6 +727,8 @@ async function init(){
   $('#plugBtn').onclick=()=>plugModal();
   $('#soundsBtn').onclick=()=>soundsModal();
   $('#vstBtn').onclick=()=>vstModal();
+  $('#libBtn').onclick=()=>libModal();
+  api('/api/soundlib',{}).then(r=>{ if(r.installed) $('#libBtn').textContent='🎻 Real instruments ✓'; });
   $('#refBtn').onclick=()=>$('#refFile').click();
   $('#refFile').onchange=()=>{const f=$('#refFile').files[0]; if(f) onReference(f)};
   api('/api/taste',{}).then(t=>TASTE=t);

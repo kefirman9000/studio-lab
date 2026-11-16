@@ -1000,6 +1000,29 @@ LABELS.update({'uk_drill': 'UK Drill', 'city_pop': 'City Pop', 'bossa_nova': 'Bo
                'tension': 'Dark Tension'})
 
 
+# ----------------------------------------------------------------------------- authentic sampled versions
+# When the sampled sound library is installed, these parts are played by real recorded instruments.
+ACOUSTIC_MAP = {
+    'rock': {'bass': 'fingerbass', 'chords': 'odguitar', 'arp': 'cleanguitar', 'lead': 'odguitar'},
+    'metal': {'bass': 'pickbass', 'chords': 'distguitar', 'arp': 'distguitar', 'lead': 'distguitar'},
+    'blues': {'bass': 'fingerbass', 'arp': 'cleanguitar', 'lead': 'odguitar'},
+    'jazz': {'bass': 'acbass', 'lead': 'mutedtrumpet'},
+    'bossa_nova': {'bass': 'acbass', 'chords': 'nylon', 'pad': 'slowstrings'},
+    'folk': {'bass': 'acbass', 'pad': 'slowstrings'},
+    'funk': {'bass': 'slapbass', 'chords': 'muted', 'arp': 'cleanguitar'},
+    'disco': {'bass': 'fingerbass', 'chords': 'cleanguitar', 'pad': 'strings'},
+    'pop': {'bass': 'fingerbass', 'arp': 'cleanguitar'},
+    'city_pop': {'bass': 'slapbass', 'arp': 'cleanguitar', 'lead': 'tenorsax'},
+    'reggae': {'bass': 'fingerbass', 'arp': 'muted'},
+    'boombap': {'bass': 'acbass'},
+}
+# which recorded drum kit suits each acoustic genre (GS kits: acoustic=Standard, room, rock=Power, jazz, brush, orchestra)
+ACOUSTIC_KIT = {'rock': 'rock', 'metal': 'rock', 'blues': 'room', 'jazz': 'brush', 'bossa_nova': 'brush', 'folk': 'room',
+                'funk': 'acoustic', 'disco': 'acoustic', 'pop': 'acoustic', 'city_pop': 'acoustic', 'reggae': 'room'}
+POWER_CHORDS = {'rock', 'metal'}
+GENTLE_MASTER = {'jazz', 'bossa_nova', 'folk', 'blues'}   # plus every Orchestral style
+
+
 def styles_by_category():
     out = {c: [] for c in CATEGORIES}
     for k, v in STYLES.items():

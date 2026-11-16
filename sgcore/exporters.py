@@ -242,6 +242,13 @@ def _instrument_xml(tcfg, kit, spb):
         return ('<instrument name="kicker"><kicker version="1" startnote="0" endnote="0" decay_syncmode="0" decay_numerator="4" '
                 f'decay_denominator="4" startfreq="{start:.0f}" endfreq="{pitch:.0f}" decay="{decay}" dist="{dist:.1f}" distend="{dist / 2:.1f}" '
                 f'gain="1" env="0.163" noise="0" click="{min(1, k.get("click", 0.3) + 0.1):.2f}" slope="0.06"/></instrument>'), None
+    if inst.startswith('sf:'):
+        from . import soundfont as sfm
+        src = sfm.library_path()
+        bank, prog = sfm.SAMPLED.get(inst[3:], (0, 0))[:2]
+        return (f'<instrument name="sf2player"><sf2player src={quoteattr(src or "")} bank="{bank}" patch="{prog}" gain="1" '
+                'reverbOn="0" reverbRoomSize="0.2" reverbDamping="0" reverbWidth="0.5" reverbLevel="0.9" chorusOn="0" '
+                'chorusNum="3" chorusLevel="2" chorusSpeed="0.3" chorusDepth="8"/></instrument>'), dict(env=None)
     if inst.startswith('user:'):
         from .usersounds import path as upath
         src = upath('inst', inst[5:]) or ''
@@ -322,6 +329,10 @@ def write_lmms(path, song):
         ch = i + 1
         if t['inst'].startswith('vst:'):          # LMMS can't load VST3 - use the matching built-in patch
             t = dict(t, inst=t.get('fallback') or 'pluck_saw')
+        if t['inst'].startswith('sf:'):
+            from . import soundfont as _sfm
+            if not _sfm.library_path():
+                t = dict(t, inst=t.get('fallback') or _sfm.fallback_for(t['inst'][3:]))
         ixml, patch = _instrument_xml(t, kit, spb)
         vol = _lmms_vol(t)
         out.append(f'      <track muted="0" type="0" name={quoteattr(t["name"] + " - " + t["inst"])} solo="0">')
