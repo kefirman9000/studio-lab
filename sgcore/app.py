@@ -695,6 +695,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(r)
         if p == '/api/diagnostics':
             from . import diagnostics
+            if body.get('summary'):
+                return self._json({'text': diagnostics.summary(JOBS, str(body.get('note', ''))[:4000])})
             return self._json({'text': diagnostics.build(JOBS, str(body.get('note', ''))[:4000]),
                                'name': 'studiolab-report-' + time.strftime('%Y%m%d-%H%M') + '.txt'})
         if p == '/api/window':

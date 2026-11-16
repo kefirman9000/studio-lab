@@ -57,6 +57,17 @@ def write_midi(path, song):
     tempo = int(60_000_000 / (song['bpm'] * sc))
     ts = {'4/4': b'\x04\x02\x18\x08', '3/4': b'\x03\x02\x18\x08', '6/8': b'\x06\x03\x24\x08', '12/8': b'\x0c\x03\x24\x08'}[meter]
     meta = [(0, 0, b'\xff\x51\x03' + tempo.to_bytes(3, 'big')), (0, 0, b'\xff\x58\x04' + ts)]
+    tm = song.get('tempo_map')
+    if tm:                                            # tempo changes (accelerando, allargando, ritardando) beat by beat
+        meta = meta[1:]
+        last = None
+        for b in range(0, int(song['total_bars'] * 4) + 1):
+            seg = next(((x0, v0, x1, v1) for (x0, v0), (x1, v1) in zip(tm, tm[1:]) if x0 <= b <= x1 and x1 > x0), None)
+            bpm_b = (seg[1] + (seg[3] - seg[1]) * (b - seg[0]) / (seg[2] - seg[0])) if seg else tm[-1][1]
+            us = int(60_000_000 / (bpm_b * sc))
+            if last is None or abs(us - last) > last * 0.004:
+                meta.append((int(b * ppq_b), 0, b'\xff\x51\x03' + us.to_bytes(3, 'big')))
+                last = us
     k = song['key']                                   # key signature: home note + major/minor quality (DAWs show it)
     minor = (k.scale[2] - k.scale[0]) % 12 == 3
     sf = (((k.root + 3) % 12 if minor else k.root) * 7) % 12

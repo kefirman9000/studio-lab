@@ -2815,6 +2815,41 @@ POOLS.update({
 
 
 # ---------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------- the ultimate orchestral generator
+# Through-composed by sgcore/journey.py (tension > sorrow > resolve > glory > reflection > resolution); these are its
+# players. Each part is one section / articulation, so the real orchestra (or BBC SO, once set up) plays every one.
+style('cinematic_journey', 'Orchestral', 'The ultimate orchestral generator - an epic cinematic journey for full symphony '
+      'orchestra: shadowy tension (creeping low strings, timpani rolls, icy low piano) > aching solo-piano sorrow > heroic '
+      'resolve (soaring violins, spiccato runs, noble horns, marcato low brass) > overwhelming tutti glory > fragile '
+      'reflection > a long, luminous final chord. Rubato and dramatic tempo shifts, near-silence to fortissimo',
+      bpm=(78, 92), scales=['minor'], composer='journey', form='epic', reverb=4.4, human=0.006, rubato=0.55,
+      kick_track='bdrum', snare_tracks=[], drums={},
+      gm_hint='Solo piano; violins I (legato + high harmonics), violas, celli, basses; strings sustain / tremolo / spiccato; '
+              '4 horns, 3 trumpets, 3 trombones, tuba; flute, oboe, clarinet; timpani, gran cassa, clash cymbals',
+      tracks=[T('piano', 'lead', 'piano', rev=0.42, pan=-0.08, db=-15),
+              T('vn1', 'lead', 'violins', rev=0.5, pan=-0.35, db=-16),
+              T('vn_hi', 'pad', 'violins', rev=0.65, pan=-0.2, db=-27, swell=0.35),
+              T('va', 'chords', 'violas', rev=0.5, pan=0.12, db=-20),
+              T('vc', 'bass', 'cello', rev=0.45, pan=0.3, db=-19),
+              T('cb', 'bass', 'contrabass', rev=0.45, pan=0.38, db=-19),
+              T('pad', 'pad', 'strings', rev=0.55, db=-20, swell=0.18),
+              T('trem', 'pad', 'tremolo', rev=0.55, pan=0.1, db=-26),
+              T('spicc_lo', 'chords', 'spiccato', rev=0.4, pan=0.2, db=-21),
+              T('spicc_hi', 'arp', 'spiccato', rev=0.45, pan=-0.25, db=-23),
+              T('horns', 'pad', 'horn', rev=0.6, pan=-0.18, db=-19, swell=0.45),
+              T('tpt', 'lead', 'trumpet', rev=0.55, pan=0.08, db=-20),
+              T('tbn', 'bass', 'trombone', rev=0.55, pan=0.22, db=-19),
+              T('tuba', 'bass', 'tuba', rev=0.5, pan=0.3, db=-21),
+              T('flute', 'arp', 'flute', rev=0.55, pan=-0.12, db=-24),
+              T('oboe', 'lead', 'oboe', rev=0.5, pan=0.04, db=-25),
+              T('clar', 'chords', 'clarinet', rev=0.5, pan=0.1, db=-26),
+              T('timp', 'bass', 'timpani', rev=0.5, pan=0.08, db=-18),
+              T('bdrum', 'kick', 'taiko', rev=0.5, db=-17),
+              T('cym', 'top', 'crash', real='orchcrash', rev=0.6, pan=0.15, db=-24)],
+      master=dict(lufs=-16.0, air=1.2, low=1.6, gentle=True))
+LABELS['cinematic_journey'] = 'Cinematic Journey (ultimate orchestral)'
+
+
 # wider pad / bass pools for genres that only had one or two options - only sounds that genuinely fit the genre
 _PAD_FAMILY = {
     ('house', 'deep_house', 'tech_house', 'ukgarage', 'afro_house', 'melodic_house', 'progressive_house', 'disco'):

@@ -52,7 +52,14 @@ class Renderer:
         self.spb = 60.0 / song['bpm']
         self.log = log
         self.cache = {}
-        self.length = int((song['total_bars'] * 4 * self.spb + 4.0 + self._rubato(song['total_bars'] * 4)) * SR)
+        self._tm = song.get('tempo_map')                    # through-composed scores: tempo changes along the story
+        self._tgrid = None
+        if self._tm:
+            from .compose import tempo_seconds
+            beats = np.arange(0.0, song['total_bars'] * 4 + 64.0, 1 / 16)
+            self._tgrid = (beats, np.array([tempo_seconds(self._tm, b) for b in beats]))
+        self.length = int((self._bt(song['total_bars'] * 4) + 4.0 + self._rubato(song['total_bars'] * 4)
+                           + (6.0 if self._tm else 0.0)) * SR)
         self.hrng = random.Random(song['seed'] + 99)
         self.bright = 2 ** (float(self.opts.brightness) * 1.2)
         self.track_gains = {}
@@ -70,11 +77,20 @@ class Renderer:
         q = beat * (4 if unit == 16 else 2)
         if abs(q - round(q)) < 1e-6 and int(round(q)) % 2 == 1:
             b += (st['swing'] - 0.5) * (0.5 if unit == 16 else 1.0)
-        t = b * self.spb + self._rubato(beat)
+        t = self._bt(b) + self._rubato(beat)
         if human and st.get('human'):
             # deterministic per position, so editing one section never shifts the feel of another
             t += random.Random(self.song['seed'] * 1000003 + int(round(beat * 960))).gauss(0, st['human'])
         return max(0.0, t)
+
+    def _bt(self, b):
+        """Seconds at beat b (strict time, no rubato / humanising)."""
+        if self._tgrid is None:
+            return b * self.spb
+        return float(np.interp(b, self._tgrid[0], self._tgrid[1], left=b * self.spb))
+
+    def _dsec(self, beat, dur):
+        return dur * self.spb if self._tgrid is None else max(0.01, self._bt(beat + dur) - self._bt(beat))
 
     def _rubato(self, beat):
         """Romantic-style rubato: each 4-bar phrase pushes a little, then broadens into its cadence (seconds added)."""
@@ -100,7 +116,7 @@ class Renderer:
         return p
 
     def _note(self, tcfg, ev, p):
-        dur = round(ev.dur * self.spb, 3)
+        dur = round(self._dsec(ev.beat, ev.dur), 3)
         if tcfg['inst'].startswith('real:'):
             sig = self._real(tcfg, ev, dur)
             if sig is not None:
@@ -286,6 +302,11 @@ class Renderer:
                 sig = self._real_drum(tcfg.get('real') or tcfg['inst'], ev, i)
             if sig is None:
                 sig = self._drum(tcfg['name'], tcfg['inst']) if is_drum else self._note(tcfg, ev, p)
+            if tcfg.get('swell') and not is_drum and ev.dur >= 2:     # bowed / blown swell: the note grows out of nothing
+                n = min(sig.shape[-1], int(self._dsec(ev.beat, ev.dur) * float(tcfg['swell']) * SR))
+                if n > 16:
+                    sig = sig.copy()
+                    sig[..., :n] *= (np.linspace(0.08, 1.0, n, dtype=np.float32) ** 1.6)
             self._add(buf, sig * ev.vel, s)
         if tcfg.get('drive'):
             buf = (soft(buf * (1 + tcfg['drive'] * 3), 1.5) / (1 + tcfg['drive'])).astype(np.float32)
@@ -327,7 +348,7 @@ class Renderer:
         """Play this part through one of your own VST3/AU instruments (falls back to the built-in sound on failure)."""
         from . import vsthost
         sid = tcfg['inst'][4:]
-        events = [(self.t_of(e.beat, human=True, layer=tcfg['layer']) + getattr(e, 'strum', 0.0) * self.spb, max(0.02, e.dur * self.spb), int(e.midi), int(max(1, min(127, e.vel * 110))))
+        events = [(self.t_of(e.beat, human=True, layer=tcfg['layer']) + getattr(e, 'strum', 0.0) * self.spb, max(0.02, self._dsec(e.beat, e.dur)), int(e.midi), int(max(1, min(127, e.vel * 110))))
                   for e in evs if e.midi is not None]
         ccs = None
         curve = (self.song.get('expr') or {}).get(tcfg['name'])
@@ -390,7 +411,9 @@ class Renderer:
             s0, s1 = b2s(sec['bar'] * 4), min(L, b2s((sec['bar'] + sec['bars']) * 4))
             e = SECTION_ENERGY.get(sec['name'], 0.9)
             e = 1 - (1 - e) * (0.5 + song['energy'])
-            if sec['opts'].get('build'):
+            if sec['opts'].get('level') is not None:      # written-out dynamics (Cinematic Journey): pp ... ff
+                env[s0:s1] = np.linspace(sec['opts']['level'], sec['opts'].get('level_to', sec['opts']['level']), max(0, s1 - s0))
+            elif sec['opts'].get('build'):
                 env[s0:s1] = np.linspace(0.72, 0.95, s1 - s0)
             else:
                 env[s0:s1] = e

@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.23.0
+- **🎬 Cinematic Journey - the ultimate orchestral generator** (top of the Orchestral tab). A through-composed score for full symphony orchestra and solo piano, written act by act instead of from loops:
+  - **Tension**: double basses on a dark pedal, celli (then violas) in muted creeping ostinatos, soft timpani rolls, icy notes at the bottom of the piano, a barely-there tremolo.
+  - **Sorrow**: the solo piano sings the song's theme (with "sighing" appoggiaturas) over soft-vibrato string pads and gentle horn swells; octaves the second time.
+  - **Resolve**: violins and violas take the theme in long legato, spiccato ostinatos and rising scalar runs drive forward, horns in noble lines, trumpets join, trombones and tuba alternate weighty chords with short marcato statements, a timpani roll throws the door open.
+  - **Glory**: massive tutti - violins high, violas, celli and horns on the theme, trumpet fanfares, sforzando low brass, thundering timpani, bass drum and cymbals, cascading piano arpeggios, flute/oboe counter-melody and high string harmonics.
+  - **Reflection**: the piano alone again over high shimmering strings and distant soft brass. **Resolution**: full strings and warm low brass hold one long, luminous (bittersweet major or dark minor) chord that fades into silence.
+  - **Tempo follows the story** (78-92 BPM base): accelerando into the climax, a held breath before it, allargando at its end, a long final ritardando - plus adjustable phrase rubato. MIDI export carries every tempo change.
+  - **Dynamics from near-silence to fortissimo**, also sent as mod-wheel (CC1) curves when an orchestra plugin plays it.
+  - Every part is its own section/articulation (violins, violas, celli, basses, sustain, tremolo, spiccato, horns, trumpets, trombones, tuba, flute, oboe, clarinet, timpani, piano), so the free real orchestra plays all of them - or your **BBC Symphony Orchestra** sections, with one tick in the Journey card.
+  - Controls: which acts to include, piano focus, rubato, dynamic range, final chord, woodwind counter-melodies. Length (Short ... Extended) and seed work as usual.
+- **Report a problem → 📋 Copy technical summary**: one short block with versions, libraries, failed jobs with their settings and errors, Python tracebacks and the end of the log - ready to paste into a chat. Same privacy rules as the full report.
+- Finished songs no longer end with long dead silence (more than 2.5 s after the last sound is trimmed with a fade).
+
 ## 1.22.0
 - **No more long silent intros**: the finished mix now starts at most 1 second before the music is audible (very quiet fade-ins and empty bars are trimmed with a short fade). Stems and MIDI keep the full timeline.
 - **Five new SUPER EPIC orchestral genres** (Orchestral tab): *Epic Orchestral*, *Epic Battle*, *Epic Choir*, *Heroic Anthem* and *Symphonic Finale*. Every one stacks the full low end - double basses, celli an octave up, trombones/tuba under the horns - with taiko, timpani, orchestral crashes, choir and soaring violins. They use the real orchestra (or your orchestra plugin) when installed.

@@ -235,3 +235,73 @@ def build(jobs=None, note=''):
     parts += _section('Recent jobs (generate / preview / installs)', lambda: _jobs(jobs or {}))
     parts += _section('Recent log', lambda: list(LINES)[-400:] or ['(empty)'])
     return redact('\n'.join(parts) + '\n')
+
+
+# ----------------------------------------------------------------------------- short technical summary (copy & paste)
+def _tracebacks(lines, limit=4):
+    """The last few Python tracebacks in the log, each with its final error line."""
+    out, cur = [], None
+    for l in lines:
+        if 'Traceback (most recent call last)' in l:
+            cur = [l]
+            out.append(cur)
+        elif cur is not None:
+            cur.append(l)
+            st = l.strip()
+            if st and not l.startswith((' ', '\t')) and ('Error' in st or 'Exception' in st or ':' in st):
+                cur = None
+    return out[-limit:]
+
+
+def summary(jobs=None, note=''):
+    """A compact, paste-able block with just the technical facts: versions, what failed, the errors and tracebacks,
+    the settings of the failing songs and the end of the log. Same redaction as the full report."""
+    import json
+    v = _versions()
+    out = ['STUDIO LAB TECHNICAL SUMMARY  ' + time.strftime('%Y-%m-%d %H:%M'), v[0], v[1], v[2]]
+    if note.strip():
+        out += ['note: ' + note.strip()[:600]]
+    try:
+        from . import samplelibs, soundfont
+        libs = [r['id'] for r in samplelibs.status() if r['installed']]
+        out.append('libraries: GM=' + ('yes' if soundfont.installed() else 'no') + ' real=' + (','.join(libs) or 'none'))
+    except Exception as e:
+        out.append(f'libraries: error {e}')
+    try:
+        from . import vsthost
+        bad = vsthost.broken()
+        out.append(f'vst: pedalboard={"yes" if vsthost.available() else "no"} broken={len(bad)}')
+        for path, why in list(bad.items())[:6]:
+            out.append(f'  broken: {os.path.basename(path)}: {str(why)[:200]}')
+    except Exception as e:
+        out.append(f'vst: error {e}')
+    items = sorted((jobs or {}).values(), key=lambda j: j.get('started') or 0)
+    failed = [j for j in items if j.get('status') == 'error' or j.get('error')
+              or any(r.get('warnings') for r in j.get('results', []))]
+    out.append(f'jobs since start: {len(items)}, with errors/warnings: {len(failed)}')
+    for j in failed[-3:]:
+        opts = [it.get('options', {}) for it in j.get('items', [])][:1]
+        out.append('--- job ' + str(j.get('status')) + (': ' + str(j.get('error'))[:600] if j.get('error') else ''))
+        for o in opts:
+            o = {k: v_ for k, v_ in o.items() if v_ not in (None, '', [], {}, False)}
+            out.append('options: ' + json.dumps(o, default=str)[:900])
+        for r in j.get('results', [])[:2]:
+            for w in (r.get('warnings') or [])[:5]:
+                out.append('warning: ' + str(w)[:300])
+        tail = [x.rstrip() for l in j.get('log', []) for x in str(l).splitlines() if x.strip()][-30:]
+        out += ['log> ' + l[:300] for l in tail]
+    lines = list(LINES)
+    tbs = _tracebacks(lines)
+    for tb in tbs:
+        out.append('--- traceback')
+        out += [l.rstrip()[:300] for l in (tb[:3] + ['  ...'] + tb[-12:] if len(tb) > 16 else tb)]
+    errs = [l.rstrip() for l in lines[-400:] if re.search(r'(?i)error|failed|exception|warning|⚠', l)]
+    if errs:
+        out.append('--- recent error lines')
+        out += [l[:300] for l in errs[-15:]]
+    out.append('--- last log lines')
+    out += [l.rstrip()[:300] for l in lines[-20:]] or ['(empty)']
+    text = redact('\n'.join(out))
+    if len(text) > 12000:
+        text = text[:6000] + '\n... (shortened) ...\n' + text[-5800:]
+    return '```\n' + text + '\n```\n'

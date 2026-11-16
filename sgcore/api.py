@@ -24,8 +24,15 @@ def song_title(song):
     return f"{song['style']}_{song['key'].name().replace(' ', '-').replace('#', 's')}_{song['bpm']}bpm_seed{song['seed']}"
 
 
+def _sec_at(song, beat):
+    if song.get('tempo_map'):
+        from .compose import tempo_seconds
+        return tempo_seconds(song['tempo_map'], beat)
+    return beat * 60 / song['bpm']
+
+
 def describe(song):
-    dur = song['total_bars'] * 4 * 60 / song['bpm']
+    dur = _sec_at(song, song['total_bars'] * 4)
     k = song['key']
     return dict(style=song['style'], key=k.name(), bpm=song['bpm'], bars=song['total_bars'],
                 duration=f"{int(dur // 60)}:{int(dur % 60):02d}", seconds=round(dur, 1), seed=song['seed'],
@@ -39,8 +46,10 @@ def describe(song):
                 fusion=song['st'].get('fusion') if song['opts'].blend or song['opts'].blend_parts else None,
                 sections=[dict(index=x['index'], name=x['name'], bar=x['bar'], bars=x['bars'], src=x['src'], copy=x['copy'],
                                layers=x['layers'], edited=x.get('edited', False),
-                               start=round(x['bar'] * 4 * 60 / song['bpm'], 2)) for x in song['sections']],
-                mood=song['opts'].mood)
+                               start=round(_sec_at(song, x['bar'] * 4), 2)) for x in song['sections']],
+                mood=song['opts'].mood,
+                tempo_range=[round(min(v for _, v in song['tempo_map'])), round(max(v for _, v in song['tempo_map']))]
+                if song.get('tempo_map') else None)
 
 
 def _nice(name):
@@ -172,6 +181,29 @@ def trim_lead_in(out, keep=1.0, rel_db=-40.0):
     return y, cut / SR
 
 
+def trim_tail(out, keep=2.5, rel_db=-60.0):
+    from .dsp import SR
+    """Drop dead silence after the last sound (a reverb tail fading below `rel_db` of the loud parts), keeping `keep` s."""
+    x = np.asarray(out)
+    mono = np.abs(x).max(axis=0) if x.ndim == 2 else np.abs(x)
+    w = int(0.05 * SR)
+    n = len(mono) // w
+    if n < 10:
+        return out, 0.0
+    rms = np.sqrt(np.mean((mono[:n * w].reshape(n, w)) ** 2, axis=1)) + 1e-12
+    hits = np.nonzero(rms > np.percentile(rms, 95) * 10 ** (rel_db / 20))[0]
+    if not len(hits):
+        return out, 0.0
+    end = min(x.shape[-1], (hits[-1] + 1) * w + int(keep * SR))
+    cut = x.shape[-1] - end
+    if cut <= int(0.5 * SR):
+        return out, 0.0
+    y = x[..., :end].copy()
+    f = min(int(1.0 * SR), y.shape[-1])
+    y[..., -f:] *= np.linspace(1.0, 0.0, f) ** 2
+    return y, cut / SR
+
+
 def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=None, prefs=None, section=None):
     """Compose + render + master + write requested outputs. Returns dict with info and file paths."""
     if isinstance(opts, dict):
@@ -208,6 +240,9 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     if trimmed > 0.05:
         log(f'   trimmed {trimmed:.1f} s of near-silent lead-in (at most 1 s left before the music)')
         info['trimmed_lead_in'] = round(trimmed, 2)
+    out, tail = trim_tail(out)
+    if tail > 0.5:
+        info['trimmed_tail'] = round(tail, 2)
     files = {}
     wav = os.path.join(outdir, title + '.wav')
     dsp.write_wav(wav, out)

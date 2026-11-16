@@ -84,6 +84,7 @@ class Options:
     chord_speed: str = None       # None = style | slow (chords last twice as long) | fast (change twice as often)
     rotation: str = 'auto'        # instrument rotation between sections: auto | off | some | lots
     avoid: dict = field(default_factory=dict)          # role -> instruments your recent songs used (picked less often)
+    journey: dict = None          # Cinematic Journey settings: acts, piano, rubato, dynamics, ending, woodwinds (see journey.py)
 
     def to_dict(self):
         return asdict(self)
@@ -615,8 +616,11 @@ def apply_sampled(st, opts):
         mapped = None if (user_pick or t.get('pooled')) else ACOUSTIC_MAP.get(name, {}).get(t['layer'])
         if mapped:
             target = mapped
-        elif inst in sfm.ACOUSTIC and (cat in ('Orchestral', 'Classic') or engine == 'sampled' or inst in sfm.ELECTRONIC_SWAP):
-            target = inst
+        elif (inst in sfm.ACOUSTIC or inst in sfm.SF_ALIAS) and (cat in ('Orchestral', 'Classic') or engine == 'sampled'
+                                                                  or inst in sfm.ELECTRONIC_SWAP):
+            target = sfm.SF_ALIAS.get(inst, inst)
+            if target != inst:
+                t['orch_name'] = inst                          # the real orchestra still plays the exact section
         else:
             continue
         t['fallback'] = t.get('fallback') or inst
@@ -647,7 +651,7 @@ def apply_real(st, opts):
         inst = t['inst']
         if t['layer'] not in MELODIC_ROLES or inst.startswith(('user:', 'vst:', 'real:')):
             continue
-        base = inst[3:] if inst.startswith('sf:') else inst
+        base = t.get('orch_name') or (inst[3:] if inst.startswith('sf:') else inst)
         orig_base = base
         style_ = st.get('name') or opts.style
         if base == 'piano' and style_ in sl.UPRIGHT_STYLES and sl.plays('upright_piano'):
@@ -1029,6 +1033,10 @@ def compose(opts):
     if opts.style in STYLE_ALIASES or any(b in STYLE_ALIASES for b in (opts.blend or [])):
         opts = replace(opts, style=STYLE_ALIASES.get(opts.style, opts.style),
                        blend=[STYLE_ALIASES.get(b, b) for b in (opts.blend or [])])
+    if opts.style == 'cinematic_journey' and opts.blend:     # a through-composed score doesn't blend
+        opts = replace(opts, blend=[], blend_parts={})
+    elif 'cinematic_journey' in (opts.blend or []):
+        opts = replace(opts, blend=[b for b in opts.blend if b != 'cinematic_journey'])
     user_opts = opts
     opts = style_knob_defaults(opts)
     opts = apply_simplicity(opts)
@@ -1044,11 +1052,12 @@ def compose(opts):
     rnd_b = prng('bass', 4)           # bass lines
     rnd_c = prng('chords', 5)         # chord rhythms, arps, voicing choices
     st = resolve_style(opts, random.Random(opts.seed * 7 + 3), mood)
-    st = apply_variety(st, opts, random.Random(opts.seed * 7919 + 17))
-    add_counter_track(st, opts)
-    add_layer_tracks(st, opts)
-    add_bass_switch_tracks(st)
-    add_section_switch_tracks(st, opts, random.Random(f'{opts.seed}-rotation-{opts.style}'))
+    if not st.get('composer'):                           # through-composed scores keep their exact orchestration
+        st = apply_variety(st, opts, random.Random(opts.seed * 7919 + 17))
+        add_counter_track(st, opts)
+        add_layer_tracks(st, opts)
+        add_bass_switch_tracks(st)
+        add_section_switch_tracks(st, opts, random.Random(f'{opts.seed}-rotation-{opts.style}'))
     debell(st, opts)
     apply_sampled(st, opts)
     from . import fxrig
@@ -1076,6 +1085,9 @@ def compose(opts):
         else:
             scale = opts.scale or rnd.choice(scales)
     key = Key(root, scale)
+    if st.get('composer') == 'journey':
+        from .journey import compose_journey
+        return compose_journey(st, opts, key, bpm, random.Random(opts.seed * 977 + 11))
     # ---- harmony
     progs = st.get('progs') or {scale: GENERIC_PROGS.get(scale, GENERIC_PROGS['major'])}
     if isinstance(progs, dict):
@@ -2433,6 +2445,23 @@ def apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_col
     return total_bars + 1                          # the hit rings out into the render's tail
 
 
+def tempo_seconds(tempo_map, beat):
+    """Seconds at `beat` for a tempo map [(beat, bpm), ...] whose tempo ramps linearly between points."""
+    tm = tempo_map
+    t = 0.0
+    if beat <= tm[0][0]:
+        return (beat - tm[0][0]) * 60.0 / tm[0][1]
+    for (b0, v0), (b1, v1) in zip(tm, tm[1:]):
+        e = min(beat, b1)
+        if e > b0:
+            ve = v0 + (v1 - v0) * (e - b0) / (b1 - b0) if b1 > b0 else v0
+            t += 60.0 * (e - b0) / v0 if abs(ve - v0) < 1e-9 else 60.0 * (e - b0) / (ve - v0) * math.log(ve / v0)
+        if beat <= b1:
+            return t
+    bl, vl = tm[-1]
+    return t + 60.0 * (beat - bl) / vl
+
+
 def section_window(song, index, preroll_bars=2, max_bars=20):
     """Excerpt containing one section (plus a short lead-in) - for auditioning edits."""
     sec = song['sections'][index]
@@ -2470,6 +2499,14 @@ def _window(song, b0, b1, fade=True, keep_fx=True):
             secs.append(dict(s, bar=s0 - b0, bars=s1 - s0))
     pv = dict(song)
     pv.update(events=evs, fx=fx, sections=secs, total_bars=b1 - b0, preview_of=(b0, b1))
+    if song.get('tempo_map'):                            # the excerpt keeps the tempo it has at that point of the story
+        tm = song['tempo_map']
+        bpm_at = lambda b: next((v0 + (v1 - v0) * (b - x0) / (x1 - x0) for (x0, v0), (x1, v1) in zip(tm, tm[1:])
+                                 if x0 <= b <= x1 and x1 > x0), tm[-1][1] if b > tm[-1][0] else tm[0][1])
+        pts = [(0.0, bpm_at(beat0))] + [(b - beat0, v) for b, v in tm if beat0 < b < beat1] + [(beat1 - beat0, bpm_at(beat1))]
+        pv['tempo_map'] = pts
+    if song.get('expr'):
+        pv['expr'] = {k: [(b - beat0, v) for b, v in c if beat0 <= b < beat1] or [(0.0, c[0][1])] for k, c in song['expr'].items() if c}
     return pv
 
 

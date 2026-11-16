@@ -45,6 +45,11 @@ h3{margin:0 0 10px;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;
 .st.in .ck{background:var(--acc2);border-color:var(--acc2);color:#04241d}
 .st.on .ck{background:var(--acc);border-color:var(--acc);color:#fff}
 .st .lead{font-size:10px;color:#ffd66b;margin-left:4px}
+.feat{padding:11px 12px;border-radius:12px;cursor:pointer;margin-bottom:8px;border:1px solid #6b5a2a;background:linear-gradient(135deg,#2a2212,#1a1626)}
+.feat:hover{border-color:#c9a24a}.feat.on{border-color:#ffd66b;box-shadow:0 0 0 1px #ffd66b inset}
+.feat .t{font-weight:650;font-size:14px;color:#ffe3a1}.feat .d{font-size:12px;color:var(--muted);margin-top:3px}
+#journeyCard{border-color:#6b5a2a}#journeyCard summary{color:#ffe3a1}
+#jActs .chip.off{opacity:.45;text-decoration:line-through}
 .mix{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .mix .chip{display:flex;align-items:center;gap:6px}
 .mix .chip .x{color:var(--muted);cursor:pointer}
@@ -188,6 +193,16 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 
   <!-- CENTER: controls -->
   <div class="col c">
+    <details class="card" id="journeyCard" open style="display:none"><summary>🎬 Cinematic Journey</summary><div class="body">
+      <div class="f wide"><label>The story <span class="hint">click an act to leave it out · tempo, dynamics and orchestration follow the story</span></label><div class="chips" id="jActs"></div></div>
+      <div class="f"><label title="How much the solo piano leads: icy low notes, the sorrow theme, cascading arpeggios in the climax">Piano focus <b id="jPianoV"></b></label><input type="range" id="jPiano" min="0" max="100" value="60"></div>
+      <div class="f"><label title="Phrase-by-phrase push and pull of the tempo (on top of the story's accelerando, allargando and final ritardando)">Rubato <b id="jRubatoV"></b></label><input type="range" id="jRubato" min="0" max="100" value="50"></div>
+      <div class="f"><label title="From near-silence to room-shaking fortissimo">Dynamic range <b id="jDynV"></b></label><input type="range" id="jDyn" min="0" max="100" value="75"></div>
+      <div class="f"><label>Final chord</label><select id="jEnd"><option value="major">Bittersweet major (luminous)</option><option value="minor">Dark minor</option></select></div>
+      <div class="f"><label><input type="checkbox" id="jWinds" checked> Woodwind counter-melodies</label></div>
+      <div class="f wide"><label><input type="checkbox" id="jBbc"> Play it on my orchestra plugin (BBC Symphony Orchestra / LABS)</label>
+        <div class="hint">Off: the free real orchestra in 🎻 Real instruments plays every section, no setup. On: sections you saved in <a href="#" id="jBbcSet">Set up my orchestra…</a> are used (violins, celli, horns, trumpets, low brass, timpani…), with mod-wheel dynamics; anything not set up uses the real orchestra.</div></div>
+    </div></details>
     <details class="card" open><summary>Basics</summary><div class="body">
       <div class="f"><label>Tempo <span class="auto"><input type="checkbox" id="bpmAuto" checked>auto</span></label>
         <div class="row"><input type="range" id="bpm" min="55" max="200" value="120" disabled><b id="bpmV" style="min-width:34px;font-family:var(--mono);font-size:12px">auto</b></div></div>
@@ -309,7 +324,13 @@ function renderStyles(){
   const q=$('#search').value.toLowerCase().trim();
   const list=$('#styleList'); list.innerHTML='';
   const cats=q?Object.keys(META.categories):[state.cat];
-  cats.forEach(c=>META.categories[c].filter(s=>!q||s.name.toLowerCase().includes(q)||s.desc.toLowerCase().includes(q)).forEach(s=>{
+  if(!q&&state.cat==='Orchestral'&&META.categories.Orchestral.some(s=>s.id==='cinematic_journey')){
+    const f=document.createElement('div'); f.className='feat'+(state.style==='cinematic_journey'&&!state.blend.length?' on':'');
+    f.innerHTML='<div class="t">🎬 Cinematic Journey</div><div class="d">The ultimate orchestral generator: tension → sorrow → resolve → glory → reflection, full symphony orchestra, solo piano, rubato and huge dynamics.</div>';
+    f.onclick=()=>{ state.style='cinematic_journey'; state.blend=[]; state.instruments={}; state.blend_parts={}; refresh(); };
+    list.appendChild(f);
+  }
+  cats.forEach(c=>META.categories[c].filter(s=>(q||s.id!=='cinematic_journey')&&(!q||s.name.toLowerCase().includes(q)||s.desc.toLowerCase().includes(q))).forEach(s=>{
     const lead=s.id===state.style, mixed=inMix(s.id);
     const d=document.createElement('div');d.className='st'+(lead?' on':'')+(mixed&&!lead?' in':'');d.title=s.desc;
     d.innerHTML=`<span class="ck" title="${mixed?'Remove from the mix':'Add to the mix (blend)'}">${mixed?'✓':''}</span><span class="nm">${s.name}${lead&&state.blend.length?'<span class="lead">★ lead</span>':''}</span><span class="bpm">${s.bpm[0]}–${s.bpm[1]}</span>`;
@@ -378,7 +399,16 @@ function renderOuts(){
     const c=document.createElement('span');const on=state.outputs.includes(k);c.className='chip'+(on?' on':'');c.textContent=n;
     c.onclick=()=>{state.outputs=on?state.outputs.filter(x=>x!==k):[...state.outputs,k];renderOuts()};o.appendChild(c)});
 }
-function refresh(){ if(window.showGenreKit) showGenreKit();renderStyles();renderSelected();}
+const J_ACTS=[['tension','Tension'],['sorrow','Sorrow'],['resolve','Resolve'],['glory','Glory'],['reflection','Reflection'],['resolution','Resolution']];
+function renderJourney(){
+  const on=state.style==='cinematic_journey'&&!state.blend.length; $('#journeyCard').style.display=on?'':'none'; if(!on) return;
+  state.jOff=state.jOff||[];
+  $('#jActs').innerHTML=J_ACTS.map(([id,n],i)=>`<span class="chip ${state.jOff.includes(id)?'off':'on'}" data-act="${id}">${i+1}. ${n}</span>`).join('');
+  $$('#jActs [data-act]').forEach(c=>c.onclick=()=>{ const a=c.dataset.act; if(state.jOff.includes(a)) state.jOff=state.jOff.filter(x=>x!==a);
+    else if(state.jOff.length<J_ACTS.length-1) state.jOff.push(a); renderJourney(); });
+  $('#jBbc').checked=!!state.orch_plugin;
+}
+function refresh(){ if(window.showGenreKit) showGenreKit();renderStyles();renderSelected();renderJourney();}
 
 function options(){
   const o={style:state.style, seed:+$('#seed').value||1, blend:state.blend, blend_parts:state.blend_parts, mood:state.mood,
@@ -406,6 +436,10 @@ function options(){
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
   if($('#vinyl').value) o.vinyl=$('#vinyl').value==='on';
   if(state.orch_plugin) o.orch_plugin=true;
+  if(state.style==='cinematic_journey'&&!state.blend.length){
+    o.journey={acts:J_ACTS.map(a=>a[0]).filter(a=>!(state.jOff||[]).includes(a)), piano:+$('#jPiano').value/100, rubato:+$('#jRubato').value/100,
+      dynamics:+$('#jDyn').value/100, ending:$('#jEnd').value, woodwinds:$('#jWinds').checked};
+  }
   if($('#bassRhythm').value) o.bass_rhythm=$('#bassRhythm').value;
   if($('#ending').value!=='auto') o.ending=$('#ending').value;
   if($('#counter').value) o.counter=$('#counter').value;
@@ -431,6 +465,8 @@ function applyOptions(o){
   $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#vinyl').value=o.vinyl===true?'on':(o.vinyl===false?'off':''); $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#vocalGuide').checked=!!o.vocal_guide;
   $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';
   LEVELS.forEach(([k,n,layers])=>{ $('#lv_'+k).value=(o.part_levels||{})[layers[0]]||0; });
+  if(o.journey){ const j=o.journey; state.jOff=J_ACTS.map(a=>a[0]).filter(a=>j.acts&&!j.acts.includes(a)); $('#jPiano').value=(j.piano??.6)*100; $('#jRubato').value=(j.rubato??.5)*100;
+    $('#jDyn').value=(j.dynamics??.75)*100; $('#jEnd').value=j.ending||'major'; $('#jWinds').checked=j.woodwinds!==false; }
   const cat=Object.entries(META.categories).find(([c,l])=>l.some(s=>s.id===o.style)); if(cat) state.cat=cat[0];
   syncAutos(); initSegs(); renderMoods(); renderLayers(); renderTabs(); refresh(); $$('input[type=range]').forEach(e=>e.oninput&&e.oninput());
 }
@@ -771,6 +807,11 @@ function diagModal(){
       <textarea id="diagNote" rows="4" style="width:100%" placeholder="e.g. Generate on Trance with the Genre VSTs on shows an error about Surge XT"></textarea></div>
     <div class="row" style="margin-top:10px"><button class="btn p" id="diagSave">Save report</button><button class="btn" id="diagCopy">Copy to clipboard</button>
       <span class="hint" id="diagMsg"></span></div>
+    <h3 style="margin-top:16px">Technical summary</h3>
+    <p class="hint">Just the technical side - versions, what failed, the error messages and tracebacks, the settings of the song that failed and
+      the end of the log - short enough to paste straight into a chat. Same privacy rules as the report.</p>
+    <div class="row"><button class="btn p" id="diagSum">📋 Copy technical summary</button><span class="hint" id="diagSumMsg"></span></div>
+    <textarea id="diagSumText" rows="8" readonly style="width:100%;display:none;margin-top:8px;font-family:var(--mono);font-size:11px"></textarea>
     <h3 style="margin-top:16px">App window</h3>
     <div class="row"><label><input type="radio" name="winMode" value="app"> Own app window (no browser tabs)</label>
       <label><input type="radio" name="winMode" value="browser"> Browser tab</label>
@@ -781,6 +822,11 @@ function diagModal(){
   $('#diagSave').onclick=async()=>{ const r=await get(); const a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([r.text],{type:'text/plain'})); a.download=r.name; document.body.appendChild(a); a.click(); a.remove();
     $('#diagMsg').textContent='Saved '+r.name+' (usually in your Downloads folder).'; };
+  $('#diagSum').onclick=async()=>{ const r=await api('/api/diagnostics',{note:$('#diagNote').value, summary:true}); const ta=$('#diagSumText');
+    ta.value=r.text; ta.style.display='';
+    try{ await navigator.clipboard.writeText(r.text); $('#diagSumMsg').textContent='Copied - paste it into your message.' }
+    catch(_){ ta.focus(); ta.select(); try{ document.execCommand('copy'); $('#diagSumMsg').textContent='Copied - paste it into your message.' }
+      catch(__){ $('#diagSumMsg').textContent='Select the text below and copy it (Ctrl+C).' } } };
   $('#diagCopy').onclick=async()=>{ const r=await get(); try{ await navigator.clipboard.writeText(r.text); $('#diagMsg').textContent='Copied - paste it into your message.' }
     catch(_){ $('#diagMsg').textContent='Could not copy - use Save report instead.' } };
   (async()=>{ const cur=(META.window||'app'); $$('#modalBox [name=winMode]').forEach(r=>{ r.checked=r.value===cur;
@@ -1034,6 +1080,10 @@ async function init(){
   bindRange('repetition',v=>v<35?v+'% · developing':v<65?v+'%':v+'% · catchy loop');
   bindRange('mrange',v=>v<35?'narrow':v<65?'normal':'wide');
   bindRange('energy',v=>v+'%'); bindRange('complexity',v=>v+'%'); bindRange('humanize',v=>v+'%'); bindRange('variety',v=>v<20?v+'% · faithful':v<60?v+'% · balanced':v+'% · adventurous'); bindRange('brightness',v=>(v>0?'+':'')+v);
+  bindRange('jPiano',v=>v<25?'in the background':v<70?v+'%':v+'% · centre stage'); bindRange('jRubato',v=>v<20?'strict':v<65?v+'%':v+'% · very free');
+  bindRange('jDyn',v=>v<35?'gentle':v<70?v+'%':v+'% · pp to fff');
+  $('#jBbc').onchange=e=>{ state.orch_plugin=e.target.checked; try{ localStorage.setItem('sl_orch_plugin', state.orch_plugin?'1':'') }catch(_){} };
+  $('#jBbcSet').onclick=async e=>{ e.preventDefault(); const V=await api('/api/vst',{}); if(!V.available){ vstModal(); return } orchModal(V); };
   bindRange('reverb',v=>v+'%'); bindRange('delay',v=>v+'%'); bindRange('width',v=>v+'%'); bindRange('bass',v=>(v>0?'+':'')+v+' dB'); bindRange('drive',v=>v+'%');
   $('#bpm').oninput=syncAutos; ['bpmAuto','swingAuto','scAuto','loudAuto'].forEach(a=>$('#'+a).onchange=syncAutos);
   $('#search').oninput=renderStyles;

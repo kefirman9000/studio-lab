@@ -374,7 +374,9 @@ FALLBACK = {'nylon': 'guitar', 'cleanguitar': 'guitar', 'muted': 'mutedgtr', 'od
 # electronic genres only swap instruments that are obviously acoustic
 ELECTRONIC_SWAP = {'piano', 'epiano', 'guitar', 'violin', 'harp', 'flute', 'sax', 'marimba', 'kalimba', 'steeldrum',
                    'celesta', 'pizz', 'clav', 'cello', 'harpsichord', 'oboe', 'clarinet', 'spiccato', 'tremolo',
-                   'upright', 'mutedgtr', 'vibes', 'harmonica', 'trumpet'}
+                   'upright', 'mutedgtr', 'vibes', 'harmonica', 'trumpet', 'contrabass', 'trombone', 'tuba', 'bassoon'}
+# orchestra sections the General MIDI bank only has as one ensemble sound
+SF_ALIAS = {'violins': 'strings', 'violas': 'strings'}
 
 
 def fallback_for(name):
