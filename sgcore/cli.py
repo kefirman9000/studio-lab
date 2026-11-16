@@ -31,6 +31,10 @@ def main(argv=None):
     ap.add_argument('--loudness', type=float)
     ap.add_argument('--inst', action='append', default=[], help='instrument override, e.g. --inst lead=violin')
     ap.add_argument('--kit')
+    ap.add_argument('--melody', choices=['diatonic', 'pentatonic', 'blues', 'bebop'], help='how the lead phrases (default: genre)')
+    ap.add_argument('--voicing', choices=['close', 'open', 'drop2', 'rootless', 'power'], help='chord voicing (default: genre)')
+    ap.add_argument('--chord-color', choices=['triad', '7', 'add9', '9', '6', 'sus2', 'sus4'])
+    ap.add_argument('--level', action='append', default=[], help='part level in dB, e.g. --level lead=-3 --level bass=+2')
     ap.add_argument('--mute', default='', help='comma-separated layers to drop: kick,snare,top,bass,chords,pad,arp,lead,fx')
     ap.add_argument('--no-vst-rig', action='store_true', help="don't play parts through your installed plugins")
     ap.add_argument('--preview', action='store_true', help='short clip only')
@@ -69,6 +73,11 @@ def main(argv=None):
             if a.inst:
                 o['instruments'] = dict(p.split('=', 1) for p in a.inst)
             o.setdefault('vst_rig', not a.no_vst_rig)
+            for k, v in (('melody_style', a.melody), ('voicing', a.voicing), ('chord_color', a.chord_color)):
+                if v:
+                    o[k] = v
+            if a.level:
+                o['part_levels'] = {k: float(v) for k, v in (x.split('=', 1) for x in a.level)}
             if a.mute:
                 o['muted'] = [m.strip() for m in a.mute.split(',') if m.strip()]
             generate(Options.from_dict(o), a.out, outputs=[f.strip() for f in a.formats.split(',')], preview=a.preview)

@@ -114,6 +114,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 .rtabs{display:flex;gap:4px;margin-bottom:12px}
 .hint{font-size:11.5px;color:var(--muted)}
 .modal .box.wide{width:min(860px,95vw)}
+.levels{display:grid;grid-template-columns:repeat(6,1fr);gap:6px 12px}.levels .lv{font-size:12px;color:var(--mut,#9aa)}.levels .lv b{float:right;font-weight:600}.levels input{width:100%}
 .pl{display:grid;grid-template-columns:22px 1fr auto;gap:4px 10px;align-items:center;padding:8px 6px;border-bottom:1px solid var(--line)}
 .pl:hover{background:var(--panel2)}
 .pl .n{font-weight:600}.pl .m{font-size:11.5px;color:var(--muted)}
@@ -194,6 +195,9 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
     <details class="card" open><summary>Sound</summary><div class="body" id="soundBody">
       <div class="f"><label>Drum kit <span class="auto"><input type="checkbox" id="userDrums">my samples</span></label><select id="kit"></select></div>
       <div class="f"><label>Brightness <b id="brightnessV"></b></label><input type="range" id="brightness" min="-100" max="100" value="0"></div>
+      <div class="f"><label>Melody style <span class="hint">how the lead phrases</span></label><select id="melStyle"></select></div>
+      <div class="f"><label>Chord voicing</label><select id="voicing"></select></div>
+      <div class="f"><label>Chord colour</label><select id="chordColor"></select></div>
     </div></details>
 
     <details class="card"><summary>Mix &amp; master</summary><div class="body">
@@ -205,6 +209,8 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f"><label>Drive / saturation <b id="driveV"></b></label><input type="range" id="drive" min="0" max="100" value="0"></div>
       <div class="f"><label>Loudness <span class="auto"><input type="checkbox" id="loudAuto" checked>style</span></label><input type="range" id="loud" min="-18" max="-6" value="-10" step="0.5" disabled></div>
       <div class="f"><label>Tape / vinyl</label><div class="seg" id="lofi"></div></div>
+      <div class="f wide"><label>Part levels <span class="hint">dB, relative to the style's own balance</span> <button class="mini" id="lvReset" style="margin-left:6px">reset</button></label>
+        <div class="levels" id="levels"></div></div>
     </div></details>
 
     <details class="card"><summary>Parts</summary><div class="body">
@@ -238,6 +244,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const LEVELS=[['drums','Drums',['kick','snare','top']],['bass','Bass',['bass']],['chords','Chords',['chords']],['pad','Pad',['pad']],['arp','Arp',['arp']],['lead','Lead',['lead']]];
 let META=null, state={style:'house', blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
   muted:[], instruments:{}, blend_parts:{}, outputs:['mp3','midi','lmms','waveform']};
 const LAYERS=[['kick','Kick'],['snare','Snare/Clap'],['top','Hats & Perc'],['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead'],['fx','FX']];
@@ -310,7 +317,8 @@ function renderSelected(){
   const defs=META.style_defaults[state.style]||{};
   ROLES.forEach(([r,label])=>{
     const w=document.createElement('div');w.className='f inst';
-    const opts=META.roles[r].map(i=>`<option value="${i.id}" ${state.instruments[r]===i.id?'selected':''}>${i.name}</option>`).join('');
+    const groups={}; META.roles[r].forEach(i=>{(groups[i.group||'Built-in']=groups[i.group||'Built-in']||[]).push(i)});
+    const opts=Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${state.instruments[r]===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('');
     const dn=defs[r]?(META.roles[r].find(i=>i.id===defs[r])||{name:defs[r]}).name:'none';
     const dl=state.blend.length?'Auto (from the fused styles)':`Style default (${dn})`;
     w.innerHTML=`<label>${label}</label><select><option value="">${dl}</option>${opts}</select>`;
@@ -350,6 +358,10 @@ function options(){
   if(!$('#loudAuto').checked) o.loudness=+$('#loud').value;
   if($('#kit').value) o.kit=$('#kit').value;
   if($('#userDrums').checked) o.user_drums=true;
+  if($('#melStyle').value) o.melody_style=$('#melStyle').value;
+  if($('#voicing').value) o.voicing=$('#voicing').value;
+  if($('#chordColor').value) o.chord_color=$('#chordColor').value;
+  const lv={}; LEVELS.forEach(([k,n,layers])=>{ const v=+$('#lv_'+k).value; if(v) layers.forEach(l=>lv[l]=v); }); if(Object.keys(lv).length) o.part_levels=lv;
   return o;
 }
 function applyOptions(o){
@@ -362,6 +374,8 @@ function applyOptions(o){
   $('#swingAuto').checked=o.swing==null; if(o.swing!=null)$('#swing').value=o.swing*100;
   $('#scAuto').checked=o.sidechain==null; if(o.sidechain!=null)$('#sidechain').value=o.sidechain*100;
   $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#userDrums').checked=!!o.user_drums;
+  $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';
+  LEVELS.forEach(([k,n,layers])=>{ $('#lv_'+k).value=(o.part_levels||{})[layers[0]]||0; });
   const cat=Object.entries(META.categories).find(([c,l])=>l.some(s=>s.id===o.style)); if(cat) state.cat=cat[0];
   syncAutos(); initSegs(); renderMoods(); renderLayers(); renderTabs(); refresh(); $$('input[type=range]').forEach(e=>e.oninput&&e.oninput());
 }
@@ -739,6 +753,14 @@ async function init(){
   $('#key').innerHTML='<option value="">Auto</option>'+META.keys.map(k=>`<option>${k}</option><option value="${k}m">${k}m</option>`).join('');
   $('#scale').innerHTML='<option value="">Auto</option>'+META.scales.map(s=>`<option value="${s}">${s.replace('_',' ')}</option>`).join('');
   $('#kit').innerHTML='<option value="">Style default</option>'+META.kits.filter(k=>k!=='default').map(k=>`<option>${k}</option>`).join('');
+  const NICE={diatonic:'Diatonic (scale)',pentatonic:'Pentatonic',blues:'Blues (blue notes, slides)',bebop:'Bebop (chromatic approaches)',
+    close:'Close',open:'Open / spread',drop2:'Drop-2 (soul, house)',rootless:'Rootless (jazz piano)',power:'Power chords',
+    triad:'Triads','7':'7ths',add9:'add9','9':'9ths','6':'6ths',sus2:'sus2',sus4:'sus4'};
+  const fill=(id,list,def)=>$(id).innerHTML=`<option value="">${def}</option>`+list.map(x=>`<option value="${x}">${NICE[x]||x}</option>`).join('');
+  fill('#melStyle',META.melody_styles,'Genre default'); fill('#voicing',META.voicings,'Genre default'); fill('#chordColor',META.chord_colors,'Varies per song');
+  $('#levels').innerHTML=LEVELS.map(([k,n])=>`<label class="lv">${n} <b id="lvV_${k}">0</b><input type="range" id="lv_${k}" min="-12" max="6" step="1" value="0"></label>`).join('');
+  LEVELS.forEach(([k])=>{ const e=$('#lv_'+k); e.oninput=()=>$('#lvV_'+k).textContent=(e.value>0?'+':'')+e.value; });
+  $('#lvReset').onclick=e=>{ e.preventDefault(); LEVELS.forEach(([k])=>{ $('#lv_'+k).value=0; $('#lv_'+k).oninput(); }); };
   $('#seed').value=Math.floor(Math.random()*99999)+1;
   initSegs(); renderTabs(); renderMoods(); renderLayers(); renderOuts(); refresh();
   bindRange('energy',v=>v+'%'); bindRange('complexity',v=>v+'%'); bindRange('humanize',v=>v+'%'); bindRange('variety',v=>v<20?v+'% · faithful':v<60?v+'% · balanced':v+'% · adventurous'); bindRange('brightness',v=>(v>0?'+':'')+v);

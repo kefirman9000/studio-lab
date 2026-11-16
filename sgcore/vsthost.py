@@ -61,18 +61,71 @@ def broken():
     return {p: v['why'] for p, v in d.items() if v.get('sig') == _sig(p)}
 
 
+def diagnose(path, err=''):
+    """Plain-language reason a plugin won't load."""
+    import platform
+    import struct
+    if not bundle_ok(path):
+        return 'its program file is missing - antivirus software may have removed it. Reinstall it, or remove it'
+    if struct.calcsize('P') * 8 == 32:
+        return 'your Python is 32-bit, which cannot load 64-bit plugins - install 64-bit Python from python.org'
+    if sys.platform.startswith('win') and platform.machine().lower() in ('arm64', 'aarch64'):
+        return 'this is an ARM PC - the plugin may only exist for Intel/AMD (x64) processors'
+    return 'the plugin is there but could not be loaded (' + str(err).split('Errors were:')[-1].strip()[:160] + ')'
+
+
 def mark_broken(path, why):
     try:
         with open(BROKEN) as f:
             d = json.load(f)
     except Exception:
         d = {}
-    if not bundle_ok(path):
-        why = 'its program file is missing - antivirus software may have removed it. Reinstall it, or remove it'
+    why = diagnose(path, why)
     d[path] = dict(sig=_sig(path), why=str(why)[:300], t=int(time.time()))
     os.makedirs(SOUNDS, exist_ok=True)
     with open(BROKEN, 'w') as f:
         json.dump(d, f)
+
+
+PROBES = os.path.join(SOUNDS, '.plugin_kinds.json')
+
+
+def _probes():
+    try:
+        with open(PROBES) as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def instrument_names():
+    """Names of installed plugins already checked to be instruments (effects are left out of the Sound menus)."""
+    pr = _probes()
+    return sorted({p['name'] for p in find_plugins() if pr.get(p['path'], {}).get('inst')
+                   and pr[p['path']].get('sig') == _sig(p['path']) and p['path'] not in broken()})
+
+
+def probe_all(log=None, limit=200):
+    """Check each installed plugin once (in its own process): instrument or effect? Cached by plugin fingerprint."""
+    if not available():
+        return 0
+    pr = _probes()
+    n = 0
+    for p in find_plugins()[:limit]:
+        sig = _sig(p['path'])
+        if pr.get(p['path'], {}).get('sig') == sig:
+            continue
+        r = probe(p['path'])
+        pr[p['path']] = dict(sig=sig, inst=bool(r.get('ok') and r.get('is_instrument')), ok=bool(r.get('ok')))
+        if not r.get('ok') and any(k in str(r.get('error')) for k in LOAD_FAIL):
+            mark_broken(p['path'], r.get('error'))
+        n += 1
+        os.makedirs(SOUNDS, exist_ok=True)
+        with open(PROBES, 'w') as f:
+            json.dump(pr, f)
+        if log:
+            log(f"   checked {p['name']}: {'instrument' if pr[p['path']]['inst'] else 'effect / not loadable'}")
+    return n
 
 
 def available():
@@ -210,6 +263,9 @@ def render(sid, events, duration, sr=44100, timeout=900):
         raise RuntimeError(f'VST sound "{sid}" not found')
     if not available():
         raise RuntimeError('VST support is not installed')
+    bad = broken().get(snd['path'])
+    if bad:
+        raise RuntimeError(f"{snd.get('plugin_label') or 'plugin'} is skipped: {bad}")
     d = tempfile.mkdtemp(prefix='sl_vst_')
     out = os.path.join(d, 'audio.npy')
     try:

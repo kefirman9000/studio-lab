@@ -60,6 +60,10 @@ class Options:
     sections: list = None         # section editor: [{src, copy, bars, seeds{part:int}, vary:int, mute:[layers]}]
     engine: str = 'auto'          # auto | sampled | synth  (sampled = real recorded instruments when the library is installed)
     vst_rig: bool = False         # play parts through genre-matched plugins (sgcore.vstrigs) when they're installed
+    melody_style: str = None      # None = genre default | diatonic | pentatonic | blues | bebop
+    voicing: str = None           # None = genre default | close | open | drop2 | rootless | power
+    chord_color: str = None       # None = varies per song | triad | 7 | add9 | 9 | 6 | sus2 | sus4
+    part_levels: dict = field(default_factory=dict)   # layer -> dB offset (-12..+6), e.g. {'lead': -3}
     mood: str = None              # dark | happy | chill | epic | dreamy | aggressive | melancholic | energetic | mysterious | romantic
 
     def to_dict(self):
@@ -137,12 +141,33 @@ def voice_chord(key, deg, size, center, voicing='close', color=None):
         r = lo + ((root - lo) % 12)
         return [r, r + 7, r + 12]
     offs = COLORS[color] if color in COLORS else [2 * i for i in range(size)]
+    if voicing == 'rootless':                       # jazz piano: the bass has the root, hands play 3-5-7-9
+        offs = [o for o in offs if o != 0]
+        for extra in (6, 8):
+            if len(offs) < 3 and extra not in offs:
+                offs.append(extra)
     pcs = [key.deg(deg + o, 4) % 12 for o in offs]
     lo = center - 6
     notes = sorted(lo + ((pc - lo) % 12) for pc in pcs)
     if voicing == 'open' and len(notes) >= 3:      # spread: second-lowest note up an octave
         notes = sorted([notes[0]] + [notes[1] + 12] + notes[2:])
+    elif voicing == 'drop2' and len(notes) >= 4:   # second-highest note dropped an octave (guitar / keys soul voicing)
+        top = notes[-4:]
+        notes = sorted(notes[:-4] + [top[2] - 12, top[0], top[1], top[3]])
     return notes
+
+
+VOICINGS = ['close', 'open', 'drop2', 'rootless', 'power']
+MELODY_STYLES = ['diatonic', 'pentatonic', 'blues', 'bebop']
+# how each genre's lead player phrases, and how its keyboard player voices chords (styles not listed: diatonic / style's own)
+GENRE_MELODY = {'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
+                'folk': 'pentatonic', 'afrobeats': 'pentatonic', 'amapiano': 'pentatonic', 'reggae': 'pentatonic',
+                'lofi': 'pentatonic', 'pop': 'pentatonic', 'disco': 'pentatonic', 'jazz': 'bebop', 'bossa_nova': 'bebop'}
+GENRE_VOICING = {'jazz': 'rootless', 'bossa_nova': 'rootless', 'lofi': 'rootless', 'boombap': 'rootless', 'city_pop': 'drop2',
+                 'deep_house': 'drop2', 'ukgarage': 'drop2', 'funk': 'drop2', 'disco': 'drop2', 'downtempo': 'drop2'}
+GENRE_COLORS = {'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
+                'city_pop': ['7', '9', 'add9'], 'deep_house': ['7', '9', 'add9'], 'ukgarage': ['7', '9'], 'funk': ['7', '9'],
+                'blues': ['7'], 'downtempo': ['7', 'add9', '9']}
 
 
 def fold(m, lo):
@@ -446,6 +471,23 @@ def apply_sampled(st, opts):
             st['sampled_kit'] = kit
 
 
+def _installed_vst(choice, opts):
+    """'vstp:<patch>' (a genre patch of an installed plugin) or 'vstd:<plugin name>' (its default sound) -> 'vst:<id>'."""
+    try:
+        from . import vsthost, vstrigs
+        if not vsthost.available():
+            return None
+        kind, ident = choice.split(':', 1)
+        if kind == 'vstp' and ident in vstrigs.PATCHES:
+            path = vstrigs.player_path(vstrigs.PATCHES[ident]['player'])
+            return 'vst:' + vstrigs.ensure_sound(ident, path, vstrigs.STYLE_TONE.get(opts.style, 0.0)) if path else None
+        if kind == 'vstd':
+            return 'vst:' + vstrigs.ensure_plain_sound(ident) if vstrigs.plugin_by_name(ident) else None
+    except Exception:
+        return None
+    return None
+
+
 def resolve_style(opts, rnd=None, mood=None):
     """Fuse styles if requested, then apply instrument / kit / mute / mix / mood overrides."""
     rnd = rnd or random.Random(opts.seed)
@@ -462,6 +504,8 @@ def resolve_style(opts, rnd=None, mood=None):
         t = dict(t)
         t['p'] = dict(t['p'])
         new = opts.instruments.get(t['layer']) if t['layer'] in MELODIC_ROLES else None
+        if isinstance(new, str) and new.startswith(('vstp:', 'vstd:')):
+            new = _installed_vst(new, opts)             # a plugin picked in the Sound dropdown -> playable sound
         if new and (new in INSTRUMENTS or new.startswith(('user:', 'vst:', 'sf:'))) and new != t['inst']:
             t['fallback'] = t['inst']
             t['user_pick'] = True
@@ -522,6 +566,10 @@ def gen_melody(key, prog, chord_bars, st, rnd, complexity):
         d -= 7
     motif = {}
     notes = []
+    lang = st.get('melody_lang') or 'diatonic'
+    lrnd = random.Random(hash(tuple(rnd.getstate()[1][:6])) ^ phrase_bars) if lang != 'diatonic' else None
+    major3 = (key.scale[2] - key.scale[0]) % 12 == 4
+    avoid = ({3, 6} if major3 else {1, 5}) if lang in ('pentatonic', 'blues') else set()
     steps = [-2, -1, -1, 1, 1, 2, 0, 3, -3]
     w = [1, 3, 3, 3, 3, 1, 1, 0.5, 0.5]
     for bar in range(phrase_bars):
@@ -551,7 +599,17 @@ def gen_melody(key, prog, chord_bars, st, rnd, complexity):
                 d = min([x for x in ct if (x - chord) % 7 == 0] or ct, key=lambda x: abs(x - d))
                 ln = max(l, 16 - step)
             vel = (0.95 if strong else 0.78) * rnd.uniform(0.9, 1.05)
-            notes.append((bar * 4 + step / 4, ln / 4 * 0.92, key.deg(d, st['lead_oct']), vel))
+            if avoid and d % 7 in avoid and not (strong and d in ct):      # pentatonic: step off the avoid notes
+                d = d + 1 if (d + 1) % 7 not in avoid and d + 1 <= hi else d - 1
+            t = bar * 4 + step / 4
+            midi = key.deg(d, st['lead_oct'])
+            prev_end = notes[-1][0] + notes[-1][1] if notes else -1
+            if lang == 'blues' and strong and d % 7 in (0, 2, 4) and lrnd.random() < (0.45 if d % 7 == 2 else 0.2) \
+                    and t - 0.125 >= prev_end:                                # bluesy slide up into the note
+                notes.append((t - 0.125, 0.11, midi - 1, vel * 0.7))
+            elif lang == 'bebop' and strong and lrnd.random() < 0.25 + 0.35 * complexity and t - 0.25 >= prev_end:
+                notes.append((t - 0.25, 0.22, midi - 1, vel * 0.8))          # chromatic approach from below
+            notes.append((t, ln / 4 * 0.92, midi, vel))
     return notes, phrase_bars
 
 
@@ -648,6 +706,16 @@ def compose(opts):
     chord_color = rnd.choice(colors.get(st.get('category'), ['triad']))
     if cx > 0.72 and chord_color == 'triad':
         chord_color = rnd.choice(['7', 'add9', '9'])
+    sname = st.get('name') or opts.style
+    if sname in GENRE_COLORS:                       # genres whose harmony is defined by extended chords
+        chord_color = random.Random(opts.seed * 31 + 7).choice(GENRE_COLORS[sname])
+    if getattr(opts, 'chord_color', None) in COLORS:
+        chord_color = opts.chord_color
+    if st.get('voicing') != 'power' and sname in GENRE_VOICING:
+        st['voicing'] = GENRE_VOICING[sname]
+    if getattr(opts, 'voicing', None) in VOICINGS:
+        st['voicing'] = opts.voicing
+    st['melody_lang'] = opts.melody_style if getattr(opts, 'melody_style', None) in MELODY_STYLES else GENRE_MELODY.get(sname, 'diatonic')
     pad_voicing = rnd.choice(['close', 'close', 'open'])
     modulate = rnd.random() < 0.22 and st.get('form') in ('edm', 'song', 'trap', 'chip', 'halftime')
     cb = st['chord_bars']

@@ -21,7 +21,7 @@ import numpy as np
 
 from . import updater, plugins
 from .api import generate, have_ffmpeg
-from .compose import Options, MOODS, SCALES, NOTE_NAMES, FUSION_PARTS, PART_LABELS
+from .compose import Options, MOODS, SCALES, NOTE_NAMES, FUSION_PARTS, PART_LABELS, VOICINGS, MELODY_STYLES, COLORS
 from .instruments import ROLE_CHOICES, INSTRUMENT_INFO, KITS
 from .styles import STYLES, CATEGORIES, label
 
@@ -89,6 +89,10 @@ def startup_detect():
                       ') - installing VST support (pedalboard) in the background ...')
                 print('VST support ready.' if vsthost.install(log=lambda *a: None) else
                       'Could not install VST support - run:  python -m pip install pedalboard')
+        if vsthost.available():
+            n = vsthost.probe_all()                      # instrument or effect? (once per plugin, cached)
+            if n:
+                print(f'Checked {n} plugin(s) - instruments now appear in the Sound menus.')
     except Exception as e:
         print('Plugin scan failed:', e)
 
@@ -206,8 +210,19 @@ def submit(items):
 
 def user_insts():
     from . import usersounds, vsthost
-    return ([dict(id='user:' + n, name='My sound: ' + n) for n in usersounds.listing()['inst']] +
-            [dict(id='vst:' + v['id'], name='VST: ' + v['name']) for v in vsthost.list_sounds() if v['ok']])
+    return ([dict(id='user:' + n, name='My sound: ' + n, group='My sounds') for n in usersounds.listing()['inst']] +
+            [dict(id='vst:' + v['id'], name='VST: ' + v['name'], group='My VST sounds') for v in vsthost.list_sounds()
+             if v['ok'] and not v.get('auto')])
+
+
+def vst_insts(role):
+    try:
+        from . import vsthost, vstrigs
+        if not vsthost.available():
+            return []
+        return vstrigs.layer_choices(role, instruments=vsthost.instrument_names())
+    except Exception:
+        return []
 
 
 def bg_job(fn):
@@ -236,7 +251,9 @@ def meta():
     return dict(
         version=updater.local_version(), repo=updater.repo(), ffmpeg=have_ffmpeg(), output_dir=out_dir(),
         categories=by_cat, moods=list(MOODS), scales=list(SCALES), keys=NOTE_NAMES,
-        roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i)) for i in lst] + user_insts() for r, lst in ROLE_CHOICES.items()},
+        roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Built-in') for i in lst] + vst_insts(r) + user_insts()
+               for r, lst in ROLE_CHOICES.items()},
+        voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
         kits=list(KITS), parts=[dict(id=p, name=PART_LABELS[p]) for p in FUSION_PARTS],
         labels={k: label(k) for k in STYLES},
         style_defaults={k: {t['layer']: t['inst'] for t in v['tracks'] if t['layer'] in ROLE_CHOICES} for k, v in STYLES.items()},
@@ -531,6 +548,7 @@ class Handler(BaseHTTPRequestHandler):
                         raise RuntimeError('could not install VST support')
                 res = vstpacks.install_many(ids, log)
                 detected(refresh=True)
+                vsthost.probe_all(log)
                 return res
             return self._json({'job': bg_job(job)})
         if p == '/api/vstpacks/remove':
@@ -589,6 +607,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(plugin_state())
         if p == '/api/plugins/scan':
             res = detected(refresh=True)
+            from . import vsthost
+            threading.Thread(target=vsthost.probe_all, daemon=True).start()
             out = plugin_state()
             out['scan'] = dict(found=len(res['found']), other=len(res['other']), dirs=res['dirs'])
             return self._json(out)

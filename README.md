@@ -47,7 +47,10 @@ Studio Lab finds the plugins installed on your computer and uses them automatica
 ```
 python studiolab.py vsts --for trance      # download what trance needs, show which plugin plays each part
 python studiolab.py generate --style trance
+python studiolab.py generate --style house --melody blues --voicing drop2 --level lead=-3
 ```
+
+Each part's **Sound** menu lists your installed plugins too, so you can put any instrument on any part.
 
 ## Works with
 

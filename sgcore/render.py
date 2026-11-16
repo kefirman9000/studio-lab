@@ -269,6 +269,10 @@ class Renderer:
                 for s0, s1 in hpsweeps:
                     sweep_region(buf, s0, s1, 'hp', 30, 900)
             target = tcfg['db'] if tcfg['db'] is not None else ROLE_DB.get(tcfg['layer'], -22)
+            try:                                          # your per-part level (Mix & master)
+                target += max(-24.0, min(9.0, float((getattr(opts, 'part_levels', None) or {}).get(tcfg['layer'], 0))))
+            except (TypeError, ValueError):
+                pass
             cur = active_rms_db(buf)
             if cur > -110:
                 g = 10 ** ((target - cur) / 20)

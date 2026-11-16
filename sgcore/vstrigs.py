@@ -241,6 +241,55 @@ def ensure_sound(patch_id, path, tone=0.0):
     return sid
 
 
+def plugin_by_name(name, plugins=None):
+    plugins = plugins if plugins is not None else plugins_on_disk()
+    bad = vsthost.broken()
+    hits = [p for p in plugins if p['name'] == name and p['path'] not in bad]
+    hits.sort(key=lambda p: (not p['path'].startswith(vsthost.PLUGIN_DIR), len(p['path'])))
+    return hits[0]['path'] if hits else None
+
+
+def ensure_plain_sound(name):
+    """A plugin's own default sound (for instruments Studio Lab has no patches for)."""
+    path = plugin_by_name(name)
+    sid = 'auto_plain_' + re.sub(r'[^A-Za-z0-9]+', '_', name).strip('_')[:40]
+    fn = os.path.join(vsthost.SOUNDS, sid + '.json')
+    os.makedirs(vsthost.SOUNDS, exist_ok=True)
+    data = dict(name=f'{name} (default sound)', path=path, plugin_label=name, auto=True, state={})
+    try:
+        with open(fn) as f:
+            old = json.load(f)
+        if not old.get('auto') or old.get('path') == path:
+            return sid
+    except Exception:
+        pass
+    with open(fn, 'w') as f:
+        json.dump(data, f)
+    return sid
+
+
+def layer_choices(layer, plugins=None, instruments=None):
+    """Sound-dropdown choices from installed plugins for one part: genre patches first, then other instrument plugins."""
+    from .instruments import ROLE_CHOICES
+    plugins = plugins if plugins is not None else plugins_on_disk()
+    out, seen = [], set()
+    suits = [c for inst in ROLE_CHOICES.get(layer, []) for c in ROLE_PATCHES.get(inst, [])]
+    rest = [c for c in PATCHES if c not in suits and (layer == 'bass') == ('bass' in c or 'acid' in c or 'reese' in c)]
+    for c in suits + rest:
+        if c in seen:
+            continue
+        seen.add(c)
+        if player_path(PATCHES[c]['player'], plugins):
+            out.append(dict(id='vstp:' + c, name=f"{PLAYERS[PATCHES[c]['player']]['name']} · {PATCHES[c]['label']}",
+                            group='Installed plugins'))
+    known = lambda path: any(pl['match'](path) for pl in PLAYERS.values() if pl['kind'] == 'synth')
+    for name in sorted(instruments or []):
+        path = plugin_by_name(name, plugins)
+        if path and not known(path):
+            out.append(dict(id='vstd:' + name, name=f'{name} (default sound)', group='Installed plugins'))
+    return out
+
+
 def _user_sound(role, sounds):
     """First of your own saved VST sounds whose name says it plays this kind of part (best word first)."""
     words = SOUND_WORDS.get(role)
