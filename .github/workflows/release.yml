@@ -1,7 +1,9 @@
 name: release
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+    paths: ['VERSION', '.github/workflows/release.yml']
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
@@ -9,13 +11,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build zip
+      - name: Read version
+        id: v
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          VER="${GITHUB_REF_NAME#v}"
+          VER="$(tr -d '[:space:]' < VERSION)"
+          echo "ver=$VER" >> "$GITHUB_OUTPUT"
+          if gh release view "v$VER" >/dev/null 2>&1; then echo "exists=1" >> "$GITHUB_OUTPUT"; else echo "exists=0" >> "$GITHUB_OUTPUT"; fi
+      - name: Build zip
+        if: steps.v.outputs.exists == '0'
+        run: |
+          VER="${{ steps.v.outputs.ver }}"
           git archive --format=zip --prefix=studio-lab/ -o "studio-lab-${VER}.zip" HEAD
       - name: Release notes from CHANGELOG
+        if: steps.v.outputs.exists == '0'
         run: |
-          VER="${GITHUB_REF_NAME#v}"
+          VER="${{ steps.v.outputs.ver }}"
           awk -v v="## ${VER}" '$0==v{f=1;next} /^## /{f=0} f' CHANGELOG.md > notes.md
           {
             echo ""
@@ -23,8 +35,9 @@ jobs:
             echo "Already installed? Click **⟳ Updates** inside the app."
           } >> notes.md
       - name: Publish
+        if: steps.v.outputs.exists == '0'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          VER="${GITHUB_REF_NAME#v}"
-          gh release create "$GITHUB_REF_NAME" "studio-lab-${VER}.zip" --title "Studio Lab ${VER}" --notes-file notes.md
+          VER="${{ steps.v.outputs.ver }}"
+          gh release create "v${VER}" "studio-lab-${VER}.zip" --target "$GITHUB_SHA" --title "Studio Lab ${VER}" --notes-file notes.md
