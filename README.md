@@ -33,12 +33,21 @@ The app opens in your browser. Everything runs locally on your machine.
 
 ## Privacy
 
-Everything runs on your own computer. The app opens a page only your own browser can reach (127.0.0.1), protected by a secret that changes every launch. Nothing is uploaded anywhere. The only internet use is the optional update check.
+Everything runs on your own computer. The app opens a page only your own browser can reach (127.0.0.1), protected by a secret that changes every launch. Nothing is uploaded anywhere. The only internet use is the optional update check and downloads you start yourself (instruments, sound library).
 
 ## Updating
 
 Click **⟳ Updates** in the top-right corner. Your files, presets and settings are kept.
 (If you cloned with git, `git pull` works too.)
+
+## Genre VSTs
+
+Click **🎚 Genre VSTs** to download free, open-source instruments (Surge XT, Dexed, JC303, DISTRHO Nekobi + Kars) and play each genre through the plugin that defines its sound: a 303 for acid, supersaws for trance, a DX7 electric piano for city pop. Plugins you already own, like TAL-NoiseMaker or BBC Symphony Orchestra Discover, are used too.
+
+```
+python studiolab.py vsts --for trance      # download what trance needs, show which plugin plays each part
+python studiolab.py generate --style trance --vst-rig
+```
 
 ## Works with
 

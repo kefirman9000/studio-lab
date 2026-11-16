@@ -143,6 +143,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
   <div class="ver" id="ver"></div>
   <div class="sp"></div>
   <button class="hbtn" id="libBtn" title="Real recorded instruments for orchestral & acoustic styles">🎻 Real instruments</button>
+  <button class="hbtn" id="rigBtn" title="Auto-download free instruments and play each genre through the plugins that define its sound">🎚 Genre VSTs</button>
   <button class="hbtn" id="vstBtn" title="Play parts with your own VST3 / AU instruments (experimental)">🎹 VST</button>
   <button class="hbtn" id="soundsBtn" title="Use your own drum samples and sounds">🎛 My sounds</button>
   <button class="hbtn" id="plugBtn" title="Tell Studio Lab which plugins you have">🔌 My plugins</button>
@@ -635,6 +636,43 @@ async function vstModal(){
     pollJob(job, j=>{ const r=j.results[0]; $('#vPlay').innerHTML=(j.status==='done'&&r&&r.url)?`<audio controls autoplay src="${r.url}" style="width:100%"></audio>`:`<div class="hint">Plugin failed: ${esc(j.error||'')}</div>`; }); });
   $('#modal').classList.add('on');
 }
+// ------------------------------------------------------------- genre VST rigs (auto-downloaded instruments)
+async function rigModal(){
+  const [S,P]=await Promise.all([api('/api/vstpacks',{}), api('/api/vstpacks/plan',{style:state.style})]);
+  const busy=()=>$$('#modalBox [data-pk],#modalBox [data-rm],#rigNeed,#rigAll').forEach(b=>b.disabled=true);
+  const packs=S.packs.map(p=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(p.name)}</span> <span class="m">${esc(p.maker)} · ${esc(p.license)} · ${esc(p.size)}</span>
+      ${p.installed?`<span class="tag ok">installed${p.version?' '+esc(p.version):''}</span>`:(p.partial?'<span class="tag no">partly installed</span>':'')}<div class="m">${esc(p.plays)}</div></div>
+      <div class="row">${p.installed?(p.version?`<button class="mini" data-rm="${p.id}">Remove</button>`:'<span class="m">installed on this computer</span>'):`<button class="mini acc" data-pk="${p.id}">Download</button>`}</div></div>`).join('');
+  const known=S.known.map(k=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(k.name)}</span> ${k.installed?'<span class="tag ok">found</span>':''}<div class="m">${esc(k.plays)}</div></div>
+      <div>${k.installed?'':`<a class="mini" href="${esc(k.url)}" target="_blank" rel="noopener">Get it ↗</a>`}</div></div>`).join('');
+  const plan=P.parts.map(r=>`<tr><td>${esc(r.layer)}</td><td class="m">${esc(r.inst)}</td><td>${r.uses?'<b>'+esc(r.uses)+'</b>':'<span class="m">built-in</span>'}${r.ideal&&!r.uses?` <span class="m">· best: ${esc(r.ideal)}</span>`:''}${r.hint?`<div class="m">${esc(r.hint)}</div>`:''}</td></tr>`).join('');
+  $('#modalBox').className='box wide';
+  $('#modalBox').innerHTML=`<h3>Genre VSTs</h3>
+    <p class="hint">Studio Lab downloads free, open-source instruments and plays each genre through the plugin that defines its sound:
+      a TB-303 for acid, Surge XT supersaws for trance, DX7 electric piano for city pop and lo-fi, Juno-style TAL-NoiseMaker for synthwave.
+      Each plugin runs in its own process; if one fails, that part simply uses the built-in sound.</p>
+    <label class="row" style="gap:8px;margin:6px 0 12px"><input type="checkbox" id="rigOn" ${S.rig?'checked':''}> <b>Play parts through genre VSTs</b> <span class="hint">(applies to new previews and songs; parts you pick under Sound stay as you set them)</span></label>
+    ${S.available?'':'<p class="hint">VST support (the free <i>pedalboard</i> library) will be installed automatically with your first download.</p>'}
+    <h3 style="margin-top:6px">${esc(styleName(state.style))} would use</h3>
+    <table style="width:100%;font-size:13px">${plan}</table>
+    ${P.missing_packs.length?`<div class="row" style="margin:8px 0"><button class="btn p" id="rigNeed">Download what ${esc(styleName(state.style))} needs</button><span class="hint">${P.missing_packs.map(i=>esc((S.packs.find(p=>p.id===i)||{}).name||i)).join(', ')} · needs internet</span></div>`:''}
+    <pre id="rigLog" class="hint" style="max-height:150px;overflow:auto"></pre>
+    <h3 style="margin-top:12px">Free instruments <button class="mini" id="rigAll" style="margin-left:8px">Download all</button></h3>${packs}
+    <h3 style="margin-top:12px">Also used when you have them</h3>${known}
+    <p class="hint">Sample players like BBC Symphony Orchestra pick their instrument inside the plugin: in 🎹 VST, create a sound from it and give it a name like
+      “BBC strings”, “BBC horns” or “LABS piano” - matching parts in any style will use it.</p>
+    <div style="text-align:right;margin-top:14px"><button class="btn p" onclick="closeModal()">Done</button></div>`;
+  $('#rigOn').onchange=async e=>{ await api('/api/vstpacks/rig',{on:e.target.checked}); $('#rigBtn').textContent='🎚 Genre VSTs'+(e.target.checked?' ✓':''); };
+  const go=async body=>{ busy(); $('#rigLog').textContent='Starting…'; const {job}=await api('/api/vstpacks/install',body);
+    pollJob(job, j=>{ const r=j.results[0]||{}; $('#rigLog').textContent+=(j.status==='done'?(r.ok?'\nDone!':'\nFinished with problems - see above.'):'\nFailed: '+(j.error||''));
+      if(j.status==='done' && !$('#rigOn').checked){ $('#rigOn').checked=true; $('#rigOn').onchange({target:$('#rigOn')}); }
+      if(j.status==='done'&&r.ok) setTimeout(rigModal,900); else $$('#modalBox [data-pk],#modalBox [data-rm],#rigNeed,#rigAll').forEach(b=>b.disabled=false); }, l=>{$('#rigLog').textContent=l; $('#rigLog').scrollTop=1e9;}); };
+  if($('#rigNeed')) $('#rigNeed').onclick=()=>go({style:state.style});
+  $('#rigAll').onclick=()=>go({ids:S.packs.filter(p=>!p.installed).map(p=>p.id)});
+  $$('#modalBox [data-pk]').forEach(b=>b.onclick=()=>go({ids:[b.dataset.pk]}));
+  $$('#modalBox [data-rm]').forEach(b=>b.onclick=async()=>{ await api('/api/vstpacks/remove',{id:b.dataset.rm}); rigModal(); });
+  $('#modal').classList.add('on');
+}
 // ------------------------------------------------------------- taste
 let TASTE=null;
 let PLUG=null;
@@ -727,6 +765,8 @@ async function init(){
   $('#plugBtn').onclick=()=>plugModal();
   $('#soundsBtn').onclick=()=>soundsModal();
   $('#vstBtn').onclick=()=>vstModal();
+  $('#rigBtn').onclick=()=>rigModal();
+  api('/api/vstpacks',{}).then(r=>{ if(r.rig) $('#rigBtn').textContent='🎚 Genre VSTs ✓'; }).catch(()=>{});
   $('#libBtn').onclick=()=>libModal();
   api('/api/soundlib',{}).then(r=>{ if(r.installed) $('#libBtn').textContent='🎻 Real instruments ✓'; });
   $('#refBtn').onclick=()=>$('#refFile').click();

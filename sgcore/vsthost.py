@@ -88,8 +88,8 @@ def _run(job, timeout):
         return {'ok': False, 'error': 'the plugin crashed while loading or playing'}, d
 
 
-def probe(path):
-    res, d = _run(dict(mode='probe', path=path), timeout=60)
+def probe(path, list_params=False):
+    res, d = _run(dict(mode='probe', path=path, list_params=list_params), timeout=60)
     shutil.rmtree(d, ignore_errors=True)
     return res
 
@@ -108,7 +108,7 @@ def list_sounds():
                 with open(os.path.join(SOUNDS, f)) as fh:
                     d = json.load(fh)
                 out.append(dict(id=f[:-5], name=d.get('name', f[:-5]), plugin=d.get('plugin_label', ''), path=d.get('path', ''),
-                                ok=os.path.exists(d.get('path', ''))))
+                                ok=os.path.exists(d.get('path', '')), auto=bool(d.get('auto')), patch=d.get('patch')))
             except Exception:
                 pass
     return out
@@ -133,7 +133,9 @@ def create_sound(path, name, existing=None, timeout=3600):
     if not any(os.path.realpath(path) == os.path.realpath(p['path']) for p in find_plugins()):
         return {'ok': False, 'error': 'unknown plugin'}
     prev = get_sound(existing) if existing else None
-    res, d = _run(dict(mode='editor', path=path, state=(prev or {}).get('state')), timeout=timeout)
+    res, d = _run(dict(mode='editor', path=path, state=(prev or {}).get('state')), timeout=timeout)   # recipe applied first
+    if prev and prev.get('auto'):
+        existing = None                        # editing a genre-rig sound saves your own copy; the rig sound stays
     shutil.rmtree(d, ignore_errors=True)
     if not res.get('ok'):
         return res

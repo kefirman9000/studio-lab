@@ -59,6 +59,7 @@ class Options:
     user_drums: bool = False      # use the drum samples you loaded instead of the built-in kit
     sections: list = None         # section editor: [{src, copy, bars, seeds{part:int}, vary:int, mute:[layers]}]
     engine: str = 'auto'          # auto | sampled | synth  (sampled = real recorded instruments when the library is installed)
+    vst_rig: bool = False         # play parts through genre-matched plugins (sgcore.vstrigs) when they're installed
     mood: str = None              # dark | happy | chill | epic | dreamy | aggressive | melancholic | energetic | mysterious | romantic
 
     def to_dict(self):
@@ -408,6 +409,13 @@ def apply_sampled(st, opts):
         st['master'] = {**st['master'], 'gentle': True}
     engine = getattr(opts, 'engine', 'auto') or 'auto'
     on = engine != 'synth' and sfm.installed()
+    if getattr(opts, 'vst_rig', False) and engine != 'synth':
+        from . import vsthost, vstrigs
+        if vsthost.available():
+            try:
+                vstrigs.assign(st, opts)
+            except Exception as e:                             # a broken plugin folder must never stop a song
+                st['rig_error'] = str(e)
     for t in st['tracks']:
         inst = t['inst']
         if inst.startswith('sf:'):
@@ -456,6 +464,7 @@ def resolve_style(opts, rnd=None, mood=None):
         new = opts.instruments.get(t['layer']) if t['layer'] in MELODIC_ROLES else None
         if new and (new in INSTRUMENTS or new.startswith(('user:', 'vst:', 'sf:'))) and new != t['inst']:
             t['fallback'] = t['inst']
+            t['user_pick'] = True
             t['inst'] = new
             t['p'] = {}
             t['db'] = None

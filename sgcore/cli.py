@@ -32,6 +32,7 @@ def main(argv=None):
     ap.add_argument('--inst', action='append', default=[], help='instrument override, e.g. --inst lead=violin')
     ap.add_argument('--kit')
     ap.add_argument('--mute', default='', help='comma-separated layers to drop: kick,snare,top,bass,chords,pad,arp,lead,fx')
+    ap.add_argument('--vst-rig', action='store_true', help='play parts through genre-matched plugins (see: studiolab.py vsts)')
     ap.add_argument('--preview', action='store_true', help='short clip only')
     ap.add_argument('--out', default='songs')
     ap.add_argument('--formats', default='wav', help='comma list of: ' + ','.join(OUTPUTS))
@@ -67,6 +68,50 @@ def main(argv=None):
                 o['blend_parts'] = dict(p.split('=', 1) for p in a.part)
             if a.inst:
                 o['instruments'] = dict(p.split('=', 1) for p in a.inst)
+            if a.vst_rig:
+                o['vst_rig'] = True
             if a.mute:
                 o['muted'] = [m.strip() for m in a.mute.split(',') if m.strip()]
             generate(Options.from_dict(o), a.out, outputs=[f.strip() for f in a.formats.split(',')], preview=a.preview)
+
+
+def vsts_main(argv=None):
+    """python studiolab.py vsts [--install all|surge,dexed,...] [--for STYLE] [--remove ID] [--params PLUGIN]"""
+    from . import vstpacks, vstrigs, vsthost
+    ap = argparse.ArgumentParser(prog='studiolab vsts', description='Download free instruments for the genre rigs.')
+    ap.add_argument('--install', help='"all" or comma-separated pack ids')
+    ap.add_argument('--for', dest='style', help='install whatever this style needs, then show its rig')
+    ap.add_argument('--remove', help='pack id to uninstall from the plugins folder')
+    ap.add_argument('--params', help='path to a .vst3 - list its parameter names (for writing new patches)')
+    a = ap.parse_args(argv)
+    if a.params:
+        r = vsthost.probe(a.params, list_params=True)
+        if not r.get('ok'):
+            sys.exit(r.get('error'))
+        for p in r.get('params', []):
+            print(f"  {p['name']:<36} {p['value']:.3f}  {', '.join(p['choices'][:8])}")
+        return
+    if a.remove:
+        vstpacks.remove(a.remove)
+    ids = []
+    if a.install:
+        ids = list(vstpacks.BY_ID) if a.install == 'all' else [i.strip() for i in a.install.split(',') if i.strip()]
+    if a.style:
+        if a.style not in STYLES:
+            sys.exit(f'unknown style {a.style!r}')
+        ids += [i for i in vstrigs.plan(a.style)['missing_packs'] if i not in ids]
+    if ids:
+        if not vsthost.available() and not vsthost.install():
+            sys.exit('could not install VST support (pip install pedalboard)')
+        r = vstpacks.install_many(ids)
+        if r['failed']:
+            print('some downloads failed:', ', '.join(f['id'] for f in r['failed']))
+    st = vstpacks.status()
+    for p in st['packs']:
+        print(f"  [{'x' if p['installed'] else ' '}] {p['id']:<7} {p['name']:<24} {p['plays']}")
+    for k in st['known']:
+        print(f"  [{'x' if k['installed'] else ' '}] {'-':<7} {k['name']:<24} {k['plays']}  ({k['url']})")
+    if a.style:
+        print(f"\n  {a.style} rig:")
+        for r in vstrigs.plan(a.style)['parts']:
+            print(f"    {r['layer']:<7} {r['inst']:<14} -> {r['uses'] or 'built-in'}{('  (' + r['hint'] + ')') if r.get('hint') else ''}")

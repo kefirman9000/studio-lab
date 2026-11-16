@@ -436,6 +436,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._deny()
         if p == '/api/generate':
             o = body.get('options', {})
+            if isinstance(o, dict) and 'vst_rig' not in o:
+                o['vst_rig'] = bool(load_settings().get('vst_rig', False))
             Options.from_dict(o)  # validate keys early
             n = max(1, min(8, int(body.get('count', 1))))
             preview = bool(body.get('preview', True))
@@ -470,6 +472,41 @@ class Handler(BaseHTTPRequestHandler):
             from . import vsthost
             vsthost.delete_sound(str(body.get('id', '')))
             return self._json({'ok': True})
+        if p == '/api/vstpacks':
+            from . import vstpacks, vsthost
+            return self._json(dict(vstpacks.status(), rig=bool(load_settings().get('vst_rig', False)),
+                                   available=vsthost.available()))
+        if p == '/api/vstpacks/rig':
+            save_settings({'vst_rig': bool(body.get('on'))})
+            return self._json({'ok': True, 'rig': bool(body.get('on'))})
+        if p == '/api/vstpacks/plan':
+            from . import vstrigs
+            style = str(body.get('style', ''))
+            if style not in STYLES:
+                return self._json({'error': 'unknown style'}, 400)
+            return self._json(vstrigs.plan(style))
+        if p == '/api/vstpacks/install':
+            from . import vstpacks, vsthost, vstrigs
+            ids = [str(i) for i in (body.get('ids') or []) if str(i) in vstpacks.BY_ID]
+            if body.get('style') in STYLES:
+                ids += [i for i in vstrigs.plan(body['style'])['missing_packs'] if i not in ids]
+
+            def job(log):
+                if not vsthost.available():
+                    log('VST support (pedalboard) is not installed yet - installing it first ...')
+                    if not vsthost.install(log):
+                        raise RuntimeError('could not install VST support')
+                res = vstpacks.install_many(ids, log)
+                vstrigs.plugins_on_disk(refresh=True)
+                return res
+            return self._json({'job': bg_job(job)})
+        if p == '/api/vstpacks/remove':
+            from . import vstpacks, vstrigs
+            if str(body.get('id')) not in vstpacks.BY_ID:
+                return self._json({'error': 'unknown pack'}, 400)
+            r = vstpacks.remove(str(body['id']))
+            vstrigs.plugins_on_disk(refresh=True)
+            return self._json(r)
         if p == '/api/soundlib':
             from . import soundfont
             return self._json({'installed': soundfont.installed(), 'path': soundfont.library_path()})

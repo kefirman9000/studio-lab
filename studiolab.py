@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Studio Lab - run without arguments to open the app in your browser.
-   Command line:  python studiolab.py generate --help"""
+   Command line:  python studiolab.py generate --help
+                  python studiolab.py vsts --help"""
 import os
 import sys
 
@@ -27,6 +28,9 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] in ('generate', 'gen', 'cli'):
         from sgcore.cli import main
         main(sys.argv[2:])
+    elif len(sys.argv) > 1 and sys.argv[1] in ('vsts', 'vst'):
+        from sgcore.cli import vsts_main
+        vsts_main(sys.argv[2:])
     else:
         from sgcore.app import run
         port = int(os.environ.get('STUDIOLAB_PORT', '8765'))
