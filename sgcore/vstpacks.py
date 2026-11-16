@@ -46,6 +46,28 @@ PACKS = [
     dict(id='jc303', name='JC303', maker='midilab', license='GPL-3.0', repo='midilab/jc303', page='https://midilab.co/jc303/',
          size='~10 MB', plays='TB-303 acid bass (acid house, techno, psytrance)', bundles=[r'^jc303$'],
          assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.zip$'], 'linux': [r'linux.*{arch}.*\.zip$', r'linux.*\.zip$']}),
+    dict(id='sixsines', name='Six Sines', maker='BaconPaul (Surge Synth Team)', license='GPL-3.0', repo='baconpaul/six-sines',
+         page='https://github.com/baconpaul/six-sines/releases', size='~15 MB',
+         plays='6-operator FM: bells, e-pianos, FM basses, glassy pads, metallic leads and FM drums',
+         bundles=[r'^six sines$', r'^sixsines$'],
+         assets={'windows': [r'win(dows)?.*(x64|64).*\.zip$', r'win(dows)?.*\.zip$'], 'mac': [r'mac.*\.(dmg|zip|pkg)$'],
+                 'linux': [r'linux.*{arch}.*\.(zip|tar\.gz)$', r'linux.*\.(zip|tar\.gz)$']}),
+    dict(id='obxf', name='OB-Xf', maker='Surge Synth Team', license='GPL-3.0', repo='surge-synthesizer/OB-Xf',
+         page='https://surge-synth-team.org/ob-xf/', size='~20 MB',
+         plays='Oberheim-style analog poly: brass, big pads, 80s stabs, warm leads (factory presets need its installer)',
+         bundles=[r'^ob xf$', r'^obxf$'],
+         assets={'windows': [r'win(dows)?(?!.*arm).*\.zip$'], 'mac': [r'mac.*\.(dmg|zip)$'],
+                 'linux': [r'linux.*{arch}.*\.zip$', r'linux(?!.*arm).*\.zip$']}),
+    dict(id='odin2', name='Odin 2', maker='TheWaveWarden', license='GPL-3.0', repo='TheWaveWarden/odin2',
+         page='https://thewavewarden.com/odin2', size='~20 MB',
+         plays='hybrid synth: growls, wobble and reese basses, analog leads, evolving pads',
+         bundles=[r'^odin ?2$'],
+         assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.(zip|dmg)$'], 'linux': [r'linux.*\.(zip|tar\.gz)$']}),
+    dict(id='monique', name='Monique', maker='Surge Synth Team', license='GPL-3.0', repo='surge-synthesizer/monique-monosynth',
+         page='https://github.com/surge-synthesizer/monique-monosynth/releases', size='~15 MB',
+         plays='morphing mono synth: fat basses, sequenced leads, acid-ish lines',
+         bundles=[r'^monique$'],
+         assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.(dmg|zip)$'], 'linux': [r'linux.*{arch}.*\.(zip|tar\.gz)$', r'linux.*\.(zip|tar\.gz)$']}),
 ]
 BY_ID = {p['id']: p for p in PACKS}
 
@@ -369,7 +391,7 @@ def status():
         found = {b for b in p['bundles'] for x in paths if re.search(b, _norm(x))}
         out.append(dict(id=p['id'], name=p['name'], maker=p['maker'], license=p['license'], plays=p['plays'], page=p['page'],
                         size=p['size'], installed=len(found) >= need, partial=0 < len(found) < need,
-                        version=rec.get(p['id'], {}).get('version'), paths=paths))
+                        version=rec.get(p['id'], {}).get('version'), paths=paths, checks=rec.get(p['id'], {}).get('checks')))
     for pid, r in rec.items():
         if pid not in BY_ID and any(os.path.exists(f) for f in r.get('files', [])):
             out.append(dict(id=pid, name=', '.join(os.path.splitext(os.path.basename(f))[0] for f in r.get('files', [])),
@@ -386,7 +408,7 @@ def status():
     return dict(packs=out, known=known, broken=bad, os=host_os(), folder=PLUGIN_DIR)
 
 
-def install(pack_id, log=print, progress=None):
+def install(pack_id, log=print, progress=None, vt_key=None, require_vt=False):
     if pack_id not in BY_ID:
         raise RuntimeError('unknown pack ' + pack_id)
     pack = BY_ID[pack_id]
@@ -406,13 +428,32 @@ def install(pack_id, log=print, progress=None):
     try:
         fn = os.path.join(work, re.sub(r'[^A-Za-z0-9._-]', '_', asset['name']))
         download(asset['url'], fn, progress, asset.get('size', 0))
+        from . import safety
         want = expected_sha256(asset)
+        digest = sha256_of(fn)
+        checks = dict(source=f"official release of {pack['repo']} on GitHub", open_source=pack['license'])
         if want:
-            if sha256_of(fn) != want:
+            if digest != want:
                 raise RuntimeError(f"{asset['name']} failed its checksum check (it isn't the file the project published) - not installed")
             log('   checksum verified (SHA-256)')
+            checks['checksum'] = 'matches the published SHA-256'
         else:
             log('   (the project publishes no checksum for this file)')
+            checks['checksum'] = 'none published'
+        d = safety.defender_scan(fn)                         # Windows: Microsoft Defender scan of the download
+        log('   ' + d['detail'])
+        if d['ran'] and not d['clean']:
+            raise RuntimeError(d['detail'] + ' - not installed')
+        checks['defender'] = d['detail']
+        v = safety.vt_check(fn, digest, vt_key, log)        # VirusTotal: ~70 engines, installs only at 0 detections
+        log('   ' + v['detail'])
+        if v.get('ran') and not v.get('clean'):
+            who = (' (' + ', '.join(v.get('flagged_by') or []) + ')') if v.get('flagged_by') else ''
+            raise RuntimeError(f"VirusTotal: {v['flagged']} of {v['engines']} antivirus engines flagged this download{who} - not installed. "
+                               f"Details: {v['link']}")
+        if require_vt and not v.get('ran'):
+            raise RuntimeError('no VirusTotal result (' + v['detail'] + ') and you asked for one - not installed')
+        checks['virustotal'] = v['detail'] + (f" · {v['link']}" if v.get('link') else '')
         os.makedirs(PLUGIN_DIR, exist_ok=True)
         copied = []
         log('Unpacking ...')
@@ -426,6 +467,13 @@ def install(pack_id, log=print, progress=None):
         if not found:
             raise RuntimeError(f"{pack['name']} is only offered with an installer for this computer - "
                                f"install it yourself from {pack['page']} and Studio Lab will find it")
+        for b in found:                                      # the unpacked plugin files themselves
+            d = safety.defender_scan(b)
+            if d['ran'] and not d['clean']:
+                raise RuntimeError(f"{os.path.basename(b)}: {d['detail']} - not installed")
+            for r in safety.scan_binaries(b, vt_key):
+                if not r['clean'] and r['engines']:
+                    raise RuntimeError(f"VirusTotal: {r['flagged']}/{r['engines']} engines flag {r['file']} - not installed ({r['link']})")
         for b in found:
             dst = os.path.join(PLUGIN_DIR, os.path.basename(b))
             if os.path.isdir(dst) and not os.path.islink(dst):
@@ -439,7 +487,8 @@ def install(pack_id, log=print, progress=None):
             copied.append(dst)
             log('   installed ' + os.path.basename(dst))
         rec = _record()
-        rec[pack_id] = dict(version=asset['version'], asset=asset['name'], files=copied, installed=int(time.time()))
+        rec[pack_id] = dict(version=asset['version'], asset=asset['name'], files=copied, installed=int(time.time()),
+                            sha256=digest, checks=checks)
         _save_record(rec)
         log(f"{pack['name']} is ready.")
         return dict(ok=True, id=pack_id, version=asset['version'], files=copied)
@@ -462,12 +511,13 @@ def remove(pack_id):
     return dict(ok=True)
 
 
-def install_many(ids, log=print, progress=None):
+def install_many(ids, log=print, progress=None, vt_key=None, require_vt=False):
     res, failed = [], []
     ids = [i for i in ids if i in BY_ID]
     for n, i in enumerate(ids):
         try:
-            res.append(install(i, log, (lambda p, n=n: progress((n + p) / len(ids))) if progress else None))
+            res.append(install(i, log, (lambda p, n=n: progress((n + p) / len(ids))) if progress else None,
+                               vt_key=vt_key, require_vt=require_vt))
         except Exception as e:
             log(f"!! {BY_ID[i]['name']}: {e}")
             failed.append(dict(id=i, error=str(e)))

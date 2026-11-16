@@ -190,6 +190,57 @@ def test_rigs(tmp):
     print('ok  genre rigs')
 
 
+def test_safety(tmp):
+    from sgcore import safety
+    assert safety.verdict({'malicious': 0, 'suspicious': 0, 'undetected': 68, 'harmless': 0})['clean']
+    assert not safety.verdict({'malicious': 1, 'suspicious': 0, 'undetected': 67})['clean']      # one engine is enough to refuse
+    assert not safety.verdict({'malicious': 0, 'suspicious': 1, 'undetected': 67})['clean']
+    assert not safety.verdict({})['clean']                                                       # no result is not "clean"
+    if not sys.platform.startswith('win'):
+        assert safety.defender_scan(tmp)['ran'] is False
+    src = os.path.join(tmp, 'six-sines-1.2.0-windows-x64.zip')
+    with zipfile.ZipFile(src, 'w') as f:
+        f.writestr('Six Sines.vst3/Contents/x86_64-win/Six Sines.vst3', b'MZ' + bytes(20000))
+    plug = os.path.join(tmp, 'plugins_s')
+    calls = []
+    def fake_vt(method, url, key, data=None, headers=None, timeout=60):
+        calls.append(url)
+        stats = {'malicious': flagged[0], 'suspicious': 0, 'undetected': 70 - flagged[0]}
+        res = {'E1': {'engine_name': 'SomeAV', 'category': 'malicious'}} if flagged[0] else {}
+        return 200, {'data': {'attributes': {'last_analysis_stats': stats, 'last_analysis_results': res}}}
+    old = (vstpacks.PLUGIN_DIR, vstpacks.RECORD, vstpacks.resolve, vstpacks.download, safety._vt)
+    try:
+        vstpacks.PLUGIN_DIR, vstpacks.RECORD = plug, os.path.join(plug, '.packs.json')
+        vstpacks.resolve = lambda pid, osname=None: dict(url='https://github.com/x', name=os.path.basename(src), size=1,
+                                                         version='v1.2.0', sha256=vstpacks.sha256_of(src))
+        vstpacks.download = lambda url, dst, progress=None, expected=0: shutil.copy(src, dst)
+        safety._vt = fake_vt
+        flagged = [2]
+        try:
+            vstpacks.install('sixsines', log=lambda *a: None, vt_key='k' * 64)
+            raise AssertionError('installed although VirusTotal engines flagged it')
+        except RuntimeError as e:
+            assert '2 of 70' in str(e) and 'SomeAV' in str(e)
+        assert not os.path.exists(os.path.join(plug, 'Six Sines.vst3'))
+        try:
+            vstpacks.install('sixsines', log=lambda *a: None, vt_key=None, require_vt=True)
+            raise AssertionError('installed without the VirusTotal result that was required')
+        except RuntimeError as e:
+            assert 'VirusTotal' in str(e)
+        flagged = [0]
+        r = vstpacks.install('sixsines', log=lambda *a: None, vt_key='k' * 64)
+        assert r['ok'] and os.path.isdir(os.path.join(plug, 'Six Sines.vst3'))
+        chk = json.load(open(vstpacks.RECORD))['sixsines']['checks']
+        assert 'matches' in chk['checksum'] and '0/70' in chk['virustotal'], chk
+    finally:
+        vstpacks.PLUGIN_DIR, vstpacks.RECORD, vstpacks.resolve, vstpacks.download, safety._vt = old
+    rels = [rel('v1.0.3', ['ob-xf-Windows-v1.0.3.exe', 'ob-xf-Windows-arm64-v1.0.3.zip', 'ob-xf-Windows-v1.0.3.zip',
+                           'ob-xf-macOS-v1.0.3.dmg', 'ob-xf-Linux-x86_64-v1.0.3.zip', 'ob-xf-assets.zip'])]
+    assert vstpacks.pick_asset(vstpacks.BY_ID['obxf'], rels, 'windows')['name'] == 'ob-xf-Windows-v1.0.3.zip'   # no installer, no ARM
+    assert vstpacks.pick_asset(vstpacks.BY_ID['obxf'], [rel('v1', ['ob-xf-Windows-v1.exe'])], 'windows') is None
+    print('ok  safety: checksum, Defender, VirusTotal 0-detection rule, new packs')
+
+
 def main():
     tmp = tempfile.mkdtemp()
     try:
@@ -197,6 +248,7 @@ def main():
         test_safe_unpack(tmp)
         test_install_flow(tmp)
         test_rigs(tmp)
+        test_safety(tmp)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     print('all good')

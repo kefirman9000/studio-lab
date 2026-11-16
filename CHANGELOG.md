@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.13.0
+- **More free instruments in Genre VSTs:** Six Sines (6-operator FM), OB-Xf (Oberheim-style poly), Odin 2 (hybrid synth) and Monique (morphing mono synth) - all free and open-source, from their official GitHub releases. They show up in every part's Sound menu once installed.
+- **Safety checks before anything is installed:**
+  - only open-source projects, straight from the official GitHub release; installers are never run - only the plugin files are unpacked;
+  - the download must match the SHA-256 GitHub publishes for it;
+  - Microsoft Defender scans the download and the unpacked plugin (Windows);
+  - **VirusTotal (optional, free API key):** ~70 antivirus engines check the exact file and its plugin binaries; it's installed only if **not one** engine flags it. Files VirusTotal hasn't seen yet are sent for analysis first. Tick "only install with a VirusTotal result of 0 detections" to refuse anything without a result.
+  - Each installed plugin shows which checks it passed.
+- The VirusTotal key stays in your local settings.json.
+
 ## 1.12.0
 - **Chords sound like chords.** About 1 in 5 chord / pad hits had two notes a semitone apart, so a chord came out as neighbouring notes rubbing. Chord colours (sus2, sus4, add9, 9th, 6th) are now only used on chords where they really form that chord (no sus4 tritones or minor-9th grinds), voice leading avoids clustered inversions, and a 7th / 9th that still lands next to another chord note moves up an octave, where it rings open. Clusters went from ~21% of chord hits to ~0.1%.
 - **Strummed chords stay together** (lo-fi, folk, country, soft rock, ambient, vaporwave): swing and humanize now move a strummed chord as one, instead of re-ordering or smearing its notes.

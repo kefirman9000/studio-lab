@@ -583,7 +583,23 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(dict(vsthost.PROBE_STATUS))
         if p == '/api/vstpacks':
             from . import vstpacks, vsthost
-            return self._json(dict(vstpacks.status(), available=vsthost.available()))
+            st_ = load_settings()
+            key = st_.get('vt_key') or ''
+            return self._json(dict(vstpacks.status(), available=vsthost.available(),
+                                   vt=dict(configured=bool(key), hint=('…' + key[-4:]) if key else '',
+                                           require=bool(st_.get('vt_require', bool(key))))))
+        if p == '/api/vstpacks/safety':
+            import re as _re
+            upd = {}
+            if 'key' in body:
+                k = str(body.get('key') or '').strip()
+                if k and not _re.fullmatch(r'[0-9a-fA-F]{64}', k):
+                    return self._json({'error': 'a VirusTotal API key is 64 letters and digits (0-9, a-f)'}, 400)
+                upd['vt_key'] = k
+            if 'require' in body:
+                upd['vt_require'] = bool(body['require'])
+            save_settings(upd)
+            return self._json({'ok': True})
         if p == '/api/vstpacks/plan':
             from . import vstrigs
             style = str(body.get('style', ''))
@@ -601,7 +617,9 @@ class Handler(BaseHTTPRequestHandler):
                     log('VST support (pedalboard) is not installed yet - installing it first ...')
                     if not vsthost.install(log):
                         raise RuntimeError('could not install VST support')
-                res = vstpacks.install_many(ids, log)
+                st_ = load_settings()
+                res = vstpacks.install_many(ids, log, vt_key=st_.get('vt_key') or None,
+                                            require_vt=bool(st_.get('vt_require', bool(st_.get('vt_key')))))
                 detected(refresh=True)
                 vsthost.probe_all(log)
                 return res
