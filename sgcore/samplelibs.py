@@ -436,7 +436,7 @@ def orch_note(name, midi, dur, vel, rr_key):
 
 # which real drum kit plays a style's drums
 LOFI_KIT_STYLES = {'lofi', 'boombap', 'hauntology', 'vaporwave', 'soul_ballad', 'jazzhop'}
-PERC = {'conga': 'conga', 'shaker': 'shaker', 'tamb': 'tamb', 'cowbell': 'cowbell', 'claves': 'claves', 'guiro': 'guiro',
+PERC = {'claves': 'claves', 'bongo': 'bongo', 'guiro': 'guiro', 'conga': 'conga', 'shaker': 'shaker', 'tamb': 'tamb', 'cowbell': 'cowbell', 'claves': 'claves', 'guiro': 'guiro',
         'woodblock': 'woodblock', 'triangle': 'triangle', 'cabasa': 'cabasa', 'bongo': 'bongo', 'agogo': 'agogo'}
 KIT_PARTS = {'kick': 'kick', 'snare': 'snare', 'rim': 'rim', 'chat': 'chat', 'ohat': 'ohat', 'ride': 'ride', 'crash': 'crash',
              'tom': 'tom', 'clap': 'clap', 'cymbal': 'crash'}

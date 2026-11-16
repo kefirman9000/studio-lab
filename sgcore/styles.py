@@ -2824,3 +2824,72 @@ STYLES['cumbia']['real_cowbell'] = True
 # phonk cowbells: the classic pitched 808 cowbell most of the time, sometimes a long-ringing, distorted, raw or crushed one
 POOLS['phonk']['lead'] = ['cowbell', 'cowbell', 'cowbell_long', 'cowbell_dist', 'cowbell_808', 'cowbell_crushed']
 POOLS['memphis_phonk']['lead'] = ['cowbell', 'cowbell', 'cowbell_808', 'cowbell_long', 'cowbell_crushed']
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# v1.20: the full genre bible (docs/GENRES.md ids) - instruments, patterns and effects where the app differed
+def _track(style, name):
+    return next((t for t in STYLES[style]['tracks'] if t['name'] == name), None)
+
+
+def _set(style, name, **kw):
+    t = _track(style, name)
+    if t:
+        t.update(kw)
+
+
+# acid house: the 303 is the star - overdriven, the lead is a 303 too, stabs not organs, dry raw mix
+_set('acid_house', 'bass', drive=0.5)
+_set('acid_house', 'lead', inst='acid', p=dict(res=9, cut=700), drive=0.4)
+_set('acid_house', 'chords', inst='stab')
+STYLES['acid_house']['reverb'] = 1.2
+POOLS['acid_house']['lead'] = ['acid', 'stab', 'hoover']
+POOLS['acid_house']['chords'] = ['stab', 'organ', 'piano']
+# dark UK dubstep: soundsystem pressure, not festival leads
+STYLES['dubstep']['kit'] = 'punchy'
+_set('dubstep', 'lead', inst='vox', rev=0.5, dly=0.4)
+POOLS['dubstep']['lead'] = ['vox', 'softlead', 'stab', 'flute']
+# downtempo: glassy bells belong here
+_set('downtempo', 'arp', inst='bell', rev=0.5, dly=0.35)
+# deep house: warm Rhodes / organ 7th-9th chords
+_set('deep_house', 'chords', inst='epiano')
+POOLS['deep_house']['chords'] = ['epiano', 'organ', 'wurli', 'stab', 'piano']
+# baile funk: distorted, loud, confrontational
+_set('baile_funk', 'kick', drive=0.5)
+_set('baile_funk', 'snare', drive=0.4)
+STYLES['baile_funk']['master'] = dict(STYLES['baile_funk']['master'], drive=0.45)
+# hardstyle: reverse bass swelling into each off-beat after the kick
+_set('hardstyle', 'bass', p=dict(cut=1400, reverse=True), drive=0.6)
+STYLES['hardstyle']['bass'] = ['..R-..R-..R-..R-']
+# braindance: hyperactive edited breaks
+# (kit handled by drumkits: think-style break, heavily chopped)
+# country: train beat on the snare (brushed 16ths, accents on 2 and 4)
+STYLES['country']['drums']['snare'] = ['....X.......X...', 'oxoxXxoxoxoxXxox']
+# salsa: clave on claves, bongó martillo, güiro, timbale cáscara - real Latin percussion when the library is installed
+_set('salsa', 'woodblock', real='claves')
+STYLES['salsa']['drums'].update({'guiro': ['x..xx..xx..xx..x'], 'bongo': ['x.xxx.xxx.xxx.xx'], 'cascara': ['x.xx.x.xx.x.x.x.']})
+STYLES['salsa']['tracks'] += [T('guiro', 'top', 'shaker', real='guiro', pan=0.35, db=-27),
+                              T('bongo', 'top', 'conga', real='bongo', pan=-0.35, db=-26, p={}),
+                              T('cascara', 'top', 'rim', pan=0.2, db=-28)]
+STYLES['salsa']['drums'].pop('shaker', None)
+STYLES['salsa']['tracks'] = [t for t in STYLES['salsa']['tracks'] if t['name'] != 'shaker']
+# cumbia: the guira scrape
+_set('cumbia', 'shaker', real='guiro')
+# 80s / Rhodes genres: chorus (Juno / Rhodes style)
+for _st, _parts in (('italo_disco', ('chords', 'arp', 'pad')), ('synthpop', ('chords', 'pad')), ('synthwave', ('pad', 'chords')),
+                    ('city_pop', ('chords',)), ('fusion', ('chords',)), ('vaporwave', ('chords', 'pad')), ('rnb', ('chords',))):
+    for _p in _parts:
+        _set(_st, _p, chorus=0.5)
+# classical feel: limited baroque vibrato, rubato in film piano / neoclassical
+_set('baroque', 'lead', p=dict(vib=3))
+STYLES['film_piano']['rubato'] = 0.4
+STYLES['neoclassical']['rubato'] = 0.3
+STYLES['chamber']['rubato'] = 0.25
+# western: whistled tune option, twangy reverb guitar
+POOLS['western']['lead'] = ['brass', 'trumpet', 'softlead', 'guitar', 'choir']
+_set('western', 'arp', rev=0.6)
+# ambient: tape warmth and drift
+STYLES['ambient']['master'] = dict(STYLES['ambient']['master'], wobble=0.15)
+BELL_OK.add('downtempo')
+MALLET_OK.add('downtempo')
+POOLS['downtempo']['arp'] = ['bell', 'epiano', 'pluck', 'guitar', 'kalimba']

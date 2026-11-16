@@ -17,6 +17,18 @@ ROLE_DB = {'kick': -13, 'snare': -17, 'top': -25, 'bass': -15, 'chords': -21, 'p
 CUT_KEYS = ('cut', 'bright')
 
 
+def chorus(buf, mix=0.5, rate=0.8, depth_ms=3.0, base_ms=12.0):
+    """Stereo chorus (Juno-style): a slowly wobbling delayed copy, opposite phase left and right."""
+    n = buf.shape[1]
+    t = np.arange(n, dtype=np.float32) / SR
+    out = buf.copy()
+    for ch, ph in ((0, 0.0), (1, np.pi)):
+        d = (base_ms + depth_ms * np.sin(2 * np.pi * rate * t + ph)) * SR / 1000.0
+        src = np.arange(n, dtype=np.float32) - d
+        out[ch] = buf[ch] * (1 - 0.35 * mix) + np.interp(src, np.arange(n, dtype=np.float32), buf[ch], left=0.0) * mix * 0.8
+    return out.astype(np.float32)
+
+
 def gated_reverb(x, hold=0.24):
     """80s gated reverb: a dense, bright room tail that's chopped off hard after ~240 ms."""
     n = int((hold + 0.03) * SR)
@@ -271,7 +283,7 @@ class Renderer:
             s = int((self.t_of(ev.beat, human=(tcfg['name'] != kick), layer=tcfg['layer']) + getattr(ev, 'strum', 0.0) * self.spb) * SR)
             sig = None
             if real_drums:
-                sig = self._real_drum(tcfg['inst'], ev, i)
+                sig = self._real_drum(tcfg.get('real') or tcfg['inst'], ev, i)
             if sig is None:
                 sig = self._drum(tcfg['name'], tcfg['inst']) if is_drum else self._note(tcfg, ev, p)
             self._add(buf, sig * ev.vel, s)
@@ -279,6 +291,8 @@ class Renderer:
             buf = (soft(buf * (1 + tcfg['drive'] * 3), 1.5) / (1 + tcfg['drive'])).astype(np.float32)
         if tcfg.get('gate'):
             buf = self._gate(buf, tcfg['gate'])
+        if tcfg.get('chorus'):
+            buf = chorus(buf, float(tcfg['chorus']))
         return buf
 
     def _gate(self, buf, pattern):

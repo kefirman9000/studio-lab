@@ -12,7 +12,12 @@ def _rng():
 
 def i_sawbass(m, dur, p, glide=None, mod=None):
     f = float(mtof(m))
-    env = adsr(dur * SR, 0.003, p.get('d', 0.18), p.get('s', 0.6), 0.05)
+    if p.get('reverse'):                                # hardstyle reverse bass: swells up after the kick, cut dead at the end
+        n_ = int(max(0.02, dur) * SR)
+        env = (np.linspace(0, 1, n_) ** 2.2).astype(np.float32)
+        env[-int(0.006 * SR):] *= np.linspace(1, 0, int(0.006 * SR))
+    else:
+        env = adsr(dur * SR, p.get('a', 0.003), p.get('d', 0.18), p.get('s', 0.6), 0.05)
     n = len(env)
     t = np.arange(n) / SR
     x = 0.7 * saw(f, n) + 0.6 * sine(f, n)

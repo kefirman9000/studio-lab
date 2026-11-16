@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.20.0
+Every genre checked against the full Studio Lab genre bible (all 114). Most already matched; these changed:
+- **Salsa** gets the real Afro-Cuban section: clave on claves, bongó martillo, güiro, timbale cáscara and a campana (real recordings when the percussion library is installed). **Cumbia** gets its guira scrape.
+- **Hardstyle** plays a real reverse bass: a swell into each off-beat after the kick, cut dead before the next one.
+- **Acid house**: the overdriven 303 is the lead too, rave stabs instead of organ, a dry raw mix.
+- **Dark UK dubstep**: sparse vocal / soft leads instead of festival hoovers, a less aggressive kit.
+- **Downtempo** keeps its glassy bells; **deep house** plays warm Rhodes / organ 7th-9th chords; **baile funk** gets distorted drums and a louder, rawer master.
+- **Braindance / IDM** plays a heavily chopped Think-style break; **country** has a train-beat snare.
+- **Chorus** (Juno / Rhodes style) on Italo disco, synth-pop, synthwave, city pop, fusion, vaporwave and R&B keys.
+- **Classical feel**: limited vibrato in Baroque, rubato in film piano, neoclassical and chamber; ambient gets tape drift; spaghetti western can use a whistled lead.
+
 ## 1.19.2
 - **Pick individual orchestra instruments.** With the free real orchestra installed, every part's Sound dropdown has a "Real orchestra (no setup)" group with 19 instruments: violins, violas, cellos and double basses as sections, a solo violin, the whole string section as sustain / spiccato / pizzicato / tremolo, French horn, trumpet, trombone, tuba, a brass section, flute, piccolo, oboe, clarinet and bassoon. The VST window lists them too.
 - The VST window explains why BBC Symphony Orchestra / LABS appear as a single plugin: they keep their instruments in their own browser and don't expose them to other programs.
