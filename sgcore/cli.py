@@ -39,6 +39,8 @@ def main(argv=None):
     ap.add_argument('--build', choices=['roll', 'triplet', 'kick_roll', 'filter', 'stutter', 'pause', 'lift', 'swell'], help='build-up style')
     ap.add_argument('--bass-rhythm', choices=['kick'], help='kick = bass plays with the kick drum')
     ap.add_argument('--ending', choices=['auto', 'hit', 'fade'])
+    ap.add_argument('--counter', choices=['on', 'off'], help='counter-melody answering the lead (default: genre decides)')
+    ap.add_argument('--layering', choices=['off', 'more'], help='parts doubled by a second instrument (default: genre decides)')
     ap.add_argument('--vocal-guide', action='store_true', help='also play the vocal guide melody (always in MIDI exports)')
     ap.add_argument('--fx', action='append', default=[], help='effect plugin on a part, e.g. --fx lead=ValhallaSupermassive')
     ap.add_argument('--level', action='append', default=[], help='part level in dB, e.g. --level lead=-3 --level bass=+2')
@@ -88,7 +90,7 @@ def main(argv=None):
             if a.fx:
                 o['part_fx'] = dict(x.split('=', 1) for x in a.fx)
             for k, v in (('melody_style', a.melody), ('voicing', a.voicing), ('chord_color', a.chord_color), ('groove', a.groove),
-                         ('bass_rhythm', a.bass_rhythm), ('ending', a.ending),
+                         ('bass_rhythm', a.bass_rhythm), ('ending', a.ending), ('counter', a.counter), ('layering', a.layering),
                          ('lead_style', a.lead), ('build_style', a.build)):
                 if v:
                     o[k] = v

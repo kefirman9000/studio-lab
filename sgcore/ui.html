@@ -125,6 +125,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 .pl .n{font-weight:600}.pl .m{font-size:11.5px;color:var(--muted)}
 .tag{font-size:10.5px;border-radius:6px;padding:1px 6px;border:1px solid var(--line);margin-left:4px;font-family:var(--mono)}
 .tag.free{background:#10261f;border-color:#1d4a3c;color:#5fe0b8}.tag.paid{background:#2a2213;border-color:#57451f;color:#ffc66b}
+.res .tags{margin-top:4px;display:flex;flex-wrap:wrap;gap:4px}.res .tags .tag{margin-left:0;color:var(--muted)}
 .tag.ok{color:#5fe0b8}.tag.no{color:#ff7d8a;border-color:#5a2730}.tag.inst{background:#1d2440;color:#9bb0ff}
 .tl{display:flex;gap:2px;margin:10px 0 2px;height:30px}
 .tl .blk{position:relative;border-radius:5px;background:#252a3d;cursor:pointer;font-size:10.5px;color:#c9cde0;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;min-width:14px;border:1px solid transparent}
@@ -200,6 +201,8 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f"><label>Build-ups</label><select id="buildStyle"><option value="">Genre default</option><option value="roll">Snare roll + riser (trance, big room)</option><option value="filter">Filter sweep, kick out (house, techno)</option><option value="triplet">Triplet roll (future bass)</option><option value="kick_roll">Kick roll (hardstyle)</option><option value="stutter">Stutter + silence (dubstep)</option><option value="pause">Drop-out (amapiano, garage)</option><option value="lift">Snare lift (pop, rock)</option><option value="swell">Swell (film)</option></select></div>
       <div class="f"><label>Bass rhythm</label><select id="bassRhythm"><option value="">Style's bassline</option><option value="kick">Follow the kick drum</option></select></div>
       <div class="f"><label>Ending</label><select id="ending"><option value="auto">Genre default</option><option value="hit">Final chord + crash</option><option value="fade">Fade out</option></select></div>
+      <div class="f"><label>Counter-melody <span class="hint">a second line answering the lead</span></label><select id="counter"><option value="">Genre decides</option><option value="on">Always</option><option value="off">Never</option></select></div>
+      <div class="f"><label>Layered sounds <span class="hint">parts doubled by a second instrument</span></label><select id="layering"><option value="">Genre &amp; variety decide</option><option value="more">More layers</option><option value="off">Off (one instrument per part)</option></select></div>
       <div class="f"><label>Vocal guide <span class="hint">a singable melody - always in MIDI exports</span></label><label class="auto" style="margin-top:6px"><input type="checkbox" id="vocalGuide"> hear it in the song</label></div>
     </div></details>
 
@@ -382,6 +385,8 @@ function options(){
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
   if($('#bassRhythm').value) o.bass_rhythm=$('#bassRhythm').value;
   if($('#ending').value!=='auto') o.ending=$('#ending').value;
+  if($('#counter').value) o.counter=$('#counter').value;
+  if($('#layering').value) o.layering=$('#layering').value;
   if($('#vocalGuide').checked) o.vocal_guide=true;
   if($('#voicing').value) o.voicing=$('#voicing').value;
   if($('#chordColor').value) o.chord_color=$('#chordColor').value;
@@ -399,7 +404,7 @@ function applyOptions(o){
   $('#swingAuto').checked=o.swing==null; if(o.swing!=null)$('#swing').value=o.swing*100;
   $('#scAuto').checked=o.sidechain==null; if(o.sidechain!=null)$('#sidechain').value=o.sidechain*100;
   $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#userDrums').checked=!!o.user_drums;
-  $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#vocalGuide').checked=!!o.vocal_guide;
+  $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#vocalGuide').checked=!!o.vocal_guide;
   $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';
   LEVELS.forEach(([k,n,layers])=>{ $('#lv_'+k).value=(o.part_levels||{})[layers[0]]||0; });
   const cat=Object.entries(META.categories).find(([c,l])=>l.some(s=>s.id===o.style)); if(cat) state.cat=cat[0];
@@ -412,10 +417,11 @@ function syncAutos(){
 
 // ------------------------------------------------------------- jobs
 let busy=false;
-async function run(preview, count, opts, section, onResult){
+async function run(preview, count, opts, section, onResult, varyPart){
   if(busy) return; busy=true; setBusy(true);
   const o=opts||options();
   const body={options:o, preview, count, outputs:state.outputs.length?state.outputs:['wav']};
+  if(varyPart) body.vary_part=varyPart;
   if(section!=null) body.section=section;
   const {job}=await api('/api/generate', body);
   const seen=new Set();
@@ -445,10 +451,12 @@ function addResult(r, target){
   const inst=Object.entries(r.instruments||{}).map(([k,v])=>`${k}: <span>${v}</span>`).join(' · ');
   const fusion=r.fusion?Object.entries(r.fusion).map(([p,s])=>`${p}←<span>${styleName(s)}</span>`).join(' · '):'';
   el.innerHTML=`<div class="top"><button class="play">▶</button><div style="min-width:0"><div class="tt">${title}</div>
-    <div class="mt">${r.key} · ${r.bpm} BPM · seed ${r.seed}${r.mood?' · '+r.mood:''}${r.preview?' · preview':' · '+r.duration}</div></div></div>
+    <div class="mt">${r.key} · ${r.meter&&r.meter!=='4/4'?r.meter+' · ':''}${r.bpm_quarter&&r.bpm_quarter!==r.bpm?r.bpm_quarter:r.bpm} BPM · seed ${r.seed}${r.mood?' · '+r.mood:''}${r.preview?' · preview':' · '+r.duration}</div>
+    ${r.arrangement&&r.arrangement.length?`<div class="tags">${r.arrangement.map(a=>`<span class="tag">${esc(a)}</span>`).join(' ')}</div>`:''}</div></div>
     <canvas class="wave"></canvas>
     <div class="info">Chords <span>${r.chords}</span> · alt <span>${r.chords_alt}</span><br>${inst}${fusion?'<br>Fusion '+fusion:''}</div>
-    <div class="rr"><span class="lbl">Re-roll</span>${['drums','bass','chords','melody','harmony'].map(p=>`<button class="mini" data-p="${p}">${p}</button>`).join('')}</div>
+    <div class="rr"><span class="lbl" title="New version of one part; everything else stays exactly the same">Re-roll</span>${['drums','bass','chords','melody','harmony'].map(p=>`<button class="mini" data-p="${p}">${p}</button>`).join('')}
+      <label class="hint" title="Make 4 versions of the part you click, over this exact song" style="margin-left:6px"><input type="checkbox" class="x4"> ×4</label></div>
     <div class="rr"><span class="lbl" title="🔒 keep this part in your next previews · ♥ you like this part (Surprise me learns from it)">Parts</span>${PARTSEED.map(([p])=>`<span class="pp">${p}<button class="ico" data-lk="${p}" title="Keep this ${p} part in new previews">🔒</button><button class="ico" data-lv="${p}" title="I like this ${p} part">♥</button></span>`).join('')}
       <span style="margin-left:auto"></span><button class="mini" data-a="ab" title="Compare two results back to back at matched loudness">A/B</button></div>
     <div class="rr"><button class="mini acc" data-a="full">⬇ Full song from this</button><button class="mini" data-a="use">Use settings</button><button class="mini" data-a="save">★ Save preset</button>
@@ -483,7 +491,9 @@ function addResult(r, target){
   btn.onclick=()=>togglePlay(r.id,url,btn,cv);
   cv.onclick=e=>{ if(playingId!==r.id) togglePlay(r.id,url,btn,cv); const f=e.offsetX/cv.clientWidth; const seek=()=>{audio.currentTime=f*audio.duration}; audio.readyState>0?seek():audio.addEventListener('loadedmetadata',seek,{once:true}); };
   drawWave(cv,url);
-  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ const o=JSON.parse(JSON.stringify(r.options)); o.part_seeds=Object.assign({},o.part_seeds||{}); o.part_seeds[b.dataset.p]=Math.floor(Math.random()*1e6); run(true,1,o); });
+  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ const o=JSON.parse(JSON.stringify(r.options)); o.seed=r.seed; o.part_seeds=Object.assign({},o.part_seeds||{});
+    if(el.querySelector('.x4').checked){ run(true,4,o,null,null,b.dataset.p); return; }
+    o.part_seeds[b.dataset.p]=Math.floor(Math.random()*1e6); run(true,1,o); });
   const partSeed=p=>{ const k=Object.fromEntries(PARTSEED)[p]; const ps=(r.options&&r.options.part_seeds)||{}; return ps[p]!=null?ps[p]:(r.seed*1009+k); };
   el.querySelectorAll('[data-lk]').forEach(b=>b.onclick=()=>{ const p=b.dataset.lk;
     if(LOCKS[p]&&LOCKS[p].from===r.id){ delete LOCKS[p]; } else { LOCKS[p]={seed:partSeed(p),from:r.id,style:r.style}; if(p==='melody'&&!LOCKS.harmony) LOCKS.harmony={seed:partSeed('harmony'),from:r.id,style:r.style,auto:true}; }
@@ -718,6 +728,7 @@ async function vstModal(){
     <p class="hint">Play any part with your own <b>VST3</b> or <b>Audio Unit</b> (Mac) instruments — e.g. Vital, Surge XT, Spitfire LABS. Create a sound (the plugin's own window opens; pick a preset, then close it),
      then choose it under <b>Sound</b> as “VST: …”. Each plugin runs in its own process, so if one misbehaves that part simply falls back to the built-in sound. VST2-only plugins (.dll) aren't supported by the plugin engine.</p>
     ${V.available?'<p><span class="tag ok">VST support installed</span></p>':`<div class="sel"><b>One-time setup:</b> VST support needs the free <i>pedalboard</i> library (by Spotify).<div class="row" style="margin-top:8px"><button class="btn p" id="vInst">Install VST support</button><span class="hint">needs internet · about 30 MB</span></div><pre id="vLog" class="hint" style="max-height:140px;overflow:auto"></pre></div>`}
+    <div class="sel" style="margin:10px 0"><b>🎻 Orchestra plugin?</b> BBC Symphony Orchestra, LABS, Kontakt … - set up one sound per section and articulation and every genre uses them. <button class="mini acc" id="vOrch" ${V.available?'':'disabled'}>Set up my orchestra…</button></div>
     <div class="row" style="margin:10px 0"><button class="mini" id="vFolder">📁 Open my plugins folder</button><button class="mini" id="vRescan">⟳ Rescan</button><span class="hint">Drop .vst3 files there, or install plugins normally - system folders are scanned too.</span></div>
     <div id="vMsg" class="hint"></div>
     <h3 style="margin-top:12px">My VST sounds</h3>${snd||'<div class="hint">None yet — create one from a plugin below.</div>'}<div id="vPlay"></div>
@@ -728,6 +739,7 @@ async function vstModal(){
     pollJob(job, async j=>{ $('#vLog').textContent+=(j.results[0]&&j.results[0].ok)?'\nDone! VST support is installed.':'\nInstall failed - see above. You can also run:  python -m pip install pedalboard'; if(j.results[0]&&j.results[0].ok) setTimeout(vstModal,1200); }, l=>$('#vLog').textContent=l); };
   $('#vFolder').onclick=()=>api('/api/open',{path:'plugins'});
   $('#vRescan').onclick=()=>vstModal();
+  $('#vOrch').onclick=()=>orchModal(V);
   $$('#modalBox [data-cr]').forEach(b=>b.onclick=async()=>{ const p=V.plugins[+b.dataset.cr]; const nm=($(`[data-nm="${b.dataset.cr}"]`).value||p.name).trim();
     $('#vMsg').innerHTML='<b>The plugin window is opening on your screen</b> - pick a preset or design a sound, then <b>close the plugin window</b> to save it.';
     const {job}=await api('/api/vst/create',{path:p.path,name:nm});
@@ -737,6 +749,43 @@ async function vstModal(){
   $$('#modalBox [data-dl]').forEach(b=>b.onclick=async()=>{ await api('/api/vst/delete',{id:b.dataset.dl}); await refreshMeta(); vstModal(); });
   $$('#modalBox [data-tst]').forEach(b=>b.onclick=async()=>{ $('#vPlay').innerHTML='<div class="hint">Rendering a test phrase through the plugin…</div>'; const {job}=await api('/api/vst/preview',{id:b.dataset.tst});
     pollJob(job, j=>{ const r=j.results[0]; $('#vPlay').innerHTML=(j.status==='done'&&r&&r.url)?`<audio controls autoplay src="${r.url}" style="width:100%"></audio>`:`<div class="hint">Plugin failed: ${esc(j.error||'')}</div>`; }); });
+  $('#modal').classList.add('on');
+}
+// ------------------------------------------------------------- orchestra setup: one saved sound per section/articulation
+const ORCH_SECTIONS=[['strings legato','long string pads and melodies'],['strings spiccato','short, driving ostinatos'],
+  ['strings tremolo','suspense and shimmer'],['strings pizzicato','plucked strings'],['violins','violin melodies'],['celli','cello lines and bass'],
+  ['horns','French horn themes and swells'],['trumpets','fanfares and brass leads'],['low brass','trombones / tuba, trailer braams'],
+  ['flute','flute melodies'],['clarinet','clarinet lines'],['oboe','oboe solos'],['harp','harp arpeggios'],['celeste','celesta / glockenspiel sparkle'],
+  ['timpani','timpani'],['choir','choir pads']];
+function orchModal(V){
+  const plugs=V.plugins.filter(p=>!p.is_effect);
+  const guess=plugs.findIndex(p=>/bbc|labs|spitfire|orchestr|kontakt/i.test(p.name));
+  const have=n=>V.sounds.find(s=>s.name.toLowerCase()===n.toLowerCase());
+  const prefixOf=p=>/bbc/i.test(p.name)?'BBC':/labs/i.test(p.name)?'LABS':p.name.split(/[\s_-]/)[0];
+  const draw=()=>{
+    const i=+($('#oPlug')?$('#oPlug').value:Math.max(0,guess)); const p=plugs[i]; const pre=$('#oPre')?$('#oPre').value:(p?prefixOf(p):'');
+    $('#oRows').innerHTML=ORCH_SECTIONS.map(([sec,what],k)=>{ const nm=(pre?pre+' ':'')+sec; const h=have(nm);
+      return `<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${h?'✓ ':''}${esc(nm)}</span> <span class="m">${esc(what)}</span></div>
+        <div class="row">${h?`<button class="mini" data-otst="${esc(h.id)}">▶</button>`:''}<button class="mini ${h?'':'acc'}" data-osec="${k}">${h?'Redo…':'Set up…'}</button></div></div>`; }).join('');
+    $$('#oRows [data-osec]').forEach(b=>b.onclick=()=>{ const sec=ORCH_SECTIONS[+b.dataset.osec][0]; const nm=(pre?pre+' ':'')+sec; const h=have(nm);
+      $('#oMsg').innerHTML=`<b>${esc(p.name)} is opening.</b> Load the <b>${esc(sec)}</b> patch (and articulation), then <b>close the plugin window</b> to save it as “${esc(nm)}”.`;
+      api('/api/vst/create',{path:p.path,name:nm,existing:h?h.id:undefined}).then(({job})=>pollJob(job, async j=>{ const r=j.results[0]||{};
+        if(r.ok){ V=await api('/api/vst',{}); META=await api('/api/meta'); $('#oMsg').textContent='Saved “'+nm+'”. Next section?'; draw(); }
+        else $('#oMsg').textContent='Could not save: '+(r.error||j.error||'unknown error'); })); });
+    $$('#oRows [data-otst]').forEach(b=>b.onclick=async()=>{ $('#oPlay').innerHTML='<div class="hint">Rendering a test phrase…</div>'; const {job}=await api('/api/vst/preview',{id:b.dataset.otst});
+      pollJob(job, j=>{ const r=j.results[0]; $('#oPlay').innerHTML=(j.status==='done'&&r&&r.url)?`<audio controls autoplay src="${r.url}" style="width:100%"></audio>`:`<div class="hint">Plugin failed: ${esc(j.error||'')}</div>`; }); });
+  };
+  $('#modalBox').className='box wide';
+  $('#modalBox').innerHTML=`<h3>🎻 Set up my orchestra</h3>
+    <p class="hint">Pick your orchestra plugin, then click <b>Set up…</b> on each section you have: the plugin opens, you load that section (e.g. <i>Violins 1 → Spiccato</i>) and close the window.
+      Studio Lab saves it with the right name, so strings, celli, horns and woodwinds in <b>every genre</b> play through your plugin - long notes get legato, fast patterns spiccato, plucked parts pizzicato,
+      and the mod wheel (CC1) shapes each phrase's dynamics. Skip any sections your plugin doesn't have.</p>
+    ${plugs.length?`<div class="row"><label>Plugin <select id="oPlug">${plugs.map((p,i)=>`<option value="${i}" ${i===Math.max(0,guess)?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
+      <label style="margin-left:10px">Name prefix <input type="text" id="oPre" style="width:90px"></label></div>`:'<div class="hint">No instrument plugins found - install your orchestra plugin first, then rescan.</div>'}
+    <div id="oMsg" class="hint" style="margin:8px 0"></div><div id="oRows"></div><div id="oPlay"></div>
+    <div style="text-align:right;margin-top:14px"><button class="btn" id="oBack">← VST sounds</button> <button class="btn p" onclick="closeModal()">Done</button></div>`;
+  if(plugs.length){ $('#oPre').value=prefixOf(plugs[Math.max(0,guess)]); $('#oPlug').onchange=()=>{ $('#oPre').value=prefixOf(plugs[+$('#oPlug').value]); draw(); }; $('#oPre').oninput=draw; draw(); }
+  $('#oBack').onclick=()=>vstModal();
   $('#modal').classList.add('on');
 }
 // ------------------------------------------------------------- genre VST rigs (auto-downloaded instruments)

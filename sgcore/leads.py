@@ -21,6 +21,12 @@ GENRE_DEVICES = {
     'neoclassical': ['hook'], 'chamber': ['hook', 'call'], 'baroque': ['arp', 'hook'], 'fantasy_rpg': ['hook', 'call'],
     'hybrid_trailer': ['hook', 'ostinato'], 'orchestral_hiphop': ['bell', 'hook'], 'symphonic_metal': ['hook', 'riff'],
     'holiday': ['hook', 'call'], 'western': ['hook', 'call'], 'chamber_pop': ['hook', 'call'],
+    'gospel': ['hook', 'call'], 'country': ['hook'], 'bluegrass': ['hook', 'arp'], 'motown': ['hook', 'call'], 'rnb': ['hook', 'call'],
+    'swing': ['hook', 'call'], 'ska': ['hook', 'call'], 'punk': ['riff', 'hook'], 'indie_rock': ['hook', 'riff'],
+    'salsa': ['hook', 'call'], 'cumbia': ['hook', 'call'], 'tango': ['hook'], 'dancehall': ['hook', 'call', 'chops'],
+    'afro_house': ['hook', 'call', 'ostinato'], 'melodic_techno': ['ostinato', 'arp', 'hook'], 'kpop': ['hook', 'call', 'chops'],
+    'jersey_club': ['chops', 'hook', 'call'], 'baile_funk': ['call', 'chops', 'hook'],
+    'waltz': ['hook'], 'celtic_jig': ['hook'], 'soul_ballad': ['hook'],
 }
 DEVICES = ['hook', 'arp', 'riff', 'ostinato', 'bell', 'call', 'chops']
 

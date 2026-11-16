@@ -72,6 +72,8 @@ class Options:
     build_style: str = None       # None = genre | roll | triplet | kick_roll | filter | stutter | pause | lift | swell
     groove: str = None            # None = genre feel | straight | dilla | laidback | afro | dembow | jazz | house | funk
     mood: str = None              # dark | happy | chill | epic | dreamy | aggressive | melancholic | energetic | mysterious | romantic
+    counter: str = None           # None = genre decides | on | off  (a second line answering the lead: celli, horns, flute ...)
+    layering: str = None          # None = genre + variety decide | off | more  (parts doubled by a second instrument)
 
     def to_dict(self):
         return asdict(self)
@@ -170,16 +172,26 @@ MELODY_STYLES = ['diatonic', 'pentatonic', 'blues', 'bebop']
 GENRE_MELODY = {'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
                 'folk': 'pentatonic', 'afrobeats': 'pentatonic', 'amapiano': 'pentatonic', 'reggae': 'pentatonic',
                 'lofi': 'pentatonic', 'pop': 'pentatonic', 'disco': 'pentatonic', 'jazz': 'bebop', 'bossa_nova': 'bebop',
-                'western': 'pentatonic', 'chamber_pop': 'pentatonic', 'fantasy_rpg': 'pentatonic'}
+                'western': 'pentatonic', 'chamber_pop': 'pentatonic', 'fantasy_rpg': 'pentatonic',
+                'gospel': 'blues', 'rnb': 'pentatonic', 'motown': 'pentatonic', 'country': 'pentatonic', 'bluegrass': 'pentatonic',
+                'swing': 'bebop', 'punk': 'pentatonic', 'indie_rock': 'pentatonic', 'kpop': 'pentatonic', 'soul_ballad': 'pentatonic',
+                'dancehall': 'pentatonic', 'afro_house': 'pentatonic', 'jersey_club': 'pentatonic', 'baile_funk': 'pentatonic',
+                'celtic_jig': 'diatonic', 'waltz': 'diatonic', 'tango': 'diatonic', 'salsa': 'diatonic', 'cumbia': 'diatonic'}
 GENRE_VOICING = {'jazz': 'rootless', 'bossa_nova': 'rootless', 'lofi': 'rootless', 'boombap': 'rootless', 'city_pop': 'drop2',
                  'deep_house': 'drop2', 'ukgarage': 'drop2', 'funk': 'drop2', 'disco': 'drop2', 'downtempo': 'drop2',
-                 'neoclassical': 'open', 'chamber': 'open', 'fantasy_rpg': 'open', 'cinematic': 'open', 'orchestral': 'open'}
+                 'neoclassical': 'open', 'chamber': 'open', 'fantasy_rpg': 'open', 'cinematic': 'open', 'orchestral': 'open',
+                 'swing': 'drop2', 'gospel': 'open', 'rnb': 'drop2', 'waltz': 'open', 'tango': 'close'}
 GENRE_COLORS = {'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
                 'city_pop': ['7', '9', 'add9'], 'deep_house': ['7', '9', 'add9'], 'ukgarage': ['7', '9'], 'funk': ['7', '9'],
                 'blues': ['7'], 'downtempo': ['7', 'add9', '9'], 'neoclassical': ['triad', 'add9', 'add9', 'sus2'],
                 'baroque': ['triad'], 'chamber': ['triad', 'triad', '7'], 'holiday': ['triad', '6', '7', 'add9'],
                 'western': ['triad', 'triad', 'sus4'], 'hybrid_trailer': ['triad', 'triad', 'add9no3'],
-                'symphonic_metal': ['triad'], 'fantasy_rpg': ['triad', 'add9', 'sus2']}
+                'symphonic_metal': ['triad'], 'fantasy_rpg': ['triad', 'add9', 'sus2'],
+                'gospel': ['7', '9', '6', '7'], 'rnb': ['7', '9', '9', 'add9'], 'swing': ['6', '7', '9'], 'motown': ['triad', '7'],
+                'country': ['triad'], 'bluegrass': ['triad'], 'tango': ['triad', '7'], 'salsa': ['triad', '7', '6'],
+                'kpop': ['triad', 'add9', '7'], 'afro_house': ['7', '9', 'triad'], 'melodic_techno': ['triad', 'sus2', 'add9no3'],
+                'soul_ballad': ['triad', '7', '6'], 'waltz': ['triad'], 'celtic_jig': ['triad', 'sus2'], 'ska': ['triad', '7'],
+                'cumbia': ['triad'], 'dancehall': ['triad', '7'], 'punk': ['triad'], 'indie_rock': ['triad', 'add9', 'sus2']}
 
 
 def fold(m, lo):
@@ -191,7 +203,10 @@ def fold(m, lo):
 
 
 def parse_rhythm(pat):
+    """'x-..X...' -> [(step, length, char)] in 16ths of a bar. 12-step patterns (triple / compound meters: 3/4, 6/8,
+    12/8) are scaled onto the same bar, so a step is a third of a beat there."""
     out = []
+    k = 16 / len(pat) if len(pat) == 12 else 1
     for i, c in enumerate(pat):
         if c not in '.-':
             l = 1
@@ -199,8 +214,41 @@ def parse_rhythm(pat):
             while j < len(pat) and pat[j] == '-':
                 l += 1
                 j += 1
-            out.append((i, l, c))
+            out.append((i * k if k != 1 else i, l * k if k != 1 else l, c))
     return out
+
+
+def grid_of(st):
+    """Steps per bar: 16 (straight 4/4) or 12 (3/4, 6/8, 12/8 - see styles 'meter')."""
+    return 12 if st.get('meter') else 16
+
+
+def grid_steps(st):
+    g = grid_of(st)
+    return [i * 16 / g for i in range(g)] if g != 16 else list(range(16))
+
+
+def lead_voicing(notes, prev, center, inversions=True):
+    """Voice leading: of the chord's inversions / octave shifts, the one closest to the previous chord (each voice moves
+    as little as possible), kept near the part's register - how a pianist or string section moves between chords."""
+    if not prev or not notes:
+        return notes
+    base = sorted(notes)
+    opts = []
+    inv = base
+    for _ in range(len(base) if inversions else 1):
+        opts.append(inv)
+        inv = sorted(inv[1:] + [inv[0] + 12])
+    opts = [[x + sh for x in o] for o in opts for sh in (-12, 0, 12)]
+
+    def cost(o):
+        c = sum(min(abs(x - q) for q in prev) for x in o) + 0.5 * sum(min(abs(q - x) for x in o) for q in prev)
+        mid = (o[0] + o[-1]) / 2
+        c += 1.5 * max(0, abs(mid - center) - 5)
+        if o[0] < center - 13 or o[-1] > center + 15:
+            c += 60
+        return c
+    return min(opts, key=cost)
 
 
 class Ev:
@@ -389,14 +437,16 @@ TONE_DEFAULTS = {'sawbass': dict(cut=2200), 'supersaw': dict(cut=3000, detune=1.
                  'spiccato': dict(cut=4200), 'tremolo': dict(cut=3600), 'brass': dict(cut=3800), 'horn': dict(cut=1600)}
 
 
+PART_K = {'harmony': 1, 'melody': 2, 'drums': 3, 'bass': 4, 'chords': 5}
+
+
 def apply_variety(st, opts, rnd):
     """Give every song its own palette: instrument swaps, tone tweaks, extra groove patterns, kit and arrangement."""
     v = max(0.0, min(1.0, float(opts.variety)))
     if v <= 0:
         return st
-    fam = groove_family(st)
+    fam = groove_family(st) if not st.get('meter') else 'meter'
     ps = opts.part_seeds or {}
-    PART_K = {'harmony': 1, 'melody': 2, 'drums': 3, 'bass': 4, 'chords': 5}
 
     def r_for(part):                                  # each part's palette comes from its own seed, so a locked part
         sd = ps.get(part) if ps.get(part) is not None else opts.seed * 1009 + PART_K[part]   # sounds the same in any song
@@ -410,11 +460,11 @@ def apply_variety(st, opts, rnd):
     st['drums'] = drums
     rb = r_for('bass')
     if st.get('bass_mode') == 'pattern' and rb.random() < 0.3 + 0.6 * v:
-        bank = EXTRA_BASS.get(fam, EXTRA_BASS['other'])
+        bank = EXTRA_BASS.get(fam, [] if fam == 'meter' else EXTRA_BASS['other'])
         st['bass'] = list(st['bass']) + rb.sample(bank, min(len(bank), 1 + int(2 * v)))
     rc = r_for('chords')
     if st.get('voicing') != 'power' and rc.random() < 0.3 + 0.6 * v:
-        bank = EXTRA_CHORD_RH.get(fam, EXTRA_CHORD_RH['other'])
+        bank = EXTRA_CHORD_RH.get(fam, [] if fam == 'meter' else EXTRA_CHORD_RH['other'])
         st['chord_rh'] = list(st['chord_rh']) + rc.sample(bank, min(len(bank), 1 + int(2 * v)))
     from .styles import POOLS
     pal = PALETTES.get(st.get('category'), {})
@@ -607,6 +657,8 @@ PHRASE_BANKS = {
                'x---x-------....', 'x-------....x---'],
     'busy': ['x.x.x.x.x-x-x---', 'x.xx.xx.x.......', 'xx.x.x..x.x.xx..', 'x.x.xx.x.x.x....', '.x.x.x.x.x.x.x..',
              'x-x-..x-x-..x-x-'],
+    'triple': ['x-xx-xx-xx-x', 'x--x--x-----', 'x-xx-x-----.', 'x-----x-xx-x', 'xxx-x-x-----', 'x--x-xx-----',
+               'x-x-x-x-----', 'x-----x--x--'],
 }
 PHRASE_FAMILY = {
     **{k: 'busy' for k in ('psytrance', 'dnb', 'jungle', 'breakcore', 'hyperpop', 'chiptune', 'trap', 'phonk', 'uk_drill', 'hardstyle')},
@@ -614,8 +666,10 @@ PHRASE_FAMILY = {
                                  'deep_house', 'tech_house', 'city_pop', 'bossa_nova')},
     **{k: 'sparse' for k in ('ambient', 'downtempo', 'lofi', 'vaporwave', 'jazz', 'cinematic', 'orchestral', 'film_piano',
                              'adventure', 'tension', 'boombap', 'neoclassical', 'western', 'hybrid_trailer')},
-    **{k: 'sung' for k in ('chamber', 'fantasy_rpg', 'holiday', 'chamber_pop', 'symphonic_metal')},
-    'baroque': 'busy', 'orchestral_hiphop': 'busy',
+    **{k: 'sung' for k in ('chamber', 'fantasy_rpg', 'holiday', 'chamber_pop', 'symphonic_metal', 'gospel', 'rnb', 'motown',
+                           'country', 'kpop', 'indie_rock', 'punk', 'cumbia', 'ska', 'dancehall')},
+    **{k: 'busy' for k in ('bluegrass', 'salsa', 'swing', 'melodic_techno', 'baile_funk', 'jersey_club', 'afro_house')},
+    'baroque': 'busy', 'orchestral_hiphop': 'busy', 'tango': 'sparse',
 }
 
 
@@ -626,6 +680,8 @@ def gen_melody(key, prog, chord_bars, st, rnd, complexity):
         return GENERATORS[dev](key, prog, chord_bars, st, rnd, complexity)
     phrase_bars = 2 * len(prog) * chord_bars
     fam = PHRASE_FAMILY.get(st.get('name'), 'sparse' if st.get('category') == 'Orchestral' else 'sung')
+    if st.get('meter'):
+        fam = 'triple'
     extra = rnd.sample(PHRASE_BANKS[fam], 3)
     rhs = sorted((parse_rhythm(r) for r in list(st['lead_rh']) + extra), key=len)
     if complexity < 0.35:
@@ -749,7 +805,11 @@ def compose(opts):
     rnd_c = prng('chords', 5)         # chord rhythms, arps, voicing choices
     st = resolve_style(opts, random.Random(opts.seed * 7 + 3), mood)
     st = apply_variety(st, opts, random.Random(opts.seed * 7919 + 17))
+    add_counter_track(st, opts)
+    add_layer_tracks(st, opts)
     apply_sampled(st, opts)
+    by_name = {t['name']: t for t in st['tracks']}
+    st['tracks'] = [t for t in st['tracks'] if not (t.get('double_of') and by_name.get(t['double_of'], {}).get('inst') == t['inst'])]
     energy = float(opts.energy)
     cx = float(opts.complexity)
     bpm = opts.bpm or rnd.randint(*st['bpm'])
@@ -799,6 +859,7 @@ def compose(opts):
     if cx > 0.72 and chord_color == 'triad':
         chord_color = rnd.choice(['7', 'add9', '9'])
     sname = st.get('name') or opts.style
+    sname_style = sname
     if sname in GENRE_COLORS:                       # genres whose harmony is defined by extended chords
         chord_color = random.Random(opts.seed * 31 + 7).choice(GENRE_COLORS[sname])
     if getattr(opts, 'chord_color', None) in COLORS:
@@ -810,6 +871,8 @@ def compose(opts):
     st['melody_lang'] = opts.melody_style if getattr(opts, 'melody_style', None) in MELODY_STYLES else GENRE_MELODY.get(sname, 'diatonic')
     from .leads import pick_device
     st['lead_device'] = pick_device(sname, opts.seed, getattr(opts, 'lead_style', None))
+    if st.get('meter'):
+        st['lead_device'] = 'hook'                     # the device figures are 16th-note based
     bsel = getattr(opts, 'build_style', None)
     st['build_style'] = bsel if bsel in BUILD_STYLES else GENRE_BUILD.get(sname) or \
         {'Classic': 'lift', 'Orchestral': 'swell'}.get(st.get('category'), 'roll')
@@ -865,6 +928,17 @@ def compose(opts):
         base_form.append((sname, nbars, layers, opts_s))
     edits = opts.sections or [dict(src=i, copy=0) for i in range(len(base_form))]
     edits = [e for e in edits if 0 <= int(e.get('src', -1)) < len(base_form)] or [dict(src=i, copy=0) for i in range(len(base_form))]
+    vl_prev = {}                          # last chord / pad voicing, for voice leading
+    _ps = lambda part, k: ps.get(part) if ps.get(part) is not None else opts.seed * 1009 + k
+    rnd_hc = random.Random(f"{_ps('harmony', 1)}-colour")   # own streams (following part locks): colour chords and
+    rnd_bp = random.Random(f"{_ps('bass', 4)}-passing")     # passing notes never reshuffle the rest of the song
+    harm_alts = []                        # (start, end, pc, new_pc): secondary dominants, borrowed chords
+    G = grid_of(st)
+    GS = grid_steps(st)
+    if st.get('meter'):
+        st['groove'] = None
+        st['swing'] = 0.5
+        st['trap_hats'] = False
     base_seed = {k: (ps.get(k) if ps.get(k) is not None else opts.seed * 1009 + n) for n, k in
                  ((3, 'drums'), (4, 'bass'), (5, 'chords'), (2, 'melody'))}
 
@@ -927,18 +1001,20 @@ def compose(opts):
                     v = VEL.get(c, 0.8) * rnd_d.uniform(1 - 0.1 * opts.humanize, 1 + 0.05 * opts.humanize)
                     evs.append(Ev(dname, beat0 + step / 4, 0.25, None, v))
                 if dname in ('chat', 'shaker') and energy > 0.7:
-                    for step in range(16):
+                    for step in GS:
                         if step not in used and rnd_d.random() < (energy - 0.7) * 1.6:
                             evs.append(Ev(dname, beat0 + step / 4, 0.25, None, 0.35))
                 if st.get('ghosts') and dname in snares[:1]:
-                    for step in range(16):
+                    for step in GS:
                         if step % 4 != 0 and step not in used and rnd_d.random() < 0.06 + 0.12 * energy:
                             evs.append(Ev(dname, beat0 + step / 4, 0.25, None, 0.28))
-            if st.get('trap_hats') and 'top' in layers and 'chat' not in st['drums']:
+            if st.get('trap_hats') and not st.get('meter') and 'top' in layers and 'chat' not in st['drums']:
                 gen_trap_hats(evs, beat0, rnd_d, energy)
             if (st.get('fill') or energy > 0.6) and 'snare' in layers and b % 8 == 7 and snares and rnd_d.random() < 0.4 + 0.5 * energy:
                 s = snares[0]
-                for k, step in enumerate(rnd_d.choice([[13, 14, 15], [12, 13, 14, 15], [10, 13, 14, 15], [14, 15]])):
+                fills = [[13, 14, 15], [12, 13, 14, 15], [10, 13, 14, 15], [14, 15]] if G == 16 else \
+                    [[x * 4 / 3 for x in f] for f in ([9, 10, 11], [8, 9, 10, 11], [10, 11])]
+                for k, step in enumerate(rnd_d.choice(fills)):
                     evs.append(Ev(s, beat0 + step / 4, 0.25, None, 0.55 + 0.1 * k))
             if opts_s.get('build'):
                 add_build_drums(evs, st, tracks, snares, kick_name, b, nbars, beat0, rnd_d)
@@ -1032,6 +1108,27 @@ def compose(opts):
                         else:
                             m = root
                         evs.append(Ev('bass', beat0 + step / 4, l / 4 * gate, m, rnd_b.uniform(0.85, 1.0)))
+                    pp = BASS_PASS.get(sname_style, 0.0)
+                    if pp and nxt != chord and b % cb == cb - 1 and rnd_bp.random() < pp:
+                        tgt = fold(key.deg(nxt, 2), lo)        # a scale step leading into the next chord's root
+                        side = -1 if tgt >= root else 1
+                        m = tgt + (key.deg(nxt + side, 2) - key.deg(nxt, 2))
+                        mine = [e for e in evs[-12:] if e.track == 'bass' and beat0 <= e.beat < beat0 + 4]
+                        late = [e for e in mine if e.beat >= beat0 + 2.5]
+                        if late:
+                            late[-1].midi = m
+                        elif mine and mine[-1].beat + mine[-1].dur > beat0 + 3:
+                            mine[-1].dur = beat0 + 3 - mine[-1].beat
+                            evs.append(Ev('bass', beat0 + 3, 0.9 * gate, m, 0.82))
+            # ---------------- harmonic colour: secondary dominants and borrowed chords (Classic / Orchestral / pop)
+            if b % cb == 0 and sname_style in COLOR_HARMONY and nxt != chord and st.get('voicing') != 'power':
+                third = (key.deg(chord + 2, 4) - key.deg(chord, 4)) % 12
+                pc3 = key.deg(chord + 2, 4) % 12
+                pcol = 0.12 + 0.3 * cx
+                if (chord - nxt) % 7 == 4 and third == 3 and rnd_hc.random() < pcol + (0.35 if nxt == 0 else 0):
+                    harm_alts.append((beat0, beat0 + 4 * cb, pc3, (pc3 + 1) % 12))      # V/x: its 3rd goes up
+                elif key.scale_name == 'major' and chord == 3 and nxt == 0 and third == 4 and rnd_hc.random() < pcol:
+                    harm_alts.append((beat0, beat0 + 4 * cb, pc3, (pc3 - 1) % 12))      # borrowed minor iv
             # ---------------- chords
             bar_col = chord_color
             if b % cb == 0 and chord_color not in ('sus2', 'sus4', 'add9no3') and rnd_c.random() < 0.15 \
@@ -1040,6 +1137,10 @@ def compose(opts):
             if 'chords' in layers and 'chords' in tracks and chord_pat and (b % cb == 0):
                 col = bar_col if st.get('voicing', 'close') != 'power' and chord_size <= 4 else None
                 notes = voice_chord(key, chord, chord_size, st.get('chord_center', 62), st.get('voicing', 'close'), col)
+                if st.get('voicing', 'close') in ('close', 'open'):
+                    notes = lead_voicing(notes, vl_prev.get('chords'), st.get('chord_center', 62),
+                                         st.get('voicing', 'close') == 'close')
+                vl_prev['chords'] = notes
                 if (opts_s.get('drop') or sname in BIG_SECTIONS) and notes and notes[-1] + 12 <= 96 and st.get('voicing') != 'power':
                     notes = notes + [notes[-1] + 12]                   # choruses / drops open up: top note doubled (once)
                 for step, l, c in parse_rhythm(chord_pat):
@@ -1051,6 +1152,8 @@ def compose(opts):
             if 'pad' in layers and 'pad' in tracks and (b % cb == 0):
                 notes = voice_chord(key, chord, min(4, chord_size), st.get('chord_center', 62) - 2, pad_voicing,
                                     bar_col if bar_col in ('triad', '7', 'add9', 'sus2', 'sus4', '6', 'add9no3') else None)
+                notes = lead_voicing(notes, vl_prev.get('pad'), st.get('chord_center', 62) - 2, pad_voicing == 'close')
+                vl_prev['pad'] = notes
                 for m in notes:
                     evs.append(Ev('pad', beat0, 4 * cb * 0.98, m, 0.8))
             # ---------------- arp
@@ -1061,12 +1164,13 @@ def compose(opts):
                 if arp['mode'] == 'updown':
                     seq = seq + seq[-2:0:-1]
                 rate = arp['rate']
-                for k in range(int(16 / rate)):
+                u = 16 / G                                       # a grid step in 16ths (4/3 in triple meters)
+                for k in range(int(G / rate)):
                     if arp.get('prob') and rnd_c.random() > arp['prob']:
                         continue
                     m = rnd_c.choice(seq) if arp['mode'] == 'random' else seq[k % len(seq)]
-                    evs.append(Ev('arp', beat0 + k * rate / 4, rate / 4 * 0.8, m,
-                                  (0.95 if k % 4 == 0 else 0.75) * rnd_c.uniform(0.9, 1.0)))
+                    evs.append(Ev('arp', beat0 + k * rate * u / 4, rate * u / 4 * 0.8, m,
+                                  (0.95 if (k % 4 == 0 if G == 16 else (k * rate) % 3 == 0) else 0.75) * rnd_c.uniform(0.9, 1.0)))
         # ---------------- lead
         if 'lead' in layers and 'lead' in tracks:
             soft_lead = 0.75 if sname in ('break', 'bridge', 'C', 'calm') else 1.0
@@ -1091,6 +1195,9 @@ def compose(opts):
             fx.append(('fade', sec_start, nbars * 4))
         bar0 += nbars
 
+    if 'counter' in tracks:
+        evs += gen_counter(evs, key, sections, cb, st, prng('melody', 2 + 90))
+    apply_harm_alts(evs, tracks, harm_alts)
     for (b0, b1, vs) in variations:
         evs = apply_variation(evs, b0, b1, vs, key, st, tracks)
     evs += gen_vocal(key, sections, cb, st, random.Random(opts.seed * 7 + 41))
@@ -1118,15 +1225,294 @@ def compose(opts):
     lock_bass_to_kick(evs, tracks, st)
     add_transitions(sections, evs, fx, tracks, st, opts)
     bar0 = apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_color, bar0)
+    shape_dynamics(evs, tracks, sections, st)
+    evs += double_layers(evs, tracks)
     in_evs = {id(e) for e in evs}
     st['tuned_notes'] = fix_clashes(evs + [v for v in vocal if id(v) not in in_evs], {**tracks, 'vocal': tracks.get('vocal') or
                                     dict(layer='lead')}, key, st, sections)
     sname ='+'.join([opts.style] + [b for b in (opts.blend or []) if b != opts.style])
-    song = dict(style=sname, seed=opts.seed, bpm=bpm, key=key, events=evs, sections=sections, fx=fx,
+    expr = expression_curves(evs, tracks, sections, fx, bar0)
+    song = dict(style=sname, seed=opts.seed, bpm=bpm, key=key, events=evs, sections=sections, fx=fx, expr=expr,
+                meter=st.get('meter') or '4/4', harm_alts=len(harm_alts),
                 total_bars=bar0, prog_main=prog_main, prog_alt=prog_alt, prog_verse=prog_verse, chord_color=chord_color,
                 modulate=modulate, st=st, opts=opts, user_opts=user_opts, vocal=vocal,
                 energy=energy)
     return song
+
+
+
+# ----------------------------------------------------------------------------- 1.10: harmony colour, bass, counter, dynamics
+# styles whose harmony uses secondary dominants and borrowed chords (modal / riff genres keep their own sound)
+COLOR_HARMONY = {
+    'pop', 'jazz', 'bossa_nova', 'city_pop', 'disco', 'folk', 'holiday', 'western', 'chamber_pop', 'soul_ballad', 'celtic_jig',
+    'cinematic', 'orchestral', 'film_piano', 'adventure', 'tension', 'neoclassical', 'chamber', 'baroque', 'fantasy_rpg',
+    'waltz', 'synthpop', 'eurodance', 'future_bass', 'progressive_house', 'trance', 'downtempo', 'vaporwave', 'lofi', 'boombap',
+    'hybrid_trailer', 'orchestral_hiphop', 'gospel', 'rnb', 'motown', 'swing', 'country', 'tango', 'salsa', 'kpop', 'ska',
+    'indie_rock', 'bluegrass'}
+# how often the bass steps into the next chord on the last beat (styles with a moving, song-like bass)
+BASS_PASS = {'pop': 0.35, 'folk': 0.5, 'holiday': 0.5, 'western': 0.45, 'chamber_pop': 0.45, 'baroque': 0.6, 'chamber': 0.55,
+             'neoclassical': 0.3, 'orchestral': 0.4, 'film_piano': 0.3, 'fantasy_rpg': 0.4, 'adventure': 0.3, 'reggae': 0.3,
+             'rock': 0.25, 'disco': 0.2, 'city_pop': 0.3, 'soul_ballad': 0.5, 'celtic_jig': 0.4, 'waltz': 0.45, 'bossa_nova': 0.35,
+             'synthpop': 0.2, 'eurodance': 0.15, 'downtempo': 0.25, 'lofi': 0.25, 'boombap': 0.2, 'symphonic_metal': 0.2,
+             'country': 0.5, 'bluegrass': 0.6, 'motown': 0.4, 'gospel': 0.4, 'ska': 0.3, 'tango': 0.3, 'indie_rock': 0.3,
+             'cumbia': 0.25, 'kpop': 0.2}
+# genres that get a counter-melody (when the genre decides): the instruments that play it, likeliest first
+COUNTER_STYLES = {
+    'orchestral': ['cello', 'horn', 'clarinet', 'flute'], 'cinematic': ['horn', 'cello', 'strings'],
+    'film_piano': ['cello', 'violin', 'oboe'], 'adventure': ['horn', 'strings', 'cello'], 'tension': ['cello', 'clarinet'],
+    'neoclassical': ['cello', 'violin'], 'chamber': ['cello', 'sf:viola', 'violin'], 'baroque': ['oboe', 'violin', 'flute'],
+    'fantasy_rpg': ['clarinet', 'oboe', 'horn', 'cello'], 'hybrid_trailer': ['horn', 'cello'], 'waltz': ['cello', 'clarinet', 'horn'],
+    'chamber_pop': ['cello', 'horn', 'flute', 'strings'], 'holiday': ['clarinet', 'strings', 'flute', 'horn'],
+    'western': ['cello', 'strings', 'flute'], 'folk': ['violin', 'flute', 'cello'], 'pop': ['strings', 'cello', 'pluck'],
+    'soul_ballad': ['strings', 'organ', 'sax'], 'celtic_jig': ['flute', 'violin'], 'symphonic_metal': ['strings', 'choir'],
+    'orchestral_hiphop': ['cello', 'horn'], 'city_pop': ['brass', 'strings'], 'disco': ['strings'], 'jazz': ['sax', 'brass'],
+    'bossa_nova': ['flute', 'strings'], 'gospel': ['organ', 'choir'], 'motown': ['strings', 'brass'],
+    'country': ['violin', 'softlead', 'guitar'], 'swing': ['brass', 'clarinet'], 'tango': ['cello', 'violin', 'accordion'],
+    'kpop': ['strings', 'pluck', 'bell'], 'rnb': ['strings', 'guitar'], 'bluegrass': ['banjo', 'guitar'], 'salsa': ['flute', 'violin'],
+}
+
+
+def add_counter_track(st, opts):
+    """A second melodic line that answers the lead (celli under violins, horns answering strings ...)."""
+    want = getattr(opts, 'counter', None)
+    name = st.get('name')
+    pool = COUNTER_STYLES.get(name) or (['cello', 'horn', 'strings'] if st.get('category') == 'Orchestral' else ['strings', 'flute'])
+    r = random.Random(opts.seed * 53 + 11)
+    if want == 'off' or not any(t['layer'] == 'lead' for t in st['tracks']):
+        return
+    if want != 'on' and not (name in COUNTER_STYLES and r.random() < 0.6):
+        return
+    inst = r.choices(pool, [2.0] + [1.0] * (len(pool) - 1))[0]
+    lead = next(t for t in st['tracks'] if t['layer'] == 'lead')
+    st['tracks'].append(dict(name='counter', layer='lead', inst=inst, pan=-0.3 if (lead.get('pan') or 0) >= 0 else 0.3,
+                             rev=max(0.3, lead.get('rev') or 0), dly=0.1, sc=0.0, db=-24, hp=None, drive=None, p={}, counter=True))
+
+
+def gen_counter(evs, key, sections, cb, st, rnd):
+    """Fill the lead's gaps with short answering phrases (chord tones, an octave down), and sometimes sing a third or
+    sixth under its long notes. It is quieter than the lead and never plays over the lead's busy passages."""
+    lead = sorted((e for e in evs if e.track == 'lead' and e.midi is not None), key=lambda e: e.beat)
+    if len(lead) < 2:
+        return []
+    pcs = sorted({(key.root + iv) % 12 for iv in key.scale})
+    out = []
+    q = 1 / 3 if st.get('meter') else 0.5               # counter rhythm grid: 8ths, or triplet 8ths
+    snap = lambda x: math.ceil(x / q - 1e-6) * q
+
+    def chord_at(beat):
+        for sec in sections:
+            if sec['bar'] * 4 <= beat < (sec['bar'] + sec['bars']) * 4 and sec.get('prog'):
+                b = int(beat // 4) - sec['bar']
+                return sec['prog'][(b // max(1, cb)) % len(sec['prog'])]
+        return 0
+
+    def tones(beat, near):
+        c = chord_at(beat)
+        cand = [key.deg(c + iv, o) for iv in (0, 2, 4) for o in (3, 4, 5)]
+        cand = [m for m in cand if 50 <= m <= 79]
+        return sorted(cand, key=lambda m: abs(m - near))
+    prev = lead[0].midi - 12
+    for a, b in zip(lead, lead[1:]):
+        g0 = a.beat + a.dur
+        gap = b.beat - g0
+        if 0.75 <= gap <= 8:
+            n = 1 if gap < 2 else rnd.choice([2, 2, 3])
+            step = snap(min(1.0, max(q, (gap - 0.25) / n)))
+            t0 = snap(g0 + 0.1)
+            target = b.midi - 12
+            for k in range(n):
+                t = t0 + k * step
+                if t + 0.25 > b.beat:
+                    break
+                near = prev + (target - prev) * (k + 1) / (n + 1)
+                tt = tones(t, near) or [near]
+                m = tt[0] if rnd.random() < 0.8 or len(tt) < 2 else tt[1]
+                out.append(Ev('counter', t, max(0.3, step * 0.9), m, 0.62 + 0.08 * rnd.random()))
+                prev = m
+        if a.dur >= 1.5 and a.beat + a.dur >= b.beat - 0.3 and rnd.random() < 0.7:
+            # the lead holds: the counter moves underneath in its second half, leading toward the lead's next note
+            n = 2 if a.dur >= 3 else 1
+            for k in range(n):
+                t = snap(a.beat + a.dur * (0.5 + 0.22 * k))
+                if t + 0.4 > b.beat:
+                    break
+                near = prev + (b.midi - 12 - prev) * (k + 1) / (n + 1)
+                tt = tones(t, near) or [near]
+                m = tt[0] if tt[0] != prev or len(tt) < 2 else tt[1]
+                out.append(Ev('counter', t, min(1.0, b.beat - t) * 0.9, m, 0.6))
+                prev = m
+        elif a.dur >= 2.0 and rnd.random() < 0.45 and a.midi % 12 in pcs:
+            i = pcs.index(a.midi % 12)
+            c = chord_at(a.beat)
+            cpcs = {key.deg(c + iv, 4) % 12 for iv in (0, 2, 4)}
+            for down in (2, 5):                                # a third, else a sixth below - if it's a chord tone
+                pc = pcs[(i - down) % len(pcs)]
+                if pc in cpcs:
+                    m = a.midi - ((a.midi % 12 - pc) % 12 or 12)
+                    if 50 <= m:
+                        out.append(Ev('counter', a.beat, a.dur, m, 0.55))
+                    break
+    return out
+
+
+def apply_harm_alts(evs, tracks, alts):
+    """Secondary dominants / borrowed chords: the altered chord tone changes in every harmony part (chords, pad, arp,
+    bass, counter); held melody notes follow through fix_clashes."""
+    if not alts:
+        return
+    for e in evs:
+        t = tracks.get(e.track)
+        if e.midi is None or not t or (t['layer'] not in ('chords', 'pad', 'arp', 'bass') and e.track != 'counter'):
+            continue
+        for b0, b1, pc, new in alts:
+            if b0 <= e.beat < b1 and e.midi % 12 == pc:
+                e.midi += (new - pc + 6) % 12 - 6
+                break
+
+
+def _is_real(t):
+    inst = t.get('inst', '')
+    return inst.startswith(('sf:', 'vst:'))
+
+
+def shape_dynamics(evs, tracks, sections, st):
+    """Play softer in quiet sections and harder in big ones - in the notes themselves, not only the fader. Sampled
+    instruments and plugins change tone with how hard they are played (softer strings sound darker and warmer).
+    Phrases also lean forward to their third bar and relax after. Built-in synths keep their levels."""
+    from .instruments import DRUMS
+    secs = [(s_['bar'] * 4, (s_['bar'] + s_['bars']) * 4, s_) for s_ in sections]
+    for e in evs:
+        t = tracks.get(e.track)
+        if e.midi is None or not t or t['inst'] in DRUMS or not _is_real(t):
+            continue
+        sec = next((x for x in secs if x[0] <= e.beat < x[1]), None)
+        if not sec:
+            continue
+        b0, b1, s_ = sec
+        en = SECTION_ENERGY.get(s_['name'], 0.9)
+        f = 0.74 + 0.26 * max(0.0, min(1.0, (en - 0.62) / 0.38))
+        if s_['opts'].get('build'):
+            f = 0.78 + 0.22 * (e.beat - b0) / max(1, b1 - b0)
+        pos = ((e.beat - b0) % 16) / 16
+        arc = 1 + 0.07 * math.sin(math.pi * min(1.0, pos / 0.75))
+        e.vel = max(0.2, min(1.0, e.vel * f * arc))
+
+
+EXPRESSIVE = {'strings', 'violin', 'cello', 'viola', 'contrabass', 'slowstrings', 'tremolo', 'spiccato', 'horn', 'brass', 'trumpet',
+              'trombone', 'tuba', 'braam', 'choir', 'vox', 'flute', 'clarinet', 'oboe', 'bassoon', 'piccolo', 'sax', 'tenorsax'}
+
+
+def base_inst(t):
+    inst = t.get('rig_from') or (t.get('fallback') if t.get('inst', '').startswith('vst:') else None) or t.get('inst', '')
+    return inst[3:] if inst.startswith('sf:') else inst
+
+
+def expression_curves(evs, tracks, sections, fx, total_bars):
+    """Mod-wheel (CC1) dynamics curves for bowed, blown and sung parts: each long note swells and relaxes, quiet
+    sections sit lower, builds rise, fades fall. Orchestra plugins (BBC Symphony Orchestra, LABS ...) use CC1 for
+    dynamics; the curves go to your saved plugin sounds and into the MIDI export. -> {track: [(beat, value 0..127)]}"""
+    out = {}
+    end = total_bars * 4
+    fades = [(b, b + d) for k, b, d in fx if k == 'fade']
+    for name, t in tracks.items():
+        if base_inst(t) not in EXPRESSIVE:
+            continue
+        notes = sorted((e for e in evs if e.track == name and e.midi is not None), key=lambda e: e.beat)
+        if not notes:
+            continue
+        longs = [e for e in notes if e.dur >= 1.5]
+        pts, last, li = [], None, 0
+        beat = 0.0
+        while beat <= end + 2:
+            sec = next((s_ for s_ in sections if s_['bar'] * 4 <= beat < (s_['bar'] + s_['bars']) * 4), None)
+            en = SECTION_ENERGY.get(sec['name'], 0.9) if sec else 0.85
+            v = 52 + 58 * max(0.0, min(1.0, (en - 0.6) / 0.4))
+            if sec and sec['opts'].get('build'):
+                v = 60 + 50 * (beat - sec['bar'] * 4) / max(1, sec['bars'] * 4)
+            while li < len(longs) and longs[li].beat + longs[li].dur < beat:
+                li += 1
+            cur = next((e for e in longs[li:li + 6] if e.beat <= beat < e.beat + e.dur), None)
+            if cur:
+                x = (beat - cur.beat) / cur.dur
+                v += 16 * math.sin(math.pi * min(1.0, x * 1.15)) - 8
+            for f0, f1 in fades:
+                if beat >= f0:
+                    v *= max(0.25, 1 - (beat - f0) / max(1, f1 - f0) * 0.75)
+            v = int(max(18, min(124, round(v))))
+            if last is None or abs(v - last) >= 2:
+                pts.append((round(beat, 3), v))
+                last = v
+            beat += 0.25
+        out[name] = pts
+    return out
+
+
+
+# ----------------------------------------------------------------------------- layered parts (two instruments, one part)
+LAYER_ODDS = {'Electronic': 0.5, 'Classic': 0.3, 'Orchestral': 0.45}
+OCT_UP = {'bell', 'celesta', 'flute', 'sf:piccolo', 'pluck', 'chip', 'marimba', 'kalimba', 'harp', 'glock', 'steeldrum', 'pizz'}
+OCT_DOWN = {'cello', 'sf:contrabass', 'sf:bassoon', 'sf:trombone', 'sf:tuba', 'horn'}
+NO_LAYER = {'808', 'logdrum', 'wobble', 'acid', 'sinebass', 'chipbass'}
+
+
+def add_layer_tracks(st, opts):
+    """Some parts get a second instrument from the genre's own pool, playing the same notes (in unison or an octave
+    apart): a supersaw lead with a pluck on top, violins doubled by a flute an octave up or celli an octave down, a
+    saw bass with a sub under it, piano chords with a string pad inside them. Which parts, and with what, changes
+    from song to song."""
+    from .styles import POOLS
+    want = getattr(opts, 'layering', None)
+    if want == 'off' or st.get('name') == 'chiptune':
+        return
+    v = max(0.0, min(1.0, float(opts.variety)))
+    cat = st.get('category')
+    fusion = st.get('fusion') or {}
+    ps = opts.part_seeds or {}
+    odds = LAYER_ODDS.get(cat, 0.3) * (0.35 + 0.9 * v) * (1.6 if want == 'more' else 1.0)
+    picks = 0
+    for t in list(st['tracks']):
+        role = t['layer']
+        if role not in ('lead', 'chords', 'pad', 'arp', 'bass') or t.get('counter') or t.get('double_of'):
+            continue
+        if role in (opts.instruments or {}) and want != 'more':
+            continue
+        part = {'bass': 'bass', 'lead': 'melody', 'arp': 'melody'}.get(role, 'chords')
+        sd = ps.get(part) if ps.get(part) is not None else opts.seed * 1009 + PART_K[part]
+        r = random.Random(f'{sd}-{role}-layer')
+        owner = fusion.get({'bass': 'bass', 'chords': 'harmony', 'pad': 'harmony'}.get(role, 'melody'), opts.style)
+        if role == 'bass':
+            if cat != 'Electronic' or t['inst'] in NO_LAYER or r.random() > odds:
+                continue
+            inst, octv = 'sinebass', 0                       # the classic sub layer under a mid bass
+        else:
+            pool = [i for i in (POOLS.get(owner, {}).get(role) or PALETTES.get(cat, {}).get(role) or []) if i != t['inst']]
+            if not pool or r.random() > odds or picks >= (3 if want == 'more' else 2):
+                continue
+            inst = r.choice(pool)
+            octv = 12 if inst in OCT_UP and role in ('lead', 'arp') else (-12 if inst in OCT_DOWN and role == 'lead' else 0)
+        picks += 1
+        base_db = t['db'] if t.get('db') is not None else {'bass': -15, 'chords': -21, 'pad': -23, 'arp': -25, 'lead': -19}[role]
+        st['tracks'].append(dict(name=t['name'] + '_layer', layer=role, inst=inst, pan=-(t.get('pan') or 0) * 0.6,
+                                 rev=t.get('rev') or 0.0, dly=t.get('dly') or 0.0, sc=t.get('sc') or 0.0,
+                                 db=base_db - (4 if role == 'bass' else 6), hp=None, drive=None, p={},
+                                 double_of=t['name'], octave=octv))
+
+
+def double_layers(evs, tracks):
+    """The layer tracks play exactly the notes of the part they double (after tuning and dynamics)."""
+    out = []
+    for name, t in tracks.items():
+        src = t.get('double_of')
+        if not src:
+            continue
+        o = t.get('octave', 0)
+        for e in evs:
+            if e.track == src and e.midi is not None:
+                m = e.midi + o
+                if not 28 <= m <= 100:
+                    m = e.midi
+                out.append(Ev(name, e.beat, e.dur, m, e.vel * 0.9, None if e.glide is None else e.glide + (m - e.midi), e.mod))
+    return out
 
 
 CLASH_LAYERS = ('lead', 'arp')
@@ -1251,7 +1637,9 @@ GENRE_BUILD = {'trance': 'roll', 'bigroom': 'roll', 'progressive_house': 'roll',
                'tech_house': 'filter', 'techno': 'filter', 'minimal': 'filter', 'acid_house': 'filter', 'psytrance': 'filter',
                'ukgarage': 'pause', 'amapiano': 'pause', 'afrobeats': 'pause', 'reggaeton': 'pause', 'synthwave': 'lift',
                'synthpop': 'lift', 'chiptune': 'lift', 'orchestral_hiphop': 'pause', 'hybrid_trailer': 'swell',
-               'symphonic_metal': 'roll'}
+               'symphonic_metal': 'roll', 'kpop': 'lift', 'melodic_techno': 'filter', 'afro_house': 'filter',
+               'jersey_club': 'pause', 'baile_funk': 'stutter', 'punk': 'roll', 'waltz': 'swell', 'celtic_jig': 'swell',
+               'soul_ballad': 'swell'}
 BIG_SECTIONS = {'chorus', 'hook', 'climax', 'theme', 'drop'}
 HIT_FORMS = {'song', 'song_b', 'jazz', 'orchestral', 'cinematic', 'trap', 'halftime', 'halftime_b', 'chip', 'trailer'}
 
@@ -1264,6 +1652,10 @@ VOCAL_SECTIONS = {'verse': (-2, 5), 'chorus': (1, 9), 'hook': (1, 9), 'drop': (1
                   'theme': (0, 8), 'climax': (2, 9)}
 VOCAL_RHYTHMS = ['x.x.x.x-x-......', 'x-x-x.x.x---....', '..x.x.x.x-x-....', 'x.x.x-x.x.x-....', 'x---x.x.x-x-....',
                  '..x.x-x-x.x.x...', 'x.x.x.x.x.x-....', 'x-.xx-x-x---....']
+
+
+VOCAL_TRIPLE = ['x-xx-xx-x---', 'x--x--x-x---', 'x-xx-x-xx---', 'xx-x--x--x--', 'x-xx-xx-xx--']
+VOCAL_TRIPLE_END = ['x-xx-x------', 'x--x--x-----', 'x-----x-----', 'x-xx--x-----']
 
 
 def gen_vocal(key, sections, chord_bars, st, rnd):
@@ -1282,8 +1674,11 @@ def gen_vocal(key, sections, chord_bars, st, rnd):
                 prog = sec['prog']
                 chord = prog[(bar // max(1, chord_bars)) % len(prog)]
                 ct = [x for x in chord_tones_deg(chord, lo, hi)]
-                pat = parse_rhythm(rnd.choice(VOCAL_RHYTHMS)) if bar % 2 == 0 else \
-                    parse_rhythm(rnd.choice(['x-x-x---........', 'x.x.x-x-x-------', 'x-x-x-x---------', 'x---x---x-------']))
+                if st.get('meter'):
+                    pat = parse_rhythm(rnd.choice(VOCAL_TRIPLE if bar % 2 == 0 else VOCAL_TRIPLE_END))
+                else:
+                    pat = parse_rhythm(rnd.choice(VOCAL_RHYTHMS)) if bar % 2 == 0 else \
+                        parse_rhythm(rnd.choice(['x-x-x---........', 'x.x.x-x-x-------', 'x-x-x-x---------', 'x---x---x-------']))
                 for i, (step, ln, c) in enumerate(pat):
                     d += rnd.choices([-2, -1, 0, 1, 2], [1, 4, 2, 4, 1])[0]
                     d = max(lo, min(hi, d))
@@ -1338,7 +1733,8 @@ GROOVES = {
 STYLE_GROOVE = {'boombap': 'dilla', 'lofi': 'dilla', 'phonk': 'dilla', 'reggae': 'laidback', 'downtempo': 'laidback',
                 'afrobeats': 'afro', 'amapiano': 'afro', 'reggaeton': 'dembow', 'moombahton': 'dembow', 'jazz': 'jazz',
                 'house': 'house', 'deep_house': 'house', 'tech_house': 'house', 'ukgarage': 'house',
-                'funk': 'funk', 'disco': 'funk', 'city_pop': 'funk'}
+                'funk': 'funk', 'disco': 'funk', 'city_pop': 'funk', 'rnb': 'laidback', 'gospel': 'laidback',
+                'swing': 'jazz', 'afro_house': 'afro', 'dancehall': 'dembow', 'cumbia': 'afro'}
 
 
 def add_build_drums(evs, st, tracks, snares, kick, b, nbars, beat0, rnd):
@@ -1378,8 +1774,9 @@ def add_build_drums(evs, st, tracks, snares, kick, b, nbars, beat0, rnd):
         for k in range(4):
             evs.append(Ev(snare, beat0 + 3 + k / 4, 0.25, None, 0.85))
     elif bs == 'swell' and snare and b >= nbars - 2:
-        for k in range(16 if not last else 14):
-            evs.append(Ev(snare, beat0 + k / 4, 0.25, None, 0.25 + 0.6 * ((b - nbars + 2) * 16 + k) / 32))
+        g = grid_of(st)
+        for k in range(g if not last else g - 2):
+            evs.append(Ev(snare, beat0 + 4 * k / g, 0.25, None, 0.25 + 0.6 * ((b - nbars + 2) * g + k) / (2 * g)))
     if bs in ('filter', 'kick_roll', 'lift') and last:   # kick drops out on the final beat
         evs[:] = [e for e in evs if not (e.track == kick and e.beat >= beat0 + 3)]
 
@@ -1423,6 +1820,7 @@ def add_transitions(sections, evs, fx, tracks, st, opts):
         start = end - beats
         drum_names = {n for n, t in tracks.items() if t['inst'] in DRUMS and t['layer'] in ('snare', 'top')}
         evs[:] = [e for e in evs if not (e.track in drum_names and start <= e.beat < end)]
+        sub = 4 if grid_of(st) == 16 else 3                 # 16ths, or triplet 8ths in 3/4, 6/8, 12/8
         if cat == 'Classic' and opts.structure != 'loop':
             for name, pitch in (('tom_hi', 190), ('tom_mid', 140), ('tom_lo', 100)):
                 if name not in tracks:
@@ -1431,15 +1829,15 @@ def add_transitions(sections, evs, fx, tracks, st, opts):
                     tracks[name] = t
                     st['tracks'].append(t)
                 st.setdefault('drum_voice', {})[name] = {'pitch': pitch}
-            n = beats * 4
+            n = beats * sub
             for k in range(n):
                 name = 'tom_hi' if k < n / 3 else ('tom_mid' if k < 2 * n / 3 else 'tom_lo')
                 if k % 2 == 0 or rnd.random() < 0.6:
-                    evs.append(Ev(snare if k == 0 else name, start + k / 4, 0.25, None, 0.6 + 0.35 * k / n))
+                    evs.append(Ev(snare if k == 0 else name, start + k / sub, 0.25, None, 0.6 + 0.35 * k / n))
         else:
-            n = beats * 4
+            n = beats * sub
             for k in range(n):
-                evs.append(Ev(snare, start + k / 4, 0.25, None, 0.45 + 0.5 * k / n))
+                evs.append(Ev(snare, start + k / sub, 0.25, None, 0.45 + 0.5 * k / n))
 
 
 def apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_color, total_bars):
@@ -1456,13 +1854,21 @@ def apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_col
     shift = next((s_['key_change'] for s_ in sections if s_.get('key_change')), 0)
     ring = 6.0
     ch, pad, bass = _track_of(tracks, 'chords'), _track_of(tracks, 'pad'), _track_of(tracks, 'bass')
+    third = (key.deg(2, 4) - key.deg(0, 4)) % 12
+    pic = None                                     # Picardy third: a minor-key piece ends on a major chord
+    if third == 3 and st.get('category') in ('Orchestral', 'Classic') and st.get('voicing') != 'power' \
+            and random.Random(opts.seed * 17 + 3).random() < 0.35:
+        pic = key.deg(2, 4) % 12
+    lift = lambda m: m + 1 if pic is not None and m % 12 == pic else m
     if ch:
         for m in voice_chord(key, 0, chord_size, st.get('chord_center', 62), st.get('voicing', 'close'),
                              chord_color if chord_color in COLORS else None):
-            evs.append(Ev(ch, end, ring, m + shift, 0.88))
+            evs.append(Ev(ch, end, ring, lift(m) + shift, 0.88))
     if pad:
         for m in voice_chord(key, 0, 3, st.get('chord_center', 62) - 2, 'open'):
-            evs.append(Ev(pad, end, ring, m + shift, 0.7))
+            evs.append(Ev(pad, end, ring, lift(m) + shift, 0.7))
+    if pic is not None:
+        last['picardy'] = True
     if bass:
         evs.append(Ev(bass, end, ring - 1, fold(key.deg(0, 2), st['bass_lo']) + shift, 0.9))
     kick = st.get('kick_track', 'kick')

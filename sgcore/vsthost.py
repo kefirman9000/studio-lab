@@ -349,8 +349,9 @@ def create_sound(path, name, existing=None, timeout=3600):
     return {'ok': True, 'id': sid}
 
 
-def render(sid, events, duration, sr=44100, timeout=900):
-    """events: [(start_s, dur_s, midi_note, velocity_0_127)] -> (2, n) float32 or raises RuntimeError."""
+def render(sid, events, duration, sr=44100, timeout=900, ccs=None):
+    """events: [(start_s, dur_s, midi_note, velocity_0_127)], ccs: [(time_s, controller, value)] -> (2, n) float32
+    or raises RuntimeError."""
     snd = get_sound(sid)
     if not snd:
         raise RuntimeError(f'VST sound "{sid}" not found')
@@ -362,7 +363,7 @@ def render(sid, events, duration, sr=44100, timeout=900):
     d = tempfile.mkdtemp(prefix='sl_vst_')
     out = os.path.join(d, 'audio.npy')
     try:
-        res, _ = _run(dict(mode='render', path=snd['path'], state=snd.get('state'), events=events,
+        res, _ = _run(dict(mode='render', path=snd['path'], state=snd.get('state'), events=events, ccs=ccs or [],
                            duration=duration, sr=sr, out=out), timeout=timeout)
         if not res.get('ok'):
             err = res.get('error', 'plugin failed')

@@ -31,13 +31,72 @@ def describe(song):
                 duration=f"{int(dur // 60)}:{int(dur % 60):02d}", seconds=round(dur, 1), seed=song['seed'],
                 form=' > '.join(f"{s['name']}({s['bars']})" for s in song['sections']),
                 chords=k.roman(song['prog_main']), chords_alt=k.roman(song['prog_alt']),
-                instruments={t['layer']: _inst_label(t['inst']) for t in song['st']['tracks']
-                             if t['layer'] in ('bass', 'chords', 'pad', 'arp', 'lead')},
+                instruments=_instruments(song),
+                meter=song.get('meter', '4/4'),
+                bpm_quarter=round(song['bpm'] * 1.5) if song.get('meter') == '3/4' else song['bpm'],
+                arrangement=_arrangement(song),
                 fusion=song['st'].get('fusion') if song['opts'].blend or song['opts'].blend_parts else None,
                 sections=[dict(index=x['index'], name=x['name'], bar=x['bar'], bars=x['bars'], src=x['src'], copy=x['copy'],
                                layers=x['layers'], edited=x.get('edited', False),
                                start=round(x['bar'] * 4 * 60 / song['bpm'], 2)) for x in song['sections']],
                 mood=song['opts'].mood)
+
+
+def _nice(name):
+    """'sf:cello' -> 'cello (recorded)', 'supersaw_lead' -> 'Supersaw lead', VST sounds by their saved name."""
+    if not isinstance(name, str):
+        return name
+    if name.startswith(('vst:', 'user:')):
+        return _inst_label(name)
+    from .instruments import INSTRUMENT_INFO
+    if name.startswith('sf:'):
+        from . import soundfont as sfm
+        hit = sfm.SAMPLED.get(name[3:])
+        return (hit[2] if hit else name[3:]) + ' (recorded)'
+    return INSTRUMENT_INFO.get(name, name).split(' (')[0]
+
+
+def _instruments(song):
+    """{part: 'Supersaw lead + Bell (8va)'} - the main instrument of each part plus any layer doubling it."""
+    out = {}
+    tracks = song['st']['tracks']
+    for t in tracks:
+        if t['layer'] in ('bass', 'chords', 'pad', 'arp', 'lead') and not t.get('double_of') and not t.get('counter'):
+            out.setdefault(t['layer'], _nice(t['inst']))
+    for t in tracks:
+        src = next((x for x in tracks if x['name'] == t.get('double_of')), None)
+        if src and src['layer'] in out:
+            o = {12: ' (8va)', -12: ' (8vb)'}.get(t.get('octave', 0), '')
+            out[src['layer']] += ' + ' + _nice(t['inst']) + o
+        if t.get('counter'):
+            out['counter'] = _nice(t['inst'])
+    return out
+
+
+def _arrangement(song):
+    """Short tags for the result card: what makes this take different."""
+    st = song['st']
+    tags = []
+    if song.get('meter', '4/4') != '4/4':
+        tags.append(song['meter'])
+    dev = st.get('lead_device')
+    if dev and dev != 'hook':
+        tags.append({'call': 'call & response lead', 'riff': 'riff lead', 'arp': 'arpeggio lead', 'ostinato': 'ostinato lead',
+                     'bell': 'bell melody', 'chops': 'vocal-chop lead'}.get(dev, dev + ' lead'))
+    if any(t.get('counter') for t in st['tracks']):
+        tags.append('counter-melody')
+    n = sum(1 for t in st['tracks'] if t.get('double_of'))
+    if n:
+        tags.append(f'{n} layered part' + ('s' if n > 1 else ''))
+    if song.get('harm_alts'):
+        tags.append('secondary dominants')
+    if st.get('voicing') not in (None, 'close'):
+        tags.append(st['voicing'] + ' voicings')
+    if any(s_.get('key_change') for s_ in song['sections']):
+        tags.append('key change')
+    if any(s_.get('picardy') for s_ in song['sections']):
+        tags.append('major-chord ending')
+    return tags
 
 
 def _inst_label(name):

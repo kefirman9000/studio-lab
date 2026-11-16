@@ -161,6 +161,8 @@ def main(path):
                 v = max(1, min(127, int(vel)))
                 msgs.append((bytes([0x90, n, v]), float(t0)))
                 msgs.append((bytes([0x80, n, 0]), float(t0 + max(0.01, dur))))
+            for (t0, cc, val) in job.get('ccs') or []:        # mod wheel / expression curves (orchestra dynamics)
+                msgs.append((bytes([0xB0, max(0, min(119, int(cc))), max(0, min(127, int(val)))]), float(t0)))
             msgs.sort(key=lambda m: (m[1], m[0][0] == 0x90))
             try:
                 audio = plugin(msgs, duration=float(job['duration']), sample_rate=sr, num_channels=2, buffer_size=1024, reset=True)

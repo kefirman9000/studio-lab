@@ -546,8 +546,15 @@ class Handler(BaseHTTPRequestHandler):
                 outputs = ['wav']
             items = []
             base = int(o.get('seed') or random.randrange(1, 10 ** 6))
+            vary = body.get('vary_part')
             for i in range(n):
-                oi = dict(o, seed=base + i if n > 1 else base)
+                if vary in ('drums', 'bass', 'chords', 'melody', 'harmony'):
+                    # N versions of one part over the exact same song: same seed, only that part's seed changes
+                    ps = dict(o.get('part_seeds') or {})
+                    ps[vary] = random.randrange(1, 10 ** 6)
+                    oi = dict(o, seed=base, part_seeds=ps)
+                else:
+                    oi = dict(o, seed=base + i if n > 1 else base)
                 items.append(dict(options=oi, outputs=outputs, preview=preview, section=section))
             return self._json({'job': submit(items)})
         if p == '/api/open' and body.get('path') == 'plugins':

@@ -183,9 +183,15 @@ class Renderer:
         sid = tcfg['inst'][4:]
         events = [(self.t_of(e.beat, human=True, layer=tcfg['layer']), max(0.02, e.dur * self.spb), int(e.midi), int(max(1, min(127, e.vel * 110))))
                   for e in evs if e.midi is not None]
+        ccs = None
+        curve = (self.song.get('expr') or {}).get(tcfg['name'])
+        if curve:
+            snd = vsthost.get_sound(sid) or {}
+            if not snd.get('auto'):                    # your own saved sounds (orchestra libraries): dynamics on CC1
+                ccs = [(0.0, 11, 100)] + [(self.t_of(b, human=False), 1, v) for b, v in curve]
         try:
             t0 = time.time()
-            audio = vsthost.render(sid, events, self.length / SR)
+            audio = vsthost.render(sid, events, self.length / SR, ccs=ccs)
             buf = np.zeros((2, self.length), dtype=np.float32)
             n = min(self.length, audio.shape[1])
             buf[:, :n] = audio[:2, :n] if audio.shape[0] >= 2 else np.vstack([audio[0, :n], audio[0, :n]])

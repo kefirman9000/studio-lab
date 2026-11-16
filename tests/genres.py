@@ -174,6 +174,40 @@ def main():
     assert gm_program(dict(inst='sf:cello')) == 42 and gm_program(dict(inst='vst:x', rig_from='sf:trumpet')) == 56
     print('ok  in tune, genre instrument pools, orchestra articulations')
 
+    # ---- 1.10: meters, layered parts, counter-melodies, expression, more genres
+    from sgcore.api import describe
+    tmp = tempfile.mkdtemp()
+    for s in ('waltz', 'celtic_jig', 'soul_ballad'):
+        song = compose(Options(style=s, seed=4, counter='on'))
+        assert song['meter'] == STYLES[s]['meter']
+        assert all(abs(e.beat * 3 - round(e.beat * 3)) < 0.02 for e in song['events']), s     # everything on the triplet grid
+        p = write_midi(os.path.join(tmp, s + '.mid'), song)
+        b = open(p, 'rb').read()
+        i = b.find(b'\xff\x58\x04')
+        assert b[i + 3] == {'3/4': 3, '6/8': 6, '12/8': 12}[song['meter']], s                 # DAWs see the real meter
+    for s in ('gospel', 'kpop', 'tango', 'salsa', 'afro_house', 'country', 'motown', 'melodic_techno'):  # (swing: bebop approach notes)
+        assert max(clash_rate(compose(Options(style=s, seed=k))) for k in (1, 2)) < 0.03, s
+        for layer, pool in POOLS[s].items():
+            assert all(i in INSTRUMENTS or (i.startswith('sf:') and i[3:] in sfm.SAMPLED) for i in pool), (s, layer)
+    n_layers = 0
+    for k in range(1, 9):
+        song = compose(Options(style='trance', seed=k))
+        tr = {t['name']: t for t in song['st']['tracks']}
+        for name, t in tr.items():
+            if t.get('double_of'):
+                n_layers += 1
+                src = [(e.beat, e.midi) for e in song['events'] if e.track == t['double_of']]
+                dup = [(e.beat, e.midi - t['octave']) for e in song['events'] if e.track == name]
+                assert len(src) == len(dup) and t['inst'] != tr[t['double_of']]['inst']          # same notes, other sound
+    assert n_layers >= 4
+    assert not any(t.get('double_of') for t in compose(Options(style='trance', seed=2, layering='off'))['st']['tracks'])
+    song = compose(Options(style='orchestral', seed=6, counter='on'))
+    assert any(e.track == 'counter' for e in song['events']) and song['expr'] and all(0 <= v <= 127 for c in song['expr'].values() for _, v in c)
+    info = describe(song)
+    assert 'counter' in info['instruments'] and isinstance(info['arrangement'], list)
+    assert len(STYLES) >= 80
+    print('ok  meters, layered parts, counter-melodies, expression, new genres')
+
 
 if __name__ == '__main__':
     main()

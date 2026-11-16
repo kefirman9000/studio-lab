@@ -962,3 +962,38 @@ GM_PROGRAM.update({'spiccato': 48, 'tremolo': 44, 'cello': 42, 'harpsichord': 6,
 PALETTES['Orchestral'] = {**PALETTES['Orchestral'],
                           'chords': PALETTES['Orchestral']['chords'] + ['spiccato', 'tremolo'],
                           'lead': PALETTES['Orchestral']['lead'] + ['cello', 'oboe', 'clarinet']}
+
+
+# =============================================================================
+#  Folk & latin colours (v1.10): accordion / bandoneon, banjo
+# =============================================================================
+
+def i_accordion(m, dur, p, glide=None, mod=None):
+    """Accordion / bandoneon: free-reed tone, two reeds tuned slightly apart (the 'musette' shimmer) - cumbia, tango, folk."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.03, 0.2, 0.92, 0.12)
+    n = len(env)
+    wet = p.get('musette', 9)                                   # cents between the reeds
+    x = sum(square(f * 2 ** (c / 1200), n, pw=0.38) * 0.5 + 0.5 * saw(f * 2 ** (c / 1200), n) for c in (-wet / 2, wet / 2))
+    y = lp(x, p.get('cut', 3800)) + 0.35 * lp(square(f * 0.5, n, pw=0.4), 1200)
+    y = eq(eq(y, 'peak', 1100, 1.0, 4), 'peak', 300, 1.0, -3)
+    bellows = 1 + 0.04 * np.sin(2 * np.pi * 0.9 * np.arange(n) / SR)
+    return hp(y, 90) * env * bellows * 0.3
+
+
+def i_banjo(m, dur, p, glide=None, mod=None):
+    """Banjo: bright, twangy plucked string with a quick drumhead decay - bluegrass rolls and country picking."""
+    y = i_pluck(m, max(0.4, min(dur, 1.2)), dict(bright=p.get('bright', 11000), damp=0.993, r=0.15))
+    n = len(y)
+    t = np.arange(n) / SR
+    y = eq(hp(y, 220), 'peak', 2800, 1.2, 6) * np.exp(-t * 3.2)
+    return y * 1.1
+
+
+INSTRUMENTS.update({'accordion': i_accordion, 'banjo': i_banjo})
+INSTRUMENT_INFO.update({'accordion': 'Accordion / bandoneon', 'banjo': 'Banjo'})
+ROLE_CHOICES['chords'] += ['accordion', 'banjo']
+ROLE_CHOICES['arp'] += ['banjo', 'accordion']
+ROLE_CHOICES['lead'] += ['accordion', 'banjo']
+ROLE_CHOICES['pad'] += ['accordion']
+GM_PROGRAM.update({'accordion': 21, 'banjo': 105})

@@ -49,8 +49,12 @@ def write_midi(path, song):
     st = song['st']
     tcfgs = {t['name']: t for t in st['tracks']}
     chunks = []
-    tempo = int(60_000_000 / song['bpm'])
-    meta = [(0, 0, b'\xff\x51\x03' + tempo.to_bytes(3, 'big')), (0, 0, b'\xff\x58\x04\x04\x02\x18\x08')]
+    meter = song.get('meter') or '4/4'
+    sc = 1.5 if meter != '4/4' else 1.0        # in 3/4, 6/8, 12/8 the engine's beat is a dotted quarter
+    ppq_b = ppq * sc                            # ticks per engine beat
+    tempo = int(60_000_000 / (song['bpm'] * sc))
+    ts = {'4/4': b'\x04\x02\x18\x08', '3/4': b'\x03\x02\x18\x08', '6/8': b'\x06\x03\x24\x08', '12/8': b'\x0c\x03\x24\x08'}[meter]
+    meta = [(0, 0, b'\xff\x51\x03' + tempo.to_bytes(3, 'big')), (0, 0, b'\xff\x58\x04' + ts)]
     k = song['key']                                   # key signature: home note + major/minor quality (DAWs show it)
     minor = (k.scale[2] - k.scale[0]) % 12 == 3
     sf = (((k.root + 3) % 12 if minor else k.root) * 7) % 12
@@ -58,7 +62,7 @@ def write_midi(path, song):
     meta.append((0, 0, b'\xff\x59\x02' + struct.pack('bB', sf, 1 if minor else 0)))
     for s in song['sections']:
         txt = s['name'].encode()
-        meta.append((int(s['bar'] * 4 * ppq), 0, b'\xff\x06' + _vlq(len(txt)) + txt))
+        meta.append((int(s['bar'] * 4 * ppq_b), 0, b'\xff\x06' + _vlq(len(txt)) + txt))
     chunks.append(_track_chunk(meta, 'Tempo & markers'))
     groups = {}
     for e in song['events']:
@@ -73,7 +77,7 @@ def write_midi(path, song):
         if t['inst'] in DRUMS:
             note = GM_DRUM.get(t['inst'], 37)
             for e in evs:
-                tk = int(round(e.beat * ppq))
+                tk = int(round(e.beat * ppq_b))
                 v = max(1, min(127, int(e.vel * 110)))
                 drum_evs.append((tk, 1, bytes([0x99, note, v])))
                 drum_evs.append((tk + ppq // 8, 0, bytes([0x89, note, 0])))
@@ -82,9 +86,13 @@ def write_midi(path, song):
             ch += 1
         chn = ch % 16
         out = [(0, 0, bytes([0xC0 | chn, gm_program(t)]))]
+        curve = (song.get('expr') or {}).get(name)
+        if curve:                                     # dynamics for orchestra libraries: mod wheel (CC1) + expression (CC11)
+            out.append((0, 0, bytes([0xB0 | chn, 11, 100])))
+            out += [(int(round(b * ppq_b)), 0, bytes([0xB0 | chn, 1, v])) for b, v in curve]
         for e in evs:
-            tk = int(round(e.beat * ppq))
-            te = tk + max(1, int(round(e.dur * ppq)))
+            tk = int(round(e.beat * ppq_b))
+            te = tk + max(1, int(round(e.dur * ppq_b)))
             v = max(1, min(127, int(e.vel * 110)))
             m = max(0, min(127, int(e.midi)))
             out.append((tk, 1, bytes([0x90 | chn, m, v])))
@@ -100,8 +108,8 @@ def write_midi(path, song):
         chn = ch % 16 if ch % 16 != 9 else 10
         out = [(0, 0, bytes([0xC0 | chn, 53]))]
         for e in vocal:
-            tk = int(round(e.beat * ppq))
-            te = tk + max(1, int(round(e.dur * ppq)))
+            tk = int(round(e.beat * ppq_b))
+            te = tk + max(1, int(round(e.dur * ppq_b)))
             v = max(1, min(127, int(e.vel * 110)))
             out.append((tk, 0, b'\xff\x05\x02la'))          # lyric placeholder, shown by most DAWs
             out.append((tk, 1, bytes([0x90 | chn, int(e.midi), v])))

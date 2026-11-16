@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.10.0 - 21 more genres, layered sounds, real dynamics
+- **21 new genres (82 total):** Waltz (3/4), Celtic Jig (6/8), Soul Ballad (12/8), Gospel, Country, Bluegrass, Motown / 60s Soul, R&B / Neo-soul, Big Band Swing, Ska, Punk, Indie Rock, Salsa, Cumbia, Tango, Dancehall, Afro House, Melodic Techno, K-pop, Jersey Club and Baile Funk. Each has its own drums, bass lines, harmony and pool of authentic instruments.
+- **Time signatures besides 4/4:** 3/4, 6/8 and 12/8 genres with triplet-grid rhythms throughout (drums, bass, chords, melody, fills, vocal guide). MIDI exports carry the real time signature and tempo.
+- **Layered sounds:** a part can be played by two instruments at once, chosen from the genre's own pool and different in every song. For example: a supersaw lead with a bell an octave up, violins doubled by flute an octave up or celli an octave down, saw bass with a sub under it, piano chords with strings inside them. Under **Layered sounds**: genre decides, more, or off.
+- **Counter-melodies:** in orchestral, chamber, pop, gospel, Motown, country, tango and other genres, a second line (celli, horns, clarinet, strings) answers the lead in its gaps and moves under its long notes. Under **Counter-melody**: genre decides, always, or never.
+- **Real dynamics for orchestra plugins:** saved orchestra sounds (BBC Symphony Orchestra, LABS ...) get mod-wheel (CC1) and expression (CC11) curves, so long notes swell and relax, quiet sections sit lower, and builds rise. The curves are in the MIDI export too.
+- **Played softer and harder:** recorded instruments and plugins are played with lower velocity in quiet sections and higher in big ones, and phrases lean toward their third bar. They now change tone with the music, not just volume.
+- **Voice leading:** chords and pads move each note to the nearest note of the next chord, like a pianist or string section, instead of jumping between fixed shapes.
+- **Moving bass lines:** in pop, folk, country, baroque, chamber, Motown and others, the bass steps into the next chord on the last beat.
+- **Richer harmony:** occasional secondary dominants (e.g. II major leading to V), the borrowed minor iv before home, the major V in minor keys, and sometimes a major chord at the end of minor-key orchestral and classic pieces.
+- **🎻 Set up my orchestra** (VST screen): pick your orchestra plugin and set up each section in one place (strings legato / spiccato / tremolo / pizzicato, violins, celli, horns, trumpets, low brass, woodwinds, harp, celeste, timpani, choir). Studio Lab names each sound so every genre finds it.
+- **Re-roll ×4:** tick ×4 next to Re-roll and click a part to get four versions of just that part over the exact same song.
+- **Result cards** show friendly instrument names, layers and the counter-melody, the time signature, and tags for what makes each take different (lead style, counter-melody, layered parts, secondary dominants, voicings, key change).
+- New instruments: accordion / bandoneon and banjo (plus recorded accordion, bandoneon, banjo, steel-string guitar, fiddle and brass section with the sound library).
+- Command line: `--counter on|off`, `--layering off|more`.
+- Note: songs from earlier versions may sound different with the same seed.
+
 ## 1.9.0 - strings, orchestra and more variety
 - **10 new genres built around strings and orchestra:** Neoclassical, Chamber / String Quartet, Baroque, Fantasy RPG, Hybrid Trailer, Orchestral Hip Hop, Symphonic Metal, Holiday, Spaghetti Western and Chamber Pop (61 total).
 - **Your orchestra plugin is used everywhere it fits.** Save sounds from BBC Symphony Orchestra, LABS or any sampler with names like "BBC strings legato", "BBC strings spiccato", "BBC strings tremolo", "BBC celli", "BBC horns", "BBC low brass", "BBC oboe", and each part picks the right one by section and articulation: long string pads take legato, ostinatos take spiccato, pizzicato parts take pizzicato. This works in any genre, not just orchestral ones. If you saved several matching sounds (two string libraries, say), songs alternate between them.
