@@ -264,9 +264,6 @@ COLORS = {'triad': [0, 2, 4], '7': [0, 2, 4, 6], 'add9': [0, 2, 4, 8], 'sus2': [
           '9': [0, 2, 4, 6, 8], '6': [0, 2, 4, 5], 'add9no3': [0, 4, 8]}
 PHRASE_PLANS = [[0, 1, 0, 1, 0, 1, 2, 3], [0, 1, 0, 2, 0, 1, 0, 3], [0, 0, 1, 1, 0, 0, 2, 3], [0, 1, 2, 3, 0, 1, 2, 3],
                 [0, 1, 0, 1, 2, 3, 2, 3], [0, 1, 2, 1, 0, 1, 2, 3]]
-EXTRA_RHYTHMS = ['x.x.x.x.x-x-x---', 'x--x--x-x--x--x-', '..x.x.x...x.x...', 'x-.x-.x-x-x-....', 'x---x.x.x---x...',
-                 '.x.x.x.x.x.x.x..', 'x-x-..x-x-..x-x-', 'x---..x-..x-x---', 'x.xx.xx.x.......', '....x-x-x-x-x---',
-                 'x-----x-----x---', 'x.x...x.x...x.x.']
 
 
 def apply_mood(opts):
@@ -567,13 +564,34 @@ def resolve_style(opts, rnd=None, mood=None):
     return st
 
 
+# extra lead rhythms per phrasing family (was one shared bank, which put the same 16th-note pairs into every genre)
+PHRASE_BANKS = {
+    'sung': ['x-x-x-x-x---....', 'x---x-x-x-------', '..x-x-x-x---x---', 'x-.x-.x-x-------', 'x-x-x---x---x---',
+             'x---x---x-x-x---', '....x-x-x-x-x---', 'x-----x-x-x-....', 'x-x-x-x---------', '..x-x---x-x-x---'],
+    'syncopated': ['..x..x..x..x....', '.x.x..x...x.x...', 'x..x..x.x.......', '..x.x..x..x.....', 'x..x...x..x.x...',
+                   '...x..x...x..x..', 'x.x..x..x.x.....', '..x...x.x..x....'],
+    'sparse': ['x-------x---x---', 'x-----x-x-------', 'x---------------', 'x-----x---------', '....x-------x---',
+               'x---x-------....', 'x-------....x---'],
+    'busy': ['x.x.x.x.x-x-x---', 'x.xx.xx.x.......', 'xx.x.x..x.x.xx..', 'x.x.xx.x.x.x....', '.x.x.x.x.x.x.x..',
+             'x-x-..x-x-..x-x-'],
+}
+PHRASE_FAMILY = {
+    **{k: 'busy' for k in ('psytrance', 'dnb', 'jungle', 'breakcore', 'hyperpop', 'chiptune', 'trap', 'phonk', 'uk_drill', 'hardstyle')},
+    **{k: 'syncopated' for k in ('funk', 'disco', 'afrobeats', 'amapiano', 'reggaeton', 'moombahton', 'reggae', 'ukgarage', 'house',
+                                 'deep_house', 'tech_house', 'city_pop', 'bossa_nova')},
+    **{k: 'sparse' for k in ('ambient', 'downtempo', 'lofi', 'vaporwave', 'jazz', 'cinematic', 'orchestral', 'film_piano',
+                             'adventure', 'tension', 'boombap')},
+}
+
+
 def gen_melody(key, prog, chord_bars, st, rnd, complexity):
     from .leads import GENERATORS
     dev = st.get('lead_device', 'hook')
     if dev in GENERATORS:                              # genre lead device (arpeggio, riff, ostinato, bell, call, chops)
         return GENERATORS[dev](key, prog, chord_bars, st, rnd, complexity)
     phrase_bars = 2 * len(prog) * chord_bars
-    extra = rnd.sample(EXTRA_RHYTHMS, 3)
+    fam = PHRASE_FAMILY.get(st.get('name'), 'sparse' if st.get('category') == 'Orchestral' else 'sung')
+    extra = rnd.sample(PHRASE_BANKS[fam], 3)
     rhs = sorted((parse_rhythm(r) for r in list(st['lead_rh']) + extra), key=len)
     if complexity < 0.35:
         pool = rhs[:max(2, len(rhs) // 2 + 1)]
@@ -646,7 +664,7 @@ def gen_melody(key, prog, chord_bars, st, rnd, complexity):
             if lang == 'blues' and strong and d % 7 in (0, 2, 4) and lrnd.random() < (0.45 if d % 7 == 2 else 0.2) \
                     and t - 0.125 >= prev_end:                                # bluesy slide up into the note
                 notes.append((t - 0.125, 0.11, midi - 1, vel * 0.7))
-            elif lang == 'bebop' and strong and lrnd.random() < 0.25 + 0.35 * complexity and t - 0.25 >= prev_end:
+            elif lang == 'bebop' and strong and lrnd.random() < 0.12 + 0.2 * complexity and t - 0.25 >= prev_end:
                 notes.append((t - 0.25, 0.22, midi - 1, vel * 0.8))          # chromatic approach from below
             notes.append((t, ln / 4 * 0.92, midi, vel))
     return notes, phrase_bars
@@ -972,7 +990,10 @@ def compose(opts):
                             m = fold(key.deg(chord + 4, 2), lo)
                         elif c == 'A':
                             tgt = fold(key.deg(nxt, 2), lo)
-                            m = tgt + (1 if tgt <= root else -1) * (1 if rnd_b.random() < 0.5 else 2)
+                            if rnd_b.random() < 0.4:                     # a step into the next chord - now and then
+                                m = tgt + (1 if tgt <= root else -1) * (1 if rnd_b.random() < 0.5 else 2)
+                            else:
+                                m = rnd_b.choice([fold(key.deg(chord + 4, 2), lo), root + 12, root])
                         else:
                             m = root
                         evs.append(Ev('bass', beat0 + step / 4, l / 4 * gate, m, rnd_b.uniform(0.85, 1.0)))
@@ -982,10 +1003,10 @@ def compose(opts):
                 if col and rnd_c.random() < 0.15:
                     col = rnd_c.choice(['sus4', 'sus2', col])
                 notes = voice_chord(key, chord, chord_size, st.get('chord_center', 62), st.get('voicing', 'close'), col)
+                if (opts_s.get('drop') or sname in BIG_SECTIONS) and notes and notes[-1] + 12 <= 96 and st.get('voicing') != 'power':
+                    notes = notes + [notes[-1] + 12]                   # choruses / drops open up: top note doubled (once)
                 for step, l, c in parse_rhythm(chord_pat):
                     dur = l / 4 * (cb if l == 16 else 1) * 0.95
-                    if (opts_s.get('drop') or sname in BIG_SECTIONS) and notes and notes[-1] + 12 <= 96 and st.get('voicing') != 'power':
-                        notes = notes + [notes[-1] + 12]               # choruses / drops open up: top note doubled
                     for i, m in enumerate(notes):
                         off = i * st.get('strum', 0.0)
                         evs.append(Ev('chords', beat0 + step / 4 + off, dur, m, rnd_c.uniform(0.75, 0.92)))
