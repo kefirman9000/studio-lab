@@ -736,11 +736,14 @@ def lead_octave_shift(mel, st):
     """Octaves to move the lead by so it sits where the genre's lead lives, whatever the key: around E5-E6 for a
     sung-style or synth lead (a little higher for trap bells and trance arps), and always clear above the chords so the
     melody isn't buried. Riff leads (rock, metal, funk, blues) already place themselves low and are left alone."""
-    if not mel or st.get('lead_device') == 'riff':
+    if not mel or (st.get('lead_device') == 'riff' and not st.get('lead_lo')):
         return 0
     mean = sum(m for _, _, m, _ in mel) / len(mel)
-    lo = max(12 * (st.get('lead_oct', 5) + 1) + 1, st.get('chord_center', 62) + 8)
-    lo += {'bell': 3, 'arp': 2}.get(st.get('lead_device'), 0)
+    if st.get('lead_lo'):                               # genres whose lead lives lower (phonk cowbells sit around A3-A4)
+        lo = st['lead_lo']
+    else:
+        lo = max(12 * (st.get('lead_oct', 5) + 1) + 1, st.get('chord_center', 62) + 8)
+        lo += {'bell': 3, 'arp': 2}.get(st.get('lead_device'), 0)
     k = 0
     while mean + k >= lo + 12:
         k -= 12
@@ -1732,6 +1735,10 @@ def section_group(sec):
     return 'A'
 
 
+# genres whose lead sound is the genre - rotation only uses their own pool
+SIGNATURE_SOUNDS = {'phonk', 'house_phonk', 'memphis_phonk'}
+
+
 def add_section_switch_tracks(st, opts, rnd):
     """Instrument rotation: verses, choruses and breaks play a part on different instruments from the genre's own pool
     (e.g. Rhodes verse, piano chorus, guitar bridge). The main instrument keeps the big sections."""
@@ -1751,7 +1758,10 @@ def add_section_switch_tracks(st, opts, rnd):
         if not main or role in (opts.instruments or {}) or main.get('user_pick') or str(main['inst']).startswith(('vst:', 'user:')):
             continue
         pool = list(POOLS.get(st.get('name') or opts.style, {}).get(role) or [])
-        pool += [x for x in pal.get(role, []) if x not in pool][:2] if len(pool) < 3 else []
+        if len(set(pool)) == 1:                         # the genre has exactly one sound for this part (phonk cowbell)
+            continue
+        if len(pool) < 3 and (st.get('name') or opts.style) not in SIGNATURE_SOUNDS:
+            pool += [x for x in pal.get(role, []) if x not in pool][:2]
         alts = [x for x in dict.fromkeys(pool) if x != main['inst'] and x in INSTRUMENTS or (isinstance(x, str) and x.startswith('sf:') and x != main['inst'])]
         if alts:
             cands.append((role, main, alts))

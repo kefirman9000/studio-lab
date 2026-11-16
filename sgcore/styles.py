@@ -518,7 +518,8 @@ style('phonk', 'Electronic', 'Drift phonk: detuned distorted cowbell melodies, c
               T('chords', 'chords', 'warmpad', rev=0.5, db=-29, p=dict(cut=700)),
               T('pad', 'pad', 'choir', rev=0.5, db=-29, p=dict(vowel='o')),
               T('arp', 'arp', 'vox', rev=0.3, dly=0.25, db=-24),
-              T('lead', 'lead', 'phonkbell', rev=0.25, dly=0.2, db=-16)],
+              T('lead', 'lead', 'cowbell', rev=0.25, dly=0.2, db=-15, drive=0.4)],
+      lead_lo=57,
       master=dict(lufs=-7.0, air=0.6, low=2.5, drive=0.35))
 
 style('ukgarage', 'Electronic', 'UK garage / 2-step: skippy shuffled drums, organ stabs, vocal chops, sub bass',
@@ -1348,7 +1349,7 @@ POOLS = {
     'trap': dict(chords=['pluck', 'piano', 'epiano', 'harp', 'strings', 'sf:nylon'], pad=['warmpad', 'strings', 'choir', 'vox'],
                  lead=['bell', 'piano', 'pluck', 'flute', 'celesta', 'vox', 'violin']),
     'phonk': dict(chords=['warmpad', 'organ', 'strings'], pad=['choir', 'warmpad', 'glasspad'], arp=['vox', 'phonkbell'],
-                  lead=['phonkbell', 'phonkbell', 'cowbell']),      # the cowbell IS the genre
+                  lead=['cowbell']),      # the pitched cowbell IS the genre
     'ukgarage': dict(bass=['sinebass', 'reese', 'fmbass'], chords=['organ', 'epiano', 'stab', 'piano'], pad=['warmpad', 'strings'],
                      arp=['epiano', 'bell', 'marimba'], lead=['vox', 'pluck', 'bell', 'epiano']),
     'dnb': dict(bass=['reese', 'sawbass', 'sinebass', 'fmbass'], chords=['epiano', 'warmpad', 'piano', 'strings', 'stab'],
@@ -2222,7 +2223,8 @@ style('house_phonk', 'Electronic', 'House phonk: four-on-the-floor phonk - disto
               T('ohat', 'top', 'ohat', db=-27), T('cowbell808', 'top', 'cowbell808', pan=-0.2, db=-31),
               T('bass', 'bass', 'fmbass', sc=0.8, db=-13, drive=0.5),
               T('chords', 'chords', 'warmpad', sc=0.6, rev=0.4, db=-29, p=dict(cut=800)),
-              T('arp', 'arp', 'vox', rev=0.3, dly=0.25, db=-24), T('lead', 'lead', 'phonkbell', sc=0.3, rev=0.2, dly=0.2, db=-16)],
+              T('arp', 'arp', 'vox', rev=0.3, dly=0.25, db=-24), T('lead', 'lead', 'cowbell', sc=0.3, rev=0.2, dly=0.2, db=-15, drive=0.4)],
+      lead_lo=57, chord_center=55,
       master=dict(lufs=-7.0, air=0.8, low=2.2, drive=0.3))
 
 style('memphis_phonk', 'Electronic', 'Memphis phonk: the original - slow, dusty and lo-fi, eerie cowbell and piano loops, rattling '
@@ -2240,7 +2242,8 @@ style('memphis_phonk', 'Electronic', 'Memphis phonk: the original - slow, dusty 
               T('chat', 'top', 'chat', pan=0.2, db=-26), T('cowbell808', 'top', 'cowbell808', pan=-0.25, db=-26),
               T('bass', 'bass', '808', db=-12, p=dict(drive=4.0, decay=0.5)),
               T('chords', 'chords', 'piano', rev=0.3, db=-23), T('arp', 'arp', 'vox', rev=0.3, dly=0.3, db=-23),
-              T('lead', 'lead', 'phonkbell', rev=0.25, dly=0.2, db=-17, p=dict(drive=2.5)), T('vinyl', 'fx', 'vinyl', db=-38)],
+              T('lead', 'lead', 'cowbell', rev=0.25, dly=0.2, db=-16, drive=0.4), T('vinyl', 'fx', 'vinyl', db=-38)],
+      lead_lo=57,
       master=dict(lufs=-9.0, air=-1.0, low=2.0, lofi=True, wobble=0.8))
 
 LABELS.update({'dubstep': 'Dubstep (Dark / UK)', 'brostep': 'Brostep', 'melodic_dubstep': 'Melodic Dubstep', 'liquid_dnb': 'Liquid DnB',
@@ -2259,9 +2262,9 @@ POOLS.update({
     'neurofunk': dict(bass=['growl', 'reese', 'fmbass', 'wobble'], chords=['stab', 'warmpad', 'bell'], pad=['warmpad', 'glasspad', 'choir'],
                       arp=['bell', 'chip', 'pluck_saw'], lead=['leadsaw', 'stab', 'hoover', 'bell']),
     'house_phonk': dict(bass=['fmbass', '808', 'sawbass'], chords=['warmpad', 'organ'], arp=['vox', 'phonkbell'],
-                        lead=['phonkbell', 'phonkbell', 'cowbell']),
+                        lead=['cowbell']),
     'memphis_phonk': dict(chords=['piano', 'organ', 'warmpad', 'epiano'], arp=['vox', 'phonkbell', 'bell'],
-                          lead=['phonkbell', 'cowbell', 'bell', 'piano']),
+                          lead=['cowbell']),
 })
 STYLES['dubstep']['progs'] = {'minor': [[0, 0, 5, 6], [0, 5, 0, 6], [0, 0, 0, 6]], 'phrygian': [[0, 0, 1, 0], [0, 1, 0, 6], [0, 0, 0, 1]]}
 STYLES['brostep']['progs'] = {'minor': [[0, 0, 5, 6], [0, 6, 5, 6]], 'phrygian': [[0, 0, 1, 0], [0, 1, 0, 6]],

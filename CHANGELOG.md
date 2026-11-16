@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.14.1
+- **Phonk leads sound like phonk.** Drift Phonk, House Phonk and Memphis Phonk now always play the melody on the pitched cowbell, in its real register (around A3-A4, about an octave lower than before). Instrument rotation no longer swaps the cowbell for a saw lead in some sections.
+
 ## 1.14.0
 - **Four new genres:**
   - *Dubstep (classic UK / Tempa)* - half-time 140, a heavy clean sub as the main voice, sparse shuffled 2-step drums, dub delays and reverb, dark minor/phrygian moods and lots of space. Soundsystem dubstep, not brostep.
