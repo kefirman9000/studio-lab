@@ -38,6 +38,10 @@ PRESETS = {
                   choir=False, lengths={'sorrow': 1.5, 'reflection': 1.5}),
 }
 UNPITCHED = {'bdrum', 'cym', 'taiko', 'snare', 'anvil'}
+RANGE = {'piano': (21, 96), 'vn1': (55, 91), 'vn_hi': (67, 91), 'va': (48, 79), 'vc': (36, 72), 'cb': (28, 55), 'pad': (36, 86),
+         'trem': (40, 84), 'spicc_lo': (28, 67), 'spicc_hi': (55, 86), 'horns': (34, 77), 'tpt': (55, 82), 'tbn': (34, 70),
+         'tbn_marc': (34, 70), 'tuba': (24, 53), 'cbtbn': (24, 48), 'cbsn': (22, 46), 'flute': (60, 91), 'oboe': (58, 86),
+         'clar': (50, 82), 'harp': (24, 91), 'choir': (45, 79), 'choir_oo': (45, 77), 'timp': (38, 57), 'sub': (20, 40)}
 # every player, for the Sound panel (track name -> label)
 PLAYERS = [('piano', 'Solo piano'), ('vn1', 'Violins I (melody)'), ('vn_hi', 'High strings / harmonics'), ('va', 'Violas'),
            ('vc', 'Celli'), ('cb', 'Double basses'), ('pad', 'String section (sustain)'), ('trem', 'Strings tremolo'),
@@ -361,13 +365,13 @@ def act_glory(S, b0, n, prog, theme, cfg):
     mel = []
     for rep in range(max(1, n // 8)):
         bars = min(8, n - rep * 8)
-        for (b, d, m, acc) in realize(theme, prog, r, 6, 0, bars, 0.1):
+        for (b, d, m, acc) in realize(theme, prog, r, 5, 0, bars, 0.1):
             beat = b0 + rep * 32 + b
             mel.append((beat, d, m))
-            S.add('vn1', beat, d, m, 0.92 * acc)
-            S.add('va', beat, d, m - 12, 0.85 * acc)
-            S.add('vc', beat, d, m - 24, 0.85 * acc)
-            S.add('horns', beat, d, m - 24, 0.88 * acc)
+            S.add('vn1', beat, d, m + 12, 0.92 * acc)      # violins an octave above the violas
+            S.add('va', beat, d, m, 0.85 * acc)
+            S.add('vc', beat, d, m - 12, 0.85 * acc)
+            S.add('horns', beat, d, m - 12, 0.88 * acc)
     for bar in range(n):
         ch = prog[bar % len(prog)]
         beat = b0 + bar * 4
@@ -377,7 +381,7 @@ def act_glory(S, b0, n, prog, theme, cfg):
             _run(S, 'spicc_hi', beat + 2, 2, ch, r, 62, 0.6, 1.0)
         for m in spread(ch, r, 60, 84, 5):
             S.add('pad', beat, 4.08, m, 0.72)
-        for m in spread(ch, r, 84, 96, 2):                   # high string harmonics, like a distant choir
+        for m in spread(ch, r, 79, 88, 2):                   # high string harmonics, like a distant choir
             S.add('vn_hi', beat, 4.08, m, 0.32)
         five, top = chord_tone(ch, r, 72), chord_tone(ch, r, 79)
         for (o, d, m) in ((0, 1.5, five), (1.5, 0.5, five), (2, 0.33, five), (2.33, 0.33, five), (2.67, 0.33, five), (3, 1, top)):
@@ -393,7 +397,7 @@ def act_glory(S, b0, n, prog, theme, cfg):
                 S.add('tbn', beat + 3.3 + k * 0.1, 0.14, top - 1 - k, 0.75 - 0.08 * k)
         if bar % 4 == 0 and bar > 0:                         # horn rip into the phrase
             cur = [m for (b, d, m) in mel if b <= beat < b + d]
-            rip(S, 'horns', beat, (cur[0] - 24) if cur else chord_tone(ch, r, 65), ch)
+            rip(S, 'horns', beat, (cur[0] - 12) if cur else chord_tone(ch, r, 65), ch)
         S.add('cbsn', beat, 4.05, low_root(ch, r, 22), 0.7)
         S.add('cbtbn', beat, 4.05, low_root(ch, r, 28), 0.85)
         if cfg['choir']:
@@ -406,7 +410,7 @@ def act_glory(S, b0, n, prog, theme, cfg):
         S.add('tuba', beat, 4.05, 24 + rt + (12 if rt < 4 else 0), 0.85)
         S.add('cb', beat, 4.05, 28 + (rt - 4) % 12, 0.85)
         # cascading piano arpeggios cut through the tutti
-        arp = tones_between(ch, r, 52, 88)
+        arp = tones_between(ch, r, 52, 84)
         seq = arp[::-1] if bar % 2 == 0 else arp
         for k in range(16):
             m = seq[k % len(seq)]
@@ -415,12 +419,12 @@ def act_glory(S, b0, n, prog, theme, cfg):
             for h in (0, 2):
                 cur = [m for (b, d, m) in mel if b <= beat + h < b + d]
                 mm = cur[0] if cur else 84
-                tgt = 164 - mm
-                c = chord_tone(ch, r, min(93, max(76, tgt)))
+                tgt = 160 - mm
+                c = chord_tone(ch, r, min(86, max(72, tgt)))
                 S.add('flute', beat + h, 2.02, c, 0.62)
                 S.add('oboe', beat + h, 2.02, c - 12, 0.55)
             for k in range(8):
-                S.add('clar', beat + k * 0.5, 0.45, arp[(k * 2) % len(arp)] if arp else 60, 0.42)
+                S.add('clar', beat + k * 0.5, 0.45, ([m for m in arp if m <= 74] or [60])[k % max(1, len([m for m in arp if m <= 74]))], 0.42)
         if bar == 0:                                         # harp glissando sweeping up out of the silence
             gliss(S, 'harp', beat, 1, ch, 48, 91, True, 0.5, 0.85)
         tm, t5 = near(rt, 45), near((rt + 7) % 12, 45)
@@ -652,7 +656,14 @@ def compose_journey(st, opts, key, bpm, rng):
         fade_bars = max(2, last['bars'] // 2)
         fx.append(('fade', (last['bar'] + last['bars'] - fade_bars) * 4, fade_bars * 4))
     total = bar + (2 if last.get('act') == 'resolution' else 0)
-    tracks = {t['name'] for t in st['tracks']}
+    for e in S.evs:                                          # keep every part in its natural register
+        lo, hi = RANGE.get(e.track, (0, 127))
+        while e.midi > hi:
+            e.midi -= 12
+        while e.midi < lo:
+            e.midi += 12
+    off = {t['name'] for t in st['tracks'] if t.get('off')}
+    tracks = {t['name'] for t in st['tracks']} - off
     evs = [e for e in S.evs if e.track in tracks and e.beat < total * 4]
     muted = set(opts.muted or [])
     if muted:

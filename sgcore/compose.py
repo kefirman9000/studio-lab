@@ -731,6 +731,9 @@ def resolve_style(opts, rnd=None, mood=None):
             new = opts.instruments.get(t['name']) if t['layer'] in MELODIC_ROLES else None
         else:
             new = opts.instruments.get(t['layer']) if t['layer'] in MELODIC_ROLES else None
+        if new == 'off' and st.get('composer'):         # a Journey player switched off in the Sound panel
+            t['off'] = True
+            new = None
         if isinstance(new, str) and new.startswith(('vstp:', 'vstd:', 'vstq:')):
             new = _installed_vst(new, opts)             # a plugin picked in the Sound dropdown -> playable sound
         if new and (new in INSTRUMENTS or new.startswith(('user:', 'vst:', 'sf:', 'real:'))) and new != t['inst']:

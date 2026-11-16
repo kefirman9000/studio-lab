@@ -386,7 +386,7 @@ function renderSelected(){
     const dn=defInst?((META.roles[role]||[]).find(i=>i.id===defInst)||{name:defInst}).name:'none';
     const dl=state.blend.length?'Auto (from the fused styles)':jParts?`Score default (${dn})`:`Style default (${dn})`;
     const fxs=(META.effects||[]);
-    w.innerHTML=`<label>${label}</label><select><option value="">${dl}</option>${opts}</select>`+
+    w.innerHTML=`<label>${label}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
       (fxs.length&&!jParts?`<select class="fxsel" title="Run this part through one of your effect plugins"><option value="">no effect plugin</option>${fxs.map(f=>`<option ${state.part_fx[r]===f?'selected':''}>${esc(f)}</option>`).join('')}</select>`:'');
     w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else delete state.instruments[r]; };
     if(w.querySelector('.fxsel')) w.querySelector('.fxsel').onchange=e=>{ if(e.target.value) state.part_fx[r]=e.target.value; else delete state.part_fx[r]; };

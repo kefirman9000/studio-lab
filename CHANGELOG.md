@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.24.1
+- Cinematic Journey: the climax's violins were written an octave too high (up to A7, a thin whistle). They now sing in their bright upper register with the violas an octave below, the high "harmonics" strings and woodwinds sit lower too, and every part is kept inside its instrument's natural range.
+- Each Journey player's Sound dropdown has **🔇 Off (silent)** to leave that instrument out.
+
 ## 1.24.0
 Cinematic Journey, more epic:
 - **Key change in the climax**: the second half of Glory lifts a whole step (switchable).
