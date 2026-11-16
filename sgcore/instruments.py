@@ -519,6 +519,17 @@ def i_cowbell(m, dur, p, glide=None, mod=None):
     t = np.arange(n) / SR
     x = square(f, n) + square(f * 1.48, n, 0.3)
     y = bp(x, f * 0.9, f * 4) * (0.7 * np.exp(-t * 18) + 0.3 * np.exp(-t * 5))
+    p = p or {}
+    if p.get('drive'):                       # phonk: overdriven until it cuts like a synth lead, ring held up by the clipping
+        d = float(p['drive'])
+        y = soft(y / (np.max(np.abs(y)) + 1e-9) * d, 1.0) / soft(np.array([d]), 1.0)[0]
+        y = eq(lp(y, 6500), 'peak', 1600, 1.0, 4)
+    if p.get('crush'):                       # light bit / sample-rate reduction for the "broken" lo-fi edge
+        c = float(p['crush'])
+        bits = 2 ** (12 - 6 * c)
+        y = np.round(y * bits) / bits
+        hold = max(1, int(1 + 5 * c))
+        y = np.repeat(y[::hold], hold)[:len(y)]
     return fade_out(y, 0.03) * 0.6
 
 

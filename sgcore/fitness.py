@@ -8,7 +8,7 @@ from collections import Counter
 
 # tempo ranges (BPM) per genre, from production practice
 TEMPO = {
-    'phonk': (120, 160), 'house_phonk': (125, 145), 'memphis_phonk': (60, 95), 'dubstep': (138, 142), 'brostep': (140, 150),
+    'phonk': (140, 170), 'house_phonk': (125, 145), 'memphis_phonk': (60, 95), 'brazilian_phonk': (128, 160), 'dubstep': (138, 142), 'brostep': (140, 150),
     'melodic_dubstep': (140, 150), 'dnb': (160, 180), 'liquid_dnb': (165, 180), 'neurofunk': (170, 180), 'jungle': (155, 175),
     'trance': (125, 150), 'uplifting_trance': (130, 142), 'psytrance': (135, 150), 'house': (118, 130), 'deep_house': (115, 126),
     'tech_house': (120, 130), 'progressive_house': (120, 132), 'melodic_house': (114, 124), 'afro_house': (115, 126),
@@ -34,9 +34,9 @@ BACKBEAT = {'pop', 'rock', 'funk', 'motown', 'indie_rock', 'gospel', 'country', 
             'hauntology', 'eurodance', 'disco'}
 SWUNG = {'jazz', 'swing', 'boombap', 'lofi', 'rnb', 'hauntology', 'gospel'}
 SUB_BASS = {'dubstep', 'brostep', 'melodic_dubstep', 'dnb', 'liquid_dnb', 'neurofunk', 'jungle'}
-SLIDING_808 = {'trap', 'phonk', 'uk_drill', 'memphis_phonk', 'luxury_rap', 'orchestral_hiphop'}
+SLIDING_808 = {'trap', 'phonk', 'brazilian_phonk', 'uk_drill', 'memphis_phonk', 'luxury_rap', 'orchestral_hiphop'}
 SIGNATURE = {   # genre -> (part, instruments, label): the sound that defines it
-    'phonk': ('lead', {'phonkbell', 'cowbell'}, 'cowbell melody'), 'house_phonk': ('lead', {'phonkbell', 'cowbell'}, 'cowbell melody'),
+    'phonk': ('lead', {'phonkbell', 'cowbell'}, 'cowbell melody'), 'house_phonk': ('lead', {'phonkbell', 'cowbell'}, 'cowbell melody'), 'brazilian_phonk': ('lead', {'phonkbell', 'cowbell'}, 'cowbell melody'),
     'memphis_phonk': ('lead', {'phonkbell', 'cowbell', 'bell', 'piano'}, 'eerie bell / cowbell loop'),
     'acid_house': ('bass', {'acid'}, '303 acid bass'), 'dubstep': ('bass', {'wobble', 'growl', 'reese'}, 'modulated mid-bass'),
     'brostep': ('bass', {'growl', 'wobble', 'fmbass', 'reese'}, 'aggressive mid-bass'),

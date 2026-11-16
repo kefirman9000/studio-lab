@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.15.0
+- **Phonk rebuilt to sound like real phonk:**
+  - *Drift Phonk* now runs at 145-165 BPM (was 135-155) with dark, root-heavy minor / phrygian / harmonic-minor harmony instead of moving chord progressions.
+  - The lead is a **heavily distorted pitched 808 cowbell** (overdriven and lightly bit-crushed so it cuts like a synth lead) playing a short **3-7 note riff on loop**, in the low register real phonk uses.
+  - Clipped, growling 808s that sustain, with lighter sidechain so the low end stays dominant; looser, slightly swung hats with rolls.
+  - Lo-fi grit everywhere: vinyl crackle, tape saturation and wobble, rolled-off highs, a crushed master; pitched-down vocal chops and a horror-style choir pad.
+  - **New phonk arrangement:** sparse intro (cowbell + atmosphere) → main → main → breakdown (bass + atmosphere) → denser drop → degrading outro. No long EDM build-ups; songs land around 1:30-3:00.
+  - *House Phonk* gets the distorted 808 bass, crushed cowbell and grit; *Memphis Phonk* (66-92 BPM) gets the crushed cowbell and a horror pad.
+- **New genre: Brazilian Phonk** - baile-funk bounce (syncopated tamborzão kick/snare and congas) under phonk grit: distorted cowbell riff, heavy distorted sub, vocal shouts.
+
 ## 1.14.1
 - **Phonk leads sound like phonk.** Drift Phonk, House Phonk and Memphis Phonk now always play the melody on the pitched cowbell, in its real register (around A3-A4, about an octave lower than before). Instrument rotation no longer swaps the cowbell for a saw lead in some sections.
 
