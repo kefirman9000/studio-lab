@@ -84,6 +84,7 @@ class Options:
     chord_speed: str = None       # None = style | slow (chords last twice as long) | fast (change twice as often)
     rotation: str = 'auto'        # instrument rotation between sections: auto | off | some | lots
     avoid: dict = field(default_factory=dict)          # role -> instruments your recent songs used (picked less often)
+    title: str = None             # song name (front of every exported file name); None = an invented name that fits the song
     journey: dict = None          # Cinematic Journey settings: acts, piano, rubato, dynamics, ending, woodwinds (see journey.py)
 
     def to_dict(self):

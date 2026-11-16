@@ -212,6 +212,8 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
     <details class="card" open><summary>Basics</summary><div class="body">
       <div class="f"><label>Tempo <span class="auto"><input type="checkbox" id="bpmAuto" checked>auto</span></label>
         <div class="row"><input type="range" id="bpm" min="55" max="200" value="120" disabled><b id="bpmV" style="min-width:34px;font-family:var(--mono);font-size:12px">auto</b></div></div>
+      <div class="f wide"><label>Song name <span class="hint">goes at the front of the file names · leave empty for an invented name</span></label>
+        <input type="text" id="songName" maxlength="60" placeholder="auto (e.g. Ashes of the North)"></div>
       <div class="f"><label>Seed <span class="hint">same seed = same song</span></label>
         <div class="row"><input type="number" id="seed" min="1" value="1"><button class="ibtn" id="dice" title="Random seed">🎲</button><label class="auto" title="Keep this seed: pressing Preview again re-renders the same song (handy while you tweak settings)"><input type="checkbox" id="seedLock">🔒</label></div></div>
       <div class="f"><label>Key</label><select id="key"></select></div>
@@ -461,6 +463,7 @@ function options(){
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
   if($('#vinyl').value) o.vinyl=$('#vinyl').value==='on';
   if(state.orch_plugin) o.orch_plugin=true;
+  if($('#songName').value.trim()) o.title=$('#songName').value.trim();
   if(isJourney(state.style)&&!state.blend.length){
     o.journey={acts:J_ACTS.map(a=>a[0]).filter(a=>!(state.jOff||['battle']).includes(a)), piano:+$('#jPiano').value/100, rubato:+$('#jRubato').value/100,
       dynamics:+$('#jDyn').value/100, ending:$('#jEnd').value, woodwinds:$('#jWinds').checked, choir:$('#jChoir').checked, lift:$('#jLift').checked,
@@ -482,7 +485,7 @@ function applyOptions(o){
   state.part_fx=Object.assign({},o.part_fx||{});
   state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
   $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#rotation').value=o.rotation||'auto';
-  $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
+  $('#songName').value=o.title||''; $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
   $('#brightness').value=(o.brightness||0)*100; $('#reverb').value=(o.reverb??1)*100; $('#delay').value=(o.delay??1)*100; $('#width').value=(o.width??1)*100;
   $('#bass').value=o.bass_boost||0; $('#drive').value=(o.drive||0)*100;
   $('#bpmAuto').checked=!o.bpm; if(o.bpm)$('#bpm').value=o.bpm; $('#key').value=o.key||''; $('#scale').value=o.scale||''; $('#prog').value=o.progression||'';
@@ -570,7 +573,7 @@ function addResult(r, target){
   $('#emptyS')&&($('#emptyS').style.display='none');
   const el=document.createElement('div');el.className='res new'; el.dataset.rid=r.id;
   const url=r.urls.mp3||r.urls.wav;
-  const title=styleName(r.style)+(r.preview?'':' — full song');
+  const title=(r.name?'“'+esc(r.name)+'” · ':'')+styleName(r.style)+(r.preview?'':' — full song');
   const inst=Object.entries(r.instruments||{}).map(([k,v])=>`${k}: <span>${v}</span>`).join(' · ');
   const fusion=r.fusion?Object.entries(r.fusion).map(([p,s])=>`${p}←<span>${styleName(s)}</span>`).join(' · '):'';
   el.innerHTML=`<div class="top"><button class="play">▶</button><div style="min-width:0"><div class="tt">${title}</div>

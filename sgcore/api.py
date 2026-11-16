@@ -219,9 +219,13 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
         info['previewed_section'] = int(section)
     elif preview:
         song = preview_window(song)
-    title = song_title(song) + (f'_sec{int(section)}_{abs(hash(json.dumps(opts.sections, sort_keys=True, default=str))) % 10**6}'
+    from .names import song_name, slug
+    name = song_name(full_song)
+    info['name'] = name
+    title = slug(name) + '_' + song_title(song) + (f'_sec{int(section)}_{abs(hash(json.dumps(opts.sections, sort_keys=True, default=str))) % 10**6}'
                                 if section is not None else ('_preview' if preview else ''))
     os.makedirs(outdir, exist_ok=True)
+    log(f"== \"{name}\"")
     log(f"== {info['style']} | {info['key']} | {info['bpm']} BPM | {info['duration']} | seed {opts.seed}")
     log(f"   form: {info['form']}")
     log(f"   chords: {info['chords']}  (alt {info['chords_alt']})")
@@ -252,7 +256,9 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     log(f'   master: {loud:.1f} LUFS, peak {peak:.1f} dBFS')
     if 'mp3' in outputs and have_ffmpeg():
         mp3 = wav[:-4] + '.mp3'
-        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', wav, '-codec:a', 'libmp3lame', '-b:a', '320k', mp3], check=True)
+        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', wav, '-codec:a', 'libmp3lame', '-b:a', '320k',
+                        '-metadata', f'title={name}', '-metadata', f"genre={info['style']}", '-metadata', 'artist=Studio Lab', mp3],
+                       check=True)
         files['mp3'] = mp3
     if not preview:
         from . import exporters

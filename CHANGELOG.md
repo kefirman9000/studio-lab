@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.26.0
+- **Every song has a name**, at the front of every exported file before the technical tag - e.g. `Ashes-of-the-North_cinematic_journey_D-minor_88bpm_seed3.mp3` (MP3, WAV, MIDI, parts, stems, DAW packs, settings and guides).
+  - Type your own in **Basics → Song name**, or leave it empty for an invented name that fits the genre and mood (the same settings always give the same name, so a preview and its full song match).
+  - The name is also written into the MP3's title tag and the MIDI file's title, and shown on each result card and in the Library.
+
 ## 1.25.0
 - **🎬 Cinematic Journey - Dark & Low**, a second mode next to the original (top of the Orchestral tab): the same story, acts, presets and controls, told from the bottom of the orchestra. Celli carry the theme (trombones double it at the big moments), bassoons replace flute and oboe, the violins drop to their low string and the high harmonics are gone, piano notes get deep octaves underneath, every bass note is thickened by contrabassoon and tuba, low brass / timpani / bass drum hit harder, the choir sings a dark "ooh", tempo sits a little slower (72-86) and the mix leans on the low end with the top rolled off.
 

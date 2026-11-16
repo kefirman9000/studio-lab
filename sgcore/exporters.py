@@ -76,6 +76,12 @@ def write_midi(path, song):
     for s in song['sections']:
         txt = s['name'].encode()
         meta.append((int(s['bar'] * 4 * ppq_b), 0, b'\xff\x06' + _vlq(len(txt)) + txt))
+    try:
+        from .names import song_name
+        nm = song_name(song).encode('utf-8')[:120]
+        meta.insert(0, (0, 0, b'\xff\x03' + _vlq(len(nm)) + nm))       # song title (DAWs show it as the project name)
+    except Exception:
+        pass
     chunks.append(_track_chunk(meta, 'Tempo & markers'))
     groups = {}
     for e in song['events']:
