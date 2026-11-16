@@ -29,8 +29,8 @@ PLAYERS = {
     'tal': dict(name='TAL-NoiseMaker', match=_matcher('noisemaker', 'noise maker'), kind='synth', pack=None),
     'dexed': dict(name='Dexed', match=_matcher('dexed'), kind='synth', pack='dexed'),
     'jc303': dict(name='JC303', match=_matcher('jc303', 'jc 303'), kind='synth', pack='jc303'),
-    'nekobi': dict(name='Nekobi', match=_matcher('nekobi'), kind='synth', pack='dpf'),
-    'kars': dict(name='Kars', match=_matcher('kars'), kind='synth', pack='dpf'),
+    'nekobi': dict(name='Nekobi', match=_matcher('nekobi'), kind='synth', pack=None),
+    'kars': dict(name='Kars', match=_matcher('kars'), kind='synth', pack=None),
     'bbcso': dict(name='BBC Symphony Orchestra', match=_matcher('bbc symphony orchestra'), kind='sampler', pack=None),
     'labs': dict(name='Spitfire LABS', match=_matcher('labs', exclude=('kilohearts',)), kind='sampler', pack=None),
 }
@@ -151,13 +151,22 @@ ROLE_PATCHES = {
 }
 ANY_CATEGORY = {'epiano', 'clav', 'marimba', 'steeldrum', 'kalimba', 'fmbass'}   # FM keys also suit funk, city pop, bossa, reggae
 
-# sample players: pick a saved sound whose name contains one of these words
-SAMPLER_ROLES = {
-    'strings': ['string', 'ensemble', 'violin', 'cello'], 'violin': ['violin', 'string'], 'pizz': ['pizz'],
-    'horn': ['horn', 'brass'], 'brass': ['brass', 'horn', 'trumpet', 'trombone'], 'harp': ['harp'],
-    'timpani': ['timpani', 'timp'], 'celesta': ['celest', 'glock'], 'choir': ['choir', 'voice', 'vox'],
-    'vox': ['choir', 'voice', 'vox'], 'flute': ['flute', 'woodwind', 'piccolo'], 'piano': ['piano'],
+# your own saved VST sounds (any plugin): a sound whose name contains one of these words plays that kind of part.
+# Sample players (BBC SO, LABS) can only be used this way; for synths it lets e.g. "Serum supersaw" beat the built-in rig.
+SOUND_WORDS = {
+    'strings': ['strings', 'string', 'ensemble', 'violins', 'cello'], 'violin': ['violin', 'strings'], 'pizz': ['pizz', 'pizzicato'],
+    'horn': ['horn', 'horns', 'brass'], 'brass': ['brass', 'horns', 'trumpet', 'trombone'], 'harp': ['harp'],
+    'timpani': ['timpani', 'timp'], 'celesta': ['celesta', 'celeste', 'glock', 'glockenspiel'],
+    'choir': ['choir', 'voices', 'vox'], 'vox': ['choir', 'voices', 'vox'], 'flute': ['flute', 'woodwind', 'woodwinds', 'piccolo'],
+    'piano': ['piano', 'grand'], 'epiano': ['epiano', 'e-piano', 'rhodes', 'wurli', 'wurlitzer'], 'organ': ['organ'],
+    'guitar': ['guitar'], 'sax': ['sax', 'saxophone'], 'marimba': ['marimba'], 'bell': ['bell', 'bells'],
+    'supersaw': ['supersaw', 'pad'], 'warmpad': ['pad'], 'supersaw_lead': ['supersaw', 'lead'],
+    'leadsaw': ['lead'], 'softlead': ['lead'], 'hoover': ['hoover', 'lead'], 'stab': ['stab', 'chords'],
+    'pluck': ['pluck'], 'pluck_saw': ['pluck'], 'acid': ['acid', '303'], '808': ['808'],
+    'sawbass': ['bass'], 'reese': ['reese', 'bass'], 'fmbass': ['bass'], 'sinebass': ['sub', 'bass'], 'wobble': ['wobble', 'bass'],
 }
+SAMPLER_ROLES = {k for k in SOUND_WORDS if k in ('strings', 'violin', 'pizz', 'horn', 'brass', 'harp', 'timpani', 'celesta',
+                                                    'choir', 'vox', 'flute', 'piano')}
 
 # genre flavour: which plugin family to reach for first, and a tone tweak (shifts filter cutoffs)
 STYLE_PREF = {
@@ -184,7 +193,8 @@ def plugins_on_disk(refresh=False):
 def player_path(pid, plugins=None):
     plugins = plugins if plugins is not None else plugins_on_disk()
     m = PLAYERS[pid]['match']
-    hits = [p['path'] for p in plugins if m(p['path'])]
+    bad = vsthost.broken()
+    hits = [p['path'] for p in plugins if m(p['path']) and p['path'] not in bad]
     hits.sort(key=lambda p: (not p.startswith(vsthost.PLUGIN_DIR), len(p)))
     return hits[0] if hits else None
 
@@ -231,17 +241,16 @@ def ensure_sound(patch_id, path, tone=0.0):
     return sid
 
 
-def _user_sampler_sound(role, sounds, plugins):
-    words = SAMPLER_ROLES.get(role)
+def _user_sound(role, sounds):
+    """First of your own saved VST sounds whose name says it plays this kind of part (best word first)."""
+    words = SOUND_WORDS.get(role)
     if not words:
         return None
-    for s in sounds:
-        if not s.get('ok') or s.get('auto'):
-            continue
-        if not any(PLAYERS[k]['match'](s['path']) for k, v in PLAYERS.items() if v['kind'] == 'sampler'):
-            continue
-        if any(w in s['name'].lower() for w in words):
-            return s
+    mine = [x for x in sounds if x.get('ok') and not x.get('auto')]
+    for w in words:
+        for s in mine:
+            if re.search(r'(?<![a-z0-9])' + re.escape(w) + r'(?![a-z0-9])', s['name'].lower()):
+                return s
     return None
 
 
@@ -256,10 +265,9 @@ def ordered(cands, style):
 def choose(inst, style, category, plugins=None, sounds=None):
     """-> (kind, id, label) for this part, or None to keep the built-in sound."""
     plugins = plugins if plugins is not None else plugins_on_disk()
-    if inst in SAMPLER_ROLES:
-        s = _user_sampler_sound(inst, sounds if sounds is not None else vsthost.list_sounds(), plugins)
-        if s:
-            return ('user', s['id'], s['name'])
+    s = _user_sound(inst, sounds if sounds is not None else vsthost.list_sounds())
+    if s:
+        return ('user', s['id'], s['name'])
     cands = list(ROLE_PATCHES.get(inst, []))
     if not cands or (category != 'Electronic' and inst not in ANY_CATEGORY):
         return None

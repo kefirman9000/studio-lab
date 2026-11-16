@@ -30,10 +30,11 @@ def test_pick_asset():
     assert vstpacks.pick_asset(surge, rels, 'mac')['name'].endswith('.dmg')
     assert vstpacks.pick_asset(surge, rels, 'linux')['name'].endswith('.tar.gz')
     only_exe = [rel('1.3.4', ['surge-xt-win64-1.3.4-setup.exe'])]
-    assert vstpacks.pick_asset(surge, only_exe, 'windows')['name'].endswith('setup.exe')
+    assert vstpacks.pick_asset(surge, only_exe, 'windows') is None              # installers are never picked
     jc = [rel('v0.12.3', ['jc303-win64-plugins.zip', 'jc303-macos-universal-plugins.zip', 'jc303-linux64-plugins.zip'])]
     for osn, want in (('windows', 'win64'), ('mac', 'macos'), ('linux', 'linux64')):
         assert want in vstpacks.pick_asset(vstpacks.BY_ID['jc303'], jc, osn)['name']
+    assert 'dpf' not in vstpacks.BY_ID                                          # retired after an antivirus alert
     nightly_only = [rel('Nightly', ['dexed-1.0.1-win.zip'], pre=True)]
     assert vstpacks.pick_asset(vstpacks.BY_ID['dexed'], nightly_only, 'windows')          # falls back to pre-release
     assert vstpacks.pick_asset(vstpacks.BY_ID['jc303'], [rel('v1', ['source.tar.gz'])], 'windows') is None
@@ -82,7 +83,19 @@ def test_safe_unpack(tmp):
     out = os.path.join(tmp, 'dx')
     vstpacks.unpack(deb, out)
     assert [os.path.basename(x) for x in vstpacks.find_bundles(out)] == ['Dexed.vst3']
-    assert vstpacks.wanted(vstpacks.BY_ID['dpf'], '/x/Nekobi.vst3') and not vstpacks.wanted(vstpacks.BY_ID['dpf'], '/x/MVerb.vst3')
+    # only the pack's own plugins are written to disk - other plugins in the same download never touch the disk
+    z2 = os.path.join(tmp, 'bundle.zip')
+    with zipfile.ZipFile(z2, 'w') as f:
+        f.writestr('Pk/JC303.vst3/Contents/x86_64-win/JC303.vst3', b'MZ' + bytes(20000))
+        f.writestr('Pk/SoulForce.vst3/Contents/x86_64-win/SoulForce.vst3', b'MZ' + bytes(20000))
+        f.writestr('Pk/readme.txt', b'x')
+    out = os.path.join(tmp, 'kx')
+    vstpacks.unpack(z2, out, keep=vstpacks.keeper(vstpacks.BY_ID['jc303']))
+    written = [os.path.relpath(os.path.join(r, n), out) for r, d, fs in os.walk(out) for n in fs]
+    assert written == [os.path.join('Pk', 'JC303.vst3', 'Contents', 'x86_64-win', 'JC303.vst3')], written
+    assert vstpacks.complete(os.path.join(out, 'Pk', 'JC303.vst3'))
+    os.makedirs(os.path.join(tmp, 'Hollow.vst3', 'Contents', 'x86_64-win'))
+    assert not vstpacks.complete(os.path.join(tmp, 'Hollow.vst3'))             # binary removed by antivirus
     print('ok  safe unpacking (zip / tar / deb, traversal + symlinks blocked)')
 
 
@@ -90,7 +103,7 @@ def test_install_flow(tmp):
     """Full install with the network replaced by a local file."""
     src = os.path.join(tmp, 'jc303-win64-plugins.zip')
     with zipfile.ZipFile(src, 'w') as f:
-        f.writestr('jc303/JC303.vst3', b'MZ fake plugin')
+        f.writestr('jc303/JC303.vst3', b'MZ' + bytes(20000))
         f.writestr('jc303/JC303.clap', b'x')
     plug = os.path.join(tmp, 'plugins')
     old = (vstpacks.PLUGIN_DIR, vstpacks.RECORD, vstpacks.resolve, vstpacks.download)
@@ -99,6 +112,7 @@ def test_install_flow(tmp):
         vstpacks.resolve = lambda pid, osname=None: dict(url='https://github.com/x', name='jc303-win64-plugins.zip', size=1, version='v9')
         vstpacks.download = lambda url, dst, progress=None, expected=0: shutil.copy(src, dst)
         r = vstpacks.install('jc303', log=lambda *a: None)
+        assert not os.path.exists(os.path.join(plug, 'JC303.clap'))
         assert r['ok'] and os.path.isfile(os.path.join(plug, 'JC303.vst3')), r
         assert json.load(open(vstpacks.RECORD))['jc303']['version'] == 'v9'
         vstpacks.remove('jc303')
@@ -126,9 +140,20 @@ def test_rigs(tmp):
     only_303 = fake(['Nekobi'])
     assert vstrigs.choose('sawbass', 'synthwave', 'Electronic', only_303, []) is None   # no 303 bass in synthwave
     assert vstrigs.choose('sawbass', 'techno', 'Electronic', only_303, [])[1] == 'nekobi.bass'
+    mine = [dict(id='u1', name='Serum supersaw', path=os.path.join(tmp, 'Serum.vst3'), ok=True),
+            dict(id='u2', name='Vital lead', path=os.path.join(tmp, 'Vital.vst3'), ok=True),
+            dict(id='a1', name='Surge XT · Supersaw', path='x', ok=True, auto=True)]
+    assert vstrigs.choose('supersaw', 'trance', 'Electronic', every, mine)[1] == 'u1'   # your named sound beats the rig
+    assert vstrigs.choose('leadsaw', 'synthwave', 'Electronic', every, mine)[1] == 'u2'
+    assert vstrigs.choose('sawbass', 'synthwave', 'Electronic', every, mine)[1] == 'tal.saw_bass'
+    assert vstrigs.choose('epiano', 'lofi', 'Electronic', every, [dict(id='x', name='Keyscape Rhodes', path='k', ok=True)])[1] == 'x'
     bbc = [dict(id='bbc1', name='BBC strings legato', path=os.path.join(tmp, 'BBC_Symphony_Orchestra__64_Bit_.vst3'), ok=True)]
     assert vstrigs.choose('strings', 'orchestral', 'Orchestral', every, bbc)[1] == 'bbc1'
     assert vstrigs.choose('horn', 'orchestral', 'Orchestral', every, bbc) is None
+    old_broken = vsthost.broken
+    vsthost.broken = lambda: {os.path.join(tmp, 'JC303.vst3'): 'Unable to scan plugin'}
+    assert pick('acid', 'acid_house')[1] == 'nekobi.acid'                       # a plugin that won't load is skipped
+    vsthost.broken = old_broken
     assert vstrigs.recipe_for('tal.saw_bass', -0.12)['params']['Filter Cutoff'] < vstrigs.PATCHES['tal.saw_bass']['params']['Filter Cutoff']
     # end to end through compose (plugin files are fakes: nothing is rendered here)
     old = (vsthost.SOUNDS, vsthost.available, vstrigs.plugins_on_disk)

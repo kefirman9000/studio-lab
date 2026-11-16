@@ -34,24 +34,18 @@ PACKS = [
          page='https://surge-synthesizer.github.io/downloads', size='~60 MB',
          plays='supersaws, pads, reese & saw basses, leads, plucks (trance, big room, future bass, house, DnB)',
          bundles=[r'^surge xt$'],
-         assets={'windows': [r'win(64|-x64).*(pluginsonly|portable).*\.zip$', r'win(64|-x64).*\.zip$', r'win(64|-x64).*setup\.exe$'],
+         assets={'windows': [r'win(64|-x64).*(pluginsonly|portable).*\.zip$', r'win(64|-x64).*\.zip$'],
                  'mac': [r'mac.*\.dmg$', r'mac.*\.zip$'],
                  'linux': [r'linux.*{arch}.*\.tar\.gz$', r'linux.*{arch}.*\.deb$', r'{arch}.*\.deb$']}),
     dict(id='dexed', name='Dexed', maker='Digital Suburban', license='GPL-3.0', repo='asb2m10/dexed',
          page='https://asb2m10.github.io/dexed/', size='~10 MB',
          plays='DX7 FM: electric piano, clav, marimba, bells, steel drum, FM bass (city pop, lo-fi, funk, R&B, 80s)',
          bundles=[r'^dexed$'],
-         assets={'windows': [r'win.*\.zip$', r'win.*\.exe$'], 'mac': [r'mac.*\.(dmg|zip|pkg)$'],
+         assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.(dmg|zip|pkg)$'],
                  'linux': [r'linux.*\.(zip|tar\.gz|tar\.xz)$']}),
     dict(id='jc303', name='JC303', maker='midilab', license='GPL-3.0', repo='midilab/jc303', page='https://midilab.co/jc303/',
          size='~10 MB', plays='TB-303 acid bass (acid house, techno, psytrance)', bundles=[r'^jc303$'],
          assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.zip$'], 'linux': [r'linux.*{arch}.*\.zip$', r'linux.*\.zip$']}),
-    dict(id='dpf', name='DISTRHO Nekobi + Kars', maker='DISTRHO / falkTX', license='GPL / MIT', repo='DISTRHO/DPF-Plugins',
-         page='https://github.com/DISTRHO/DPF-Plugins', size='~15 MB',
-         plays='Nekobi: a second 303-style acid bass · Kars: plucked-string synth for electronic plucks',
-         bundles=[r'^nekobi$', r'^kars$'],
-         assets={'windows': [r'win(64|dows).*\.zip$'], 'mac': [r'mac.*\.(pkg|dmg|zip)$'],
-                 'linux': [r'linux.*{arch}.*\.tar\.(xz|gz)$', r'linux.*\.tar\.(xz|gz)$']}),
 ]
 BY_ID = {p['id']: p for p in PACKS}
 
@@ -141,11 +135,30 @@ def _inside(base, target):
     return os.path.commonpath([base, target]) == base
 
 
-def extract_zip(path, out):
+ARCHIVES = ('.zip', '.tar.gz', '.tgz', '.tar.xz', '.tar.bz2', '.tar', '.deb', '.dmg', '.pkg')
+
+
+def keeper(pack):
+    """Archive-member filter: only the pack's own plugin bundles (and archives that may contain them) are written to
+    disk - other plugins shipped in the same download are never unpacked."""
+    exts = ('.vst3', '.component')
+
+    def keep(name):
+        parts = [x for x in name.replace('\\', '/').split('/') if x and x != '.']
+        for seg in parts:
+            if seg.lower().endswith(exts):
+                return wanted(pack, seg)
+        return bool(parts) and parts[-1].lower().endswith(ARCHIVES)
+    return keep
+
+
+def extract_zip(path, out, keep=None):
     with zipfile.ZipFile(path) as z:
         for m in z.infolist():
             name = m.filename.replace('\\', '/')
             if name.startswith('/') or '..' in name.split('/'):
+                continue
+            if keep and not name.endswith('/') and not keep(name):
                 continue
             mode = (m.external_attr >> 16) & 0o170000
             dst = os.path.join(out, *name.split('/'))
@@ -172,11 +185,13 @@ def extract_zip(path, out):
                 os.chmod(dst, perm | 0o600)
 
 
-def extract_tar(path, out):
+def extract_tar(path, out, keep=None):
     with tarfile.open(path) as t:
         safe = []
         for m in t.getmembers():
             if m.name.startswith('/') or '..' in m.name.split('/') or m.isdev():
+                continue
+            if keep and not m.isdir() and not keep(m.name):
                 continue
             if (m.issym() or m.islnk()) and (m.linkname.startswith('/') or
                                              not _inside(out, os.path.join(out, os.path.dirname(m.name), m.linkname))):
@@ -190,7 +205,7 @@ def extract_tar(path, out):
             t.extractall(out, members=safe)
 
 
-def extract_deb(path, out):
+def extract_deb(path, out, keep=None):
     """.deb = ar archive holding data.tar.*; parsed here so no dpkg is needed."""
     with open(path, 'rb') as f:
         if f.read(8) != b'!<arch>\n':
@@ -208,7 +223,7 @@ def extract_deb(path, out):
                 tmp = os.path.join(out, '_' + name)
                 with open(tmp, 'wb') as g:
                     g.write(data)
-                extract_tar(tmp, out)
+                extract_tar(tmp, out, keep)
                 os.remove(tmp)
                 return
     raise RuntimeError('no data in .deb')
@@ -236,15 +251,15 @@ def _expand_pkg(path, out, log):
     subprocess.run(['pkgutil', '--expand-full', path, out], check=True, capture_output=True)
 
 
-def unpack(path, out, log=print, depth=0):
+def unpack(path, out, log=print, depth=0, keep=None):
     low = path.lower()
     os.makedirs(out, exist_ok=True)
     if low.endswith('.zip'):
-        extract_zip(path, out)
+        extract_zip(path, out, keep)
     elif low.endswith(('.tar.gz', '.tgz', '.tar.xz', '.tar.bz2', '.tar')):
-        extract_tar(path, out)
+        extract_tar(path, out, keep)
     elif low.endswith('.deb'):
-        extract_deb(path, out)
+        extract_deb(path, out, keep)
     elif low.endswith('.dmg') and sys.platform == 'darwin':
         _extract_dmg(path, out, log)
     elif low.endswith('.pkg') and sys.platform == 'darwin':
@@ -256,7 +271,7 @@ def unpack(path, out, log=print, depth=0):
             for fn in files:
                 if fn.lower().endswith(('.zip', '.tar.gz', '.tar.xz', '.deb', '.dmg', '.pkg')):
                     try:
-                        unpack(os.path.join(root, fn), os.path.join(root, fn + '_x'), log, depth + 1)
+                        unpack(os.path.join(root, fn), os.path.join(root, fn + '_x'), log, depth + 1, keep)
                     except Exception as e:
                         log(f'   (skipped {fn}: {e})')
 
@@ -273,6 +288,16 @@ def find_bundles(folder):
     return out
 
 
+def complete(bundle):
+    """A plugin bundle must actually contain its program file (antivirus software may have removed it)."""
+    if os.path.isfile(bundle):
+        return os.path.getsize(bundle) > 10_000
+    for root, dirs, files in os.walk(bundle):
+        if any(os.path.getsize(os.path.join(root, f)) > 10_000 for f in files if not os.path.islink(os.path.join(root, f))):
+            return True
+    return False
+
+
 def _norm(name):
     base = os.path.splitext(os.path.basename(name))[0].lower()
     base = re.sub(r'[\s_\-]*\(?(64|32)[\s_\-]*bit\)?', '', base)
@@ -281,22 +306,6 @@ def _norm(name):
 
 def wanted(pack, path):
     return any(re.search(p, _norm(path)) for p in pack['bundles'])
-
-
-# ----------------------------------------------------------------------------- installers (only when no archive exists)
-def run_installer(path, log):
-    if not sys.platform.startswith('win'):
-        raise RuntimeError('this download is a Windows installer')
-    log('Starting the official installer - approve the Windows prompt (it may ask for administrator rights) ...')
-    with open(path, 'rb') as f:
-        head = f.read(4 << 20)
-    args = '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-' if b'Inno Setup' in head else ''
-    ps = ("$p = Start-Process -FilePath '{}' {} -Verb RunAs -Wait -PassThru; exit $p.ExitCode"
-          .format(path.replace("'", "''"), f"-ArgumentList '{args}'" if args else ''))
-    r = subprocess.run(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', ps], capture_output=True, text=True)
-    if r.returncode != 0:
-        raise RuntimeError('the installer was cancelled or failed' + (f' ({r.stderr.strip()[:200]})' if r.stderr.strip() else ''))
-    log('Installer finished.')
 
 
 # ----------------------------------------------------------------------------- status / install
@@ -334,12 +343,20 @@ def status():
         out.append(dict(id=p['id'], name=p['name'], maker=p['maker'], license=p['license'], plays=p['plays'], page=p['page'],
                         size=p['size'], installed=len(found) >= need, partial=0 < len(found) < need,
                         version=rec.get(p['id'], {}).get('version'), paths=paths))
+    for pid, r in rec.items():
+        if pid not in BY_ID and any(os.path.exists(f) for f in r.get('files', [])):
+            out.append(dict(id=pid, name=', '.join(os.path.splitext(os.path.basename(f))[0] for f in r.get('files', [])),
+                            maker='', license='', size='', page='', installed=True, partial=False, version=r.get('version'),
+                            retired=True, paths=r.get('files', []),
+                            plays='no longer offered for download - still used while installed; remove it if you prefer'))
     known = []
     for k in KNOWN:
         from .vstrigs import PLAYERS
         hit = [x['path'] for x in plugins if PLAYERS[k['id']]['match'](x['path'])]
         known.append(dict(k, installed=bool(hit), paths=hit))
-    return dict(packs=out, known=known, os=host_os(), folder=PLUGIN_DIR)
+    from .vsthost import broken
+    bad = [dict(name=os.path.splitext(os.path.basename(p))[0], path=p, why=w) for p, w in broken().items()]
+    return dict(packs=out, known=known, broken=bad, os=host_os(), folder=PLUGIN_DIR)
 
 
 def install(pack_id, log=print, progress=None):
@@ -354,6 +371,9 @@ def install(pack_id, log=print, progress=None):
         raise RuntimeError(f"couldn't reach GitHub: {e}{hint}. You can also download it from {pack['page']}")
     if not asset:
         raise RuntimeError(f"no {host_os()} download found for {pack['name']} - get it from {pack['page']}")
+    if asset['name'].lower().endswith(('.exe', '.msi')):
+        raise RuntimeError(f"{pack['name']} is only offered with an installer for this computer - "
+                           f"install it yourself from {pack['page']} and Studio Lab will find it")
     log(f"Downloading {asset['name']} ({asset['version']}, {asset['size'] / 1e6:.0f} MB) ...")
     work = tempfile.mkdtemp(prefix='sl_pack_')
     try:
@@ -361,33 +381,29 @@ def install(pack_id, log=print, progress=None):
         download(asset['url'], fn, progress, asset.get('size', 0))
         os.makedirs(PLUGIN_DIR, exist_ok=True)
         copied = []
-        if fn.lower().endswith('.exe'):
-            run_installer(fn, log)
-        else:
-            log('Unpacking ...')
-            ex = os.path.join(work, 'x')
-            unpack(fn, ex, log)
-            found = [b for b in find_bundles(ex) if wanted(pack, b)]
-            if not found:
-                inner = [f for r, d, fs in os.walk(ex) for f in fs if f.lower().endswith('.exe')]
-                if inner and sys.platform.startswith('win'):
-                    run_installer(os.path.join(next(r for r, d, fs in os.walk(ex) if inner[0] in fs), inner[0]), log)
-                else:
-                    raise RuntimeError(f"no plugin found inside {asset['name']} - get it from {pack['page']}")
-            for b in found:
-                dst = os.path.join(PLUGIN_DIR, os.path.basename(b))
-                if os.path.isdir(dst) and not os.path.islink(dst):
-                    shutil.rmtree(dst)
-                elif os.path.exists(dst):
-                    os.remove(dst)
-                if os.path.isdir(b):
-                    shutil.copytree(b, dst, symlinks=True)
-                else:
-                    shutil.copy2(b, dst)
-                if sys.platform == 'darwin':
-                    subprocess.run(['xattr', '-dr', 'com.apple.quarantine', dst], capture_output=True)
-                copied.append(dst)
-                log('   installed ' + os.path.basename(dst))
+        log('Unpacking ...')
+        ex = os.path.join(work, 'x')
+        unpack(fn, ex, log, keep=keeper(pack))
+        found = [b for b in find_bundles(ex) if wanted(pack, b)]
+        gone = [b for b in found if not complete(b)]
+        if gone:
+            raise RuntimeError(', '.join(os.path.basename(b) for b in gone) + ' is incomplete after unpacking '
+                               '(your antivirus may have removed part of it) - not installed')
+        if not found:
+            raise RuntimeError(f"{pack['name']} is only offered with an installer for this computer - "
+                               f"install it yourself from {pack['page']} and Studio Lab will find it")
+        for b in found:
+            dst = os.path.join(PLUGIN_DIR, os.path.basename(b))
+            if os.path.isdir(dst) and not os.path.islink(dst):
+                shutil.rmtree(dst)
+            elif os.path.exists(dst):
+                os.remove(dst)
+            if os.path.isdir(b):
+                shutil.copytree(b, dst, symlinks=True)
+            else:
+                shutil.copy2(b, dst)
+            copied.append(dst)
+            log('   installed ' + os.path.basename(dst))
         rec = _record()
         rec[pack_id] = dict(version=asset['version'], asset=asset['name'], files=copied, installed=int(time.time()))
         _save_record(rec)
@@ -395,6 +411,11 @@ def install(pack_id, log=print, progress=None):
         return dict(ok=True, id=pack_id, version=asset['version'], files=copied)
     finally:
         shutil.rmtree(work, ignore_errors=True)
+
+
+def recorded():
+    """Ids of packs this app installed (including retired ones, so they can still be removed)."""
+    return list(_record())
 
 
 def remove(pack_id):

@@ -1,5 +1,6 @@
 """Experimental: use your own VST3 / Audio Unit instruments to render parts (via Spotify's pedalboard library).
 Every plugin call runs in a separate process (sgcore.vst_worker) so a crashing plugin can't take the app down."""
+import hashlib
 import json
 import os
 import re
@@ -17,6 +18,61 @@ from . import updater
 ROOT = updater.ROOT
 PLUGIN_DIR = os.path.join(ROOT, 'plugins')          # drop .vst3 / .component files here
 SOUNDS = os.path.join(ROOT, 'vst_sounds')           # saved plugin sounds (presets)
+
+
+BROKEN = os.path.join(SOUNDS, '.broken_plugins.json')
+LOAD_FAIL = ('Failed to load plugin', 'Unable to scan plugin', 'crashed while loading', 'unsupported plugin format')
+
+
+def _sig(path):
+    """Fingerprint of a plugin file/bundle: its files and sizes (changes when the plugin is reinstalled or repaired)."""
+    try:
+        if os.path.isfile(path):
+            return str(os.path.getsize(path))
+        items = []
+        for root, dirs, files in os.walk(path):
+            for f in files:
+                fp = os.path.join(root, f)
+                items.append(f'{os.path.relpath(fp, path)}:{os.path.getsize(fp)}')
+        return hashlib.sha1('\n'.join(sorted(items)).encode()).hexdigest()[:16]
+    except OSError:
+        return '0'
+
+
+def bundle_ok(path):
+    """False when the plugin's program file is missing (typically removed by antivirus software)."""
+    if os.path.isfile(path):
+        return os.path.getsize(path) > 10_000
+    for root, dirs, files in os.walk(path):
+        for f in files:
+            fp = os.path.join(root, f)
+            if not os.path.islink(fp) and os.path.getsize(fp) > 10_000:
+                return True
+    return False
+
+
+def broken():
+    """Plugins that failed to load, {path: reason}. An entry is forgotten when the plugin file changes (reinstalled)."""
+    try:
+        with open(BROKEN) as f:
+            d = json.load(f)
+    except Exception:
+        return {}
+    return {p: v['why'] for p, v in d.items() if v.get('sig') == _sig(p)}
+
+
+def mark_broken(path, why):
+    try:
+        with open(BROKEN) as f:
+            d = json.load(f)
+    except Exception:
+        d = {}
+    if not bundle_ok(path):
+        why = 'its program file is missing - antivirus software may have removed it. Reinstall it, or remove it'
+    d[path] = dict(sig=_sig(path), why=str(why)[:300], t=int(time.time()))
+    os.makedirs(SOUNDS, exist_ok=True)
+    with open(BROKEN, 'w') as f:
+        json.dump(d, f)
 
 
 def available():
@@ -160,7 +216,10 @@ def render(sid, events, duration, sr=44100, timeout=900):
         res, _ = _run(dict(mode='render', path=snd['path'], state=snd.get('state'), events=events,
                            duration=duration, sr=sr, out=out), timeout=timeout)
         if not res.get('ok'):
-            raise RuntimeError(res.get('error', 'plugin failed'))
+            err = res.get('error', 'plugin failed')
+            if any(k in err for k in LOAD_FAIL):
+                mark_broken(snd['path'], err)          # don't pick it again until it's reinstalled
+            raise RuntimeError(err)
         audio = np.load(out)
     finally:
         shutil.rmtree(d, ignore_errors=True)

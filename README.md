@@ -42,11 +42,11 @@ Click **⟳ Updates** in the top-right corner. Your files, presets and settings 
 
 ## Genre VSTs
 
-Click **🎚 Genre VSTs** to download free, open-source instruments (Surge XT, Dexed, JC303, DISTRHO Nekobi + Kars) and play each genre through the plugin that defines its sound: a 303 for acid, supersaws for trance, a DX7 electric piano for city pop. Plugins you already own, like TAL-NoiseMaker or BBC Symphony Orchestra Discover, are used too.
+Studio Lab finds the plugins installed on your computer and uses them automatically. Click **🎚 Genre VSTs** to download free, open-source instruments (Surge XT, Dexed, JC303) and play each genre through the plugin that defines its sound: a 303 for acid, supersaws for trance, a DX7 electric piano for city pop. Plugins you already own, like TAL-NoiseMaker, are used too; save sounds from any plugin with names like "Serum supersaw" or "BBC strings" and matching parts use them.
 
 ```
 python studiolab.py vsts --for trance      # download what trance needs, show which plugin plays each part
-python studiolab.py generate --style trance --vst-rig
+python studiolab.py generate --style trance
 ```
 
 ## Works with

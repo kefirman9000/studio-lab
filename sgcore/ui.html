@@ -640,7 +640,7 @@ async function vstModal(){
 async function rigModal(){
   const [S,P]=await Promise.all([api('/api/vstpacks',{}), api('/api/vstpacks/plan',{style:state.style})]);
   const busy=()=>$$('#modalBox [data-pk],#modalBox [data-rm],#rigNeed,#rigAll').forEach(b=>b.disabled=true);
-  const packs=S.packs.map(p=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(p.name)}</span> <span class="m">${esc(p.maker)} · ${esc(p.license)} · ${esc(p.size)}</span>
+  const packs=S.packs.map(p=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(p.name)}</span> ${p.retired?'':`<span class="m">${esc(p.maker)} · ${esc(p.license)} · ${esc(p.size)}</span>`}
       ${p.installed?`<span class="tag ok">installed${p.version?' '+esc(p.version):''}</span>`:(p.partial?'<span class="tag no">partly installed</span>':'')}<div class="m">${esc(p.plays)}</div></div>
       <div class="row">${p.installed?(p.version?`<button class="mini" data-rm="${p.id}">Remove</button>`:'<span class="m">installed on this computer</span>'):`<button class="mini acc" data-pk="${p.id}">Download</button>`}</div></div>`).join('');
   const known=S.known.map(k=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(k.name)}</span> ${k.installed?'<span class="tag ok">found</span>':''}<div class="m">${esc(k.plays)}</div></div>
@@ -651,7 +651,9 @@ async function rigModal(){
     <p class="hint">Studio Lab downloads free, open-source instruments and plays each genre through the plugin that defines its sound:
       a TB-303 for acid, Surge XT supersaws for trance, DX7 electric piano for city pop and lo-fi, Juno-style TAL-NoiseMaker for synthwave.
       Each plugin runs in its own process; if one fails, that part simply uses the built-in sound.</p>
-    <label class="row" style="gap:8px;margin:6px 0 12px"><input type="checkbox" id="rigOn" ${S.rig?'checked':''}> <b>Play parts through genre VSTs</b> <span class="hint">(applies to new previews and songs; parts you pick under Sound stay as you set them)</span></label>
+    <p class="hint"><b>Used automatically:</b> any of these plugins installed on this computer plays the parts it suits - nothing to tick. Parts you pick yourself under <b>Sound</b> stay as you set them.</p>
+    ${(S.broken||[]).length?`<div class="sel" style="border-color:#5a2730"><b>Not used - these plugins fail to load:</b> ${S.broken.map(b=>esc(b.name)+(b.why.startsWith('its program file')?' <span class="m">('+esc(b.why.split(' - ')[0])+')</span>':'')).join(', ')}.
+      <div class="hint">Often antivirus software removed part of the plugin. Reinstall it (Studio Lab tries it again once the file changes) or remove it.</div></div>`:''}
     ${S.available?'':'<p class="hint">VST support (the free <i>pedalboard</i> library) will be installed automatically with your first download.</p>'}
     <h3 style="margin-top:6px">${esc(styleName(state.style))} would use</h3>
     <table style="width:100%;font-size:13px">${plan}</table>
@@ -662,13 +664,11 @@ async function rigModal(){
     <p class="hint">Sample players like BBC Symphony Orchestra pick their instrument inside the plugin: in 🎹 VST, create a sound from it and give it a name like
       “BBC strings”, “BBC horns” or “LABS piano” - matching parts in any style will use it.</p>
     <div style="text-align:right;margin-top:14px"><button class="btn p" onclick="closeModal()">Done</button></div>`;
-  $('#rigOn').onchange=async e=>{ await api('/api/vstpacks/rig',{on:e.target.checked}); $('#rigBtn').textContent='🎚 Genre VSTs'+(e.target.checked?' ✓':''); };
   const go=async body=>{ busy(); $('#rigLog').textContent='Starting…'; const {job}=await api('/api/vstpacks/install',body);
     pollJob(job, j=>{ const r=j.results[0]||{}; $('#rigLog').textContent+=(j.status==='done'?(r.ok?'\nDone!':'\nFinished with problems - see above.'):'\nFailed: '+(j.error||''));
-      if(j.status==='done' && !$('#rigOn').checked){ $('#rigOn').checked=true; $('#rigOn').onchange({target:$('#rigOn')}); }
       if(j.status==='done'&&r.ok) setTimeout(rigModal,900); else $$('#modalBox [data-pk],#modalBox [data-rm],#rigNeed,#rigAll').forEach(b=>b.disabled=false); }, l=>{$('#rigLog').textContent=l; $('#rigLog').scrollTop=1e9;}); };
   if($('#rigNeed')) $('#rigNeed').onclick=()=>go({style:state.style});
-  $('#rigAll').onclick=()=>go({ids:S.packs.filter(p=>!p.installed).map(p=>p.id)});
+  $('#rigAll').onclick=()=>go({ids:S.packs.filter(p=>!p.installed&&!p.retired).map(p=>p.id)});
   $$('#modalBox [data-pk]').forEach(b=>b.onclick=()=>go({ids:[b.dataset.pk]}));
   $$('#modalBox [data-rm]').forEach(b=>b.onclick=async()=>{ await api('/api/vstpacks/remove',{id:b.dataset.rm}); rigModal(); });
   $('#modal').classList.add('on');
@@ -681,34 +681,34 @@ async function plugModal(data){
   PLUG=data||await api('/api/plugins');
   const fx=new Set(['reverb','delay','eq','comp','limiter','meter']);
   const isFx=p=>p.cats.every(c=>fx.has(c));
-  const row=p=>`<label class="pl"><input type="checkbox" data-id="${p.id}" ${p.owned?'checked':''}>
+  const row=p=>`<label class="pl"><span>${p.installed?'✓':''}</span>
      <div><span class="n">${p.name}</span> <span class="m">${p.maker}</span>
-      <span class="tag ${p.free?'free':'paid'}">${p.free?'FREE':'PAID'}</span>${p.installed?'<span class="tag inst">installed</span>':''}
+      <span class="tag ${p.free?'free':'paid'}">${p.free?'FREE':'PAID'}</span>${p.installed?'<span class="tag inst">on this computer</span>':''}
       <div class="m">${p.cats.map(c=>CATNAMES[c]||c).join(' · ')} — ${p.formats.join('/').toUpperCase()}</div></div>
      <div style="text-align:right">${Object.entries(p.works).map(([d,ok])=>`<span class="tag ${ok?'ok':'no'}">${d==='lmms'?'LMMS':'Waveform'} ${ok?'✓':'✗'}</span>`).join('')}
       <div style="margin-top:4px"><a href="${p.url}" target="_blank" rel="noopener" style="font-size:12px">Get it ↗</a></div></div></label>`;
-  const inst=PLUG.catalog.filter(p=>!isFx(p)), effs=PLUG.catalog.filter(isFx);
+  const byInst=(a,b)=>(b.installed-a.installed);
+  const inst=PLUG.catalog.filter(p=>!isFx(p)).sort(byInst), effs=PLUG.catalog.filter(isFx).sort(byInst);
   $('#modalBox').className='box wide';
   $('#modalBox').innerHTML=`<h3>My plugins</h3>
     <div class="row" style="flex-wrap:wrap;gap:14px;margin-bottom:10px">
       <div><div class="hint">My DAWs</div><div class="chips" id="pdaws">${['lmms','waveform'].map(d=>`<span class="chip ${PLUG.daws.includes(d)?'on':''}" data-d="${d}">${d==='lmms'?'LMMS':'Waveform Free'}</span>`).join('')}</div></div>
       <div><div class="hint">My computer</div><select id="pos" style="width:auto">${['windows','mac','linux'].map(o=>`<option value="${o}" ${PLUG.os===o?'selected':''}>${o[0].toUpperCase()+o.slice(1)}${o===PLUG.host_os?' (this PC)':''}</option>`).join('')}</select></div>
-      <div style="margin-left:auto"><button class="btn s" id="pscan">🔍 Scan my plugin folders</button></div>
+      <div style="margin-left:auto"><button class="btn s" id="pscan">⟳ Rescan</button></div>
     </div>
-    <div class="hint" style="margin-bottom:8px">Tick what you own (or scan). Every full song then comes with a guide saying which plugin to load on each part — only ones your DAWs can open.
+    <div class="hint" style="margin-bottom:8px">Studio Lab finds the plugins installed on this computer by itself (✓) and uses them: matching parts play through them, and every full song comes with a guide saying which plugin to load on each part — only ones your DAWs can open.
       <br>LMMS loads <b>VST2</b> plugins on Windows/Linux and <b>SF2</b> soundfonts everywhere (no VST3, no VST on Mac). Waveform loads VST, VST3 and AU (Mac).</div>
     <div id="pscanres" class="hint"></div>
     <h3 style="margin-top:12px">Instruments</h3>${inst.map(row).join('')}
     <h3 style="margin-top:16px">Mixing &amp; effects</h3>${effs.map(row).join('')}
     ${PLUG.other&&PLUG.other.length?`<h3 style="margin-top:16px">Other plugins found on this computer</h3><div class="hint">${PLUG.other.map(esc).join(' · ')}</div>`:''}
     <div style="text-align:right;margin-top:14px"><button class="btn p" onclick="closeModal()">Done</button></div>`;
-  const save=async()=>{ const owned=$$('#modalBox input[data-id]').filter(x=>x.checked).map(x=>x.dataset.id);
-    const daws=$$('#pdaws .chip.on').map(x=>x.dataset.d); const r=await api('/api/plugins',{plugins_owned:owned,daws:daws.length?daws:['lmms','waveform'],os:$('#pos').value}); return r; };
-  $$('#modalBox input[data-id]').forEach(x=>x.onchange=save);
+  const save=async()=>{ const daws=$$('#pdaws .chip.on').map(x=>x.dataset.d);
+    return await api('/api/plugins',{daws:daws.length?daws:['lmms','waveform'],os:$('#pos').value}); };
   $$('#pdaws .chip').forEach(c=>c.onclick=async()=>{c.classList.toggle('on'); plugModal(await save());});
   $('#pos').onchange=async()=>plugModal(await save());
   $('#pscan').onclick=async()=>{ $('#pscan').disabled=true; $('#pscan').textContent='Scanning…'; const r=await api('/api/plugins/scan',{});
-    await plugModal(r); $('#pscanres').innerHTML=`Scanned ${r.scan.dirs.length} folder(s): matched <b>${r.scan.found}</b> known plugins (ticked automatically), ${r.scan.other} others listed below.`; };
+    await plugModal(r); $('#pscanres').innerHTML=`Scanned ${r.scan.dirs.length} folder(s): found <b>${r.scan.found}</b> known plugins, ${r.scan.other} others listed below.`; };
   $('#modal').classList.add('on');
 }
 function closeModal(){$('#modal').classList.remove('on');$('#modalBox').className='box'}
@@ -766,7 +766,7 @@ async function init(){
   $('#soundsBtn').onclick=()=>soundsModal();
   $('#vstBtn').onclick=()=>vstModal();
   $('#rigBtn').onclick=()=>rigModal();
-  api('/api/vstpacks',{}).then(r=>{ if(r.rig) $('#rigBtn').textContent='🎚 Genre VSTs ✓'; }).catch(()=>{});
+
   $('#libBtn').onclick=()=>libModal();
   api('/api/soundlib',{}).then(r=>{ if(r.installed) $('#libBtn').textContent='🎻 Real instruments ✓'; });
   $('#refBtn').onclick=()=>$('#refFile').click();

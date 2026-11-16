@@ -32,7 +32,7 @@ def main(argv=None):
     ap.add_argument('--inst', action='append', default=[], help='instrument override, e.g. --inst lead=violin')
     ap.add_argument('--kit')
     ap.add_argument('--mute', default='', help='comma-separated layers to drop: kick,snare,top,bass,chords,pad,arp,lead,fx')
-    ap.add_argument('--vst-rig', action='store_true', help='play parts through genre-matched plugins (see: studiolab.py vsts)')
+    ap.add_argument('--no-vst-rig', action='store_true', help="don't play parts through your installed plugins")
     ap.add_argument('--preview', action='store_true', help='short clip only')
     ap.add_argument('--out', default='songs')
     ap.add_argument('--formats', default='wav', help='comma list of: ' + ','.join(OUTPUTS))
@@ -68,8 +68,7 @@ def main(argv=None):
                 o['blend_parts'] = dict(p.split('=', 1) for p in a.part)
             if a.inst:
                 o['instruments'] = dict(p.split('=', 1) for p in a.inst)
-            if a.vst_rig:
-                o['vst_rig'] = True
+            o.setdefault('vst_rig', not a.no_vst_rig)
             if a.mute:
                 o['muted'] = [m.strip() for m in a.mute.split(',') if m.strip()]
             generate(Options.from_dict(o), a.out, outputs=[f.strip() for f in a.formats.split(',')], preview=a.preview)

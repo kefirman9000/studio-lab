@@ -50,10 +50,47 @@ def host_os():
     return 'windows' if sys.platform.startswith('win') else ('mac' if sys.platform == 'darwin' else 'linux')
 
 
+_DETECT = {'t': 0.0, 'res': None, 'lock': threading.Lock()}
+
+
+def detected(refresh=False, max_age=300):
+    """Plugins installed on this computer (scanned automatically, cached for a few minutes)."""
+    with _DETECT['lock']:
+        if refresh or _DETECT['res'] is None or time.time() - _DETECT['t'] > max_age:
+            try:
+                _DETECT['res'] = plugins.scan()
+            except Exception:
+                _DETECT['res'] = _DETECT['res'] or dict(found={}, other=[], dirs=[])
+            _DETECT['t'] = time.time()
+            try:
+                from . import vstrigs
+                vstrigs.plugins_on_disk(refresh=True)
+            except Exception:
+                pass
+        return _DETECT['res']
+
+
 def plugin_prefs():
     st = load_settings()
-    return dict(owned=st.get('plugins_owned', []), daws=st.get('daws') or ['lmms', 'waveform'],
-                os=st.get('os') or host_os(), found=st.get('plugins_found', {}))
+    found = detected()['found']
+    return dict(owned=sorted(found), daws=st.get('daws') or ['lmms', 'waveform'],
+                os=st.get('os') or host_os(), found=found)
+
+
+def startup_detect():
+    """Scan plugin folders; if any plugin the genre rigs can play is installed, make sure VST support is ready."""
+    try:
+        detected(refresh=True)
+        from . import vsthost, vstrigs
+        if not vsthost.available():
+            usable = [pid for pid, pl in vstrigs.PLAYERS.items() if vstrigs.player_path(pid)]
+            if usable:
+                print('Found plugins Studio Lab can play (' + ', '.join(vstrigs.PLAYERS[u]['name'] for u in usable) +
+                      ') - installing VST support (pedalboard) in the background ...')
+                print('VST support ready.' if vsthost.install(log=lambda *a: None) else
+                      'Could not install VST support - run:  python -m pip install pedalboard')
+    except Exception as e:
+        print('Plugin scan failed:', e)
 
 
 def plugin_state():
@@ -63,9 +100,9 @@ def plugin_state():
         cat.append(dict(id=p['id'], name=p['name'], maker=p['maker'], url=p['url'], free=p['free'], cats=p['cats'], tip=p['tip'],
                         formats=pr['found'].get(p['id']) or p['formats'], owned=p['id'] in pr['owned'],
                         installed=p['id'] in pr['found'], works=plugins.works_in(p, pr['daws'], pr['os'], pr['found'].get(p['id']))))
-    st = load_settings()
-    return dict(catalog=cat, daws=pr['daws'], os=pr['os'], host_os=host_os(), other=st.get('plugins_other', []),
-                scanned=st.get('plugins_scanned_dirs', []))
+    d = detected()
+    return dict(catalog=cat, daws=pr['daws'], os=pr['os'], host_os=host_os(), other=d.get('other', []),
+                scanned=d.get('dirs', []), scanned_at=int(_DETECT['t']))
 
 
 RATINGS = os.path.join(ROOT, 'ratings.json')
@@ -437,7 +474,7 @@ class Handler(BaseHTTPRequestHandler):
         if p == '/api/generate':
             o = body.get('options', {})
             if isinstance(o, dict) and 'vst_rig' not in o:
-                o['vst_rig'] = bool(load_settings().get('vst_rig', False))
+                o['vst_rig'] = True                    # installed plugins are used automatically
             Options.from_dict(o)  # validate keys early
             n = max(1, min(8, int(body.get('count', 1))))
             preview = bool(body.get('preview', True))
@@ -474,11 +511,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({'ok': True})
         if p == '/api/vstpacks':
             from . import vstpacks, vsthost
-            return self._json(dict(vstpacks.status(), rig=bool(load_settings().get('vst_rig', False)),
-                                   available=vsthost.available()))
-        if p == '/api/vstpacks/rig':
-            save_settings({'vst_rig': bool(body.get('on'))})
-            return self._json({'ok': True, 'rig': bool(body.get('on'))})
+            return self._json(dict(vstpacks.status(), available=vsthost.available()))
         if p == '/api/vstpacks/plan':
             from . import vstrigs
             style = str(body.get('style', ''))
@@ -497,15 +530,15 @@ class Handler(BaseHTTPRequestHandler):
                     if not vsthost.install(log):
                         raise RuntimeError('could not install VST support')
                 res = vstpacks.install_many(ids, log)
-                vstrigs.plugins_on_disk(refresh=True)
+                detected(refresh=True)
                 return res
             return self._json({'job': bg_job(job)})
         if p == '/api/vstpacks/remove':
             from . import vstpacks, vstrigs
-            if str(body.get('id')) not in vstpacks.BY_ID:
+            if str(body.get('id')) not in vstpacks.BY_ID and str(body.get('id')) not in vstpacks.recorded():
                 return self._json({'error': 'unknown pack'}, 400)
             r = vstpacks.remove(str(body['id']))
-            vstrigs.plugins_on_disk(refresh=True)
+            detected(refresh=True)
             return self._json(r)
         if p == '/api/soundlib':
             from . import soundfont
@@ -551,15 +584,11 @@ class Handler(BaseHTTPRequestHandler):
         if p == '/api/meta':
             return self._json(meta())
         if p == '/api/plugins':
-            upd = {k: body[k] for k in ('plugins_owned', 'daws', 'os') if k in body}
+            upd = {k: body[k] for k in ('daws', 'os') if k in body}
             save_settings(upd)
             return self._json(plugin_state())
         if p == '/api/plugins/scan':
-            res = plugins.scan(body.get('extra_dirs') or [])
-            st = load_settings()
-            owned = sorted(set(st.get('plugins_owned', [])) | set(res['found']))
-            save_settings(dict(plugins_found=res['found'], plugins_other=res['other'], plugins_scanned_dirs=res['dirs'],
-                               plugins_owned=owned))
+            res = detected(refresh=True)
             out = plugin_state()
             out['scan'] = dict(found=len(res['found']), other=len(res['other']), dirs=res['dirs'])
             return self._json(out)
@@ -589,6 +618,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def run(port=8765, open_browser=True):
     threading.Thread(target=worker, daemon=True).start()
+    threading.Thread(target=startup_detect, daemon=True).start()
     for p in range(port, port + 20):
         try:
             srv = ThreadingHTTPServer(('127.0.0.1', p), Handler)
