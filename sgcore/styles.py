@@ -2477,3 +2477,99 @@ def _widen(families, role):
 _widen(_PAD_FAMILY, 'pad')
 _widen(_BASS_FAMILY, 'bass')
 
+
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Bells are seasoning, not a default. Bell / celesta / glockenspiel / music-box sounds stay only where they're idiomatic
+# (trap bell melodies, film & orchestral, holiday, fantasy, horror music boxes); mallets (marimba, kalimba, vibes,
+# steel drum) stay in afro, latin, caribbean, jazz, bossa, lo-fi and organic styles. Everywhere else a bell is
+# replaced by the genre's own sound for that part.
+BELLS = {'bell', 'celesta', 'sf:glock', 'sf:musicbox', 'sf:tubular', 'glock', 'musicbox', 'tubular', 'sf:celesta'}
+MALLETS = {'marimba', 'kalimba', 'vibes', 'steeldrum', 'sf:marimba', 'sf:vibes', 'sf:kalimba', 'sf:steeldrum', 'sf:xylophone'}
+BELL_OK = {'trap', 'holiday', 'fantasy_rpg', 'ambient', 'cinematic', 'orchestral', 'film_piano', 'waltz', 'neoclassical',
+           'adventure', 'tension', 'hauntology', 'chamber_pop', 'braindance', 'orchestral_hiphop', 'hybrid_trailer', 'lofi'}
+MALLET_OK = BELL_OK | {'afrobeats', 'amapiano', 'afro_house', 'cumbia', 'salsa', 'dancehall', 'bossa_nova', 'jazz', 'swing',
+                       'lofi', 'organic_house', 'liquid_dnb', 'city_pop', 'downtempo'}
+# what a genre plays instead (by part); anything not listed falls back to its category
+NO_BELL = {
+    'trance': dict(arp='pluck_saw', lead='supersaw_lead'), 'uplifting_trance': dict(arp='pluck_saw', lead='supersaw_lead'),
+    'psytrance': dict(arp='pluck_saw', lead='acid'), 'progressive_trance': dict(arp='pluck_saw', lead='supersaw_lead'),
+    'techno': dict(arp='pluck_saw', lead='stab', chords='stab'), 'minimal': dict(arp='pluck', lead='stab', chords='stab'),
+    'melodic_techno': dict(arp='pluck_saw', lead='pluck_saw'), 'house': dict(arp='pluck', lead='stab'),
+    'tech_house': dict(arp='pluck', lead='stab'), 'progressive_house': dict(arp='pluck_saw', lead='supersaw_lead'),
+    'acid_house': dict(arp='acid', lead='acid'), 'melodic_house': dict(arp='pluck_saw', lead='pluck_saw'),
+    'dnb': dict(arp='stab', lead='leadsaw'), 'neurofunk': dict(arp='stab', lead='reese', chords='stab'),
+    'jungle': dict(arp='stab', lead='vox'), 'breakcore': dict(arp='stab', lead='chip'),
+    'dubstep': dict(arp='pluck_saw', lead='leadsaw'), 'brostep': dict(arp='pluck_saw', lead='leadsaw'),
+    'melodic_dubstep': dict(arp='pluck_saw', lead='supersaw_lead'), 'tempa_dubstep': dict(arp='organ', lead='flute'),
+    'future_bass': dict(arp='pluck_saw', lead='supersaw_lead'), 'ukgarage': dict(arp='organ', lead='vox'),
+    'synthwave': dict(arp='pluck_saw', lead='leadsaw'), 'synthpop': dict(arp='pluck_saw', lead='polysynth'),
+    'electro': dict(arp='pluck_saw', lead='leadsaw'), 'bigroom': dict(arp='pluck_saw', lead='supersaw_lead'),
+    'hardstyle': dict(arp='pluck_saw', lead='supersaw_lead'), 'eurodance': dict(arp='pluck_saw', lead='supersaw_lead'),
+    'hyperpop': dict(arp='chip', lead='supersaw_lead'), 'kpop': dict(arp='pluck', lead='supersaw_lead'),
+    'pop': dict(arp='pluck', lead='piano'), 'teen_pop': dict(arp='pluck', lead='piano'), 'uk_drill': dict(arp='piano', lead='piano'),
+    'boombap': dict(arp='epiano', lead='piano', chords='epiano'), 'luxury_rap': dict(arp='piano', lead='piano'),
+    'jersey_club': dict(arp='vox', lead='vox'), 'vaporwave': dict(arp='epiano', lead='sax'), 'motown': dict(arp='piano', lead='sax'),
+    'indie_rock': dict(arp='guitar', lead='guitar'), 'soft_rock': dict(arp='guitar', lead='piano'), 'disco_funk': dict(arp='clav'),
+}
+NO_BELL_CAT = {'Electronic': dict(arp='pluck_saw', lead='leadsaw', chords='stab', pad='glasspad'),
+               'Classic': dict(arp='pluck', lead='piano', chords='epiano', pad='strings'),
+               'Orchestral': dict(arp='harp', lead='flute', chords='strings', pad='strings')}
+
+
+def bell_allowed(style, inst):
+    if inst in BELLS:
+        return style in BELL_OK
+    if inst in MALLETS:
+        return style in MALLET_OK
+    return True
+
+
+def bell_swap(style, role, inst=None):
+    st = STYLES.get(style, {})
+    rep = NO_BELL.get(style, {}).get(role) or NO_BELL_CAT.get(st.get('category'), NO_BELL_CAT['Electronic']).get(role)
+    return rep if rep and rep != inst else 'pluck'
+
+
+for _name, _st in STYLES.items():
+    for _t in _st['tracks']:
+        if _t['layer'] in ('arp', 'lead', 'chords', 'pad') and not bell_allowed(_name, _t['inst']):
+            _t['inst'] = bell_swap(_name, _t['layer'], _t['inst'])
+    for _role, _pool in list(POOLS.get(_name, {}).items()):
+        if _role in ('arp', 'lead', 'chords', 'pad'):
+            _keep = [x for x in _pool if bell_allowed(_name, x)]
+            _own = next((t['inst'] for t in _st['tracks'] if t['layer'] == _role), None)
+            if _own and _keep and _keep[0] != _own:          # the genre's own sound still leads its pool
+                _keep = [_own] + [x for x in _keep if x != _own]
+            POOLS[_name][_role] = _keep or [bell_swap(_name, _role)]
+
+
+# trance: big halls on lead / pad, dotted-8th delay on lead and arp, and the classic 16th trance gate on the pad in drops
+_TRANCE_GATE = {'trance': 'x.xx.x.xx.xx.x.x', 'uplifting_trance': 'x.x.xx.xx.x.xx.x', 'progressive_trance': 'xx.x.xx.xx.x.xx.',
+                'psytrance': None}
+for _n, _g in _TRANCE_GATE.items():
+    for _t in STYLES[_n]['tracks']:
+        if _t['layer'] == 'lead':
+            _t['rev'] = max(_t.get('rev') or 0, 0.55)
+            _t['dly'] = max(_t.get('dly') or 0, 0.35)
+        elif _t['layer'] == 'arp':
+            _t['rev'] = max(_t.get('rev') or 0, 0.35)
+            _t['dly'] = max(_t.get('dly') or 0, 0.4)
+        elif _t['layer'] == 'pad':
+            _t['rev'] = max(_t.get('rev') or 0, 0.6)
+            if _g:
+                _t['gate'] = _g
+    STYLES[_n]['delay_beats'] = 0.75
+    STYLES[_n]['reverb'] = max(STYLES[_n].get('reverb') or 0, 3.0)
+
+
+# audit fixes: disco & funk play an electric bass (not a synth saw), ambient never gets a gritty FM bass
+for _n in ('disco', 'funk'):
+    for _t in STYLES[_n]['tracks']:
+        if _t['layer'] == 'bass':
+            _t['inst'] = 'pluck'
+            _t['p'] = dict(bright=1700, damp=0.996)
+POOLS['disco']['bass'] = ['pluck', 'sf:fingerbass', 'sf:slapbass', 'moogbass']
+POOLS['funk']['bass'] = ['pluck', 'sf:slapbass', 'sf:fingerbass', 'moogbass']
+POOLS['ambient']['bass'] = ['sinebass', 'moogbass']

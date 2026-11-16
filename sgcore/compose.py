@@ -567,7 +567,7 @@ def apply_variety(st, opts, rnd):
             t['dly'] = max(t['dly'], 0.2) * rnd.uniform(0.7, 1.3)
         tracks.append(t)
     st['tracks'] = tracks
-    if not opts.kit and st.get('category') != 'Orchestral' and rd.random() < 0.35 * v:
+    if not opts.kit and not st.get('kit_id') and st.get('category') != 'Orchestral' and rd.random() < 0.35 * v:
         kit = dict(KITS[rd.choice(['808', '909', 'punchy', 'soft', 'default'])])
         st['kitparams'] = kit
     elif st.get('kitparams', {}).get('kick'):
@@ -654,13 +654,20 @@ def apply_real(st, opts):
     if getattr(opts, 'user_drums', False):
         return
     name = opts.style
-    if sl.installed('drums') and (opts.kit in (None, '', 'acoustic')):
-        acoustic = st.get('sampled_kit') not in (None, 'orchestra') or ACOUSTIC_KIT.get(name) or st.get('kit') == 'acoustic' \
-            or opts.kit == 'acoustic'
-        if name in sl.LOFI_KIT_STYLES:
-            st['real_kit'] = 'lofi'
-        elif acoustic:
-            st['real_kit'] = 'studio'
+    if sl.installed('drums'):
+        if st.get('kit_id'):                               # a chosen / genre kit says which mic, if any
+            mic = st.get('want_real_kit')
+            if mic and not sl.has(mic + ':kick'):
+                mic = 'studio' if sl.has('studio:kick') else None
+            if mic:
+                st['real_kit'] = mic
+        elif opts.kit in (None, '', 'acoustic'):
+            acoustic = st.get('sampled_kit') not in (None, 'orchestra') or ACOUSTIC_KIT.get(name) or st.get('kit') == 'acoustic' \
+                or opts.kit == 'acoustic'
+            if name in sl.LOFI_KIT_STYLES:
+                st['real_kit'] = 'lofi'
+            elif acoustic:
+                st['real_kit'] = 'studio'
     if sl.installed('percussion'):
         st['real_perc'] = True
     if 'orch_note' in st:                                  # re-check now that parts may play the real orchestra
@@ -717,11 +724,16 @@ def resolve_style(opts, rnd=None, mood=None):
             t['db'] = None
         tracks.append(t)
     st['tracks'] = tracks
-    kit = dict(KITS.get(opts.kit or st['kit'], {}))
-    if not opts.kit:
+    from . import drumkits
+    groove_of = (st.get('fusion') or {}).get('groove') or st.get('name') or opts.style
+    kit_id = drumkits.effective(opts, groove_of, st)
+    preset = drumkits.configure(st, kit_id, groove_of, opts) if kit_id else st['kit']
+    kit = dict(KITS.get(preset, {}))
+    if not kit_id:
         for k, v in st.get('kit_override', {}).items():
             kit[k] = {**kit.get(k, {}), **v}
     st['kitparams'] = kit
+    drumkits.install_break(st, st['tracks'])
     if opts.swing is not None:
         st['swing'] = opts.swing
     st['human'] = st['human'] * opts.humanize
@@ -1002,6 +1014,7 @@ def style_knob_defaults(opts):
 
 
 def compose(opts):
+    from . import drumkits  # noqa: F401  (break patterns)
     user_opts = opts
     opts = style_knob_defaults(opts)
     opts = apply_simplicity(opts)
@@ -1022,6 +1035,7 @@ def compose(opts):
     add_layer_tracks(st, opts)
     add_bass_switch_tracks(st)
     add_section_switch_tracks(st, opts, random.Random(f'{opts.seed}-rotation-{opts.style}'))
+    debell(st, opts)
     apply_sampled(st, opts)
     by_name = {t['name']: t for t in st['tracks']}
     st['tracks'] = [t for t in st['tracks'] if not (t.get('double_of') and by_name.get(t['double_of'], {}).get('inst') == t['inst'])]
@@ -1224,11 +1238,14 @@ def compose(opts):
             nxt = prog[((b + 1) // cb) % len(prog)]
             last_of_4 = (b % 4 == 3)
             # ---------------- drums
+            slices = drumkits.chop_map(st, bar, rnd_d, energy, b) if st.get('break_seq') else None
             for dname, pats in st['drums'].items():
                 if dname not in tracks or tracks[dname]['layer'] not in layers:
                     continue
                 pat = pchoice[dname]
-                if dname == kick_name and last_of_4 and len(pats) > 1 and rnd_d.random() < 0.2 + 0.3 * energy:
+                if slices is not None:                      # a break: its 4-bar pattern, straight or chopped
+                    pat = drumkits.bar_pattern(st, dname, slices) or pat
+                elif dname == kick_name and last_of_4 and len(pats) > 1 and rnd_d.random() < 0.2 + 0.3 * energy:
                     pat = rnd_d.choice(pats)
                 hits = parse_rhythm(pat)
                 used = {s for s, l, c in hits}
@@ -1714,6 +1731,27 @@ OCT_DOWN = {'cello', 'sf:contrabass', 'sf:bassoon', 'sf:trombone', 'sf:tuba', 'h
 NO_LAYER = {'808', 'logdrum', 'wobble', 'acid', 'sinebass', 'chipbass'}
 
 
+def debell(st, opts):
+    """Last check on every song: no bell / mallet sound in a genre where it isn't idiomatic (rotation, layering, moods
+    and palettes all end up here) - unless you picked it yourself."""
+    from .styles import bell_allowed, bell_swap, BELLS, MALLETS, STYLES
+    name = st.get('name') or opts.style
+    mine = opts.instruments or {}
+    own = {(t['layer'], t['inst']) for t in STYLES.get(name, {}).get('tracks', [])}
+    rnd = random.Random(f'{opts.seed}-bells-{name}')
+    for t in st['tracks']:
+        role = t['layer']
+        if role not in ('arp', 'lead', 'chords', 'pad') or t['inst'].startswith(('vst:', 'user:', 'real:')):
+            continue
+        if mine.get(role) == t['inst']:
+            continue
+        if bell_allowed(name, t['inst']):
+            # even where they fit, a bell / mallet that isn't the genre's own sound for this part is an occasional colour
+            if t['inst'] not in BELLS | MALLETS or (role, t['inst']) in own or rnd.random() < 0.35:
+                continue
+        t['inst'] = bell_swap(name, role, t['inst'])
+
+
 def add_layer_tracks(st, opts):
     """Some parts get a second instrument from the genre's own pool, playing the same notes (in unison or an octave
     apart): a supersaw lead with a pluck on top, violins doubled by a flute an octave up or celli an octave down, a
@@ -1793,7 +1831,7 @@ def section_group(sec):
 
 
 # genres whose lead sound is the genre - rotation only uses their own pool
-SIGNATURE_SOUNDS = {'phonk', 'house_phonk', 'memphis_phonk', 'brazilian_phonk'}
+SIGNATURE_SOUNDS = {'phonk', 'house_phonk', 'memphis_phonk', 'brazilian_phonk', 'metal', 'punk', 'symphonic_metal', 'rock'}
 
 
 def add_section_switch_tracks(st, opts, rnd):

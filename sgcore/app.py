@@ -327,7 +327,10 @@ def meta():
         roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Built-in') for i in lst] + vst_insts(r) + user_insts()
                for r, lst in ROLE_CHOICES.items()},
         effects=vst_effects(), voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
-        kits=list(KITS), parts=[dict(id=p, name=PART_LABELS[p]) for p in FUSION_PARTS],
+        kits=__import__('sgcore.drumkits', fromlist=['menu']).menu() + [dict(id=k, group='Other synth kits', label=k.title())
+                                                                         for k in KITS if k not in ('default',) and k not in
+                                                                         __import__('sgcore.drumkits', fromlist=['MENU']).MENU],
+        genre_kits=__import__('sgcore.drumkits', fromlist=['GENRE_KIT']).GENRE_KIT, parts=[dict(id=p, name=PART_LABELS[p]) for p in FUSION_PARTS],
         labels={k: label(k) for k in STYLES},
         style_defaults={k: {t['layer']: t['inst'] for t in v['tracks'] if t['layer'] in ROLE_CHOICES} for k, v in STYLES.items()},
     )

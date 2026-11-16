@@ -109,7 +109,7 @@ LIBS = {
     'percussion': dict(repo='sgossner/VCSL', dir='vcsl', title='Percussion (Versilian Community Sample Library)',
                        by='Versilian Studios', rules=[('', r) for r in VCSL], ext='.wav'),
     'drums': dict(repo='sfzinstruments/virtuosity_drums', dir='vdrums', title='Acoustic drum kits (Virtuosity Drums)',
-                  by='Versilian Studios & Karoryfer', rules=[('studio', r) for r in vdrums('mid')] + [('lofi', r) for r in vdrums('lofi')],
+                  by='Versilian Studios & Karoryfer', rules=[('studio', r) for r in vdrums('mid')] + [('lofi', r) for r in vdrums('lofi')] + [('room', r) for r in vdrums('room')],
                   ext='.flac'),
 }
 

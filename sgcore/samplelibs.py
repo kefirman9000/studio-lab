@@ -37,8 +37,8 @@ REAL_DIR = os.path.join(ROOT, 'sound_library', 'real')
 MANIFEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'samplelibs.json')
 LIB_ORDER = ['drums', 'percussion', 'strings', 'winds']
 BLURB = {
-    'drums': 'A real acoustic drum kit (kick, snare, hats, ride, crash, toms) with 2 mic sounds: clean studio and vintage lo-fi. '
-             'Used by funk, disco, rock, jazz, soul, lo-fi, boom-bap and other acoustic styles.',
+    'drums': 'A real acoustic drum kit (kick, snare, hats, ride, crash, toms) with 3 mic sounds: clean studio, big rock room and '
+             'vintage lo-fi. Plays the rock, funk, disco, jazz and soul kits and the re-played breaks (Amen, Think, Funky Drummer ...).',
     'percussion': 'Real congas, bongos, shakers, tambourine, claps, cowbell, claves, guiro, woodblock, triangle - used in every genre that has them '
                   '(organic house, afro, latin, disco, pop ...).',
     'strings': 'A real string orchestra: violin, viola, cello and bass sections that play sustain, spiccato, pizzicato and tremolo, '
@@ -76,8 +76,11 @@ def status():
     out = []
     for lib in LIB_ORDER:
         L = manifest()['libs'][lib]
+        inst = installed(lib)
+        missing = [f for f in L['files'] if not os.path.isfile(_local(lib, f))] if inst else []
         out.append(dict(id=lib, title=L['title'], by=L['by'], mb=round(L['bytes'] / 1e6), files=len(L['files']),
-                        installed=installed(lib), blurb=BLURB[lib], license='CC0 (public domain)',
+                        installed=inst, update_mb=round(sum(f['s'] for f in missing) / 1e6, 1) if len(missing) > 3 else 0,
+                        blurb=BLURB[lib], license='CC0 (public domain)',
                         source=f"https://github.com/{L['repo']}"))
     return out
 
@@ -436,4 +439,4 @@ LOFI_KIT_STYLES = {'lofi', 'boombap', 'hauntology', 'vaporwave', 'soul_ballad', 
 PERC = {'conga': 'conga', 'shaker': 'shaker', 'tamb': 'tamb', 'cowbell': 'cowbell', 'claves': 'claves', 'guiro': 'guiro',
         'woodblock': 'woodblock', 'triangle': 'triangle', 'cabasa': 'cabasa', 'bongo': 'bongo', 'agogo': 'agogo'}
 KIT_PARTS = {'kick': 'kick', 'snare': 'snare', 'rim': 'rim', 'chat': 'chat', 'ohat': 'ohat', 'ride': 'ride', 'crash': 'crash',
-             'tom': 'tom', 'clap': 'clap'}
+             'tom': 'tom', 'clap': 'clap', 'cymbal': 'crash'}

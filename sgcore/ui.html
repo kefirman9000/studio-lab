@@ -377,7 +377,7 @@ function renderOuts(){
     const c=document.createElement('span');const on=state.outputs.includes(k);c.className='chip'+(on?' on':'');c.textContent=n;
     c.onclick=()=>{state.outputs=on?state.outputs.filter(x=>x!==k):[...state.outputs,k];renderOuts()};o.appendChild(c)});
 }
-function refresh(){renderStyles();renderSelected();}
+function refresh(){ if(window.showGenreKit) showGenreKit();renderStyles();renderSelected();}
 
 function options(){
   const o={style:state.style, seed:+$('#seed').value||1, blend:state.blend, blend_parts:state.blend_parts, mood:state.mood,
@@ -521,6 +521,7 @@ function addResult(r, target){
       <span style="margin-left:auto"></span><button class="rate" data-r="1" title="I like this">👍</button><button class="rate" data-r="-1" title="Not for me">👎</button></div>
     <div class="tl" title="Click a section to edit it"></div><div class="sedbox"></div>
     <div class="dragrow rr"></div>
+    ${r.kit?`<div class="hint" style="margin-top:4px">🥁 ${esc(r.kit)}</div>`:''}
     ${r.orch_note?`<div class="hint" style="margin-top:6px">🎻 ${esc(r.orch_note)} <a href="#" class="orchGo" data-note="${esc(r.orch_note)}">Set up now</a></div>`:''}
     ${r.warnings&&r.warnings.length?`<div class="hint" style="color:#ffb547;margin-top:6px">⚠ ${r.warnings.map(esc).join('<br>⚠ ')}</div>`:''}
     <div class="plugrec"></div>
@@ -973,7 +974,12 @@ async function init(){
   $('#ver').textContent='v'+META.version;
   $('#key').innerHTML='<option value="">Auto</option>'+META.keys.map(k=>`<option>${k}</option><option value="${k}m">${k}m</option>`).join('');
   $('#scale').innerHTML='<option value="">Auto</option>'+META.scales.map(s=>`<option value="${s}">${s.replace('_',' ')}</option>`).join('');
-  $('#kit').innerHTML='<option value="">Style default</option>'+META.kits.filter(k=>k!=='default').map(k=>`<option>${k}</option>`).join('');
+  { const groups={}; META.kits.forEach(k=>{ (groups[k.group]=groups[k.group]||[]).push(k) });
+    $('#kit').innerHTML='<option value="">Genre kit</option>'+Object.entries(groups).map(([g,ks])=>`<optgroup label="${esc(g)}">`+
+      ks.map(k=>`<option value="${esc(k.id)}">${esc(k.label)}</option>`).join('')+'</optgroup>').join('');
+    window.showGenreKit=()=>{ const k=(META.genre_kits||{})[state.style]; const o=$('#kit').options[0];
+      const lab=k&&META.kits.find(x=>x.id===k); o.textContent='Genre kit'+(lab?' - '+lab.label:''); };
+    showGenreKit(); }
   const NICE={diatonic:'Diatonic (scale)',pentatonic:'Pentatonic',blues:'Blues (blue notes, slides)',bebop:'Bebop (chromatic approaches)',
     close:'Close',open:'Open / spread',drop2:'Drop-2 (soul, house)',rootless:'Rootless (jazz piano)',power:'Power chords',
     triad:'Triads','7':'7ths',add9:'add9','9':'9ths','6':'6ths',sus2:'sus2',sus4:'sus4'};

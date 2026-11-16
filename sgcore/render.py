@@ -122,6 +122,14 @@ class Renderer:
         if sig is False:
             try:
                 sig = sl.hit(name, vb, f'{idx % 4}')
+                semis = float(self.st.get('break_pitch') or 0.0)
+                if sig is not None and semis and kit and name.startswith(kit + ':'):
+                    # breaks: the kit tuned up / down like a sped-up / slowed record
+                    r = 2 ** (semis / 12.0)
+                    pos = np.arange(0, len(sig) - 1, r)
+                    i0 = pos.astype(np.int64)
+                    fr = (pos - i0).astype(np.float32)
+                    sig = (sig[i0] * (1 - fr) + sig[i0 + 1] * fr).astype(np.float32)
             except Exception:
                 sig = None
             self.cache[key] = sig
@@ -238,7 +246,37 @@ class Renderer:
             self._add(buf, sig * ev.vel, s)
         if tcfg.get('drive'):
             buf = (soft(buf * (1 + tcfg['drive'] * 3), 1.5) / (1 + tcfg['drive'])).astype(np.float32)
+        if tcfg.get('gate'):
+            buf = self._gate(buf, tcfg['gate'])
         return buf
+
+    def _gate(self, buf, pattern):
+        """Trance gate: the part is chopped to a 16th-note pattern during drops (breakdowns stay open)."""
+        steps = [c != '.' for c in pattern]
+        env = np.ones(self.length, dtype=np.float32)
+        sm = int(0.004 * SR)
+        for sec in self.song.get('sections', []):
+            if not (sec['opts'].get('drop') or sec['name'] in ('drop', 'chorus', 'climax')):
+                continue
+            b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+            k = 0
+            beat = b0
+            while beat < b1:
+                a = int(self.t_of(beat, human=False) * SR)
+                z = int(self.t_of(beat + 0.25, human=False) * SR)
+                if a >= self.length:
+                    break
+                z = min(z, self.length)
+                if not steps[k % len(steps)]:
+                    seg = np.full(z - a, 0.08, dtype=np.float32)
+                    r = min(sm, len(seg) // 2)
+                    if r:
+                        seg[:r] = np.linspace(1, 0.08, r)
+                        seg[-r:] = np.linspace(0.08, 1, r)
+                    env[a:z] = seg
+                k += 1
+                beat += 0.25
+        return buf * env
 
     def _render_vst(self, tcfg, evs):
         """Play this part through one of your own VST3/AU instruments (falls back to the built-in sound on failure)."""

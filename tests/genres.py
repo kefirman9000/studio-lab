@@ -354,8 +354,47 @@ def test_builds_and_vinyl():
     print('ok  build-ups vary per song and per build, new build types, vinyl on/off')
 
 
+
+def test_kits_and_bells():
+    from sgcore import drumkits
+    from sgcore.styles import BELLS, MALLETS, BELL_OK, MALLET_OK, STYLES
+    # genre kits
+    for st, kit in (('jungle', 'amen'), ('boombap', 'funky_drummer'), ('downtempo', 'back_to_life'), ('trap', '808'),
+                    ('trance', 'trance'), ('rock', 'rock'), ('synthwave', 'linn'), ('techno', 'techno')):
+        assert compose(Options(style=st, seed=2))['st'].get('kit_id') == kit, st
+    # a break replaces the kit's patterns with its own 4-bar cycle; jungle chops it, a straight break doesn't
+    j = compose(Options(style='jungle', seed=3))
+    assert {'kick', 'snare', 'ride'} <= {e.track for e in j['events'] if e.midi is None}
+    def bars(song, track):
+        out = {}
+        for e in song['events']:
+            if e.track == track:
+                out.setdefault(int(e.beat // 4), []).append(round(e.beat % 4, 2))
+        return [tuple(sorted(v)) for k, v in sorted(out.items())]
+    straight = compose(Options(style='house', seed=3, kit='amen'))
+    sb = set(bars(straight, 'snare'))
+    assert len(sb) <= 10, sb                                           # the 4 bars of the break (+ fills, builds)
+    assert len(set(bars(j, 'snare'))) > len(sb)                        # chopped: many more bar shapes
+    # you can switch kits on any genre, and the menu lists them
+    for k in drumkits.MENU:
+        s = compose(Options(style='pop', seed=1, kit=k))
+        assert s['st']['kit_id'] == k and any(e.midi is None for e in s['events']), k
+    # bells only where they belong
+    for name in ('trance', 'techno', 'dnb', 'house', 'dubstep', 'future_bass', 'ukgarage', 'synthwave'):
+        for k in range(1, 7):
+            s = compose(Options(style=name, seed=k))
+            for t in s['st']['tracks']:
+                if t['layer'] in ('arp', 'lead', 'chords', 'pad'):
+                    assert t['inst'] not in BELLS and t['inst'] not in MALLETS, (name, k, t['name'], t['inst'])
+    s = compose(Options(style='trance', seed=1, instruments={'arp': 'bell'}))
+    assert any(t['inst'] == 'bell' for t in s['st']['tracks'] if t['layer'] == 'arp')   # your own pick is kept
+    assert any(t.get('gate') for t in compose(Options(style='trance', seed=1))['st']['tracks'])
+    print('ok  genre drum kits, re-played breaks + chops, kit switching, bells only where idiomatic, trance gate')
+
+
 if __name__ == '__main__':
     main()
     test_builds_and_vinyl()
+    test_kits_and_bells()
     test_chords_and_knobs()
     test_rotation_and_freshness()

@@ -30,7 +30,8 @@ def main(argv=None):
     ap.add_argument('--brightness', type=float, default=0.0)
     ap.add_argument('--loudness', type=float)
     ap.add_argument('--inst', action='append', default=[], help='instrument override, e.g. --inst lead=violin')
-    ap.add_argument('--kit')
+    ap.add_argument('--kit', help='drum kit: 808, 909, trance, techno, linn, punchy, hard, soft, studio, rock, vintage, '
+                    'amen, think, funky_drummer, apache, back_to_life, levee (default: the genre\'s kit)')
     ap.add_argument('--melody', choices=['diatonic', 'pentatonic', 'blues', 'bebop'], help='how the lead phrases (default: genre)')
     ap.add_argument('--voicing', choices=['close', 'open', 'drop2', 'rootless', 'power'], help='chord voicing (default: genre)')
     ap.add_argument('--chord-color', choices=['triad', '7', 'add9', '9', '6', 'sus2', 'sus4'])

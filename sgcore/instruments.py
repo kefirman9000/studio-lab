@@ -552,7 +552,28 @@ def i_hoover(m, dur, p, glide=None, mod=None):
 
 
 def i_supersaw_lead(m, dur, p, glide=None, mod=None):
-    return i_supersaw(m, dur, dict(cut=p.get('cut', 7000), a=0.005, r=0.2, detune=p.get('detune', 1.3)))
+    """The trance lead: 9 detuned saws spread across the stereo field, an octave-down saw for body, a filter that opens on
+    every note, delayed vibrato on long notes and a high-pass so it sits above the chords."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.004, 0.25, 0.85, p.get('r', 0.25))
+    n = len(env)
+    t = np.arange(n) / SR
+    vib = 1 + 0.0035 * np.sin(2 * np.pi * 5.2 * t) * np.clip((t - 0.3) / 0.35, 0, 1)
+    cents = np.array([-34, -22, -12, -5, 0, 5, 12, 22, 34]) * p.get('detune', 1.0)
+    L = np.zeros(n)
+    R = np.zeros(n)
+    for i, c in enumerate(cents):
+        ph = np.cumsum(f * 2 ** (c / 1200) * vib / SR) + _rng().random()
+        s_ = 2 * (ph % 1.0) - 1
+        th = (i / (len(cents) - 1)) * np.pi / 2
+        L += s_ * np.cos(th)
+        R += s_ * np.sin(th)
+    sub = 2 * ((np.cumsum(f / 2 * vib / SR)) % 1.0) - 1
+    x = np.vstack([L, R]) / len(cents) * 1.7 + 0.35 * sub
+    fenv = 0.55 + 0.45 * np.exp(-t * 6)
+    y = filt_env(x, 900, p.get('cut', 9000), fenv)
+    y = hp(y, 180)
+    return y * env * 1.1
 
 
 INSTRUMENTS = {
@@ -626,6 +647,15 @@ KITS = {
                  chat=dict(decay=90)),
     'acoustic': dict(kick=dict(pitch=58, punch=60, sweep=30, decay=11, drive=1.1, click=0.5), snare=dict(tone=195, snap=1.0, body=0.8, decay=11),
                      chat=dict(decay=45), ohat=dict(decay=5)),
+    # trance: a tight, rolling 909 kick with a long tail, crisp clap, airy open hats
+    'trance': dict(kick=dict(pitch=48, punch=170, sweep=40, decay=6.5, drive=2.6, len=0.55, click=0.55), snare=dict(tone=200, snap=1.3, decay=16),
+                   clap=dict(tail=9), chat=dict(decay=70), ohat=dict(decay=5)),
+    # techno: harder, darker 909 with drive
+    'techno': dict(kick=dict(pitch=46, punch=150, sweep=34, decay=5.5, drive=3.6, len=0.6, click=0.4), snare=dict(tone=180, snap=1.1, decay=15),
+                   chat=dict(decay=95), ohat=dict(decay=9)),
+    # 80s LinnDrum-style: round kick, big snare with a fat body (the gated-reverb era)
+    'linn': dict(kick=dict(pitch=56, punch=80, sweep=28, decay=10, drive=1.3, click=0.35), snare=dict(tone=210, snap=1.0, body=1.2, decay=7),
+                 clap=dict(tail=6), chat=dict(decay=55), ohat=dict(decay=6)),
 }
 
 

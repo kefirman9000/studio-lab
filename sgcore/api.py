@@ -223,6 +223,10 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
         info['warnings'] = r.vst_failures
     if song['st'].get('orch_note'):
         info['orch_note'] = song['st']['orch_note']
+    from . import drumkits
+    k = drumkits.MENU.get(song['st'].get('kit_id') or '')
+    if k:
+        info['kit'] = k[2] + (' (real drums)' if song['st'].get('real_kit') else '')
     info.update(files=files, loudness=round(loud, 1), peak=round(peak, 1), render_seconds=round(time.time() - t0, 1),
                 preview=preview)
     log(f'   done in {time.time() - t0:.0f}s')
