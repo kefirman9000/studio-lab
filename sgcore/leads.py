@@ -7,6 +7,8 @@ import random
 
 # which devices suit each genre (one is picked per song, so the same style still varies)
 GENRE_DEVICES = {
+    'tempa_dubstep': ['hook', 'ostinato'], 'progressive_trance': ['hook', 'hook', 'call'], 'organic_house': ['hook', 'call'],
+    'disco_funk': ['riff', 'call'],
     'trance': ['arp', 'hook'], 'progressive_house': ['arp', 'hook'], 'synthwave': ['arp', 'hook'], 'eurodance': ['hook', 'arp'],
     'chiptune': ['arp', 'hook'], 'electro': ['arp', 'riff'], 'synthpop': ['hook', 'arp'], 'bigroom': ['hook', 'chops'],
     'hardstyle': ['hook', 'arp'], 'future_bass': ['chops', 'hook'], 'hyperpop': ['hook', 'chops'],

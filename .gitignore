@@ -11,3 +11,4 @@ plugins/*
 !plugins/README.txt
 vst_sounds/
 sound_library/
+recent_instruments.json

@@ -31,7 +31,7 @@ def describe(song):
                 duration=f"{int(dur // 60)}:{int(dur % 60):02d}", seconds=round(dur, 1), seed=song['seed'],
                 form=' > '.join(f"{s['name']}({s['bars']})" for s in song['sections']),
                 chords=k.roman(song['prog_main']), chords_alt=k.roman(song['prog_alt']),
-                instruments=_instruments(song),
+                instruments=_instruments(song), inst_ids=_inst_ids(song),
                 meter=song.get('meter', '4/4'),
                 bpm_quarter=round(song['bpm'] * 1.5) if song.get('meter') == '3/4' else song['bpm'],
                 arrangement=_arrangement(song),
@@ -71,8 +71,23 @@ def _instruments(song):
             out[src['layer']] += ' + ' + _nice(t['inst']) + o
         if t.get('counter'):
             out['counter'] = _nice(t['inst'])
-        if t.get('switch_of') and t['switch_of'] in [x['name'] for x in tracks] and 'bass' in out:
+        if t.get('switch_of') == 'bass' and 'bass' in out:
             out['bass'] += ' / ' + _nice(t['inst'])          # bass voices that trade bars in the drop
+        elif t.get('switch_of') in out:                      # instrument rotation between sections
+            where = ' & '.join({'A': 'verses', 'B': 'choruses', 'C': 'breaks'}[g] for g in t.get('groups', ()))
+            out[t['switch_of']] += f' · {where}: ' + _nice(t['inst'])
+    return out
+
+
+def _inst_ids(song):
+    """{part: [instrument ids]} actually used (main + rotation), for 'don't repeat what I just heard'."""
+    out = {}
+    for t in song['st']['tracks']:
+        role = t.get('switch_of') or t['layer']
+        if role in ('bass', 'chords', 'pad', 'arp', 'lead') and not t.get('double_of') and not t.get('counter'):
+            out.setdefault(role, [])
+            if t['inst'] not in out[role]:
+                out[role].append(t['inst'])
     return out
 
 
@@ -202,6 +217,8 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
         info['plugins'] = {k: v['picks'] for k, v in song['plugin_recs'].items()}
     if getattr(r, 'vst_failures', None):
         info['warnings'] = r.vst_failures
+    if song['st'].get('orch_note'):
+        info['orch_note'] = song['st']['orch_note']
     info.update(files=files, loudness=round(loud, 1), peak=round(peak, 1), render_seconds=round(time.time() - t0, 1),
                 preview=preview)
     log(f'   done in {time.time() - t0:.0f}s')

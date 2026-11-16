@@ -80,6 +80,8 @@ class Options:
     repetition: float = 0.5       # 0..1 how much the melody repeats its opening idea (catchy loop <-> developing line)
     melody_range: float = 0.5     # 0..1 narrow (a few notes) <-> wide (big leaps)
     chord_speed: str = None       # None = style | slow (chords last twice as long) | fast (change twice as often)
+    rotation: str = 'auto'        # instrument rotation between sections: auto | off | some | lots
+    avoid: dict = field(default_factory=dict)          # role -> instruments your recent songs used (picked less often)
 
     def to_dict(self):
         return asdict(self)
@@ -213,7 +215,7 @@ def voice_chord(key, deg, size, center, voicing='close', color=None):
 VOICINGS = ['close', 'open', 'drop2', 'rootless', 'power']
 MELODY_STYLES = ['diatonic', 'pentatonic', 'blues', 'bebop']
 # how each genre's lead player phrases, and how its keyboard player voices chords (styles not listed: diatonic / style's own)
-GENRE_MELODY = {'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
+GENRE_MELODY = {'tempa_dubstep': 'diatonic', 'progressive_trance': 'diatonic', 'organic_house': 'diatonic', 'disco_funk': 'pentatonic', 'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
                 'folk': 'pentatonic', 'afrobeats': 'pentatonic', 'amapiano': 'pentatonic', 'reggae': 'pentatonic',
                 'lofi': 'pentatonic', 'pop': 'pentatonic', 'disco': 'pentatonic', 'jazz': 'bebop', 'bossa_nova': 'bebop',
                 'western': 'pentatonic', 'chamber_pop': 'pentatonic', 'fantasy_rpg': 'pentatonic',
@@ -227,7 +229,7 @@ GENRE_VOICING = {'jazz': 'rootless', 'bossa_nova': 'rootless', 'lofi': 'rootless
                  'deep_house': 'drop2', 'ukgarage': 'drop2', 'funk': 'drop2', 'disco': 'drop2', 'downtempo': 'drop2',
                  'neoclassical': 'open', 'chamber': 'open', 'fantasy_rpg': 'open', 'cinematic': 'open', 'orchestral': 'open',
                  'swing': 'drop2', 'gospel': 'open', 'rnb': 'drop2', 'waltz': 'open', 'tango': 'close'}
-GENRE_COLORS = {'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
+GENRE_COLORS = {'tempa_dubstep': ['triad'], 'progressive_trance': ['triad', 'sus2', 'add9'], 'organic_house': ['add9', 'triad', 'sus2'], 'disco_funk': ['7', '9', 'triad'], 'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
                 'city_pop': ['7', '9', 'add9'], 'deep_house': ['7', '9', 'add9'], 'ukgarage': ['7', '9'], 'funk': ['7', '9'],
                 'blues': ['7'], 'downtempo': ['7', 'add9', '9'], 'neoclassical': ['triad', 'add9', 'add9', 'sus2'],
                 'baroque': ['triad'], 'chamber': ['triad', 'triad', '7'], 'holiday': ['triad', '6', '7', 'add9'],
@@ -537,9 +539,11 @@ def apply_variety(st, opts, rnd):
             part_rng[role] = random.Random(f'{sd}-{role}-{owner}-variety')
         rr = part_rng[role]
         free = role not in (opts.instruments or {}) and not t.get('user_pick') and not chip_locked
-        if free and pool and rr.random() < 0.3 + 0.55 * v:
-            # the genre's own pool: its signature sound stays the likeliest, the others are all authentic alternatives
-            w = [2.0 if i == 0 else 1.0 for i in range(len(pool))]
+        if free and pool and rr.random() < 0.55 + 0.4 * v:
+            # the genre's own pool: its signature sound a little likelier, every other one an authentic alternative;
+            # instruments your last songs in this genre used are picked less often, so the next one sounds fresh
+            recent = set((getattr(opts, 'avoid', None) or {}).get(role, []))
+            w = [(1.4 if i == 0 else 1.0) * (0.25 if x in recent else 1.0) for i, x in enumerate(pool)]
             choice = rr.choices(pool, w)[0]
             if choice != t['inst']:
                 t.update(inst=choice, p={}, db=None, pooled=True)
@@ -716,9 +720,9 @@ PHRASE_BANKS = {
 }
 PHRASE_FAMILY = {
     **{k: 'busy' for k in ('psytrance', 'dnb', 'jungle', 'breakcore', 'hyperpop', 'chiptune', 'trap', 'phonk', 'uk_drill', 'hardstyle')},
-    **{k: 'syncopated' for k in ('funk', 'disco', 'afrobeats', 'amapiano', 'reggaeton', 'moombahton', 'reggae', 'ukgarage', 'house',
+    **{k: 'syncopated' for k in ('disco_funk', 'funk', 'disco', 'afrobeats', 'amapiano', 'reggaeton', 'moombahton', 'reggae', 'ukgarage', 'house',
                                  'deep_house', 'tech_house', 'city_pop', 'bossa_nova')},
-    **{k: 'sparse' for k in ('ambient', 'downtempo', 'lofi', 'vaporwave', 'jazz', 'cinematic', 'orchestral', 'film_piano',
+    **{k: 'sparse' for k in ('tempa_dubstep', 'ambient', 'downtempo', 'lofi', 'vaporwave', 'jazz', 'cinematic', 'orchestral', 'film_piano',
                              'adventure', 'tension', 'boombap', 'neoclassical', 'western', 'hybrid_trailer')},
     **{k: 'sung' for k in ('chamber', 'fantasy_rpg', 'holiday', 'chamber_pop', 'symphonic_metal', 'gospel', 'rnb', 'motown',
                            'country', 'kpop', 'indie_rock', 'punk', 'cumbia', 'ska', 'dancehall')},
@@ -934,8 +938,20 @@ def apply_simplicity(opts):
     return replace(opts, **ch)
 
 
+def style_knob_defaults(opts):
+    """Some genres are simpler / more repetitive by nature; their defaults apply while your knobs are untouched."""
+    sd = STYLES.get(opts.style, {})
+    ch = {}
+    if sd.get('repetition') is not None and abs(float(opts.repetition) - 0.5) < 1e-9:
+        ch['repetition'] = sd['repetition']
+    if sd.get('simplicity') and not opts.simplicity:
+        ch['simplicity'] = sd['simplicity']
+    return replace(opts, **ch) if ch else opts
+
+
 def compose(opts):
     user_opts = opts
+    opts = style_knob_defaults(opts)
     opts = apply_simplicity(opts)
     opts, mood = apply_mood(opts)
     S = max(0.0, min(1.0, float(getattr(opts, 'simplicity', 0) or 0)))
@@ -953,6 +969,7 @@ def compose(opts):
     add_counter_track(st, opts)
     add_layer_tracks(st, opts)
     add_bass_switch_tracks(st)
+    add_section_switch_tracks(st, opts, random.Random(f'{opts.seed}-rotation-{opts.style}'))
     apply_sampled(st, opts)
     by_name = {t['name']: t for t in st['tracks']}
     st['tracks'] = [t for t in st['tracks'] if not (t.get('double_of') and by_name.get(t['double_of'], {}).get('inst') == t['inst'])]
@@ -1407,6 +1424,7 @@ def compose(opts):
     st['tuned_notes'] = fix_clashes(evs + [v for v in vocal if id(v) not in in_evs], {**tracks, 'vocal': tracks.get('vocal') or
                                     dict(layer='lead')}, key, st, sections)
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
+    switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
     if muted:                                            # parts you switched off: everything else stays note-for-note
         evs = [e for e in evs if tracks.get(e.track, {}).get('layer') not in muted]
@@ -1701,6 +1719,76 @@ def double_layers(evs, tracks):
     return out
 
 
+SECTION_GROUPS = {'B': {'chorus', 'hook', 'drop', 'climax', 'theme', 'main', 'loop'},
+                  'C': {'break', 'bridge', 'calm', 'outro', 'C', 'breakdown', 'interlude', 'solo'}}
+
+
+def section_group(sec):
+    """A = verses / intros, B = choruses / drops, C = breaks / bridges / outros."""
+    if sec['opts'].get('drop') or sec['name'] in SECTION_GROUPS['B']:
+        return 'B'
+    if sec['name'] in SECTION_GROUPS['C'] or sec['opts'].get('fade'):
+        return 'C'
+    return 'A'
+
+
+def add_section_switch_tracks(st, opts, rnd):
+    """Instrument rotation: verses, choruses and breaks play a part on different instruments from the genre's own pool
+    (e.g. Rhodes verse, piano chorus, guitar bridge). The main instrument keeps the big sections."""
+    from .styles import POOLS
+    mode = getattr(opts, 'rotation', 'auto') or 'auto'
+    if mode == 'off' or opts.structure == 'loop':
+        return
+    v = float(getattr(opts, 'variety', 0.5))
+    n_roles = {'some': 1, 'lots': 3}.get(mode, 1 if v < 0.45 else (2 if v < 0.8 else 3))
+    if mode == 'auto' and random.Random(f'{opts.seed}-rot-on').random() > 0.35 + 0.6 * v:
+        return
+    pal = PALETTES.get(st.get('category'), {})
+    recent = getattr(opts, 'avoid', None) or {}
+    cands = []
+    for role in ('lead', 'chords', 'pad', 'arp'):
+        main = next((t for t in st['tracks'] if t['layer'] == role and t['name'] == role), None)
+        if not main or role in (opts.instruments or {}) or main.get('user_pick') or str(main['inst']).startswith(('vst:', 'user:')):
+            continue
+        pool = list(POOLS.get(st.get('name') or opts.style, {}).get(role) or [])
+        pool += [x for x in pal.get(role, []) if x not in pool][:2] if len(pool) < 3 else []
+        alts = [x for x in dict.fromkeys(pool) if x != main['inst'] and x in INSTRUMENTS or (isinstance(x, str) and x.startswith('sf:') and x != main['inst'])]
+        if alts:
+            cands.append((role, main, alts))
+    rnd.shuffle(cands)
+    for role, main, alts in cands[:n_roles]:
+        w = [0.3 if x in recent.get(role, []) else 1.0 for x in alts]
+        picks = []
+        for k in range(2 if (mode == 'lots' or rnd.random() < 0.4) and len(alts) >= 2 else 1):
+            c = rnd.choices(alts, w)[0]
+            i = alts.index(c)
+            alts, w = alts[:i] + alts[i + 1:], w[:i] + w[i + 1:]
+            picks.append(c)
+            if not alts:
+                break
+        for k, inst in enumerate(picks):
+            st['tracks'].append(dict(main, name=f'{role}_sw{k + 1}', inst=inst, p={}, db=None, pooled=True,
+                                     switch_of=role, groups=('A',) if (k == 0 and len(picks) > 1) else (('A', 'C') if k == 0 else ('C',))))
+
+
+def switch_sections(evs, tracks, sections):
+    alts = {}
+    for n, t in tracks.items():
+        if t.get('switch_of') in ('lead', 'chords', 'pad', 'arp'):
+            for g in t.get('groups', ()):
+                alts.setdefault(t['switch_of'], {})[g] = n
+    if not alts:
+        return
+    spans = [(s_['bar'] * 4, (s_['bar'] + s_['bars']) * 4, section_group(s_)) for s_ in sections]
+    for e in evs:
+        to = alts.get(e.track)
+        if not to:
+            continue
+        g = next((g for b0, b1, g in spans if b0 <= e.beat < b1), None)
+        if g in to:
+            e.track = to[g]
+
+
 def add_bass_switch_tracks(st):
     """Styles with 'bass_switch': extra bass voices (each a different timbre) that take over bars of the drop."""
     names = st.get('bass_switch') or []
@@ -1849,7 +1937,7 @@ def apply_variation(evs, b0, b1, seed, key, st, tracks):
 
 
 BUILD_STYLES = ['roll', 'triplet', 'kick_roll', 'filter', 'stutter', 'pause', 'lift', 'swell']
-GENRE_BUILD = {'trance': 'roll', 'bigroom': 'roll', 'progressive_house': 'roll', 'electro': 'roll', 'eurodance': 'roll',
+GENRE_BUILD = {'tempa_dubstep': 'pause', 'progressive_trance': 'roll', 'organic_house': 'filter', 'disco_funk': 'lift', 'trance': 'roll', 'bigroom': 'roll', 'progressive_house': 'roll', 'electro': 'roll', 'eurodance': 'roll',
                'moombahton': 'roll', 'dnb': 'roll', 'jungle': 'stutter', 'hardstyle': 'kick_roll', 'future_bass': 'triplet',
                'hyperpop': 'triplet', 'dubstep': 'stutter', 'breakcore': 'stutter', 'house': 'filter', 'deep_house': 'filter',
                'tech_house': 'filter', 'techno': 'filter', 'minimal': 'filter', 'acid_house': 'filter', 'psytrance': 'filter',
@@ -1950,7 +2038,7 @@ GROOVES = {
     'house': {'top': [0, 0, .07, 0] * 4, 'chords': [0, 0, .04, 0] * 4},
     'funk': {'top': [0, -.05] * 8, 'bass': [-.02] * 16, 'snare': [0, .06] * 8},
 }
-STYLE_GROOVE = {'boombap': 'dilla', 'lofi': 'dilla', 'phonk': 'dilla', 'reggae': 'laidback', 'downtempo': 'laidback',
+STYLE_GROOVE = {'disco_funk': 'funk', 'organic_house': 'house', 'boombap': 'dilla', 'lofi': 'dilla', 'phonk': 'dilla', 'reggae': 'laidback', 'downtempo': 'laidback',
                 'afrobeats': 'afro', 'amapiano': 'afro', 'reggaeton': 'dembow', 'moombahton': 'dembow', 'jazz': 'jazz',
                 'house': 'house', 'deep_house': 'house', 'tech_house': 'house', 'ukgarage': 'house',
                 'funk': 'funk', 'disco': 'funk', 'city_pop': 'funk', 'rnb': 'laidback', 'gospel': 'laidback',

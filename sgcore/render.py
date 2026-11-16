@@ -76,15 +76,21 @@ class Renderer:
         return sig
 
     def _sampled(self, tcfg, ev, dur, p):
-        """Real recorded instrument from the sound library; velocity changes the tone, not just the level."""
+        """Real recorded instrument from the sound library; velocity changes the tone, not just the level.
+        Orchestral sounds get a performance pass: section width, expression swells and round-robin variation."""
         from . import soundfont as sfm
         vel = int(min(127, max(24, round((30 + 92 * min(1.1, ev.vel)) / 12) * 12)))
-        key = (tcfg['name'], ev.midi, dur, vel)
+        name = tcfg['inst'][3:]
+        rr = 0
+        if name in sfm.PERFORMED:                       # round robin: 3 takes per note, picked by position in the song
+            rr = int(round(ev.beat * 4) + ev.midi) % 3
+        key = (tcfg['name'], ev.midi, dur, vel, rr)
         sig = self.cache.get(key)
         if sig is None:
-            name = tcfg['inst'][3:]
             try:
                 sig = sfm.sampled_note(name, ev.midi, dur, vel)
+                if name in sfm.PERFORMED:
+                    sig = sfm.perform(name, sig, dur, vel, rr)
                 a = (p or {}).get('a', 0) if (p or {}).get('a', 0) > 0.04 else 0
                 if a:
                     n = min(sig.shape[1], int(a * SR))

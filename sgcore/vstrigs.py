@@ -233,6 +233,7 @@ SAMPLER_ROLES = {k for k in SOUND_WORDS if k in ('strings', 'violin', 'pizz', 'h
 
 # genre flavour: which plugin family to reach for first, and a tone tweak (shifts filter cutoffs)
 STYLE_PREF = {
+    'progressive_trance': ['surge'], 'organic_house': ['dexed', 'tal'], 'disco_funk': ['dexed', 'tal'], 'tempa_dubstep': ['surge'],
     'synthwave': ['tal'], 'synthpop': ['tal'], 'electro': ['tal'], 'vaporwave': ['tal', 'dexed'], 'eurodance': ['tal', 'surge'],
     'city_pop': ['dexed', 'tal'], 'house': ['tal'], 'deep_house': ['tal', 'dexed'], 'ukgarage': ['tal'],
     'trance': ['surge'], 'progressive_house': ['surge'], 'bigroom': ['surge'], 'hardstyle': ['surge'], 'future_bass': ['surge'],
@@ -442,6 +443,7 @@ def assign(st, opts, log=None):
     tone = STYLE_TONE.get(style, 0.0) + 0.06 * float(getattr(opts, 'brightness', 0.0) or 0.0)
     plugins = plugins_on_disk()
     if not plugins:
+        st['orch_note'] = orchestra_note(st, {}, cat, {})
         return {}
     sounds = vsthost.list_sounds()
     used = {}
@@ -467,7 +469,33 @@ def assign(st, opts, log=None):
         t['p'] = {}
         used[t['layer']] = extra if kind == 'user' else f"{PLAYERS[PATCHES[ident]['player']]['name']} · {PATCHES[ident]['label']}"
     st['rig'] = used
+    st['orch_note'] = orchestra_note(st, plugins, cat, used)
     return used
+
+
+ORCH_PARTS = {'strings', 'slowstrings', 'spiccato', 'tremolo', 'pizz', 'violin', 'viola', 'cello', 'contrabass', 'horn',
+              'brass', 'trumpet', 'trombone', 'tuba', 'timpani', 'harp', 'choir', 'flute', 'oboe', 'clarinet', 'bassoon'}
+
+
+def orchestra_note(st, plugins, cat, used):
+    """Explain, in one line, why orchestral parts didn't use a real orchestra plugin (or None if they did / there are none)."""
+    parts = []
+    for t in st.get('tracks', []):
+        base = t['inst'][3:] if t['inst'].startswith('sf:') else t['inst']
+        if base in ORCH_PARTS and not t['inst'].startswith(('vst:', 'user:')):
+            parts.append(t['layer'])
+    if not parts:
+        return None
+    parts = sorted(set(parts))
+    have = [PLAYERS[p]['name'] for p in ('bbcso', 'labs') if plugins and player_path(p, plugins)]
+    what = ', '.join(parts)
+    if have:
+        return (f'Orchestral parts ({what}) used the built-in library - {have[0]} is installed but has no saved sounds yet. '
+                'Open VST instruments → "Set up my orchestra…" (about 2 minutes) and every song will use it.')
+    if cat == 'Orchestral' or len(parts) >= 2:
+        return (f'Orchestral parts ({what}) used the built-in General MIDI library. For real orchestra sounds install the free '
+                'BBC Symphony Orchestra Discover or Spitfire LABS, then "Set up my orchestra…" in VST instruments.')
+    return None
 
 
 def plan(style, category=None):

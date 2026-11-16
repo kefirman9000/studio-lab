@@ -178,6 +178,40 @@ def inside(path, root):
         return False
 
 
+RECENT_FILE = os.path.join(ROOT, 'recent_instruments.json')
+SEED_AVOID = {}                                   # (style, seed) -> the freshness list that song was made with
+_RECENT_LOCK = threading.Lock()
+
+
+def recent_avoid(style, songs=3):
+    """Instruments the last few songs in this genre used (picked less often next time, so it sounds fresh)."""
+    try:
+        with open(RECENT_FILE) as f:
+            hist = json.load(f).get(style, [])
+    except Exception:
+        return {}
+    out = {}
+    for h in hist[-songs:]:
+        for role, insts in h.items():
+            out.setdefault(role, [])
+            out[role] += [i for i in insts if i not in out[role]]
+    return out
+
+
+def remember_instruments(style, ids):
+    if not ids:
+        return
+    with _RECENT_LOCK:
+        try:
+            with open(RECENT_FILE) as f:
+                d = json.load(f)
+        except Exception:
+            d = {}
+        d[style] = (d.get(style, []) + [ids])[-6:]
+        with open(RECENT_FILE, 'w') as f:
+            json.dump(d, f)
+
+
 def worker():
     while True:
         job = WORK.get()
@@ -196,6 +230,8 @@ def worker():
                 info = generate(item['options'], sub, outputs=item['outputs'], preview=item['preview'], log=log, progress=prog,
                                 prefs=plugin_prefs(), section=item.get('section'))
                 info['options'] = item['options']
+                if not item.get('section'):
+                    remember_instruments(item['options'].get('style'), info.get('inst_ids'))
                 rel = lambda v: '/files/' + os.path.relpath(v, out_dir()).replace(os.sep, '/')
                 info['urls'] = {k: rel(v) for k, v in info['files'].items() if k != 'waveform' and isinstance(v, str) and os.path.isfile(v)}
                 info['part_urls'] = {k: rel(v) for k, v in (info.get('parts') or {}).items()}
@@ -537,6 +573,9 @@ class Handler(BaseHTTPRequestHandler):
             o = body.get('options', {})
             if isinstance(o, dict) and 'vst_rig' not in o:
                 o['vst_rig'] = True                    # installed plugins are used automatically
+            fresh = isinstance(o, dict) and 'avoid' not in o and body.get('section') is None
+            if fresh:
+                o['avoid'] = recent_avoid(o.get('style'))   # lean away from what your last songs in this genre used
             Options.from_dict(o)  # validate keys early
             n = max(1, min(8, int(body.get('count', 1))))
             preview = bool(body.get('preview', True))
@@ -555,6 +594,14 @@ class Handler(BaseHTTPRequestHandler):
                     oi = dict(o, seed=base, part_seeds=ps)
                 else:
                     oi = dict(o, seed=base + i if n > 1 else base)
+                if fresh:                                # the same seed again (e.g. Full song after its preview) = the same song
+                    k = (oi.get('style'), oi['seed'])
+                    if k in SEED_AVOID:
+                        oi['avoid'] = SEED_AVOID[k]
+                    else:
+                        SEED_AVOID[k] = oi['avoid']
+                        if len(SEED_AVOID) > 500:
+                            SEED_AVOID.pop(next(iter(SEED_AVOID)))
                 items.append(dict(options=oi, outputs=outputs, preview=preview, section=section))
             return self._json({'job': submit(items)})
         if p == '/api/open' and body.get('path') == 'plugins':

@@ -201,7 +201,8 @@ def main():
         for name, t in tr.items():
             if t.get('double_of'):
                 n_layers += 1
-                src = [(e.beat, e.midi) for e in song['events'] if e.track == t['double_of']]
+                part = {t['double_of']} | {n for n, x in tr.items() if x.get('switch_of') == t['double_of']}   # incl. rotation
+                src = [(e.beat, e.midi) for e in song['events'] if e.track in part]
                 dup = [(e.beat, e.midi - t['octave']) for e in song['events'] if e.track == name]
                 assert len(src) == len(dup) and t['inst'] != tr[t['double_of']]['inst']          # same notes, other sound
     assert n_layers >= 4
@@ -296,6 +297,34 @@ def test_chords_and_knobs():
     print('ok  chords without clusters, strums in order, simplicity / repetition / range / chord speed')
 
 
+def test_rotation_and_freshness():
+    import collections
+    from sgcore.compose import Options, compose, section_group
+    song = compose(Options(style='pop', seed=12, rotation='lots'))
+    alts = {t['name']: t for t in song['st']['tracks'] if t.get('switch_of') in ('lead', 'chords', 'pad', 'arp')}
+    assert alts, 'rotation=lots made no section instruments'
+    for name, t in alts.items():                        # alternates only play in their own section groups
+        for e in song['events']:
+            if e.track == name:
+                sec = next(s_ for s_ in song['sections'] if s_['bar'] * 4 <= e.beat < (s_['bar'] + s_['bars']) * 4)
+                assert section_group(sec) in t['groups'], (name, sec['name'])
+        assert t['inst'] != next(x for x in song['st']['tracks'] if x['name'] == t['switch_of'])['inst']
+    assert not any(t.get('switch_of') in ('lead', 'chords', 'pad', 'arp') for t in compose(Options(style='pop', seed=12, rotation='off'))['st']['tracks'])
+    assert not any(t.get('switch_of') == 'lead' for t in compose(Options(style='pop', seed=12, rotation='lots', instruments={'lead': 'flute'}))['st']['tracks'])
+    count = lambda avoid: collections.Counter(
+        t['inst'] for sd in range(40) for t in compose(Options(style='house', seed=sd, rotation='off', avoid=avoid))['st']['tracks']
+        if t['name'] == 'chords')
+    base = count({})
+    top = base.most_common(1)[0][0]
+    fresh = count({'chords': [top]})
+    assert fresh[top] < base[top], (top, base[top], fresh[top])           # recent instruments are picked less often
+    a = compose(Options(style='pop', seed=12, rotation='lots', avoid={'lead': ['vox']}))
+    b = compose(Options(style='pop', seed=12, rotation='lots', avoid={'lead': ['vox']}))
+    assert [t['inst'] for t in a['st']['tracks']] == [t['inst'] for t in b['st']['tracks']]   # same options = same song
+    print('ok  instrument rotation between sections, freshness, reproducibility')
+
+
 if __name__ == '__main__':
     main()
     test_chords_and_knobs()
+    test_rotation_and_freshness()

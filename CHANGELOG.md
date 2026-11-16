@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.14.0
+- **Four new genres:**
+  - *Dubstep (classic UK / Tempa)* - half-time 140, a heavy clean sub as the main voice, sparse shuffled 2-step drums, dub delays and reverb, dark minor/phrygian moods and lots of space. Soundsystem dubstep, not brostep.
+  - *Progressive Trance (emotional)* - Above & Beyond-style: simple emotive chords, a big singable supersaw or pluck lead, long builds, a piano breakdown and a clean, wide drop.
+  - *Organic Melodic House* - Nora En Pure-style: warm four-on-the-floor with shakers and congas, piano, flute, harp and soft strings; hypnotic and spacious, no big drops.
+  - *Disco Funk (70s)* - KC & the Sunshine Band-style: dry punchy four-on-the-floor, a syncopated bass hook, chicken-scratch guitar, horn riffs, claps, congas and tambourine.
+  - The melodic genres default to simpler, more repetitive melodies (until you move the Simplicity / Repetition knobs yourself).
+- **Instruments change between song sections.** Drops/choruses, verses and breakdowns can each use a different genre-fitting instrument for a part, so one song doesn't use the same sounds all the way through.
+- **Less sameness between generations.** Instruments you heard in your last few songs of a genre are used less often when you press Generate again, and genres pick from a wider pool of pads and basses.
+- **More realistic orchestra from the built-in library.** Section sounds (strings, brass, choir, horns) now play as an ensemble of slightly detuned, slightly offset players spread across the stereo field; sustained strings, brass and winds swell into notes instead of switching on; and repeated notes rotate between three takes (round robin).
+- **Why orchestral parts don't use your orchestra plugin.** BBC Symphony Orchestra and LABS have no presets Studio Lab can choose from, so they're only used once you save a sound per section ("Set up my orchestra…"). When a song's orchestral parts fell back to the built-in library, the result now says so and has a "Set up now" link.
+
 ## 1.13.0
 - **More free instruments in Genre VSTs:** Six Sines (6-operator FM), OB-Xf (Oberheim-style poly), Odin 2 (hybrid synth) and Monique (morphing mono synth) - all free and open-source, from their official GitHub releases. They show up in every part's Sound menu once installed.
 - **Safety checks before anything is installed:**

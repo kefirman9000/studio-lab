@@ -416,3 +416,65 @@ def sampled_drum(name, kit='acoustic'):
     x = x.mean(axis=0)
     pk = float(np.max(np.abs(x)))
     return (x / pk).astype(np.float32) if pk > 1e-4 else None
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Performance pass for orchestral samples. General-MIDI patches are single, static recordings, which is what makes
+# them sound "soundfonty". Real sections are several players slightly out of tune and time with each other, notes
+# swell instead of switching on, and no two bows are the same. This adds those three things.
+SECTIONS = {'strings', 'slowstrings', 'tremolo', 'spiccato', 'pizz', 'choir', 'brass', 'horn', 'trumpetsection'}
+SUSTAINED = {'strings', 'slowstrings', 'tremolo', 'violin', 'viola', 'cello', 'contrabass', 'choir', 'brass', 'horn',
+             'trombone', 'tuba', 'trumpet', 'trumpetsection', 'flute', 'oboe', 'clarinet', 'bassoon', 'piccolo'}
+PERFORMED = SECTIONS | SUSTAINED
+
+
+def _shift(x, cents, delay):
+    """Re-pitch by a few cents (resampling) and delay by `delay` samples."""
+    n = x.shape[1]
+    r = 2 ** (cents / 1200.0)
+    idx = np.arange(n, dtype=np.float64) * r
+    idx = idx[idx < n - 1]
+    i0 = idx.astype(np.int64)
+    f = (idx - i0).astype(np.float32)
+    y = np.zeros_like(x)
+    m = min(len(i0), n - delay)
+    for c in range(x.shape[0]):
+        v = x[c, i0] * (1 - f) + x[c, i0 + 1] * f
+        y[c, delay:delay + m] = v[:m]
+    return y
+
+
+def perform(name, sig, dur, vel, rr=0):
+    sr = 44100
+    x = sig.astype(np.float32)
+    n = x.shape[1]
+    import zlib
+    rnd = np.random.default_rng(zlib.crc32(f'{name}-{rr}-{int(vel)}'.encode()))
+    if name in SECTIONS:
+        # extra desks: detuned, a few ms late, panned apart - an ensemble instead of one sample
+        out = x.copy()
+        for k, (cents, ms, pan) in enumerate([(-7, 9, -0.5), (6, 16, 0.5), (-3, 23, 0.0)]):
+            c = cents + float(rnd.uniform(-2.5, 2.5))
+            d = int(sr * (ms + float(rnd.uniform(-3, 3))) / 1000)
+            y = _shift(x, c, d)
+            y[0] *= 1 - max(0, pan) * 0.6
+            y[1] *= 1 + min(0, pan) * 0.6
+            out += y * 0.55
+        x = out / 1.9
+    if name in SUSTAINED and dur > 0.35:
+        # expression: soft entry and a gentle swell over the note, more for quiet playing
+        soft = 1.0 - vel / 127.0
+        att = min(0.35, 0.05 + 0.12 * dur * (0.4 + soft))
+        na = min(n, int(att * sr))
+        env = np.ones(n, dtype=np.float32)
+        env[:na] = np.linspace(0.0, 1.0, na, dtype=np.float32) ** 1.6
+        nb = min(n, int(dur * sr))
+        if nb > na + 10:
+            sw = 0.10 + 0.14 * soft                     # crescendo into the middle of the note, then relax
+            t = np.linspace(0, 1, nb - na, dtype=np.float32)
+            env[na:nb] *= (1 - sw) + sw * np.sin(np.pi * 0.75 * t)      # swell to 2/3 of the note, then ease
+        x = x * env
+    # round robin: each take a hair different in level and tuning
+    if rr:
+        x = _shift(x, float(rnd.uniform(-3, 3)), 0) * float(rnd.uniform(0.93, 1.05))
+    return x.astype(np.float32)

@@ -213,6 +213,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f wide"><label>Variety <span class="hint">how much each song re-imagines its style: instruments, tones, grooves, arrangement</span><b id="varietyV"></b></label><input type="range" id="variety" min="0" max="100" value="55"></div>
       <div class="f"><label>Groove feel <span class="hint">timing of each part</span></label><select id="groove"><option value="">Genre feel</option><option value="straight">Straight (on the grid)</option><option value="dilla">Lazy hip-hop (J Dilla)</option><option value="laidback">Laid back (reggae)</option><option value="afro">Afro swing</option><option value="dembow">Dembow push</option><option value="jazz">Jazz (ride on top)</option><option value="house">House (late hats)</option><option value="funk">Funk (pushed 16ths)</option></select></div>
       <div class="f"><label>Lead style <span class="hint">how the lead line is built</span></label><select id="leadStyle"><option value="">Genre default</option><option value="hook">Hook (sung-style melody)</option><option value="arp">Arpeggio (trance, synthwave)</option><option value="riff">Riff (rock, funk)</option><option value="ostinato">Ostinato (techno)</option><option value="bell">Bell motif (trap)</option><option value="call">Call &amp; response (afro, reggae)</option><option value="chops">Vocal-chop stabs (house, garage)</option></select></div>
+      <div class="f"><label title="Verses, choruses and breaks play parts on different instruments from the genre's own pool">Instrument rotation</label><select id="rotation"><option value="auto">Auto (with Variety)</option><option value="off">Off - one instrument per part</option><option value="some">Some - one part changes</option><option value="lots">Lots - several parts change</option></select></div>
       <div class="f"><label>Build-ups</label><select id="buildStyle"><option value="">Genre default</option><option value="roll">Snare roll + riser (trance, big room)</option><option value="filter">Filter sweep, kick out (house, techno)</option><option value="triplet">Triplet roll (future bass)</option><option value="kick_roll">Kick roll (hardstyle)</option><option value="stutter">Stutter + silence (dubstep)</option><option value="pause">Drop-out (amapiano, garage)</option><option value="lift">Snare lift (pop, rock)</option><option value="swell">Swell (film)</option></select></div>
       <div class="f"><label>Bass rhythm</label><select id="bassRhythm"><option value="">Style's bassline</option><option value="kick">Follow the kick drum</option></select></div>
       <div class="f"><label>Ending</label><select id="ending"><option value="auto">Genre default</option><option value="hit">Final chord + crash</option><option value="fade">Fade out</option></select></div>
@@ -398,6 +399,7 @@ function options(){
   if($('#melStyle').value) o.melody_style=$('#melStyle').value;
   if($('#groove').value) o.groove=$('#groove').value;
   if($('#chordSpeed').value) o.chord_speed=$('#chordSpeed').value;
+  if($('#rotation').value!=='auto') o.rotation=$('#rotation').value;
   if($('#leadStyle').value) o.lead_style=$('#leadStyle').value;
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
   if($('#bassRhythm').value) o.bass_rhythm=$('#bassRhythm').value;
@@ -414,7 +416,7 @@ function applyOptions(o){
   state.style=o.style; state.blend=o.blend||[]; state.blend_parts=o.blend_parts||{}; state.mood=o.mood||null;
   state.part_fx=Object.assign({},o.part_fx||{});
   state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
-  $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||'';
+  $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#rotation').value=o.rotation||'auto';
   $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
   $('#brightness').value=(o.brightness||0)*100; $('#reverb').value=(o.reverb??1)*100; $('#delay').value=(o.delay??1)*100; $('#width').value=(o.width??1)*100;
   $('#bass').value=o.bass_boost||0; $('#drive').value=(o.drive||0)*100;
@@ -517,6 +519,7 @@ function addResult(r, target){
       <span style="margin-left:auto"></span><button class="rate" data-r="1" title="I like this">👍</button><button class="rate" data-r="-1" title="Not for me">👎</button></div>
     <div class="tl" title="Click a section to edit it"></div><div class="sedbox"></div>
     <div class="dragrow rr"></div>
+    ${r.orch_note?`<div class="hint" style="margin-top:6px">🎻 ${esc(r.orch_note)} <a href="#" class="orchGo">Set up now</a></div>`:''}
     ${r.warnings&&r.warnings.length?`<div class="hint" style="color:#ffb547;margin-top:6px">⚠ ${r.warnings.map(esc).join('<br>⚠ ')}</div>`:''}
     <div class="plugrec"></div>
     <div class="files"></div>`;
@@ -1025,6 +1028,8 @@ async function init(){
   syncAutos(); updates(false);
 }
 init();
+document.addEventListener('click',async e=>{ const a=e.target.closest&&e.target.closest('.orchGo'); if(!a) return; e.preventDefault();
+  const V=await api('/api/vst',{}); if(!V.available){ vstModal(); return } orchModal(V); });
 </script>
 </body>
 </html>
