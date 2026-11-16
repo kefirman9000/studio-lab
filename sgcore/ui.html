@@ -763,7 +763,7 @@ async function libModal(){
   const L=await api('/api/soundlib',{});
   const real=(L.real||[]).map(r=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(r.title)}</span> <span class="tag inst">${r.mb} MB</span> <span class="tag ok">${esc(r.license)}</span>
       <div class="m">${esc(r.blurb)}</div><div class="m">by ${esc(r.by)} · <a href="${esc(r.source)}" target="_blank" rel="noopener">source</a></div><pre class="hint" id="rl_${r.id}" style="max-height:90px;overflow:auto;margin:4px 0 0"></pre></div>
-      <div class="row">${r.installed?`<span class="tag ok">Installed</span><button class="mini" data-rrm="${r.id}">Remove</button>`:`<button class="mini acc" data-rin="${r.id}">Download</button>`}</div></div>`).join('');
+      <div class="row">${r.installed&&r.update_mb?`<button class="mini acc" data-rin="${r.id}">Update (+${r.update_mb} MB)</button><button class="mini" data-rrm="${r.id}">Remove</button>`:r.installed?`<span class="tag ok">Installed</span><button class="mini" data-rrm="${r.id}">Remove</button>`:`<button class="mini acc" data-rin="${r.id}">Download</button>`}</div></div>`).join('');
   $('#modalBox').className='box wide';
   $('#modalBox').innerHTML=`<h3>🎻 Real instruments</h3>
     <p class="hint"><b>Real recorded libraries</b> - multi-sampled (several dynamics and round-robin takes per note), played automatically wherever a genre uses that instrument.
