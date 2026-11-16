@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+songs/
+presets/
+settings.json
+.backup/
+.DS_Store
