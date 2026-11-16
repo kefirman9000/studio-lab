@@ -386,7 +386,7 @@ BRASS = [(60, 'trumpet'), (53, 'horn'), (41, 'trombone'), (0, 'tuba')]
 ORCH = {
     'strings': ('section', 'sus'), 'slowstrings': ('section', 'sus'), 'spiccato': ('section', 'short'),
     'pizz': ('section', 'pizz'), 'tremolo': ('section', 'trem'),
-    'violin': ('solo', 'violin'), 'fiddle': ('solo', 'violin'), 'viola': ('solo', 'violas'), 'cello': ('solo', 'celli'),
+    'violins': ('solo', 'violins'), 'violin': ('solo', 'violin'), 'fiddle': ('solo', 'violin'), 'viola': ('solo', 'violas'), 'cello': ('solo', 'celli'),
     'contrabass': ('solo', 'basses'),
     'brass': ('brass', 'sus'), 'trumpetsection': ('brass', 'sus'), 'horn': ('solo', 'horn'), 'trumpet': ('solo', 'trumpet'),
     'trombone': ('solo', 'trombone'), 'tuba': ('solo', 'tuba'), 'flute': ('solo', 'flute'), 'oboe': ('solo', 'oboe'),
@@ -440,3 +440,36 @@ PERC = {'conga': 'conga', 'shaker': 'shaker', 'tamb': 'tamb', 'cowbell': 'cowbel
         'woodblock': 'woodblock', 'triangle': 'triangle', 'cabasa': 'cabasa', 'bongo': 'bongo', 'agogo': 'agogo'}
 KIT_PARTS = {'kick': 'kick', 'snare': 'snare', 'rim': 'rim', 'chat': 'chat', 'ohat': 'ohat', 'ride': 'ride', 'crash': 'crash',
              'tom': 'tom', 'clap': 'clap', 'cymbal': 'crash'}
+
+
+# the individual instruments you can pick in the Sound dropdowns: (id, label, library, parts it suits)
+CHOICES = [
+    ('violins', 'Violins (section)', 'strings', ('lead', 'chords', 'pad', 'arp')),
+    ('violin', 'Solo violin', 'strings', ('lead', 'arp')),
+    ('viola', 'Violas (section)', 'strings', ('lead', 'chords', 'pad', 'arp')),
+    ('cello', 'Cellos (section)', 'strings', ('lead', 'bass', 'chords', 'pad')),
+    ('contrabass', 'Double basses', 'strings', ('bass',)),
+    ('strings', 'String section - sustain', 'strings', ('chords', 'pad', 'lead', 'bass')),
+    ('spiccato', 'String section - spiccato', 'strings', ('chords', 'arp', 'bass', 'lead')),
+    ('pizz', 'String section - pizzicato', 'strings', ('arp', 'chords', 'bass', 'lead')),
+    ('tremolo', 'String section - tremolo', 'strings', ('pad', 'chords')),
+    ('horn', 'French horn', 'winds', ('lead', 'pad', 'chords')),
+    ('trumpet', 'Trumpet', 'winds', ('lead',)),
+    ('trombone', 'Trombone', 'winds', ('lead', 'bass', 'chords')),
+    ('tuba', 'Tuba', 'winds', ('bass',)),
+    ('brass', 'Brass section', 'winds', ('lead', 'chords', 'pad')),
+    ('flute', 'Flute', 'winds', ('lead', 'arp')),
+    ('piccolo', 'Piccolo', 'winds', ('lead', 'arp')),
+    ('oboe', 'Oboe', 'winds', ('lead',)),
+    ('clarinet', 'Clarinet', 'winds', ('lead', 'arp', 'chords')),
+    ('bassoon', 'Bassoon', 'winds', ('bass', 'lead')),
+]
+
+
+def choices(role=None):
+    """Installed real-orchestra instruments as dropdown entries (all of them, or the ones that suit one part)."""
+    out = []
+    for iid, label, lib, roles in CHOICES:
+        if installed(lib) and (role is None or role in roles) and plays(iid):
+            out.append(dict(id='real:' + iid, name=label + ' (real)', group='Real orchestra (no setup)'))
+    return out

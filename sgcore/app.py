@@ -255,6 +255,14 @@ def submit(items):
     return jid
 
 
+def real_insts(role):
+    try:
+        from . import samplelibs
+        return samplelibs.choices(role)
+    except Exception:
+        return []
+
+
 def user_insts():
     from . import usersounds, vsthost
     return ([dict(id='user:' + n, name='My sound: ' + n, group='My sounds') for n in usersounds.listing()['inst']] +
@@ -328,7 +336,7 @@ def meta():
     return dict(
         version=updater.local_version(), repo=updater.repo(), ffmpeg=have_ffmpeg(), output_dir=out_dir(),
         categories=by_cat, moods=list(MOODS), scales=list(SCALES), keys=NOTE_NAMES,
-        roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Built-in') for i in lst] + vst_insts(r) + user_insts()
+        roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Built-in') for i in lst] + real_insts(r) + vst_insts(r) + user_insts()
                for r, lst in ROLE_CHOICES.items()},
         effects=vst_effects(), voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
         kits=__import__('sgcore.drumkits', fromlist=['menu']).menu() + [dict(id=k, group='Other synth kits', label=k.title())
@@ -619,7 +627,7 @@ class Handler(BaseHTTPRequestHandler):
         if p == '/api/vst':
             from . import vsthost
             return self._json(dict(available=vsthost.available(), plugins=vsthost.find_plugins(), sounds=vsthost.list_sounds(),
-                                   folder=vsthost.PLUGIN_DIR, python=sys.executable))
+                                   folder=vsthost.PLUGIN_DIR, python=sys.executable, real=real_insts(None)))
         if p == '/api/vst/install':
             from . import vsthost
             return self._json({'job': bg_job(lambda log: {'ok': vsthost.install(log)})})

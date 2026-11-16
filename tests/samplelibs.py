@@ -87,6 +87,8 @@ def main():
         assert sl.plays('strings') and sl.plays('spiccato') and not sl.plays('flute')
         hits = {sl.hit('clap', 0.8, str(k)).tobytes() for k in range(3)}
         assert len(hits) == 3
+        ids = {c['id'] for c in sl.choices('pad')}
+        assert 'real:strings' in ids and 'real:flute' not in ids, ids                # only installed instruments are offered
         print('ok  playback: nearest note, velocity layers, round robins, spiccato for short notes, section split')
 
         # songs use them: strings parts become real, acoustic kits get real claps

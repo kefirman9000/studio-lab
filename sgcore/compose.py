@@ -718,7 +718,7 @@ def resolve_style(opts, rnd=None, mood=None):
         new = opts.instruments.get(t['layer']) if t['layer'] in MELODIC_ROLES else None
         if isinstance(new, str) and new.startswith(('vstp:', 'vstd:', 'vstq:')):
             new = _installed_vst(new, opts)             # a plugin picked in the Sound dropdown -> playable sound
-        if new and (new in INSTRUMENTS or new.startswith(('user:', 'vst:', 'sf:'))) and new != t['inst']:
+        if new and (new in INSTRUMENTS or new.startswith(('user:', 'vst:', 'sf:', 'real:'))) and new != t['inst']:
             t['fallback'] = t['inst']
             t['user_pick'] = True
             t['inst'] = new

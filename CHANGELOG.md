@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.19.2
+- **Pick individual orchestra instruments.** With the free real orchestra installed, every part's Sound dropdown has a "Real orchestra (no setup)" group with 19 instruments: violins, violas, cellos and double basses as sections, a solo violin, the whole string section as sustain / spiccato / pizzicato / tremolo, French horn, trumpet, trombone, tuba, a brass section, flute, piccolo, oboe, clarinet and bassoon. The VST window lists them too.
+- The VST window explains why BBC Symphony Orchestra / LABS appear as a single plugin: they keep their instruments in their own browser and don't expose them to other programs.
+
 ## 1.19.1
 - **The classic phonk cowbell is back.** The phonk lead no longer has forced overdrive, bit-crushing or an added echo on it: by default it's the classic pitched 808 cowbell with light saturation. Each song picks from five cowbells - classic (most often), raw 808 (dry, short), long ring (sustained with a slight chorus), distorted and crushed - and you can choose any of them as the Lead instrument.
 

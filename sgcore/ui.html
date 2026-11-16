@@ -834,7 +834,12 @@ async function vstModal(){
     <div class="sel" style="margin:10px 0"><b>🎻 Orchestra:</b> the easiest real orchestra is the free one in <a href="#" id="vReal">🎻 Real instruments</a> - download Strings and Brass &amp; woodwinds once and every section is used automatically, no setup.
       <div class="hint" style="margin-top:6px">Prefer your own orchestra plugin (BBC Symphony Orchestra, LABS, Kontakt …)? Save one sound per section, then tick
       <label><input type="checkbox" id="vOrchUse" ${(state.orch_plugin?'checked':'')}> use my orchestra plugin instead</label>
-      <button class="mini" id="vOrch" ${V.available?'':'disabled'}>Set up my orchestra…</button></div></div>
+      <button class="mini" id="vOrch" ${V.available?'':'disabled'}>Set up my orchestra…</button></div>
+      <div class="hint" style="margin-top:6px">Why does BBC Symphony Orchestra / LABS show up as one plugin? Those plugins keep their instruments
+      (violins, celli, horns …) in their own browser and don't tell other programs about them, so they can't be listed here.</div>
+      ${(V.real&&V.real.length)?`<div style="margin-top:8px"><b>Real orchestra instruments</b> <span class="hint">- pick any of these in a part's Sound dropdown</span>
+        <div class="row" style="flex-wrap:wrap;gap:4px;margin-top:4px">${V.real.map(r=>`<span class="tag inst">${esc(r.name.replace(' (real)',''))}</span>`).join('')}</div></div>`
+        :`<div class="hint" style="margin-top:6px">Download Strings and Brass &amp; woodwinds in 🎻 Real instruments to get 19 individual orchestra instruments here and in the Sound dropdowns.</div>`}</div>
     <div class="row" style="margin:10px 0"><button class="mini" id="vFolder">📁 Open my plugins folder</button><button class="mini" id="vRescan">⟳ Rescan</button><span class="hint">Drop .vst3 files there, or install plugins normally - system folders are scanned too.</span></div>
     <div id="vMsg" class="hint"></div>
     <h3 style="margin-top:12px">My VST sounds</h3>${snd||'<div class="hint">None yet — create one from a plugin below.</div>'}<div id="vPlay"></div>
