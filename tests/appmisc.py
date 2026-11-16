@@ -78,6 +78,11 @@ def test_journey():
     assert 'Glory' not in [x['name'] for x in tg['sections']] and not tg['sections'][-1].get('picardy')
     el = compose(Options(style='cinematic_journey', seed=5, journey={'preset': 'elegy', 'piano': 0.2}))
     assert [x['name'] for x in el['sections']] == ['Sorrow', 'Reflection', 'Resolution'] and 'choir_oo' not in {e.track for e in el['events']}
+    lo_ = compose(Options(style='cinematic_journey_low', seed=5))
+    lt = {e.track for e in lo_['events']}
+    assert 'vc_mel' in lt and 'bsn' in lt and not lt & {'vn_hi', 'flute', 'oboe'}
+    hi_n = lambda song: sum(e.midi >= 72 for e in song['events'] if e.track not in ('bdrum', 'cym', 'taiko', 'snare', 'anvil'))
+    assert hi_n(lo_) < 0.6 * hi_n(s) and max(e.midi for e in lo_['events']) <= 79                 # darker, lower
     m = compose(Options(style='cinematic_journey', seed=5, journey={'acts': ['sorrow', 'glory'], 'ending': 'minor'}))
     assert [x['name'] for x in m['sections']] == ['Sorrow', 'Glory']
     b = compose(Options(style='cinematic_journey', seed=5, blend=['trance']))

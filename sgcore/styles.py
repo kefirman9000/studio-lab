@@ -2857,7 +2857,21 @@ style('cinematic_journey', 'Orchestral', 'The ultimate orchestral generator - an
               T('snare', 'snare', 'snare', rev=0.45, pan=0.1, db=-22),
               T('anvil', 'top', 'anvil', rev=0.45, pan=0.3, db=-27)],
       master=dict(lufs=-16.0, air=1.2, low=1.6, gentle=True))
+STYLES['cinematic_journey']['tracks'] += [T('vc_mel', 'lead', 'cello', rev=0.45, pan=0.25, db=-16),
+                                          T('bsn', 'chords', 'bassoon', rev=0.45, pan=0.12, db=-24)]
+style('cinematic_journey_low', 'Orchestral', 'Cinematic Journey - Dark & Low: the same story told from the bottom of the orchestra. '
+      'Celli, horns and trombones carry the theme, double basses, tuba, contrabass trombone and contrabassoon underneath, '
+      'deep resonant piano, thundering timpani and bass drum, a male choir - classic dramatic, super-low orchestral weight',
+      bpm=(72, 86), scales=['minor'], composer='journey', low=True, form='epic', reverb=4.6, human=0.006, rubato=0.55,
+      kick_track='bdrum', snare_tracks=[], drums={}, gm_hint=STYLES['cinematic_journey']['gm_hint'],
+      tracks=[dict(t) for t in STYLES['cinematic_journey']['tracks']],
+      master=dict(lufs=-15.0, air=-1.5, low=3.4, gentle=True))
+for _t in STYLES['cinematic_journey_low']['tracks']:          # rebalance: the low end forward, the top back
+    _t['db'] = {'vc_mel': -15, 'cb': -17, 'tbn': -17, 'tbn_marc': -17, 'tuba': -18, 'cbtbn': -18, 'cbsn': -21, 'timp': -16,
+                'bdrum': -15, 'vc': -18, 'horns': -18, 'vn1': -22, 'tpt': -23, 'pad': -21, 'spicc_hi': -26, 'harp': -25,
+                'choir': -22, 'choir_oo': -22, 'piano': -16}.get(_t['name'], _t['db'])
 LABELS['cinematic_journey'] = 'Cinematic Journey (ultimate orchestral)'
+LABELS['cinematic_journey_low'] = 'Cinematic Journey - Dark & Low'
 
 
 # wider pad / bass pools for genres that only had one or two options - only sounds that genuinely fit the genre

@@ -1039,10 +1039,11 @@ def compose(opts):
     if opts.style in STYLE_ALIASES or any(b in STYLE_ALIASES for b in (opts.blend or [])):
         opts = replace(opts, style=STYLE_ALIASES.get(opts.style, opts.style),
                        blend=[STYLE_ALIASES.get(b, b) for b in (opts.blend or [])])
-    if opts.style == 'cinematic_journey' and opts.blend:     # a through-composed score doesn't blend
+    _J = ('cinematic_journey', 'cinematic_journey_low')
+    if opts.style in _J and opts.blend:                     # a through-composed score doesn't blend
         opts = replace(opts, blend=[], blend_parts={})
-    elif 'cinematic_journey' in (opts.blend or []):
-        opts = replace(opts, blend=[b for b in opts.blend if b != 'cinematic_journey'])
+    elif any(b in _J for b in (opts.blend or [])):
+        opts = replace(opts, blend=[b for b in opts.blend if b not in _J])
     user_opts = opts
     opts = style_knob_defaults(opts)
     opts = apply_simplicity(opts)

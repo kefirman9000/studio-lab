@@ -331,12 +331,15 @@ function renderStyles(){
   const list=$('#styleList'); list.innerHTML='';
   const cats=q?Object.keys(META.categories):[state.cat];
   if(!q&&state.cat==='Orchestral'&&META.categories.Orchestral.some(s=>s.id==='cinematic_journey')){
-    const f=document.createElement('div'); f.className='feat'+(state.style==='cinematic_journey'&&!state.blend.length?' on':'');
-    f.innerHTML='<div class="t">🎬 Cinematic Journey</div><div class="d">The ultimate orchestral generator: tension → sorrow → resolve → glory → reflection, full symphony orchestra, solo piano, rubato and huge dynamics.</div>';
-    f.onclick=()=>{ state.style='cinematic_journey'; state.blend=[]; state.instruments={}; state.blend_parts={}; refresh(); };
-    list.appendChild(f);
+    [['cinematic_journey','🎬 Cinematic Journey','The ultimate orchestral generator: tension → sorrow → resolve → glory → reflection, full symphony orchestra, solo piano, rubato and huge dynamics.'],
+     ['cinematic_journey_low','🎬 Cinematic Journey - Dark & Low','The same story from the bottom of the orchestra: celli, horns and trombones on the theme, tuba, contrabassoon, deep piano and thundering timpani - classic dramatic, super-low weight.']]
+    .forEach(([id,t,d])=>{ if(!META.categories.Orchestral.some(s=>s.id===id)) return;
+      const f=document.createElement('div'); f.className='feat'+(state.style===id&&!state.blend.length?' on':'');
+      f.innerHTML=`<div class="t">${t}</div><div class="d">${d}</div>`;
+      f.onclick=()=>{ state.style=id; state.blend=[]; state.instruments={}; state.blend_parts={}; refresh(); };
+      list.appendChild(f); });
   }
-  cats.forEach(c=>META.categories[c].filter(s=>(q||s.id!=='cinematic_journey')&&(!q||s.name.toLowerCase().includes(q)||s.desc.toLowerCase().includes(q))).forEach(s=>{
+  cats.forEach(c=>META.categories[c].filter(s=>(q||!isJourney(s.id))&&(!q||s.name.toLowerCase().includes(q)||s.desc.toLowerCase().includes(q))).forEach(s=>{
     const lead=s.id===state.style, mixed=inMix(s.id);
     const d=document.createElement('div');d.className='st'+(lead?' on':'')+(mixed&&!lead?' in':'');d.title=s.desc;
     d.innerHTML=`<span class="ck" title="${mixed?'Remove from the mix':'Add to the mix (blend)'}">${mixed?'✓':''}</span><span class="nm">${s.name}${lead&&state.blend.length?'<span class="lead">★ lead</span>':''}</span><span class="bpm">${s.bpm[0]}–${s.bpm[1]}</span>`;
@@ -376,7 +379,7 @@ function renderSelected(){
   // instrument selectors (defaults come from the style)
   $$('#soundBody .inst').forEach(e=>e.remove());
   const defs=META.style_defaults[state.style]||{};
-  const jParts=(state.style==='cinematic_journey'&&!state.blend.length)?(META.journey_parts||[]):null;
+  const jParts=(isJourney(state.style)&&!state.blend.length)?(META.journey_parts||[]).filter(p=>state.style==='cinematic_journey_low'?!['vn_hi','flute','oboe'].includes(p.id):!['vc_mel','bsn'].includes(p.id)):null;
   const rows=jParts?jParts.map(p=>[p.id,p.name,p.layer,p.inst]):ROLES.map(([r,l])=>[r,l,r,defs[r]]);
   if(jParts){ const h=document.createElement('div'); h.className='f wide inst'; h.innerHTML='<div class="hint">🎬 Cinematic Journey: every player has its own sound. Leave on <b>Score default</b> for the real orchestra / your orchestra plugin.</div>'; $('#soundBody').appendChild(h); }
   rows.forEach(([r,label,role,defInst])=>{
@@ -408,6 +411,7 @@ function renderOuts(){
     const c=document.createElement('span');const on=state.outputs.includes(k);c.className='chip'+(on?' on':'');c.textContent=n;
     c.onclick=()=>{state.outputs=on?state.outputs.filter(x=>x!==k):[...state.outputs,k];renderOuts()};o.appendChild(c)});
 }
+function isJourney(id){ return id==='cinematic_journey'||id==='cinematic_journey_low'; }
 const J_ACTS=[['tension','Tension'],['sorrow','Sorrow'],['resolve','Resolve'],['battle','Battle'],['glory','Glory'],['reflection','Reflection'],['resolution','Resolution']];
 const J_PRESETS=[['hero','🦸 Hero\'s journey'],['tragedy','🥀 Tragedy'],['triumph','🏆 Triumph'],['elegy','🕯️ Elegy']];
 function applyJPreset(id){ const P=(META.journey_presets||{})[id]; if(!P) return; state.jPreset=id;
@@ -417,7 +421,7 @@ function applyJPreset(id){ const P=(META.journey_presets||{})[id]; if(!P) return
   $('#jHybrid').checked=!!P.hybrid; $('#jWinds').checked=P.woodwinds!==false; ['jPiano','jRubato','jDyn'].forEach(k=>$('#'+k).oninput&&$('#'+k).oninput()); renderJourney(); }
 let J_HALL=null;
 function renderJourney(){
-  const on=state.style==='cinematic_journey'&&!state.blend.length; $('#journeyCard').style.display=on?'':'none'; if(!on) return;
+  const on=isJourney(state.style)&&!state.blend.length; $('#journeyCard').style.display=on?'':'none'; if(!on) return;
   if(!state.jOff) state.jOff=['battle'];
   $('#jPresets').innerHTML=J_PRESETS.map(([id,n])=>`<span class="chip ${state.jPreset===id?'on':''}" data-jp="${id}">${n}</span>`).join('');
   $$('#jPresets [data-jp]').forEach(c=>c.onclick=()=>applyJPreset(c.dataset.jp));
@@ -457,7 +461,7 @@ function options(){
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
   if($('#vinyl').value) o.vinyl=$('#vinyl').value==='on';
   if(state.orch_plugin) o.orch_plugin=true;
-  if(state.style==='cinematic_journey'&&!state.blend.length){
+  if(isJourney(state.style)&&!state.blend.length){
     o.journey={acts:J_ACTS.map(a=>a[0]).filter(a=>!(state.jOff||['battle']).includes(a)), piano:+$('#jPiano').value/100, rubato:+$('#jRubato').value/100,
       dynamics:+$('#jDyn').value/100, ending:$('#jEnd').value, woodwinds:$('#jWinds').checked, choir:$('#jChoir').checked, lift:$('#jLift').checked,
       hybrid:$('#jHybrid').checked, glory_style:$('#jGlory').value};

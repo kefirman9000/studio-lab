@@ -41,14 +41,57 @@ UNPITCHED = {'bdrum', 'cym', 'taiko', 'snare', 'anvil'}
 RANGE = {'piano': (21, 96), 'vn1': (55, 91), 'vn_hi': (67, 91), 'va': (48, 79), 'vc': (36, 72), 'cb': (28, 55), 'pad': (36, 86),
          'trem': (40, 84), 'spicc_lo': (28, 67), 'spicc_hi': (55, 86), 'horns': (34, 77), 'tpt': (55, 82), 'tbn': (34, 70),
          'tbn_marc': (34, 70), 'tuba': (24, 53), 'cbtbn': (24, 48), 'cbsn': (22, 46), 'flute': (60, 91), 'oboe': (58, 86),
-         'clar': (50, 82), 'harp': (24, 91), 'choir': (45, 79), 'choir_oo': (45, 77), 'timp': (38, 57), 'sub': (20, 40)}
+         'clar': (50, 82), 'harp': (24, 91), 'choir': (45, 79), 'choir_oo': (45, 77), 'timp': (38, 57), 'sub': (20, 40),
+         'vc_mel': (36, 69), 'bsn': (34, 67)}
+# Dark & Low: the highest each part may go (everything above folds down an octave at a time)
+LOW_TOP = {'piano': 76, 'va': 72, 'pad': 72, 'trem': 67, 'spicc_hi': 72, 'harp': 79, 'choir': 67, 'choir_oo': 64, 'tpt': 74,
+           'horns': 70, 'clar': 67, 'vn1': 79, 'spicc_lo': 60}
+
+
+def go_low(S, cfg):
+    """Retell the score from the bottom of the orchestra: the theme moves to celli (+ horns / trombones), the flute and
+    oboe hand over to bassoons, the violins drop to their low string, everything else loses its top, and the low brass,
+    basses, contrabassoon, piano and percussion get heavier."""
+    out = []
+    for e in S.evs:
+        t = e.track
+        if t == 'vn_hi':
+            continue                                         # no high harmonics
+        if t == 'vn1':                                       # the theme: celli, an octave+ lower, with violins far below their top
+            out.append(Ev('vc_mel', e.beat, e.dur, e.midi - 24, min(1.0, e.vel * 1.05)))
+            if e.vel > 0.7:                                  # the big moments: trombones double the melody
+                out.append(Ev('tbn', e.beat, e.dur, e.midi - 24, e.vel * 0.8))
+            e.midi -= 12
+            e.vel *= 0.7
+        elif t in ('flute', 'oboe'):
+            e.track = 'bsn'
+            e.midi -= 24
+        elif t in ('tuba', 'cbtbn', 'cbsn', 'cb', 'tbn', 'tbn_marc', 'timp', 'vc'):
+            e.vel = min(1.0, e.vel * 1.12)
+        elif t in ('bdrum', 'taiko'):
+            e.vel = min(1.0, e.vel * 1.1)
+        top = LOW_TOP.get(e.track)
+        if top:
+            while e.midi > top:
+                e.midi -= 12
+        if e.track == 'choir':
+            e.track = 'choir_oo'                             # a dark male "ooh" instead of a bright "aah"
+        out.append(e)
+        if t == 'piano' and e.dur >= 1.5 and e.midi >= 45 and e.vel > 0.3:   # deep resonant piano octaves underneath
+            out.append(Ev('piano', e.beat, e.dur, e.midi - 24 if e.midi - 24 >= 21 else e.midi - 12, e.vel * 0.6))
+        if t == 'cb':                                        # contrabassoon and tuba thicken every bass note
+            out.append(Ev('cbsn', e.beat, e.dur, e.midi - 12 if e.midi - 12 >= 22 else e.midi, e.vel * 0.55))
+            if e.vel >= 0.5:
+                out.append(Ev('tuba', e.beat, e.dur, e.midi, e.vel * 0.55))
+    S.evs = out
 # every player, for the Sound panel (track name -> label)
 PLAYERS = [('piano', 'Solo piano'), ('vn1', 'Violins I (melody)'), ('vn_hi', 'High strings / harmonics'), ('va', 'Violas'),
            ('vc', 'Celli'), ('cb', 'Double basses'), ('pad', 'String section (sustain)'), ('trem', 'Strings tremolo'),
            ('spicc_lo', 'Low string ostinato'), ('spicc_hi', 'High string runs'), ('horns', 'French horns'), ('tpt', 'Trumpets'),
            ('tbn', 'Trombones (sustain)'), ('tbn_marc', 'Trombones (marcato hits)'), ('tuba', 'Tuba'), ('cbtbn', 'Contrabass trombone'),
            ('cbsn', 'Contrabassoon'), ('flute', 'Flute'), ('oboe', 'Oboe'), ('clar', 'Clarinet'), ('harp', 'Harp'),
-           ('choir', 'Choir "aah"'), ('choir_oo', 'Choir "ooh"'), ('timp', 'Timpani'), ('sub', 'Hybrid sub boom')]
+           ('choir', 'Choir "aah"'), ('choir_oo', 'Choir "ooh"'), ('timp', 'Timpani'), ('sub', 'Hybrid sub boom'),
+           ('vc_mel', 'Celli (melody, Dark & Low)'), ('bsn', 'Bassoons (Dark & Low)')]
 
 SC = [0, 2, 3, 5, 7, 8, 10]                     # natural minor; the V chord and a major ending raise notes as needed
 QUAL = {'m': (0, 3, 7), 'M': (0, 4, 7), 'sus4': (0, 5, 7), 'sus2': (0, 2, 7)}
@@ -662,6 +705,14 @@ def compose_journey(st, opts, key, bpm, rng):
             e.midi -= 12
         while e.midi < lo:
             e.midi += 12
+    if st.get('low'):
+        go_low(S, cfg)
+        for e in S.evs:
+            lo, hi = RANGE.get(e.track, (0, 127))
+            while e.midi > hi:
+                e.midi -= 12
+            while e.midi < lo:
+                e.midi += 12
     off = {t['name'] for t in st['tracks'] if t.get('off')}
     tracks = {t['name'] for t in st['tracks']} - off
     evs = [e for e in S.evs if e.track in tracks and e.beat < total * 4]

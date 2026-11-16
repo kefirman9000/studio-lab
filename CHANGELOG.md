@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.25.0
+- **🎬 Cinematic Journey - Dark & Low**, a second mode next to the original (top of the Orchestral tab): the same story, acts, presets and controls, told from the bottom of the orchestra. Celli carry the theme (trombones double it at the big moments), bassoons replace flute and oboe, the violins drop to their low string and the high harmonics are gone, piano notes get deep octaves underneath, every bass note is thickened by contrabassoon and tuba, low brass / timpani / bass drum hit harder, the choir sings a dark "ooh", tempo sits a little slower (72-86) and the mix leans on the low end with the top rolled off.
+
 ## 1.24.1
 - Cinematic Journey: the climax's violins were written an octave too high (up to A7, a thin whistle). They now sing in their bright upper register with the violas an octave below, the high "harmonics" strings and woodwinds sit lower too, and every part is kept inside its instrument's natural range.
 - Each Journey player's Sound dropdown has **🔇 Off (silent)** to leave that instrument out.

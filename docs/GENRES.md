@@ -1,4 +1,4 @@
-# Studio Lab genres (120)
+# Studio Lab genres (121)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
@@ -111,7 +111,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Symphonic Metal | `symphonic_metal` | 120-170 | Symphonic metal: double-kick drums and power chords under choir, string ostinatos and a soaring lead |
 | Tango | `tango` | 108-126 | Tango: marcato four-beat pulse, bandoneon, dramatic violin lines, staccato piano and double bass |
 
-## Orchestral (21)
+## Orchestral (22)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -120,6 +120,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Chamber / String Quartet | `chamber` | 72-112 | Chamber / string quartet: violin melody, viola harmony, cello line, pizzicato colour |
 | Cinematic / Epic | `cinematic` | 80-110 | Epic cinematic / trailer: string ostinatos, taiko & timpani, horns, choir, huge climax |
 | Cinematic Journey (ultimate orchestral) | `cinematic_journey` | 78-92 | The ultimate orchestral generator - an epic cinematic journey for full symphony orchestra: shadowy tension (creeping low strings, timpani rolls, icy low piano) > aching solo-piano sorrow > heroic resolve (soaring violins, spiccato runs, noble horns, marcato low brass) > overwhelming tutti glory > fragile reflection > a long, luminous final chord. Rubato and dramatic tempo shifts, near-silence to fortissimo |
+| Cinematic Journey - Dark & Low | `cinematic_journey_low` | 72-86 | Cinematic Journey - Dark & Low: the same story told from the bottom of the orchestra. Celli, horns and trombones carry the theme, double basses, tuba, contrabass trombone and contrabassoon underneath, deep resonant piano, thundering timpani and bass drum, a male choir - classic dramatic, super-low orchestral weight |
 | Classical (Mozart era) | `classical_period` | 100-140 | Classical period (Mozart / Haydn): elegant homophony - a clear singing melody over Alberti-bass and string accompaniment, 4+4-bar phrases, functional cadences, pairs of winds, horns and timpani |
 | Dark Choral Epic | `epic_choir` | 60-84 | Dark choral epic ("Dies Irae" / sacred horror): a massive choir over pipe organ, droning double basses and tuba, tolling tubular bells, timpani and orchestral bass drum - slow, monumental, apocalyptic |
 | Dark Tension | `tension` | 60-84 | Dark tension / horror: creeping low strings, eerie celesta, choir swells, timpani hits |
