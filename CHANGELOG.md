@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.19.0
+- **🩺 Report a problem** (header button): saves one text file - or copies it to the clipboard - with Studio Lab's version, Python / OS and library versions, your settings, sound libraries, every plugin found and why any failed to load, the genre VST packs, recent songs and installs with their errors and warnings, and the recent log. API keys, your user name, home folder and e-mail addresses are removed automatically. Add a note about what happened and send the file for help.
+- **Everything the app prints is now kept in `logs/studiolab.log`** (rotates at 2 MB), so errors are still there after the window closes.
+- **Studio Lab opens in its own app window** - no browser tabs or address bar - using Microsoft Edge / Chrome app mode (part of Windows, nothing to install), or a native window if `pywebview` is installed. Closing the window quits Studio Lab. On Windows the launcher no longer leaves a console window open. Prefer a browser tab? Report a problem → App window → Browser tab, or start with `--browser`.
+- **Create desktop shortcut** (Report a problem window): a Studio Lab shortcut that starts the app with no console.
+- **Genre list:** `docs/GENRES.md` lists all 114 genres by category with id, tempo range and current description (`python tools/genre_list.py` regenerates it).
+
 ## 1.18.1
 - **A real orchestra with no setup.** When the free Strings and Brass & woodwinds libraries (🎻 Real instruments) are installed, they play every orchestral part automatically - no plugin, no saving sounds per section. Your orchestra plugin (BBC Symphony Orchestra, LABS ...) is only used if you tick "use my orchestra plugin instead" in VST instruments. Songs whose orchestral parts fell back to General MIDI now point to the one-click download instead of the plugin setup.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Studio Lab - run without arguments to open the app in your browser.
+"""Studio Lab - run without arguments to open the app in its own window (--browser: in a browser tab).
    Command line:  python studiolab.py generate --help
                   python studiolab.py vsts --help"""
 import os
@@ -34,4 +34,5 @@ if __name__ == '__main__':
     else:
         from sgcore.app import run
         port = int(os.environ.get('STUDIOLAB_PORT', '8765'))
-        run(port=port, open_browser='--no-browser' not in sys.argv)
+        run(port=port, open_browser='--no-browser' not in sys.argv,
+            window='browser' if '--browser' in sys.argv else ('app' if '--app-window' in sys.argv else 'auto'))

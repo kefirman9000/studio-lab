@@ -243,6 +243,7 @@ def worker():
             job['status'] = 'error'
             job['error'] = str(e)
             job['log'].append(traceback.format_exc())
+            print('ERROR in generate job:\n' + traceback.format_exc())
         job['progress'] = 1.0
         WORK.task_done()
 
@@ -312,7 +313,10 @@ def bg_job(fn):
         except Exception as e:
             job['status'] = 'error'
             job['error'] = str(e)
+            job['log'].append(traceback.format_exc())
+            print('ERROR in background task:\n' + traceback.format_exc())
         job['progress'] = 1.0
+    job['started'] = time.time()
     threading.Thread(target=run, daemon=True).start()
     return jid
 
@@ -330,7 +334,7 @@ def meta():
         kits=__import__('sgcore.drumkits', fromlist=['menu']).menu() + [dict(id=k, group='Other synth kits', label=k.title())
                                                                          for k in KITS if k not in ('default',) and k not in
                                                                          __import__('sgcore.drumkits', fromlist=['MENU']).MENU],
-        genre_kits=__import__('sgcore.drumkits', fromlist=['GENRE_KIT']).GENRE_KIT, parts=[dict(id=p, name=PART_LABELS[p]) for p in FUSION_PARTS],
+        window=load_settings().get('window', 'app'), genre_kits=__import__('sgcore.drumkits', fromlist=['GENRE_KIT']).GENRE_KIT, parts=[dict(id=p, name=PART_LABELS[p]) for p in FUSION_PARTS],
         labels={k: label(k) for k in STYLES},
         style_defaults={k: {t['layer']: t['inst'] for t in v['tracks'] if t['layer'] in ROLE_CHOICES} for k, v in STYLES.items()},
     )
@@ -681,6 +685,22 @@ class Handler(BaseHTTPRequestHandler):
             r = vstpacks.remove(str(body['id']))
             detected(refresh=True)
             return self._json(r)
+        if p == '/api/diagnostics':
+            from . import diagnostics
+            return self._json({'text': diagnostics.build(JOBS, str(body.get('note', ''))[:4000]),
+                               'name': 'studiolab-report-' + time.strftime('%Y%m%d-%H%M') + '.txt'})
+        if p == '/api/window':
+            mode = 'browser' if body.get('mode') == 'browser' else 'app'
+            s_ = load_settings()
+            s_['window'] = mode
+            save_settings(s_)
+            return self._json({'window': mode})
+        if p == '/api/shortcut':
+            from . import appwindow
+            try:
+                return self._json({'path': appwindow.make_shortcut()})
+            except Exception as e:
+                return self._json({'error': str(e)})
         if p == '/api/soundlib':
             from . import soundfont, samplelibs
             return self._json({'installed': soundfont.installed(), 'path': soundfont.library_path(), 'real': samplelibs.status()})
@@ -784,7 +804,9 @@ class Handler(BaseHTTPRequestHandler):
         self.send_error(404)
 
 
-def run(port=8765, open_browser=True):
+def run(port=8765, open_browser=True, window='auto'):
+    from . import diagnostics
+    diagnostics.capture()
     threading.Thread(target=worker, daemon=True).start()
     threading.Thread(target=startup_detect, daemon=True).start()
     for p in range(port, port + 20):
@@ -795,7 +817,22 @@ def run(port=8765, open_browser=True):
         except OSError:
             continue
     url = f'http://127.0.0.1:{srv.server_address[1]}/'
-    print(f'Studio Lab is running at {url}  (close this window to quit)')
+    print(f'Studio Lab is running at {url}')
+    if window == 'auto':
+        window = load_settings().get('window', 'app')
+    if open_browser and window == 'app':
+        # its own app window; the web server runs in the background and stops when the window is closed
+        from . import appwindow
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        mode = appwindow.open_window(url, lambda: os._exit(0))
+        print(f'   opened as: {mode}')
+        if mode == 'webview':
+            return
+        try:
+            threading.Event().wait()
+        except KeyboardInterrupt:
+            pass
+        return
     if open_browser:
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()
     try:

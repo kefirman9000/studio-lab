@@ -12,4 +12,5 @@ jobs:
       - run: python -m tests.smoke
       - run: python -m tests.vstpacks
       - run: python -m tests.samplelibs
+      - run: python -m tests.appmisc
       - run: python -m tests.genres

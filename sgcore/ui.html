@@ -167,6 +167,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
   <button class="hbtn" id="plugBtn" title="Tell Studio Lab which plugins you have">🔌 My plugins</button>
   <button class="hbtn" id="presetBtn" title="Save or load your favourite settings">★ Presets</button>
   <button class="hbtn" id="folderBtn" title="Open the output folder">📁 Output</button>
+  <button class="hbtn" id="diagBtn" title="Save a report of errors and settings to send for help">🩺 Report a problem</button>
   <button class="hbtn" id="updBtn">⟳ Updates<span class="badge" id="updBadge" style="display:none">new</span></button>
 </header>
 <main>
@@ -760,6 +761,33 @@ async function soundsModal(data){
   $('#modal').classList.add('on');
 }
 // ------------------------------------------------------------- sampled sound library
+function diagModal(){
+  $('#modalBox').className='box wide';
+  $('#modalBox').innerHTML=`<h3>🩺 Report a problem</h3>
+    <p class="hint">Makes one text file with Studio Lab's version, your settings, sound libraries, plugins (and why any failed to load),
+     recent songs and installs with their errors, and the recent log. API keys, your user name and e-mail addresses are removed.
+     Send the file to whoever is helping you.</p>
+    <div class="f wide"><label>What happened? <span class="hint">optional</span></label>
+      <textarea id="diagNote" rows="4" style="width:100%" placeholder="e.g. Generate on Trance with the Genre VSTs on shows an error about Surge XT"></textarea></div>
+    <div class="row" style="margin-top:10px"><button class="btn p" id="diagSave">Save report</button><button class="btn" id="diagCopy">Copy to clipboard</button>
+      <span class="hint" id="diagMsg"></span></div>
+    <h3 style="margin-top:16px">App window</h3>
+    <div class="row"><label><input type="radio" name="winMode" value="app"> Own app window (no browser tabs)</label>
+      <label><input type="radio" name="winMode" value="browser"> Browser tab</label>
+      <button class="btn" id="mkShortcut">Create desktop shortcut</button></div>
+    <p class="hint">Takes effect the next time Studio Lab starts. The shortcut starts it with no console window.</p>
+    <div style="text-align:right;margin-top:14px"><button class="btn" onclick="closeModal()">Close</button></div>`;
+  const get=async()=> api('/api/diagnostics',{note:$('#diagNote').value});
+  $('#diagSave').onclick=async()=>{ const r=await get(); const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([r.text],{type:'text/plain'})); a.download=r.name; document.body.appendChild(a); a.click(); a.remove();
+    $('#diagMsg').textContent='Saved '+r.name+' (usually in your Downloads folder).'; };
+  $('#diagCopy').onclick=async()=>{ const r=await get(); try{ await navigator.clipboard.writeText(r.text); $('#diagMsg').textContent='Copied - paste it into your message.' }
+    catch(_){ $('#diagMsg').textContent='Could not copy - use Save report instead.' } };
+  (async()=>{ const cur=(META.window||'app'); $$('#modalBox [name=winMode]').forEach(r=>{ r.checked=r.value===cur;
+      r.onchange=async()=>{ const x=await api('/api/window',{mode:r.value}); META.window=x.window; $('#diagMsg').textContent='Saved - applies next start.' } }); })();
+  $('#mkShortcut').onclick=async()=>{ const r=await api('/api/shortcut',{}); $('#diagMsg').textContent=r.error?r.error:'Shortcut created: '+r.path; };
+  $('#modal').classList.add('on');
+}
 async function libModal(){
   const L=await api('/api/soundlib',{});
   const real=(L.real||[]).map(r=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(r.title)}</span> <span class="tag inst">${r.mb} MB</span> <span class="tag ok">${esc(r.license)}</span>
@@ -1035,6 +1063,7 @@ async function init(){
   $('#soundsBtn').onclick=()=>soundsModal();
   $('#vstBtn').onclick=()=>vstModal();
   $('#rigBtn').onclick=()=>rigModal();
+  $('#diagBtn').onclick=()=>diagModal();
   (function watchPlugins(){ let seen=false;
     const t=async()=>{ let st; try{ st=await api('/api/vststatus',{}); }catch(e){ return; }
       if(st.running){ seen=true; if(!busy) $('#status').textContent=`Checking your plugins ${st.done+1}/${st.total}: ${st.current}…`; setTimeout(t,1500); }
