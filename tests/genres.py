@@ -392,9 +392,41 @@ def test_kits_and_bells():
     print('ok  genre drum kits, re-played breaks + chops, kit switching, bells only where idiomatic, trance gate')
 
 
+
+def test_bible_genres():
+    from sgcore.render import Renderer
+    from sgcore.styles import STYLES
+    new = ('italo_disco', 'new_beat', 'gabber', 'rave_hardcore', 'future_funk', 'bebop', 'modal_jazz', 'soul_jazz', 'fusion',
+           'classical_period', 'romantic', 'impressionism', 'minimalism')
+    for n in new:
+        assert n in STYLES, n
+    rng = {'house': (118, 128), 'deep_house': (115, 125), 'tech_house': (122, 128), 'progressive_house': (122, 130), 'bigroom': (125, 132),
+           'uplifting_trance': (128, 140), 'psytrance': (138, 148), 'dubstep': (138, 145), 'dnb': (160, 180), 'jungle': (160, 180),
+           'acid_house': (120, 130), 'italo_disco': (110, 128), 'new_beat': (90, 120), 'gabber': (160, 200), 'rave_hardcore': (130, 160),
+           'synthwave': (80, 120), 'future_funk': (110, 130), 'bebop': (180, 300), 'funk': (90, 120)}
+    for n, (lo, hi) in rng.items():
+        a, b = STYLES[n]['bpm']
+        assert lo <= a and b <= hi, (n, STYLES[n]['bpm'])
+    # Alberti bass: low - high - middle - high
+    s = compose(Options(style='classical_period', seed=2, rotation='off', layering='off'))
+    arp = sorted((e.beat, e.midi) for e in s['events'] if e.track == 'arp')[:4]
+    m = [x[1] for x in arp]
+    assert m[1] == m[3] and m[0] < m[2] < m[1], m
+    # jazz: snare comping on off-beats
+    j = compose(Options(style='bebop', seed=2))
+    assert any(e.track == 'snare' and (e.beat * 4) % 4 != 0 for e in j['events'])
+    # rubato stretches phrase ends; the 80s kit gates its snare
+    r = compose(Options(style='romantic', seed=2))
+    R = Renderer(r, log=lambda *a: None)
+    assert R.t_of(64, human=False) > 64 * R.spb and R.length > int(r['total_bars'] * 4 * R.spb * 44100)
+    assert compose(Options(style='italo_disco', seed=1))['st'].get('gated_snare')
+    print('ok  bible genres: tempos, Alberti bass, jazz comping, rubato, gated snare, 13 new genres')
+
+
 if __name__ == '__main__':
     main()
     test_builds_and_vinyl()
     test_kits_and_bells()
+    test_bible_genres()
     test_chords_and_knobs()
     test_rotation_and_freshness()

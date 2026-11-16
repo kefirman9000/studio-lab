@@ -1,4 +1,5 @@
 """Rendering: events -> tracks -> mix (sidechain, sends, buses) -> master."""
+import math
 import os
 import random
 import time
@@ -16,6 +17,21 @@ ROLE_DB = {'kick': -13, 'snare': -17, 'top': -25, 'bass': -15, 'chords': -21, 'p
 CUT_KEYS = ('cut', 'bright')
 
 
+def gated_reverb(x, hold=0.24):
+    """80s gated reverb: a dense, bright room tail that's chopped off hard after ~240 ms."""
+    n = int((hold + 0.03) * SR)
+    rng = np.random.default_rng(7)
+    ir = rng.standard_normal(n).astype(np.float32) * np.exp(-np.arange(n) / (0.5 * SR)).astype(np.float32)
+    ir[0] = 6.0
+    from scipy.signal import fftconvolve
+    y = fftconvolve(x[:n], ir)[:n].astype(np.float32)
+    g = np.ones(n, dtype=np.float32)
+    k = int(0.02 * SR)
+    g[-k:] = np.linspace(1, 0, k)
+    y = y / (np.max(np.abs(y)) + 1e-9) * g
+    return y
+
+
 class Renderer:
     def __init__(self, song, log=print):
         self.song = song
@@ -24,7 +40,7 @@ class Renderer:
         self.spb = 60.0 / song['bpm']
         self.log = log
         self.cache = {}
-        self.length = int((song['total_bars'] * 4 * self.spb + 4.0) * SR)
+        self.length = int((song['total_bars'] * 4 * self.spb + 4.0 + self._rubato(song['total_bars'] * 4)) * SR)
         self.hrng = random.Random(song['seed'] + 99)
         self.bright = 2 ** (float(self.opts.brightness) * 1.2)
         self.track_gains = {}
@@ -42,11 +58,22 @@ class Renderer:
         q = beat * (4 if unit == 16 else 2)
         if abs(q - round(q)) < 1e-6 and int(round(q)) % 2 == 1:
             b += (st['swing'] - 0.5) * (0.5 if unit == 16 else 1.0)
-        t = b * self.spb
+        t = b * self.spb + self._rubato(beat)
         if human and st.get('human'):
             # deterministic per position, so editing one section never shifts the feel of another
             t += random.Random(self.song['seed'] * 1000003 + int(round(beat * 960))).gauss(0, st['human'])
         return max(0.0, t)
+
+    def _rubato(self, beat):
+        """Romantic-style rubato: each 4-bar phrase pushes a little, then broadens into its cadence (seconds added)."""
+        R = float(self.st.get('rubato') or 0.0)
+        if not R:
+            return 0.0
+        span = 16.0
+        n, p = divmod(beat, span)
+        p /= span
+        E = R * span * self.spb * 0.07                  # how much later each phrase ends than strict time
+        return n * E + E * p ** 4 + R * self.spb * 0.12 * math.sin(2 * math.pi * p) * (1 - p)
 
     def _params(self, tcfg):
         p = dict(tcfg['p'])
@@ -114,6 +141,8 @@ class Renderer:
             name = 'clap'
         elif perc and inst in sl.PERC:
             name = sl.PERC[inst]
+        elif perc and inst == 'cowbell808' and self.st.get('real_cowbell'):
+            name = 'cowbell'                                # latin styles: a real campana, not an 808
         if not name:
             return None
         vb = round(max(0.05, min(1.0, ev.vel)) * 6) / 6
@@ -201,6 +230,8 @@ class Renderer:
                 kitp.update(self.st.get('drum_voice', {}).get(name, {}))     # e.g. high / mid / low toms
                 sig = DRUMS[inst](kitp)
             sig = (sig / (np.max(np.abs(sig)) + 1e-9)).astype(np.float32)
+            if self.st.get('gated_snare') and inst in ('snare', 'clap'):
+                sig = gated_reverb(sig)
             self.cache[('drum', name)] = sig
         return sig
 

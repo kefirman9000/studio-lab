@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.18.0
+Genres checked against the electronic and multi-genre production bibles (tempo, feel, rhythm grid, sound, arrangement).
+- **13 new genres:**
+  - *Electronic:* Italo Disco (LinnDrum-style kit with a gated-reverb snare, octave synth bass, Juno/DX7-style arps), New Beat (slow, stomping 100-115 BPM EBM/acid), Hardcore / Gabber (170-195 BPM distorted pitched kicks, hoovers), Breakbeat Hardcore / Rave (Amen-style breaks over a 4/4 kick, piano stabs, hoovers), Future Funk (swung disco groove, heavy sidechain, vocal chops, slap-style bass).
+  - *Jazz:* Bebop (180-260 BPM, rapid ii-V changes, bebop lines, rootless comping), Cool / Modal Jazz (long stretches on one mode, space, muted trumpet), Soul Jazz / Hard Bop (organ trio), Jazz Fusion (straight 16ths, electric bass, Rhodes, synth and overdriven guitar).
+  - *Classical:* Classical period (Mozart / Haydn - melody over Alberti bass, 4+4 phrases, horns, timpani), Romantic Orchestra (rubato, rich chromatic harmony, horns, swelling dynamics), Impressionism (lydian / modal colours, harp, flute, piano washes, flexible pulse), Minimalism (steady pulse, repeating marimba / piano cells, slow harmony).
+- **New musical behaviour:** Alberti-bass accompaniment; jazz snare comping ("dropping bombs") in Bebop, Modal, Jazz and Swing; Romantic rubato (phrases push, then broaden into the cadence); the 80s **gated-reverb snare** on the LinnDrum-style kit (synthwave, synthpop, city pop, Italo); a real campana cowbell for salsa and cumbia when the percussion library is installed.
+- **Fixes to existing genres:** house 120-127 BPM with moderate (not pumping) sidechain and conga fills; deep house and psytrance now flow continuously instead of build → drop, deep house with gentler sidechain; progressive house gets long evolving builds and strip-down breakdowns; uplifting trance 134-140, psytrance 140-148, big room 126-130, synthwave 90-112; jungle swings harder; the reggae skank sits on every "and".
+
 ## 1.17.0
 - **Every genre has its own drum kit, and you can switch kits** (Sound → Drum kit, grouped):
   - *Drum machines:* TR-808 (rap, trap, drill), TR-909 (house), Trance 909 (rolling kick, open hats), Techno 909 (hard, rumble), 80s LinnDrum-style (synthwave, synthpop, city pop), punchy EDM, hardstyle, soft.

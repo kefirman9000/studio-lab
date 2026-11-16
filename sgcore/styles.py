@@ -2430,6 +2430,230 @@ POOLS['brazilian_phonk'] = dict(lead=['cowbell'], bass=['808'], chords=['warmpad
 
 
 # ---------------------------------------------------------------------------------------------------------------
+# v1.18: genres from the technical production bibles (tempo / feel / grid / sound / arrangement as specified there)
+style('italo_disco', 'Electronic', 'Italo disco / Eurodisco (early-mid 80s): four-on-the-floor with a gated-reverb snare on 2 and 4, a '
+      'melodic octave synth bassline, bright Juno / Jupiter / DX7 arps and anthemic leads - cleaner and more synthetic than disco',
+      bpm=(116, 126), scales=['minor', 'major'], kit='linn', form='song', sc_depth=0.2, swing=0.5,
+      progs={'minor': [[0, 5, 2, 6], [0, 3, 6, 5], [0, 5, 3, 4]], 'major': [[0, 4, 5, 3], [5, 3, 0, 4]]},
+      drums={'kick': [FOUR], 'snare': [BACKBEAT], 'chat': ['x.x.x.x.x.x.x.x.'], 'ohat': [OFFHAT], 'tamb': ['....x.......x...']},
+      snare_tracks=['snare'], bass=['R.O.R.O.R.O.R.O.', 'R.O.R.R.O.R.O.R.', 'RRO.RRO.RRO.RRO.'], bass_gate=0.55, bass_lo=33,
+      chord_rh=['x-------x-------', 'x---x---x---x---'], chord_center=64, arp=dict(rate=1, mode='up', oct=5),
+      lead_rh=['x-x-x---x-x-x---', 'x---x---x-x-x-x-', 'x-x-x-x-x-------', 'x-------x---x-x-'], repetition=0.75,
+      gm_hint='Juno / Jupiter octave bass; DX7 / PPG brass and bells; bright saw lead; vocoder; LinnDrum with gated snare',
+      tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.3, db=-16), T('chat', 'top', 'chat', pan=0.2, db=-28),
+              T('ohat', 'top', 'ohat', db=-28), T('tamb', 'top', 'tamb', pan=-0.3, db=-30),
+              T('bass', 'bass', 'sawbass', sc=0.3, db=-14, p=dict(cut=1300)), T('chords', 'chords', 'polysynth', rev=0.35, db=-24),
+              T('pad', 'pad', 'solina', rev=0.5, db=-28), T('arp', 'arp', 'pluck_saw', dly=0.3, pan=0.25, db=-27),
+              T('lead', 'lead', 'leadsaw', rev=0.4, dly=0.3, db=-19)],
+      master=dict(lufs=-10.0, air=2.0, low=0.8))
+
+style('new_beat', 'Electronic', 'New beat (late-80s Belgium): slow, heavy, stomping four-on-the-floor at ~100-115 BPM, industrial EBM '
+      'drums, dark acid-tinged bass and sampled stabs - hypnotic and menacing',
+      bpm=(100, 116), scales=['minor', 'phrygian'], kit='techno', form='groove', sc_depth=0.15, swing=0.52,
+      progs={'minor': [[0, 0, 0, 0], [0, 0, 5, 6]], 'phrygian': [[0, 1, 0, 1], [0, 0, 1, 0]]},
+      drums={'kick': [FOUR], 'snare': [BACKBEAT], 'clap': ['....X.......X..x'], 'chat': ['..x...x...x...x.'],
+             'rim': ['...x..x....x..x.']},
+      snare_tracks=['snare', 'clap'], bass=['R.RR.RR.R.RR.RR.', 'R.R.R.RRR.R.R.RR'], bass_mode='acid', bass_lo=31,
+      chord_rh=['x...............', '....x.......x...'], chord_center=58, arp=dict(rate=2, mode='random', oct=4, prob=0.5),
+      lead_rh=['x-------........', 'x---....x---....'], repetition=0.85, simplicity=0.4,
+      tracks=[T('kick', 'kick', 'kick', db=-12, drive=0.5), T('snare', 'snare', 'snare', rev=0.35, db=-16, drive=0.4),
+              T('clap', 'snare', 'clap', rev=0.3, db=-20), T('chat', 'top', 'chat', db=-28), T('rim', 'top', 'rim', pan=0.3, db=-29),
+              T('bass', 'bass', 'acid', db=-14, p=dict(res=7, cut=500)), T('chords', 'chords', 'stab', rev=0.45, dly=0.3, db=-25),
+              T('pad', 'pad', 'choir', rev=0.6, db=-30), T('arp', 'arp', 'pluck_saw', dly=0.4, db=-29),
+              T('lead', 'lead', 'vox', rev=0.4, dly=0.3, db=-22)],
+      master=dict(lufs=-9.5, air=0.6, low=1.6, drive=0.3))
+
+style('gabber', 'Electronic', 'Hardcore / gabber (90s Rotterdam): 170-200 BPM four-on-the-floor of heavily distorted, pitched '
+      '"gabber" kicks, screeching leads, hoovers and raw, confrontational energy',
+      bpm=(170, 195), scales=['minor', 'phrygian'], kit='hard', form='edm', sc_depth=0.5, swing=0.5,
+      kit_override={'kick': {'drive': 14.0, 'pitch': 52, 'decay': 4.5, 'punch': 380, 'len': 0.5}},
+      progs={'minor': [[0, 0, 5, 6], [0, 5, 6, 4]], 'phrygian': [[0, 1, 0, 1]]},
+      drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'chat': ['x.x.x.x.x.x.x.x.']},
+      snare_tracks=['clap'], bass=['................'], bass_lo=31,
+      chord_rh=['x...x...x...x...', 'x.x.x.x.x.x.x.x.'], chord_center=62, arp=dict(rate=1, mode='random', oct=5),
+      lead_rh=['x.x.x.x.x.x.x.x.', 'x-x-x-x-x-x-x-x-', 'xxx.x.x.xxx.x.x.'], repetition=0.8,
+      tracks=[T('kick', 'kick', 'kick', db=-10, drive=0.9), T('clap', 'snare', 'clap', rev=0.2, db=-18),
+              T('ohat', 'top', 'ohat', db=-27), T('chat', 'top', 'chat', db=-29),
+              T('bass', 'bass', 'sinebass', db=-30), T('chords', 'chords', 'hoover', rev=0.3, db=-22, drive=0.5),
+              T('pad', 'pad', 'choir', rev=0.5, db=-30), T('arp', 'arp', 'pluck_saw', dly=0.2, db=-27),
+              T('lead', 'lead', 'leadsaw', rev=0.3, db=-18, drive=0.6)],
+      master=dict(lufs=-7.0, air=1.2, low=1.8, drive=0.6))
+
+style('rave_hardcore', 'Electronic', 'Breakbeat hardcore / early UK rave (1990-93): Amen-style breaks over a four-on-the-floor kick, '
+      'piano stabs, hoover and Mentasm leads, pitched-up vocal chops - funky, chaotic, euphoric',
+      bpm=(135, 155), scales=['minor', 'major'], kit='acoustic', form='edm', sc_depth=0.3, swing=0.52,
+      progs={'minor': [[0, 5, 3, 4], [0, 5, 6, 4]], 'major': [[0, 4, 5, 3], [0, 3, 4, 4]]},
+      drums={'kick': [FOUR], 'snare': ['....X..x.x..X..x'], 'ride': ['x.x.x.x.x.x.x.x.']},
+      snare_tracks=['snare'], bass=['R...R...R...R...', 'R..RR..RR..RR..R'], bass_lo=31,
+      chord_rh=['x..x..x...x..x..', 'x.x..x..x.x..x..'], chord_center=64, arp=dict(rate=2, mode='up', oct=5),
+      lead_rh=['x-x-x---x-x-x---', 'x---x---x-x-x---', 'x.x.x.x.x.x.x.x.'],
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.15, db=-15), T('ride', 'top', 'ride', db=-27),
+              T('bass', 'bass', 'sinebass', sc=0.3, db=-14), T('chords', 'chords', 'piano', rev=0.3, db=-20),
+              T('pad', 'pad', 'choir', rev=0.5, db=-28), T('arp', 'arp', 'vox', dly=0.25, db=-24),
+              T('lead', 'lead', 'hoover', rev=0.3, db=-19)],
+      master=dict(lufs=-8.5, air=1.6, low=1.2, drive=0.3))
+
+style('future_funk', 'Electronic', 'Future funk: pitched-up, chopped 70s/80s disco and city-pop flavour over a swung four-on-the-floor '
+      'with heavy sidechain pumping - funky bass, filter sweeps, vocal chops; bright and nostalgic',
+      bpm=(115, 126), scales=['major', 'dorian'], kit='909', form='edm', sc_depth=0.85, sc_release=0.3, swing=0.57, chord_size=4,
+      progs={'major': [[3, 2, 1, 4], [1, 4, 0, 5], [3, 4, 2, 5]], 'dorian': [[0, 3, 0, 3], [0, 3, 6, 2]]},
+      drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'chat': ['x.xxx.xxx.xxx.xx'], 'tamb': ['....x.......x...']},
+      snare_tracks=['clap'], bass=['R..O.R...RR.O..A', 'R.R..O.R..R.O.R.', 'R..O..R.R.O..R.A'], bass_gate=0.5, bass_lo=31,
+      chord_rh=['x..x..x.x..x..x.', '.x.x..x..x.x..x.'], chord_center=64, arp=dict(rate=2, mode='up', oct=5),
+      lead_rh=['x.x.x...x.x.x...', '..x.x.x...x.x...', 'x.xx.x..x.xx.x..'],
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('clap', 'snare', 'clap', rev=0.25, db=-18), T('ohat', 'top', 'ohat', db=-27),
+              T('chat', 'top', 'chat', pan=0.2, db=-29), T('tamb', 'top', 'tamb', pan=-0.3, db=-30),
+              T('bass', 'bass', 'pluck', sc=0.7, db=-14, p=dict(bright=1800, damp=0.996)),
+              T('chords', 'chords', 'epiano', sc=0.9, rev=0.3, db=-22), T('pad', 'pad', 'strings', sc=0.8, rev=0.4, db=-27),
+              T('arp', 'arp', 'vox', sc=0.6, dly=0.25, db=-23), T('lead', 'lead', 'vox', sc=0.5, rev=0.3, db=-19)],
+      master=dict(lufs=-8.5, air=2.4, low=1.0))
+
+# ---- jazz
+style('bebop', 'Classic', 'Bebop: fast swing, dense 8th-note lines built from chord tones, tensions and chromatic approach notes over '
+      'rapid ii-V changes; ride and walking bass drive, piano comps rootless voicings',
+      bpm=(180, 260), scales=['major', 'minor'], swing=0.62, human=0.007, chord_size=4, voicing='rootless', form='jazz',
+      progs={'major': [[1, 4, 0, 0], [2, 5, 1, 4], [1, 4, 2, 5], [0, 5, 1, 4]], 'minor': [[1, 4, 0, 0], [0, 3, 1, 4]]},
+      chord_bars=1, drums={'ride': ['x...x.x.x...x.x.'], 'chat': ['....x.......x...'], 'kick': ['o...o...o...o...'],
+                           'snare': ['................']},
+      snare_tracks=['snare'], comp_snare=True, bass=['R.......R.......'], bass_mode='walk', bass_lo=36,
+      chord_rh=['...x-.....x-....', '.x-.....x-..x-..', '......x-..x-....'], chord_center=60, arp=dict(rate=2, mode='up', oct=5),
+      lead_rh=['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x-..', '..x.x.x.x.x.x.x.', 'x.x.x.x.x-..x.x.'],
+      tracks=[T('ride', 'top', 'ride', pan=0.3, db=-26), T('chat', 'top', 'chat', pan=-0.2, db=-30), T('kick', 'kick', 'kick', db=-24),
+              T('snare', 'snare', 'snare', rev=0.2, db=-24), T('bass', 'bass', 'upright', db=-15),
+              T('chords', 'chords', 'piano', rev=0.2, pan=-0.15, db=-23), T('lead', 'lead', 'sax', rev=0.25, db=-17)],
+      master=dict(lufs=-14.0, air=1.2, low=0.8))
+
+style('modal_jazz', 'Classic', 'Cool / modal jazz (Kind of Blue era): long stretches on one mode, medium tempo, lots of space, quartal-ish '
+      'piano voicings, muted trumpet and tenor sax, brushes and ride, walking bass',
+      bpm=(110, 150), scales=['dorian', 'mixolydian', 'lydian'], swing=0.6, human=0.008, chord_size=4, voicing='open', form='jazz',
+      progs={'dorian': [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 0, 1]], 'mixolydian': [[0, 0, 0, 0], [0, 0, 6, 6]],
+             'lydian': [[0, 0, 1, 1]]}, chord_bars=2,
+      drums={'ride': ['x...x.x.x...x.x.'], 'chat': ['....x.......x...'], 'kick': ['o.......o.......'], 'snare': ['................']},
+      snare_tracks=['snare'], comp_snare=True, bass=['R.......R.......'], bass_mode='walk', bass_lo=36,
+      chord_rh=['x-......x-......', '...x-.......x-..', 'x-..........x-..'], chord_center=60, arp=dict(rate=2, mode='up', oct=5),
+      lead_rh=['x---x-x-x-------', 'x-x-x---....x---', '....x-x-x---x---', 'x-------x-x-x---'], repetition=0.6,
+      tracks=[T('ride', 'top', 'ride', pan=0.3, db=-27), T('chat', 'top', 'chat', pan=-0.2, db=-31), T('kick', 'kick', 'kick', db=-26),
+              T('snare', 'snare', 'snare', rev=0.2, db=-26), T('bass', 'bass', 'upright', db=-15),
+              T('chords', 'chords', 'piano', rev=0.25, pan=-0.15, db=-24), T('lead', 'lead', 'trumpet', rev=0.3, db=-18)],
+      master=dict(lufs=-15.0, air=1.0, low=0.8))
+
+style('soul_jazz', 'Classic', 'Hard bop / soul jazz: organ trio grooves - Hammond B3 comping and bass, bluesy guitar and tenor sax, '
+      'gospel-tinged harmony, hard swing or straight-8th backbeat',
+      bpm=(100, 140), scales=['dorian', 'mixolydian', 'minor'], swing=0.6, human=0.007, chord_size=4, form='jazz',
+      progs={'dorian': [[0, 3, 0, 3], [0, 0, 3, 3]], 'mixolydian': [[0, 3, 0, 4], [0, 0, 3, 0]], 'minor': [[0, 3, 0, 4]]},
+      drums={'kick': ['X.....X...X.....'], 'snare': [BACKBEAT], 'ride': ['x...x.x.x...x.x.'], 'chat': ['....x.......x...']},
+      snare_tracks=['snare'], ghosts=True, bass=['R.......R.......'], bass_mode='walk', bass_lo=33,
+      chord_rh=['.x-...x-.x-...x-', 'x-..x-..x-..x-..', '...x-..x-..x-...'], chord_center=60, arp=dict(rate=2, mode='up', oct=5),
+      lead_rh=['x.x.x-..x.x.x---', 'x-x-x.x.x-......', '..x.x.x-x.x.x---'], melody_style='blues',
+      tracks=[T('kick', 'kick', 'kick', db=-20), T('snare', 'snare', 'snare', rev=0.15, db=-20), T('ride', 'top', 'ride', pan=0.3, db=-27),
+              T('chat', 'top', 'chat', pan=-0.2, db=-30), T('bass', 'bass', 'organ', db=-16, p=dict(drawbar='bass')),
+              T('chords', 'chords', 'organ', rev=0.2, pan=-0.2, db=-22), T('arp', 'arp', 'guitar', pan=0.3, db=-26),
+              T('lead', 'lead', 'sax', rev=0.25, db=-17)],
+      master=dict(lufs=-13.0, air=1.2, low=1.0))
+
+style('fusion', 'Classic', 'Jazz fusion / jazz-rock: straight 16th-note grooves, electric bass, Rhodes and synth leads, overdriven '
+      'guitar, extended chords and virtuosic unison lines over a rock / funk rhythm section',
+      bpm=(96, 140), scales=['dorian', 'mixolydian', 'lydian', 'minor'], swing=0.5, human=0.005, chord_size=4, form='song',
+      progs={'dorian': [[0, 3, 6, 2], [0, 6, 3, 4]], 'mixolydian': [[0, 6, 3, 0], [0, 3, 6, 6]], 'lydian': [[0, 1, 0, 1], [0, 1, 4, 5]],
+             'minor': [[0, 5, 3, 4], [0, 3, 6, 4]]},
+      drums={'kick': ['X..x..X...X..x..', 'X.x...X..x..X...'], 'snare': ['....X..o....X..o'], 'chat': ['xxxxxxxxxxxxxxxx'],
+             'ohat': ['......x.......x.'], 'ride': ['x.x.x.x.x.x.x.x.']},
+      snare_tracks=['snare'], ghosts=True, bass=['R.RO.R.OR.R.O.RA', 'R..R.O.RR.R..O.R', 'R.R.O.R.R.R.O.RA'], bass_lo=31,
+      chord_rh=['x--.x--.x--.x--.', '.x-..x-..x-..x-.', 'x-..x-..x-..x---'], chord_center=60, arp=dict(rate=1, mode='updown', oct=5),
+      lead_rh=['x.x.x.x.x.x.x.x.', 'x.xxx.x.x.xxx.x.', 'x-x-x-x-x.x.x---'], voicing='drop2',
+      tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.15, db=-18), T('chat', 'top', 'chat', pan=0.2, db=-29),
+              T('ohat', 'top', 'ohat', db=-30), T('ride', 'top', 'ride', pan=0.3, db=-31),
+              T('bass', 'bass', 'pluck', db=-14, p=dict(bright=1900, damp=0.996)),
+              T('chords', 'chords', 'epiano', rev=0.25, pan=-0.2, db=-22), T('pad', 'pad', 'polysynth', rev=0.4, db=-30),
+              T('arp', 'arp', 'guitar', pan=0.3, db=-27, drive=0.4), T('lead', 'lead', 'leadsaw', rev=0.3, dly=0.2, db=-18)],
+      master=dict(lufs=-12.0, air=1.6, low=1.0))
+
+# ---- classical periods
+style('classical_period', 'Orchestral', 'Classical period (Mozart / Haydn): elegant homophony - a clear singing melody over Alberti-bass '
+      'and string accompaniment, 4+4-bar phrases, functional cadences, pairs of winds, horns and timpani',
+      bpm=(100, 140), scales=['major', 'minor'], human=0.006, chord_size=3, chord_bars=1, form='orchestral', reverb=2.0,
+      progs={'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 1, 4, 0], [0, 5, 1, 4], [0, 3, 1, 4]], 'minor': [[0, 3, 4, 0], [0, 5, 3, 4]]},
+      drums={'timp': ['X...............', '................']}, kick_track='timp',
+      bass=['R...R...R...R...', 'R.......R.......'], bass_lo=36,
+      chord_rh=['x...x...x...x...', 'x.......x.......'], chord_center=60, arp=dict(rate=1, mode='alberti', oct=5),
+      lead_rh=['x.x.x.x.x-------', 'x---x.x.x.x.x---', 'x-x-x-x-x-x-x---', 'x.x.x-x-x-------'], lead_oct=5, repetition=0.65,
+      gm_hint='Violins (melody); piano / strings Alberti bass; cellos & basses; pairs of flutes, oboes, horns; timpani',
+      tracks=[T('timp', 'kick', 'timp', rev=0.4, db=-28), T('bass', 'bass', 'cello', rev=0.3, db=-20),
+              T('chords', 'chords', 'strings', rev=0.3, db=-26, p=dict(a=0.08)),
+              T('pad', 'pad', 'horn', rev=0.4, db=-31), T('arp', 'arp', 'piano', rev=0.25, pan=-0.15, db=-23),
+              T('lead', 'lead', 'violin', rev=0.3, db=-18)],
+      master=dict(lufs=-16.0, air=1.0, low=0.5))
+
+style('romantic', 'Orchestral', 'Romantic orchestra (Tchaikovsky / Brahms): expansive lyrical themes with rubato, rich chromatic '
+      'harmony, full strings with continuous vibrato, horns and woodwinds, swelling ppp-to-fff dynamics',
+      bpm=(60, 92), scales=['minor', 'major', 'harmonic_minor'], human=0.012, chord_size=4, chord_bars=1, form='cinematic',
+      reverb=3.2, voicing='open', rubato=0.8,
+      progs={'minor': [[0, 5, 3, 4], [0, 3, 6, 4], [0, 6, 5, 4]], 'major': [[0, 5, 3, 4], [0, 2, 3, 4], [0, 4, 5, 2]],
+             'harmonic_minor': [[0, 3, 4, 5], [0, 5, 1, 4]]},
+      drums={'timp': ['X...............', 'X.......X.......']}, kick_track='timp',
+      bass=['R-------R-------', 'R---------------'], bass_lo=33,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=58, arp=dict(rate=2, mode='updown', oct=5, prob=0.7),
+      lead_rh=['x-----x-x-------', 'x---x-x-x-------', 'x-------x---x---', 'x-x-x---x-------'], lead_oct=5,
+      tracks=[T('timp', 'kick', 'timp', rev=0.5, db=-26), T('bass', 'bass', 'contrabass' if False else 'cello', rev=0.4, db=-19),
+              T('chords', 'chords', 'strings', rev=0.45, db=-21, p=dict(a=0.3, r=0.7)),
+              T('pad', 'pad', 'horn', rev=0.5, db=-27), T('arp', 'arp', 'harp', rev=0.45, db=-27),
+              T('lead', 'lead', 'violin', rev=0.45, db=-17, p=dict(vib=8))],
+      master=dict(lufs=-15.0, air=1.0, low=0.6))
+
+style('impressionism', 'Orchestral', 'Impressionism (Debussy / Ravel): modal and lydian colours, parallel gliding chords, blurred '
+      'harmony, harp and flute over muted strings and piano washes, flexible pulse - atmosphere over function',
+      bpm=(56, 80), scales=['lydian', 'dorian', 'mixolydian'], human=0.012, chord_size=4, chord_bars=2, form='orchestral', reverb=3.5,
+      voicing='open', rubato=0.5,
+      progs={'lydian': [[0, 1, 0, 1], [0, 1, 2, 1], [0, 6, 1, 0]], 'dorian': [[0, 3, 0, 6], [0, 1, 0, 3]], 'mixolydian': [[0, 6, 0, 6]]},
+      drums={}, bass=['R---------------'], bass_lo=36,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=62, arp=dict(rate=1, mode='updown', oct=5),
+      lead_rh=['x-----x-x-x-----', 'x---x---x-------', '..x-x-x-x-------', 'x-x-x-x---------'], lead_oct=5,
+      tracks=[T('bass', 'bass', 'cello', rev=0.5, db=-22), T('chords', 'chords', 'piano', rev=0.5, db=-22),
+              T('pad', 'pad', 'strings', rev=0.6, db=-27, p=dict(a=0.6, cut=2600)), T('arp', 'arp', 'harp', rev=0.5, pan=0.2, db=-24),
+              T('lead', 'lead', 'flute', rev=0.5, db=-19)],
+      master=dict(lufs=-17.0, air=1.0, low=0.4))
+
+style('minimalism', 'Orchestral', 'Minimalism (Reich / Glass / Adams): a steady pulse of repeating cells on marimba, piano and strings, '
+      'shifting by gradual additive / phasing processes over slow diatonic harmony',
+      bpm=(120, 160), scales=['minor', 'major', 'dorian'], human=0.002, chord_size=3, chord_bars=4, form='groove',
+      progs={'minor': [[0, 5, 3, 4], [0, 6, 5, 6]], 'major': [[0, 4, 5, 3], [0, 3, 0, 4]], 'dorian': [[0, 3, 0, 3]]},
+      drums={}, bass=['R-------R-------', 'R.......R.......'], bass_lo=36,
+      chord_rh=['x.x.x.x.x.x.x.x.', 'xx.xx.xx.xx.xx.x'], chord_center=60, arp=dict(rate=1, mode='updown', oct=5),
+      lead_rh=['x.x.x.x.x.x.x.x.', 'x.xx.x.xx.x.xx.x', 'xx.x.xx.x.xx.x.x'], lead_oct=5, repetition=0.95, simplicity=0.2,
+      tracks=[T('bass', 'bass', 'cello', rev=0.3, db=-21), T('chords', 'chords', 'piano', rev=0.3, pan=-0.2, db=-23),
+              T('pad', 'pad', 'strings', rev=0.4, db=-28), T('arp', 'arp', 'marimba', rev=0.3, pan=0.25, db=-23),
+              T('lead', 'lead', 'marimba', rev=0.3, pan=-0.25, db=-21)],
+      master=dict(lufs=-15.0, air=1.2, low=0.5))
+
+LABELS.update({'italo_disco': 'Italo Disco', 'new_beat': 'New Beat', 'gabber': 'Hardcore / Gabber', 'rave_hardcore': 'Breakbeat Hardcore / Rave',
+               'future_funk': 'Future Funk', 'bebop': 'Bebop', 'modal_jazz': 'Cool / Modal Jazz', 'soul_jazz': 'Soul Jazz / Hard Bop',
+               'fusion': 'Jazz Fusion', 'classical_period': 'Classical (Mozart era)', 'romantic': 'Romantic Orchestra',
+               'impressionism': 'Impressionism', 'minimalism': 'Minimalism'})
+POOLS.update({
+    'italo_disco': dict(bass=['sawbass', 'fmbass', 'moogbass'], chords=['polysynth', 'synthbrass', 'epiano'], pad=['solina', 'strings', 'choir'],
+                        arp=['pluck_saw', 'chip', 'pluck'], lead=['leadsaw', 'synthbrass', 'vox', 'polysynth']),
+    'new_beat': dict(bass=['acid', 'sawbass'], chords=['stab', 'organ'], pad=['choir', 'warmpad'], arp=['pluck_saw'], lead=['vox', 'stab']),
+    'gabber': dict(chords=['hoover', 'stab', 'supersaw'], lead=['leadsaw', 'hoover', 'supersaw_lead'], arp=['pluck_saw', 'chip']),
+    'rave_hardcore': dict(bass=['sinebass', 'reese'], chords=['piano', 'stab', 'organ'], pad=['choir', 'strings'], arp=['vox', 'pluck_saw'],
+                          lead=['hoover', 'leadsaw', 'vox', 'piano']),
+    'future_funk': dict(bass=['pluck', 'sf:slapbass', 'moogbass'], chords=['epiano', 'polysynth', 'sf:cleanguitar', 'synthbrass'],
+                        pad=['strings', 'solina'], arp=['vox', 'mutedgtr', 'epiano'], lead=['vox', 'synthbrass', 'sax', 'leadsaw']),
+    'bebop': dict(chords=['piano', 'guitar'], lead=['sax', 'sf:tenorsax', 'trumpet', 'sf:trumpet']),
+    'modal_jazz': dict(chords=['piano', 'epiano'], lead=['trumpet', 'sax', 'sf:tenorsax', 'flute']),
+    'soul_jazz': dict(chords=['organ'], arp=['guitar'], lead=['sax', 'sf:tenorsax', 'guitar', 'organ']),
+    'fusion': dict(chords=['epiano', 'wurli', 'polysynth'], arp=['guitar', 'sf:odguitar'], lead=['leadsaw', 'guitar', 'sax', 'softlead']),
+    'classical_period': dict(chords=['strings', 'spiccato'], arp=['piano', 'harpsichord', 'strings'], lead=['violin', 'flute', 'oboe', 'clarinet'],
+                             pad=['horn', 'strings']),
+    'romantic': dict(chords=['strings', 'tremolo'], lead=['violin', 'cello', 'horn', 'clarinet', 'oboe'], pad=['horn', 'choir', 'strings'],
+                     arp=['harp', 'pizz']),
+    'impressionism': dict(chords=['piano', 'harp', 'strings'], lead=['flute', 'oboe', 'clarinet', 'violin'], arp=['harp', 'celesta', 'piano'],
+                          pad=['strings', 'choir']),
+    'minimalism': dict(chords=['piano', 'organ', 'strings'], arp=['marimba', 'piano', 'vibes'], lead=['marimba', 'piano', 'vibes', 'clarinet', 'violin'],
+                       pad=['strings', 'organ']),
+})
+
+
+# ---------------------------------------------------------------------------------------------------------------
 # wider pad / bass pools for genres that only had one or two options - only sounds that genuinely fit the genre
 _PAD_FAMILY = {
     ('house', 'deep_house', 'tech_house', 'ukgarage', 'afro_house', 'melodic_house', 'progressive_house', 'disco'):
@@ -2487,9 +2711,9 @@ _widen(_BASS_FAMILY, 'bass')
 # replaced by the genre's own sound for that part.
 BELLS = {'bell', 'celesta', 'sf:glock', 'sf:musicbox', 'sf:tubular', 'glock', 'musicbox', 'tubular', 'sf:celesta'}
 MALLETS = {'marimba', 'kalimba', 'vibes', 'steeldrum', 'sf:marimba', 'sf:vibes', 'sf:kalimba', 'sf:steeldrum', 'sf:xylophone'}
-BELL_OK = {'trap', 'holiday', 'fantasy_rpg', 'ambient', 'cinematic', 'orchestral', 'film_piano', 'waltz', 'neoclassical',
+BELL_OK = {'impressionism', 'trap', 'holiday', 'fantasy_rpg', 'ambient', 'cinematic', 'orchestral', 'film_piano', 'waltz', 'neoclassical',
            'adventure', 'tension', 'hauntology', 'chamber_pop', 'braindance', 'orchestral_hiphop', 'hybrid_trailer', 'lofi'}
-MALLET_OK = BELL_OK | {'afrobeats', 'amapiano', 'afro_house', 'cumbia', 'salsa', 'dancehall', 'bossa_nova', 'jazz', 'swing',
+MALLET_OK = BELL_OK | {'minimalism', 'afrobeats', 'amapiano', 'afro_house', 'cumbia', 'salsa', 'dancehall', 'bossa_nova', 'jazz', 'swing',
                        'lofi', 'organic_house', 'liquid_dnb', 'city_pop', 'downtempo'}
 # what a genre plays instead (by part); anything not listed falls back to its category
 NO_BELL = {
@@ -2573,3 +2797,26 @@ for _n in ('disco', 'funk'):
 POOLS['disco']['bass'] = ['pluck', 'sf:fingerbass', 'sf:slapbass', 'moogbass']
 POOLS['funk']['bass'] = ['pluck', 'sf:slapbass', 'sf:fingerbass', 'moogbass']
 POOLS['ambient']['bass'] = ['sinebass', 'moogbass']
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# corrections from the production bibles
+STYLES['house']['bpm'] = (120, 127)                       # 118-128, sweet spot 122-125
+STYLES['house']['sc_depth'] = 0.55                         # moderate sidechain: groove, not pumping
+STYLES['house']['drums']['conga'] = ['..o..x.....o.x..', '......x..x....o.']   # organic percussion fills the mids
+STYLES['house']['tracks'].append(T('conga', 'top', 'conga', pan=-0.3, db=-29))
+STYLES['deep_house']['form'] = 'groove'                     # linear and hypnotic, fewer drops
+STYLES['deep_house']['sc_depth'] = 0.35                     # gentle sidechain
+STYLES['progressive_house']['form'] = 'trance'              # long evolving builds, breakdowns that strip to almost nothing
+STYLES['progressive_house']['bpm'] = (122, 130)
+STYLES['bigroom']['bpm'] = (126, 130)
+STYLES['uplifting_trance']['bpm'] = (134, 140)              # uplifting usually 136-138
+STYLES['psytrance']['bpm'] = (140, 148)                     # full-on 142-148
+STYLES['psytrance']['form'] = 'groove'                      # continuous energy, not build -> drop
+STYLES['jungle']['swing'] = 0.56                            # older styles: heavy shuffle
+STYLES['synthwave']['bpm'] = (90, 112)
+STYLES['reggae']['chord_rh'] = ['..x...x...x...x.', '..x-..x-..x-..x-']   # the skank on every "and"
+for _j in ('jazz', 'swing'):
+    STYLES[_j]['comp_snare'] = True                         # snare comping / dropping bombs
+STYLES['salsa']['real_cowbell'] = True
+STYLES['cumbia']['real_cowbell'] = True

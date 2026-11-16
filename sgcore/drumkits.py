@@ -90,9 +90,11 @@ GENRE_KIT = {
     'soft_rock': 'studio', 'funk': 'studio', 'disco': 'studio', 'disco_funk': 'studio', 'motown': 'studio', 'gospel': 'studio',
     'blues': 'studio', 'reggae': 'studio', 'ska': 'studio', 'jazz': 'studio', 'swing': 'studio', 'soul_ballad': 'studio',
     'country': 'studio', 'folk': 'studio', 'pop': 'studio',
+    'rave_hardcore': 'amen', 'future_funk': '909', 'italo_disco': 'linn', 'new_beat': 'techno',
+    'bebop': 'studio', 'modal_jazz': 'studio', 'soul_jazz': 'studio', 'fusion': 'studio',
 }
 # how much jungle-style chopping a genre does with its break (0 = played straight)
-CHOP = {'jungle': 0.55, 'breakcore': 0.85, 'dnb': 0.2, 'liquid_dnb': 0.1, 'boombap': 0.08}
+CHOP = {'rave_hardcore': 0.3, 'jungle': 0.55, 'breakcore': 0.85, 'dnb': 0.2, 'liquid_dnb': 0.1, 'boombap': 0.08}
 
 
 def menu():
@@ -114,6 +116,8 @@ def configure(st, kit_id, style, opts):
         return kit_id                                   # a plain synth preset name ('acoustic', 'default' ...)
     _, _, _, preset, mic, brk = entry
     st['kit_id'] = kit_id
+    if kit_id == 'linn':
+        st['gated_snare'] = True                       # the 80s gated-reverb snare
     if mic:
         st['want_real_kit'] = mic
     if brk:
