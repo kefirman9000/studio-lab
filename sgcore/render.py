@@ -170,7 +170,7 @@ class Renderer:
         p = None if is_drum else self._params(tcfg)
         kick = self.st.get('kick_track', 'kick')
         for ev in evs:
-            s = int(self.t_of(ev.beat, human=(tcfg['name'] != kick), layer=tcfg['layer']) * SR)
+            s = int((self.t_of(ev.beat, human=(tcfg['name'] != kick), layer=tcfg['layer']) + getattr(ev, 'strum', 0.0) * self.spb) * SR)
             sig = self._drum(tcfg['name'], tcfg['inst']) if is_drum else self._note(tcfg, ev, p)
             self._add(buf, sig * ev.vel, s)
         if tcfg.get('drive'):
@@ -181,7 +181,7 @@ class Renderer:
         """Play this part through one of your own VST3/AU instruments (falls back to the built-in sound on failure)."""
         from . import vsthost
         sid = tcfg['inst'][4:]
-        events = [(self.t_of(e.beat, human=True, layer=tcfg['layer']), max(0.02, e.dur * self.spb), int(e.midi), int(max(1, min(127, e.vel * 110))))
+        events = [(self.t_of(e.beat, human=True, layer=tcfg['layer']) + getattr(e, 'strum', 0.0) * self.spb, max(0.02, e.dur * self.spb), int(e.midi), int(max(1, min(127, e.vel * 110))))
                   for e in evs if e.midi is not None]
         ccs = None
         curve = (self.song.get('expr') or {}).get(tcfg['name'])

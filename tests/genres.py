@@ -119,12 +119,17 @@ def main():
     from sgcore.refparse import analyze_file
     from sgcore.compose import NOTE_NAMES
     d = tempfile.mkdtemp()
-    song = compose(Options(style='pop', seed=31, variety=0))
+    song = next(x for x in (compose(Options(style='pop', seed=sd, variety=0)) for sd in range(31, 60))
+                if not x['modulate'])                                   # a song that stays in one key
     path = write_midi(os.path.join(d, 'x.mid'), song)
     ref = analyze_file(path, open(path, 'rb').read())
     assert ref['bpm'] == song['bpm'] and ref['key'].rstrip('m') == NOTE_NAMES[song['key'].root], (ref, song['key'].name())
     progs = {'-'.join(str(x + 1) for x in song[k]) for k in ('prog_main', 'prog_verse', 'prog_alt')}
-    assert ref['progression'] in progs, (ref, progs)
+    def cyc(p):                                                          # a loop, wherever it starts
+        xs = p.split('-')
+        xs = [x for i, x in enumerate(xs) if x != xs[i - 1]] or xs
+        return {tuple(xs[i:] + xs[:i]) for i in range(len(xs))}
+    assert any(cyc(ref['progression']) & cyc(p) for p in progs), (ref, progs)
     assert analyze_file('a.json', b'{"options": {"style": "jazz"}}')['options']['style'] == 'jazz'
     try:
         analyze_file('a.txt', b'hello')
@@ -247,5 +252,50 @@ def main():
     print('ok  genre authenticity checks, bass switching, sub layers')
 
 
+def test_chords_and_knobs():
+    import collections
+    from sgcore.compose import Options, compose, color_fits, Key
+    from sgcore.render import Renderer
+    k = Key(1, 'major')
+    assert not color_fits(k, 3, 'sus4') and not color_fits(k, 2, 'add9') and color_fits(k, 0, 'add9')
+    bad = tot = 0
+    for i, name in enumerate(['pop', 'house', 'jazz', 'synthwave', 'teen_pop', 'luxury_rap', 'chamber_pop', 'electro', 'salsa']):
+        song = compose(Options(style=name, seed=300 + i))
+        for t in song['st']['tracks']:
+            if t['layer'] not in ('chords', 'pad'):
+                continue
+            hits = collections.defaultdict(set)
+            for e in song['events']:
+                if e.track == t['name'] and e.midi is not None:
+                    hits[round(e.beat, 3)].add(e.midi)
+            for ms in hits.values():
+                ms = sorted(ms)
+                tot += len(ms) > 1
+                bad += any(b - a == 1 for a, b in zip(ms, ms[1:]))
+    assert bad / tot < 0.03, (bad, tot)                                   # chords are chords, not neighbouring notes
+    song = compose(Options(style='folk', seed=3))                         # strummed: low to high, never reordered
+    r = Renderer(song, log=lambda *a: None)
+    by = collections.defaultdict(list)
+    for e in song['events']:
+        if e.track == 'chords' and e.midi is not None:
+            by[round(e.beat, 3)].append(e)
+    for evs in list(by.values())[:200]:
+        ts = [r.t_of(e.beat, True, 'chords') + e.strum * r.spb for e in sorted(evs, key=lambda e: e.strum)]
+        assert ts == sorted(ts)
+    def lead(o):
+        return [e for e in compose(o)['events'] if e.track == 'lead' and e.midi is not None]
+    a, b = lead(Options(style='pop', seed=9)), lead(Options(style='pop', seed=9, simplicity=1.0))
+    assert len(b) < 0.8 * len(a) and sum(e.dur for e in b) / len(b) > sum(e.dur for e in a) / len(a)
+    full = compose(Options(style='house', seed=4)); bare = compose(Options(style='house', seed=4, simplicity=1.0))
+    assert sum(e.midi is None for e in bare['events']) < 0.6 * sum(e.midi is None for e in full['events'])
+    assert not any(e.track == 'counter' for e in bare['events'])
+    rng = lambda o: (lambda m: max(m) - min(m))([e.midi for e in lead(o)])
+    assert rng(Options(style='pop', seed=9, melody_range=0.0)) < rng(Options(style='pop', seed=9, melody_range=1.0))
+    assert compose(Options(style='pop', seed=9, chord_speed='slow'))['st']['chord_bars'] == 2 * compose(Options(style='pop', seed=9))['st']['chord_bars']
+    assert Options().simplicity == 0.0                                    # defaults leave songs as they were
+    print('ok  chords without clusters, strums in order, simplicity / repetition / range / chord speed')
+
+
 if __name__ == '__main__':
     main()
+    test_chords_and_knobs()

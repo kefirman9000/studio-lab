@@ -34,6 +34,10 @@ def main(argv=None):
     ap.add_argument('--melody', choices=['diatonic', 'pentatonic', 'blues', 'bebop'], help='how the lead phrases (default: genre)')
     ap.add_argument('--voicing', choices=['close', 'open', 'drop2', 'rootless', 'power'], help='chord voicing (default: genre)')
     ap.add_argument('--chord-color', choices=['triad', '7', 'add9', '9', '6', 'sus2', 'sus4'])
+    ap.add_argument('--simplicity', type=float, help='0..1 strip it back (triads, fewer notes, held chords)')
+    ap.add_argument('--repetition', type=float, help='0..1 how much the melody repeats its opening idea')
+    ap.add_argument('--melody-range', type=float, help='0..1 narrow <-> wide')
+    ap.add_argument('--chord-speed', choices=['slow', 'fast'])
     ap.add_argument('--groove', choices=['straight', 'dilla', 'laidback', 'afro', 'dembow', 'jazz', 'house', 'funk'])
     ap.add_argument('--lead', choices=['hook', 'arp', 'riff', 'ostinato', 'bell', 'call', 'chops'], help='lead style (default: genre)')
     ap.add_argument('--build', choices=['roll', 'triplet', 'kick_roll', 'filter', 'stutter', 'pause', 'lift', 'swell'], help='build-up style')
@@ -85,6 +89,10 @@ def main(argv=None):
             if a.inst:
                 o['instruments'] = dict(p.split('=', 1) for p in a.inst)
             o.setdefault('vst_rig', not a.no_vst_rig)
+            for k, v in (('simplicity', a.simplicity), ('repetition', a.repetition), ('melody_range', a.melody_range),
+                         ('chord_speed', a.chord_speed)):
+                if v is not None:
+                    o[k] = v
             if a.vocal_guide:
                 o['vocal_guide'] = True
             if a.fx:

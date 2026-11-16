@@ -77,7 +77,7 @@ def write_midi(path, song):
         if t['inst'] in DRUMS:
             note = GM_DRUM.get(t['inst'], 37)
             for e in evs:
-                tk = int(round(e.beat * ppq_b))
+                tk = int(round((e.beat + getattr(e, 'strum', 0.0)) * ppq_b))
                 v = max(1, min(127, int(e.vel * 110)))
                 drum_evs.append((tk, 1, bytes([0x99, note, v])))
                 drum_evs.append((tk + ppq // 8, 0, bytes([0x89, note, 0])))
@@ -91,7 +91,7 @@ def write_midi(path, song):
             out.append((0, 0, bytes([0xB0 | chn, 11, 100])))
             out += [(int(round(b * ppq_b)), 0, bytes([0xB0 | chn, 1, v])) for b, v in curve]
         for e in evs:
-            tk = int(round(e.beat * ppq_b))
+            tk = int(round((e.beat + getattr(e, 'strum', 0.0)) * ppq_b))
             te = tk + max(1, int(round(e.dur * ppq_b)))
             v = max(1, min(127, int(e.vel * 110)))
             m = max(0, min(127, int(e.midi)))
@@ -108,7 +108,7 @@ def write_midi(path, song):
         chn = ch % 16 if ch % 16 != 9 else 10
         out = [(0, 0, bytes([0xC0 | chn, 53]))]
         for e in vocal:
-            tk = int(round(e.beat * ppq_b))
+            tk = int(round((e.beat + getattr(e, 'strum', 0.0)) * ppq_b))
             te = tk + max(1, int(round(e.dur * ppq_b)))
             v = max(1, min(127, int(e.vel * 110)))
             out.append((tk, 0, b'\xff\x05\x02la'))          # lyric placeholder, shown by most DAWs

@@ -204,6 +204,10 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
     <details class="card" open><summary>Feel</summary><div class="body">
       <div class="f"><label>Energy <b id="energyV"></b></label><input type="range" id="energy" min="0" max="100" value="50"></div>
       <div class="f"><label>Complexity <b id="complexityV"></b></label><input type="range" id="complexity" min="0" max="100" value="50"></div>
+      <div class="f"><label title="Strip it back: plain triads, fewer and longer notes, held chords, no counter-melody or doubling, fewer fills">Simplicity <b id="simplicityV"></b></label><input type="range" id="simplicity" min="0" max="100" value="0"></div>
+      <div class="f"><label title="How much the melody repeats its opening idea: high = catchy loop, low = keeps developing">Repetition <b id="repetitionV"></b></label><input type="range" id="repetition" min="0" max="100" value="50"></div>
+      <div class="f"><label title="Narrow = a few notes, chant-like · wide = big leaps">Melody range <b id="mrangeV"></b></label><input type="range" id="mrange" min="0" max="100" value="50"></div>
+      <div class="f"><label>Chord speed</label><select id="chordSpeed"><option value="">Style default</option><option value="slow">Slow (chords last twice as long)</option><option value="fast">Fast (change twice as often)</option></select></div>
       <div class="f"><label>Swing <span class="auto"><input type="checkbox" id="swingAuto" checked>style</span></label><input type="range" id="swing" min="50" max="75" value="55" disabled></div>
       <div class="f"><label>Humanize <b id="humanizeV"></b></label><input type="range" id="humanize" min="0" max="200" value="100"></div>
       <div class="f wide"><label>Variety <span class="hint">how much each song re-imagines its style: instruments, tones, grooves, arrangement</span><b id="varietyV"></b></label><input type="range" id="variety" min="0" max="100" value="55"></div>
@@ -376,6 +380,7 @@ function refresh(){renderStyles();renderSelected();}
 function options(){
   const o={style:state.style, seed:+$('#seed').value||1, blend:state.blend, blend_parts:state.blend_parts, mood:state.mood,
     length:state.length, structure:state.structure, energy:$('#energy').value/100, complexity:$('#complexity').value/100,
+    simplicity:$('#simplicity').value/100, repetition:$('#repetition').value/100, melody_range:$('#mrange').value/100,
     humanize:$('#humanize').value/100, variety:$('#variety').value/100, instruments:state.instruments, muted:state.muted, brightness:$('#brightness').value/100,
     reverb:$('#reverb').value/100, delay:$('#delay').value/100, width:$('#width').value/100, bass_boost:+$('#bass').value,
     drive:$('#drive').value/100, lofi:state.lofi};
@@ -392,6 +397,7 @@ function options(){
   if(Object.keys(LOCKS).length) o.part_seeds=Object.fromEntries(Object.entries(LOCKS).map(([p,l])=>[p,l.seed]));
   if($('#melStyle').value) o.melody_style=$('#melStyle').value;
   if($('#groove').value) o.groove=$('#groove').value;
+  if($('#chordSpeed').value) o.chord_speed=$('#chordSpeed').value;
   if($('#leadStyle').value) o.lead_style=$('#leadStyle').value;
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
   if($('#bassRhythm').value) o.bass_rhythm=$('#bassRhythm').value;
@@ -408,6 +414,7 @@ function applyOptions(o){
   state.style=o.style; state.blend=o.blend||[]; state.blend_parts=o.blend_parts||{}; state.mood=o.mood||null;
   state.part_fx=Object.assign({},o.part_fx||{});
   state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
+  $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||'';
   $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
   $('#brightness').value=(o.brightness||0)*100; $('#reverb').value=(o.reverb??1)*100; $('#delay').value=(o.delay??1)*100; $('#width').value=(o.width??1)*100;
   $('#bass').value=o.bass_boost||0; $('#drive').value=(o.drive||0)*100;
@@ -952,6 +959,9 @@ async function init(){
   $('#lvReset').onclick=e=>{ e.preventDefault(); LEVELS.forEach(([k])=>{ $('#lv_'+k).value=0; $('#lv_'+k).oninput(); }); };
   $('#seed').value=Math.floor(Math.random()*99999)+1;
   initSegs(); renderTabs(); renderMoods(); renderLayers(); renderOuts(); refresh();
+  bindRange('simplicity',v=>v<5?'off':v<40?v+'% · lighter':v<75?v+'% · simple':v+'% · bare');
+  bindRange('repetition',v=>v<35?v+'% · developing':v<65?v+'%':v+'% · catchy loop');
+  bindRange('mrange',v=>v<35?'narrow':v<65?'normal':'wide');
   bindRange('energy',v=>v+'%'); bindRange('complexity',v=>v+'%'); bindRange('humanize',v=>v+'%'); bindRange('variety',v=>v<20?v+'% · faithful':v<60?v+'% · balanced':v+'% · adventurous'); bindRange('brightness',v=>(v>0?'+':'')+v);
   bindRange('reverb',v=>v+'%'); bindRange('delay',v=>v+'%'); bindRange('width',v=>v+'%'); bindRange('bass',v=>(v>0?'+':'')+v+' dB'); bindRange('drive',v=>v+'%');
   $('#bpm').oninput=syncAutos; ['bpmAuto','swingAuto','scAuto','loudAuto'].forEach(a=>$('#'+a).onchange=syncAutos);

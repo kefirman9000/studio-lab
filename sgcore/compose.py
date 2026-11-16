@@ -2,7 +2,7 @@
 import math
 import random
 import re
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field, asdict, replace
 
 from .styles import STYLES, FORMS, FORM_VARIANTS
 from .instruments import KITS, INSTRUMENTS, PALETTES
@@ -76,6 +76,10 @@ class Options:
     mood: str = None              # dark | happy | chill | epic | dreamy | aggressive | melancholic | energetic | mysterious | romantic
     counter: str = None           # None = genre decides | on | off  (a second line answering the lead: celli, horns, flute ...)
     layering: str = None          # None = genre + variety decide | off | more  (parts doubled by a second instrument)
+    simplicity: float = 0.0       # 0..1 strip it back: triads, fewer & longer notes, held chords, no extras
+    repetition: float = 0.5       # 0..1 how much the melody repeats its opening idea (catchy loop <-> developing line)
+    melody_range: float = 0.5     # 0..1 narrow (a few notes) <-> wide (big leaps)
+    chord_speed: str = None       # None = style | slow (chords last twice as long) | fast (change twice as often)
 
     def to_dict(self):
         return asdict(self)
@@ -145,7 +149,45 @@ def parse_key(text):
     return NOTE_NAMES.index(r), minor
 
 
+def color_fits(key, deg, color):
+    """Does this colour really form that chord on this scale degree? (sus4 on vii is a tritone, add9 on iii a b9 ...)"""
+    if color in (None, 'triad', '7'):
+        return True
+    r = key.deg(deg, 4)
+    iv = lambda k: (key.deg(deg + k, 4) - r) % 12
+    fifth_ok = iv(4) == 7
+    if color == 'sus2':
+        return iv(1) == 2 and fifth_ok
+    if color == 'sus4':
+        return iv(3) == 5 and fifth_ok
+    if color in ('add9', '9', 'add9no3'):
+        return iv(1) == 2 and fifth_ok                # a major 9th; a minor 9th grinds against the root
+    if color == '6':
+        return iv(5) == 9 and fifth_ok                # a major 6th; a minor 6th rubs against the 5th
+    return True
+
+
+def declutter(notes, key, deg, color=None):
+    """No two chord notes a semitone apart: the colour note (7th / 9th / 6th) moves up an octave, where it rings open."""
+    notes = sorted(notes)
+    core = {key.deg(deg + k, 4) % 12 for k in ((0, 1, 4) if color == 'sus2' else (0, 3, 4) if color == 'sus4' else (0, 2, 4))}
+    for _ in range(6):
+        clash = next(((a, b) for a, b in zip(notes, notes[1:]) if b - a == 1), None)
+        if not clash:
+            break
+        a, b = clash
+        mover = b if b % 12 not in core else (a if a % 12 not in core else None)
+        if mover is None:
+            break
+        notes.remove(mover)
+        up = mover + 12
+        notes = sorted(notes + [up if up <= max(notes + [mover]) + 12 else mover - 12])
+    return notes
+
+
 def voice_chord(key, deg, size, center, voicing='close', color=None):
+    if color and not color_fits(key, deg, color):
+        color = '7' if color == '9' and size >= 4 else None
     if voicing == 'power':
         root = key.deg(deg, 4) % 12
         lo = center - 6
@@ -165,7 +207,7 @@ def voice_chord(key, deg, size, center, voicing='close', color=None):
     elif voicing == 'drop2' and len(notes) >= 4:   # second-highest note dropped an octave (guitar / keys soul voicing)
         top = notes[-4:]
         notes = sorted(notes[:-4] + [top[2] - 12, top[0], top[1], top[3]])
-    return notes
+    return declutter(notes, key, deg, color)
 
 
 VOICINGS = ['close', 'open', 'drop2', 'rootless', 'power']
@@ -251,6 +293,7 @@ def lead_voicing(notes, prev, center, inversions=True):
 
     def cost(o):
         c = sum(min(abs(x - q) for q in prev) for x in o) + 0.5 * sum(min(abs(q - x) for x in o) for q in prev)
+        c += 12 * sum(1 for a, b in zip(o, o[1:]) if b - a == 1)      # a semitone cluster sounds like two notes, not a chord
         mid = (o[0] + o[-1]) / 2
         c += 1.5 * max(0, abs(mid - center) - 5)
         if o[0] < center - 13 or o[-1] > center + 15:
@@ -260,10 +303,11 @@ def lead_voicing(notes, prev, center, inversions=True):
 
 
 class Ev:
-    __slots__ = ('track', 'beat', 'dur', 'midi', 'vel', 'glide', 'mod')
+    __slots__ = ('track', 'beat', 'dur', 'midi', 'vel', 'glide', 'mod', 'strum')
 
-    def __init__(self, track, beat, dur, midi, vel, glide=None, mod=None):
+    def __init__(self, track, beat, dur, midi, vel, glide=None, mod=None, strum=0.0):
         self.track, self.beat, self.dur, self.midi, self.vel, self.glide, self.mod = track, beat, dur, midi, vel, glide, mod
+        self.strum = strum                       # beats after the chord's own position (strummed chords move as one)
 
 
 def chord_tones_deg(chord, lo, hi):
@@ -701,6 +745,57 @@ def lead_octave_shift(mel, st):
     return k
 
 
+def _snap(key, m):
+    """Nearest note of the key."""
+    pcs = {(key.root + x) % 12 for x in key.scale}
+    for d in (0, 1, -1, 2, -2):
+        if (m + d) % 12 in pcs:
+            return m + d
+    return m
+
+
+def shape_melody(notes, phrase_bars, key, opts, rnd):
+    """Repetition (repeat the opening idea vs keep developing), melody range, and simplicity (fewer, longer notes)."""
+    if not notes:
+        return notes
+    R = max(0.0, min(1.0, float(getattr(opts, 'repetition', 0.5))))
+    W = max(0.0, min(1.0, float(getattr(opts, 'melody_range', 0.5))))
+    S = max(0.0, min(1.0, float(getattr(opts, 'simplicity', 0) or 0)))
+    notes = sorted(notes)
+    blk = 8                                                  # beats in a 2-bar idea
+    nblk = int(phrase_bars * 4 // blk)
+    if R > 0.6 and nblk >= 3:                                # catchy: the opening 2 bars come back
+        first = [n for n in notes if n[0] < blk]
+        copy_to = [k for k in range(1, nblk - 1) if R > 0.85 or k % 2 == 0]
+        out = [n for n in notes if int(n[0] // blk) not in copy_to]
+        for k in copy_to:
+            out += [(b + k * blk, d, m, v) for b, d, m, v in first]
+        notes = sorted(out)
+    elif R < 0.35:                                           # developing: later ideas drift away from the first
+        amt = (0.35 - R) / 0.35
+        notes = [(b, d, _snap(key, m + rnd.choice([-2, -1, 1, 2])) if b >= blk and rnd.random() < 0.35 * amt else m, v)
+                 for b, d, m, v in notes]
+    if abs(W - 0.5) > 0.05:                                  # narrow <-> wide, kept in key
+        f = 0.45 + 1.1 * W
+        ms = sorted(m for _, _, m, _ in notes)
+        mid = ms[len(ms) // 2]
+        notes = [(b, d, _snap(key, int(round(mid + (m - mid) * f))), v) for b, d, m, v in notes]
+    if S > 0:                                                # simple: drop off-beat notes, hold the rest longer
+        kept = []
+        for n in notes:
+            b = n[0]
+            on_beat = abs(b - round(b)) < 1e-6
+            if not on_beat and rnd.random() < 0.75 * S and kept:
+                continue
+            kept.append(n)
+        out = []
+        for i, (b, d, m, v) in enumerate(kept):
+            nxt = kept[i + 1][0] if i + 1 < len(kept) else b + d
+            out.append((b, max(d, min(nxt - b, 2.0) * 0.92 * S + d * (1 - S)), m, v))
+        notes = out
+    return notes
+
+
 def gen_melody(key, prog, chord_bars, st, rnd, complexity):
     from .leads import GENERATORS
     dev = st.get('lead_device', 'hook')
@@ -821,9 +916,29 @@ def gen_acid_pattern(key, rnd, energy, bars=2):
     return steps
 
 
+def apply_simplicity(opts):
+    """Simplicity strips a song back: fewer notes, plain triads, no counter-melody / doubling, (later) held chords."""
+    S = max(0.0, min(1.0, float(getattr(opts, 'simplicity', 0) or 0)))
+    if S <= 0:
+        return opts
+    ch = dict(complexity=float(opts.complexity) * (1 - 0.75 * S))
+    if S >= 0.4:
+        if not opts.chord_color:
+            ch['chord_color'] = 'triad'
+        if not opts.counter:
+            ch['counter'] = 'off'
+    if S >= 0.5 and not opts.layering:
+        ch['layering'] = 'off'
+    if S >= 0.75 and 'arp' not in (opts.muted or []):
+        ch['muted'] = list(opts.muted or []) + ['arp']
+    return replace(opts, **ch)
+
+
 def compose(opts):
     user_opts = opts
+    opts = apply_simplicity(opts)
     opts, mood = apply_mood(opts)
+    S = max(0.0, min(1.0, float(getattr(opts, 'simplicity', 0) or 0)))
     ps = opts.part_seeds or {}
 
     def prng(part, k):
@@ -913,11 +1028,18 @@ def compose(opts):
     modulate = rnd.random() < {'teen_pop': 0.75, 'gospel': 0.35, 'soul_ballad': 0.35}.get(st.get('name'), 0.22) \
         and st.get('form') in ('edm', 'song', 'trap', 'chip', 'halftime', 'song_b')   # (teen pop: the last-chorus key change)
     cb = st['chord_bars']
+    if getattr(opts, 'chord_speed', None) == 'slow':
+        cb = min(4, cb * 2)
+    elif getattr(opts, 'chord_speed', None) == 'fast' and cb >= 2:
+        cb = cb // 2
+    st['chord_bars'] = cb
     chord_size = st['chord_size'] + (1 if cx > 0.72 else 0) - (1 if cx < 0.28 and st['chord_size'] > 3 else 0)
     chord_size = max(3, min(5, chord_size))
     mel_main, ph_bars = gen_melody(key, prog_main, cb, st, rnd_m, cx)
     mel_alt, ph_alt = gen_melody(key, prog_alt, cb, st, rnd_m, cx)
     mel_verse, ph_verse = gen_melody(key, prog_verse, cb, st, rnd_m, cx)
+    mel_main, mel_alt, mel_verse = [shape_melody(x, p_, key, opts, random.Random(opts.seed * 53 + i_))
+                                    for i_, (x, p_) in enumerate(((mel_main, ph_bars), (mel_alt, ph_alt), (mel_verse, ph_verse)))]
     lead_k = lead_octave_shift(mel_main, st)            # same register in every key (not an octave higher in B than in C)
     mel_main, mel_alt, mel_verse = [[(a, b, m + lead_octave_shift(x, st), v) for a, b, m, v in x] for x in (mel_main, mel_alt, mel_verse)]
     st['lead_shift'] = lead_k
@@ -1046,7 +1168,7 @@ def compose(opts):
                             evs.append(Ev(dname, beat0 + step / 4, 0.25, None, 0.28))
             if st.get('trap_hats') and not st.get('meter') and 'top' in layers and 'chat' not in st['drums']:
                 gen_trap_hats(evs, beat0, rnd_d, energy)
-            if (st.get('fill') or energy > 0.6) and 'snare' in layers and b % 8 == 7 and snares and rnd_d.random() < 0.4 + 0.5 * energy:
+            if (st.get('fill') or energy > 0.6) and 'snare' in layers and b % 8 == 7 and snares and rnd_d.random() < (0.4 + 0.5 * energy) * (1 - S):
                 s = snares[0]
                 fills = [[13, 14, 15], [12, 13, 14, 15], [10, 13, 14, 15], [14, 15]] if G == 16 else \
                     [[x * 4 / 3 for x in f] for f in ([9, 10, 11], [8, 9, 10, 11], [10, 11])]
@@ -1131,7 +1253,9 @@ def compose(opts):
                 else:
                     gate = st.get('bass_gate', 0.92)
                     for step, l, c in parse_rhythm(bass_pat):
-                        if c == 'O':
+                        if S >= 0.6 and c in 'OFA':                 # simple: the bass stays on the root
+                            m = root
+                        elif c == 'O':
                             m = root + 12
                         elif c == 'F':
                             m = fold(key.deg(chord + 4, 2), lo)
@@ -1157,7 +1281,7 @@ def compose(opts):
                             mine[-1].dur = beat0 + 3 - mine[-1].beat
                             evs.append(Ev('bass', beat0 + 3, 0.9 * gate, m, 0.82))
             # ---------------- harmonic colour: secondary dominants and borrowed chords (Classic / Orchestral / pop)
-            if b % cb == 0 and sname_style in COLOR_HARMONY and nxt != chord and st.get('voicing') != 'power':
+            if b % cb == 0 and sname_style in COLOR_HARMONY and nxt != chord and st.get('voicing') != 'power' and S < 0.3:
                 third = (key.deg(chord + 2, 4) - key.deg(chord, 4)) % 12
                 pc3 = key.deg(chord + 2, 4) % 12
                 pcol = 0.12 + 0.3 * cx
@@ -1167,7 +1291,7 @@ def compose(opts):
                     harm_alts.append((beat0, beat0 + 4 * cb, pc3, (pc3 - 1) % 12))      # borrowed minor iv
             # ---------------- chords
             bar_col = chord_color
-            if b % cb == 0 and chord_color not in ('sus2', 'sus4', 'add9no3') and rnd_c.random() < 0.15 \
+            if b % cb == 0 and chord_color not in ('sus2', 'sus4', 'add9no3') and rnd_c.random() < 0.15 * (1 - S) \
                     and not (opts_s.get('drop') or sname in BIG_SECTIONS):
                 bar_col = rnd_c.choice(['sus4', 'sus2', chord_color])   # a sus colour now and then (chords + pad agree)
             if 'chords' in layers and 'chords' in tracks and chord_pat and (b % cb == 0):
@@ -1176,19 +1300,24 @@ def compose(opts):
                 if st.get('voicing', 'close') in ('close', 'open'):
                     notes = lead_voicing(notes, vl_prev.get('chords'), st.get('chord_center', 62),
                                          st.get('voicing', 'close') == 'close')
+                    notes = declutter(notes, key, chord, col if col and color_fits(key, chord, col) else None)
                 vl_prev['chords'] = notes
                 if (opts_s.get('drop') or sname in BIG_SECTIONS) and notes and notes[-1] + 12 <= 96 and st.get('voicing') != 'power':
                     notes = notes + [notes[-1] + 12]                   # choruses / drops open up: top note doubled (once)
-                for step, l, c in parse_rhythm(chord_pat):
+                hits = parse_rhythm(chord_pat)
+                if S >= 0.5 and hits:                            # simple: one held chord instead of a rhythm
+                    hits = [(hits[0][0], 16, hits[0][2])]
+                for step, l, c in hits:
                     dur = l / 4 * (cb if l == 16 else 1) * 0.95
                     for i, m in enumerate(notes):
-                        off = i * st.get('strum', 0.0)
-                        evs.append(Ev('chords', beat0 + step / 4 + off, dur, m, rnd_c.uniform(0.75, 0.92)))
+                        evs.append(Ev('chords', beat0 + step / 4, dur, m, rnd_c.uniform(0.75, 0.92), strum=i * st.get('strum', 0.0)))
             # ---------------- pad
             if 'pad' in layers and 'pad' in tracks and (b % cb == 0):
                 notes = voice_chord(key, chord, min(4, chord_size), st.get('chord_center', 62) - 2, pad_voicing,
                                     bar_col if bar_col in ('triad', '7', 'add9', 'sus2', 'sus4', '6', 'add9no3') else None)
                 notes = lead_voicing(notes, vl_prev.get('pad'), st.get('chord_center', 62) - 2, pad_voicing == 'close')
+                pcol = bar_col if bar_col in ('sus2', 'sus4') and color_fits(key, chord, bar_col) else None
+                notes = declutter(notes, key, chord, pcol)
                 vl_prev['pad'] = notes
                 for m in notes:
                     evs.append(Ev('pad', beat0, 4 * cb * 0.98, m, 0.8))
@@ -1258,6 +1387,18 @@ def compose(opts):
         tracks['vocal'] = t
     else:
         evs[:] = [e for e in evs if e.track != 'vocal']
+    if S > 0:
+        from .instruments import DRUMS as _DR
+        rs = random.Random(opts.seed * 61 + 5)
+        def busy(e):
+            t = tracks.get(e.track, {})
+            if t.get('inst') not in _DR:
+                return False
+            if e.vel < 0.6 and rs.random() < S:                       # ghost notes
+                return True
+            q = e.beat * 4                                             # 16th-note hats / shakers -> 8ths
+            return t.get('layer') == 'top' and abs(q - round(q)) < 1e-6 and int(round(q)) % 2 == 1 and rs.random() < S
+        evs[:] = [e for e in evs if not busy(e)]
     lock_bass_to_kick(evs, tracks, st)
     add_transitions(sections, evs, fx, tracks, st, opts)
     bar0 = apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_color, bar0)
@@ -1893,7 +2034,7 @@ def add_transitions(sections, evs, fx, tracks, st, opts):
             continue
         end = (cur['bar'] + cur['bars']) * 4
         fx.append(('swell', end - 4, 4))
-        if 'snare' not in cur['layers'] or not snare or rnd.random() > 0.55 + 0.45 * opts.energy:
+        if 'snare' not in cur['layers'] or not snare or rnd.random() > (0.55 + 0.45 * opts.energy) * (1 - 0.8 * float(getattr(opts, 'simplicity', 0) or 0)):
             continue
         beats = 2 if cat == 'Classic' else rnd.choice([1, 1, 2])
         start = end - beats

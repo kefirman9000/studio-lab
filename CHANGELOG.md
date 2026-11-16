@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.12.0
+- **Chords sound like chords.** About 1 in 5 chord / pad hits had two notes a semitone apart, so a chord came out as neighbouring notes rubbing. Chord colours (sus2, sus4, add9, 9th, 6th) are now only used on chords where they really form that chord (no sus4 tritones or minor-9th grinds), voice leading avoids clustered inversions, and a 7th / 9th that still lands next to another chord note moves up an octave, where it rings open. Clusters went from ~21% of chord hits to ~0.1%.
+- **Strummed chords stay together** (lo-fi, folk, country, soft rock, ambient, vaporwave): swing and humanize now move a strummed chord as one, instead of re-ordering or smearing its notes.
+- **New controls:**
+  - *Simplicity* knob - strip a song back: plain triads, no secondary dominants or sus chords, fewer and longer melody notes, held chords, roots-only bass, no counter-melody or doubling, fewer fills, ghost notes and 16th hats (the arp drops out at the top of the range).
+  - *Repetition* knob - from a melody that keeps developing to a catchy loop that keeps returning to its opening idea.
+  - *Melody range* knob - narrow and chant-like to wide with big leaps (always in key).
+  - *Chord speed* - chords last twice as long, or change twice as often.
+  - Command line: `--simplicity`, `--repetition`, `--melody-range`, `--chord-speed`.
+
 ## 1.11.0 - the biggest one yet: 96 genres, 14 new instruments, knobs, genre-fit scores
 - **Every genre audited.** Each genre was measured (tempo, kick and snare placement, swing, bass movement, harmonic rhythm, lead register, phrasing, song length) and checked against how the genre really sounds. The fixes:
   - **Leads sit in the right register in every key.** They used to be up to an octave too high in keys like B♭ or B, so they came out shrill. They're now centred around E5–E6 (a little higher for trap bells and trance) and always above the chords.
