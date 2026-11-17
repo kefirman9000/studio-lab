@@ -350,7 +350,7 @@ def test_builds_and_vinyl():
             assert drums, bs
     vin = lambda **kw: any(t['inst'] == 'vinyl' for t in compose(Options(seed=3, **kw))['st']['tracks'])
     assert not vin(style='phonk') and not vin(style='memphis_phonk') and vin(style='phonk', vinyl=True)
-    assert vin(style='lofi') and not vin(style='lofi', vinyl=False)
+    assert not vin(style='lofi') and vin(style='lofi', vinyl=True) and not vin(style='lofi', vinyl=False)   # off unless asked for
     print('ok  build-ups vary per song and per build, new build types, vinyl on/off')
 
 

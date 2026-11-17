@@ -54,7 +54,7 @@ class Options:
     drive: float = 0.0            # master saturation 0..1
     loudness: float = None        # target LUFS
     lofi: bool = None             # force tape/vinyl master on/off
-    vinyl: bool = None            # vinyl crackle: None = genre default, False = off, True = on
+    vinyl: bool = None            # vinyl crackle: only True turns it on (None / False = off)
     blend: list = field(default_factory=list)          # extra styles to fuse with the main style
     blend_parts: dict = field(default_factory=dict)    # part -> style  (groove, bass, harmony, melody, form, mix)
     part_seeds: dict = field(default_factory=dict)     # re-roll one part: harmony, melody, drums, bass, chords
@@ -783,7 +783,7 @@ def resolve_style(opts, rnd=None, mood=None):
         m['lofi'] = opts.lofi
     st['master'] = m
     vin = getattr(opts, 'vinyl', None)
-    if vin is False:
+    if vin is not True:                                  # crackle only when you switch it on (no genre turns it on by itself)
         st['tracks'] = [t for t in st['tracks'] if t['inst'] != 'vinyl']
     elif vin is True and not any(t['inst'] == 'vinyl' for t in st['tracks']):
         st['tracks'] = st['tracks'] + [dict(name='vinyl', layer='fx', inst='vinyl', pan=0.0, rev=0.0, dly=0.0, sc=0.0, db=-36,

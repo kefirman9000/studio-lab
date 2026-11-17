@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.32.1
+- **Vinyl crackle is off by default** in every genre (lo-fi, boom bap, hauntology, vaporwave ...). Switch it on any time with Mix & master → Vinyl crackle → On. The tape wobble and dusty tone of those genres stay.
+
 ## 1.32.0
 Rap, hip-hop & R&B, round two - plus Airwindows:
 - **Sampler grit**: Boom Bap, Lo-fi, Memphis Phonk and the new Jazz Rap run their loops (chords, melody, pads) through an SP-1200-style stage - 26 kHz sample-and-hold, 12-bit grain and the dull top end - so they sound sampled off a record instead of played.
