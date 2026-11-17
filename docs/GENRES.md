@@ -1,4 +1,4 @@
-# Studio Lab genres (213)
+# Studio Lab genres (215)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
@@ -293,7 +293,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Japanese zen (koto, shakuhachi) | `japanese_zen` | 66-84 | Japanese zen / traditional-inspired: koto plucks and pressed bends, a breathy shakuhachi-style flute, a soft taiko and wood blocks, lots of space - calm, modal and spacious |
 | Raga (sitar, tabla, tanpura) | `raga_fusion` | 84-112 | Raga (Hindustani-inspired): a tanpura drone the whole way, the sitar alone in a slow free alap with sliding meend, then a pulse, then the tabla enters for the gat in a 16-beat teental and the music speeds into a jhala climax |
 
-## Orchestral (26)
+## Orchestral (28)
 
 ### Film & Trailer (7)
 
@@ -334,6 +334,13 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Fantasy RPG | `fantasy_rpg` | 84-116 | Fantasy RPG / video-game score: harp arpeggios, flute & oboe melody, warm strings, horn swells |
+
+### Christmas & Holiday (2)
+
+| Genre | id | BPM | Current description |
+|---|---|---|---|
+| Christmas orchestral - joyful | `christmas_joyful` | 120-152 | Christmas orchestral, joyful (family-film score): a lilting 3/4 carol for full orchestra - oom-pah cellos and basses, pizzicato and short strings on the off-beats, a soaring violin melody doubled by glockenspiel an octave up, celesta sparkle, a children's-choir pad with warm horns, sleigh bells and timpani; it starts hushed, swells chorus by chorus, changes key up for the last chorus and ends on a big held chord |
+| Christmas orchestral - mischief | `christmas_mischief` | 128-140 | Christmas orchestral, mischief (family-film action cue): a driving 4/4 around 130-140 in a minor key - a staccato low-string ostinato, stabbing strings, blasting horns and brass, chromatic woodwind scurries, a sneaky celesta / flute motif, snare, timpani and sleigh bells driving 8ths; it gathers pace, explodes into the chase, tiptoes through a quiet sneaky break, and ends on a low unison hit |
 
 ### Classical Eras (11)
 

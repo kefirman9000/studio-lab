@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.45.0
+- **Two Christmas film-score genres**, from four of your family-Christmas-movie score cues.
+  - **Christmas orchestral - joyful:** a lilting 3/4 carol for full orchestra.
+    - **The players:** oom-pah celli and basses, pizzicato off-beats, a violin melody doubled by glockenspiel an octave up, celesta sparkle, a children's-choir pad with horns, sleigh bells and timpani.
+    - **The shape:** it starts hushed and swells chorus by chorus, with a key change up for the last chorus and a big held final chord.
+  - **Christmas orchestral - mischief:** the action cue, a driving 4/4 around 130-140 in a minor key.
+    - **The players:** a staccato low-string ostinato, stabbing strings, horn and trombone blasts, chromatic woodwind scurries, a sneaky flute / celesta motif, snare, timpani and sleigh bells.
+    - **The shape:** a rising build, the chase, a hushed sneaky break, the chase again, and a low unison hit.
+  - **Mastering:** both are mastered gently with the wide dynamics of the references.
+- **Fast bass-warp trap**, from your notes on that DJ Smokey style:
+  - **The 808:** sits on the root more, with occasional slides rather than constant ones.
+  - **The texture:** the whole mix is a little more saturated ("nuked"), and the lead and arp get heavier reverb and delay.
+  - **Cowbell stabs:** cowbell is now one of the lead choices.
+- A genre can now force its last-chorus key change (`key_change`).
+
 ## 1.44.2
 - New genre **Bass-warp trap - fast (160)**, from your two 159-162 BPM references and your hard-bass / trap-hat production notes.
   - **The tempo:** full speed, not half-time.

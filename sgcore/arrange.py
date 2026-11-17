@@ -76,7 +76,7 @@ GENRE_BUILD = {'riddim': 'pause', 'chillstep': 'swell', 'jazz_rap': 'pause', 'cl
                'symphonic_metal': 'roll', 'kpop': 'lift', 'melodic_techno': 'filter', 'afro_house': 'filter',
                'jersey_club': 'pause', 'baile_funk': 'stutter', 'punk': 'roll', 'waltz': 'swell', 'celtic_jig': 'swell',
                'soul_ballad': 'swell', 'braindance': 'stutter', 'hauntology': 'pause', 'brostep': 'roll', 'melodic_dubstep': 'roll',
-               'neurofunk': 'stutter', 'neurofunk_lite': 'roll', 'bass_warp_trap': 'pause', 'bass_warp_fast': 'stutter', 'liquid_euphoric': 'roll', 'liquid_dancefloor': 'roll', 'pop_house_90s': 'filter', 'jump_up': 'roll', 'dark_synthwave': 'filter', 'modern_gospel': 'swell', 'liquid_dnb': 'filter', 'house_phonk': 'pause', 'memphis_phonk': 'pause', 'phonk': 'pause', 'brazilian_phonk': 'pause', 'uplifting_trance': 'roll',
+               'neurofunk': 'stutter', 'neurofunk_lite': 'roll', 'christmas_joyful': 'swell', 'christmas_mischief': 'swell', 'bass_warp_trap': 'pause', 'bass_warp_fast': 'stutter', 'liquid_euphoric': 'roll', 'liquid_dancefloor': 'roll', 'pop_house_90s': 'filter', 'jump_up': 'roll', 'dark_synthwave': 'filter', 'modern_gospel': 'swell', 'liquid_dnb': 'filter', 'house_phonk': 'pause', 'memphis_phonk': 'pause', 'phonk': 'pause', 'brazilian_phonk': 'pause', 'uplifting_trance': 'roll',
                'melodic_house': 'filter', 'teen_pop': 'lift', 'luxury_rap': 'pause', 'jam_band': 'lift', 'soft_rock': 'lift',
                'funky_breaks': 'stutter', 'piano_miniature': 'none', 'uk_road_rap': 'pause'}
 
@@ -84,7 +84,7 @@ GENRE_BUILD = {'riddim': 'pause', 'chillstep': 'swell', 'jazz_rap': 'pause', 'cl
 BIG_SECTIONS = {'chorus', 'hook', 'climax', 'theme', 'drop'}
 
 
-HIT_FORMS = {'boogie', 'spooky_surf', 'surf_rock', 'monster_theme', 'lofi_rock', 'nu_metal', 'song', 'song_b', 'jazz', 'orchestral', 'cinematic', 'trap', 'halftime', 'halftime_b', 'chip', 'trailer'}
+HIT_FORMS = {'christmas_joy', 'christmas_trap', 'boogie', 'spooky_surf', 'surf_rock', 'monster_theme', 'lofi_rock', 'nu_metal', 'song', 'song_b', 'jazz', 'orchestral', 'cinematic', 'trap', 'halftime', 'halftime_b', 'chip', 'trailer'}
 
 
 def _track_of(tracks, layer):

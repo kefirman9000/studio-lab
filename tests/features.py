@@ -522,6 +522,22 @@ def test_bass_warp_trap():
     print('ok  bass-warp trap (+ fast): warped 808s, slides, 808-up / growl switch-ups, parallel grit, pitched hat rolls')
 
 
+def test_christmas_orchestral():
+    """v1.45: Christmas film-score orchestra - joyful 3/4 carol with a last-chorus key change, mischief 4/4 chase."""
+    from sgcore.compose import Options, compose
+    j = compose(Options(style='christmas_joyful', seed=3))
+    assert j['st'].get('meter') == '3/4'
+    assert any(x.get('key_change') for x in j['sections'])                 # the lift into the last chorus
+    lv = [x['opts'].get('level') for x in j['sections'] if x['opts'].get('level') is not None]
+    assert lv[0] < 0.4 and max(lv) >= 0.95                                   # hushed start, full-orchestra finish
+    assert {'glock', 'sleigh', 'horns'} <= {e.track for e in j['events']}
+    m = compose(Options(style='christmas_mischief', seed=3))
+    assert 128 <= m['bpm'] <= 140 and 3 in m['key'].scale             # a minor third: minor / harmonic minor
+    sneak = next(x for x in m['sections'] if x['name'] == 'sneak')
+    assert sneak['opts']['level'] < 0.5 and 'kick' not in sneak['layers']
+    print('ok  Christmas orchestral: joyful 3/4 carol + key change, mischief chase with a sneaky break')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -544,6 +560,7 @@ def main():
     test_surf_and_monster_theme()
     test_v144_drums_layers_new_genres()
     test_bass_warp_trap()
+    test_christmas_orchestral()
     print('all good')
 
 

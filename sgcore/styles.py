@@ -6633,7 +6633,7 @@ style('bass_warp_fast', 'Electronic',
              'ohat': ['..x...x...x...x.', '................'], 'cowbell808': ['..........x.....', '......x.......x.', '................']},
       snare_tracks=['snare', 'clap'], build_family=['stutter', 'tapestop', 'drumless', 'halftime'],
       transition_moves=['gap', 'tapestop', 'gap', 'none'], keep_fx=['tapestop'],
-      plain_drops=True, bass_mode='808', bass_lo=21, warp_808=0.6, warp_min=3, oct808=0.12, fifth808=0.08, glide808=0.45,
+      plain_drops=True, bass_mode='808', bass_lo=21, warp_808=0.5, warp_min=3, oct808=0.08, fifth808=0.05, glide808=0.3,
       chord_rh=['x---------------', 'x-------x-------'], chord_center=60, arp=dict(rate=2, mode='random', oct=5, prob=0.4),
       lead_rh=['x..x..x.x..x..x.', 'x.x.x...x.x.x...', 'x---x---x-x-x---', 'x..x..x.........'], repetition=0.85,
       gm_hint='Hard bass: a clean mono 808 sub (root notes, octave jumps, glides) + a parallel, heavily driven copy for the '
@@ -6649,16 +6649,107 @@ style('bass_warp_fast', 'Electronic',
               T('cowbell808', 'top', 'cowbell808', pan=0.25, db=-27),
               T('chords', 'chords', 'warmpad', rev=0.45, db=-28, p=dict(cut=1200)),
               T('pad', 'pad', 'choir', rev=0.55, db=-29),
-              T('arp', 'arp', 'bell', rev=0.4, dly=0.3, pan=0.3, db=-28),
-              T('lead', 'lead', 'phonkbell', rev=0.35, dly=0.25, db=-21),
+              T('arp', 'arp', 'bell', rev=0.6, dly=0.4, pan=0.3, db=-28),
+              T('lead', 'lead', 'phonkbell', rev=0.55, dly=0.35, db=-21),
               T('texture', 'fx', 'texture', db=-36)],
-      master=dict(lufs=-8.5, air=-0.3, low=4.0, drive=0.05, max_gr=5.0),
+      master=dict(lufs=-8.5, air=-0.3, low=4.0, drive=0.18, max_gr=5.0),
       pools=dict(bass=['808'],
                  chords=['warmpad', 'glasspad', 'choir', 'strings'],
                  pad=['choir', 'warmpad', 'glasspad'],
                  arp=['bell', 'celesta', 'pluck', 'chip'],
-                 lead=['phonkbell', 'bell', 'leadsaw', 'pluck', 'chip']),
+                 lead=['phonkbell', 'bell', 'cowbell', 'leadsaw', 'pluck', 'chip']),
       label='Bass-warp trap - fast (160)')
+
+
+# v1.45: Christmas film-score orchestra, from four of the user's family-Christmas-movie score cues. Joyful: a lilting
+# 3/4 carol feel around 120-150, D major-ish, choir and strings carrying warm low-mids, one long crescendo of ~10 dB and
+# a key change up for the last chorus, a big held final chord. Mischief (the "setting the trap" cue): a driving 4/4
+# around 136 in a minor key, loud and busy, heavy staccato low strings and brass, chromatic colour, a low unison end.
+FORMS['christmas_joy'] = [('intro', 4, {'arp', 'pad'}, {'level': 0.25}),
+                          ('verse', 16, {'kick', 'top', 'bass', 'chords', 'arp', 'lead'}, {'level': 0.42}),
+                          ('verse', 16, {'kick', 'top', 'bass', 'chords', 'arp', 'lead', 'pad'}, {'level': 0.55}),
+                          ('bridge', 8, {'bass', 'chords', 'arp', 'lead'}, {'alt': True, 'level': 0.4}),
+                          ('chorus', 16, {'kick', 'top', 'bass', 'chords', 'arp', 'lead', 'pad'}, {'crash': True, 'level': 0.7, 'level_to': 0.88}),
+                          ('chorus', 16, {'kick', 'top', 'bass', 'chords', 'arp', 'lead', 'pad'}, {'crash': True, 'level': 0.95, 'level_to': 1.0}),
+                          ('outro', 4, {'kick', 'bass', 'chords', 'pad', 'lead', 'arp'}, {'level': 1.0})]
+style('christmas_joyful', 'Orchestral',
+      'Christmas orchestral, joyful (family-film score): a lilting 3/4 carol for full orchestra - oom-pah cellos and '
+      'basses, pizzicato and short strings on the off-beats, a soaring violin melody doubled by glockenspiel an octave up, '
+      'celesta sparkle, a children\'s-choir pad with warm horns, sleigh bells and timpani; it starts hushed, swells '
+      'chorus by chorus, changes key up for the last chorus and ends on a big held chord',
+      meter='3/4', bpm=(120, 152), scales=['major'], human=0.012, form='christmas_joy', form_scale=1.6, reverb=3.4,
+      key_change=True, no_rotation=True, no_layers=True,
+      progs={'major': [[0, 3, 4, 0], [0, 5, 1, 4], [0, 3, 0, 4], [3, 4, 2, 5], [0, 4, 5, 3]]},
+      chord_size=3, chord_bars=1, drums={'timp': ['X...........', 'X.....X.....'], 'sleigh': ['x.x.x.x.x.x.', 'xxxxxxxxxxxx']},
+      kick_track='timp', snare_tracks=[],
+      bass=['R.....F.....', 'R...........', 'R.....O.....'], bass_lo=33, bass_gate=0.55,
+      chord_rh=['....x...x...', '..x.x...x.x.', 'x.....x.....'], chord_center=62, arp=dict(rate=1, mode='updown', oct=6, prob=0.75),
+      lead_rh=['x---x-x-x---', 'x-----x---x-', 'x-x-x-x-----', 'x---------x-', 'x-xx-xx-----'], lead_oct=5, repetition=0.8,
+      gm_hint='Violins (melody) doubled by glockenspiel 8va; pizzicato / short strings (pah-pah); celli + basses (oom); '
+              'celesta; children\'s choir (aah); French horns; sleigh bells; timpani; a cymbal at the big moments',
+      tracks=[T('timp', 'kick', 'timp', rev=0.4, db=-25),
+              T('sleigh', 'top', 'sleigh', pan=0.3, rev=0.3, db=-32),
+              T('bass', 'bass', 'cello', rev=0.35, db=-17, p=dict(a=0.03)),
+              T('bass_cb', 'bass', 'contrabass', double_of='bass', octave=-12, keep_inst=True, rev=0.35, db=-24),
+              T('chords', 'chords', 'pizz', rev=0.4, db=-20),
+              T('pad', 'pad', 'choir', rev=0.55, db=-20),
+              T('horns', 'pad', 'horn', double_of='pad', octave=-12, keep_inst=True, rev=0.45, db=-23),
+              T('arp', 'arp', 'celesta', rev=0.45, pan=-0.3, db=-29),
+              T('lead', 'lead', 'violin', rev=0.45, pan=0.1, db=-19),
+              T('glock', 'lead', 'celesta', double_of='lead', octave=12, keep_inst=True, rev=0.45, pan=0.2, db=-29)],
+      master=dict(lufs=-17.0, air=0.4, low=0.8, gentle=True, max_gr=1.5),
+      pools=dict(bass=['cello', 'pizz', 'contrabass'],
+                 chords=['pizz', 'spiccato', 'strings', 'harp'],
+                 pad=['choir', 'strings', 'horn'],
+                 arp=['celesta', 'harp', 'flute', 'tubular'],
+                 lead=['violin', 'flute', 'horn', 'trumpet', 'oboe']),
+      label='Christmas orchestral - joyful')
+
+FORMS['christmas_trap'] = [('intro', 4, {'kick', 'bass'}, {'level': 0.45}),
+                           ('A', 8, {'kick', 'top', 'bass', 'chords'}, {'level': 0.6}),
+                           ('A', 8, {'kick', 'top', 'bass', 'chords', 'lead'}, {'level': 0.68}),
+                           ('B', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'pad'}, {'alt': True, 'crash': True, 'level': 0.78}),
+                           ('build', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {'build': True, 'level': 0.6, 'level_to': 1.0}),
+                           ('chase', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'pad', 'lead'}, {'drop': True, 'crash': True, 'level': 1.0}),
+                           ('sneak', 8, {'bass', 'arp', 'lead'}, {'alt': True, 'level': 0.32}),
+                           ('chase', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'pad', 'lead'}, {'drop': True, 'crash': True, 'level': 1.0}),
+                           ('outro', 4, {'kick', 'bass', 'chords', 'pad'}, {'level': 1.0})]
+style('christmas_mischief', 'Orchestral',
+      'Christmas orchestral, mischief (family-film action cue): a driving 4/4 around 130-140 in a minor key - a '
+      'staccato low-string ostinato, stabbing strings, blasting horns and brass, chromatic woodwind scurries, a sneaky '
+      'celesta / flute motif, snare, timpani and sleigh bells driving 8ths; it gathers pace, explodes into the chase, '
+      'tiptoes through a quiet sneaky break, and ends on a low unison hit',
+      bpm=(128, 140), scales=['minor', 'harmonic_minor'], human=0.008, form='christmas_trap', form_scale=1, reverb=2.8,
+      no_rotation=True, no_layers=True, fill=True,
+      progs={'minor': [[0, 0, 5, 4], [0, 1, 0, 4], [0, 3, 4, 0], [0, 5, 1, 4]], 'harmonic_minor': [[0, 0, 4, 4], [0, 1, 4, 0]]},
+      chord_size=3, chord_bars=1,
+      drums={'timp': ['X.......X.......', 'X.X.....X.X.....'], 'snare': ['....X.......X...', '....x.x.X...x.xx', 'x.xxX.x.x.xxX.x.'],
+             'sleigh': ['x.x.x.x.x.x.x.x.']},
+      kick_track='timp', snare_tracks=['snare'], build_family=['swell', 'march', 'cymbal'],
+      bass=['R.R.R.R.R.R.R.R.', 'R.RRR.R.R.RRR.R.', 'R.R.u.R.d.R.R.R.'], bass_lo=31, bass_gate=0.45,
+      chord_rh=['x.x.x.x.x.x.x.x.', 'x..x..x.x..x..x.', 'x...x...x.x.x...'], chord_center=58,
+      arp=dict(rate=1, mode='random', oct=5, prob=0.7),
+      lead_rh=['x.x.x...x.x.x...', 'x...x.x.x...x...', 'xxxx..x.x.......', 'x.x.x.x.x---....'], lead_oct=5, repetition=0.8,
+      gm_hint='Celli + basses spiccato ostinato; violins spiccato stabs; French horns + trombones (blasts); flute / '
+              'clarinet chromatic runs; celesta + flute sneaky motif; orchestral snare, timpani, sleigh bells, cymbals',
+      tracks=[T('timp', 'kick', 'timp', rev=0.35, db=-21),
+              T('snare', 'snare', 'snare', rev=0.3, db=-24),
+              T('sleigh', 'top', 'sleigh', pan=0.3, rev=0.25, db=-31),
+              T('bass', 'bass', 'cello', rev=0.3, db=-19, p=dict(a=0.01)),
+              T('bass_cb', 'bass', 'contrabass', double_of='bass', octave=-12, keep_inst=True, rev=0.3, db=-26),
+              T('chords', 'chords', 'spiccato', rev=0.35, db=-19),
+              T('pad', 'pad', 'horn', rev=0.4, db=-19),
+              T('brass', 'pad', 'trombone', double_of='pad', octave=-12, keep_inst=True, rev=0.35, db=-24),
+              T('arp', 'arp', 'clarinet', rev=0.35, pan=-0.3, db=-27),
+              T('lead', 'lead', 'flute', rev=0.4, pan=0.15, db=-21),
+              T('cel', 'lead', 'celesta', double_of='lead', octave=12, keep_inst=True, rev=0.4, pan=-0.15, db=-29)],
+      master=dict(lufs=-16.0, air=0.4, low=1.0, gentle=True, max_gr=2.0),
+      pools=dict(bass=['cello', 'contrabass', 'pizz'],
+                 chords=['spiccato', 'pizz', 'strings'],
+                 pad=['horn', 'brass', 'strings'],
+                 arp=['clarinet', 'flute', 'oboe', 'celesta'],
+                 lead=['flute', 'celesta', 'clarinet', 'oboe', 'horn']),
+      label='Christmas orchestral - mischief')
 
 
 # ============================== rules applied to all the genres above ========================================

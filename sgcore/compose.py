@@ -1003,7 +1003,7 @@ def compose(opts):
     g = getattr(opts, 'groove', None)
     st['groove'] = None if g == 'straight' else (g if g in GROOVES else STYLE_GROOVE.get(sname))
     pad_voicing = rnd.choice(['close', 'close', 'open'])
-    modulate = rnd.random() < {'teen_pop': 0.75, 'gospel': 0.35, 'soul_ballad': 0.35, 'smooth_jazz': 0.7}.get(st.get('name'), 0.22) \
+    modulate = bool(st.get('key_change')) or rnd.random() < {'teen_pop': 0.75, 'gospel': 0.35, 'soul_ballad': 0.35, 'smooth_jazz': 0.7}.get(st.get('name'), 0.22) \
         and st.get('form') in ('edm', 'song', 'trap', 'chip', 'halftime', 'song_b')   # (teen pop: the last-chorus key change)
     cb = st['chord_bars']
     if getattr(opts, 'chord_speed', None) == 'slow':
