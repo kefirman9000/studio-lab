@@ -123,7 +123,7 @@ MENU = {k[0]: k for k in KIT_MENU}
 
 # the kit each genre plays by default (genres not listed keep their own synthesized kit)
 GENRE_KIT = {
-    'jungle': 'amen', 'breakcore': 'amen', 'dnb': 'amen', 'liquid_dnb': 'think',
+    'jungle': 'amen', 'breakcore': 'amen', 'dnb': 'amen', 'liquid_dnb': 'think', 'liquid_euphoric': 'think', 'liquid_dancefloor': 'think',
     'boombap': 'funky_drummer', 'downtempo': 'back_to_life', 'hauntology': 'vintage', 'vaporwave': 'vintage', 'lofi': 'vintage',
     'hauntology_sunlit': 'vintage', 'hauntology_dark': 'vintage', 'neo_soul': 'funky_drummer', 'g_funk': '808', 'new_jack_swing': 'linn',
     'alt_rnb': '808', 'rage': '808', 'plugg': '808', 'jazz_rap': 'funky_drummer', 'cloud_rap': '808', 'slow_jam': '808',
@@ -335,7 +335,7 @@ CHOP.update({'funky_breaks': 0.35})
 # 1.41: kits for the genres that had none (each picks the recorded / machine kit its records were made with)
 GENRE_KIT.update({'holiday': 'brushes', 'western': 'vintage', 'chamber_pop': 'studio', 'jam_rock_80s': 'big80s',
                   'lofi_rock': 'rusty', 'sophisti_pop': 'big80s', 'folk_jam': 'brushes', 'psych_pop': 'dead70s',
-                  'boogie_rock': 'rock', 'spooky_surf': 'vintage', 'surf_rock': 'vintage', 'monster_theme': 'vintage', 'nu_metal': 'rock', 'soul_sample_rap': 'vintage',
+                  'boogie_rock': 'rock', 'boogie_blues_rock': 'rock', 'spooky_surf': 'vintage', 'surf_rock': 'vintage', 'monster_theme': 'vintage', 'nu_metal': 'rock', 'soul_sample_rap': 'vintage',
                   'new_age_chant': 'funky_drummer', 'midfi_synthfunk': 'linn', 'uk_bass_130': 'techno', 'hard_trance': 'trance',
                   'nu_disco': '909', 'piano_house_90s': '909', 'tokyo_deep_house': '909', 'smooth_90s_rap': '808',
                   'bay_rap': '808', 'futuristic_bounce': '808', 'hard_trap': '808', 'switch_trap': '808', 'club_pop': '707',

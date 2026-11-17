@@ -13,7 +13,7 @@ GROUPS = {
                              'progressive_trance', 'psytrance', 'trance_pop_90s', 'hard_trance', 'uk_bass_130']),
         ('Dubstep, Garage & Bass', ['dubstep', 'brostep', 'riddim', 'melodic_dubstep', 'chillstep', 'deep_dubstep', 'deep_dubstep_minimal',
                                     'deep_dubstep_rollers', 'future_bass', 'ukgarage', 'future_garage', 'early_dubstep', 'bassline_140', 'grime']),
-        ('Drum & Bass, Breaks & Hard', ['dnb', 'liquid_dnb', 'neurofunk', 'neurofunk_lite', 'jump_up', 'jungle', 'breakcore', 'braindance', 'rave_hardcore',
+        ('Drum & Bass, Breaks & Hard', ['dnb', 'liquid_dnb', 'liquid_euphoric', 'liquid_dancefloor', 'neurofunk', 'neurofunk_lite', 'jump_up', 'jungle', 'breakcore', 'braindance', 'rave_hardcore',
                                         'hardstyle', 'gabber', 'electro', 'funky_breaks']),
         ('Hip-Hop, Trap & Phonk', ['trap', 'uk_drill', 'uk_road_rap', 'rage', 'plugg', 'cloud_rap', 'luxury_rap', 'orchestral_hiphop',
                                    'jersey_club', 'phonk', 'memphis_phonk', 'house_phonk', 'brazilian_phonk', 'hard_trap', 'switch_trap', 'wonky_beats']),
@@ -26,7 +26,7 @@ GROUPS = {
     ],
     'Classic': [
         ('Rock & Metal', ['rock', 'indie_rock', 'alt_rock_90s', 'punk', 'soft_rock', 'jam_band', 'jam_rock_80s', 'metal',
-                          'symphonic_metal', 'lofi_rock', 'boogie_rock', 'nu_metal', 'spooky_surf', 'monster_theme', 'surf_rock']),
+                          'symphonic_metal', 'lofi_rock', 'boogie_rock', 'boogie_blues_rock', 'nu_metal', 'spooky_surf', 'monster_theme', 'surf_rock']),
         ('Pop & Indie', ['pop', 'bedroom_pop', 'chamber_pop', 'city_pop', 'holiday', 'sophisti_pop', 'psych_pop']),
         ('Funk & Disco', ['funk', 'disco', 'disco_funk', 'smooth_funk', 'electro_funk']),
         ('Soul, R&B & Gospel', ['motown', 'soul_ballad', 'gospel', 'modern_gospel', 'rnb', 'neo_soul', 'new_jack_swing', 'quiet_storm', 'slow_jam']),

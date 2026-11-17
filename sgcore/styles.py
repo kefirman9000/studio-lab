@@ -6395,6 +6395,156 @@ style('pop_house_90s', 'Electronic',
       label='90s pop house / dance-pop')
 
 
+# v1.44: liquid / dancefloor drum & bass, modelled on nine of the user's reference tracks (174-176 BPM, analysed bar by
+# bar): a 16-32 bar intro (drums without the sub, or keys alone), a short build, a ~64-bar drop in 16-bar phrases with a
+# switch-up at each phrase end, a beatless keys / strings breakdown, a second 64-bar drop and a DJ outro (drums + bass,
+# no sub). The sub only arrives in the drops (20-45% of the energy); the mid-bass pumps in 8ths and 3-3-2 figures;
+# the chords change every bar; piano, strings and 16th-note bleeps on top.
+FORMS['liquid_euphoric'] = [('intro', 16, {'kick', 'snare', 'top', 'chords'}, {'filter_in': True}),
+                            ('break', 16, {'chords', 'pad', 'arp', 'lead'}, {'alt': True}),
+                            ('build', 8, {'snare', 'top', 'chords', 'pad', 'arp'}, {'build': True}),
+                            ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead'}, {'drop': True}),
+                            ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'lead'}, {'var': 1}),
+                            ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp'}, {'alt': True}),
+                            ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'crash': True}),
+                            ('break', 24, {'chords', 'pad', 'lead', 'arp'}, {'alt': True}),
+                            ('build', 8, {'snare', 'top', 'chords', 'pad', 'arp'}, {'build': True}),
+                            ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead'}, {'drop': True}),
+                            ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'lead'}, {'var': 1}),
+                            ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp'}, {'alt': True}),
+                            ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'crash': True}),
+                            ('outro', 16, {'kick', 'snare', 'top', 'bass'}, {'fade': True})]
+LIQ_DRUMS = {'kick': ['X.........X.....', 'X.........X..x..', 'X.x.......X.....'],
+             'snare': [BACKBEAT, '..x.X...x.x.X..o', '....X..x.o..X...'],
+             'chat': ['x.x.x.x.x.x.x.x.', 'x.xxx.x.x.xxx.x.'], 'shaker': ['xxxxxxxxxxxxxxxx'], 'ride': ['x...x...x...x...']}
+style('liquid_euphoric', 'Electronic',
+      'Liquid drum & bass, euphoric: an uplifting 175 BPM two-step with rolling ghost snares, a bright piano playing a new '
+      'chord every bar, lush strings, 16th-note bleeps and bloops on top and a big singing synth lead; a warm mid-bass '
+      'pumping in 8ths with the sub arriving only for the drops; long keys intro and breakdown, two 64-bar drops with a '
+      'switch-up every 16 bars, a DJ outro',
+      bpm=(174, 176), scales=['major', 'minor'], swing=0.52, human=0.002, ghosts=True, fill=True, kit='punchy',
+      form='liquid_euphoric', form_scale=1, sub_layer=True, sc_depth=0.5, sc_release=0.3, chord_size=4, reverb=2.4,
+      build_family=['roll', 'hats', 'drumless', 'wash'],
+      progs={'major': [[5, 3, 0, 4], [0, 4, 5, 3], [3, 4, 5, 0], [5, 4, 3, 4], [3, 0, 4, 5]],
+             'minor': [[0, 5, 2, 6], [5, 6, 0, 0], [0, 6, 5, 6], [3, 4, 0, 5]]},
+      drums=LIQ_DRUMS, snare_tracks=['snare'],
+      bass=['R.R.R.R.R.R.R.R.', 'R..R..R.R..R..R.', 'R-R-R-.RR-R-R-.R', 'R---R-R-R---R-R-'], bass_lo=28, bass_gate=0.85,
+      chord_rh=['x-------x-------', 'x..x..x...x..x..', 'x---x---x---x---', '..x...x...x...x.'], chord_center=62,
+      arp=dict(rate=1, mode='random', oct=6, prob=0.55),
+      lead_rh=['x---x-x-x-------', 'x-x-x---x-x-x---', 'x-------x---x-x-', '..x-x-x-x---x---'], repetition=0.8,
+      gm_hint='Bright piano (chords every bar, offbeat stabs); string section / string pad; 16th-note square or pluck '
+              'bleeps; singing saw lead; warm mid-bass pumping in 8ths + mono sine sub in the drops; crisp two-step '
+              'breaks with ghost snares, 16th shaker, ride',
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.25, db=-15),
+              T('chat', 'top', 'chat', pan=0.2, db=-22), T('shaker', 'top', 'shaker', pan=-0.25, db=-27),
+              T('ride', 'top', 'ride', pan=0.3, db=-31),
+              T('bass', 'bass', 'moogbass', sc=0.8, db=-10, p=dict(cut=900)),
+              T('chords', 'chords', 'piano', rev=0.35, sc=0.5, db=-25, hp=250),
+              T('pad', 'pad', 'strings', rev=0.5, sc=0.7, db=-28),
+              T('arp', 'arp', 'chip', pan=0.3, rev=0.3, dly=0.35, sc=0.4, db=-27, p=dict(pw=0.25)),
+              T('lead', 'lead', 'supersaw_lead', rev=0.4, dly=0.3, sc=0.4, db=-21)],
+      master=dict(lufs=-8.0, air=1.8, low=1.4, max_gr=6.0),
+      pools=dict(bass=['moogbass', 'reese', 'fmbass', 'sawbass'],
+                 chords=['piano', 'epiano', 'm1piano', 'polysynth'],
+                 pad=['strings', 'warmpad', 'glasspad', 'solina'],
+                 arp=['chip', 'pluck', 'bell', 'pluck_saw'],
+                 lead=['supersaw_lead', 'leadsaw', 'softlead', 'pluck_saw']),
+      label='Liquid DnB - euphoric (piano & bleeps)')
+
+FORMS['liquid_dancefloor'] = [('intro', 32, {'kick', 'snare', 'top', 'chords'}, {'filter_in': True}),
+                              ('build', 8, {'snare', 'top', 'chords', 'arp'}, {'build': True}),
+                              ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True}),
+                              ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {'var': 1}),
+                              ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'alt': True}),
+                              ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad'}, {'crash': True}),
+                              ('break', 16, {'chords', 'pad', 'arp'}, {'alt': True}),
+                              ('build', 8, {'snare', 'top', 'chords', 'arp'}, {'build': True}),
+                              ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True}),
+                              ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {'var': 1}),
+                              ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'alt': True}),
+                              ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad'}, {'crash': True}),
+                              ('outro', 32, {'kick', 'snare', 'top', 'bass'}, {'fade': True})]
+style('liquid_dancefloor', 'Electronic',
+      'Liquid drum & bass, dancefloor roller: a driving 175 BPM two-step with rolling ghost snares and shakers, a filtered '
+      'reese mid-bass that trades with a deep clean sub every 4 bars, short brass and synth stabs, chopped piano chords, '
+      'bleepy 16th arps and a funky lead line; a long drums-first DJ intro, two 64-bar drops in 16-bar phrases and a long '
+      'DJ outro',
+      bpm=(174, 176), scales=['minor', 'dorian'], swing=0.52, human=0.002, ghosts=True, fill=True, kit='punchy',
+      form='liquid_dancefloor', form_scale=1, sub_layer=True, sc_depth=0.55, sc_release=0.28, chord_size=4, reverb=1.9,
+      bass_switch=['sinebass'], switch_bars=4, switch_db=-16, build_family=['roll', 'hats', 'drumless', 'halftime'],
+      progs={'minor': [[0, 5, 2, 6], [0, 6, 5, 6], [0, 3, 6, 5], [5, 6, 0, 0]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 4]]},
+      drums=LIQ_DRUMS, snare_tracks=['snare'],
+      bass=['R.R.R.R.R.R.R.R.', 'R..R..R.R..R..R.', 'R-.RR-.RR-.RR-.R', 'R-R-..R-R-R-..R-'], bass_lo=28, bass_gate=0.8,
+      chord_rh=['x..x..x...x..x..', '..x...x...x...x.', 'x---....x---....'], chord_center=62,
+      arp=dict(rate=1, mode='random', oct=6, prob=0.5),
+      lead_rh=['x.x.....x.x.....', 'x...x.x.x.......', '..x.x...x.x.x...'], repetition=0.85,
+      gm_hint='Filtered reese mid-bass (8ths, 3-3-2) trading with a clean sine sub every 4 bars; brass / synth-brass '
+              'stabs; chopped piano; 16th square bleeps; funky synth or guitar lead; crisp rolling two-step breaks',
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.2, db=-15),
+              T('chat', 'top', 'chat', pan=0.2, db=-22), T('shaker', 'top', 'shaker', pan=-0.25, db=-27),
+              T('ride', 'top', 'ride', pan=0.3, db=-31),
+              T('bass', 'bass', 'reese', sc=0.8, db=-10, p=dict(cut=1100)),
+              T('chords', 'chords', 'synthbrass', rev=0.3, sc=0.5, db=-23, hp=180),
+              T('pad', 'pad', 'warmpad', rev=0.45, sc=0.7, db=-26),
+              T('arp', 'arp', 'chip', pan=0.3, rev=0.25, dly=0.3, sc=0.4, db=-27, p=dict(pw=0.25)),
+              T('lead', 'lead', 'pluck_saw', rev=0.3, dly=0.25, sc=0.4, db=-20)],
+      master=dict(lufs=-7.5, air=1.6, low=1.5, max_gr=6.0),
+      pools=dict(bass=['reese', 'moogbass', 'fmbass', 'growl'],
+                 chords=['synthbrass', 'piano', 'stab', 'brass'],
+                 pad=['warmpad', 'strings', 'glasspad'],
+                 arp=['chip', 'pluck', 'bell'],
+                 lead=['pluck_saw', 'leadsaw', 'guitar', 'softlead']),
+      label='Liquid DnB - dancefloor roller')
+
+
+# v1.44: boogie blues-rock (bar-band slide boogie), from four of the user's reference tracks: 96-123 BPM with a heavy
+# shuffle (off-beats at ~0.62 of the beat), open-tuning keys (E, G, A, D), 12-bar choruses at a constant level - the
+# riff alone, then the band, verses answered by slide guitar, slide and sax solo choruses, an ending hit. Raunchy, mid-
+# heavy and dry: almost no sub or air.
+FORMS['boogie'] = [('intro', 4, {'bass', 'top'}, {}),
+                   ('verse', 12, {'kick', 'snare', 'top', 'bass', 'chords'}, {'crash': True}),
+                   ('verse', 12, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {}),
+                   ('solo', 12, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'alt': True}),
+                   ('verse', 12, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'crash': True}),
+                   ('verse', 12, {'kick', 'snare', 'top', 'bass', 'chords'}, {}),
+                   ('solo', 12, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'alt': True}),
+                   ('verse', 12, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'crash': True}),
+                   ('outro', 12, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {})]
+style('boogie_blues_rock', 'Classic',
+      'Boogie blues-rock (bar-band slide boogie): a heavy, swaggering shuffle around 95-125 BPM in E, G, A or D - the '
+      'bass and a raunchy rhythm guitar locked on the boogie riff (root, third, fifth, sixth, flat seventh), a fat '
+      'backbeat, a distorted slide guitar answering every line and taking a solo chorus, a honking tenor sax for '
+      'another; 12-bar choruses at full tilt, dry and mid-heavy, ending on a hit',
+      bpm=(95, 125), scales=['mixolydian'], swing=0.62, swing_unit=8, human=0.008, chord_size=3, kit='acoustic',
+      form='boogie', voicing='power', roots=[4, 7, 9, 2], ghosts=True, fill=True, slides=0.55, no_rotation=True, own_progs=True,
+      riff_locked=True, reverb=1.4, sc_depth=0.0,
+      progs=[[0, 0, 0, 0, 3, 3, 0, 0, 4, 3, 0, 4], [0, 3, 0, 0, 3, 3, 0, 0, 4, 3, 0, 4], [0, 0, 0, 0, 3, 3, 0, 0, 4, 4, 0, 4]],
+      drums={'kick': ['X.......X.......', 'X.....X.X.......'], 'snare': [BACKBEAT],
+             'chat': ['x.x.x.x.x.x.x.x.'], 'ride': ['x.x.x.x.x.x.x.x.']},
+      snare_tracks=['snare'], build_family=['pickup', 'stops'], transition_moves=['crash', 'none'],
+      bass=['R.R.3.3.5.5.6.6.', '7.7.6.6.5.5.3.3.'], bass_cycle=True, bass_lo=28, bass_gate=0.75,
+      chord_rh=['....x.......x...', 'x.x.x.x.x.x.x.x.', '....x..x....x...'], chord_center=52,
+      arp=dict(rate=2, mode='updown', oct=4, prob=0.5),
+      lead_rh=['x-x-x---x-x-----', '....x-x-x-x-x---', 'x---x-x-x-------', 'x.x.x.x.x---x---'], lead_oct=4,
+      repetition=0.75,
+      gm_hint='Distorted slide guitar (open E / open G, bottleneck); overdriven rhythm guitar on the boogie riff; '
+              'electric bass doubling it; tenor sax; straight-ahead rock kit with a heavy shuffle',
+      tracks=[T('kick', 'kick', 'kick', db=-16), T('snare', 'snare', 'snare', rev=0.2, db=-15),
+              T('chat', 'top', 'chat', db=-26), T('ride', 'top', 'ride', db=-29),
+              T('bass', 'bass', 'ebass', db=-12),
+              T('riff', 'bass', 'guitar', double_of='bass', octave=12, keep_inst=True, pan=-0.3, rev=0.15, db=-19,
+                p=dict(dist=8, bright=3500), drive=0.7, hp=180, presence=6),
+              T('chords', 'chords', 'guitar', pan=0.3, rev=0.15, db=-16, p=dict(dist=10, bright=4000), drive=0.8, hp=200, presence=7),
+              T('lead', 'lead', 'guitar', rev=0.3, db=-14, p=dict(dist=12, bright=4500, damp=0.999), drive=0.9, hp=180, presence=6),
+              T('solo_sax', 'lead', 'sax', rev=0.3, db=-17)],
+      master=dict(lufs=-11.0, air=0.0, low=0.8),
+      solos=['solo_sax'],
+      pools=dict(bass=['ebass', 'sf:pickbass', 'sf:fingerbass'],
+                 chords=['guitar', 'sf:odguitar', 'sf:distguitar'],
+                 lead=['guitar', 'sf:odguitar', 'harmonica', 'sax']),
+      label='Boogie blues-rock (slide)')
+
+
 # ============================== rules applied to all the genres above ========================================
 # ----------------------------------------------------------------------------- real basses everywhere they belong
 # electric bass (Growlybass) for electric genres, upright (Meatbass) for acoustic / jazz ones

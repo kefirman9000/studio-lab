@@ -167,6 +167,9 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 .blend{margin-top:12px}
 ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#262b3a;border-radius:9px;border:3px solid transparent;background-clip:content-box}
 @media (max-width:1200px){main{grid-template-columns:270px 1fr}.col.r{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}}
+.vol{display:inline-flex;align-items:center;gap:4px;margin-left:6px;font-weight:400}
+.vol input[type=range]{width:84px;height:14px;vertical-align:middle}
+.vol b{font-family:var(--mono);font-size:10.5px;min-width:38px;opacity:.75}
 </style>
 </head>
 <body>
@@ -219,21 +222,6 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f wide"><label><input type="checkbox" id="jBbc"> Play it on my orchestra plugin (BBC Symphony Orchestra / LABS)</label>
         <div class="hint">Off: the free real orchestra in 🎻 Real instruments plays every section, no setup. On: sections you saved in <a href="#" id="jBbcSet">Set up my orchestra…</a> are used (violins, celli, horns, trumpets, low brass, timpani…), with mod-wheel dynamics; anything not set up uses the real orchestra.</div></div>
     </div></details>
-    <details class="card" open><summary>Basics</summary><div class="body">
-      <div class="f"><label>Tempo <span class="auto"><input type="checkbox" id="bpmAuto" checked>auto</span></label>
-        <div class="row"><input type="range" id="bpm" min="55" max="200" value="120" disabled><b id="bpmV" style="min-width:34px;font-family:var(--mono);font-size:12px">auto</b></div></div>
-      <div class="f wide"><label>Song name <span class="hint">goes at the front of the file names · leave empty for an invented name</span></label>
-        <input type="text" id="songName" maxlength="60" placeholder="auto (e.g. Ashes of the North)"></div>
-      <div class="f"><label>Seed <span class="hint">same seed = same song</span></label>
-        <div class="row"><input type="number" id="seed" min="1" value="1"><button class="ibtn" id="dice" title="Random seed">🎲</button><label class="auto" title="Keep this seed: pressing Preview again re-renders the same song (handy while you tweak settings)"><input type="checkbox" id="seedLock">🔒</label></div></div>
-      <div class="f"><label>Key</label><select id="key"></select></div>
-      <div class="f"><label>Scale</label><select id="scale"></select></div>
-      <div class="f"><label>Length</label><div class="seg" id="length"></div></div>
-      <div class="f"><label>Structure</label><div class="seg" id="structure"></div></div>
-      <div class="f wide"><label>Reference track <span class="hint">match tempo, key, loudness &amp; brightness of a song you like</span></label>
-        <div class="row"><button class="ibtn" id="refBtn" title="An audio file, a MIDI file, MusicXML (MuseScore, Sibelius, Dorico...) or Studio Lab settings">🎯 Match a reference…</button><input type="file" id="refFile" accept="audio/*,.mid,.midi,.kar,.musicxml,.xml,.mxl,.json" hidden><span class="hint" id="refRes"></span></div></div>
-      <div class="f wide"><label>Chord progression <span class="hint">optional • e.g. i-VI-III-VII or 1-5-6-4</span></label><input type="text" id="prog" placeholder="auto"></div>
-    </div></details>
 
     <details class="card" open><summary>Feel</summary><div class="body">
       <div class="f"><label>Energy <b id="energyV"></b></label><input type="range" id="energy" min="0" max="100" value="50"></div>
@@ -247,26 +235,31 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f wide"><label>Variety <span class="hint">how much each song re-imagines its style: instruments, tones, grooves, arrangement</span><b id="varietyV"></b></label><input type="range" id="variety" min="0" max="100" value="55"></div>
       <div class="f"><label>Groove feel <span class="hint">timing of each part</span></label><select id="groove"><option value="">Genre feel</option><option value="straight">Straight (on the grid)</option><option value="dilla">Lazy hip-hop (drunk, late snares)</option><option value="laidback">Laid back (reggae)</option><option value="afro">Afro swing</option><option value="dembow">Dembow push</option><option value="jazz">Jazz (ride on top)</option><option value="house">House (late hats)</option><option value="funk">Funk (pushed 16ths)</option></select></div>
       <div class="f"><label>Lead style <span class="hint">how the lead line is built</span></label><select id="leadStyle"><option value="">Genre default</option><option value="hook">Hook (sung-style melody)</option><option value="arp">Arpeggio (trance, synthwave)</option><option value="riff">Riff (rock, funk)</option><option value="ostinato">Ostinato (techno)</option><option value="bell">Bell motif (trap)</option><option value="call">Call &amp; response (afro, reggae)</option><option value="chops">Vocal-chop stabs (house, garage)</option></select></div>
+      <div class="f"><label>Bass rhythm</label><select id="bassRhythm"><option value="">Style's bassline</option><option value="kick">Follow the kick drum</option></select></div>
+      <div class="f"><label>Vocal guide <span class="hint">a singable melody - always in MIDI exports</span></label><label class="auto" style="margin-top:6px"><input type="checkbox" id="vocalGuide"> hear it in the song</label></div>
+    </div></details>
+
+    <details class="card"><summary>Arrangement <span class="hint">build-ups, transitions, instrument changes, ending</span></summary><div class="body">
       <div class="f"><label title="Verses, choruses and breaks play parts on different instruments from the genre's own pool">Instrument rotation</label><select id="rotation"><option value="auto">Auto (with Variety)</option><option value="off">Off - one instrument per part</option><option value="some">Some - one part changes</option><option value="lots">Lots - several parts change</option></select></div>
       <div class="f"><label title="How hard songs ramp up into choruses and drops">Build-ups <span class="hint">ramps into big sections</span></label><select id="builds"><option value="auto">On (genre style)</option><option value="subtle">Subtle - natural, no EDM ramps</option><option value="off">Off - no build-ups</option></select></div>
       <div class="f"><label>Build-up style</label><select id="buildStyle"><option value="">Genre default (varies per build)</option><optgroup label="Natural / band"><option value="pickup">Groove + short fill</option><option value="ride">Ride cymbal crescendo</option><option value="stops">Stop-time hits</option><option value="march">Marching snare</option><option value="tomgroove">Tom groove</option><option value="toms">Tom run</option><option value="lift">Snare lift (pop, rock)</option><option value="cymbal">Mallet cymbal roll (film)</option><option value="swell">Swell (film)</option><option value="pause">Drop-out (amapiano, garage)</option><option value="none">Nothing - just go</option></optgroup><optgroup label="Electronic"><option value="roll">Snare roll + riser (trance, big room)</option><option value="filter">Filter sweep, kick out (house, techno)</option><option value="pulse">Kick pulse + filter</option><option value="wash">Noise wash</option><option value="tapestop">Tape stop</option><option value="triplet">Triplet roll (future bass)</option><option value="kick_roll">Kick roll (hardstyle)</option><option value="stutter">Stutter + silence (dubstep)</option><option value="hats">Accelerating hats</option><option value="claps">Clap build</option><option value="halftime">Half-time, then snap</option><option value="drumless">Drums out - riser &amp; filter only</option></optgroup></select></div>
       <div class="f"><label title="Risers, reverse cymbals, impacts, tape stops between sections">Transition FX</label><select id="transFx"><option value="auto">Varied (genre)</option><option value="fewer">Fewer</option><option value="fills">Drum fills only - no FX sounds</option><option value="off">Off - straight cuts</option></select></div>
-      <div class="f"><label>Bass rhythm</label><select id="bassRhythm"><option value="">Style's bassline</option><option value="kick">Follow the kick drum</option></select></div>
       <div class="f"><label>Ending</label><select id="ending"><option value="auto">Genre default</option><option value="hit">Final chord + crash</option><option value="fade">Fade out</option></select></div>
       <div class="f"><label>Counter-melody <span class="hint">a second line answering the lead</span></label><select id="counter"><option value="">Genre decides</option><option value="on">Always</option><option value="off">Never</option></select></div>
       <div class="f"><label>Layered sounds <span class="hint">parts doubled by a second instrument</span></label><select id="layering"><option value="">Genre &amp; variety decide</option><option value="more">More layers</option><option value="off">Off (one instrument per part)</option></select></div>
-      <div class="f"><label>Vocal guide <span class="hint">a singable melody - always in MIDI exports</span></label><label class="auto" style="margin-top:6px"><input type="checkbox" id="vocalGuide"> hear it in the song</label></div>
     </div></details>
+
 
     <details class="card"><summary>Character <span class="hint">genre traits - change one to get a different kind of song in the same genre</span></summary><div class="body" id="traitsBody">
       <div class="f wide"><label class="auto"><input type="checkbox" id="traitSurprise"> 🎲 Surprise me - each song changes two of density, energy curve, variation, drop or texture</label>
-        <button class="btn" id="traitReset" type="button" style="margin-left:8px">↺ Genre traits</button></div>
+        <button class="mini" id="traitReset" type="button" style="margin-left:8px">↺ Genre traits</button></div>
     </div></details>
 
-    <details class="card" open><summary>Sound</summary><div class="body" id="soundBody">
-      <div class="f wide" id="drumsHead"><div class="hint" style="margin-top:6px"><b>Drums &amp; tone</b></div></div>
+    <details class="card" open><summary>Parts <span class="hint">every part: sound, mute and volume in one place</span></summary><div class="body" id="soundBody">
+      <div class="f wide" id="drumsHead"><div class="hint" style="margin-top:6px"><b>Drums</b> <span id="drumVol"></span></div></div>
       <div class="f"><label>Drum kit <span class="auto"><input type="checkbox" id="userDrums">my samples</span></label><select id="kit"></select>
         <div class="mutes"><span class="hint">mute</span><label class="auto"><input type="checkbox" data-mute="kick">kick</label><label class="auto"><input type="checkbox" data-mute="snare">snare / clap</label><label class="auto"><input type="checkbox" data-mute="top">hats &amp; perc</label><label class="auto"><input type="checkbox" data-mute="fx">FX</label></div></div>
+      <div class="f wide"><div class="hint" style="margin-top:6px"><b>Tone &amp; playing style</b></div></div>
       <div class="f wide" id="fusionBox" style="display:none"><label>Fusion — which style drives each part</label><div class="body" id="fusionParts" style="padding:0;grid-template-columns:1fr 1fr 1fr"></div></div>
       <div class="f"><label>Vinyl crackle</label><select id="vinyl"><option value="">Off</option><option value="on">On</option></select></div>
       <div class="f"><label>Brightness <b id="brightnessV"></b></label><input type="range" id="brightness" min="-100" max="100" value="0"></div>
@@ -284,10 +277,25 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f"><label>Drive / saturation <b id="driveV"></b></label><input type="range" id="drive" min="0" max="100" value="0"></div>
       <div class="f"><label>Loudness <span class="auto"><input type="checkbox" id="loudAuto" checked>style</span></label><input type="range" id="loud" min="-18" max="-6" value="-10" step="0.5" disabled></div>
       <div class="f"><label>Tape / vinyl</label><div class="seg" id="lofi"></div></div>
-      <div class="f wide"><label>Part levels <span class="hint">dB, relative to the style's own balance</span> <button class="mini" id="lvReset" style="margin-left:6px">reset</button></label>
-        <div class="levels" id="levels"></div></div>
+      <div class="f wide"><div class="hint">Each part's volume is in <b>Parts</b>, next to its sound and mute.</div></div>
     </div></details>
 
+
+    <details class="card" open><summary>Basics</summary><div class="body">
+      <div class="f"><label>Tempo <span class="auto"><input type="checkbox" id="bpmAuto" checked>auto</span></label>
+        <div class="row"><input type="range" id="bpm" min="55" max="200" value="120" disabled><b id="bpmV" style="min-width:34px;font-family:var(--mono);font-size:12px">auto</b></div></div>
+      <div class="f wide"><label>Song name <span class="hint">goes at the front of the file names · leave empty for an invented name</span></label>
+        <input type="text" id="songName" maxlength="60" placeholder="auto (e.g. Ashes of the North)"></div>
+      <div class="f"><label>Seed <span class="hint">same seed = same song</span></label>
+        <div class="row"><input type="number" id="seed" min="1" value="1"><button class="ibtn" id="dice" title="Random seed">🎲</button><label class="auto" title="Keep this seed: pressing Preview again re-renders the same song (handy while you tweak settings)"><input type="checkbox" id="seedLock">🔒</label></div></div>
+      <div class="f"><label>Key</label><select id="key"></select></div>
+      <div class="f"><label>Scale</label><select id="scale"></select></div>
+      <div class="f"><label>Length</label><div class="seg" id="length"></div></div>
+      <div class="f"><label>Structure</label><div class="seg" id="structure"></div></div>
+      <div class="f wide"><label>Reference track <span class="hint">match tempo, key, loudness &amp; brightness of a song you like</span></label>
+        <div class="row"><button class="ibtn" id="refBtn" title="An audio file, a MIDI file, MusicXML (MuseScore, Sibelius, Dorico...) or Studio Lab settings">🎯 Match a reference…</button><input type="file" id="refFile" accept="audio/*,.mid,.midi,.kar,.musicxml,.xml,.mxl,.json" hidden><span class="hint" id="refRes"></span></div></div>
+      <div class="f wide"><label>Chord progression <span class="hint">optional • e.g. i-VI-III-VII or 1-5-6-4</span></label><input type="text" id="prog" placeholder="auto"></div>
+    </div></details>
 
     <div class="bar">
       <div class="locks rr" id="locks" style="display:none"></div>
@@ -320,7 +328,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const LEVELS=[['drums','Drums',['kick','snare','top']],['bass','Bass',['bass']],['chords','Chords',['chords']],['pad','Pad',['pad']],['arp','Arp',['arp']],['lead','Lead',['lead']]];
-let META=null, state={closed:(()=>{try{return JSON.parse(localStorage.getItem('sl_closed')||'{}')}catch(_){return {}}})(), orch_plugin:(()=>{try{return !!localStorage.getItem('sl_orch_plugin')}catch(_){return false}})(), style:'house', part_fx:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
+let META=null, state={closed:(()=>{try{return JSON.parse(localStorage.getItem('sl_closed')||'{}')}catch(_){return {}}})(), orch_plugin:(()=>{try{return !!localStorage.getItem('sl_orch_plugin')}catch(_){return false}})(), style:'house', part_fx:{}, levels:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
   muted:[], instruments:{}, blend_parts:{}, outputs:['mp3','midi','lmms','waveform']};
 const LAYERS=[['kick','Kick'],['snare','Snare/Clap'],['top','Hats & Perc'],['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead'],['fx','FX']];
 const OUTS=[['mp3','MP3'],['wav','WAV'],['midi','MIDI'],['stems','Stems'],['daw','DAW pack (Ableton, FL, Logic, Reaper)'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack']];
@@ -411,10 +419,11 @@ function renderSelected(){
   const rows=jParts?jParts.map(p=>[p.id,p.name,p.layer,p.inst]):ROLES.map(([r,l])=>[r,l,r,defs[r]]);
   if(jParts){ const h=document.createElement('div'); h.className='f wide inst'; h.innerHTML='<div class="hint">🎬 Cinematic Journey: every player has its own sound. Leave on <b>Score default</b> for the real orchestra / your orchestra plugin.</div>'; $('#soundBody').appendChild(h); }
   if(!jParts&&!state.blend.length){ const h=document.createElement('div'); h.className='f wide inst rrsounds';
-    h.innerHTML=`<div class="rr" style="margin:0"><button class="mini acc" data-snd-roll="all" title="Pick a different sound for every part from this genre's suggestions">🎲 Re-roll sounds</button><button class="mini" data-snd-roll="reset" title="Back to the genre's own sounds">↺ Genre sounds</button><span class="hint" style="margin-left:6px">Each part's list starts with the sounds that suit this genre. 🎲 next to a part tries another one.</span></div>`;
+    h.innerHTML=`<div class="rr" style="margin:0"><button class="mini acc" data-snd-roll="all" title="Pick a different sound for every part from this genre's suggestions">🎲 Re-roll sounds</button><button class="mini" data-snd-roll="reset" title="Back to the genre's own sounds">↺ Genre sounds</button><button class="mini" data-vol-reset="1" title="Every part back to the genre's own balance">↺ Volumes</button><span class="hint" style="margin-left:6px">Each part's list starts with the sounds that suit this genre. 🎲 next to a part tries another one.</span></div>`;
     $('#soundBody').appendChild(h);
     h.querySelector('[data-snd-roll=all]').onclick=()=>{ rerollSounds(state.style, state.instruments); renderSelected(); $('#status').textContent='New sounds picked from the genre\'s suggestions - press Preview to hear them.'; };
-    h.querySelector('[data-snd-roll=reset]').onclick=()=>{ state.instruments={}; renderSelected(); }; }
+    h.querySelector('[data-snd-roll=reset]').onclick=()=>{ state.instruments={}; renderSelected(); };
+    h.querySelector('[data-vol-reset]').onclick=()=>{ state.levels={}; bindLevels(); }; }
   rows.forEach(([r,label,role,defInst])=>{
     const w=document.createElement('div');w.className='f inst';
     const pool=(!jParts&&!state.blend.length)?(((META.style_pools||{})[state.style]||{})[r]||[]):[];
@@ -427,7 +436,7 @@ function renderSelected(){
     const fxs=(META.effects||[]);
     const mute=jParts?'':`<span class="auto" title="Switch this part off (e.g. no lead for an instrumental bed)"><input type="checkbox" data-mute="${r}" ${state.muted.includes(r)?'checked':''}>mute</span>`;
     const dice=pool.length>1?`<button class="ico" data-dice="${r}" title="Try another sound that suits this genre">🎲</button>`:'';
-    w.innerHTML=`<label>${label} ${dice} ${mute}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
+    w.innerHTML=`<label>${label} ${dice} ${mute} ${jParts?'':volHtml(r)}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
       (fxs.length&&!jParts?`<select class="fxsel" title="Run this part through one of your effect plugins"><option value="">no effect plugin</option>${fxs.map(f=>`<option ${state.part_fx[r]===f?'selected':''}>${esc(f)}</option>`).join('')}</select>`:'');
     w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else delete state.instruments[r]; };
     if(w.querySelector('[data-dice]')) w.querySelector('[data-dice]').onclick=e=>{ e.preventDefault(); const cur=state.instruments[r]||pool[0];
@@ -461,7 +470,9 @@ function renderSelected(){
       $('#soundBody').appendChild(w); }); }
   // the sounds come first in the Sound panel, then drums & tone
   const sb=$('#soundBody'), head=$('#drumsHead'); $$('#soundBody .inst').forEach(e=>sb.insertBefore(e, head));
+  if($('#drumVol')) $('#drumVol').innerHTML=volHtml('drums');
   bindMutes();
+  bindLevels();
 }
 function soundName(id){ for(const r of Object.keys(META.roles||{})){ const i=(META.roles[r]||[]).find(x=>x.id===id); if(i) return i.name; }
   return String(id).replace(/^sf:/,'').replace(/_/g,' ')+(String(id).startsWith('sf:')?' (recorded)':''); }
@@ -471,6 +482,14 @@ function rerollSounds(style, into){
     const opts=pool.filter(x=>x!==cur); const pick=opts[Math.floor(Math.random()*opts.length)];
     if(pick===pool[0]) delete into[role]; else into[role]=pick; });
   return into;
+}
+function volHtml(k){ const v=(state.levels||{})[k]||0;
+  return `<span class="vol" title="Volume of this part (dB, relative to the genre's own balance)"><input type="range" data-lv="${k}" min="-12" max="6" step="1" value="${v}"><b data-lvv="${k}">${v>0?'+':''}${v} dB</b></span>`; }
+function bindLevels(){
+  state.levels=state.levels||{};
+  $$('[data-lv]').forEach(e=>{ const k=e.dataset.lv; e.value=state.levels[k]||0;
+    const show=()=>{ $$(`[data-lvv="${k}"]`).forEach(b=>b.textContent=(+e.value>0?'+':'')+e.value+' dB'); };
+    show(); e.oninput=()=>{ state.levels[k]=+e.value; if(!+e.value) delete state.levels[k]; show(); }; });
 }
 function bindMutes(){
   $$('[data-mute]').forEach(c=>{ c.checked=state.muted.includes(c.dataset.mute);
@@ -572,7 +591,7 @@ function options(){
   if($('#vocalGuide').checked) o.vocal_guide=true;
   if($('#voicing').value) o.voicing=$('#voicing').value;
   if($('#chordColor').value) o.chord_color=$('#chordColor').value;
-  const lv={}; LEVELS.forEach(([k,n,layers])=>{ const v=+$('#lv_'+k).value; if(v) layers.forEach(l=>lv[l]=v); }); if(Object.keys(lv).length) o.part_levels=lv;
+  const lv={}; LEVELS.forEach(([k,n,layers])=>{ const v=+((state.levels||{})[k]||0); if(v) layers.forEach(l=>lv[l]=v); }); if(Object.keys(lv).length) o.part_levels=lv;
   return o;
 }
 function applyOptions(o){
@@ -589,7 +608,7 @@ function applyOptions(o){
   $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#userDrums').checked=!!o.user_drums;
   $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#builds').value=o.builds||'auto'; renderTraits(); setTraits(o.traits); $('#transFx').value=o.transition_fx||'auto'; $('#vinyl').value=o.vinyl===true?'on':''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#vocalGuide').checked=!!o.vocal_guide;
   $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';
-  LEVELS.forEach(([k,n,layers])=>{ $('#lv_'+k).value=(o.part_levels||{})[layers[0]]||0; });
+  state.levels={}; LEVELS.forEach(([k,n,layers])=>{ const v=(o.part_levels||{})[layers[0]]||0; if(v) state.levels[k]=v; }); bindLevels();
   if(o.journey){ const j=o.journey; state.jOff=J_ACTS.map(a=>a[0]).filter(a=>j.acts&&!j.acts.includes(a)); $('#jPiano').value=(j.piano??.6)*100; $('#jRubato').value=(j.rubato??.5)*100;
     $('#jDyn').value=(j.dynamics??.75)*100; $('#jEnd').value=j.ending||'major'; $('#jWinds').checked=j.woodwinds!==false;
     $('#jChoir').checked=j.choir!==false; $('#jLift').checked=j.lift!==false; $('#jHybrid').checked=!!j.hybrid; $('#jGlory').value=j.glory_style||'concert'; state.jPreset=j.preset||null; }
@@ -866,7 +885,10 @@ function setupTimeline(el, r){
 // ------------------------------------------------------------- song editor (any result, library song or dropped project)
 let EDSTYLE=null;
 function soundSelect(tr, pick){
-  if(tr.drum) return `<label><input type="checkbox" data-on="${esc(tr.id)}" ${pick==='off'?'':'checked'}> playing</label>`;
+  if(tr.drum && tr.layer==='fx') return `<label><input type="checkbox" data-on="${esc(tr.id)}" ${pick==='off'?'':'checked'}> playing</label>`;
+  if(tr.drum){ const ds=(META.drum_sounds||[]);
+    return `<select data-snd="${esc(tr.id)}"><option value="">Keep (${esc(tr.sound)})</option><option value="off" ${pick==='off'?'selected':''}>🔇 Off (silent)</option>`+
+      `<optgroup label="Drum sounds">`+ds.map(d=>`<option value="${esc(d.id)}" ${pick===d.id?'selected':''}>${esc(d.name)}</option>`).join('')+'</optgroup></select>'; }
   const pool=((META.style_pools||{})[EDSTYLE]||{})[tr.layer]||[]; const byId={}; (META.roles[tr.layer]||[]).forEach(i=>byId[i.id]=i);
   const groups={}; if(pool.length) groups['Suggested for this genre']=pool.map(id=>byId[id]||{id,name:soundName(id)});
   (META.roles[tr.layer]||[]).forEach(i=>{ if(pool.includes(i.id)) return; (groups[i.group||'Built-in']=groups[i.group||'Built-in']||[]).push(i)});
@@ -882,15 +904,21 @@ function openEditor(r){
     <div class="hint">Click a section on the timeline to re-roll, lengthen, move, duplicate or mute parts in it. Below: every sound playing in this song.</div>
     <div id="edCard"></div>
     <h4 style="margin:14px 0 4px">Every sound in this song</h4>
+    <div class="f" style="max-width:420px"><label><b>Drum kit</b> <span class="hint">the whole kit at once</span></label><select id="edKit"></select></div>
     ${tracks.length?`<div class="sounds">${tracks.map(tr=>`<div class="snd"><label><b>${esc(tr.part)}</b></label><div class="s">${esc(tr.sound)} · ${tr.notes} notes</div>${soundSelect(tr, picks[tr.id])}</div>`).join('')}</div>`
       :'<div class="hint">This song was made with an older version - press Preview below once to list its sounds.</div>'}
     <div class="rr"><button class="btn s" data-e="roll" style="padding:7px 12px" title="Same song, new sounds picked from the genre's suggestions">🎲 Re-roll sounds</button><button class="btn s" data-e="prev" style="padding:7px 12px">▶ Preview with these sounds</button><button class="btn g" data-e="full" style="padding:7px 12px">⬇ Full song with these sounds</button><span class="hint" style="margin-left:8px">Same song, same notes - only the sounds you change are different.</span></div>`;
   if(r.urls&&(r.urls.mp3||r.urls.wav)){ addResult(Object.assign({}, r, {id:(r.id||'ed')+'_ed'}), $('#edCard'));
     setTimeout(()=>{ const cv=$('#edCard canvas'); if(cv) drawWave(cv, r.urls.mp3||r.urls.wav); }, 80); }
   const first=$('#edCard .blk'); if(first) first.click();
+  { const ks=$('#edKit'); if(ks){ const cur=(r.options&&r.options.kit)||''; const g={};
+      (META.kits||[]).forEach(k=>{ (g[k.group||'Kits']=g[k.group||'Kits']||[]).push(k); });
+      ks.innerHTML=`<option value="">Genre kit</option>`+Object.entries(g).map(([n,items])=>`<optgroup label="${esc(n)}">`+items.map(k=>`<option value="${esc(k.id)}" ${cur===k.id?'selected':''}>${esc(k.label||k.name||k.id)}</option>`).join('')+'</optgroup>').join('');
+      ks.onchange=()=>{ kitPick=ks.value; }; } }
   box.querySelectorAll('[data-snd]').forEach(s=>s.onchange=()=>{ if(s.value) picks[s.dataset.snd]=s.value; else delete picks[s.dataset.snd]; });
   box.querySelectorAll('[data-on]').forEach(c=>c.onchange=()=>{ if(c.checked) delete picks[c.dataset.on]; else picks[c.dataset.on]='off'; });
-  const opts=()=>{ const o=JSON.parse(JSON.stringify(r.options||{})); o.seed=r.seed; o.instruments=Object.assign({}, o.instruments||{}, picks);
+  let kitPick=(r.options&&r.options.kit)||'';
+  const opts=()=>{ const o=JSON.parse(JSON.stringify(r.options||{})); o.seed=r.seed; o.instruments=Object.assign({}, o.instruments||{}, picks); if(kitPick) o.kit=kitPick; else delete o.kit;
     Object.keys(o.instruments).forEach(k=>{ if(!picks[k] && tracks.some(t=>t.id===k)) delete o.instruments[k]; }); return o; };
   box.querySelector('[data-e=close]').onclick=closeEditor;
   box.querySelector('[data-e=prev]').onclick=()=>run(true,1,opts(),null,res=>openEditor(res));
@@ -1278,10 +1306,7 @@ async function init(){
     triad:'Triads','7':'7ths',add9:'add9','9':'9ths','6':'6ths',sus2:'sus2',sus4:'sus4'};
   const fill=(id,list,def)=>$(id).innerHTML=`<option value="">${def}</option>`+list.map(x=>`<option value="${x}">${NICE[x]||x}</option>`).join('');
   fill('#melStyle',META.melody_styles,'Genre default'); fill('#voicing',META.voicings,'Genre default'); fill('#chordColor',META.chord_colors,'Varies per song');
-  $('#levels').innerHTML=LEVELS.map(([k,n])=>`<label class="lv">${n} <b id="lvV_${k}">0</b><input type="range" id="lv_${k}" min="-12" max="6" step="1" value="0"></label>`).join('');
-  LEVELS.forEach(([k])=>{ const e=$('#lv_'+k); e.oninput=()=>$('#lvV_'+k).textContent=(e.value>0?'+':'')+e.value; });
   initKnobs();
-  $('#lvReset').onclick=e=>{ e.preventDefault(); LEVELS.forEach(([k])=>{ $('#lv_'+k).value=0; $('#lv_'+k).oninput(); }); };
   $('#seed').value=Math.floor(Math.random()*99999)+1;
   initSegs(); renderTabs(); renderMoods(); renderLayers(); renderOuts(); refresh();
   bindRange('simplicity',v=>v<5?'off':v<40?v+'% · lighter':v<75?v+'% · simple':v+'% · bare');

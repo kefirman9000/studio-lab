@@ -4,7 +4,7 @@ import random
 from dataclasses import dataclass, field, asdict, replace
 
 from .styles import STYLES, FORMS, FORM_VARIANTS
-from .instruments import KITS, INSTRUMENTS, PALETTES
+from .instruments import KITS, INSTRUMENTS, PALETTES, DRUMS
 from .theory import (Key, parse_progression, parse_key, color_fits, declutter, voice_chord, VOICINGS, fold, parse_rhythm,
                      grid_of, grid_steps, lead_voicing, Ev, chord_tones_deg, COLORS)
 from .figures import gen_riff, vary_melody, gen_trap_hats, gen_acid_pattern
@@ -908,6 +908,11 @@ def compose(opts):
         add_bass_switch_tracks(st)
         add_section_switch_tracks(st, opts, random.Random(f'{opts.seed}-rotation-{opts.style}'))
     debell(st, opts)
+    chords_t = next((t for t in st['tracks'] if t['name'] == 'chords'), None)
+    if chords_t and attack_class(chords_t['inst']) == 'hit':      # a pad under struck chords swells in, never a late 2nd hit
+        for t in st['tracks']:
+            if t['layer'] == 'pad' and not t.get('user_pick') and float((t.get('p') or {}).get('a', 0) or 0) < 0.35:
+                t['p'] = dict(t.get('p') or {}, a=0.35)
     apply_sampled(st, opts)
     from . import fxrig
     fxrig.plan(st, opts.style, bool(getattr(opts, 'vst_rig', False)))
@@ -928,7 +933,7 @@ def compose(opts):
             alt = [s for s in scales if (s in ('minor', 'dorian', 'phrygian', 'harmonic_minor', 'melodic_minor')) == minor]
             scale = alt[0] if alt else scale
     else:
-        root = rnd.randrange(12)
+        root = rnd.choice(st['roots']) if st.get('roots') else rnd.randrange(12)   # open-tuning genres: E, G, A, D
         if not opts.scale and mood and mood.get('scales'):
             pref = [x for x in mood['scales'] if x in scales] or mood['scales']
             scale = rnd.choice(pref)
@@ -1275,13 +1280,16 @@ def compose(opts):
                         evs.append(Ev('bass', beat0 + q, 0.92, m, 0.95 if q == 0 else 0.82))
                 else:
                     gate = st.get('bass_gate', 0.92)
-                    for step, l, c in parse_rhythm(bass_pat):
+                    bp_ = st['bass'][b % len(st['bass'])] if st.get('bass_cycle') else bass_pat   # boogie: up one bar, down the next
+                    for step, l, c in parse_rhythm(bp_):
                         if S >= 0.6 and c in 'OFA':                 # simple: the bass stays on the root
                             m = root
                         elif c == 'O':
                             m = root + 12
                         elif c == 'F':
                             m = fold(key.deg(chord + 4, 2), lo)
+                        elif c in '3567':                           # boogie chord tones: major 3rd, 5th, 6th, flat 7th
+                            m = root + {'3': 4, '5': 7, '6': 9, '7': 10}[c]
                         elif c == 'u':                              # chromatic upper neighbour (a half step up)
                             m = root + 1
                         elif c == 'd':                              # chromatic lower neighbour (a half step down)
@@ -1530,10 +1538,13 @@ def compose(opts):
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
     for name, t in tracks.items():                       # any part of this song, picked by its own name in the editor
         pick = (opts.instruments or {}).get(name)
-        if not pick or t.get('user_pick') or (name == t['layer'] and not st.get('composer')):
+        is_drum = t['layer'] in ('kick', 'snare', 'top')
+        if not pick or t.get('user_pick') or (name == t['layer'] and not st.get('composer') and not is_drum):
             continue
         if pick == 'off':
             t['off'] = True
+        elif is_drum and pick in DRUMS:                   # a different drum sound for this drum part (editor)
+            t['inst'], t['user_pick'] = pick, True
         elif t['layer'] in MELODIC_ROLES and isinstance(pick, str) and (pick in INSTRUMENTS or pick.startswith(('user:', 'vst:', 'sf:', 'real:'))):
             t['fallback'], t['inst'], t['user_pick'] = t['inst'], pick, True
     hold_slow_chords(evs, tracks, st, bpm)               # again: switched / re-picked parts may now be on a pad sound
@@ -1793,6 +1804,18 @@ def debell(st, opts):
         t['inst'] = mine_[0] if mine_ else bell_swap(name, role, t['inst'])
 
 
+SWELL_SOUNDS = {'warmpad', 'glasspad', 'strings', 'slowstrings', 'choir', 'solina', 'supersaw', 'tremolo', 'violins', 'violas',
+                'drone', 'talkbox', 'brass', 'horn', 'trombone', 'violin', 'pedalsteel', 'bandoneon', 'accordion', 'cello',
+                'viola', 'synthbrass', 'braam', 'harmonica', 'flute', 'oboe', 'clarinet', 'sax', 'vox', 'organ'}
+
+
+def attack_class(inst):
+    """'swell' for sounds that fade / bow / blow in, 'hit' for struck or plucked ones. Layering a hit with a swell on the
+    same chord makes a flam: the struck note on the beat, then the swell peaking a 16th later (a '1-2' instead of a 1)."""
+    base = str(inst).split(':', 1)[-1]
+    return 'swell' if base in SWELL_SOUNDS or base.startswith(('slow', 'pad')) else 'hit'
+
+
 def add_layer_tracks(st, opts):
     """Some parts get a second instrument from the genre's own pool, playing the same notes (in unison or an octave
     apart): a supersaw lead with a pluck on top, violins doubled by a flute an octave up or celli an octave down, a
@@ -1833,6 +1856,10 @@ def add_layer_tracks(st, opts):
             pool = [i for i in (POOLS.get(owner, {}).get(role) or PALETTES.get(cat, {}).get(role) or []) if i != t['inst']]
             if not pool or r.random() > odds or picks >= (3 if want == 'more' else 2):
                 continue
+            if role in ('chords', 'arp'):                    # no swells doubling struck chords (and the reverse): flams
+                pool = [i for i in pool if attack_class(i) == attack_class(t['inst'])]
+                if not pool:
+                    continue
             inst = r.choice(pool)
             octv = 12 if inst in OCT_UP and role in ('lead', 'arp') else (-12 if inst in OCT_DOWN and role == 'lead' else 0)
         picks += 1
@@ -2103,7 +2130,7 @@ def add_bass_switch_tracks(st):
     names = [n if n != main['inst'] else spare.pop(0) for n in names]   # every voice a different timbre
     for i, inst in enumerate(names):
         st['tracks'].append(dict(name=f'bass_{"bcd"[i]}', layer='bass', inst=inst, pan=0.0, rev=0.0, dly=0.0,
-                                 sc=main.get('sc') or 0.0, db=main.get('db'), hp=None, drive=None,
+                                 sc=main.get('sc') or 0.0, db=st.get('switch_db', main.get('db')), hp=None, drive=None,
                                  p={'sub': 0.0} if inst == 'wobble' else {}, switch_of='bass'))
 
 

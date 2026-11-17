@@ -371,6 +371,8 @@ def meta():
                                                                          __import__('sgcore.drumkits', fromlist=['MENU']).MENU],
         window=load_settings().get('window', 'app'), genre_kits=__import__('sgcore.drumkits', fromlist=['GENRE_KIT']).GENRE_KIT, journey_presets=__import__('sgcore.journey', fromlist=['PRESETS']).PRESETS, journey_parts=[dict(id=n, name=l, layer=next(t['layer'] for t in STYLES['cinematic_journey']['tracks'] if t['name'] == n), inst=next(t['inst'] for t in STYLES['cinematic_journey']['tracks'] if t['name'] == n)) for n, l in __import__('sgcore.journey', fromlist=['PLAYERS']).PLAYERS], parts=[dict(id=p, name=PART_LABELS[p]) for p in FUSION_PARTS],
         labels={k: label(k) for k in STYLES},
+        drum_sounds=[dict(id=d, name=__import__('sgcore.api', fromlist=['DRUM_PART']).DRUM_PART.get(d, d.replace('_', ' ').capitalize()))
+                     for d in sorted(__import__('sgcore.instruments', fromlist=['DRUMS']).DRUMS)],
         traits_meta=[dict(id=k, name=lab, values=[v for v in vals if v not in __import__('sgcore.traits', fromlist=['x']).DESCRIPTIVE_VALUES.get(k, ())])
                      for k, (lab, vals) in __import__('sgcore.traits', fromlist=['x']).CATEGORIES.items()
                      if k not in __import__('sgcore.traits', fromlist=['x']).DESCRIPTIVE],

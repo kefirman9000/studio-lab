@@ -552,6 +552,9 @@ class Renderer:
                 buf = hp(buf, tcfg['hp']).astype(np.float32)
             if tcfg.get('lp'):                                # a muffled, felted tone
                 buf = lp(buf, tcfg['lp']).astype(np.float32)
+            if tcfg.get('presence'):                          # amp-style tone: scoop the boxy 400 Hz, push the 2.5 kHz bite
+                pr = float(tcfg['presence'])
+                buf = eq(eq(buf, 'peak', 400, 0.9, -0.6 * pr), 'peak', 2500, 0.8, pr).astype(np.float32)
             if tcfg['layer'] in ('chords', 'pad', 'arp'):
                 for s0, s1 in lpsweeps:
                     sweep_region(buf, s0, s1, 'lp', 250, 18000)

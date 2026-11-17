@@ -1,8 +1,8 @@
-# Studio Lab genres (208)
+# Studio Lab genres (211)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (109)
+## Electronic (111)
 
 ### House & Disco (21)
 
@@ -65,7 +65,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | UK Garage | `ukgarage` | 130-134 | UK garage / 2-step: skippy shuffled drums, organ stabs, vocal chops, sub bass |
 | UK bassline (140) | `bassline_140` | 136-142 | UK bassline (Northern / speed-garage style): a bouncy four-on-the-floor around 138-142 with shuffled garage hats, a warbling, organ-like wobble bass that bounces in octaves and talks between the kicks, bright stabs and a chopped vocal-style hook - cheeky, fast and built for the rave |
 
-### Drum & Bass, Breaks & Hard (13)
+### Drum & Bass, Breaks & Hard (15)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -80,6 +80,8 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Jump-up DnB | `jump_up` | 172-176 | Jump-up drum & bass: bouncy party two-step at 174 - a rubbery, talking mid-bass wobble riff that answers itself bar to bar over a sine sub, punchy breaks, short stabs and big drops; brighter and sillier than neurofunk |
 | Jungle | `jungle` | 160-172 | Jungle / breakbeat: chopped amen-style breaks, deep subs, rave stabs and dub pads |
 | Liquid DnB | `liquid_dnb` | 170-176 | Liquid drum & bass: rolling, swung two-step breaks at 174, warm melodic bass over a sine sub, Rhodes and jazzy 7th chords, lush pads, soulful leads |
+| Liquid DnB - dancefloor roller | `liquid_dancefloor` | 174-176 | Liquid drum & bass, dancefloor roller: a driving 175 BPM two-step with rolling ghost snares and shakers, a filtered reese mid-bass that trades with a deep clean sub every 4 bars, short brass and synth stabs, chopped piano chords, bleepy 16th arps and a funky lead line; a long drums-first DJ intro, two 64-bar drops in 16-bar phrases and a long DJ outro |
+| Liquid DnB - euphoric (piano & bleeps) | `liquid_euphoric` | 174-176 | Liquid drum & bass, euphoric: an uplifting 175 BPM two-step with rolling ghost snares, a bright piano playing a new chord every bar, lush strings, 16th-note bleeps and bloops on top and a big singing synth lead; a warm mid-bass pumping in 8ths with the sub arriving only for the drops; long keys intro and breakdown, two 64-bar drops with a switch-up every 16 bars, a DJ outro |
 | Neurofunk | `neurofunk` | 172-176 | Neurofunk: tight, technical two-step at 174, dark and mechanical - growls, reese and FM stabs trading every bar over a sine sub, cold stabs and sparse atmospheres |
 | Neurofunk (lighter) | `neurofunk_lite` | 172-176 | Neurofunk, lighter and more melodic: the tight 174 two-step and a dark reese, but with clearer chords, a pad underneath and a lead you can hum - less extreme sound design than full neurofunk |
 
@@ -163,15 +165,16 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hauntology II (sunlit tape) | `hauntology_sunlit` | 82-96 | Hauntology II - sunlit tape: warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
 | Hauntology III (dark film haze) | `hauntology_dark` | 64-80 | Hauntology III - dark film haze: slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
 
-## Classic (73)
+## Classic (74)
 
-### Rock & Metal (15)
+### Rock & Metal (16)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | 70s Soft Rock | `soft_rock` | 100-126 | 70s soft rock (California): steady groove, round melodic bass, strummed acoustic and clean electric guitars, Rhodes and organ, a smooth vocal-style lead |
 | 80s boogie rock | `boogie_rock` | 164-176 | Mid-80s boogie rock: a fast, bouncing two-beat shuffle around 170 driven by a cheerful combo-organ riff, clean chorused electric guitar licks, a pumping root-fifth bass and a big, roomy kit with a backbeat snare - feel-good and radio-bright |
 | 90s alt rock | `alt_rock_90s` | 104-132 | 90s alternative rock: jangly clean arpeggios in the verses, crunchy distorted power chords that explode in the choruses, an eighth-note pick bass, a big dry room kit - catchy, major-key and a little melancholy, mastered with 90s dynamics |
+| Boogie blues-rock (slide) | `boogie_blues_rock` | 95-125 | Boogie blues-rock (bar-band slide boogie): a heavy, swaggering shuffle around 95-125 BPM in E, G, A or D - the bass and a raunchy rhythm guitar locked on the boogie riff (root, third, fifth, sixth, flat seventh), a fat backbeat, a distorted slide guitar answering every line and taking a solo chorus, a honking tenor sax for another; 12-bar choruses at full tilt, dry and mid-heavy, ending on a hit |
 | Indie Rock | `indie_rock` | 108-140 | Indie rock: jangly clean guitars in 8ths, melodic bass, straight-ahead drums, a hooky guitar lead |
 | Jam Band | `jam_band` | 100-132 | Jam band / psychedelic Americana: noodling clean lead guitar, melodic wandering bass, organ, loose two-drummer groove, long improvised sections |
 | Jam-band rock (80s, upbeat) | `jam_rock_80s` | 108-126 | Jam-band rock (80s, upbeat sing-along): a bright, bouncing major-key groove from two drummers, chiming chorused rhythm guitar, a melodic bass that never sits still, 80s digital keys and organ, and a clean lead guitar that noodles around the tune - then stretches out in long solo jams |

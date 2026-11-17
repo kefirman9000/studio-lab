@@ -457,6 +457,34 @@ def test_surf_and_monster_theme():
     print('ok  surf rock feel, monster TV theme riff, pick / finger bass fall back to a bass (not a synth pluck)')
 
 
+def test_v144_drums_layers_new_genres():
+    """v1.44: editor drum swaps / kick off, no hit+swell layer flams, liquid DnB + boogie genres, UI parts panel."""
+    from sgcore.compose import Options, compose, attack_class
+    s = compose(Options(style='house', seed=4, instruments={'clap': 'rim', 'chat': 'shaker', 'kick': 'off'}))
+    tr = {t['name']: t for t in s['st']['tracks']}
+    assert tr['clap']['inst'] == 'rim' and tr['chat']['inst'] == 'shaker' and not any(e.track == 'kick' for e in s['events'])
+    for g in ('breakcore', 'dnb', 'pop', 'trance'):
+        for sd in range(1, 8):
+            s = compose(Options(style=g, seed=sd, variety=0.9))
+            tr = {t['name']: t for t in s['st']['tracks']}
+            for t in s['st']['tracks']:
+                if t.get('double_of') and t['layer'] in ('chords', 'arp'):
+                    assert attack_class(t['inst']) == attack_class(tr[t['double_of']]['inst']), (g, sd, t['inst'])
+    for g in ('liquid_euphoric', 'liquid_dancefloor'):
+        s = compose(Options(style=g, seed=3))
+        bars = sum(x['bars'] for x in s['sections'])
+        assert 200 <= bars <= 240 and 174 <= s['bpm'] <= 176, (g, bars)
+        assert not any(e.track.startswith('bass') for e in s['events'] if e.beat < s['sections'][1]['bar'] * 4)   # no bass in the intro
+    s = compose(Options(style='boogie_blues_rock', seed=1))
+    b = [e.midi for e in sorted((e for e in s['events'] if e.track == 'bass'), key=lambda e: e.beat)][:8]
+    assert [x - b[0] for x in b] == [0, 0, 4, 4, 7, 7, 9, 9], b                 # the boogie riff climbs root-3-5-6
+    assert s['key'].root in (4, 7, 9, 2)
+    ui = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'sgcore', 'ui.html'), encoding='utf-8').read()
+    assert ui.index('<summary>Basics</summary>') > ui.index('<summary>Mix &amp; master</summary>')
+    assert 'volHtml(r)' in ui and 'id="levels"' not in ui and 'id="edKit"' in ui
+    print('ok  editor drum swaps, no flam layers, liquid DnB x2, boogie riff + keys, unified parts panel')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -477,6 +505,7 @@ def main():
     test_traits_and_review()
     test_rotation_keeps_genre_sound()
     test_surf_and_monster_theme()
+    test_v144_drums_layers_new_genres()
     print('all good')
 
 

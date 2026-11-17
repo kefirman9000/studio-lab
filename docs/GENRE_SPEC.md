@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (208 genres)
+# Studio Lab - technical genre rules (211 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -1785,6 +1785,66 @@ Neurofunk, lighter and more melodic: the tight 174 two-step and a dark reese, bu
 - **Mix** {'lufs': -8.0, 'air': 1.8, 'low': 1.6, 'drive': 0.15} · reverb 2.0 · sc_depth 0.55
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'sub_layer': True}
 - **Sound brief** Reese mid-bass over a mono sub; tight punchy breaks; cold stab chords; a soft pad and a simple synth lead
+
+### Liquid DnB - euphoric (piano & bleeps) (`liquid_euphoric`)
+
+Liquid drum & bass, euphoric: an uplifting 175 BPM two-step with rolling ghost snares, a bright piano playing a new chord every bar, lush strings, 16th-note bleeps and bloops on top and a big singing synth lead; a warm mid-bass pumping in 8ths with the sub arriving only for the drops; long keys intro and breakdown, two 64-bar drops with a switch-up every 16 bars, a DJ outro
+
+- **Tempo** 174-176 BPM · **scales** major, minor · swing 0.52 (unit 16) · humanise 0.002
+- **Progressions** {'major': [[5, 3, 0, 4], [0, 4, 5, 3], [3, 4, 5, 0], [5, 4, 3, 4], [3, 0, 4, 5]], 'minor': [[0, 5, 2, 6], [5, 6, 0, 0], [0, 6, 5, 6], [3, 4, 0, 5]]} · chord_bars 1 · chord size 4
+- **Song form** `liquid_euphoric`: intro 16 [chords, kick, snare, top] (filter_in) -> break 16 [arp, chords, lead, pad] (alt) -> build 8 [arp, chords, pad, snare, top] (build) -> drop 16 [bass, chords, kick, lead, pad, snare, top] (drop) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (var=1) -> drop 16 [arp, bass, chords, kick, pad, snare, top] (alt) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> break 24 [arp, chords, lead, pad] (alt) -> build 8 [arp, chords, pad, snare, top] (build) -> drop 16 [bass, chords, kick, lead, pad, snare, top] (drop) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (var=1) -> drop 16 [arp, bass, chords, kick, pad, snare, top] (alt) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 16 [bass, kick, snare, top] (fade) · form_scale 1
+- **Drums** **kick** `X.........X.....` / `X.........X..x..` / `X.x.......X.....`; **snare** `....X.......X...` / `..x.X...x.x.X..o` / `....X..x.o..X...`; **chat** `x.x.x.x.x.x.x.x.` / `x.xxx.x.x.xxx.x.`; **shaker** `xxxxxxxxxxxxxxxx`; **ride** `x...x...x...x...`
+- **Drum kit** think · preset `punchy`
+- **Bass** `R.R.R.R.R.R.R.R.` / `R..R..R.R..R..R.` / `R-R-R-.RR-R-R-.R` / `R---R-R-R---R-R-` · mode `pattern` · lowest note 28
+- **Chord rhythm** `x-------x-------` / `x..x..x...x..x..` / `x---x---x---x---` / `..x...x...x...x.`
+- **Arp** {'rate': 1, 'mode': 'random', 'oct': 6, 'prob': 0.55}
+- **Lead rhythm** `x---x-x-x-------` / `x-x-x---x-x-x---` / `x-------x---x-x-` / `..x-x-x-x---x---`
+- **Build-ups** default `roll` · choices ['roll', 'hats', 'drumless', 'wash']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `sectional` · culture `uk_soundsystem` · texture `club_punchy` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -12 dB
+  - snare (snare): `snare` -15 dB · rev=0.25
+  - chat (top): `chat` -22 dB · pan=0.2
+  - shaker (top): `shaker` -27 dB · pan=-0.25
+  - ride (top): `ride` -31 dB · pan=0.3
+  - bass (bass): `moogbass` -10 dB · sc=0.8 · alternatives ['reese', 'fmbass', 'sawbass']
+  - chords (chords): `piano` -25 dB · rev=0.35 · sc=0.5 · alternatives ['epiano', 'm1piano', 'polysynth']
+  - pad (pad): `strings` -28 dB · rev=0.5 · sc=0.7 · alternatives ['warmpad', 'glasspad', 'solina']
+  - arp (arp): `chip` -27 dB · pan=0.3 · rev=0.3 · dly=0.35 · sc=0.4 · alternatives ['pluck', 'bell', 'pluck_saw']
+  - lead (lead): `supersaw_lead` -21 dB · rev=0.4 · dly=0.3 · sc=0.4 · alternatives ['leadsaw', 'softlead', 'pluck_saw']
+- **Mix** {'lufs': -8.0, 'air': 1.8, 'low': 1.4, 'max_gr': 6.0} · reverb 2.4 · sc_depth 0.5
+- **Other rules** {'sc_release': 0.3, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.85, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'sub_layer': True, 'repetition': 0.8}
+- **Sound brief** Bright piano (chords every bar, offbeat stabs); string section / string pad; 16th-note square or pluck bleeps; singing saw lead; warm mid-bass pumping in 8ths + mono sine sub in the drops; crisp two-step breaks with ghost snares, 16th shaker, ride
+
+### Liquid DnB - dancefloor roller (`liquid_dancefloor`)
+
+Liquid drum & bass, dancefloor roller: a driving 175 BPM two-step with rolling ghost snares and shakers, a filtered reese mid-bass that trades with a deep clean sub every 4 bars, short brass and synth stabs, chopped piano chords, bleepy 16th arps and a funky lead line; a long drums-first DJ intro, two 64-bar drops in 16-bar phrases and a long DJ outro
+
+- **Tempo** 174-176 BPM · **scales** minor, dorian · swing 0.52 (unit 16) · humanise 0.002
+- **Progressions** {'minor': [[0, 5, 2, 6], [0, 6, 5, 6], [0, 3, 6, 5], [5, 6, 0, 0]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 4]]} · chord_bars 1 · chord size 4
+- **Song form** `liquid_dancefloor`: intro 32 [chords, kick, snare, top] (filter_in) -> build 8 [arp, chords, snare, top] (build) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> drop 16 [arp, bass, chords, kick, snare, top] (var=1) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> drop 16 [bass, chords, kick, pad, snare, top] (crash) -> break 16 [arp, chords, pad] (alt) -> build 8 [arp, chords, snare, top] (build) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> drop 16 [arp, bass, chords, kick, snare, top] (var=1) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> drop 16 [bass, chords, kick, pad, snare, top] (crash) -> outro 32 [bass, kick, snare, top] (fade) · form_scale 1
+- **Drums** **kick** `X.........X.....` / `X.........X..x..` / `X.x.......X.....`; **snare** `....X.......X...` / `..x.X...x.x.X..o` / `....X..x.o..X...`; **chat** `x.x.x.x.x.x.x.x.` / `x.xxx.x.x.xxx.x.`; **shaker** `xxxxxxxxxxxxxxxx`; **ride** `x...x...x...x...`
+- **Drum kit** think · preset `punchy`
+- **Bass** `R.R.R.R.R.R.R.R.` / `R..R..R.R..R..R.` / `R-.RR-.RR-.RR-.R` / `R-R-..R-R-R-..R-` · mode `pattern` · lowest note 28
+- **Chord rhythm** `x..x..x...x..x..` / `..x...x...x...x.` / `x---....x---....`
+- **Arp** {'rate': 1, 'mode': 'random', 'oct': 6, 'prob': 0.5}
+- **Lead rhythm** `x.x.....x.x.....` / `x...x.x.x.......` / `..x.x...x.x.x...`
+- **Build-ups** default `roll` · choices ['roll', 'hats', 'drumless', 'halftime']
+- **Traits** arrangement `switchup_heavy` · density `medium` · feel `tight_swing` · melody `minimal_motivic` · bass `wobble_modulated` · drop `long_build` · variation `switchup` · culture `uk_soundsystem` · texture `club_punchy` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `sudden_contrasts`
+- **Instruments**
+  - kick (kick): `kick` -12 dB
+  - snare (snare): `snare` -15 dB · rev=0.2
+  - chat (top): `chat` -22 dB · pan=0.2
+  - shaker (top): `shaker` -27 dB · pan=-0.25
+  - ride (top): `ride` -31 dB · pan=0.3
+  - bass (bass): `reese` -10 dB · sc=0.8 · alternatives ['moogbass', 'fmbass', 'growl']
+  - chords (chords): `synthbrass` -23 dB · rev=0.3 · sc=0.5 · alternatives ['piano', 'stab', 'brass']
+  - pad (pad): `warmpad` -26 dB · rev=0.45 · sc=0.7 · alternatives ['strings', 'glasspad']
+  - arp (arp): `chip` -27 dB · pan=0.3 · rev=0.25 · dly=0.3 · sc=0.4 · alternatives ['pluck', 'bell']
+  - lead (lead): `pluck_saw` -20 dB · rev=0.3 · dly=0.25 · sc=0.4 · alternatives ['leadsaw', 'guitar', 'softlead']
+- **Mix** {'lufs': -7.5, 'air': 1.6, 'low': 1.5, 'max_gr': 6.0} · reverb 1.9 · sc_depth 0.55
+- **Other rules** {'sc_release': 0.28, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.8, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'sub_layer': True, 'bass_switch': ['sinebass'], 'switch_bars': 4, 'switch_db': -16, 'repetition': 0.85}
+- **Sound brief** Filtered reese mid-bass (8ths, 3-3-2) trading with a clean sine sub every 4 bars; brass / synth-brass stabs; chopped piano; 16th square bleeps; funky synth or guitar lead; crisp rolling two-step breaks
 
 ## Hip-Hop, Trap & Phonk
 
@@ -3688,6 +3748,35 @@ Spooky surf - 60s monster-sitcom theme: a driving 150 BPM surf beat under a low,
 - **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 1.5, 'width': 1.0} · reverb 2.2 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_fx_sounds': True, 'spring': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'riff_locked': True, 'section_progs': {'verse': [0, 0, 0, 0], 'main': [0, 0, 5, 4], 'alt': [2, 6, 5, 2]}, 'repetition': 0.85}
 - **Sound brief** Twangy baritone / six-string guitar doubling the bass on a low chromatic riff (spring reverb); electric bass; brass section stabs; trumpet melody for the bridge; sax section; driving surf drums with ride
+
+### Boogie blues-rock (slide) (`boogie_blues_rock`)
+
+Boogie blues-rock (bar-band slide boogie): a heavy, swaggering shuffle around 95-125 BPM in E, G, A or D - the bass and a raunchy rhythm guitar locked on the boogie riff (root, third, fifth, sixth, flat seventh), a fat backbeat, a distorted slide guitar answering every line and taking a solo chorus, a honking tenor sax for another; 12-bar choruses at full tilt, dry and mid-heavy, ending on a hit
+
+- **Tempo** 95-125 BPM · **scales** mixolydian · swing 0.62 (unit 8) · humanise 0.008
+- **Progressions** [[0, 0, 0, 0, 3, 3, 0, 0, 4, 3, 0, 4], [0, 3, 0, 0, 3, 3, 0, 0, 4, 3, 0, 4], [0, 0, 0, 0, 3, 3, 0, 0, 4, 4, 0, 4]] · chord_bars 1 · chord size 3
+- **Song form** `boogie`: intro 4 [bass, top] -> verse 12 [bass, chords, kick, snare, top] (crash) -> verse 12 [bass, chords, kick, lead, snare, top] -> solo 12 [bass, chords, kick, lead, snare, top] (alt) -> verse 12 [bass, chords, kick, lead, snare, top] (crash) -> verse 12 [bass, chords, kick, snare, top] -> solo 12 [bass, chords, kick, lead, snare, top] (alt) -> verse 12 [bass, chords, kick, lead, snare, top] (crash) -> outro 12 [bass, chords, kick, lead, snare, top] · form_scale 1
+- **Drums** **kick** `X.......X.......` / `X.....X.X.......`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`; **ride** `x.x.x.x.x.x.x.x.`
+- **Drum kit** rock · preset `acoustic`
+- **Bass** `R.R.3.3.5.5.6.6.` / `7.7.6.6.5.5.3.3.` · mode `pattern` · lowest note 28
+- **Chord rhythm** `....x.......x...` / `x.x.x.x.x.x.x.x.` / `....x..x....x...`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 4, 'prob': 0.5}
+- **Lead rhythm** `x-x-x---x-x-----` / `....x-x-x-x-x---` / `x---x-x-x-------` / `x.x.x.x.x---x---`
+- **Build-ups** default `(category default)` · choices ['pickup', 'stops'] · transitions ['crash', 'none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `live_drums` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `triplet_feel` · harmony `modal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -16 dB
+  - snare (snare): `snare` -15 dB · rev=0.2
+  - chat (top): `chat` -26 dB
+  - ride (top): `ride` -29 dB
+  - bass (bass): `ebass` -12 dB · alternatives ['sf:pickbass', 'sf:fingerbass']
+  - riff (bass): `guitar` -19 dB · pan=-0.3 · rev=0.15
+  - chords (chords): `guitar` -16 dB · pan=0.3 · rev=0.15 · alternatives ['sf:odguitar', 'sf:distguitar']
+  - lead (lead): `guitar` -14 dB · rev=0.3 · alternatives ['sf:odguitar', 'harmonica', 'sax']
+  - solo_sax (lead): `sax` -17 dB · rev=0.3
+- **Mix** {'lufs': -11.0, 'air': 0.0, 'low': 0.8} · reverb 1.4 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.75, 'chord_center': 52, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 4, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'roots': [4, 7, 9, 2], 'slides': 0.55, 'no_rotation': True, 'own_progs': True, 'riff_locked': True, 'bass_cycle': True, 'repetition': 0.75, 'solos': ['solo_sax']}
+- **Sound brief** Distorted slide guitar (open E / open G, bottleneck); overdriven rhythm guitar on the boogie riff; electric bass doubling it; tenor sax; straight-ahead rock kit with a heavy shuffle
 
 ## Pop & Indie
 

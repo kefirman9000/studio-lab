@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.44.0
+- **The song editor can change drums.**
+  - A **Drum kit** menu swaps the whole kit.
+  - Every drum part has its own sound menu (a different snare, a rim or clap instead, a shaker for the hats ...) and can be switched off, the main kick and snare included. Before, drums only had a "playing" tick box, and the main kick / snare couldn't be changed at all.
+- **Fix: the "1-2" flam on pads.** A struck instrument (piano, e-piano, guitar) was sometimes layered with a swelling one (string machine, supersaw, strings) on the same chords. The struck note landed on the beat and the swell peaked a 16th later, which you heard as a doubled, slightly late hit.
+  - Layering now only pairs sounds of the same kind.
+  - A pad under struck chords swells in slowly instead of landing late.
+- **Two new liquid drum & bass genres**, modelled on nine of your liquid DnB reference tracks, analysed bar by bar.
+  - **The shape:** a 16-32 bar intro, a short build, ~64-bar drops in 16-bar phrases with a switch-up at each phrase end, a beatless keys breakdown, a second drop and a DJ outro.
+  - **The details:** the sub only arrives in the drops, the mid-bass pumps in 8ths and 3-3-2 figures, the chords change every bar, and there are rolling ghost-snare two-step breaks and 16th-note bleeps.
+  - **Liquid DnB - euphoric (piano & bleeps):** major keys, bright piano, strings and a singing lead.
+  - **Liquid DnB - dancefloor roller:** minor keys, a reese that trades with a clean sub every 4 bars, brass stabs.
+  - **Mastering:** both are mastered louder, like the records.
+- New genre **Boogie blues-rock (slide)**, from your four bar-band boogie references.
+  - **The feel:** a heavy 0.62 shuffle at 95-125 BPM in E, G, A or D (open-tuning keys), with 12-bar choruses.
+  - **The riff:** the bass and an overdriven rhythm guitar lock on the boogie riff, climbing root-3-5-6 in one bar and coming back down from the flat 7th in the next.
+  - **The solos:** a distorted slide guitar answers and takes a solo chorus, and a tenor sax takes another. The mix is dry and mid-heavy, and the song ends on a hit.
+- **Interface tidy-up.**
+  - **Parts** (was Sound) puts every part's sound, 🎲, mute and **volume** on one row, and the drums the same way (kit, my samples, per-drum mutes, drum volume). The separate "Part levels" block is gone, and **↺ Volumes** resets them.
+  - A new **Arrangement** card takes build-ups, build style, transition FX, instrument rotation, counter-melody, layered sounds and ending out of the crowded Feel card.
+  - **Basics** (tempo, seed, key, scale, length, structure, reference, chords) moved to the bottom, above the Preview buttons.
+- New genre building blocks: `bass_cycle` (bass patterns bar by bar), boogie bass notes (`3` `5` `6` `7`), `roots` (allowed keys), a per-part `presence` EQ (amp-style scoop and bite), `switch_db`, and a per-genre limiter allowance (`max_gr`).
+
 ## 1.43.3
 - **Band genres sound like a band at transitions.**
   - Rock, jazz, swing, funk, Latin, country, folk, blues, soul and gospel, world, and the acoustic side of pop no longer get studio transition FX: reverse-cymbal "tssss" swells, cymbal-roll swells, risers, noise washes, tape stops, impacts or filter sweeps. Their transitions are the band's own: fills, stops and a crash on the downbeat.
