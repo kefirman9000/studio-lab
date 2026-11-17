@@ -62,6 +62,7 @@ class Options:
     melody_style: str = None      # None = genre default | diatonic | pentatonic | blues | bebop
     voicing: str = None           # None = genre default | close | open | drop2 | rootless | power
     chord_color: str = None       # None = varies per song | triad | 7 | add9 | 9 | 6 | sus2 | sus4
+    octaves: dict = None          # part (role like 'lead' or a track name) -> octaves up (+) / down (-)
     traits: dict = None           # genre-trait overrides {category: value} (see sgcore/traits.py); {'_surprise': True} = random
     part_levels: dict = field(default_factory=dict)   # layer -> dB offset (-12..+6), e.g. {'lead': -3}
     part_fx: dict = field(default_factory=dict)       # layer -> effect plugin name (e.g. {'lead': 'ValhallaSupermassive'})
@@ -1325,7 +1326,7 @@ def compose(opts):
             if b % cb == 0 and sname_style in COLOR_HARMONY and nxt != chord and st.get('voicing') != 'power' and S < 0.3:
                 third = (key.deg(chord + 2, 4) - key.deg(chord, 4)) % 12
                 pc3 = key.deg(chord + 2, 4) % 12
-                pcol = 0.12 + 0.3 * cx
+                pcol = 0.12 + 0.3 * cx + float(st.get('colour_boost') or 0)   # film-score genres colour more
                 if (chord - nxt) % 7 == 4 and third == 3 and rnd_hc.random() < pcol + (0.35 if nxt == 0 else 0):
                     harm_alts.append((beat0, beat0 + 4 * cb, pc3, (pc3 + 1) % 12))      # V/x: its 3rd goes up
                 elif key.scale_name == 'major' and chord == 3 and nxt == 0 and third == 4 and rnd_hc.random() < pcol:
@@ -1542,6 +1543,9 @@ def compose(opts):
         chop_samples(evs, tracks, random.Random(opts.seed * 53 + 1))
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
+    if not st.get('composer'):
+        fit_registers(evs, tracks)                        # each part in its instrument's sweet spot
+    apply_octaves(evs, tracks, getattr(opts, 'octaves', None))
     for sec in sections:                                  # bass-warp switch-ups: the 808 jumps up, the sub drops out
         bm = sec['opts'].get('bass_mod')                     # ... or a whole section of distorted, growling 808
         if bm and str(tracks.get('bass', {}).get('inst', '')).endswith('808'):
@@ -1593,7 +1597,7 @@ COLOR_HARMONY = {
     'cinematic', 'orchestral', 'film_piano', 'adventure', 'tension', 'neoclassical', 'chamber', 'baroque', 'fantasy_rpg',
     'waltz', 'synthpop', 'eurodance', 'future_bass', 'progressive_house', 'trance', 'downtempo', 'vaporwave', 'lofi', 'boombap',
     'hybrid_trailer', 'orchestral_hiphop', 'teen_pop', 'soft_rock', 'luxury_rap', 'uplifting_trance', 'gospel', 'rnb', 'motown', 'swing', 'country', 'tango', 'salsa', 'kpop', 'ska',
-    'indie_rock', 'bluegrass'}
+    'indie_rock', 'bluegrass', 'christmas_joyful', 'christmas_mischief', 'christmas_magic'}
 # how often the bass steps into the next chord on the last beat (styles with a moving, song-like bass)
 BASS_PASS = {'pop': 0.35, 'folk': 0.5, 'holiday': 0.5, 'western': 0.45, 'chamber_pop': 0.45, 'baroque': 0.6, 'chamber': 0.55,
              'neoclassical': 0.3, 'orchestral': 0.4, 'film_piano': 0.3, 'fantasy_rpg': 0.4, 'adventure': 0.3, 'reggae': 0.3,
@@ -2054,6 +2058,68 @@ def natural_band(st):
         return group_of(name) in NATURAL_GROUPS
     except Exception:
         return False
+
+
+# where each melodic instrument sounds best: the middle of a part is kept inside this window (MIDI notes), else the
+# part moves by whole octaves (a brass lead squealing around A5 drops to A4; a flute line down in the mud goes up)
+INST_RANGE = {
+    'piano': (40, 91), 'm1piano': (45, 88), 'epiano': (45, 84), 'wurli': (45, 84), 'organ': (43, 79), 'clav': (48, 79),
+    'harpsichord': (45, 84), 'guitar': (45, 84), 'acguitar': (45, 81), 'nylon': (45, 81), 'twang': (40, 79),
+    'mutedgtr': (40, 67), 'cleanguitar': (45, 84), 'jazzguitar': (45, 81), 'odguitar': (40, 84), 'distguitar': (40, 84),
+    'sax': (50, 80), 'tenorsax': (46, 72), 'altosax': (53, 78), 'sopranosax': (58, 84), 'sopsax': (58, 84),
+    'brass': (52, 77), 'trumpet': (55, 79), 'mutedtrumpet': (55, 79), 'trumpetsection': (55, 79), 'trombone': (40, 67),
+    'horn': (43, 70), 'tuba': (28, 53), 'synthbrass': (50, 79),
+    'flute': (62, 89), 'piccolo': (74, 98), 'clarinet': (52, 82), 'oboe': (60, 84), 'bassoon': (36, 63),
+    'violin': (57, 88), 'viola': (50, 77), 'cello': (38, 69), 'contrabass': (28, 55),
+    'harmonica': (55, 81), 'accordion': (50, 79), 'vox': (52, 79), 'choir': (48, 76),
+    'celesta': (64, 100), 'bell': (64, 96), 'vibes': (55, 86), 'marimba': (48, 84), 'kalimba': (60, 86), 'harp': (40, 91),
+    'leadsaw': (52, 84), 'softlead': (55, 84), 'supersaw_lead': (55, 86), 'pluck': (52, 86), 'pluck_saw': (52, 86),
+    'chip': (55, 91), 'hoover': (48, 79), 'stab': (48, 84),
+}
+
+
+def fit_registers(evs, tracks):
+    """Keep every melodic part (lead, arp, chords, pad) in its instrument's comfortable register: if the middle of the
+    part sits above / below the instrument's window, the whole part moves by octaves (the melody keeps its shape)."""
+    by = {}
+    for e in evs:
+        t = tracks.get(e.track)
+        if t and t.get('layer') in ('lead', 'arp', 'chords', 'pad') and e.midi is not None:
+            by.setdefault(e.track, []).append(e)
+    for name, es in by.items():
+        rng = INST_RANGE.get(str(tracks[name].get('inst', '')).split(':', 1)[-1])
+        if not rng:
+            continue
+        mid = sorted(e.midi for e in es)[len(es) // 2]
+        k = 0
+        while mid + k > rng[1] and k > -36:
+            k -= 12
+        while mid + k < rng[0] and k < 36:
+            k += 12
+        if k:
+            for e in es:
+                e.midi += k
+                if e.glide is not None:
+                    e.glide += k
+
+
+def apply_octaves(evs, tracks, octs):
+    """Your octave choices: {'lead': -1, 'chords': 1, 'pad_sw1': -1 ...} - a part name wins over its role."""
+    if not octs:
+        return
+    for e in evs:
+        t = tracks.get(e.track)
+        if not t or e.midi is None or t.get('layer') in ('kick', 'snare', 'top', 'fx'):
+            continue
+        k = octs.get(e.track, octs.get(t.get('layer'), 0))
+        try:
+            k = max(-3, min(3, int(k)))
+        except (TypeError, ValueError):
+            k = 0
+        if k:
+            e.midi += 12 * k
+            if e.glide is not None:
+                e.glide += 12 * k
 
 
 def inst_family(inst):

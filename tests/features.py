@@ -532,10 +532,30 @@ def test_christmas_orchestral():
     assert lv[0] < 0.4 and max(lv) >= 0.95                                   # hushed start, full-orchestra finish
     assert {'glock', 'sleigh', 'horns'} <= {e.track for e in j['events']}
     m = compose(Options(style='christmas_mischief', seed=3))
-    assert 128 <= m['bpm'] <= 140 and 3 in m['key'].scale             # a minor third: minor / harmonic minor
+    assert 128 <= m['bpm'] <= 154 and 3 in m['key'].scale             # a minor third: minor / harmonic minor
     sneak = next(x for x in m['sections'] if x['name'] == 'sneak')
     assert sneak['opts']['level'] < 0.5 and 'kick' not in sneak['layers']
     print('ok  Christmas orchestral: joyful 3/4 carol + key change, mischief chase with a sneaky break')
+
+
+def test_octaves_and_ranges():
+    """v1.46: every melodic part is kept in its instrument's sweet spot, and each part can be moved by octaves."""
+    from sgcore.compose import Options, compose, INST_RANGE
+    def med(s, n):
+        m = sorted(e.midi for e in s['events'] if e.track == n and e.midi is not None)
+        return m[len(m) // 2] if m else None
+    s = compose(Options(style='swing', seed=773040))                       # the squealing big-band lead
+    inst = s['st']['tracks'][[t['name'] for t in s['st']['tracks']].index('lead')]['inst'].split(':')[-1]
+    lo, hi = INST_RANGE[inst]
+    assert lo <= med(s, 'lead') <= hi, (inst, med(s, 'lead'))
+    a = compose(Options(style='swing', seed=773040, octaves={'lead': -1, 'chords': 1}))
+    assert med(a, 'lead') == med(s, 'lead') - 12 and med(a, 'chords') == med(s, 'chords') + 12
+    assert med(a, 'bass') == med(s, 'bass')                                   # other parts untouched
+    m = compose(Options(style='christmas_magic', seed=4))
+    assert {'flute', 'vibes', 'bass_cb'} <= {e.track for e in m['events']} and m['harm_alts'] >= 1
+    ui = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'sgcore', 'ui.html'), encoding='utf-8').read()
+    assert 'octHtml(r,' in ui and 'data-edoct' in ui
+    print('ok  instrument sweet-spot registers, per-part octave choices (panel + editor), magical Christmas genre')
 
 
 def main():
@@ -561,6 +581,7 @@ def main():
     test_v144_drums_layers_new_genres()
     test_bass_warp_trap()
     test_christmas_orchestral()
+    test_octaves_and_ranges()
     print('all good')
 
 

@@ -6679,7 +6679,8 @@ style('christmas_joyful', 'Orchestral',
       'chorus by chorus, changes key up for the last chorus and ends on a big held chord',
       meter='3/4', bpm=(120, 152), scales=['major'], human=0.012, form='christmas_joy', form_scale=1.6, reverb=3.4,
       key_change=True, no_rotation=True, no_layers=True,
-      progs={'major': [[0, 3, 4, 0], [0, 5, 1, 4], [0, 3, 0, 4], [3, 4, 2, 5], [0, 4, 5, 3]]},
+      progs={'major': [[0, 3, 4, 0], [0, 5, 1, 4], [0, 3, 0, 4], [3, 4, 2, 5], [0, 4, 5, 3], [0, 0, 3, 0], [0, 4, 3, 0], [0, 5, 2, 3]]},
+      colour_boost=0.25,
       chord_size=3, chord_bars=1, drums={'timp': ['X...........', 'X.....X.....'], 'sleigh': ['x.x.x.x.x.x.', 'xxxxxxxxxxxx']},
       kick_track='timp', snare_tracks=[],
       bass=['R.....F.....', 'R...........', 'R.....O.....'], bass_lo=33, bass_gate=0.55,
@@ -6719,7 +6720,7 @@ style('christmas_mischief', 'Orchestral',
       'staccato low-string ostinato, stabbing strings, blasting horns and brass, chromatic woodwind scurries, a sneaky '
       'celesta / flute motif, snare, timpani and sleigh bells driving 8ths; it gathers pace, explodes into the chase, '
       'tiptoes through a quiet sneaky break, and ends on a low unison hit',
-      bpm=(128, 140), scales=['minor', 'harmonic_minor'], human=0.008, form='christmas_trap', form_scale=1, reverb=2.8,
+      bpm=(128, 154), scales=['minor', 'harmonic_minor'], human=0.008, form='christmas_trap', colour_boost=0.15, form_scale=1, reverb=2.8,
       no_rotation=True, no_layers=True, fill=True,
       progs={'minor': [[0, 0, 5, 4], [0, 1, 0, 4], [0, 3, 4, 0], [0, 5, 1, 4]], 'harmonic_minor': [[0, 0, 4, 4], [0, 1, 4, 0]]},
       chord_size=3, chord_bars=1,
@@ -6750,6 +6751,54 @@ style('christmas_mischief', 'Orchestral',
                  arp=['clarinet', 'flute', 'oboe', 'celesta'],
                  lead=['flute', 'celesta', 'clarinet', 'oboe', 'horn']),
       label='Christmas orchestral - mischief')
+
+
+# magical / mysterious Christmas (from the user's MIDI of a family-Christmas sequel's opening titles + "the house" cue):
+# ~90-98 BPM, 4/4 with the odd 6/4 bar, D minor-ish with b6, iv, V7 and the Neapolitan bII; a celesta melody way up
+# (around F6) doubled by flutes, harp arpeggios and glissandi, vibraphone, soft piano, a string bed, soft sleigh bells
+# and a triangle - hushed, glittering, slightly eerie, swelling once before it fades back to the celesta
+FORMS['christmas_magic'] = [('intro', 4, {'arp', 'lead'}, {'level': 0.3}),
+                            ('A', 8, {'top', 'bass', 'arp', 'pad', 'lead'}, {'level': 0.45}),
+                            ('A', 8, {'top', 'bass', 'arp', 'pad', 'chords', 'lead'}, {'level': 0.55}),
+                            ('B', 8, {'top', 'bass', 'pad', 'chords', 'lead'}, {'alt': True, 'level': 0.5}),
+                            ('A', 8, {'kick', 'top', 'bass', 'arp', 'pad', 'chords', 'lead'}, {'level': 0.65, 'level_to': 0.9}),
+                            ('coda', 4, {'arp', 'lead', 'pad'}, {'fade': True, 'level': 0.45})]
+style('christmas_magic', 'Orchestral',
+      'Christmas orchestral, magical (family-film opening titles): a hushed, glittering cue around 95 BPM - a celesta '
+      'melody way up high doubled by flutes, rippling harp arpeggios and glissandi, vibraphone and soft piano, a warm '
+      'string bed, soft sleigh bells and a triangle; minor-key magic with the flat sixth, minor iv and a dark Neapolitan '
+      'chord, swelling once with timpani before fading back to the celesta',
+      bpm=(88, 100), scales=['harmonic_minor', 'minor', 'phrygian'], human=0.012, form='christmas_magic', form_scale=1.5,
+      reverb=4.0, no_rotation=True, no_layers=True, colour_boost=0.2, rubato=0.25,
+      progs={'harmonic_minor': [[0, 4, 0, 5], [0, 5, 3, 4], [0, 3, 4, 0], [5, 3, 4, 0]],
+             'minor': [[0, 5, 3, 6], [0, 5, 6, 4], [0, 3, 5, 4]], 'phrygian': [[0, 1, 0, 5], [0, 1, 5, 0]]},
+      chord_size=3, chord_bars=1,
+      drums={'timp': ['X...............', '................'], 'sleigh': ['x.x.x.x.x.x.x.x.', 'x...x...x...x...'], 'tri': ['x...............']},
+      kick_track='timp', snare_tracks=[],
+      bass=['R---------------', 'R-------F-------'], bass_lo=33,
+      chord_rh=['x---------------', 'x-------x-------', '..x...x...x...x.'], chord_center=62,
+      arp=dict(rate=1, mode='updown', oct=5, prob=0.9),
+      lead_rh=['x-x-x-x-x---x---', 'x---x-x-x-------', 'x.x.x.x.x-------', '....x-x-x-x-x---'], lead_oct=6, repetition=0.8,
+      gm_hint='Celesta (melody, very high) + flutes doubling; harp arpeggios & glissandi; vibraphone; soft grand piano; '
+              'string pad (violins / violas / celli); bass clarinet / basses; soft sleigh bells, triangle, timpani swell',
+      tracks=[T('timp', 'kick', 'timp', rev=0.5, db=-27),
+              T('sleigh', 'top', 'sleigh', pan=0.3, rev=0.4, db=-33),
+              T('tri', 'top', 'crash', pan=-0.3, rev=0.5, db=-36),
+              T('bass', 'bass', 'cello', rev=0.45, db=-17, p=dict(a=0.08)),
+              T('bass_cb', 'bass', 'contrabass', double_of='bass', octave=-12, keep_inst=True, rev=0.45, db=-21),
+              T('chords', 'chords', 'piano', rev=0.5, db=-26, touch=0.6),
+              T('vibes', 'chords', 'vibes', double_of='chords', octave=12, keep_inst=True, rev=0.5, pan=0.25, db=-32),
+              T('pad', 'pad', 'strings', rev=0.55, db=-22),
+              T('arp', 'arp', 'harp', rev=0.5, pan=-0.25, db=-23),
+              T('lead', 'lead', 'celesta', rev=0.5, pan=0.1, db=-19),
+              T('flute', 'lead', 'flute', double_of='lead', octave=-12, keep_inst=True, rev=0.5, pan=-0.1, db=-24)],
+      master=dict(lufs=-18.0, air=0.8, low=0.5, gentle=True, max_gr=1.0),
+      pools=dict(bass=['cello', 'contrabass', 'bassoon'],
+                 chords=['piano', 'harp', 'vibes'],
+                 pad=['strings', 'choir', 'horn'],
+                 arp=['harp', 'celesta', 'vibes'],
+                 lead=['celesta', 'flute', 'vibes', 'oboe']),
+      label='Christmas orchestral - magical (celesta)')
 
 
 # ============================== rules applied to all the genres above ========================================

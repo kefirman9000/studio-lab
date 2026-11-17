@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (215 genres)
+# Studio Lab - technical genre rules (216 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -6018,7 +6018,7 @@ Fantasy RPG / video-game score: harp arpeggios, flute & oboe melody, warm string
 Christmas orchestral, joyful (family-film score): a lilting 3/4 carol for full orchestra - oom-pah cellos and basses, pizzicato and short strings on the off-beats, a soaring violin melody doubled by glockenspiel an octave up, celesta sparkle, a children's-choir pad with warm horns, sleigh bells and timpani; it starts hushed, swells chorus by chorus, changes key up for the last chorus and ends on a big held chord
 
 - **Tempo** 120-152 BPM · meter 3/4 · **scales** major · swing 0.5 (unit 16) · humanise 0.012
-- **Progressions** {'major': [[0, 3, 4, 0], [0, 5, 1, 4], [0, 3, 0, 4], [3, 4, 2, 5], [0, 4, 5, 3]]} · chord_bars 1 · chord size 3
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 5, 1, 4], [0, 3, 0, 4], [3, 4, 2, 5], [0, 4, 5, 3], [0, 0, 3, 0], [0, 4, 3, 0], [0, 5, 2, 3]]} · chord_bars 1 · chord size 3
 - **Song form** `christmas_joy`: intro 4 [arp, pad] (level=0.25) -> verse 16 [arp, bass, chords, kick, lead, top] (level=0.42) -> verse 16 [arp, bass, chords, kick, lead, pad, top] (level=0.55) -> bridge 8 [arp, bass, chords, lead] (alt, level=0.4) -> chorus 16 [arp, bass, chords, kick, lead, pad, top] (crash, level=0.7, level_to=0.88) -> chorus 16 [arp, bass, chords, kick, lead, pad, top] (crash, level=0.95, level_to=1.0) -> outro 4 [arp, bass, chords, kick, lead, pad] (level=1.0) · form_scale 1.6
 - **Drums** **timp** `X...........` / `X.....X.....`; **sleigh** `x.x.x.x.x.x.` / `xxxxxxxxxxxx`
 - **Drum kit** (synth preset) · preset `default`
@@ -6040,14 +6040,14 @@ Christmas orchestral, joyful (family-film score): a lilting 3/4 carol for full o
   - lead (lead): `violin` -19 dB · pan=0.1 · rev=0.45 · alternatives ['flute', 'horn', 'trumpet', 'oboe']
   - glock (lead): `celesta` -29 dB · pan=0.2 · rev=0.45
 - **Mix** {'lufs': -17.0, 'air': 0.4, 'low': 0.8, 'gentle': True, 'max_gr': 1.5} · reverb 3.4 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.55, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'key_change': True, 'no_rotation': True, 'no_layers': True, 'repetition': 0.8}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.55, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'key_change': True, 'no_rotation': True, 'no_layers': True, 'colour_boost': 0.25, 'repetition': 0.8}
 - **Sound brief** Violins (melody) doubled by glockenspiel 8va; pizzicato / short strings (pah-pah); celli + basses (oom); celesta; children's choir (aah); French horns; sleigh bells; timpani; a cymbal at the big moments
 
 ### Christmas orchestral - mischief (`christmas_mischief`)
 
 Christmas orchestral, mischief (family-film action cue): a driving 4/4 around 130-140 in a minor key - a staccato low-string ostinato, stabbing strings, blasting horns and brass, chromatic woodwind scurries, a sneaky celesta / flute motif, snare, timpani and sleigh bells driving 8ths; it gathers pace, explodes into the chase, tiptoes through a quiet sneaky break, and ends on a low unison hit
 
-- **Tempo** 128-140 BPM · **scales** minor, harmonic_minor · swing 0.5 (unit 16) · humanise 0.008
+- **Tempo** 128-154 BPM · **scales** minor, harmonic_minor · swing 0.5 (unit 16) · humanise 0.008
 - **Progressions** {'minor': [[0, 0, 5, 4], [0, 1, 0, 4], [0, 3, 4, 0], [0, 5, 1, 4]], 'harmonic_minor': [[0, 0, 4, 4], [0, 1, 4, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `christmas_trap`: intro 4 [bass, kick] (level=0.45) -> A 8 [bass, chords, kick, top] (level=0.6) -> A 8 [bass, chords, kick, lead, top] (level=0.68) -> B 8 [arp, bass, chords, kick, pad, snare, top] (alt, crash, level=0.78) -> build 8 [arp, bass, chords, kick, snare, top] (build, level=0.6, level_to=1.0) -> chase 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop, crash, level=1.0) -> sneak 8 [arp, bass, lead] (alt, level=0.32) -> chase 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop, crash, level=1.0) -> outro 4 [bass, chords, kick, pad] (level=1.0) · form_scale 1
 - **Drums** **timp** `X.......X.......` / `X.X.....X.X.....`; **snare** `....X.......X...` / `....x.x.X...x.xx` / `x.xxX.x.x.xxX.x.`; **sleigh** `x.x.x.x.x.x.x.x.`
@@ -6071,8 +6071,39 @@ Christmas orchestral, mischief (family-film action cue): a driving 4/4 around 13
   - lead (lead): `flute` -21 dB · pan=0.15 · rev=0.4 · alternatives ['celesta', 'clarinet', 'oboe', 'horn']
   - cel (lead): `celesta` -29 dB · pan=-0.15 · rev=0.4
 - **Mix** {'lufs': -16.0, 'air': 0.4, 'low': 1.0, 'gentle': True, 'max_gr': 2.0} · reverb 2.8 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.45, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'no_rotation': True, 'no_layers': True, 'repetition': 0.8}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.45, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'colour_boost': 0.15, 'no_rotation': True, 'no_layers': True, 'repetition': 0.8}
 - **Sound brief** Celli + basses spiccato ostinato; violins spiccato stabs; French horns + trombones (blasts); flute / clarinet chromatic runs; celesta + flute sneaky motif; orchestral snare, timpani, sleigh bells, cymbals
+
+### Christmas orchestral - magical (celesta) (`christmas_magic`)
+
+Christmas orchestral, magical (family-film opening titles): a hushed, glittering cue around 95 BPM - a celesta melody way up high doubled by flutes, rippling harp arpeggios and glissandi, vibraphone and soft piano, a warm string bed, soft sleigh bells and a triangle; minor-key magic with the flat sixth, minor iv and a dark Neapolitan chord, swelling once with timpani before fading back to the celesta
+
+- **Tempo** 88-100 BPM · **scales** harmonic_minor, minor, phrygian · swing 0.5 (unit 16) · humanise 0.012
+- **Progressions** {'harmonic_minor': [[0, 4, 0, 5], [0, 5, 3, 4], [0, 3, 4, 0], [5, 3, 4, 0]], 'minor': [[0, 5, 3, 6], [0, 5, 6, 4], [0, 3, 5, 4]], 'phrygian': [[0, 1, 0, 5], [0, 1, 5, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `christmas_magic`: intro 4 [arp, lead] (level=0.3) -> A 8 [arp, bass, lead, pad, top] (level=0.45) -> A 8 [arp, bass, chords, lead, pad, top] (level=0.55) -> B 8 [bass, chords, lead, pad, top] (alt, level=0.5) -> A 8 [arp, bass, chords, kick, lead, pad, top] (level=0.65, level_to=0.9) -> coda 4 [arp, lead, pad] (fade, level=0.45) · form_scale 1.5
+- **Drums** **timp** `X...............` / `................`; **sleigh** `x.x.x.x.x.x.x.x.` / `x...x...x...x...`; **tri** `x...............`
+- **Drum kit** (synth preset) · preset `default`
+- **Bass** `R---------------` / `R-------F-------` · mode `pattern` · lowest note 33
+- **Chord rhythm** `x---------------` / `x-------x-------` / `..x...x...x...x.`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.9}
+- **Lead rhythm** `x-x-x-x-x---x---` / `x---x-x-x-------` / `x.x.x.x.x-------` / `....x-x-x-x-x---`
+- **Build-ups** default `swell` · choices ['swell', 'cymbal', 'tomgroove', 'march', 'pickup', 'drumless', 'ride']
+- **Traits** arrangement `narrative` · density `medium` · feel `drifting` · melody `long_lyrical` · bass `rolling_groove` · drop `emotional_swell` · variation `theme_and_variations` · culture `cinematic_score` · texture `massive_reverb` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `emotional_arc`
+- **Instruments**
+  - timp (kick role - the genre's low drum): `timp` -27 dB · rev=0.5
+  - sleigh (top): `sleigh` -33 dB · pan=0.3 · rev=0.4
+  - tri (top): `crash` -36 dB · pan=-0.3 · rev=0.5
+  - bass (bass): `cello` -17 dB · rev=0.45 · alternatives ['contrabass', 'bassoon']
+  - bass_cb (bass): `contrabass` -21 dB · rev=0.45
+  - chords (chords): `piano` -26 dB · rev=0.5 · alternatives ['harp', 'vibes']
+  - vibes (chords): `vibes` -32 dB · pan=0.25 · rev=0.5
+  - pad (pad): `strings` -22 dB · rev=0.55 · alternatives ['choir', 'horn']
+  - arp (arp): `harp` -23 dB · pan=-0.25 · rev=0.5 · alternatives ['celesta', 'vibes']
+  - lead (lead): `celesta` -19 dB · pan=0.1 · rev=0.5 · alternatives ['flute', 'vibes', 'oboe']
+  - flute (lead): `flute` -24 dB · pan=-0.1 · rev=0.5
+- **Mix** {'lufs': -18.0, 'air': 0.8, 'low': 0.5, 'gentle': True, 'max_gr': 1.0} · reverb 4.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 6, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'no_rotation': True, 'no_layers': True, 'colour_boost': 0.2, 'rubato': 0.25, 'repetition': 0.8}
+- **Sound brief** Celesta (melody, very high) + flutes doubling; harp arpeggios & glissandi; vibraphone; soft grand piano; string pad (violins / violas / celli); bass clarinet / basses; soft sleigh bells, triangle, timpani swell
 
 ## Classical Eras
 

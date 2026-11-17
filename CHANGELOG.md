@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.46.0
+- **Parts no longer squeal too high.** Every melodic part (lead, arp, chords, pad) now stays in its instrument's comfortable range. If the middle of a part sits above or below its instrument's range, the whole part moves by octaves and keeps its shape. Ranges are set for 60+ instruments: sax, trumpet, brass, trombone, horn, flute, clarinet, oboe, violin, cello, guitars, pianos, mallets, synth leads and more. Example: your swing song's brass lead moved from around A5 down to A4.
+- **Octave control for every part.**
+  - **Parts panel:** each part has an "8ve" menu (-2 to +2) next to its volume.
+  - **Song editor:** every sound in the song has one too, including section switches and layers.
+  - **Saving:** it's saved with your settings (`octaves`).
+- New genre **Christmas orchestral - magical (celesta)**, from your MIDI of a family-Christmas sequel's opening titles.
+  - **The sound:** a hushed, glittering cue around 95 BPM. A celesta melody way up high doubled by flute, rippling harp, vibraphone and soft piano, low strings, soft sleigh bells, a triangle and one timpani swell.
+  - **The harmony:** minor-key magic with the flat sixth, minor iv and a dark Neapolitan chord.
+- **Christmas joyful / mischief** use the film-score harmony colour seen in your MIDIs: secondary dominants and the bittersweet borrowed minor iv. Mischief now reaches the flight cue's 154 BPM.
+
 ## 1.45.0
 - **Two Christmas film-score genres**, from four of your family-Christmas-movie score cues.
   - **Christmas orchestral - joyful:** a lilting 3/4 carol for full orchestra.

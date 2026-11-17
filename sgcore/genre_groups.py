@@ -45,7 +45,7 @@ GROUPS = {
         ('Solo Piano', ['piano_miniature']),
         ('Ambient & Experimental', ['field_ambient']),
         ('Fantasy & Games', ['fantasy_rpg']),
-        ('Christmas & Holiday', ['christmas_joyful', 'christmas_mischief']),
+        ('Christmas & Holiday', ['christmas_joyful', 'christmas_magic', 'christmas_mischief']),
         ('Classical Eras', ['baroque', 'baroque_organ', 'minuet', 'classical_period', 'waltz', 'romantic', 'impressionism', 'minimalism',
                             'neoclassical', 'chamber', 'orchestral']),
     ],

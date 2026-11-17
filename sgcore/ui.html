@@ -167,6 +167,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 .blend{margin-top:12px}
 ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#262b3a;border-radius:9px;border:3px solid transparent;background-clip:content-box}
 @media (max-width:1200px){main{grid-template-columns:270px 1fr}.col.r{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}}
+.octsel{width:auto!important;padding:1px 4px!important;font-size:11px!important;margin-left:6px;height:auto!important}
 .vol{display:inline-flex;align-items:center;gap:4px;margin-left:6px;font-weight:400}
 .vol input[type=range]{width:84px;height:14px;vertical-align:middle}
 .vol b{font-family:var(--mono);font-size:10.5px;min-width:38px;opacity:.75}
@@ -328,7 +329,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const LEVELS=[['drums','Drums',['kick','snare','top']],['bass','Bass',['bass']],['chords','Chords',['chords']],['pad','Pad',['pad']],['arp','Arp',['arp']],['lead','Lead',['lead']]];
-let META=null, state={closed:(()=>{try{return JSON.parse(localStorage.getItem('sl_closed')||'{}')}catch(_){return {}}})(), orch_plugin:(()=>{try{return !!localStorage.getItem('sl_orch_plugin')}catch(_){return false}})(), style:'house', part_fx:{}, levels:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
+let META=null, state={closed:(()=>{try{return JSON.parse(localStorage.getItem('sl_closed')||'{}')}catch(_){return {}}})(), orch_plugin:(()=>{try{return !!localStorage.getItem('sl_orch_plugin')}catch(_){return false}})(), style:'house', part_fx:{}, levels:{}, octaves:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
   muted:[], instruments:{}, blend_parts:{}, outputs:['mp3','midi','lmms','waveform']};
 const LAYERS=[['kick','Kick'],['snare','Snare/Clap'],['top','Hats & Perc'],['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead'],['fx','FX']];
 const OUTS=[['mp3','MP3'],['wav','WAV'],['midi','MIDI'],['stems','Stems'],['daw','DAW pack (Ableton, FL, Logic, Reaper)'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack']];
@@ -436,7 +437,7 @@ function renderSelected(){
     const fxs=(META.effects||[]);
     const mute=jParts?'':`<span class="auto" title="Switch this part off (e.g. no lead for an instrumental bed)"><input type="checkbox" data-mute="${r}" ${state.muted.includes(r)?'checked':''}>mute</span>`;
     const dice=pool.length>1?`<button class="ico" data-dice="${r}" title="Try another sound that suits this genre">🎲</button>`:'';
-    w.innerHTML=`<label>${label} ${dice} ${mute} ${jParts?'':volHtml(r)}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
+    w.innerHTML=`<label>${label} ${dice} ${mute} ${jParts?'':volHtml(r)} ${jParts?'':octHtml(r,(state.octaves||{})[r])}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
       (fxs.length&&!jParts?`<select class="fxsel" title="Run this part through one of your effect plugins"><option value="">no effect plugin</option>${fxs.map(f=>`<option ${state.part_fx[r]===f?'selected':''}>${esc(f)}</option>`).join('')}</select>`:'');
     w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else delete state.instruments[r]; };
     if(w.querySelector('[data-dice]')) w.querySelector('[data-dice]').onclick=e=>{ e.preventDefault(); const cur=state.instruments[r]||pool[0];
@@ -473,6 +474,7 @@ function renderSelected(){
   if($('#drumVol')) $('#drumVol').innerHTML=volHtml('drums');
   bindMutes();
   bindLevels();
+  bindOctaves();
 }
 function soundName(id){ for(const r of Object.keys(META.roles||{})){ const i=(META.roles[r]||[]).find(x=>x.id===id); if(i) return i.name; }
   return String(id).replace(/^sf:/,'').replace(/_/g,' ')+(String(id).startsWith('sf:')?' (recorded)':''); }
@@ -485,6 +487,11 @@ function rerollSounds(style, into){
 }
 function volHtml(k){ const v=(state.levels||{})[k]||0;
   return `<span class="vol" title="Volume of this part (dB, relative to the genre's own balance)"><input type="range" data-lv="${k}" min="-12" max="6" step="1" value="${v}"><b data-lvv="${k}">${v>0?'+':''}${v} dB</b></span>`; }
+function octHtml(k, cur, attr){ attr=attr||'data-oct'; cur=+cur||0;
+  return `<select class="octsel" ${attr}="${k}" title="Move this part up or down by octaves">`+[-2,-1,0,1,2].map(v=>`<option value="${v}" ${v===cur?'selected':''}>${v===0?'8ve ±0':(v>0?'8ve +'+v:'8ve '+v)}</option>`).join('')+'</select>'; }
+function bindOctaves(){ state.octaves=state.octaves||{};
+  $$('[data-oct]').forEach(e=>{ e.value=state.octaves[e.dataset.oct]||0;
+    e.onchange=()=>{ const v=+e.value; if(v) state.octaves[e.dataset.oct]=v; else delete state.octaves[e.dataset.oct]; }; }); }
 function bindLevels(){
   state.levels=state.levels||{};
   $$('[data-lv]').forEach(e=>{ const k=e.dataset.lv; e.value=state.levels[k]||0;
@@ -575,6 +582,7 @@ function options(){
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
   o.builds=$('#builds').value||'auto'; o.transition_fx=$('#transFx').value||'auto';
   { const tr=traitOpts(); if(tr) o.traits=tr; }
+  if(state.octaves && Object.keys(state.octaves).length) o.octaves=Object.assign({}, state.octaves);
   if($('#vinyl').value) o.vinyl=$('#vinyl').value==='on';
   if(state.orch_plugin) o.orch_plugin=true;
   if($('#songName').value.trim()) o.title=$('#songName').value.trim();
@@ -606,7 +614,7 @@ function applyOptions(o){
   $('#swingAuto').checked=o.swing==null; if(o.swing!=null)$('#swing').value=o.swing*100;
   $('#scAuto').checked=o.sidechain==null; if(o.sidechain!=null)$('#sidechain').value=o.sidechain*100;
   $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#userDrums').checked=!!o.user_drums;
-  $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#builds').value=o.builds||'auto'; renderTraits(); setTraits(o.traits); $('#transFx').value=o.transition_fx||'auto'; $('#vinyl').value=o.vinyl===true?'on':''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#vocalGuide').checked=!!o.vocal_guide;
+  $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#builds').value=o.builds||'auto'; renderTraits(); setTraits(o.traits); state.octaves=Object.assign({}, o.octaves||{}); bindOctaves(); $('#transFx').value=o.transition_fx||'auto'; $('#vinyl').value=o.vinyl===true?'on':''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#vocalGuide').checked=!!o.vocal_guide;
   $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';
   state.levels={}; LEVELS.forEach(([k,n,layers])=>{ const v=(o.part_levels||{})[layers[0]]||0; if(v) state.levels[k]=v; }); bindLevels();
   if(o.journey){ const j=o.journey; state.jOff=J_ACTS.map(a=>a[0]).filter(a=>j.acts&&!j.acts.includes(a)); $('#jPiano').value=(j.piano??.6)*100; $('#jRubato').value=(j.rubato??.5)*100;
@@ -905,7 +913,7 @@ function openEditor(r){
     <div id="edCard"></div>
     <h4 style="margin:14px 0 4px">Every sound in this song</h4>
     <div class="f" style="max-width:420px"><label><b>Drum kit</b> <span class="hint">the whole kit at once</span></label><select id="edKit"></select></div>
-    ${tracks.length?`<div class="sounds">${tracks.map(tr=>`<div class="snd"><label><b>${esc(tr.part)}</b></label><div class="s">${esc(tr.sound)} · ${tr.notes} notes</div>${soundSelect(tr, picks[tr.id])}</div>`).join('')}</div>`
+    ${tracks.length?`<div class="sounds">${tracks.map(tr=>`<div class="snd"><label><b>${esc(tr.part)}</b> ${tr.drum?'':octHtml(tr.id,(r.options&&r.options.octaves||{})[tr.id],'data-edoct')}</label><div class="s">${esc(tr.sound)} · ${tr.notes} notes</div>${soundSelect(tr, picks[tr.id])}</div>`).join('')}</div>`
       :'<div class="hint">This song was made with an older version - press Preview below once to list its sounds.</div>'}
     <div class="rr"><button class="btn s" data-e="roll" style="padding:7px 12px" title="Same song, new sounds picked from the genre's suggestions">🎲 Re-roll sounds</button><button class="btn s" data-e="prev" style="padding:7px 12px">▶ Preview with these sounds</button><button class="btn g" data-e="full" style="padding:7px 12px">⬇ Full song with these sounds</button><span class="hint" style="margin-left:8px">Same song, same notes - only the sounds you change are different.</span></div>`;
   if(r.urls&&(r.urls.mp3||r.urls.wav)){ addResult(Object.assign({}, r, {id:(r.id||'ed')+'_ed'}), $('#edCard'));
@@ -918,7 +926,9 @@ function openEditor(r){
   box.querySelectorAll('[data-snd]').forEach(s=>s.onchange=()=>{ if(s.value) picks[s.dataset.snd]=s.value; else delete picks[s.dataset.snd]; });
   box.querySelectorAll('[data-on]').forEach(c=>c.onchange=()=>{ if(c.checked) delete picks[c.dataset.on]; else picks[c.dataset.on]='off'; });
   let kitPick=(r.options&&r.options.kit)||'';
-  const opts=()=>{ const o=JSON.parse(JSON.stringify(r.options||{})); o.seed=r.seed; o.instruments=Object.assign({}, o.instruments||{}, picks); if(kitPick) o.kit=kitPick; else delete o.kit;
+  const edOct=Object.assign({}, (r.options&&r.options.octaves)||{});
+  box.querySelectorAll('[data-edoct]').forEach(e=>e.onchange=()=>{ const v=+e.value; if(v) edOct[e.dataset.edoct]=v; else delete edOct[e.dataset.edoct]; });
+  const opts=()=>{ const o=JSON.parse(JSON.stringify(r.options||{})); o.seed=r.seed; o.instruments=Object.assign({}, o.instruments||{}, picks); if(kitPick) o.kit=kitPick; else delete o.kit; if(Object.keys(edOct).length) o.octaves=Object.assign({}, edOct); else delete o.octaves;
     Object.keys(o.instruments).forEach(k=>{ if(!picks[k] && tracks.some(t=>t.id===k)) delete o.instruments[k]; }); return o; };
   box.querySelector('[data-e=close]').onclick=closeEditor;
   box.querySelector('[data-e=prev]').onclick=()=>run(true,1,opts(),null,res=>openEditor(res));
