@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 
 import numpy as np
 
-from .compose import NOTE_NAMES, SCALES
+from .theory import NOTE_NAMES, SCALES
 
 MAX_BYTES = 20 * 1024 * 1024
 # Note = (beat, length_beats, midi_pitch, velocity_0_1, is_drum)

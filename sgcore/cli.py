@@ -5,7 +5,7 @@ import random
 import sys
 
 from .api import generate, OUTPUTS
-from .compose import Options, MOODS, FUSION_PARTS
+from .compose import Options, MOODS
 from .styles import STYLES
 
 

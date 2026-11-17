@@ -1,16 +1,44 @@
 name: test
 on: [push, pull_request]
 jobs:
-  smoke:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: pip install flake8
+      # real errors only: undefined names, unused imports / variables, syntax problems
+      - run: flake8 --select=F --max-line-length=200 sgcore studiolab.py tests tools
+
+  oldest-python:
+    # the README promises Python 3.9+: everything must at least import and the fast tests pass there
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
       - run: pip install -r requirements.txt
-      - run: python -m tests.smoke
-      - run: python -m tests.vstpacks
-      - run: python -m tests.samplelibs
+      - run: python -m compileall -q sgcore studiolab.py tests tools
       - run: python -m tests.appmisc
-      - run: python -m tests.genres
+      - run: python -m tests.features
+      - run: python -m tests.smoke --shard 1/8
+
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: ['smoke --shard 1/3', 'smoke --shard 2/3', 'smoke --shard 3/3', 'genres', 'features',
+                'vstpacks', 'samplelibs', 'appmisc']
+    name: ${{ matrix.suite }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m tests.${{ matrix.suite }}

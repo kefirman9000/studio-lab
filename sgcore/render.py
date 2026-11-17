@@ -7,7 +7,6 @@ import time
 import numpy as np
 from scipy.ndimage import uniform_filter1d
 
-from . import dsp
 from .dsp import (SR, hp, lp, eq, soft, compressor, limiter, lufs, active_rms_db, make_ir, reverb, pingpong,
                   make_spring_ir, dub_delay,
                   sweep_region, write_wav_float)
@@ -56,7 +55,7 @@ class Renderer:
         self._tm = song.get('tempo_map')                    # through-composed scores: tempo changes along the story
         self._tgrid = None
         if self._tm:
-            from .compose import tempo_seconds
+            from .windows import tempo_seconds
             beats = np.arange(0.0, song['total_bars'] * 4 + 64.0, 1 / 16)
             self._tgrid = (beats, np.array([tempo_seconds(self._tm, b) for b in beats]))
         self.length = int((self._bt(song['total_bars'] * 4) + 4.0 + self._rubato(song['total_bars'] * 4)

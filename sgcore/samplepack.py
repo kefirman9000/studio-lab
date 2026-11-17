@@ -6,7 +6,8 @@ import tempfile
 import numpy as np
 
 from . import dsp
-from .compose import loop_window, voice_chord
+from .windows import loop_window
+from .theory import voice_chord
 from .instruments import DRUMS, INSTRUMENTS
 from .render import Renderer, master
 

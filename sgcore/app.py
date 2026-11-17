@@ -21,7 +21,8 @@ import numpy as np
 
 from . import updater, plugins
 from .api import generate, have_ffmpeg
-from .compose import Options, MOODS, SCALES, NOTE_NAMES, FUSION_PARTS, PART_LABELS, VOICINGS, MELODY_STYLES, COLORS
+from .compose import Options, MOODS, FUSION_PARTS, PART_LABELS, MELODY_STYLES
+from .theory import SCALES, NOTE_NAMES, VOICINGS, COLORS
 from .instruments import ROLE_CHOICES, INSTRUMENT_INFO, KITS
 from .styles import STYLES, CATEGORIES, label
 
@@ -228,7 +229,7 @@ def worker():
                     job['progress'] = (i + p) / len(job['items'])
                 sub = os.path.join(out_dir(), 'previews') if item['preview'] else out_dir()
                 info = generate(item['options'], sub, outputs=item['outputs'], preview=item['preview'], log=log, progress=prog,
-                                prefs=plugin_prefs(), section=item.get('section'))
+                                prefs=plugin_prefs(), section=item.get('section'), loop=item.get('loop', False))
                 info['options'] = item['options']
                 if not item.get('section'):
                     remember_instruments(item['options'].get('style'), info.get('inst_ids'))
@@ -628,7 +629,8 @@ class Handler(BaseHTTPRequestHandler):
                         SEED_AVOID[k] = oi['avoid']
                         if len(SEED_AVOID) > 500:
                             SEED_AVOID.pop(next(iter(SEED_AVOID)))
-                items.append(dict(options=oi, outputs=outputs, preview=preview, section=section))
+                items.append(dict(options=oi, outputs=outputs, preview=preview, section=section,
+                                  loop=bool(body.get('loop')) and section is not None))
             return self._json({'job': submit(items)})
         if p == '/api/open' and body.get('path') == 'plugins':
             from .vsthost import PLUGIN_DIR

@@ -40,7 +40,8 @@ def test_journey():
     import numpy as np
     from sgcore import samplelibs
     samplelibs.REAL_DIR = '_no_real_libs'
-    from sgcore.compose import compose, Options, tempo_seconds, section_window
+    from sgcore.compose import compose, Options
+    from sgcore.windows import tempo_seconds, section_window
     from sgcore.api import describe, trim_tail, trim_lead_in
     from sgcore.dsp import SR
     tm = [(0, 60.0), (8, 60.0), (16, 120.0)]

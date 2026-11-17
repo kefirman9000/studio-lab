@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.37.0
+- **Fixed: the app did not start on Python 3.9, 3.10 or 3.11** (one line of the DAW export used syntax only Python 3.12 understands). The tests now also run on Python 3.9.
+- The Windows and Mac start files say clearly when Python is missing or too old (with the download link) instead of failing silently; so does the app itself when it is started without a console window.
+- **🔁 Loop it** in the section editor: up to 8 bars of a section, repeating seamlessly (the reverb tail wraps round to the start), to listen while trying new takes or sounds.
+- Bassoon and contrabassoon parts in the Cinematic Journey now each pick their own saved sound (a "contrabassoon" sound was being chosen for the normal bassoon part).
+- Under the hood (no change to how anything sounds - verified note-for-note on every genre): every genre is now defined in one place in `styles.py` (instrument pools and menu names included) instead of being patched again in later sections; `compose.py` is split into `theory.py`, `figures.py`, `arrange.py` and `windows.py`.
+- New feature tests (metal riffs, key-tuned hard kicks, classical forms and cadences, montuno, Leslie / amp / dub delay, seamless loops); CI runs the test suites in parallel, adds a lint check and a Python 3.9 job.
+- README: genres, real instruments, all the plugins (Dragonfly Reverb, Airwindows), the loop button and a short developer guide.
+
 ## 1.36.0
 The genres that needed the most work (everything except vocals):
 - **Metal, symphonic metal, punk**: real riffs instead of strummed chords - palm-muted chugs, gallops, ringing power chords and the metal riff notes (b2, minor 3rd, tritone), with the bass doubling the riff. Choruses switch to driving open power chords. A new **high-gain amp** (boost, two clipping stages, scooped mids, 4x12 cab, slightly different left / right like a double-tracked guitar) on both the synth and the recorded guitar; double-kick and gallop kick patterns.

@@ -2,7 +2,7 @@
 import numpy as np
 from scipy import signal
 
-from .compose import NOTE_NAMES
+from .theory import NOTE_NAMES
 
 # Krumhansl-Schmuckler key profiles
 MAJOR = np.array([6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88])
@@ -53,7 +53,7 @@ def analyze(x, sr):
             if c > best[0]:
                 best = (c, r, name)
     # ---- loudness (approx LUFS) and brightness
-    from .dsp import lufs, SR
+    from .dsp import lufs
     x44 = signal.resample_poly(x, 2, 1)[:]
     try:
         loud = float(lufs(np.vstack([x44, x44])))

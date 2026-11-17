@@ -219,7 +219,7 @@ SOUND_WORDS = {
     'cello': ['cello', 'celli', 'low strings', 'basses', 'strings'], 'viola': ['viola', 'violas', 'strings'],
     'contrabass': ['contrabass', 'basses', 'double bass', 'celli', 'cello'], 'harpsichord': ['harpsichord', 'cembalo'],
     'clarinet': ['clarinet', 'clarinets', 'woodwind', 'woodwinds'], 'oboe': ['oboe', 'oboes', 'woodwind', 'woodwinds'],
-    'bassoon': ['bassoon', 'bassoons', 'woodwind'], 'piccolo': ['piccolo', 'flute'],
+    'bassoon': ['bassoons', 'bassoon', 'woodwind', 'contrabassoon'], 'piccolo': ['piccolo', 'flute'],
     'trumpet': ['trumpet', 'trumpets', 'brass'], 'trombone': ['trombone', 'trombones', 'low brass', 'brass'],
     'upright': ['upright', 'double bass', 'acoustic bass'], 'vibes': ['vibraphone', 'vibes'],
     'wurli': ['wurli', 'wurlitzer'], 'harmonica': ['harmonica', 'harp mic'], 'pedalsteel': ['pedal steel', 'lap steel', 'steel guitar'],
@@ -227,18 +227,19 @@ SOUND_WORDS = {
     'synthbrass': ['synth brass', 'prophet brass', 'ob brass'], 'moogbass': ['moog', 'minimoog', 'model d'],
     'glasspad': ['glass pad'], 'solina': ['solina', 'string machine', 'string ensemble synth'],
     'violins': ['violins legato', 'violins 1', 'violins', 'violin', 'strings legato', 'strings'],
-    'violas': ['violas', 'viola', 'strings'], 'bassoon': ['contrabassoon', 'bassoons', 'bassoon', 'woodwind'],
+    'violas': ['violas', 'viola', 'strings'],
+    'contrabassoon': ['contrabassoon', 'contra bassoon', 'bassoons', 'bassoon', 'woodwind'],
     'trombone_marcato': ['low brass marcato', 'trombones marcato', 'brass marcato', 'marcato', 'trombones', 'trombone', 'low brass'],
     'tuba': ['tuba', 'low brass'], 'braam': ['braam', 'low brass', 'trombone', 'trombones', 'tuba', 'brass', 'horns', 'horn'],
 }
 # articulation words: a long-note part never picks a short-note sound (and the reverse) while a better one exists
 SHORT_WORDS = ('spiccato', 'staccato', 'short', 'pizz', 'pizzicato', 'marcato', 'ostinato')
 LONG_ROLES = {'strings', 'violin', 'slowstrings', 'cello', 'viola', 'contrabass', 'tremolo', 'horn', 'brass', 'choir', 'vox', 'braam',
-              'violins', 'violas', 'trombone', 'tuba', 'trumpet', 'bassoon'}
+              'violins', 'violas', 'trombone', 'tuba', 'trumpet', 'bassoon', 'contrabassoon'}
 SAMPLER_ROLES = {k for k in SOUND_WORDS if k in ('strings', 'violin', 'pizz', 'horn', 'brass', 'harp', 'timpani', 'celesta',
                                                     'choir', 'vox', 'flute', 'piano', 'spiccato', 'tremolo', 'slowstrings',
                                                     'cello', 'viola', 'contrabass', 'harpsichord', 'clarinet', 'oboe',
-                                                    'bassoon', 'piccolo', 'trumpet', 'trombone', 'tuba', 'braam')}
+                                                    'bassoon', 'contrabassoon', 'piccolo', 'trumpet', 'trombone', 'tuba', 'braam')}
 
 # genre flavour: which plugin family to reach for first, and a tone tweak (shifts filter cutoffs)
 STYLE_PREF = {

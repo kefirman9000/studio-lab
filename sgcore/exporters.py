@@ -143,7 +143,6 @@ def write_midi(path, song):
 
 def write_part_midis(folder, song):
     """One small MIDI file per part (drag-and-drop friendly). Returns {part: path}."""
-    import copy
     os.makedirs(folder, exist_ok=True)
     out = {}
     st = song['st']
@@ -306,7 +305,6 @@ def _has_user_drum(inst):
 
 def _instrument_xml(tcfg, kit, spb):
     inst = tcfg['inst']
-    name = tcfg['name']
     if inst in ('kick', 'chipkick') and not (kit.get('_user_drums') and _has_user_drum(inst)):
         k = dict(kit.get('kick', {}))
         pitch = k.get('pitch', 48)
@@ -554,7 +552,8 @@ def write_waveform(folder, song, renderer, mastered_wav):
         tid, vid, lid, cid = new_id(), new_id(), new_id(), new_id()
         rel = os.path.relpath(path, folder).replace('\\', '/')
         length = _wav_seconds(path)
-        return (f'  <TRACK id="{tid}" name={quoteattr(name)} colour="{colour}"{" mute=\"1\"" if mute else ""}>\n'
+        mute_attr = ' mute="1"' if mute else ''
+        return (f'  <TRACK id="{tid}" name={quoteattr(name)} colour="{colour}"{mute_attr}>\n'
                 '    <MODIFIERS/>\n    <OUTPUTDEVICES><DEVICE name="(default audio output)"/></OUTPUTDEVICES>\n    <CLIPSLOTS/>\n'
                 f'    <PLUGIN type="volume" id="{vid}" enabled="1" volume="{_fader_pos(vol_db):.6f}" pan="0.0" remapOnTempoChange="1"><MODIFIERASSIGNMENTS/></PLUGIN>\n'
                 f'    <PLUGIN type="level" id="{lid}" enabled="1"/>\n'

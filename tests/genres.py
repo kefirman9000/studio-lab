@@ -6,7 +6,8 @@ import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from sgcore.compose import Options, compose, voice_chord, Key, GENRE_MELODY, GENRE_VOICING
+from sgcore.compose import Options, compose, GENRE_MELODY, GENRE_VOICING
+from sgcore.theory import voice_chord, Key
 from sgcore import samplelibs as _sl  # noqa: E402
 _sl.REAL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_no_real_libs')   # same sounds as CI
 from sgcore.styles import STYLES
@@ -39,7 +40,7 @@ def main():
     assert house['st']['voicing'] == 'rootless' and house['st']['melody_lang'] == 'bebop'
     rock = compose(Options(style='rock', seed=2))
     assert rock['st']['voicing'] == 'power'                                     # power chords survive genre voicings
-    from sgcore.compose import preview_window
+    from sgcore.windows import preview_window
     from sgcore.render import Renderer
     import numpy as np
     from scipy.io import wavfile
@@ -68,7 +69,7 @@ def main():
     # ---- genre build-ups and lead devices
     from sgcore.leads import GENRE_DEVICES
     want = {'trance': 'roll', 'techno': 'filter', 'hardstyle': 'kick_roll', 'dubstep': 'stutter', 'amapiano': 'pause', 'pop': 'lift'}
-    from sgcore.compose import BUILD_FAMILY
+    from sgcore.arrange import BUILD_FAMILY
     for name, bs in want.items():
         for k in (5, 6, 7):
             seq = compose(Options(style=name, seed=k))['st']['build_seq']
@@ -122,7 +123,7 @@ def main():
     # ---- references from note files
     from sgcore.exporters import write_midi
     from sgcore.refparse import analyze_file
-    from sgcore.compose import NOTE_NAMES
+    from sgcore.theory import NOTE_NAMES
     d = tempfile.mkdtemp()
     song = next(x for x in (compose(Options(style='pop', seed=sd, variety=0)) for sd in range(31, 60))
                 if not x['modulate'])                                   # a song that stays in one key
@@ -260,7 +261,8 @@ def main():
 
 def test_chords_and_knobs():
     import collections
-    from sgcore.compose import Options, compose, color_fits, Key
+    from sgcore.compose import Options, compose
+    from sgcore.theory import color_fits, Key
     from sgcore.render import Renderer
     k = Key(1, 'major')
     assert not color_fits(k, 3, 'sus4') and not color_fits(k, 2, 'add9') and color_fits(k, 0, 'add9')
@@ -357,7 +359,7 @@ def test_builds_and_vinyl():
 
 def test_kits_and_bells():
     from sgcore import drumkits
-    from sgcore.styles import BELLS, MALLETS, BELL_OK, MALLET_OK, STYLES
+    from sgcore.styles import BELLS, MALLETS
     # genre kits
     for st, kit in (('jungle', 'amen'), ('boombap', 'funky_drummer'), ('downtempo', 'back_to_life'), ('trap', '808'),
                     ('trance', 'trance'), ('rock', 'rusty'), ('jazz', 'brushes'), ('funk', 'seventies'), ('metal', 'rock'),

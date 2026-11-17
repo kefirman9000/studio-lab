@@ -8,6 +8,26 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
+def _fail(msg):
+    """Show a startup problem even when there is no console (pythonw on Windows starts without one)."""
+    print(msg)
+    if os.name == 'nt' and not (sys.stdout and sys.stdout.isatty()):
+        try:
+            import ctypes
+            ctypes.windll.user32.MessageBoxW(None, msg, 'Studio Lab', 0x10)
+        except Exception:
+            pass
+    elif sys.stdin and sys.stdin.isatty():
+        input('Press Enter to close...')
+    sys.exit(1)
+
+
+def _check_python():
+    if sys.version_info < (3, 9):
+        _fail('Studio Lab needs Python 3.9 or newer (this is %d.%d).\n'
+              'Download a newer one from https://www.python.org/downloads/' % sys.version_info[:2])
+
+
 def _check_deps():
     missing = []
     for m in ('numpy', 'scipy'):
@@ -16,14 +36,12 @@ def _check_deps():
         except ImportError:
             missing.append(m)
     if missing:
-        print('Studio Lab needs: ' + ' '.join(missing))
-        print('Install them with:   python -m pip install ' + ' '.join(missing))
-        if sys.stdin and sys.stdin.isatty():
-            input('Press Enter to close...')
-        sys.exit(1)
+        _fail('Studio Lab needs: ' + ' '.join(missing) + '\n'
+              'Install them with:   python -m pip install ' + ' '.join(missing))
 
 
 if __name__ == '__main__':
+    _check_python()
     _check_deps()
     if len(sys.argv) > 1 and sys.argv[1] in ('generate', 'gen', 'cli'):
         from sgcore.cli import main

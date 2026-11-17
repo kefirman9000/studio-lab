@@ -1,7 +1,6 @@
 """High-level entry point used by the CLI and the app."""
 import json
 import os
-import re
 import shutil
 import subprocess
 import time
@@ -9,9 +8,9 @@ import time
 import numpy as np
 
 from . import dsp
-from .compose import Options, compose, preview_window, section_window, loop_window
+from .compose import Options, compose
+from .windows import preview_window, section_window, section_loop
 from .render import Renderer, master
-from .styles import STYLES
 
 OUTPUTS = ('wav', 'mp3', 'midi', 'stems', 'lmms', 'waveform', 'pack', 'daw')
 
@@ -26,7 +25,7 @@ def song_title(song):
 
 def _sec_at(song, beat):
     if song.get('tempo_map'):
-        from .compose import tempo_seconds
+        from .windows import tempo_seconds
         return tempo_seconds(song['tempo_map'], beat)
     return beat * 60 / song['bpm']
 
@@ -208,7 +207,24 @@ def trim_tail(out, keep=2.5, rel_db=-60.0):
     return y, cut / SR
 
 
-def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=None, prefs=None, section=None):
+def wrap_loop(x, seconds):
+    """Cut audio to exactly one loop and fold everything that rings past the end (reverb, delays, long notes) back
+    onto the start, so it repeats without a gap or a click."""
+    from .dsp import SR
+    n = int(round(seconds * SR))
+    if n <= 0 or x.shape[-1] <= n:
+        return x
+    y = x[..., :n].copy()
+    tail = x[..., n:2 * n]
+    y[..., :tail.shape[-1]] += tail
+    pk = float(np.max(np.abs(y)))
+    ceiling = 10 ** (-1.0 / 20)
+    if pk > ceiling:
+        y *= ceiling / pk
+    return y
+
+
+def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=None, prefs=None, section=None, loop=False):
     """Compose + render + master + write requested outputs. Returns dict with info and file paths."""
     if isinstance(opts, dict):
         opts = Options.from_dict(opts)
@@ -217,7 +233,13 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     song = compose(opts)
     info = describe(song)
     full_song = song
-    if section is not None and 0 <= int(section) < len(song['sections']):
+    loop = bool(loop) and section is not None and 0 <= int(section) < len(song['sections'])
+    if loop:
+        song = section_loop(song, int(section))
+        preview = True
+        info['previewed_section'] = int(section)
+        info['loop'] = True
+    elif section is not None and 0 <= int(section) < len(song['sections']):
         song = section_window(song, int(section))
         preview = True
         info['previewed_section'] = int(section)
@@ -226,7 +248,7 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     from .names import song_name, slug
     name = song_name(full_song)
     info['name'] = name
-    title = slug(name) + '_' + song_title(song) + (f'_sec{int(section)}_{abs(hash(json.dumps(opts.sections, sort_keys=True, default=str))) % 10**6}'
+    title = slug(name) + '_' + song_title(song) + ('_loop' if loop else '') + (f'_sec{int(section)}_{abs(hash(json.dumps(opts.sections, sort_keys=True, default=str))) % 10**6}'
                                 if section is not None else ('_preview' if preview else ''))
     os.makedirs(outdir, exist_ok=True)
     log(f"== \"{name}\"")
@@ -244,11 +266,14 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     mix = r.render(stems_dir, progress=progress)
     r.premaster_peak = float(np.max(np.abs(mix)))
     out = master(mix, song['st']['master'], log=log)
-    out, trimmed = trim_lead_in(out)
+    if loop:
+        out = wrap_loop(out, r._bt(song['total_bars'] * 4))
+        info['loop_seconds'] = round(out.shape[-1] / dsp.SR, 3)
+    out, trimmed = (out, 0.0) if loop else trim_lead_in(out)
     if trimmed > 0.05:
         log(f'   trimmed {trimmed:.1f} s of near-silent lead-in (at most 1 s left before the music)')
         info['trimmed_lead_in'] = round(trimmed, 2)
-    out, tail = trim_tail(out)
+    out, tail = (out, 0.0) if loop else trim_tail(out)
     if tail > 0.5:
         info['trimmed_tail'] = round(tail, 2)
     files = {}

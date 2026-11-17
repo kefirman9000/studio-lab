@@ -543,12 +543,13 @@ function syncAutos(){
 
 // ------------------------------------------------------------- jobs
 let busy=false;
-async function run(preview, count, opts, section, onResult, varyPart){
+async function run(preview, count, opts, section, onResult, varyPart, extra){
   if(busy) return; busy=true; setBusy(true);
   const o=opts||options();
   const body={options:o, preview, count, outputs:state.outputs.length?state.outputs:['wav']};
   if(varyPart) body.vary_part=varyPart;
   if(section!=null) body.section=section;
+  if(extra) Object.assign(body, extra);
   const {job}=await api('/api/generate', body);
   const seen=new Set();
   const poll=async()=>{
@@ -732,7 +733,7 @@ function setupTimeline(el, r){
       <div class="row"><span class="lbl hint">New take</span><button class="mini acc" data-x="all">🎲 Whole section</button>${PARTS.map(p=>`<button class="mini" data-p="${p}">${p}</button>`).join('')}<button class="mini" data-x="vary" title="Keeps the section, changes a few details">✨ Subtle variation</button></div>
       <div class="row"><span class="lbl hint">Shape</span><button class="mini" data-x="shorter">− 4 bars</button><button class="mini" data-x="longer">+ 4 bars</button><button class="mini" data-x="left">◀ move</button><button class="mini" data-x="right">move ▶</button><button class="mini" data-x="dup">⧉ duplicate</button><button class="mini" data-x="del">🗑 remove</button><button class="mini" data-x="reset">↺ reset</button></div>
       <div class="row"><span class="lbl hint">Parts here</span>${(s.layers||[]).map(l=>`<span class="chip ${(e.mute||[]).includes(l)?'':'on'}" data-m="${l}">${l}</span>`).join('')}</div>
-      <div class="row"><button class="btn s" data-x="hear" style="padding:7px 12px">▶ Hear this section</button><button class="btn g" data-x="apply" style="padding:7px 12px">⬇ Full song with edits</button></div>
+      <div class="row"><button class="btn s" data-x="hear" style="padding:7px 12px">▶ Hear this section</button><button class="btn s" data-x="loop" style="padding:7px 12px" title="Up to 8 bars of this section, repeating seamlessly - handy while you try sounds">🔁 Loop it</button><button class="btn g" data-x="apply" style="padding:7px 12px">⬇ Full song with edits</button></div>
       <div class="sedplay"></div></div>`;
     const q=x=>box.querySelector(x);
     box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{e.seeds=Object.assign({},e.seeds||{});e.seeds[b.dataset.p]=rnd();draw();hear()});
@@ -749,12 +750,13 @@ function setupTimeline(el, r){
       if(x==='dup'){const c=Math.max(...edits.filter(y=>y.src===e.src).map(y=>y.copy||0))+1;edits.splice(sel+1,0,Object.assign(JSON.parse(JSON.stringify(e)),{copy:c}));sel++}
       if(x==='del'&&edits.length>1){edits.splice(sel,1);sel=Math.min(sel,edits.length-1)}
       if(x==='hear'){hear();return}
+      if(x==='loop'){hear(true);return}
       if(x==='apply'){run(false,1,Object.assign({},r.options,{sections:edits}));return}
       draw();panel();
     });
-    function hear(){ const o=Object.assign({},r.options,{sections:edits}); const at=sel;
+    function hear(loop){ const o=Object.assign({},r.options,{sections:edits}); const at=sel;
       run(true,1,o,at,res=>{ const sp=el.querySelector('.sedplay'); if(!sp) return; const u=res.urls.wav||res.urls.mp3;
-        sp.innerHTML=`<audio controls autoplay src="${u}"></audio><div class="hint">Section ${at+1} with a short lead-in. Happy? Press “Full song with edits”.</div>`; }); }
+        sp.innerHTML=`<audio controls autoplay ${loop?'loop':''} src="${u}"></audio><div class="hint">${loop?`Section ${at+1}, looping. Try a new take or change a part - press 🔁 again to hear it.`:`Section ${at+1} with a short lead-in.`} Happy? Press “Full song with edits”.</div>`; }, null, loop?{loop:true}:null); }
   };
   draw();
 }

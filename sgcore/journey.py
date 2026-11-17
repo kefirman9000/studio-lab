@@ -19,7 +19,7 @@ soft / loud recordings of the real orchestra - and mod-wheel curves for orchestr
 import math
 import random
 
-from .compose import Ev, Key
+from .theory import Ev, Key
 
 ACTS = [('tension', 'Tension', 16), ('sorrow', 'Sorrow', 16), ('resolve', 'Resolve', 16), ('battle', 'Battle', 8),
         ('glory', 'Glory', 16), ('reflection', 'Reflection', 8), ('resolution', 'Resolution', 8)]
