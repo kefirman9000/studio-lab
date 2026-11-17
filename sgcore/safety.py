@@ -41,11 +41,23 @@ def defender_scan(path, timeout=600):
     except Exception as e:
         return dict(ran=False, clean=None, detail=f'Defender could not run ({e})')
     out = (r.stdout or '') + (r.stderr or '')
-    if r.returncode == 0:
+    return defender_verdict(r.returncode, out)
+
+
+def defender_verdict(code, out):
+    """Read MpCmdRun's answer. Exit code 2 (or 'found N threats' with N > 0) = a threat. Anything else that isn't 0 is
+    the scanner failing to run - e.g. 'CmdTool: Failed with hr = 0x80004005' when Defender is switched off or another
+    antivirus is in charge - which says nothing about the file, so it must never be reported as a threat."""
+    import re
+    m = re.search(r'found\s+(\d+)\s+threats?', out or '', re.I)
+    if code == 2 or (m and int(m.group(1)) > 0):
+        return dict(ran=True, clean=False, detail='Microsoft Defender found a threat: ' + ' '.join((out or '').split())[:200])
+    if code == 0:
         return dict(ran=True, clean=True, detail='Microsoft Defender: no threats found')
-    if r.returncode == 2 or 'threat' in out.lower():
-        return dict(ran=True, clean=False, detail='Microsoft Defender found a threat: ' + ' '.join(out.split())[:200])
-    return dict(ran=False, clean=None, detail=f'Defender could not scan (code {r.returncode}) - another antivirus may be in charge')
+    hr = re.search(r'hr\s*=\s*(0x[0-9a-f]+)', out or '', re.I)
+    why = f'Windows error {hr.group(1)}' if hr else f'code {code}'
+    return dict(ran=False, clean=None, detail=f'Microsoft Defender could not scan this file ({why}) - usually Defender is switched '
+                                              'off or another antivirus is in charge. This is not a threat.')
 
 
 # ----------------------------------------------------------------------------- VirusTotal

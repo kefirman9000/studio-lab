@@ -208,6 +208,7 @@ def test_safety(tmp):
         stats = {'malicious': flagged[0], 'suspicious': 0, 'undetected': 70 - flagged[0]}
         res = {'E1': {'engine_name': 'SomeAV', 'category': 'malicious'}} if flagged[0] else {}
         return 200, {'data': {'attributes': {'last_analysis_stats': stats, 'last_analysis_results': res}}}
+    vstpacks.BY_ID.update({p_['id']: p_ for p_ in vstpacks._UNUSED_PACKS})   # a test pack with a known bundle name
     old = (vstpacks.PLUGIN_DIR, vstpacks.RECORD, vstpacks.resolve, vstpacks.download, safety._vt)
     try:
         vstpacks.PLUGIN_DIR, vstpacks.RECORD = plug, os.path.join(plug, '.packs.json')
@@ -238,7 +239,15 @@ def test_safety(tmp):
                            'ob-xf-macOS-v1.0.3.dmg', 'ob-xf-Linux-x86_64-v1.0.3.zip', 'ob-xf-assets.zip'])]
     assert vstpacks.pick_asset(vstpacks.BY_ID['obxf'], rels, 'windows')['name'] == 'ob-xf-Windows-v1.0.3.zip'   # no installer, no ARM
     assert vstpacks.pick_asset(vstpacks.BY_ID['obxf'], [rel('v1', ['ob-xf-Windows-v1.exe'])], 'windows') is None
-    print('ok  safety: checksum, Defender, VirusTotal 0-detection rule, new packs')
+    aw = [rel('DAWPlugin', ['AirwindowsConsolidated-x-Windows-arm64ec.zip', 'AirwindowsConsolidated-x-Windows-Setup.exe',
+                            'AirwindowsConsolidated-x-Windows-x64.zip'])]
+    assert vstpacks.pick_asset(vstpacks.BY_ID['airwindows'], aw, 'windows')['name'].endswith('Windows-x64.zip')   # never ARM
+    v = safety.defender_verdict(-2147467259, 'CmdTool: Failed with hr = 0x80004005. Check MpCmdRun.log for more information')
+    assert v['ran'] is False and v['clean'] is None                     # a scan that couldn't run is not a threat
+    assert safety.defender_verdict(2, 'found 1 threats')['clean'] is False and safety.defender_verdict(0, '')['clean'] is True
+    for gone in ('sixsines', 'monique', 'obxf', 'odin2'):
+        assert gone not in [p_['id'] for p_ in vstpacks.PACKS]
+    print('ok  safety: checksum, Defender (a failed scan is not a threat), VirusTotal 0-detection rule, packs')
 
 
 def main():

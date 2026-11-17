@@ -46,28 +46,6 @@ PACKS = [
     dict(id='jc303', name='JC303', maker='midilab', license='GPL-3.0', repo='midilab/jc303', page='https://midilab.co/jc303/',
          size='~10 MB', plays='TB-303 acid bass (acid house, techno, psytrance)', bundles=[r'^jc303$'],
          assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.zip$'], 'linux': [r'linux.*{arch}.*\.zip$', r'linux.*\.zip$']}),
-    dict(id='sixsines', name='Six Sines', maker='BaconPaul (Surge Synth Team)', license='GPL-3.0', repo='baconpaul/six-sines',
-         page='https://github.com/baconpaul/six-sines/releases', size='~15 MB',
-         plays='6-operator FM: bells, e-pianos, FM basses, glassy pads, metallic leads and FM drums',
-         bundles=[r'^six sines$', r'^sixsines$'],
-         assets={'windows': [r'win(dows)?.*(x64|64).*\.zip$', r'win(dows)?.*\.zip$'], 'mac': [r'mac.*\.(dmg|zip|pkg)$'],
-                 'linux': [r'linux.*{arch}.*\.(zip|tar\.gz)$', r'linux.*\.(zip|tar\.gz)$']}),
-    dict(id='obxf', name='OB-Xf', maker='Surge Synth Team', license='GPL-3.0', repo='surge-synthesizer/OB-Xf',
-         page='https://surge-synth-team.org/ob-xf/', size='~20 MB',
-         plays='Oberheim-style analog poly: brass, big pads, 80s stabs, warm leads (factory presets need its installer)',
-         bundles=[r'^ob xf$', r'^obxf$'],
-         assets={'windows': [r'win(dows)?(?!.*arm).*\.zip$'], 'mac': [r'mac.*\.(dmg|zip)$'],
-                 'linux': [r'linux.*{arch}.*\.zip$', r'linux(?!.*arm).*\.zip$']}),
-    dict(id='odin2', name='Odin 2', maker='TheWaveWarden', license='GPL-3.0', repo='TheWaveWarden/odin2',
-         page='https://thewavewarden.com/odin2', size='~20 MB',
-         plays='hybrid synth: growls, wobble and reese basses, analog leads, evolving pads',
-         bundles=[r'^odin ?2$'],
-         assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.(zip|dmg)$'], 'linux': [r'linux.*\.(zip|tar\.gz)$']}),
-    dict(id='monique', name='Monique', maker='Surge Synth Team', license='GPL-3.0', repo='surge-synthesizer/monique-monosynth',
-         page='https://github.com/surge-synthesizer/monique-monosynth/releases', size='~15 MB',
-         plays='morphing mono synth: fat basses, sequenced leads, acid-ish lines',
-         bundles=[r'^monique$'],
-         assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.(dmg|zip)$'], 'linux': [r'linux.*{arch}.*\.(zip|tar\.gz)$', r'linux.*\.(zip|tar\.gz)$']}),
     dict(id='dragonfly', name='Dragonfly Reverb', maker='Michael Willis', license='GPL-3.0', repo='michaelwillis/dragonfly-reverb',
          page='https://michaelwillis.github.io/dragonfly-reverb/', size='~10 MB', kind='effect',
          plays='hall, plate and room reverbs - each genre\'s reverb runs through the right one (hall for orchestral & trance, '
@@ -84,6 +62,33 @@ PACKS = [
                  'mac': [r'mac.*\.(zip|dmg)$'], 'linux': [r'linux.*{arch}.*\.zip$', r'linux.*\.zip$']}),
 ]
 BY_ID = {p['id']: p for p in PACKS}
+# packs no longer offered (no genre used them, and their nightly builds tripped scans); kept only for the tests and so an
+# existing install is recognised and can be removed
+_UNUSED_PACKS = [
+    dict(id='sixsines', name='Six Sines', maker='BaconPaul (Surge Synth Team)', license='GPL-3.0', repo='baconpaul/six-sines',
+         page='https://github.com/baconpaul/six-sines/releases', size='~15 MB',
+         plays='6-operator FM: bells, e-pianos, FM basses, glassy pads, metallic leads and FM drums',
+         bundles=[r'^six sines$', r'^sixsines$'],
+         assets={'windows': [r'win(dows)?.*(x64|64).*\.zip$', r'win(dows)?.*\.zip$'], 'mac': [r'mac.*\.(dmg|zip|pkg)$'],
+                 'linux': [r'linux.*{arch}.*\.(zip|tar\.gz)$', r'linux.*\.(zip|tar\.gz)$']}),
+    dict(id='monique', name='Monique', maker='Surge Synth Team', license='GPL-3.0', repo='surge-synthesizer/monique-monosynth',
+         page='https://github.com/surge-synthesizer/monique-monosynth/releases', size='~15 MB',
+         plays='morphing mono synth: fat basses, sequenced leads, acid-ish lines',
+         bundles=[r'^monique$'],
+         assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.(dmg|zip)$'], 'linux': [r'linux.*{arch}.*\.(zip|tar\.gz)$', r'linux.*\.(zip|tar\.gz)$']}),
+    dict(id='obxf', name='OB-Xf', maker='Surge Synth Team', license='GPL-3.0', repo='surge-synthesizer/OB-Xf',
+         page='https://surge-synth-team.org/ob-xf/', size='~20 MB',
+         plays='Oberheim-style analog poly: brass, big pads, 80s stabs, warm leads (factory presets need its installer)',
+         bundles=[r'^ob xf$', r'^obxf$'],
+         assets={'windows': [r'win(dows)?(?!.*arm).*\.zip$'], 'mac': [r'mac.*\.(dmg|zip)$'],
+                 'linux': [r'linux.*{arch}.*\.zip$', r'linux(?!.*arm).*\.zip$']}),
+    dict(id='odin2', name='Odin 2', maker='TheWaveWarden', license='GPL-3.0', repo='TheWaveWarden/odin2',
+         page='https://thewavewarden.com/odin2', size='~20 MB',
+         plays='hybrid synth: growls, wobble and reese basses, analog leads, evolving pads',
+         bundles=[r'^odin ?2$'],
+         assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.(zip|dmg)$'], 'linux': [r'linux.*\.(zip|tar\.gz)$']}),
+]
+
 
 # instruments the rigs can use but that can't be auto-downloaded (licence, account or installer app required)
 KNOWN = [
@@ -128,6 +133,8 @@ def pick_asset(pack, releases, osname=None):
                 continue
             names = [a for a in rel.get('assets', []) if not a['name'].lower().endswith(('.sha256', '.sig', '.asc', '.txt'))]
             sums = {a['name'][:-7]: a['browser_download_url'] for a in rel.get('assets', []) if a['name'].lower().endswith('.sha256')}
+            arm = platform.machine().lower() in ('arm64', 'aarch64')
+            names = [a for a in names if arm or not re.search(r'arm|aarch', a['name'], re.I)]   # never an ARM build on x64
             for pat in pats:
                 for a in names:
                     if pat.search(a['name']):

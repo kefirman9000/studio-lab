@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.35.1
+Genre VSTs downloads fixed:
+- **"Microsoft Defender found a threat: CmdTool: Failed with hr = 0x80004005" was wrong**: that message means Defender's scanner couldn't run (usually Defender is switched off or another antivirus is in charge) - it never found anything. Studio Lab read it as a threat and refused every plugin. A scan that can't run is now reported as "could not scan - not a threat" and the install continues with the other checks (checksum, and VirusTotal if you set it up). Only a real detection (exit code 2 / "found N threats") blocks an install.
+- **Airwindows downloaded the ARM build** ("Windows-arm64ec.zip") on normal PCs; ARM builds are now never picked on x64.
+- **Removed from the download list: Six Sines, Monique, OB-Xf and Odin 2** - no genre actually played them (no sounds were written for them). If you installed them, they show as "retired" with a Remove button.
+
 ## 1.35.0
 - **Three more free real drum kits** in 🎻 Real instruments (CC0, Karoryfer Samples - same checked download as the others), each in the Kit menu and the default for the genres it suits:
   - **70s soul / funk kit** (Gogodze Phu Vol II, 28 MB): dry and warm, recorded to sound like early-70s records - funk, Motown, soul jazz, blues, reggae, disco-funk, gospel.
