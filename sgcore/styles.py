@@ -6270,19 +6270,19 @@ FORMS['surf_rock'] = [('intro', 4, {'kick', 'snare', 'top', 'lead'}, {}),
                       ('outro', 4, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {})]
 style('surf_rock', 'Classic',
       'Surf rock (early-60s instrumental surf): a fast, straight beat driven by the floor tom, a twangy guitar melody '
-      'tremolo-picked on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and '
+      'tremolo-picked in bursts on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and '
       'now and then a combo organ or sax - sunny, wet and full speed ahead',
-      bpm=(150, 176), scales=['major', 'mixolydian', 'minor', 'phrygian_dominant'], swing=0.5, human=0.008, form='surf_rock',
+      bpm=(132, 156), scales=['major', 'mixolydian', 'minor', 'phrygian_dominant'], swing=0.5, human=0.008, form='surf_rock',
       chord_size=3, kit='acoustic', sc_depth=0.0, reverb=2.6, spring=True, fill=True,
       progs={'major': [[0, 3, 4, 3], [0, 5, 3, 4], [0, 0, 3, 3], [0, 3, 0, 4]], 'mixolydian': [[0, 6, 3, 0], [0, 6, 0, 6]],
              'minor': [[0, 5, 6, 0], [0, 6, 5, 4]], 'phrygian_dominant': [[0, 1, 0, 1], [0, 1, 6, 0]]},
-      drums={'kick': ['X.......X.......', 'X.....X.X.......'], 'snare': [BACKBEAT, '....X.......X.x.'],
-             'chat': ['x.x.x.x.x.x.x.x.'], 'tom': ['x.x.x.x.x.x.x.x.', 'x.xxx.x.x.xxx.x.']},
+      drums={'kick': ['X.......X.......', 'X.....X.X.......'], 'snare': [BACKBEAT],
+             'chat': ['x.x.x.x.x.x.x.x.'], 'tom': ['x...x...x...x...', 'x...x...x.x.x...']},
       snare_tracks=['snare'], build_family=['pickup', 'stops'], transition_moves=['crash', 'none', 'none'],
-      bass=['R.R.F.F.R.R.F.F.', 'R...F...O...F...', 'R.F.R.F.R.F.A.A.'], bass_lo=31,
-      chord_rh=['x.x.x.x.x.x.x.x.', 'x..x..x.x..x..x.', 'x---x---x---x---'], chord_center=60, strum=0.012,
-      arp=dict(rate=2, mode='updown', oct=5, prob=0.6),
-      lead_rh=['xxxxxxxxx-x-x---', 'xxxxxxxxxxxxx---', 'x-x-x-x-xxxxx---', 'xxxx..xxxx..x---'], lead_oct=4,
+      bass=['R...F...R...F...', 'R...F...O...F...', 'R.R.F...R.R.F...'], bass_lo=31,
+      chord_rh=['x...x...x...x...', 'x..x..x.x.......', 'x---x---x---x---'], chord_center=60, strum=0.012,
+      arp=dict(rate=2, mode='updown', oct=5, prob=0.5),
+      lead_rh=['x-x-x-x-x---x---', 'x.x.x.x.x.x.x---', 'x---x-x-x-x-x---', 'x-x-x-x-xxxx----'], lead_oct=4,
       repetition=0.75,
       gm_hint='Twangy single-coil guitar (tremolo-picked, low strings) in a spring reverb tank; strummed rhythm guitar; '
               'electric bass; floor-tom surf beat; combo organ or tenor sax for a chorus',
@@ -6298,6 +6298,51 @@ style('surf_rock', 'Classic',
                  arp=['organ', 'guitar', 'twang', 'sax'],
                  lead=['twang', 'guitar', 'sax', 'sf:cleanguitar']),
       label='Surf rock (60s)')
+
+
+# v1.43.2: 60s monster-sitcom theme (from the user's TV-theme reference, analysed bar by bar at 152 BPM in E):
+# a low chromatic riff (root, a half step up, root, a half step down) played by the bass and a twangy baritone guitar
+# an octave up, brass stabs over it; a brass-melody bridge on III-VII-VI; a sax-section stretch; the riff theme again
+# twice; a chromatic stab ending. The drums never stop.
+FORMS['monster_theme'] = [('intro', 4, {'kick', 'snare', 'top', 'bass'}, {}),
+                          ('A', 16, {'kick', 'snare', 'top', 'bass', 'chords'}, {'crash': True}),
+                          ('bridge', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'alt': True, 'crash': True}),
+                          ('horns', 12, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {}),
+                          ('bridge', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'alt': True, 'crash': True}),
+                          ('A', 16, {'kick', 'snare', 'top', 'bass', 'chords'}, {'crash': True}),
+                          ('A', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {}),
+                          ('outro', 4, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {})]
+style('monster_theme', 'Classic',
+      'Spooky surf - 60s monster-sitcom theme: a driving 150 BPM surf beat under a low, creeping chromatic riff '
+      '(root, a half step up, back, a half step down) played by the bass and a twangy baritone guitar together, '
+      'punchy brass stabs, a bright brass-melody bridge in the relative major, a honking sax-section stretch, and a '
+      'big chromatic stab ending - campy, creepy and catchy',
+      bpm=(146, 158), scales=['minor'], swing=0.5, human=0.007, form='monster_theme', chord_size=3, kit='acoustic',
+      sc_depth=0.0, reverb=2.2, spring=True, fill=True, no_rotation=True, own_progs=True, no_layers=True, riff_locked=True,
+      progs={'minor': [[0, 0, 0, 0], [0, 0, 5, 4], [2, 6, 5, 2]]},
+      section_progs=dict(verse=[0, 0, 0, 0], main=[0, 0, 5, 4], alt=[2, 6, 5, 2]),
+      drums={'kick': ['X.......X.......', 'X.....X.X.......'], 'snare': [BACKBEAT],
+             'chat': ['x.x.x.x.x.x.x.x.'], 'ride': ['x.x.x.x.x.x.x.x.']},
+      snare_tracks=['snare'], build_family=['pickup', 'stops'], transition_moves=['crash', 'none'],
+      bass=['R.R.u.R.d.R.R...', 'R.u.R.d.R.R.u.R.', 'R.R.R.u.R.d.R...'], bass_lo=28, bass_gate=0.7,
+      chord_rh=['..x...x...x...x.', 'x.......x.x.....', '....x.......x.x.'], chord_center=62,
+      arp=dict(rate=2, mode='updown', oct=4, prob=0.7),
+      lead_rh=['x-x-x---x-x-x---', 'x---x-x-x-------', 'x-x-x-x-x---x---'], lead_oct=5, repetition=0.85,
+      gm_hint='Twangy baritone / six-string guitar doubling the bass on a low chromatic riff (spring reverb); electric '
+              'bass; brass section stabs; trumpet melody for the bridge; sax section; driving surf drums with ride',
+      tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.3, db=-15),
+              T('chat', 'top', 'chat', db=-27), T('ride', 'top', 'ride', db=-28),
+              T('bass', 'bass', 'ebass', db=-11),
+              T('riff', 'bass', 'twang', double_of='bass', octave=12, keep_inst=True, rev=0.45, db=-13),
+              T('chords', 'chords', 'brass', rev=0.3, db=-23, pan=0.25, hp=180),
+              T('arp', 'arp', 'sax', pan=-0.25, rev=0.3, db=-22),
+              T('lead', 'lead', 'brass', rev=0.35, dly=0.1, db=-17)],
+      master=dict(lufs=-11.0, air=1.2, low=1.5, width=1.0),
+      pools=dict(bass=['ebass', 'sf:pickbass', 'sf:fingerbass', 'upright'],
+                 chords=['brass', 'synthbrass', 'organ', 'sf:trumpetsection'],
+                 arp=['sax', 'brass', 'organ'],
+                 lead=['brass', 'sax', 'twang', 'organ']),
+      label='Spooky surf - monster TV theme')
 
 
 # ============================== rules applied to all the genres above ========================================

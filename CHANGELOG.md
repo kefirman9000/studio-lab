@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.43.2
+- **Surf rock no longer sounds double-time.**
+  - Tempo is now 132-156.
+  - The tremolo-picked lead comes in bursts instead of nonstop 16ths.
+  - The floor tom plays quarters, and bass and rhythm guitar play quarters and 8ths.
+- New genre **Spooky surf - monster TV theme**, modelled on your 60s monster-sitcom theme reference (analysed at 152 BPM in E).
+  - **The riff:** a low chromatic crawl (root, a half step up, back, a half step down) played by the bass and a twangy guitar together, with brass stabs over it.
+  - **The bridge:** a brass melody in the relative major (III-VII-VI), then a sax-section stretch.
+  - **The ending:** the riff theme twice more, then a big stab.
+  - **No swaps:** the line-up stays fixed, with no instrument rotation or automatic doubling.
+- **Genres can pin each section's chords** (`section_progs`), and **bass patterns can play chromatic neighbours** (`u` = a half step up, `d` = a half step down).
+- **Fix: "pick bass" and "finger bass" played as a synth pluck** when the General MIDI sound bank isn't installed. They now fall back to the electric bass.
+
 ## 1.43.1
 From your exported songs (jazz, funk, rock, bossa nova, lo-fi, drum & bass, house, spooky surf), each re-created from its seed and measured against your reference tracks.
 - **Fix: the genre's own instrument sometimes never played.** Instrument rotation (other sounds for verses / breaks) treated lo-fi's "B" sections and jazz's "head" as verses. The swapped-in sound then covered the whole song: your lo-fi had two guitars and no Rhodes, and your jazz had no main lead. The genre's own sound now always keeps the sections where it plays most.

@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (206 genres)
+# Studio Lab - technical genre rules (207 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -3603,19 +3603,19 @@ Nu-metal / alt-metal (late 90s - early 2000s): down-tuned, chugging power-chord 
 
 ### Surf rock (60s) (`surf_rock`)
 
-Surf rock (early-60s instrumental surf): a fast, straight beat driven by the floor tom, a twangy guitar melody tremolo-picked on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and now and then a combo organ or sax - sunny, wet and full speed ahead
+Surf rock (early-60s instrumental surf): a fast, straight beat driven by the floor tom, a twangy guitar melody tremolo-picked in bursts on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and now and then a combo organ or sax - sunny, wet and full speed ahead
 
-- **Tempo** 150-176 BPM · **scales** major, mixolydian, minor, phrygian_dominant · swing 0.5 (unit 16) · humanise 0.008
+- **Tempo** 132-156 BPM · **scales** major, mixolydian, minor, phrygian_dominant · swing 0.5 (unit 16) · humanise 0.008
 - **Progressions** {'major': [[0, 3, 4, 3], [0, 5, 3, 4], [0, 0, 3, 3], [0, 3, 0, 4]], 'mixolydian': [[0, 6, 3, 0], [0, 6, 0, 6]], 'minor': [[0, 5, 6, 0], [0, 6, 5, 4]], 'phrygian_dominant': [[0, 1, 0, 1], [0, 1, 6, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `surf_rock`: intro 4 [kick, lead, snare, top] -> A 16 [bass, chords, kick, lead, snare, top] (crash) -> B 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> break 4 [kick, snare, top] -> solo 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> A 16 [bass, chords, kick, lead, snare, top] (crash) -> outro 4 [bass, chords, kick, lead, snare, top] · form_scale 1
-- **Drums** **kick** `X.......X.......` / `X.....X.X.......`; **snare** `....X.......X...` / `....X.......X.x.`; **chat** `x.x.x.x.x.x.x.x.`; **tom** `x.x.x.x.x.x.x.x.` / `x.xxx.x.x.xxx.x.`
+- **Drums** **kick** `X.......X.......` / `X.....X.X.......`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`; **tom** `x...x...x...x...` / `x...x...x.x.x...`
 - **Drum kit** vintage · preset `acoustic`
-- **Bass** `R.R.F.F.R.R.F.F.` / `R...F...O...F...` / `R.F.R.F.R.F.A.A.` · mode `pattern` · lowest note 31
-- **Chord rhythm** `x.x.x.x.x.x.x.x.` / `x..x..x.x..x..x.` / `x---x---x---x---`
-- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
-- **Lead rhythm** `xxxxxxxxx-x-x---` / `xxxxxxxxxxxxx---` / `x-x-x-x-xxxxx---` / `xxxx..xxxx..x---`
+- **Bass** `R...F...R...F...` / `R...F...O...F...` / `R.R.F...R.R.F...` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x...x...x...x...` / `x..x..x.x.......` / `x---x---x---x---`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `x-x-x-x-x---x---` / `x.x.x.x.x.x.x---` / `x---x-x-x-x-x---` / `x-x-x-x-xxxx----`
 - **Build-ups** default `(category default)` · choices ['pickup', 'stops'] · transitions ['crash', 'none', 'none']
-- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `wet_and_spacious` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `wet_and_spacious` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
 - **Instruments**
   - kick (kick): `kick` -13 dB
   - snare (snare): `snare` -16 dB · rev=0.35
@@ -3628,6 +3628,35 @@ Surf rock (early-60s instrumental surf): a fast, straight beat driven by the flo
 - **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 2.0, 'width': 1.1} · reverb 2.6 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.012, 'voicing': 'close', 'lead_oct': 4, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'spring': True, 'repetition': 0.75}
 - **Sound brief** Twangy single-coil guitar (tremolo-picked, low strings) in a spring reverb tank; strummed rhythm guitar; electric bass; floor-tom surf beat; combo organ or tenor sax for a chorus
+
+### Spooky surf - monster TV theme (`monster_theme`)
+
+Spooky surf - 60s monster-sitcom theme: a driving 150 BPM surf beat under a low, creeping chromatic riff (root, a half step up, back, a half step down) played by the bass and a twangy baritone guitar together, punchy brass stabs, a bright brass-melody bridge in the relative major, a honking sax-section stretch, and a big chromatic stab ending - campy, creepy and catchy
+
+- **Tempo** 146-158 BPM · **scales** minor · swing 0.5 (unit 16) · humanise 0.007
+- **Progressions** {'minor': [[0, 0, 0, 0], [0, 0, 5, 4], [2, 6, 5, 2]]} · chord_bars 1 · chord size 3
+- **Song form** `monster_theme`: intro 4 [bass, kick, snare, top] -> A 16 [bass, chords, kick, snare, top] (crash) -> bridge 8 [bass, chords, kick, lead, snare, top] (alt, crash) -> horns 12 [arp, bass, chords, kick, snare, top] -> bridge 8 [bass, chords, kick, lead, snare, top] (alt, crash) -> A 16 [bass, chords, kick, snare, top] (crash) -> A 8 [bass, chords, kick, lead, snare, top] -> outro 4 [bass, chords, kick, lead, snare, top] · form_scale 1
+- **Drums** **kick** `X.......X.......` / `X.....X.X.......`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`; **ride** `x.x.x.x.x.x.x.x.`
+- **Drum kit** vintage · preset `acoustic`
+- **Bass** `R.R.u.R.d.R.R...` / `R.u.R.d.R.R.u.R.` / `R.R.R.u.R.d.R...` · mode `pattern` · lowest note 28
+- **Chord rhythm** `..x...x...x...x.` / `x.......x.x.....` / `....x.......x.x.`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 4, 'prob': 0.7}
+- **Lead rhythm** `x-x-x---x-x-x---` / `x---x-x-x-------` / `x-x-x-x-x---x---`
+- **Build-ups** default `(category default)` · choices ['pickup', 'stops'] · transitions ['crash', 'none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `minimal_motivic` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -14 dB
+  - snare (snare): `snare` -15 dB · rev=0.3
+  - chat (top): `chat` -27 dB
+  - ride (top): `ride` -28 dB
+  - bass (bass): `ebass` -11 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'upright']
+  - riff (bass): `twang` -13 dB · rev=0.45
+  - chords (chords): `brass` -23 dB · pan=0.25 · rev=0.3 · alternatives ['synthbrass', 'organ', 'sf:trumpetsection']
+  - arp (arp): `sax` -22 dB · pan=-0.25 · rev=0.3 · alternatives ['brass', 'organ']
+  - lead (lead): `brass` -17 dB · rev=0.35 · dly=0.1 · alternatives ['sax', 'twang', 'organ']
+- **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 1.5, 'width': 1.0} · reverb 2.2 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'spring': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'riff_locked': True, 'section_progs': {'verse': [0, 0, 0, 0], 'main': [0, 0, 5, 4], 'alt': [2, 6, 5, 2]}, 'repetition': 0.85}
+- **Sound brief** Twangy baritone / six-string guitar doubling the bass on a low chromatic riff (spring reverb); electric bass; brass section stabs; trumpet melody for the bridge; sax section; driving surf drums with ride
 
 ## Pop & Indie
 

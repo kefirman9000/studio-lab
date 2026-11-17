@@ -439,6 +439,24 @@ def test_rotation_keeps_genre_sound():
     print('ok  instrument rotation: the genre sound keeps its sections, swaps stay in the same family')
 
 
+def test_surf_and_monster_theme():
+    """v1.43.2: surf rock in a normal (not double) time feel; the monster TV theme's chromatic riff; bass fallbacks."""
+    from sgcore.compose import Options, compose
+    from sgcore.styles import STYLES
+    from sgcore import soundfont as sfm
+    assert STYLES['surf_rock']['bpm'][1] <= 160
+    assert not any('xxxxxxxx' in p for p in STYLES['surf_rock']['lead_rh'])
+    for sd in (1, 2, 3):
+        s = compose(Options(style='monster_theme', seed=sd, variety=0.9))
+        b = [e.midi for e in s['events'] if e.track == 'bass']
+        steps = {y - x for x, y in zip(b, b[1:])}
+        assert {1, -1} <= steps, sd                                   # the half-step crawl is always there
+        assert any(e.track == 'riff' for e in s['events'])          # doubled by the twang guitar
+        assert not any(t.get('switch_of') for t in s['st']['tracks'])
+    assert sfm.fallback_for('pickbass') == 'ebass' and sfm.fallback_for('fingerbass') == 'ebass'
+    print('ok  surf rock feel, monster TV theme riff, pick / finger bass fall back to a bass (not a synth pluck)')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -458,6 +476,7 @@ def main():
     test_sound_choices()
     test_traits_and_review()
     test_rotation_keeps_genre_sound()
+    test_surf_and_monster_theme()
     print('all good')
 
 

@@ -317,7 +317,7 @@ def apply_variety(st, opts, rnd):
             drums[name] += rd.sample(bank, min(len(bank), 1 + int(2 * v)))
     st['drums'] = drums
     rb = r_for('bass')
-    if st.get('bass_mode') == 'pattern' and rb.random() < 0.3 + 0.6 * v:
+    if st.get('bass_mode') == 'pattern' and not st.get('riff_locked') and rb.random() < 0.3 + 0.6 * v:
         bank = EXTRA_BASS.get(fam, [] if fam == 'meter' else EXTRA_BASS['other'])
         st['bass'] = list(st['bass']) + rb.sample(bank, min(len(bank), 1 + int(2 * v)))
     rc = r_for('chords')
@@ -963,6 +963,12 @@ def compose(opts):
     prog_main = custom or picks[0]
     prog_verse = custom or (picks[1] if rnd.random() < 0.6 else picks[0])
     prog_alt = custom or picks[2]
+    sp = st.get('section_progs') or {}                  # a genre that pins its sections' harmony (TV-theme forms)
+    if sp and not custom:
+        ok = lambda p_: p_ if p_ and all(key.chord_ok(d) for d in p_) else None
+        prog_main = ok(sp.get('main')) or prog_main
+        prog_verse = ok(sp.get('verse')) or prog_verse
+        prog_alt = ok(sp.get('alt')) or prog_alt
     colors = {'Electronic': ['triad', 'triad', '7', 'add9', 'sus2', 'add9no3', '6'],
               'Classic': ['triad', '7', '7', 'add9', '6', '9', 'sus4'], 'Orchestral': ['triad', 'triad', 'add9', 'sus4', '6']}
     chord_color = rnd.choice(colors.get(st.get('category'), ['triad']))
@@ -1276,6 +1282,10 @@ def compose(opts):
                             m = root + 12
                         elif c == 'F':
                             m = fold(key.deg(chord + 4, 2), lo)
+                        elif c == 'u':                              # chromatic upper neighbour (a half step up)
+                            m = root + 1
+                        elif c == 'd':                              # chromatic lower neighbour (a half step down)
+                            m = root - 1
                         elif c == 'A':
                             tgt = fold(key.deg(nxt, 2), lo)
                             if rnd_b.random() < 0.4:                     # a step into the next chord - now and then
@@ -1786,8 +1796,8 @@ def add_layer_tracks(st, opts):
     from song to song."""
     from .styles import POOLS
     want = getattr(opts, 'layering', None)
-    if want == 'off' or st.get('name') == 'chiptune':
-        return
+    if want == 'off' or st.get('name') == 'chiptune' or (st.get('no_layers') and want != 'on'):
+        return                                           # (a genre whose doubling is written in keeps its line-up)
     v = max(0.0, min(1.0, float(opts.variety)))
     cat = st.get('category')
     fusion = st.get('fusion') or {}

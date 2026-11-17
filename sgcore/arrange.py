@@ -84,7 +84,7 @@ GENRE_BUILD = {'riddim': 'pause', 'chillstep': 'swell', 'jazz_rap': 'pause', 'cl
 BIG_SECTIONS = {'chorus', 'hook', 'climax', 'theme', 'drop'}
 
 
-HIT_FORMS = {'spooky_surf', 'surf_rock', 'lofi_rock', 'nu_metal', 'song', 'song_b', 'jazz', 'orchestral', 'cinematic', 'trap', 'halftime', 'halftime_b', 'chip', 'trailer'}
+HIT_FORMS = {'spooky_surf', 'surf_rock', 'monster_theme', 'lofi_rock', 'nu_metal', 'song', 'song_b', 'jazz', 'orchestral', 'cinematic', 'trap', 'halftime', 'halftime_b', 'chip', 'trailer'}
 
 
 def _track_of(tracks, layer):

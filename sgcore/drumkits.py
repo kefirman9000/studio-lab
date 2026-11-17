@@ -335,7 +335,7 @@ CHOP.update({'funky_breaks': 0.35})
 # 1.41: kits for the genres that had none (each picks the recorded / machine kit its records were made with)
 GENRE_KIT.update({'holiday': 'brushes', 'western': 'vintage', 'chamber_pop': 'studio', 'jam_rock_80s': 'big80s',
                   'lofi_rock': 'rusty', 'sophisti_pop': 'big80s', 'folk_jam': 'brushes', 'psych_pop': 'dead70s',
-                  'boogie_rock': 'rock', 'spooky_surf': 'vintage', 'surf_rock': 'vintage', 'nu_metal': 'rock', 'soul_sample_rap': 'vintage',
+                  'boogie_rock': 'rock', 'spooky_surf': 'vintage', 'surf_rock': 'vintage', 'monster_theme': 'vintage', 'nu_metal': 'rock', 'soul_sample_rap': 'vintage',
                   'new_age_chant': 'funky_drummer', 'midfi_synthfunk': 'linn', 'uk_bass_130': 'techno', 'hard_trance': 'trance',
                   'nu_disco': '909', 'piano_house_90s': '909', 'tokyo_deep_house': '909', 'smooth_90s_rap': '808',
                   'bay_rap': '808', 'futuristic_bounce': '808', 'hard_trap': '808', 'switch_trap': '808', 'club_pop': '707',
