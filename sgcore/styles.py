@@ -4158,6 +4158,109 @@ style('big_band_50s', 'Classic',
       label='50s big band (brassy, smooth)')
 
 
+
+# ----------------------------------------------------------------------------- more hauntology (tape-music nostalgia)
+style('hauntology_melody', 'Electronic',
+      'Hauntology - wobbly melody, slow beat: a dusty 80-90 BPM hip-hop beat under a simple, sad-happy detuned synth '
+      'melody that drifts in and out of tune on old tape, a round warm bass, faded analog pads and very little top end',
+      bpm=(80, 92), scales=['minor', 'dorian', 'major'], swing=0.55, human=0.006, form='lofi', chord_size=4,
+      progs={'minor': [[0, 5, 3, 6], [0, 3, 0, 5], [5, 3, 0, 0]], 'dorian': [[0, 3, 0, 3]], 'major': [[0, 3, 0, 4], [3, 0, 3, 4]]},
+      sc_depth=0.0, reverb=2.6, kit='soft', sampler=True,
+      drums={'kick': ['X.......X.x.....', 'X.....x.X.......', 'X.......X...x...'], 'snare': [BACKBEAT],
+             'clap': ['....x.......x...'], 'chat': ['x.x.x.x.x.x.x.x.', '..x...x...x...x.']},
+      snare_tracks=['snare'],
+      bass=['R-------R-------', 'R-----..R---....', 'R-------F-------'], bass_lo=31,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=60, arp=dict(rate=2, mode='updown', oct=5, prob=0.5),
+      lead_rh=['x-------x---x---', 'x---x---x-------', 'x---x-x-x-------', 'x-------x-------'], repetition=0.9,
+      gm_hint='Detuned mono synth melody (pitch drifting on tape); warm sub; faded string-machine pad; dusty soft kit',
+      tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.35, db=-18),
+              T('clap', 'snare', 'clap', rev=0.4, db=-24), T('chat', 'top', 'chat', db=-31),
+              T('bass', 'bass', 'moogbass', db=-14, p=dict(cut=500)),
+              T('chords', 'chords', 'solina', rev=0.5, db=-24, p=dict(cut=1400)),
+              T('pad', 'pad', 'warmpad', rev=0.55, db=-27, p=dict(cut=900)),
+              T('arp', 'arp', 'vibes', rev=0.5, dly=0.3, pan=-0.25, db=-28),
+              T('lead', 'lead', 'polysynth', rev=0.45, dly=0.3, db=-18, p=dict(a=0.02, cut=1800), chorus=0.6),
+              T('vinyl', 'fx', 'vinyl', db=-40)],
+      master=dict(lufs=-13.0, air=-3.0, low=1.6, lofi=True, wobble=4.5),
+      pools=dict(bass=['moogbass', 'sinebass'], chords=['solina', 'polysynth', 'warmpad'], pad=['warmpad', 'solina', 'choir'],
+                 arp=['vibes', 'bell', 'polysynth'], lead=['polysynth', 'softlead', 'vibes']),
+      label='Hauntology - wobbly melody (slow beat)')
+
+style('hauntology_lullaby', 'Electronic',
+      'Hauntology - beatless tape lullaby: no drums at all, just slow, warm chords on a detuned piano or string machine '
+      'and a little melody, played off a worn tape that sags in pitch - quiet, muffled, short and wistful',
+      bpm=(60, 76), scales=['major', 'lydian', 'mixolydian'], human=0.012, form='ambient', chord_size=4,
+      progs={'major': [[0, 3, 0, 4], [0, 5, 3, 4], [3, 0, 3, 0]], 'lydian': [[0, 1, 0, 1]], 'mixolydian': [[0, 6, 0, 3]]},
+      sc_depth=0.0, reverb=3.4, kit='soft', sampler=True, chord_bars=2,
+      drums={}, bass=['R---------------'], bass_lo=36,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=60, arp=dict(rate=4, mode='up', oct=5, prob=0.6),
+      lead_rh=['x-------x-------', 'x---x---x-------', 'x---------------'], repetition=0.85,
+      gm_hint='Detuned piano / string machine chords; a soft melody; heavy tape wow and flutter; no drums',
+      tracks=[T('bass', 'bass', 'sinebass', db=-22, p=dict(cut=300)),
+              T('chords', 'chords', 'piano', rev=0.55, db=-20, chorus=0.5),
+              T('pad', 'pad', 'solina', rev=0.6, db=-24),
+              T('arp', 'arp', 'celesta', rev=0.6, dly=0.3, pan=0.25, db=-29),
+              T('lead', 'lead', 'softlead', rev=0.55, dly=0.3, db=-21, p=dict(cut=1500)),
+              T('vinyl', 'fx', 'vinyl', db=-40)],
+      master=dict(lufs=-17.0, air=-6.0, low=0.4, lofi=True, wobble=6.0, width=1.4),
+      pools=dict(chords=['piano', 'epiano', 'solina', 'polysynth'], pad=['solina', 'warmpad'], arp=['celesta', 'vibes', 'bell'],
+                 lead=['softlead', 'polysynth', 'flute']),
+      label='Hauntology - beatless tape lullaby')
+
+style('hauntology_campfire', 'Electronic',
+      'Hauntology - campfire guitar haze: looping acoustic guitar figures and slowly strummed chords over a warm, '
+      'loose 90 BPM beat, a deep round bass, reversed swells and soft synths - sunlit, hazy and outdoors',
+      bpm=(84, 96), scales=['major', 'mixolydian', 'dorian'], swing=0.55, human=0.008, form='lofi', chord_size=4,
+      progs={'major': [[0, 3, 0, 3], [0, 4, 3, 0], [3, 0, 4, 0]], 'mixolydian': [[0, 6, 3, 0]], 'dorian': [[0, 3, 0, 3]]},
+      sc_depth=0.0, reverb=2.4, kit='soft', sampler=True,
+      drums={'kick': ['X.......X.x.....', 'X.....x...X.....'], 'snare': [BACKBEAT], 'chat': ['x.x.x.x.x.x.x.x.'],
+             'shaker': ['..x...x...x...x.']},
+      snare_tracks=['snare'],
+      bass=['R-------R---....', 'R-----..R-------'], bass_lo=31,
+      chord_rh=['x-----x-x-------', 'x---x---x---x---'], chord_center=60, strum=0.02,
+      arp=dict(rate=2, mode='updown', oct=4, rh=['x.x.x.x.x.x.x.x.', 'x..x..x.x..x..x.']),
+      lead_rh=['x-------x-------', 'x---x---x-------', 'x---------------'], repetition=0.9,
+      gm_hint='Acoustic guitar loops (fingerpicked + strummed); warm loose drums; round bass; reversed swells; soft synth',
+      tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.3, db=-18), T('chat', 'top', 'chat', db=-30),
+              T('shaker', 'top', 'shaker', pan=0.3, db=-31),
+              T('bass', 'bass', 'moogbass', db=-14, p=dict(cut=500)),
+              T('chords', 'chords', 'acguitar', rev=0.4, pan=-0.2, db=-21, chorus=0.3),
+              T('pad', 'pad', 'warmpad', rev=0.55, db=-27, p=dict(cut=900)),
+              T('arp', 'arp', 'acguitar', rev=0.4, pan=0.25, db=-23, p=dict(bright=4500)),
+              T('lead', 'lead', 'polysynth', rev=0.45, dly=0.3, db=-21, chorus=0.5, p=dict(cut=1600)),
+              T('vinyl', 'fx', 'vinyl', db=-40)],
+      master=dict(lufs=-13.0, air=-2.0, low=1.4, lofi=True, wobble=3.5),
+      pools=dict(bass=['moogbass', 'sinebass'], chords=['acguitar', 'guitar', 'sf:nylon'], pad=['warmpad', 'solina'],
+                 arp=['acguitar', 'guitar', 'harp'], lead=['polysynth', 'softlead', 'acguitar']),
+      label='Hauntology - campfire guitar haze')
+
+style('hauntology_cold', 'Electronic',
+      'Hauntology - cold dystopian synths: slow, heavy and minor - a stark kick and snare with lots of space, cold '
+      'analog arpeggios, a dark drone bass, eerie detuned pads and a lonely melody, like a 70s public-information film '
+      'played back decades later',
+      bpm=(64, 76), scales=['minor', 'phrygian', 'harmonic_minor'], swing=0.52, human=0.005, form='lofi', chord_size=3,
+      progs={'minor': [[0, 0, 5, 6], [0, 6, 5, 6], [0, 3, 0, 6]], 'phrygian': [[0, 1, 0, 0]], 'harmonic_minor': [[0, 4, 0, 5]]},
+      sc_depth=0.0, reverb=3.0, kit='soft', sampler=True, chord_bars=2,
+      drums={'kick': ['X.........X.....', 'X.......X.......', 'X..........X....'], 'snare': [BACKBEAT],
+             'chat': ['x...x...x...x...', '..x...x...x...x.']},
+      snare_tracks=['snare'],
+      bass=['R---------------', 'R-------R-------'], bass_lo=28,
+      chord_rh=['x---------------'], chord_center=58, arp=dict(rate=1, mode='updown', oct=4, prob=0.9),
+      lead_rh=['x-------........', 'x---x-------....', '........x-------', 'x-------x-------'], repetition=0.9,
+      gm_hint='Stark slow kit; cold analog arpeggio; drone bass; detuned eerie pads; a lonely synth / flute melody',
+      tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.45, db=-17), T('chat', 'top', 'chat', db=-31),
+              T('bass', 'bass', 'sinebass', db=-14, p=dict(cut=300)),
+              T('chords', 'chords', 'polysynth', rev=0.5, db=-24, p=dict(cut=1000, a=0.4)),
+              T('pad', 'pad', 'choir', rev=0.6, db=-27),
+              T('arp', 'arp', 'polysynth', rev=0.4, dly=0.35, pan=0.25, db=-25, p=dict(a=0.003, d=0.25, s=0.1, cut=1800)),
+              T('lead', 'lead', 'softlead', rev=0.5, dly=0.35, db=-20, p=dict(cut=1400)),
+              T('texture', 'fx', 'texture', db=-36), T('vinyl', 'fx', 'vinyl', db=-40)],
+      master=dict(lufs=-13.0, air=-1.5, low=1.4, lofi=True, wobble=3.0),
+      pools=dict(bass=['sinebass', 'moogbass'], chords=['polysynth', 'solina', 'warmpad'], pad=['choir', 'warmpad', 'solina'],
+                 arp=['polysynth', 'pluck_saw', 'bell'], lead=['softlead', 'polysynth', 'flute']),
+      label='Hauntology - cold dystopian synths')
+
+
 # ============================== rules applied to all the genres above ========================================
 # ----------------------------------------------------------------------------- real basses everywhere they belong
 # electric bass (Growlybass) for electric genres, upright (Meatbass) for acoustic / jazz ones

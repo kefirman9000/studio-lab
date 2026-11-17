@@ -1,8 +1,8 @@
-# Studio Lab genres (158)
+# Studio Lab genres (162)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (77)
+## Electronic (81)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -40,6 +40,10 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hardcore / Gabber | `gabber` | 170-195 | Hardcore / gabber (90s Rotterdam): 170-200 BPM four-on-the-floor of heavily distorted, pitched "gabber" kicks, screeching leads, hoovers and raw, confrontational energy |
 | Hardstyle | `hardstyle` | 148-154 | Hardstyle: distorted pitched kicks, screeching leads, euphoric supersaw melodies |
 | Hauntology | `hauntology` | 78-96 | Hauntology: warped-tape analog synths, slow dusty hip-hop breaks, nostalgic melodies and string-machine haze, all drifting like an old cassette |
+| Hauntology - beatless tape lullaby | `hauntology_lullaby` | 60-76 | Hauntology - beatless tape lullaby: no drums at all, just slow, warm chords on a detuned piano or string machine and a little melody, played off a worn tape that sags in pitch - quiet, muffled, short and wistful |
+| Hauntology - campfire guitar haze | `hauntology_campfire` | 84-96 | Hauntology - campfire guitar haze: looping acoustic guitar figures and slowly strummed chords over a warm, loose 90 BPM beat, a deep round bass, reversed swells and soft synths - sunlit, hazy and outdoors |
+| Hauntology - cold dystopian synths | `hauntology_cold` | 64-76 | Hauntology - cold dystopian synths: slow, heavy and minor - a stark kick and snare with lots of space, cold analog arpeggios, a dark drone bass, eerie detuned pads and a lonely melody, like a 70s public-information film played back decades later |
+| Hauntology - wobbly melody (slow beat) | `hauntology_melody` | 80-92 | Hauntology - wobbly melody, slow beat: a dusty 80-90 BPM hip-hop beat under a simple, sad-happy detuned synth melody that drifts in and out of tune on old tape, a round warm bass, faded analog pads and very little top end |
 | Hauntology II (sunlit tape) | `hauntology_sunlit` | 84-100 | Hauntology II - sunlit tape (Boards of Canada, "Music Has the Right to Children"): warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
 | Hauntology III (dark film haze) | `hauntology_dark` | 66-84 | Hauntology III - dark film haze (Boards of Canada, "Geogaddi"): slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
 | Hopecore (dreamy, slow) | `hopecore_dreamy` | 118-136 | Hopecore (dreamy): the slower, softer side - warm 120-135 BPM bounce with a sub-heavy kick and soft claps, gentle major piano and guitar loops, airy pads, music-box and bell melodies, a hopeful lead floating in reverb |

@@ -271,3 +271,4 @@ GENRE_KIT.update({'hopecore': 'amen', 'alt_rock_90s': 'rock', 'bedroom_pop': '70
                   'electro_funk': 'dmx', 'ps1_game': 'think', 'nineties_club_house': '909', 'sunny_melodic_house': '909'})
 CHOP.update({'hopecore': 0.45, 'ps1_game': 0.12})
 GENRE_KIT.update({'swing_tomtom': 'studio', 'big_band_50s': 'studio'})
+GENRE_KIT.update({k: 'vintage' for k in ('hauntology_melody', 'hauntology_campfire', 'hauntology_cold')})

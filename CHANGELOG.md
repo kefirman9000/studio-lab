@@ -14,6 +14,7 @@
 - **Hopecore (euphoric breaks)** and **Hopecore (dreamy, slow)**.
 - **Swing-era big band (hot, tom-tom)**: a fast 1930s minor-key flag-waver on the floor-tom groove, riffing brass, sax section, clarinet lead, a drum break and a shout chorus.
 - **50s big band (brassy, smooth)**: a medium-up swinging major-key chart - walking bass, ride and hi-hat on 2 and 4, piano comping, sax section, trumpet and trombone hits building to a shout chorus.
+- **Four more hauntology moods** (the original Hauntology is unchanged): *wobbly melody, slow beat* (a detuned synth tune drifting on tape over a dusty beat), *beatless tape lullaby* (quiet, muffled, no drums), *campfire guitar haze* (looping acoustic guitars over a loose 90 BPM beat) and *cold dystopian synths* (slow, stark, minor, cold analog arpeggios).
 - Also **Soca / calypso** (steel pan, iron, brass hits), **Raga** (tanpura drone, sitar with meend, tabla; alap - jor - gat - jhala) and **Japanese zen** (koto, shakuhachi-style flute, taiko).
 
 **Drum kits**
