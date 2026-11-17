@@ -35,6 +35,7 @@ PLAYERS = {
     'labs': dict(name='Spitfire LABS', match=_matcher('labs', exclude=('kilohearts',)), kind='sampler', pack=None),
     # effects (used by sgcore.fxrig, never as instruments)
     'dragonfly': dict(name='Dragonfly Reverb', match=_matcher('dragonfly'), kind='fx', pack='dragonfly'),
+    'airwindows': dict(name='Airwindows Consolidated', match=_matcher('airwindows'), kind='fx', pack='airwindows'),
     'chowtape': dict(name='CHOW Tape Model', match=_matcher('chowtapemodel', 'chow tape'), kind='fx', pack=None),
     'byod': dict(name='BYOD', match=_matcher('byod'), kind='fx', pack=None),
 }

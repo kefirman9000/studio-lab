@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.32.0
+Rap, hip-hop & R&B, round two - plus Airwindows:
+- **Sampler grit**: Boom Bap, Lo-fi, Memphis Phonk and the new Jazz Rap run their loops (chords, melody, pads) through an SP-1200-style stage - 26 kHz sample-and-hold, 12-bit grain and the dull top end - so they sound sampled off a record instead of played.
+- **808s**: kept in the real sub register (E1 ... A2, slides included) instead of drifting up into the mids, with a longer, more audible trap slide.
+- **New genres**: **Jazz Rap** (A Tribe Called Quest / Nujabes: dusty swung break, real upright walking under jazzy Rhodes, vibes and muted-trumpet phrases), **Cloud Rap** (Clams Casino / Yung Lean: washed-out reverb pads, choir haze, bells drowned in echo, soft 808), **90s R&B Slow Jam** (Jodeci / Boyz II Men: DX e-piano 9ths, finger snaps, deep sub, strings, clean guitar).
+- **Airwindows Consolidated** (MIT, 500+ effects - tape, console, saturation, lo-fi, reverbs) is a new Genre VSTs pack, downloaded from its official GitHub release (the zip, never the installer) with the usual checks. Pick it as a part effect in Sound.
+
 ## 1.31.0
 Every genre checked against the new real instruments:
 - **Two new free real-bass libraries** in 🎻 Real instruments (CC0, Karoryfer Samples): **Electric bass** (Growlybass, a Squier Jazz bass, sustained + staccato, 46 MB) and **Upright double bass** (Meatbass, pizzicato, 29 MB).

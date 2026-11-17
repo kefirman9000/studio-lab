@@ -48,7 +48,7 @@ def i_808(m, dur, p, glide=None, mod=None):
     t = np.arange(n) / SR
     if glide is not None:
         f0 = float(mtof(glide))
-        freq = f + (f0 - f) * np.exp(-t / 0.06)
+        freq = f + (f0 - f) * np.exp(-t / p.get('slide', 0.09))      # the classic trap 808 slide
     else:
         freq = np.full(n, f)
     y = np.sin(2 * np.pi * np.cumsum(freq) / SR)

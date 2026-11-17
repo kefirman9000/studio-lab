@@ -1,8 +1,8 @@
-# Studio Lab genres (136)
+# Studio Lab genres (139)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (67)
+## Electronic (68)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -20,6 +20,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Breakcore | `breakcore` | 170-190 | Breakcore: frantic chopped breaks at 180+, reese bass, melancholic pads and chiptune |
 | Brostep | `brostep` | 140-150 | Brostep: festival dubstep - snarling growls, wobbles and FM stabs trading bars in the drop over a clean sub, aggressive half-time drums, pitch dives, risers and hard stops |
 | Chiptune | `chiptune` | 140-160 | 8-bit chiptune: pulse-wave leads, triangle bass, noise drums, lightning arpeggios |
+| Cloud Rap | `cloud_rap` | 60-76 | Cloud rap (Clams Casino, A$AP Rocky, Yung Lean): dreamy, washed-out and ethereal - huge reverb pads and choir-like haze, a soft melody drowned in echo, slow half-time drums and a deep, gentle 808 |
 | Dancehall | `dancehall` | 88-104 | Dancehall: digital riddim, syncopated kick and snare, sub bass, synth stabs and chanted hooks |
 | Deep Dubstep (dark, minimal) | `deep_dubstep` | 138-142 | Deep / minimal dubstep: half-time 140 with the kick on 1 and the snare on 3, sparse shuffled 2-step percussion thrown into dub delays, a heavy clean sub carrying the track, one eerie motif, dub chord stabs and lots of dark negative space - soundsystem pressure, not festival brostep |
 | Deep House | `deep_house` | 118-123 | Deep house: warm organ & Rhodes 7th chords, round sub, shuffled shakers |
@@ -74,11 +75,12 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Uplifting Trance | `uplifting_trance` | 134-140 | Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw leads and plucky arps, a long piano / pad breakdown that explodes into the drop |
 | Vaporwave | `vaporwave` | 60-80 | Vaporwave: slowed 80s nostalgia - lush Rhodes, sax, chorused pads, tape haze |
 
-## Classic (47)
+## Classic (49)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | 70s Soft Rock | `soft_rock` | 100-126 | 70s soft rock (California): steady groove, round melodic bass, strummed acoustic and clean electric guitars, Rhodes and organ, a smooth vocal-style lead |
+| 90s R&B Slow Jam | `slow_jam` | 58-72 | 90s R&B slow jam (Jodeci, Boyz II Men, Silk): candle-lit and swung - DX electric piano 9ths, finger snaps on 2 and 4, a deep sub bass, soft 16th hats, lush strings and a smooth clean-guitar line |
 | Bebop | `bebop` | 180-260 | Bebop: fast swing, dense 8th-note lines built from chord tones, tensions and chromatic approach notes over rapid ii-V changes; ride and walking bass drive, piano comps rootless voicings |
 | Big Band Swing | `swing` | 132-196 | Big-band swing: walking bass, ride and hi-hat on 2 & 4, brass section shouts, a sax solo |
 | Bluegrass | `bluegrass` | 112-150 | Bluegrass: banjo rolls, fiddle breakdowns, mandolin chop on the offbeat, driving upright bass |
@@ -103,6 +105,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Jam Band | `jam_band` | 100-132 | Jam band / psychedelic Americana: noodling clean lead guitar, melodic wandering bass, organ, loose two-drummer groove, long improvised sections |
 | Jazz | `jazz` | 100-160 | Jazz / swing: walking bass, ride-cymbal swing, piano comping with extended chords |
 | Jazz Fusion | `fusion` | 96-140 | Jazz fusion / jazz-rock: straight 16th-note grooves, electric bass, Rhodes and synth leads, overdriven guitar, extended chords and virtuosic unison lines over a rock / funk rhythm section |
+| Jazz Rap | `jazz_rap` | 84-96 | Jazz rap (A Tribe Called Quest, Digable Planets, Nujabes): a dusty swung break, upright bass walking under jazzy 9th-chord Rhodes and piano loops, vibraphone and muted-horn phrases - all crunched through an SP-1200 |
 | Metal | `metal` | 140-180 | Metal: palm-muted power chords, double-kick drums, shredding lead guitar |
 | Modern Country | `modern_country` | 76-108 | Modern country / Nashville pop (Luke Combs, Morgan Wallen, Kacey Musgraves): big clean drums, driving 16th acoustic strum, electric bass on the root, twangy Telecaster riffs and pedal-steel swells, a big singalong chorus |
 | Motown / 60s Soul | `motown` | 100-126 | Motown / 60s soul: tambourine on every backbeat, melodic bass, piano and guitar chops, strings and horns |

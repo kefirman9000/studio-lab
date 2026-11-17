@@ -312,6 +312,8 @@ class Renderer:
                     sig = sig.copy()
                     sig[..., :n] *= (np.linspace(0.08, 1.0, n, dtype=np.float32) ** 1.6)
             self._add(buf, sig * ev.vel, s)
+        if self.st.get('sampler') and tcfg['layer'] in ('chords', 'lead', 'arp', 'pad') and np.any(buf):
+            buf = sp1200(buf)                             # the sampled-loop grit of an SP-1200 / MPC
         if tcfg.get('amp') and tcfg['inst'].startswith('real:'):
             buf = guitar_amp(buf, float(tcfg['amp']))
         if tcfg.get('drive'):
@@ -576,6 +578,20 @@ class Renderer:
         self.stems = stems
         self.stem_env = env
         return mix
+
+
+def sp1200(x, rate=26040.0, bits=12):
+    """E-mu SP-1200 character: 26.04 kHz sample-and-hold (aliasing sparkle), 12-bit grain and the dull top end of its
+    output filters - what makes a boom-bap loop sound sampled rather than played."""
+    x = np.asarray(x, dtype=np.float32)
+    n = x.shape[-1]
+    idx = np.floor(np.arange(n) * rate / SR) * (SR / rate)
+    idx = np.minimum(idx.astype(np.int64), n - 1)
+    y = x[..., idx]
+    peak = float(np.max(np.abs(y))) + 1e-9
+    q = 2 ** (bits - 1)
+    y = np.round(y / peak * q) / q * peak
+    return lp(y.astype(np.float64), 11000).astype(np.float32)
 
 
 def guitar_amp(x, gain):

@@ -75,6 +75,13 @@ PACKS = [
          bundles=[r'^dragonfly ?hall ?reverb$', r'^dragonfly ?room ?reverb$', r'^dragonfly ?plate ?reverb$'],
          assets={'windows': [r'win64.*\.zip$', r'windows.*64.*\.zip$'], 'mac': [r'mac.*\.zip$'],
                  'linux': [r'linux.*{arch}.*\.zip$', r'linux.*\.zip$']}),
+    dict(id='airwindows', name='Airwindows Consolidated', maker='Chris Johnson (Airwindows) & Paul Walker', license='MIT',
+         repo='baconpaul/airwin2rack', page='https://www.airwindows.com/consolidated/', size='~30 MB', kind='effect',
+         plays='500+ Airwindows effects in one plugin - tape (ToTape), console, saturation, lo-fi, reverbs and more. Pick it as a '
+               'part effect in Sound (e.g. tape or console warmth on a boom-bap loop, saturation on a bass)',
+         bundles=[r'^airwindows ?consolidated$'],
+         assets={'windows': [r'airwindows.*win.*\.zip$', r'win.*(x64|64).*\.zip$', r'win.*\.zip$'],
+                 'mac': [r'mac.*\.(zip|dmg)$'], 'linux': [r'linux.*{arch}.*\.zip$', r'linux.*\.zip$']}),
 ]
 BY_ID = {p['id']: p for p in PACKS}
 
