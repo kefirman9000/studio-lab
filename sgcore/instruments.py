@@ -1448,3 +1448,44 @@ INSTRUMENTS['organbass'] = i_organbass
 INSTRUMENT_INFO['organbass'] = 'House organ bass (M1-style)'
 ROLE_CHOICES['bass'] += ['organbass']
 GM_PROGRAM['organbass'] = 16
+
+
+
+def i_screech(m, dur, p, glide=None, mod=None):
+    """Brostep screech (Skrillex "Scary Monsters" style): a high, harsh FM tone with a sweeping notch / formant and a
+    pitch bend that whines up at the start - played an octave or two above the growls."""
+    f = float(mtof(m)) * 2 ** p.get('octave', 1)
+    env = adsr(dur * SR, 0.003, 0.08, 0.95, 0.03)
+    n = len(env)
+    t = np.arange(n) / SR
+    bend = 2 ** ((-5 * np.exp(-t * 18)) / 12)                     # whines up into the note
+    hz = 1.0 / ((mod or 0.25) * p.get('spb', 0.43))
+    lfo = 0.5 - 0.5 * np.cos(2 * np.pi * hz * t)
+    ph = 2 * np.pi * np.cumsum(f * bend) / SR
+    x = np.sin(ph + (3.0 + 6.0 * lfo) * np.sin(ph * 3.01)) + 0.4 * saw(f * 1.01, n)
+    y = svf_sweep(soft(x * 3.0, 2.5), 900 + 2600 * lfo, q=5.0) + 0.3 * x
+    y = soft(hp(y, 300) * 2.0, 2.0) * 0.35
+    return y * env
+
+
+def i_riddim(m, dur, p, glide=None, mod=None):
+    """Riddim bass: a hollow square / saw stack through a band-pass that is chopped on and off by a hard, tempo-synced
+    gate (mod = chop length in beats) - the minimal, repetitive, triplet-chopped mid bass of riddim - plus a clean sub."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.002, 0.05, 1.0, 0.02)
+    n = len(env)
+    t = np.arange(n) / SR
+    hz = 1.0 / ((mod or 1 / 3) * p.get('spb', 0.43))
+    gate = (np.sin(2 * np.pi * hz * t) > -0.2).astype(np.float64)
+    gate = np.convolve(gate, np.ones(64) / 64, mode='same')       # click-free chops
+    x = square(f, n, 0.0) + 0.7 * saw(f * 1.006, n) + 0.5 * square(f * 2.003, n, 0.25)
+    y = svf_sweep(x, np.full(n, p.get('cut', 750)), q=3.5) + 0.35 * x
+    y = soft(y * 2.8, 2.4) * 0.45 * gate
+    sub = sine(f / 2 if f > 70 else f, n) * p.get('sub', 0.7)
+    return (y + sub) * env
+
+
+INSTRUMENTS.update({'screech': i_screech, 'riddim': i_riddim})
+INSTRUMENT_INFO.update({'screech': 'Screech bass (brostep)', 'riddim': 'Riddim bass (chopped)'})
+ROLE_CHOICES['bass'] += ['screech', 'riddim']
+GM_PROGRAM.update({'screech': 81, 'riddim': 39})

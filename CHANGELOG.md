@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.34.0
+Dubstep, more authentic:
+- **Dubstep (classic UK)**: dark chord stabs and horror-movie bells over the wobble and sub (the soft synth lead is gone).
+- **Brostep**: a new **screech bass** (high, harsh FM with a whine-up bend and sweeping formant - the Skrillex sound); the drop now trades growl -> wobble -> growl -> screech, with a supersaw lead for the breakdowns (no more rave hoover or 8-bit sounds).
+- **Melodic Dubstep**: reese / growl / wobble basses under supersaw leads (no plain saw bass or vocal-synth lead).
+- **New: Riddim** - a new **riddim bass** (hollow square / saw, hard tempo-synced triplet chops, own sub) repeating its 2-bar phrase over sparse half-time drums and a creepy bell.
+- **New: Chillstep** - slow half-time at 140, lush reverb pads, piano, delayed plucks and a gentle rolling wobble.
+- Each wobble genre can now set its own wobble rates (riddim chops in triplets, chillstep rolls slowly).
+- All dubstep styles keep their signature sounds instead of the variety setting swapping them.
+
 ## 1.33.0
 House & trance with their real sounds:
 - **House**: the bouncy **M1-style organ bass** (new sound, the 90s NYC / Robin S bass), offbeat **piano** stabs (real Steinway), organ hits, warm pads - instead of a saw bass, supersaw pad and plucks.

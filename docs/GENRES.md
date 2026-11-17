@@ -1,8 +1,8 @@
-# Studio Lab genres (139)
+# Studio Lab genres (141)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (68)
+## Electronic (70)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -19,6 +19,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Breakbeat Hardcore / Rave | `rave_hardcore` | 135-155 | Breakbeat hardcore / early UK rave (1990-93): Amen-style breaks over a four-on-the-floor kick, piano stabs, hoover and Mentasm leads, pitched-up vocal chops - funky, chaotic, euphoric |
 | Breakcore | `breakcore` | 170-190 | Breakcore: frantic chopped breaks at 180+, reese bass, melancholic pads and chiptune |
 | Brostep | `brostep` | 140-150 | Brostep: festival dubstep - snarling growls, wobbles and FM stabs trading bars in the drop over a clean sub, aggressive half-time drums, pitch dives, risers and hard stops |
+| Chillstep | `chillstep` | 138-144 | Chillstep (Blackmill, Seven Lions-ish ambient side): slow half-time dubstep at 140 with lush reverb pads, piano and gentle plucks drowned in delay, a soft rolling wobble and a warm sub - melancholic and floating |
 | Chiptune | `chiptune` | 140-160 | 8-bit chiptune: pulse-wave leads, triangle bass, noise drums, lightning arpeggios |
 | Cloud Rap | `cloud_rap` | 60-76 | Cloud rap (Clams Casino, A$AP Rocky, Yung Lean): dreamy, washed-out and ethereal - huge reverb pads and choir-like haze, a soft melody drowned in echo, slow half-time drums and a deep, gentle 808 |
 | Dancehall | `dancehall` | 88-104 | Dancehall: digital riddim, syncopated kick and snare, sub bass, synth stabs and chanted hooks |
@@ -27,7 +28,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Downtempo | `downtempo` | 85-100 | Downtempo / chillout: laid-back beats, Rhodes & piano, warm pads, glassy bells |
 | Drift Phonk | `phonk` | 145-165 | Drift phonk: a heavily distorted pitched 808 cowbell riff on loop, clipped growling 808s, rolling hats, dark minor / phrygian mood, chopped vocals and tape grit - made at 3 a.m., played too loud in a car |
 | Drum & Bass | `dnb` | 170-176 | Drum & bass: two-step breaks at 174, growling reese bass, wide pads |
-| Dubstep (Dark / UK) | `dubstep` | 138-142 | Dark / UK dubstep: half-time at 140, deep clean sub with a slow wobbling mid-bass, sparse syncopated drums, lots of space, dark atmospheres |
+| Dubstep (classic UK) | `dubstep` | 138-142 | Dark / UK dubstep: half-time at 140, deep clean sub with a slow wobbling mid-bass, sparse syncopated drums, lots of space, dark atmospheres |
 | Electro | `electro` | 125-132 | Electro: robotic 808 funk, FM bass grit, zappy leads |
 | Eurodance | `eurodance` | 134-142 | 90s eurodance: driving four-on-the-floor, offbeat bass, piano stabs, big anthemic leads |
 | Future Bass | `future_bass` | 140-160 | Future bass: lush pitch-chopped supersaw chords, vocal chops, half-time trap drums |
@@ -63,6 +64,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Psytrance | `psytrance` | 140-148 | Psytrance: relentless kick-bass rolls, acid squelches, hypnotic phrygian riffs |
 | Rage | `rage` | 150-165 | Rage (Playboi Carti, Trippie Redd, F1lthy-style): huge detuned supersaw synth leads and arps, distorted booming 808s, hard trap drums at 150+ - loud, bright and euphoric |
 | Reggaeton | `reggaeton` | 88-100 | Reggaeton: dembow rhythm, deep 808s, plucky synths, latin percussion |
+| Riddim | `riddim` | 140-150 | Riddim (Subtronics, Excision, early Rusko-inspired riddim): minimal and hypnotic - a hollow, hard-chopped triplet mid-bass repeating its 2-bar phrase, deep sub, sparse half-time drums, a creepy bell or stab and almost nothing else |
 | Synth-pop | `synthpop` | 110-122 | Synth-pop: punchy LinnDrum-style beats, bright plucks, string pads, catchy leads |
 | Synthwave | `synthwave` | 90-112 | 80s synthwave/retrowave: gated-reverb snares, pulsing octave bass, supersaws, saw lead |
 | Tech House | `tech_house` | 124-128 | Tech house: rolling, rubbery filtered bassline, 909 groove with congas, rims and shakers, percussive organ and synth stabs - minimal melody, all groove |

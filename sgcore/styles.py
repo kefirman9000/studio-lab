@@ -3562,3 +3562,69 @@ STYLES['house']['desc'] = ('Classic / NYC house: four-on-the-floor 909, the boun
                            'warm pads, pumping sidechain')
 STYLES['tech_house']['desc'] = ('Tech house: rolling, rubbery filtered bassline, 909 groove with congas, rims and shakers, '
                                 'percussive organ and synth stabs - minimal melody, all groove')
+
+
+# ----------------------------------------------------------------------------- 1.34: dubstep, more authentic
+# classic UK dubstep: dark stabs and horror bells over the wobble (not a soft synth lead)
+for _t in STYLES['dubstep']['tracks']:
+    if _t['name'] == 'lead':
+        _t.update(inst='stab', p=dict(cut=1600), db=-22)
+    if _t['name'] == 'arp':
+        _t.update(inst='bell', p={}, db=-27, dly=0.35)
+POOLS['dubstep'].update(lead=['stab', 'organ', 'bell', 'softlead'], arp=['bell', 'celesta', 'pluck_saw'])
+BELL_OK.update({'dubstep', 'riddim', 'chillstep'})
+MALLET_OK.update({'dubstep', 'riddim', 'chillstep'})
+# brostep: the drop trades growl -> wobble -> growl -> screech; supersaw lead for the breakdowns
+STYLES['brostep']['bass_switch'] = ['wobble', 'screech']
+for _t in STYLES['brostep']['tracks']:
+    if _t['name'] == 'lead':
+        _t.update(inst='supersaw_lead', p={}, db=-19)
+POOLS['brostep'].update(lead=['supersaw_lead', 'leadsaw', 'hoover'], bass=['growl', 'wobble', 'screech', 'fmbass', 'reese'])
+
+style('riddim', 'Electronic', 'Riddim (Subtronics, Excision, early Rusko-inspired riddim): minimal and hypnotic - a hollow, hard-chopped '
+      'triplet mid-bass repeating its 2-bar phrase, deep sub, sparse half-time drums, a creepy bell or stab and almost nothing else',
+      bpm=(140, 150), scales=['minor', 'phrygian'], form='halftime', chord_size=3, sc_depth=0.35, sc_release=0.25, reverb=2.0,
+      progs={'minor': [[0, 0, 0, 0], [0, 0, 5, 0], [0, 6, 0, 5]], 'phrygian': [[0, 1, 0, 0], [0, 0, 1, 0]]}, chord_bars=2,
+      kit_override=dict(kick=dict(pitch=52, punch=95, drive=2.0, len=0.3), snare=dict(tone=220, snap=1.3, decay=18)),
+      drums={'kick': ['X.........X.....', 'X.....X...X.....', 'X..........X....'], 'snare': [HALF], 'clap': [HALF],
+             'chat': ['x...x...x...x...', 'x.x.x...x.x.x...'], 'crash': ['X...............', '................']},
+      snare_tracks=['snare', 'clap'], bass=['R.......R.......'], bass_mode='wobble', wobble_rates=[1 / 3, 1 / 3, 0.5, 1 / 6, 0.25],
+      bass_lo=29, chord_rh=['x---------------'], chord_center=58, arp=dict(rate=4, mode='random', oct=5, prob=0.5),
+      lead_rh=['x-------........', 'x---....x---....', '........x-------'], repetition=0.95,
+      gm_hint='Riddim bass (Serum / Vital: square + saw, comb or formant, hard LFO chops), sine sub, dry heavy drums, creepy bell',
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.25, db=-15), T('clap', 'snare', 'clap', rev=0.2, db=-18),
+              T('chat', 'top', 'chat', pan=0.15, db=-27), T('crash', 'top', 'crash', rev=0.4, db=-24),
+              T('bass', 'bass', 'riddim', sc=0.5, db=-11),
+              T('pad', 'pad', 'warmpad', rev=0.5, db=-30, p=dict(cut=700)),
+              T('arp', 'arp', 'bell', rev=0.5, dly=0.35, pan=0.3, db=-27),
+              T('lead', 'lead', 'stab', rev=0.3, db=-23, p=dict(cut=1400)), T('texture', 'fx', 'texture', db=-38)],
+      master=dict(lufs=-8.0, air=1.4, low=2.4, drive=0.2))
+
+style('chillstep', 'Electronic', 'Chillstep (Blackmill, Seven Lions-ish ambient side): slow half-time dubstep at 140 with lush reverb pads, '
+      'piano and gentle plucks drowned in delay, a soft rolling wobble and a warm sub - melancholic and floating',
+      bpm=(138, 144), scales=['minor', 'major', 'dorian'], form='halftime', chord_size=4, sc_depth=0.3, sc_release=0.45, reverb=3.6,
+      progs={'minor': [[0, 5, 2, 6], [0, 3, 5, 4], [5, 3, 0, 4]], 'major': [[0, 5, 3, 4], [3, 0, 4, 5]], 'dorian': [[0, 3, 0, 3]]},
+      drums={'kick': ['X.........X.....', 'X.....x...X.....'], 'snare': [HALF], 'chat': ['x.x.x.x.x.x.x.x.', 'x...x...x.x.x...'],
+             'shaker': ['..x...x...x...x.']}, snare_tracks=['snare'],
+      bass=['R-------R-------'], bass_mode='wobble', wobble_rates=[1, 1, 0.5, 2], bass_lo=29,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=62, arp=dict(rate=2, mode='updown', oct=5, prob=0.8),
+      lead_rh=['x---x---x-------', 'x-------x---x---', 'x-x-x---x-------'],
+      gm_hint='Soft supersaw / Juno pads, piano, delayed pluck, gentle LFO wobble, sub, soft half-time drums, rain / vinyl texture',
+      tracks=[T('kick', 'kick', 'kick', db=-15), T('snare', 'snare', 'snare', rev=0.45, db=-18), T('chat', 'top', 'chat', db=-29),
+              T('shaker', 'top', 'shaker', pan=0.3, db=-31), T('bass', 'bass', 'wobble', sc=0.5, db=-15, p=dict(cut=900, sub=0.9)),
+              T('chords', 'chords', 'piano', rev=0.5, dly=0.2, db=-20), T('pad', 'pad', 'warmpad', rev=0.6, db=-23, p=dict(cut=1800)),
+              T('arp', 'arp', 'pluck_saw', rev=0.5, dly=0.4, pan=0.25, db=-25),
+              T('lead', 'lead', 'supersaw_lead', rev=0.55, dly=0.3, db=-20, p=dict(cut=2400)), T('texture', 'fx', 'texture', db=-36)],
+      master=dict(lufs=-10.0, air=1.3, low=1.6))
+
+LABELS.update({'dubstep': 'Dubstep (classic UK)', 'riddim': 'Riddim', 'chillstep': 'Chillstep'})
+POOLS.update({
+    'riddim': dict(bass=['riddim', 'wobble', 'fmbass'], arp=['bell', 'celesta'], lead=['stab', 'bell', 'screech'], pad=['warmpad', 'choir']),
+    'chillstep': dict(bass=['wobble', 'reese', 'sinebass'], chords=['piano', 'supersaw', 'warmpad', 'epiano'],
+                      pad=['warmpad', 'glasspad', 'choir', 'strings'], arp=['pluck_saw', 'bell', 'piano'],
+                      lead=['supersaw_lead', 'pluck_saw', 'piano', 'softlead']),
+})
+POOLS['brostep'].update(lead=['supersaw_lead', 'leadsaw'], arp=['pluck_saw', 'bell'])
+BELL_OK.add('brostep')
+POOLS['melodic_dubstep'].update(bass=['reese', 'growl', 'wobble'], lead=['supersaw_lead', 'pluck_saw', 'piano'])
+POOLS['brostep']['bass'] = ['growl', 'wobble', 'screech', 'reese']

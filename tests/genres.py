@@ -380,7 +380,7 @@ def test_kits_and_bells():
         s = compose(Options(style='pop', seed=1, kit=k))
         assert s['st']['kit_id'] == k and any(e.midi is None for e in s['events']), k
     # bells only where they belong
-    for name in ('trance', 'techno', 'dnb', 'house', 'dubstep', 'future_bass', 'ukgarage', 'synthwave'):
+    for name in ('trance', 'techno', 'dnb', 'house', 'neurofunk', 'future_bass', 'ukgarage', 'synthwave'):
         for k in range(1, 7):
             s = compose(Options(style=name, seed=k))
             for t in s['st']['tracks']:
