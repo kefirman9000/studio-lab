@@ -667,6 +667,8 @@ def apply_real(st, opts):
             from . import soundfont as sfm
             t['fallback'] = t.get('fallback') or (orig_base if orig_base in INSTRUMENTS else sfm.fallback_for(orig_base))
             t['real_from'] = inst
+            if base in ('guitar', 'mutedgtr') and (t.get('p') or {}).get('dist'):
+                t['amp'] = float(t['p']['dist'])           # the synth's distortion becomes an amp on the real guitar
             t['inst'] = 'real:' + base
     if getattr(opts, 'user_drums', False):
         return

@@ -37,7 +37,7 @@ from . import updater
 ROOT = updater.ROOT
 REAL_DIR = os.path.join(ROOT, 'sound_library', 'real')
 MANIFEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'samplelibs.json')
-LIB_ORDER = ['drums', 'percussion', 'strings', 'winds', 'keys', 'colors', 'archtop', 'twang']
+LIB_ORDER = ['drums', 'percussion', 'strings', 'winds', 'keys', 'colors', 'archtop', 'twang', 'ebass', 'dbass']
 BLURB = {
     'drums': 'A real acoustic drum kit (kick, snare, hats, ride, crash, toms) with 3 mic sounds: clean studio, big rock room and '
              'vintage lo-fi. Plays the rock, funk, disco, jazz and soul kits and the re-played breaks (Amen, Think, Funky Drummer ...).',
@@ -53,7 +53,12 @@ BLURB = {
     'archtop': 'A real guitar (Karoryfer Shinyguitar, microphone recording): the strummed and picked acoustic guitar in country, '
                'folk, bluegrass and every genre that asks for an acoustic guitar.',
     'twang': 'A real twangy hollowbody electric (Karoryfer Black And Green Guitars, "twang" and staccato playing): the Telecaster-'
-             'style country lead, chicken-pickin\' fills and slapback twang in classic, modern and outlaw country.',
+             'style country lead, chicken-pickin\' fills and slapback twang in classic, modern and outlaw country. Also plays every '
+             'clean or distorted electric guitar part (funk, reggae, Motown, R&B, jazz, rock, metal ...) through an amp.',
+    'ebass': 'A real electric bass (Karoryfer Growlybass, a Squier Jazz bass; sustained + staccato): rock, funk, disco, Motown, '
+             'reggae, blues, pop, R&B, smooth jazz and every genre with an electric bass.',
+    'dbass': 'A real upright double bass, played pizzicato (Karoryfer Meatbass): jazz, swing, bebop, country, bluegrass, boom bap '
+             'and every genre with an upright bass.',
 }
 MAX_LEN = {'ring': 4.5, 'sus': 7.0, 'trem': 6.0, 'hit': 4.0, 'slap': 2.0, 'short': 2.0, 'pizz': 2.5}
 _lock = threading.Lock()
@@ -412,7 +417,9 @@ ORCH = {
     'pipeorgan': ('solo', 'pipeorgan'), 'fmpiano': ('solo', 'fmpiano'),
     'harp': ('ring', 'harp'), 'marimba': ('ring', 'marimba'), 'vibes': ('ring', 'vibes'), 'xylophone': ('ring', 'xylophone'),
     'glock': ('ring', 'glock'), 'tubular': ('ring', 'tubular'), 'kalimba': ('ring', 'kalimba'),
-    'sax': ('solo', 'sax'), 'tenorsax': ('solo', 'sax'), 'harmonica': ('solo', 'harmonica'), 'sopsax': ('solo', 'sax'), 'acguitar': ('ring', 'acguitar'), 'twang': ('solo', 'twang'), 'ocarina': ('solo', 'ocarina'),
+    'sax': ('solo', 'sax'), 'tenorsax': ('solo', 'sax'), 'harmonica': ('solo', 'harmonica'), 'sopsax': ('solo', 'sax'), 'ebass': ('solo', 'ebass'), 'fingerbass': ('solo', 'ebass'),
+    'pickbass': ('solo', 'ebass'), 'upright': ('solo', 'dbass'), 'acbass': ('solo', 'dbass'), 'guitar': ('solo', 'twang'),
+    'mutedgtr': ('solo', 'twang'), 'cleanguitar': ('solo', 'twang'), 'acguitar': ('ring', 'acguitar'), 'twang': ('solo', 'twang'), 'ocarina': ('solo', 'ocarina'),
 }
 # styles whose piano is a worn upright rather than a concert grand
 UPRIGHT_STYLES = {'lofi', 'boombap', 'hauntology', 'vaporwave', 'memphis_phonk', 'blues', 'soul_ballad', 'folk', 'western', 'motown'}
@@ -509,6 +516,8 @@ CHOICES = [
     ('sopsax', 'Soprano sax (high sax)', 'colors', ('lead',)),
     ('acguitar', 'Acoustic guitar', 'archtop', ('chords', 'arp', 'lead', 'bass')),
     ('twang', 'Twang electric guitar', 'twang', ('lead', 'arp', 'chords')),
+    ('ebass', 'Electric bass', 'ebass', ('bass',)),
+    ('upright', 'Upright double bass', 'dbass', ('bass',)),
     ('ocarina', 'Ocarina', 'colors', ('lead',)),
 ]
 

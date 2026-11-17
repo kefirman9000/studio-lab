@@ -312,6 +312,8 @@ class Renderer:
                     sig = sig.copy()
                     sig[..., :n] *= (np.linspace(0.08, 1.0, n, dtype=np.float32) ** 1.6)
             self._add(buf, sig * ev.vel, s)
+        if tcfg.get('amp') and tcfg['inst'].startswith('real:'):
+            buf = guitar_amp(buf, float(tcfg['amp']))
         if tcfg.get('drive'):
             buf = (soft(buf * (1 + tcfg['drive'] * 3), 1.5) / (1 + tcfg['drive'])).astype(np.float32)
         if tcfg.get('gate'):
@@ -574,6 +576,19 @@ class Renderer:
         self.stems = stems
         self.stem_env = env
         return mix
+
+
+def guitar_amp(x, gain):
+    """A guitar amp + 4x12 cabinet for the recorded electric: tighten the lows, clip hard (asymmetric, like a valve
+    stage), then the speaker's mid bump and top roll-off. gain ~3 = crunch, 10-20 = rock lead, 25+ = metal."""
+    y = hp(x.astype(np.float64), 110)
+    peak = float(np.max(np.abs(y))) + 1e-9
+    g = 1.0 + gain * 1.5
+    y = y / peak * g
+    y = np.tanh(y + 0.15) - np.tanh(0.15)
+    y = eq(eq(y, 'peak', 1800, 0.9, 4.0), 'peak', 400, 1.0, -2.0)
+    y = lp(hp(y, 90), 5200)
+    return (y / (np.max(np.abs(y)) + 1e-9) * peak).astype(np.float32)
 
 
 def pitch_vibrato(x, amount, note_sec):

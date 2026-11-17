@@ -1406,3 +1406,16 @@ INSTRUMENTS['sopsax'] = INSTRUMENTS['sax']             # synth stand-in until a 
 INSTRUMENT_INFO['sopsax'] = 'Soprano sax'
 ROLE_CHOICES['lead'] += ['sopsax']
 GM_PROGRAM['sopsax'] = 64
+
+
+
+def i_ebass(m, dur, p, glide=None, mod=None):
+    """Electric bass stand-in (until the real one is installed): a round plucked string with a little finger thump."""
+    y = i_pluck(m, dur, dict(bright=p.get('bright', 1400), damp=p.get('damp', 0.996), r=0.12))
+    return eq(y, 'peak', 90, 1.0, 3)
+
+
+INSTRUMENTS['ebass'] = i_ebass
+INSTRUMENT_INFO['ebass'] = 'Electric bass'
+ROLE_CHOICES['bass'] += ['ebass']
+GM_PROGRAM['ebass'] = 33

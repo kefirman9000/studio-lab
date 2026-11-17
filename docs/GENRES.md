@@ -117,7 +117,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Rock | `rock` | 110-140 | Rock: driving drums, distorted power-chord guitars, solid bass, lead guitar |
 | Salsa | `salsa` | 160-200 | Salsa: clave and cowbell, conga tumbao, piano montuno, anticipated bass and a blazing trumpet section |
 | Ska | `ska` | 120-164 | Ska: offbeat guitar & organ skank, fast walking bass, rimshot backbeat, punchy horn lines |
-| Smooth Jazz | `smooth_jazz` | 76-100 | Smooth jazz (Kenny G, Dave Koz, Boney James): a silky sax melody that scoops into its notes, lush Rhodes major-7th and 9th chords, warm fretless-style bass, light drums with cross-stick, soft pads and clean jazz guitar |
+| Smooth Jazz (Kenny G style) | `smooth_jazz` | 64-92 | Smooth jazz, Kenny G style ("Songbird", "Forever in Love"): a soprano sax soaring up high in long held notes with wide vibrato, scooping into every phrase, over lush 80s DX electric piano and pads, a warm fretless bass and soft, reverb-washed drums - romantic, slow and polished, with a key change for the last chorus |
 | Smooth Jazz-Funk | `smooth_funk` | 96-116 | Smooth jazz-funk (Grover Washington Jr., George Benson, Spyro Gyra): a funky slap-and-pop bass groove, crisp 16th hats, jazz-guitar octave melodies, sax answers, bright electric piano and stabby brass |
 | Soul Ballad (12/8) | `soul_ballad` | 48-66 | Soul / doo-wop ballad (12/8): triplet piano, slow backbeat, organ and strings, a big vocal-style lead |
 | Soul Jazz / Hard Bop | `soul_jazz` | 100-140 | Hard bop / soul jazz: organ trio grooves - Hammond B3 comping and bass, bluesy guitar and tenor sax, gospel-tinged harmony, hard swing or straight-8th backbeat |

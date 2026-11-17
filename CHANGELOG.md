@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.31.0
+Every genre checked against the new real instruments:
+- **Two new free real-bass libraries** in 🎻 Real instruments (CC0, Karoryfer Samples): **Electric bass** (Growlybass, a Squier Jazz bass, sustained + staccato, 46 MB) and **Upright double bass** (Meatbass, pizzicato, 29 MB).
+  - 24 genres that played a generic "plucked string" synth bass now play the real electric bass (rock, metal, punk, funk, disco, Motown, blues, ska, soul, gospel, pop, fusion ...); jazz, swing, bossa nova, bluegrass, folk, Celtic, western, salsa and chamber pop get the upright. Every upright / acoustic-bass part in any genre uses the real one.
+- **Real electric guitar everywhere**: every synth "electric guitar" / palm-muted guitar part (~45 genres - funk, reggae, Motown, R&B, jazz, city pop, afrobeats, cumbia ...) now plays the real twang guitar when it's installed; parts that were distorted (rock, metal, punk, blues and indie leads) go through a new **guitar amp + cabinet** stage. Bossa nova, Celtic jig, soft rock and holiday strum the real acoustic.
+- **No more robotic "vox" synth** except in genres built on vocal chops (UK garage, future bass, Jersey club, baile funk, the phonk family, future funk, rave, melodic dubstep, hyperpop). Elsewhere (deep house, tech house, dubstep, jungle, afrobeats, dancehall, K-pop, teen pop, liquid DnB, new beat ...) it's replaced by the genre's own lead.
+
 ## 1.30.1
 - **Smooth Jazz is now Kenny G style**: a new **Soprano sax** sound soaring up high in long held notes with a delayed, widening vibrato and scoops into every phrase, over lush 80s DX electric piano and pads, fretless-style bass and soft reverb-washed drums; slow ballad tempos, romantic major-key progressions and a key change for the last chorus in most songs. The sax stays a soloist (no doubling).
 - New expressive vibrato for held notes on recorded instruments (used by the soprano sax).

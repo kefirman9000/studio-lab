@@ -35,9 +35,9 @@ def tree(d):
     return head, rows
 
 
-def parse(name):
+def parse(name, lower=False):
     base = name.rsplit('/', 1)[-1].rsplit('.', 1)[0]
-    if re.match(r'^(twang|staccato)_|^[a-g]b?\d_vl', base):       # Karoryfer guitars: lower-case notes, 'bb3' = B flat 3
+    if lower or re.match(r'^(twang|staccato)_|^[a-g]b?\d_vl', base):       # Karoryfer guitars: lower-case notes, 'bb3' = B flat 3
         base = re.sub(r'(^|_)([a-g])(b?)(\d)(?=_)', lambda m: m.group(1) + m.group(2).upper() + m.group(3) + m.group(4), base)
     m = re.search(r'(?:^|_)([A-G])(#|b)?(-?\d)(?=_|$)', base)
     midi = None
@@ -135,6 +135,8 @@ COLORS = [
 # Karoryfer CC0 guitars
 TWANG = [('twang', 'sus', r'^Samples/green/ord/', r'_(mf|f)_rr[12]\.wav$|_p_rr1\.wav$', 2),
          ('twang', 'short', r'^Samples/green/stac/', r'', 2)]
+GROWLY = [('ebass', 'sus', r'^sustain/', r'_(p|f)_rr[12]\.wav$', 2), ('ebass', 'short', r'^staccato/', r'_rr[12]\.wav$', 2)]
+MEAT = [('dbass', 'sus', r'^Samples/pizz/', r'/[a-g]b?\d_vl[13]_rr[12]\.wav$', 2)]
 ARCHTOP = [('acguitar', 'ring', r'^Samples/acoustic/', r'/[a-g]b?\d_vl[24]_rr[12]_1\.wav$', 2)]
 THIN = {'grand': ({2, 4}, 2), 'upright_piano': ({1, 3}, None), 'harpsichord': (None, 2)}
 STRINGS = {'violins', 'violas', 'celli', 'basses', 'violin'}
@@ -154,6 +156,10 @@ LIBS = {
                   rules=[('', r) for r in TWANG], ext='.wav'),
     'archtop': dict(repo='sfzinstruments/karoryfer.shinyguitar', dir='shiny', title='Acoustic archtop guitar (Karoryfer Shinyguitar)',
                     by='Karoryfer Samples', rules=[('', r) for r in ARCHTOP], ext='.wav'),
+    'ebass': dict(repo='sfzinstruments/karoryfer.growlybass', dir='growlybass', title='Electric bass (Karoryfer Growlybass)',
+                  by='Karoryfer Samples', rules=[('', r) for r in GROWLY], ext='.wav', lower=True, shift=-12),
+    'dbass': dict(repo='sfzinstruments/karoryfer.meatbass', dir='meatbass', title='Upright double bass (Karoryfer Meatbass)',
+                  by='Karoryfer Samples', rules=[('', r) for r in MEAT], ext='.wav'),
     'drums': dict(repo='sfzinstruments/virtuosity_drums', dir='vdrums', title='Acoustic drum kits (Virtuosity Drums)',
                   by='Versilian Studios & Karoryfer', rules=[('studio', r) for r in vdrums('mid')] + [('lofi', r) for r in vdrums('lofi')] + [('room', r) for r in vdrums('room')],
                   ext='.flac'),
@@ -181,7 +187,9 @@ def main(root, only=None):
             for path, sha in sorted(rows.items()):
                 if not path.lower().endswith(cfg['ext']) or not re.search(folder, path) or (pat and not re.search(pat, path)):
                     continue
-                midi, dyn, rr = parse(path)
+                midi, dyn, rr = parse(path, cfg.get('lower', False))
+                if midi is not None and cfg.get('shift'):
+                    midi += cfg['shift']             # Growlybass files are named an octave above the sounding pitch
                 if rr > max_rr:
                     continue
                 f = dict(p=path, sha=sha, i=(kit + ':' + inst) if kit else inst, a=art, v=dyn, r=rr)

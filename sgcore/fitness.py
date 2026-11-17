@@ -33,7 +33,7 @@ TWO_STEP = {'dnb', 'liquid_dnb', 'neurofunk', 'jungle'}
 BACKBEAT = {'pop', 'rock', 'funk', 'motown', 'indie_rock', 'gospel', 'country', 'ska', 'kpop', 'teen_pop', 'soft_rock',
             'rnb', 'boombap', 'lofi', 'synthwave', 'synthpop', 'metal', 'jam_band', 'chamber_pop', 'city_pop', 'memphis_phonk',
             'hauntology', 'eurodance', 'disco'}
-SWUNG = {'jazz', 'swing', 'boombap', 'lofi', 'rnb', 'hauntology', 'gospel', 'neo_soul', 'g_funk', 'new_jack_swing', 'hauntology_sunlit', 'smooth_jazz', 'quiet_storm'}
+SWUNG = {'jazz', 'swing', 'boombap', 'lofi', 'rnb', 'hauntology', 'gospel', 'neo_soul', 'g_funk', 'new_jack_swing', 'hauntology_sunlit', 'quiet_storm'}
 SUB_BASS = {'dubstep', 'brostep', 'melodic_dubstep', 'dnb', 'liquid_dnb', 'neurofunk', 'jungle'}
 SLIDING_808 = {'trap', 'phonk', 'brazilian_phonk', 'uk_drill', 'memphis_phonk', 'luxury_rap', 'orchestral_hiphop'}
 SIGNATURE = {   # genre -> (part, instruments, label): the sound that defines it

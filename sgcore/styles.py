@@ -707,7 +707,7 @@ style('rock', 'Classic', 'Rock: driving drums, distorted power-chord guitars, so
       lead_rh=['x-x-x---x-x-x---', 'x---x-x-x-------', 'x.x.x.x.x---x---', 'x-------x-------'], lead_oct=4, fill=True,
       tracks=[T('kick', 'kick', 'kick'), T('snare', 'snare', 'snare', rev=0.25), T('chat', 'top', 'chat', pan=0.2, db=-27),
               T('ride', 'top', 'ride', pan=-0.3, db=-32),
-              T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1800, damp=0.997)),
+              T('bass', 'bass', 'ebass', db=-15, p=dict(bright=1800, damp=0.997)),
               T('chords', 'chords', 'guitar', drive=1.0, p=dict(dist=12, bright=5000)),
               T('pad', 'pad', 'organ', rev=0.3, db=-28),
               T('arp', 'arp', 'guitar', pan=0.4, db=-27, p=dict(dist=6)),
@@ -725,7 +725,7 @@ style('jazz', 'Classic', 'Jazz / swing: walking bass, ride-cymbal swing, piano c
       lead_rh=['x.x.x.x.x---....', '..x.x-x.x.x-....', 'x-.xx-x.x---x...', 'x---x-x-x-------'],
       tracks=[T('ride', 'top', 'ride', pan=0.3, db=-24), T('chat', 'top', 'chat', pan=-0.2, db=-29),
               T('kick', 'kick', 'kick', db=-24), T('snare', 'snare', 'snare', db=-26),
-              T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1200, damp=0.996)),
+              T('bass', 'bass', 'ebass', db=-15, p=dict(bright=1200, damp=0.996)),
               T('chords', 'chords', 'piano', rev=0.2, db=-21),
               T('arp', 'arp', 'piano', rev=0.2, db=-25),
               T('lead', 'lead', 'brass', rev=0.25, db=-19)],
@@ -971,8 +971,8 @@ style('bossa_nova', 'Classic', 'Bossa nova: gentle syncopated nylon guitar, rim 
       chord_rh=['x..x..x...x..x..', 'x.x..x.x..x..x..'], chord_center=62, arp=dict(rate=2, mode='up', oct=5, prob=0.5),
       lead_rh=['x---x-x-x---....', '..x-x-x-x-------', 'x-------x---x---', 'x---------------'],
       tracks=[T('kick', 'kick', 'kick', db=-20), T('rim', 'snare', 'rim', db=-22), T('shaker', 'top', 'shaker', pan=0.3, db=-29),
-              T('bass', 'bass', 'pluck', db=-16, p=dict(bright=1200, damp=0.996)),
-              T('chords', 'chords', 'guitar', rev=0.2, p=dict(bright=4000, damp=0.995)), T('pad', 'pad', 'strings', rev=0.4, db=-28),
+              T('bass', 'bass', 'ebass', db=-16, p=dict(bright=1200, damp=0.996)),
+              T('chords', 'chords', 'acguitar', rev=0.2, p=dict(bright=4000, damp=0.995)), T('pad', 'pad', 'strings', rev=0.4, db=-28),
               T('arp', 'arp', 'piano', rev=0.25, db=-27), T('lead', 'lead', 'flute', rev=0.35, dly=0.15)],
       master=dict(lufs=-14.0, air=1.0, low=0.5))
 
@@ -984,7 +984,7 @@ style('blues', 'Classic', 'Blues shuffle: 12-bar form, swung grooves, piano, org
       chord_rh=['x-.x-.x-.x-.x-.x', 'x---x---x---x---'], chord_center=60, arp=dict(rate=2, mode='random', oct=4, prob=0.6),
       lead_rh=['x.x.x-....x.x---', '..x-x-x-x-------', 'x-.xx-x.x---....', 'x---x-x-x-------'], lead_oct=4,
       tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.2), T('ride', 'top', 'ride', db=-25),
-              T('chat', 'top', 'chat', db=-29), T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1200)),
+              T('chat', 'top', 'chat', db=-29), T('bass', 'bass', 'ebass', db=-15, p=dict(bright=1200)),
               T('chords', 'chords', 'piano', rev=0.2), T('pad', 'pad', 'organ', rev=0.25, db=-26),
               T('arp', 'arp', 'guitar', pan=0.3, db=-26), T('lead', 'lead', 'guitar', rev=0.3, p=dict(dist=10, bright=5000, damp=0.999))],
       master=dict(lufs=-12.0, air=1.0, low=1.0))
@@ -997,7 +997,7 @@ style('metal', 'Classic', 'Metal: palm-muted power chords, double-kick drums, sh
       chord_rh=['xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxx.xx', 'x-x-xxx-x-x-xxx-'], chord_center=48, arp=dict(rate=1, mode='updown', oct=4),
       lead_rh=['xxxxx.x.x-x-x---', 'x-x-x-x-xxxx----', 'x.x.x.x.x-------', 'x-------x-------'], lead_oct=4,
       tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.2, db=-15), T('chat', 'top', 'chat', db=-28),
-              T('ride', 'top', 'ride', db=-30), T('bass', 'bass', 'pluck', db=-15, drive=0.6, p=dict(bright=2000, damp=0.997)),
+              T('ride', 'top', 'ride', db=-30), T('bass', 'bass', 'ebass', db=-15, drive=0.6, p=dict(bright=2000, damp=0.997)),
               T('chords', 'chords', 'guitar', drive=1.5, p=dict(dist=25, bright=4500, damp=0.99)),
               T('arp', 'arp', 'guitar', pan=0.4, db=-26, p=dict(dist=18)),
               T('lead', 'lead', 'guitar', rev=0.3, dly=0.2, p=dict(dist=30, bright=6000, damp=0.999))],
@@ -1011,7 +1011,7 @@ style('folk', 'Classic', 'Folk / acoustic: strummed guitar, warm piano, gentle p
       chord_rh=['x.x.xxx.x.x.xxx.', 'x--x--x-x--x--x-'], chord_center=60, strum=0.012, arp=dict(rate=2, mode='updown', oct=5),
       lead_rh=['x---x-x-x---....', 'x-x-x---x-------', '..x-x-x-x---x---', 'x---------------'],
       tracks=[T('kick', 'kick', 'kick', db=-19), T('tamb', 'snare', 'tamb', db=-23), T('shaker', 'top', 'shaker', db=-29),
-              T('bass', 'bass', 'pluck', db=-17, p=dict(bright=1500)), T('chords', 'chords', 'acguitar', rev=0.2, p=dict(bright=5500)),
+              T('bass', 'bass', 'ebass', db=-17, p=dict(bright=1500)), T('chords', 'chords', 'acguitar', rev=0.2, p=dict(bright=5500)),
               T('pad', 'pad', 'strings', rev=0.4, db=-27), T('arp', 'arp', 'piano', rev=0.3, db=-26),
               T('lead', 'lead', 'flute', rev=0.35)],
       master=dict(lufs=-13.0, air=1.0, low=0.5))
@@ -1181,7 +1181,7 @@ style('symphonic_metal', 'Classic', 'Symphonic metal: double-kick drums and powe
       lead_rh=['x---x-x-x-------', 'x-x-x---x---x---', 'x-------x---x---', 'x-.x-.x-x-------'], lead_oct=5,
       gm_hint='Distorted guitars; Choir (pad); Strings spiccato (ostinato); Violin / guitar / horn lead; Organ',
       tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.25, db=-15), T('chat', 'top', 'chat', db=-28),
-              T('ride', 'top', 'ride', db=-30), T('bass', 'bass', 'pluck', db=-15, drive=0.6, p=dict(bright=2000, damp=0.997)),
+              T('ride', 'top', 'ride', db=-30), T('bass', 'bass', 'ebass', db=-15, drive=0.6, p=dict(bright=2000, damp=0.997)),
               T('chords', 'chords', 'guitar', drive=1.5, pan=-0.2, p=dict(dist=25, bright=4500, damp=0.99)),
               T('pad', 'pad', 'choir', rev=0.5, db=-22),
               T('arp', 'arp', 'spiccato', rev=0.3, pan=0.3, db=-25),
@@ -1200,7 +1200,7 @@ style('holiday', 'Classic', 'Holiday / Christmas: sleigh bells, celesta, pizzica
       gm_hint='Sleigh bells; Glockenspiel / celesta; Strings; Brass section; Pizzicato; Upright bass',
       tracks=[T('kick', 'kick', 'kick', db=-19), T('snare', 'snare', 'snare', rev=0.3, db=-22),
               T('sleigh', 'top', 'sleigh', pan=0.25, db=-28), T('tamb', 'top', 'tamb', pan=-0.25, db=-29),
-              T('bass', 'bass', 'pluck', db=-16, p=dict(bright=1200, damp=0.996)),
+              T('bass', 'bass', 'ebass', db=-16, p=dict(bright=1200, damp=0.996)),
               T('chords', 'chords', 'piano', rev=0.3, db=-22), T('pad', 'pad', 'strings', rev=0.4, db=-25),
               T('arp', 'arp', 'celesta', rev=0.35, pan=-0.2, db=-26),
               T('lead', 'lead', 'brass', rev=0.35, db=-19)],
@@ -1219,7 +1219,7 @@ style('western', 'Classic', 'Spaghetti western: twangy reverb guitar, lonely tru
       gm_hint='Twangy electric guitar (lots of spring reverb); Trumpet / whistle melody; Choir; Woodblock hooves',
       tracks=[T('kick', 'kick', 'kick', db=-19), T('snare', 'snare', 'snare', rev=0.4, db=-23),
               T('woodblock', 'top', 'woodblock', pan=0.3, db=-27), T('tom', 'top', 'tom', rev=0.4, db=-24),
-              T('bass', 'bass', 'pluck', db=-17, p=dict(bright=1200)),
+              T('bass', 'bass', 'ebass', db=-17, p=dict(bright=1200)),
               T('chords', 'chords', 'guitar', pan=-0.2, rev=0.45, dly=0.25, p=dict(bright=4500, damp=0.995)),
               T('pad', 'pad', 'choir', rev=0.55, db=-25, p=dict(vowel='o')),
               T('arp', 'arp', 'guitar', pan=0.3, rev=0.4, db=-26, p=dict(bright=3500)),
@@ -1238,7 +1238,7 @@ style('chamber_pop', 'Classic', 'Chamber / orchestral pop: pop drums & piano wit
       gm_hint='Piano; String section (legato pad + spiccato); Pizzicato / glockenspiel; Horns; Violin or flute counter-melody',
       tracks=[T('kick', 'kick', 'kick'), T('snare', 'snare', 'snare', rev=0.3), T('chat', 'top', 'chat', pan=0.2, db=-28),
               T('tamb', 'top', 'tamb', pan=-0.25, db=-30),
-              T('bass', 'bass', 'pluck', db=-16, p=dict(bright=1500)),
+              T('bass', 'bass', 'ebass', db=-16, p=dict(bright=1500)),
               T('chords', 'chords', 'piano', rev=0.25), T('pad', 'pad', 'strings', rev=0.4, db=-24),
               T('arp', 'arp', 'pizz', rev=0.3, pan=-0.3, db=-25),
               T('lead', 'lead', 'violin', rev=0.35, db=-18)],
@@ -1399,9 +1399,9 @@ POOLS = {
     'pop': dict(bass=['sawbass', 'sf:fingerbass', 'sinebass'], chords=['piano', 'guitar', 'sf:cleanguitar', 'epiano', 'pluck_saw'],
                 pad=['strings', 'warmpad', 'organ'], arp=['guitar', 'sf:cleanguitar', 'bell', 'piano', 'pizz', 'celesta'],
                 lead=['pluck', 'piano', 'guitar', 'bell', 'vox', 'violin', 'flute']),
-    'rock': dict(bass=['pluck', 'sf:fingerbass', 'sf:pickbass'], chords=['guitar', 'sf:odguitar', 'sf:distguitar'],
+    'rock': dict(bass=['ebass', 'sf:fingerbass', 'sf:pickbass'], chords=['guitar', 'sf:odguitar', 'sf:distguitar'],
                  pad=['organ', 'strings', 'warmpad'], arp=['guitar', 'piano', 'sf:cleanguitar'], lead=['guitar', 'sf:odguitar', 'organ']),
-    'jazz': dict(bass=['pluck', 'sf:acbass'], chords=['piano', 'epiano', 'guitar', 'organ'], arp=['piano', 'guitar', 'epiano'],
+    'jazz': dict(bass=['ebass', 'sf:acbass'], chords=['piano', 'epiano', 'guitar', 'organ'], arp=['piano', 'guitar', 'epiano'],
                  lead=['brass', 'sax', 'sf:tenorsax', 'sf:mutedtrumpet', 'piano', 'guitar', 'flute', 'clarinet']),
     'boombap': dict(bass=['sinebass', 'sf:acbass', 'upright', 'moogbass'], chords=['piano', 'epiano', 'wurli', 'organ'],
                     lead=['sax', 'flute', 'vibes', 'brass', 'piano']),
@@ -1409,23 +1409,23 @@ POOLS = {
                    lead=['softlead', 'flute', 'brass', 'sax', 'organ', 'sf:trumpet']),
     'city_pop': dict(bass=['fmbass', 'sf:slapbass', 'sf:fingerbass'], chords=['epiano', 'piano', 'guitar', 'brass'], pad=['strings', 'warmpad'],
                      arp=['guitar', 'sf:cleanguitar', 'epiano', 'bell', 'marimba'], lead=['sax', 'sf:tenorsax', 'brass', 'leadsaw', 'epiano', 'flute']),
-    'bossa_nova': dict(bass=['pluck', 'sf:acbass'], chords=['guitar', 'sf:nylon', 'piano', 'epiano'], pad=['strings', 'warmpad'],
+    'bossa_nova': dict(bass=['ebass', 'sf:acbass'], chords=['guitar', 'sf:nylon', 'piano', 'epiano'], pad=['strings', 'warmpad'],
                        arp=['piano', 'guitar', 'sf:nylon'], lead=['flute', 'sax', 'clarinet', 'piano', 'sf:nylon', 'vox']),
-    'blues': dict(bass=['pluck', 'sf:fingerbass', 'sf:acbass'], chords=['piano', 'organ', 'guitar'], pad=['organ', 'brass'],
+    'blues': dict(bass=['ebass', 'sf:fingerbass', 'sf:acbass'], chords=['piano', 'organ', 'guitar'], pad=['organ', 'brass'],
                   arp=['guitar', 'piano'], lead=['guitar', 'sf:odguitar', 'sax', 'sf:tenorsax', 'organ', 'piano', 'brass']),
-    'metal': dict(bass=['pluck', 'sf:pickbass'], chords=['guitar', 'sf:distguitar'], arp=['guitar', 'sf:distguitar', 'spiccato'],
+    'metal': dict(bass=['ebass', 'sf:pickbass'], chords=['guitar', 'sf:distguitar'], arp=['guitar', 'sf:distguitar', 'spiccato'],
                   lead=['guitar', 'sf:distguitar']),
-    'folk': dict(bass=['pluck', 'sf:acbass'], chords=['guitar', 'sf:nylon', 'piano', 'harp'], pad=['strings', 'sf:slowstrings', 'organ'],
+    'folk': dict(bass=['ebass', 'sf:acbass'], chords=['guitar', 'sf:nylon', 'piano', 'harp'], pad=['strings', 'sf:slowstrings', 'organ'],
                  arp=['piano', 'guitar', 'sf:nylon', 'harp'], lead=['flute', 'violin', 'clarinet', 'oboe', 'guitar', 'sf:nylon', 'piano']),
-    'symphonic_metal': dict(bass=['pluck', 'sf:pickbass'], chords=['guitar', 'sf:distguitar'], pad=['choir', 'strings', 'organ', 'horn', 'tremolo'],
+    'symphonic_metal': dict(bass=['ebass', 'sf:pickbass'], chords=['guitar', 'sf:distguitar'], pad=['choir', 'strings', 'organ', 'horn', 'tremolo'],
                             arp=['spiccato', 'harp', 'piano', 'pizz'], lead=['violin', 'guitar', 'sf:distguitar', 'choir', 'horn', 'flute']),
-    'holiday': dict(bass=['pluck', 'sf:acbass'], chords=['piano', 'epiano', 'guitar', 'harp', 'strings'], pad=['strings', 'organ', 'choir', 'horn'],
+    'holiday': dict(bass=['ebass', 'sf:acbass'], chords=['piano', 'epiano', 'guitar', 'harp', 'strings'], pad=['strings', 'organ', 'choir', 'horn'],
                     arp=['celesta', 'bell', 'pizz', 'harp', 'marimba'],
                     lead=['brass', 'flute', 'clarinet', 'violin', 'celesta', 'sax', 'sf:trumpet', 'oboe']),
-    'western': dict(bass=['pluck', 'sf:acbass', 'cello'], chords=['guitar', 'sf:cleanguitar', 'sf:nylon', 'harp'],
+    'western': dict(bass=['ebass', 'sf:acbass', 'cello'], chords=['guitar', 'sf:cleanguitar', 'sf:nylon', 'harp'],
                     pad=['choir', 'strings', 'tremolo', 'organ'], arp=['guitar', 'harp', 'sf:nylon', 'pizz'],
                     lead=['brass', 'sf:trumpet', 'flute', 'violin', 'guitar', 'sf:cleanguitar', 'cello', 'oboe']),
-    'chamber_pop': dict(bass=['pluck', 'sf:fingerbass', 'cello'], chords=['piano', 'guitar', 'epiano', 'harp', 'spiccato'],
+    'chamber_pop': dict(bass=['ebass', 'sf:fingerbass', 'cello'], chords=['piano', 'guitar', 'epiano', 'harp', 'spiccato'],
                         pad=['strings', 'sf:slowstrings', 'horn', 'organ'], arp=['pizz', 'celesta', 'harp', 'bell', 'marimba', 'spiccato'],
                         lead=['violin', 'flute', 'horn', 'cello', 'piano', 'oboe', 'clarinet']),
     # ---- orchestral
@@ -1486,8 +1486,8 @@ style('celtic_jig', 'Classic', 'Celtic jig (6/8): fiddle and tin whistle tunes, 
       lead_rh=['xxxxxxxxxxxx', 'x-xx-xx-xx-x', 'xxx-xxxxx-x-', 'x-xxxxx-xx-x'], lead_oct=5,
       gm_hint='Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass',
       tracks=[T('kick', 'kick', 'kick', db=-22), T('tom', 'snare', 'tom', rev=0.25, db=-19), T('tamb', 'top', 'tamb', pan=0.3, db=-30),
-              T('bass', 'bass', 'pluck', db=-17, p=dict(bright=1200, damp=0.996)),
-              T('chords', 'chords', 'guitar', pan=-0.25, rev=0.25, db=-22, p=dict(bright=5000)),
+              T('bass', 'bass', 'ebass', db=-17, p=dict(bright=1200, damp=0.996)),
+              T('chords', 'chords', 'acguitar', pan=-0.25, rev=0.25, db=-22, p=dict(bright=5000)),
               T('arp', 'arp', 'harp', rev=0.3, pan=0.3, db=-27),
               T('lead', 'lead', 'violin', rev=0.3, db=-17, p=dict(vib=8))],
       master=dict(lufs=-12.0, air=1.4, low=0.8))
@@ -1502,7 +1502,7 @@ style('soul_ballad', 'Classic', 'Soul / doo-wop ballad (12/8): triplet piano, sl
       lead_rh=['x--x--x--...', 'x-xx-xx-x...', 'x-----x-xx..', 'x--x-xx-....'], fill=True,
       gm_hint='Piano (triplets); Hammond organ; Strings; Saxophone or vocal lead; Bass guitar',
       tracks=[T('kick', 'kick', 'kick', db=-19), T('snare', 'snare', 'snare', rev=0.35, db=-19), T('chat', 'top', 'chat', db=-30),
-              T('ride', 'top', 'ride', db=-31), T('bass', 'bass', 'pluck', db=-16, p=dict(bright=1200)),
+              T('ride', 'top', 'ride', db=-31), T('bass', 'bass', 'ebass', db=-16, p=dict(bright=1200)),
               T('chords', 'chords', 'piano', rev=0.3, db=-21), T('pad', 'pad', 'organ', rev=0.3, db=-27),
               T('lead', 'lead', 'sax', rev=0.35, db=-18)],
       master=dict(lufs=-12.0, air=1.2, low=1.0))
@@ -1519,7 +1519,7 @@ style('gospel', 'Classic', 'Gospel: Hammond organ and piano, choir, hand claps, 
       gm_hint='Hammond B3 organ (Leslie); Piano; Choir; Bass; Hand claps',
       tracks=[T('kick', 'kick', 'kick'), T('snare', 'snare', 'snare', rev=0.3), T('clap', 'snare', 'clap', rev=0.35, db=-20),
               T('chat', 'top', 'chat', db=-28), T('tamb', 'top', 'tamb', pan=0.3, db=-29),
-              T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1100)),
+              T('bass', 'bass', 'ebass', db=-15, p=dict(bright=1100)),
               T('chords', 'chords', 'organ', pan=-0.2, rev=0.25, p=dict(leslie=6.0)),
               T('pad', 'pad', 'choir', rev=0.4, db=-24),
               T('arp', 'arp', 'piano', rev=0.25, pan=0.25, db=-24),
@@ -1552,7 +1552,7 @@ style('bluegrass', 'Classic', 'Bluegrass: banjo rolls, fiddle breakdowns, mandol
       arp=dict(rate=1, mode='updown', oct=5),
       lead_rh=['x.x.x.x.x.x.x.x.', 'x.x.x-x.x.x.x---', 'xx.x.x.xx.x.x.x.', 'x-x-x-x-x.x.x---'],
       gm_hint='Banjo (rolls); Fiddle (lead); Mandolin chop; Acoustic guitar; Upright bass',
-      tracks=[T('bass', 'bass', 'pluck', db=-16, p=dict(bright=1100, damp=0.995)),
+      tracks=[T('bass', 'bass', 'ebass', db=-16, p=dict(bright=1100, damp=0.995)),
               T('chords', 'chords', 'acguitar', pan=0.25, rev=0.15, db=-22, p=dict(bright=7000, damp=0.985)),
               T('arp', 'arp', 'banjo', pan=-0.3, rev=0.15, db=-24),
               T('lead', 'lead', 'violin', rev=0.25, db=-17, p=dict(vib=8))],
@@ -1569,7 +1569,7 @@ style('motown', 'Classic', 'Motown / 60s soul: tambourine on every backbeat, mel
       lead_rh=['x-x-x---x-x-x---', 'x---x-x-x-------', '..x-x-x-x---x---', 'x-x-x-x-x-------'],
       gm_hint='Bass guitar (melodic, Jamerson-style); Piano; Rhythm guitar; Strings; Horn section; Tambourine',
       tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.3), T('tamb', 'top', 'tamb', pan=0.3, db=-25),
-              T('chat', 'top', 'chat', db=-29), T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1000, damp=0.996)),
+              T('chat', 'top', 'chat', db=-29), T('bass', 'bass', 'ebass', db=-15, p=dict(bright=1000, damp=0.996)),
               T('chords', 'chords', 'piano', rev=0.25, db=-22), T('pad', 'pad', 'strings', rev=0.4, db=-25),
               T('arp', 'arp', 'guitar', pan=-0.3, db=-26), T('lead', 'lead', 'brass', rev=0.3, db=-19)],
       master=dict(lufs=-11.0, air=1.3, low=1.0))
@@ -1602,7 +1602,7 @@ style('swing', 'Classic', 'Big-band swing: walking bass, ride and hi-hat on 2 & 
       gm_hint='Brass section (trumpets + trombones); Saxophones; Piano; Upright bass (walking); Ride cymbal',
       tracks=[T('ride', 'top', 'ride', pan=0.3, db=-23), T('chat', 'top', 'chat', pan=-0.2, db=-29),
               T('kick', 'kick', 'kick', db=-24), T('snare', 'snare', 'snare', db=-25),
-              T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1200, damp=0.996)),
+              T('bass', 'bass', 'ebass', db=-15, p=dict(bright=1200, damp=0.996)),
               T('chords', 'chords', 'brass', rev=0.25, db=-21),
               T('arp', 'arp', 'piano', rev=0.2, pan=0.25, db=-26),
               T('lead', 'lead', 'sax', rev=0.25, db=-18)],
@@ -1619,7 +1619,7 @@ style('ska', 'Classic', 'Ska: offbeat guitar & organ skank, fast walking bass, r
       lead_rh=['x-x-x---x-x-x---', 'x.x.x-x.x---....', 'x---x-x-x-------', 'x-.x-.x-x-------'],
       gm_hint='Clean guitar skank; Organ (offbeats); Bass guitar; Trumpet + trombone + sax horns',
       tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.25), T('rim', 'snare', 'rim', db=-22),
-              T('chat', 'top', 'chat', db=-28), T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1200)),
+              T('chat', 'top', 'chat', db=-28), T('bass', 'bass', 'ebass', db=-15, p=dict(bright=1200)),
               T('chords', 'chords', 'guitar', pan=-0.25, db=-22, p=dict(bright=6000, damp=0.98)),
               T('pad', 'pad', 'organ', pan=0.25, db=-27),
               T('lead', 'lead', 'brass', rev=0.25, db=-18)],
@@ -1635,7 +1635,7 @@ style('punk', 'Classic', 'Punk rock: fast down-picked power chords, driving 8th-
       lead_rh=['x-x-x-x-x---x---', 'x---x---x-x-x---', 'x-x-x---x-x-x---'],
       gm_hint='Distorted guitars (down-picked); Bass guitar (8ths); Drums',
       tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.2, db=-15), T('chat', 'top', 'chat', db=-27),
-              T('crash', 'top', 'crash', db=-28), T('bass', 'bass', 'pluck', db=-15, drive=0.5, p=dict(bright=2200, damp=0.997)),
+              T('crash', 'top', 'crash', db=-28), T('bass', 'bass', 'ebass', db=-15, drive=0.5, p=dict(bright=2200, damp=0.997)),
               T('chords', 'chords', 'guitar', drive=1.4, pan=-0.2, p=dict(dist=22, bright=4500, damp=0.99)),
               T('lead', 'lead', 'guitar', drive=1.0, pan=0.2, rev=0.2, db=-18, p=dict(dist=14, bright=5000))],
       master=dict(lufs=-9.0, air=1.5, low=0.8))
@@ -1652,7 +1652,7 @@ style('indie_rock', 'Classic', 'Indie rock: jangly clean guitars in 8ths, melodi
       lead_rh=['x-x-x---x-x-x---', 'x---x-x-x-------', '..x-x-x-x---x---', 'x-x-x-x-x---....'],
       gm_hint='Clean / chorus guitars (jangle); Arpeggiated lead guitar; Bass guitar; Drums; Synth or organ pad',
       tracks=[T('kick', 'kick', 'kick'), T('snare', 'snare', 'snare', rev=0.3), T('chat', 'top', 'chat', db=-28),
-              T('ride', 'top', 'ride', db=-32), T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1800, damp=0.997)),
+              T('ride', 'top', 'ride', db=-32), T('bass', 'bass', 'ebass', db=-15, p=dict(bright=1800, damp=0.997)),
               T('chords', 'chords', 'guitar', pan=-0.25, rev=0.25, dly=0.15, p=dict(bright=6500, damp=0.992)),
               T('pad', 'pad', 'organ', rev=0.35, db=-29),
               T('arp', 'arp', 'guitar', pan=0.3, rev=0.3, dly=0.25, db=-24, p=dict(bright=7000)),
@@ -1672,7 +1672,7 @@ style('salsa', 'Classic', 'Salsa: clave and cowbell, conga tumbao, piano montuno
       gm_hint='Piano montuno; Trumpets + trombones; Congas, timbales, cowbell, clave; Baby bass (anticipated)',
       tracks=[T('woodblock', 'top', 'woodblock', pan=0.25, db=-26), T('cowbell808', 'top', 'cowbell808', pan=-0.25, db=-30),
               T('conga', 'top', 'conga', pan=0.3, db=-23), T('kick', 'kick', 'kick', db=-22), T('rim', 'snare', 'rim', db=-24),
-              T('shaker', 'top', 'shaker', db=-32), T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1000, damp=0.996)),
+              T('shaker', 'top', 'shaker', db=-32), T('bass', 'bass', 'ebass', db=-15, p=dict(bright=1000, damp=0.996)),
               T('chords', 'chords', 'piano', rev=0.2, db=-21), T('arp', 'arp', 'piano', rev=0.2, db=-27),
               T('lead', 'lead', 'brass', rev=0.25, db=-17)],
       master=dict(lufs=-11.0, air=1.5, low=0.9))
@@ -1689,7 +1689,7 @@ style('cumbia', 'Classic', 'Cumbia: guira scrape and congas, kick on one and thr
       gm_hint='Accordion (melody); Guira / shaker; Congas & timbales; Guitar (offbeats); Bass',
       tracks=[T('kick', 'kick', 'kick', db=-17), T('shaker', 'top', 'shaker', pan=0.3, db=-25), T('conga', 'top', 'conga', pan=-0.25, db=-23),
               T('rim', 'snare', 'rim', db=-24), T('cowbell808', 'top', 'cowbell808', db=-32),
-              T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1000)),
+              T('bass', 'bass', 'ebass', db=-15, p=dict(bright=1000)),
               T('chords', 'chords', 'guitar', pan=-0.2, db=-23, p=dict(bright=6000, damp=0.985)),
               T('arp', 'arp', 'marimba', pan=0.3, db=-27),
               T('lead', 'lead', 'accordion', rev=0.25, db=-18)],
@@ -1827,35 +1827,35 @@ GENTLE_MASTER.update({'bluegrass', 'tango', 'swing', 'soul_ballad', 'celtic_jig'
 POOLS.update({
     'waltz': dict(bass=['cello', 'pizz', 'sf:contrabass'], chords=['spiccato', 'strings', 'harp', 'pizz'],
                   arp=['harp', 'celesta', 'flute', 'pizz'], lead=['violin', 'flute', 'clarinet', 'oboe', 'cello']),
-    'celtic_jig': dict(bass=['pluck', 'sf:acbass'], chords=['guitar', 'sf:nylon', 'harp', 'accordion'],
+    'celtic_jig': dict(bass=['ebass', 'sf:acbass'], chords=['guitar', 'sf:nylon', 'harp', 'accordion'],
                        arp=['harp', 'guitar', 'banjo'], lead=['violin', 'flute', 'sf:piccolo', 'accordion', 'sf:fiddle']),
-    'soul_ballad': dict(bass=['pluck', 'sf:fingerbass', 'sf:acbass'], chords=['piano', 'epiano', 'organ', 'guitar'],
+    'soul_ballad': dict(bass=['ebass', 'sf:fingerbass', 'sf:acbass'], chords=['piano', 'epiano', 'organ', 'guitar'],
                         pad=['organ', 'strings', 'choir'], lead=['sax', 'sf:tenorsax', 'vox', 'guitar', 'organ', 'strings']),
-    'gospel': dict(bass=['pluck', 'sf:fingerbass', 'fmbass'], chords=['organ', 'piano', 'epiano'], pad=['choir', 'organ', 'strings'],
+    'gospel': dict(bass=['ebass', 'sf:fingerbass', 'fmbass'], chords=['organ', 'piano', 'epiano'], pad=['choir', 'organ', 'strings'],
                    arp=['piano', 'organ', 'epiano'], lead=['piano', 'organ', 'vox', 'choir', 'sax', 'guitar']),
     'country': dict(bass=['upright', 'sf:acbass', 'sf:fingerbass'], chords=['acguitar', 'piano', 'banjo'],
                     arp=['twang', 'acguitar', 'banjo'],
                     lead=['violin', 'sf:fiddle', 'twang', 'pedalsteel', 'harmonica', 'piano']),
-    'bluegrass': dict(bass=['pluck', 'sf:acbass'], chords=['guitar', 'banjo'], arp=['banjo', 'guitar', 'sf:banjo'],
+    'bluegrass': dict(bass=['ebass', 'sf:acbass'], chords=['guitar', 'banjo'], arp=['banjo', 'guitar', 'sf:banjo'],
                       lead=['violin', 'sf:fiddle', 'banjo', 'guitar']),
-    'motown': dict(bass=['pluck', 'sf:fingerbass'], chords=['piano', 'guitar', 'sf:cleanguitar', 'organ', 'epiano'],
+    'motown': dict(bass=['ebass', 'sf:fingerbass'], chords=['piano', 'guitar', 'sf:cleanguitar', 'organ', 'epiano'],
                    pad=['strings', 'sf:slowstrings', 'organ', 'brass'], arp=['guitar', 'sf:cleanguitar', 'piano', 'celesta'],
                    lead=['brass', 'sax', 'sf:tenorsax', 'strings', 'vox', 'flute', 'sf:trumpet']),
     'rnb': dict(bass=['sinebass', 'sf:fingerbass', 'fmbass', '808'], chords=['epiano', 'piano', 'guitar', 'sf:cleanguitar', 'organ'],
                 pad=['warmpad', 'strings', 'glasspad'], lead=['sf:cleanguitar', 'guitar', 'softlead', 'epiano', 'sax', 'flute']),
-    'swing': dict(bass=['pluck', 'sf:acbass'], chords=['brass', 'sf:trumpetsection', 'piano', 'sax'], arp=['piano', 'guitar'],
+    'swing': dict(bass=['ebass', 'sf:acbass'], chords=['brass', 'sf:trumpetsection', 'piano', 'sax'], arp=['piano', 'guitar'],
                   lead=['sax', 'sf:tenorsax', 'brass', 'sf:trumpet', 'sf:mutedtrumpet', 'clarinet', 'sf:trombone']),
-    'ska': dict(bass=['pluck', 'sf:fingerbass'], chords=['guitar', 'sf:cleanguitar', 'organ', 'piano'], pad=['organ', 'brass'],
+    'ska': dict(bass=['ebass', 'sf:fingerbass'], chords=['guitar', 'sf:cleanguitar', 'organ', 'piano'], pad=['organ', 'brass'],
                 lead=['brass', 'sf:trumpet', 'sax', 'sf:trombone', 'organ']),
-    'punk': dict(bass=['pluck', 'sf:pickbass'], chords=['guitar', 'sf:distguitar', 'sf:odguitar'], lead=['guitar', 'sf:odguitar', 'sf:distguitar']),
-    'indie_rock': dict(bass=['pluck', 'sf:pickbass', 'sf:fingerbass'], chords=['guitar', 'sf:cleanguitar', 'sf:odguitar', 'piano'],
+    'punk': dict(bass=['ebass', 'sf:pickbass'], chords=['guitar', 'sf:distguitar', 'sf:odguitar'], lead=['guitar', 'sf:odguitar', 'sf:distguitar']),
+    'indie_rock': dict(bass=['ebass', 'sf:pickbass', 'sf:fingerbass'], chords=['guitar', 'sf:cleanguitar', 'sf:odguitar', 'piano'],
                        pad=['organ', 'warmpad', 'strings'], arp=['guitar', 'sf:cleanguitar', 'bell', 'piano'],
                        lead=['guitar', 'sf:odguitar', 'sf:cleanguitar', 'leadsaw', 'piano']),
-    'salsa': dict(bass=['pluck', 'sf:acbass', 'sf:fingerbass'], chords=['piano', 'epiano'], arp=['piano', 'marimba', 'guitar'],
+    'salsa': dict(bass=['ebass', 'sf:acbass', 'sf:fingerbass'], chords=['piano', 'epiano'], arp=['piano', 'marimba', 'guitar'],
                   lead=['brass', 'sf:trumpetsection', 'sf:trumpet', 'sf:trombone', 'flute', 'sax', 'violin']),
-    'cumbia': dict(bass=['pluck', 'sf:fingerbass', 'sinebass'], chords=['guitar', 'sf:cleanguitar', 'organ', 'accordion'],
+    'cumbia': dict(bass=['ebass', 'sf:fingerbass', 'sinebass'], chords=['guitar', 'sf:cleanguitar', 'organ', 'accordion'],
                    arp=['marimba', 'guitar', 'flute'], lead=['accordion', 'sf:accordion', 'flute', 'organ', 'brass', 'guitar']),
-    'tango': dict(bass=['cello', 'sf:contrabass', 'pluck'], chords=['piano', 'accordion', 'strings'], pad=['accordion', 'sf:bandoneon', 'strings'],
+    'tango': dict(bass=['cello', 'sf:contrabass', 'ebass'], chords=['piano', 'accordion', 'strings'], pad=['accordion', 'sf:bandoneon', 'strings'],
                   arp=['pizz', 'piano', 'harp'], lead=['violin', 'accordion', 'sf:bandoneon', 'cello', 'piano', 'clarinet']),
     'dancehall': dict(bass=['sinebass', '808', 'fmbass'], chords=['stab', 'pluck_saw', 'organ', 'marimba', 'steeldrum'],
                       pad=['warmpad', 'strings'], lead=['vox', 'pluck', 'leadsaw', 'flute', 'steeldrum', 'bell']),
@@ -2033,7 +2033,7 @@ style('jam_band', 'Classic', 'Jam band / psychedelic Americana: noodling clean l
       gm_hint='Clean electric guitars (lead + rhythm); Bass guitar (melodic); Hammond organ; Piano; two drummers',
       tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.3, db=-18), T('ride', 'top', 'ride', pan=0.25, db=-26),
               T('chat', 'top', 'chat', pan=-0.25, db=-29), T('tom', 'top', 'tom', rev=0.3, db=-24),
-              T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1400, damp=0.997)),
+              T('bass', 'bass', 'ebass', db=-15, p=dict(bright=1400, damp=0.997)),
               T('chords', 'chords', 'guitar', pan=-0.25, rev=0.3, db=-22, p=dict(bright=5500)),
               T('pad', 'pad', 'organ', pan=0.25, rev=0.3, db=-26), T('arp', 'arp', 'piano', rev=0.3, db=-27),
               T('lead', 'lead', 'guitar', rev=0.35, dly=0.2, db=-18, p=dict(dist=4, bright=5000))],
@@ -2071,8 +2071,8 @@ style('soft_rock', 'Classic', '70s soft rock (California): steady groove, round 
       gm_hint='Acoustic + clean electric guitars; Fender Rhodes; Hammond organ; Bass guitar (melodic); soft drums with tom fills',
       tracks=[T('kick', 'kick', 'kick', db=-16), T('snare', 'snare', 'snare', rev=0.35, db=-18), T('chat', 'top', 'chat', db=-28),
               T('tom', 'top', 'tom', rev=0.35, db=-23), T('tamb', 'top', 'tamb', pan=0.3, db=-30),
-              T('bass', 'bass', 'pluck', db=-15, p=dict(bright=1200, damp=0.997)),
-              T('chords', 'chords', 'guitar', pan=-0.25, rev=0.25, p=dict(bright=5500)), T('pad', 'pad', 'organ', pan=0.25, rev=0.3, db=-27),
+              T('bass', 'bass', 'ebass', db=-15, p=dict(bright=1200, damp=0.997)),
+              T('chords', 'chords', 'acguitar', pan=-0.25, rev=0.25, p=dict(bright=5500)), T('pad', 'pad', 'organ', pan=0.25, rev=0.3, db=-27),
               T('arp', 'arp', 'epiano', rev=0.3, pan=0.2, db=-25), T('lead', 'lead', 'guitar', rev=0.35, dly=0.2, db=-18, p=dict(dist=3, bright=5000))],
       master=dict(lufs=-11.0, air=1.3, low=1.0))
 
@@ -2104,13 +2104,13 @@ POOLS.update({
     'melodic_house': dict(bass=['moogbass', 'sinebass', 'sawbass'], chords=['warmpad', 'piano', 'polysynth', 'epiano', 'strings'],
                           pad=['glasspad', 'strings', 'warmpad', 'choir', 'solina'], arp=['harp', 'pluck', 'guitar', 'marimba', 'kalimba', 'bell'],
                           lead=['piano', 'pluck', 'guitar', 'sf:nylon', 'violin', 'flute', 'vox']),
-    'jam_band': dict(bass=['pluck', 'sf:fingerbass', 'upright'], chords=['guitar', 'sf:cleanguitar', 'piano', 'organ'],
+    'jam_band': dict(bass=['ebass', 'sf:fingerbass', 'upright'], chords=['guitar', 'sf:cleanguitar', 'piano', 'organ'],
                      pad=['organ', 'wurli', 'pedalsteel'], arp=['piano', 'guitar', 'wurli'],
                      lead=['guitar', 'sf:cleanguitar', 'organ', 'piano', 'pedalsteel', 'harmonica']),
     'teen_pop': dict(bass=['moogbass', 'fmbass', 'sawbass', 'sf:fingerbass'], chords=['pluck_saw', 'piano', 'mutedgtr', 'stab', 'guitar', 'polysynth'],
                      pad=['strings', 'polysynth', 'warmpad', 'choir'], arp=['mutedgtr', 'pluck', 'bell', 'guitar', 'harp'],
                      lead=['vox', 'pluck', 'guitar', 'strings', 'flute', 'synthbrass']),
-    'soft_rock': dict(bass=['pluck', 'sf:fingerbass', 'moogbass'], chords=['guitar', 'sf:steelguitar', 'sf:cleanguitar', 'epiano', 'piano', 'wurli'],
+    'soft_rock': dict(bass=['ebass', 'sf:fingerbass', 'moogbass'], chords=['guitar', 'sf:steelguitar', 'sf:cleanguitar', 'epiano', 'piano', 'wurli'],
                       pad=['organ', 'strings', 'solina', 'polysynth', 'pedalsteel'], arp=['epiano', 'guitar', 'piano', 'vibes'],
                       lead=['guitar', 'sf:cleanguitar', 'vox', 'epiano', 'pedalsteel', 'flute', 'sax']),
     'luxury_rap': dict(chords=['piano', 'strings', 'epiano', 'brass', 'harp'], pad=['strings', 'choir', 'horn', 'solina', 'sf:slowstrings'],
@@ -2386,7 +2386,7 @@ style('disco_funk', 'Classic', '70s disco-funk: punchy dry four-on-the-floor, a 
       tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.15, db=-18), T('clap', 'snare', 'clap', rev=0.12, db=-22),
               T('ohat', 'top', 'ohat', pan=0.2, db=-28), T('chat', 'top', 'chat', pan=-0.2, db=-30),
               T('tamb', 'top', 'tamb', pan=0.35, db=-29), T('conga', 'top', 'conga', pan=-0.3, db=-27),
-              T('bass', 'bass', 'pluck', db=-14, p=dict(bright=1600, damp=0.996)),
+              T('bass', 'bass', 'ebass', db=-14, p=dict(bright=1600, damp=0.996)),
               T('chords', 'chords', 'mutedgtr', pan=-0.25, rev=0.12, db=-23),
               T('pad', 'pad', 'strings', pan=0.2, rev=0.35, db=-29),
               T('arp', 'arp', 'clav', pan=0.25, rev=0.15, db=-26),
@@ -2523,7 +2523,7 @@ style('future_funk', 'Electronic', 'Future funk: pitched-up, chopped 70s/80s dis
       lead_rh=['x.x.x...x.x.x...', '..x.x.x...x.x...', 'x.xx.x..x.xx.x..'],
       tracks=[T('kick', 'kick', 'kick', db=-12), T('clap', 'snare', 'clap', rev=0.25, db=-18), T('ohat', 'top', 'ohat', db=-27),
               T('chat', 'top', 'chat', pan=0.2, db=-29), T('tamb', 'top', 'tamb', pan=-0.3, db=-30),
-              T('bass', 'bass', 'pluck', sc=0.7, db=-14, p=dict(bright=1800, damp=0.996)),
+              T('bass', 'bass', 'ebass', sc=0.7, db=-14, p=dict(bright=1800, damp=0.996)),
               T('chords', 'chords', 'epiano', sc=0.9, rev=0.3, db=-22), T('pad', 'pad', 'strings', sc=0.8, rev=0.4, db=-27),
               T('arp', 'arp', 'vox', sc=0.6, dly=0.25, db=-23), T('lead', 'lead', 'vox', sc=0.5, rev=0.3, db=-19)],
       master=dict(lufs=-8.5, air=2.4, low=1.0))
@@ -2583,7 +2583,7 @@ style('fusion', 'Classic', 'Jazz fusion / jazz-rock: straight 16th-note grooves,
       lead_rh=['x.x.x.x.x.x.x.x.', 'x.xxx.x.x.xxx.x.', 'x-x-x-x-x.x.x---'], voicing='drop2',
       tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.15, db=-18), T('chat', 'top', 'chat', pan=0.2, db=-29),
               T('ohat', 'top', 'ohat', db=-30), T('ride', 'top', 'ride', pan=0.3, db=-31),
-              T('bass', 'bass', 'pluck', db=-14, p=dict(bright=1900, damp=0.996)),
+              T('bass', 'bass', 'ebass', db=-14, p=dict(bright=1900, damp=0.996)),
               T('chords', 'chords', 'epiano', rev=0.25, pan=-0.2, db=-22), T('pad', 'pad', 'polysynth', rev=0.4, db=-30),
               T('arp', 'arp', 'guitar', pan=0.3, db=-27, drive=0.4), T('lead', 'lead', 'leadsaw', rev=0.3, dly=0.2, db=-18)],
       master=dict(lufs=-12.0, air=1.6, low=1.0))
@@ -2656,7 +2656,7 @@ POOLS.update({
     'gabber': dict(chords=['hoover', 'stab', 'supersaw'], lead=['leadsaw', 'hoover', 'supersaw_lead'], arp=['pluck_saw', 'chip']),
     'rave_hardcore': dict(bass=['sinebass', 'reese'], chords=['piano', 'stab', 'organ'], pad=['choir', 'strings'], arp=['vox', 'pluck_saw'],
                           lead=['hoover', 'leadsaw', 'vox', 'piano']),
-    'future_funk': dict(bass=['pluck', 'sf:slapbass', 'moogbass'], chords=['epiano', 'polysynth', 'sf:cleanguitar', 'synthbrass'],
+    'future_funk': dict(bass=['ebass', 'sf:slapbass', 'moogbass'], chords=['epiano', 'polysynth', 'sf:cleanguitar', 'synthbrass'],
                         pad=['strings', 'solina'], arp=['vox', 'mutedgtr', 'epiano'], lead=['vox', 'synthbrass', 'sax', 'leadsaw']),
     'bebop': dict(chords=['piano', 'guitar'], lead=['sax', 'sf:tenorsax', 'trumpet', 'sf:trumpet']),
     'modal_jazz': dict(chords=['piano', 'epiano'], lead=['trumpet', 'sax', 'sf:tenorsax', 'flute']),
@@ -3439,3 +3439,47 @@ POOLS['downtempo']['arp'] = ['bell', 'epiano', 'pluck', 'guitar', 'kalimba']
 
 # renamed genres: old ids still work (saved presets, links, command line)
 STYLE_ALIASES = {'tempa_dubstep': 'deep_dubstep'}
+
+
+# ----------------------------------------------------------------------------- 1.31: real basses everywhere they belong
+# electric bass (Growlybass) for electric genres, upright (Meatbass) for acoustic / jazz ones
+_UPRIGHT = ('jazz', 'swing', 'bossa_nova', 'bluegrass', 'folk', 'celtic_jig', 'western', 'salsa', 'chamber_pop')
+for _n, _st in STYLES.items():
+    for _t in _st['tracks']:
+        if _t['layer'] == 'bass' and _t['inst'] in ('pluck', 'ebass') and not _t.get('double_of'):
+            if _st['category'] == 'Electronic' and _n not in ('future_funk', 'afrobeats', 'reggaeton'):
+                continue
+            _t['inst'] = 'upright' if _n in _UPRIGHT else 'ebass'
+            _t['p'] = {}
+for _n, _pl in POOLS.items():
+    _b = _pl.get('bass')
+    if not _b:
+        continue
+    _own = next((t['inst'] for t in STYLES.get(_n, {}).get('tracks', []) if t['layer'] == 'bass' and not t.get('double_of')), None)
+    _b = [('ebass' if x == 'pluck' else x) for x in _b]
+    if _own in ('upright', 'ebass'):
+        _b = [_own] + [x for x in _b if x != _own and not (_own == 'upright' and x == 'ebass')]
+    _pl['bass'] = list(dict.fromkeys(_b))
+
+
+# ----------------------------------------------------------------------------- 1.31: the vowel-synth "vox" only where chops are the sound
+VOX_OK = {'future_bass', 'ukgarage', 'jersey_club', 'baile_funk', 'phonk', 'house_phonk', 'memphis_phonk', 'brazilian_phonk',
+          'future_funk', 'rave_hardcore', 'melodic_dubstep', 'hyperpop', 'hauntology'}
+_VOX_REPLACE = {'lead': {'Electronic': 'pluck_saw', 'Classic': 'piano'}, 'pad': {'Electronic': 'warmpad', 'Classic': 'strings'},
+                'arp': {'Electronic': 'pluck_saw', 'Classic': 'piano'}}
+for _n, _st in STYLES.items():
+    if _n in VOX_OK:
+        continue
+    _pl = POOLS.get(_n, {})
+    for _t in _st['tracks']:
+        if _t['inst'] == 'vox' and _t['layer'] in _VOX_REPLACE:
+            alt = [x for x in _pl.get(_t['layer'], []) if x != 'vox']
+            _t['inst'] = alt[0] if alt else _VOX_REPLACE[_t['layer']].get(_st['category'], 'pluck_saw')
+            _t['p'] = {}
+    for _r, _l in list(_pl.items()):
+        if 'vox' in _l:
+            _own = next((t['inst'] for t in _st['tracks'] if t['layer'] == _r and not t.get('double_of')), None)
+            _l2 = [x for x in _l if x != 'vox']
+            if _own and _own in _l2:
+                _l2 = [_own] + [x for x in _l2 if x != _own]
+            _pl[_r] = _l2 or [_own]
