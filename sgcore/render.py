@@ -302,6 +302,8 @@ class Renderer:
                 sig = self._real_drum(tcfg.get('real') or tcfg['inst'], ev, i)
             if sig is None:
                 sig = self._drum(tcfg['name'], tcfg['inst']) if is_drum else self._note(tcfg, ev, p)
+            if getattr(ev, 'slide', 0) and not is_drum:          # slide / bend up into the note
+                sig = pitch_slide(sig, float(ev.slide), min(0.22, max(0.07, self._dsec(ev.beat, ev.dur) * 0.3)))
             if tcfg.get('swell') and not is_drum and ev.dur >= 2:     # bowed / blown swell: the note grows out of nothing
                 n = min(sig.shape[-1], int(self._dsec(ev.beat, ev.dur) * float(tcfg['swell']) * SR))
                 if n > 16:
@@ -570,6 +572,23 @@ class Renderer:
         self.stems = stems
         self.stem_env = env
         return mix
+
+
+def pitch_slide(x, semis, sec):
+    """Bend a rendered note so it starts `semis` semitones low and glides up into pitch over `sec` seconds."""
+    x = np.asarray(x, dtype=np.float32)
+    n = x.shape[-1]
+    m = min(n - 1, max(2, int(sec * SR)))
+    r = np.ones(n, dtype=np.float64)
+    u = np.linspace(0.0, 1.0, m)
+    r[:m] = 2.0 ** (-semis * (1.0 - u) ** 2 / 12.0)          # fast at first, settling gently into the note
+    pos = np.concatenate([[0.0], np.cumsum(r[:-1])])
+    pos = pos[pos < n - 1]
+    i0 = pos.astype(np.int64)
+    fr = (pos - i0).astype(np.float32)
+    if x.ndim == 1:
+        return x[i0] * (1 - fr) + x[i0 + 1] * fr
+    return x[:, i0] * (1 - fr) + x[:, i0 + 1] * fr
 
 
 def fx_cymroll(sec):

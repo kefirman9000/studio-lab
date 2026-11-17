@@ -1,6 +1,6 @@
 """Real-instrument sample libraries: multi-sampled orchestra, percussion and acoustic drum kits.
 
-All of them are CC0 (public domain) recordings by Versilian Studios, fetched straight from their GitHub repositories
+All of them are CC0 (public domain) recordings by Versilian Studios and Karoryfer Samples, fetched straight from their GitHub repositories
 at a pinned commit. Every file is checked against the git SHA-1 listed in samplelibs.json before it's kept, and
 only audio is stored (nothing runs). Songs made with them are entirely yours.
 
@@ -9,6 +9,8 @@ Libraries
   winds       horn, trumpet, trombone, tuba, flute, oboe, clarinet, bassoon, piccolo (sustain + staccato), timpani
   percussion  congas, bongos, shakers, tambourine, real claps, cowbell, claves, guiro, woodblock, triangle ...
   drums       Virtuosity Drums - a real acoustic kit, close "studio" sound and a vintage "lofi" mic
+  archtop     Karoryfer Shinyguitar (microphone) - the acoustic guitar
+  twang       Karoryfer Black And Green Guitars - twangy hollowbody electric, sustained + staccato (country leads)
 
 The player picks the recorded note nearest to the one asked for (re-pitching only a few semitones), a velocity layer
 that matches how hard the note is played, a different round-robin take each time, and - for orchestral sounds - the
@@ -35,7 +37,7 @@ from . import updater
 ROOT = updater.ROOT
 REAL_DIR = os.path.join(ROOT, 'sound_library', 'real')
 MANIFEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'samplelibs.json')
-LIB_ORDER = ['drums', 'percussion', 'strings', 'winds', 'keys', 'colors']
+LIB_ORDER = ['drums', 'percussion', 'strings', 'winds', 'keys', 'colors', 'archtop', 'twang']
 BLURB = {
     'drums': 'A real acoustic drum kit (kick, snare, hats, ride, crash, toms) with 3 mic sounds: clean studio, big rock room and '
              'vintage lo-fi. Plays the rock, funk, disco, jazz and soul kits and the re-played breaks (Amen, Think, Funky Drummer ...).',
@@ -48,6 +50,10 @@ BLURB = {
             'a Flemish harpsichord, a pipe organ for orchestral and baroque styles, and a Yamaha TX81Z FM piano.',
     'colors': 'Concert harp, marimba, vibraphone, xylophone, glockenspiel, tubular bells, kalimba, tenor sax (sustain + staccato), '
               'harmonica, ocarina and sleigh bells - recorded, used wherever a genre plays them.',
+    'archtop': 'A real guitar (Karoryfer Shinyguitar, microphone recording): the strummed and picked acoustic guitar in country, '
+               'folk, bluegrass and every genre that asks for an acoustic guitar.',
+    'twang': 'A real twangy hollowbody electric (Karoryfer Black And Green Guitars, "twang" and staccato playing): the Telecaster-'
+             'style country lead, chicken-pickin\' fills and slapback twang in classic, modern and outlaw country.',
 }
 MAX_LEN = {'ring': 4.5, 'sus': 7.0, 'trem': 6.0, 'hit': 4.0, 'slap': 2.0, 'short': 2.0, 'pizz': 2.5}
 _lock = threading.Lock()
@@ -406,7 +412,7 @@ ORCH = {
     'pipeorgan': ('solo', 'pipeorgan'), 'fmpiano': ('solo', 'fmpiano'),
     'harp': ('ring', 'harp'), 'marimba': ('ring', 'marimba'), 'vibes': ('ring', 'vibes'), 'xylophone': ('ring', 'xylophone'),
     'glock': ('ring', 'glock'), 'tubular': ('ring', 'tubular'), 'kalimba': ('ring', 'kalimba'),
-    'sax': ('solo', 'sax'), 'tenorsax': ('solo', 'sax'), 'harmonica': ('solo', 'harmonica'), 'ocarina': ('solo', 'ocarina'),
+    'sax': ('solo', 'sax'), 'tenorsax': ('solo', 'sax'), 'harmonica': ('solo', 'harmonica'), 'acguitar': ('ring', 'acguitar'), 'twang': ('solo', 'twang'), 'ocarina': ('solo', 'ocarina'),
 }
 # styles whose piano is a worn upright rather than a concert grand
 UPRIGHT_STYLES = {'lofi', 'boombap', 'hauntology', 'vaporwave', 'memphis_phonk', 'blues', 'soul_ballad', 'folk', 'western', 'motown'}
@@ -500,6 +506,8 @@ CHOICES = [
     ('kalimba', 'Kalimba', 'colors', ('arp', 'lead')),
     ('sax', 'Tenor sax', 'colors', ('lead',)),
     ('harmonica', 'Harmonica', 'colors', ('lead',)),
+    ('acguitar', 'Acoustic guitar', 'archtop', ('chords', 'arp', 'lead', 'bass')),
+    ('twang', 'Twang electric guitar', 'twang', ('lead', 'arp', 'chords')),
     ('ocarina', 'Ocarina', 'colors', ('lead',)),
 ]
 

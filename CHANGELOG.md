@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.29.0
+Real guitars, real slides, more harmonica:
+- **Two new free real-guitar libraries** in 🎻 Real instruments (CC0 public domain, Karoryfer Samples, same download safety as the others):
+  - *Acoustic guitar* (Shinyguitar, microphone recording, 56 MB): the strummed and picked acoustic in Country, Modern Country, Country Waltz, Bluegrass and Folk.
+  - *Twang electric guitar* (Black And Green Guitars, 157 MB): real "twang" picking plus staccato for chicken-pickin' - the country lead and fills in Country, Modern Country and Outlaw Country.
+  - Both show up as "Acoustic guitar (real)" / "Twang electric guitar (real)" in every Sound dropdown.
+- **Real slides and bends**: country melodies now actually glide up into their notes (a whole or half step), on the recorded fiddle, harmonica and guitar as well as the synths - instead of a separate grace note.
+- **More harmonica**: harmonica answers the melody in Outlaw Country (and sometimes Country), alongside the pedal steel.
+- Country styles no longer fall back to the General MIDI steel guitar or the synth "electric guitar" for their acoustic parts.
+
 ## 1.28.0
 Country, made authentic - and four more country styles:
 - **Country (classic / honky-tonk)** reworked: upright bass in a boom-chick with walk-ups (was a generic pluck), strummed acoustic with **honky-tonk piano** (a detuned piano, an octave up) doubling it, **chicken-pickin' Telecaster** fills (new "Telecaster twang" sound), real fiddle on the melody, pedal steel swells and pedal-steel answers.

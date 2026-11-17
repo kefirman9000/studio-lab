@@ -1393,3 +1393,10 @@ INSTRUMENT_INFO['twang'] = 'Telecaster twang guitar (country)'
 ROLE_CHOICES['lead'] += ['twang']
 ROLE_CHOICES['arp'] += ['twang']
 GM_PROGRAM['twang'] = 27
+
+
+INSTRUMENTS['acguitar'] = INSTRUMENTS['guitar']        # synth stand-in until the real guitar library is installed
+INSTRUMENT_INFO['acguitar'] = 'Acoustic guitar'
+for _r in ('chords', 'arp', 'lead'):
+    ROLE_CHOICES[_r] += ['acguitar']
+GM_PROGRAM['acguitar'] = 25

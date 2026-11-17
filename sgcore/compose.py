@@ -309,11 +309,12 @@ def lead_voicing(notes, prev, center, inversions=True):
 
 
 class Ev:
-    __slots__ = ('track', 'beat', 'dur', 'midi', 'vel', 'glide', 'mod', 'strum')
+    __slots__ = ('track', 'beat', 'dur', 'midi', 'vel', 'glide', 'mod', 'strum', 'slide')
 
-    def __init__(self, track, beat, dur, midi, vel, glide=None, mod=None, strum=0.0):
+    def __init__(self, track, beat, dur, midi, vel, glide=None, mod=None, strum=0.0, slide=0.0):
         self.track, self.beat, self.dur, self.midi, self.vel, self.glide, self.mod = track, beat, dur, midi, vel, glide, mod
         self.strum = strum                       # beats after the chord's own position (strummed chords move as one)
+        self.slide = slide                       # semitones the note slides up from (fiddle / steel / guitar / harmonica)
 
 
 def chord_tones_deg(chord, lo, hi):
@@ -1593,7 +1594,8 @@ COUNTER_STYLES = {
     'soul_ballad': ['strings', 'organ', 'sax'], 'celtic_jig': ['flute', 'violin'], 'symphonic_metal': ['strings', 'choir'],
     'orchestral_hiphop': ['cello', 'horn'], 'city_pop': ['brass', 'strings'], 'disco': ['strings'], 'jazz': ['sax', 'brass'],
     'bossa_nova': ['flute', 'strings'], 'gospel': ['organ', 'choir'], 'motown': ['strings', 'brass'],
-    'country': ['pedalsteel', 'violin', 'twang'], 'modern_country': ['pedalsteel', 'twang'], 'country_waltz': ['pedalsteel', 'violin'], 'swing': ['brass', 'clarinet'], 'tango': ['cello', 'violin', 'accordion'],
+    'country': ['pedalsteel', 'violin', 'twang', 'harmonica'], 'modern_country': ['pedalsteel', 'twang'], 'country_waltz': ['pedalsteel', 'violin'],
+    'outlaw_country': ['harmonica', 'twang'], 'western_swing': ['pedalsteel', 'violin'], 'swing': ['brass', 'clarinet'], 'tango': ['cello', 'violin', 'accordion'],
     'kpop': ['strings', 'pluck', 'bell'], 'teen_pop': ['strings', 'pluck', 'vox'], 'luxury_rap': ['horn', 'strings', 'choir'],
     'soft_rock': ['organ', 'epiano', 'guitar'], 'jam_band': ['organ', 'piano'], 'uplifting_trance': ['pluck_saw', 'strings'], 'rnb': ['strings', 'guitar'], 'bluegrass': ['banjo', 'guitar'], 'salsa': ['flute', 'violin'],
 }
@@ -1856,21 +1858,20 @@ def add_layer_tracks(st, opts):
 
 
 def add_slides(evs, tracks, st, key, rnd):
-    """Grace-note slides into the melody's longer notes: a quick note a whole step (or half step) below, the way a fiddle,
-    pedal steel or Telecaster bends and slides into pitch - the most recognisable country inflection."""
+    """Real slides into the melody's longer notes: the note itself starts a whole step (or half step) low and glides up
+    into pitch, the way a fiddle, pedal steel, Telecaster or harmonica bends into a note - the most recognisable country
+    inflection. Works on recorded instruments too (the renderer bends the recording)."""
     p = float(st.get('slides') or 0)
     scale = {(key.root + x) % 12 for x in key.scale}
-    add = []
     for e in evs:
         t = tracks.get(e.track, {})
         if t.get('layer') != 'lead' or e.midi is None or e.dur < 0.5 or rnd.random() > p:
             continue
         if abs(e.beat * 2 - round(e.beat * 2)) > 1e-6:      # on the beat or the off-beat 8th only
             continue
-        below = e.midi - 2 if (e.midi - 2) % 12 in scale else e.midi - 1
-        g = 0.12 if e.dur < 1 else 0.18
-        add.append(Ev(e.track, max(0.0, e.beat - g), g, below, e.vel * 0.72))
-    evs += add
+        e.slide = 2.0 if (e.midi - 2) % 12 in scale else 1.0
+        if rnd.random() < 0.25:
+            e.slide = 1.0                                   # a quick half-step bend now and then
 
 
 def double_layers(evs, tracks):

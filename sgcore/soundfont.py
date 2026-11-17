@@ -376,7 +376,7 @@ ELECTRONIC_SWAP = {'piano', 'epiano', 'guitar', 'violin', 'harp', 'flute', 'sax'
                    'celesta', 'pizz', 'clav', 'cello', 'harpsichord', 'oboe', 'clarinet', 'spiccato', 'tremolo',
                    'upright', 'mutedgtr', 'vibes', 'harmonica', 'trumpet', 'contrabass', 'trombone', 'tuba', 'bassoon'}
 # orchestra sections the General MIDI bank only has as one ensemble sound
-SF_ALIAS = {'violins': 'strings', 'violas': 'strings'}
+SF_ALIAS = {'violins': 'strings', 'violas': 'strings', 'acguitar': 'steelguitar', 'twang': 'cleanguitar'}
 
 
 def fallback_for(name):

@@ -60,9 +60,13 @@ def _nice(name):
         return _inst_label(name)
     from .instruments import INSTRUMENT_INFO
     if name.startswith('real:'):
+        from . import samplelibs as sl
+        lab = next((c[1] for c in sl.CHOICES if c[0] == name[5:]), None)
+        if lab:
+            return lab + ' (real)'
         from . import soundfont as sfm
         hit = sfm.SAMPLED.get(name[5:])
-        return (hit[2] if hit else name[5:]) + ' (real orchestra)'
+        return (hit[2] if hit else name[5:]) + ' (real)'
     if name.startswith('sf:'):
         from . import soundfont as sfm
         hit = sfm.SAMPLED.get(name[3:])

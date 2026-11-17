@@ -6,7 +6,11 @@ app checks after download. Run from the repo root with shallow, blob-less clones
     git clone --depth 1 --filter=blob:none --no-checkout https://github.com/sgossner/VSCO-2-CE  <dir>/vsco-2-ce
     git clone --depth 1 --filter=blob:none --no-checkout https://github.com/sgossner/VCSL        <dir>/vcsl
     git clone --depth 1 --filter=blob:none --no-checkout https://github.com/sfzinstruments/virtuosity_drums <dir>/vdrums
-    python tools/make_samplelib_manifest.py <dir>
+    git clone --depth 1 --filter=blob:none --no-checkout https://github.com/sfzinstruments/karoryfer.black-and-green-guitars <dir>/bng
+    git clone --depth 1 --filter=blob:none --no-checkout https://github.com/sfzinstruments/karoryfer.shinyguitar <dir>/shiny
+    python tools/make_samplelib_manifest.py <dir>                     (all libraries)
+    python tools/make_samplelib_manifest.py <dir> --only twang,archtop  (just these, merged into the existing file)
+(never use `git ls-tree -l` on these clones: it downloads every sample to report its size)
 """
 import json
 import os
@@ -33,6 +37,8 @@ def tree(d):
 
 def parse(name):
     base = name.rsplit('/', 1)[-1].rsplit('.', 1)[0]
+    if re.match(r'^(twang|staccato)_|^[a-g]b?\d_vl', base):       # Karoryfer guitars: lower-case notes, 'bb3' = B flat 3
+        base = re.sub(r'(^|_)([a-g])(b?)(\d)(?=_)', lambda m: m.group(1) + m.group(2).upper() + m.group(3) + m.group(4), base)
     m = re.search(r'(?:^|_)([A-G])(#|b)?(-?\d)(?=_|$)', base)
     midi = None
     if m:
@@ -126,6 +132,10 @@ COLORS = [
     ('ocarina', 'sus', r'^Aerophones/Edge-blown Aerophones/Ocarina, Typical/Sustains/', r'', 1),
     ('sleigh', 'hit', r'^' + I + 'Sleigh Bells/', r'Sleighbells_Hit', 3),
 ]
+# Karoryfer CC0 guitars
+TWANG = [('twang', 'sus', r'^Samples/green/ord/', r'_(mf|f)_rr[12]\.wav$|_p_rr1\.wav$', 2),
+         ('twang', 'short', r'^Samples/green/stac/', r'', 2)]
+ARCHTOP = [('acguitar', 'ring', r'^Samples/acoustic/', r'/[a-g]b?\d_vl[24]_rr[12]_1\.wav$', 2)]
 THIN = {'grand': ({2, 4}, 2), 'upright_piano': ({1, 3}, None), 'harpsichord': (None, 2)}
 STRINGS = {'violins', 'violas', 'celli', 'basses', 'violin'}
 LIBS = {
@@ -139,6 +149,11 @@ LIBS = {
                  by='Versilian Studios', rules=[('', r) for r in KEYS], ext='.wav'),
     'colors': dict(repo='sgossner/VCSL', dir='vcsl', title='Harp, mallets, sax & more (Versilian Community Sample Library)',
                    by='Versilian Studios', rules=[('', r) for r in COLORS], ext='.wav'),
+    'twang': dict(repo='sfzinstruments/karoryfer.black-and-green-guitars', dir='bng',
+                  title='Twang electric guitar (Karoryfer Black And Green Guitars)', by='Karoryfer Samples',
+                  rules=[('', r) for r in TWANG], ext='.wav'),
+    'archtop': dict(repo='sfzinstruments/karoryfer.shinyguitar', dir='shiny', title='Acoustic archtop guitar (Karoryfer Shinyguitar)',
+                    by='Karoryfer Samples', rules=[('', r) for r in ARCHTOP], ext='.wav'),
     'drums': dict(repo='sfzinstruments/virtuosity_drums', dir='vdrums', title='Acoustic drum kits (Virtuosity Drums)',
                   by='Versilian Studios & Karoryfer', rules=[('studio', r) for r in vdrums('mid')] + [('lofi', r) for r in vdrums('lofi')] + [('room', r) for r in vdrums('room')],
                   ext='.flac'),
@@ -152,9 +167,14 @@ def size_of(repo, commit, path):
         return int(r.headers['Content-Length'])
 
 
-def main(root):
+def main(root, only=None):
     out = {'version': 1, 'license': 'CC0-1.0', 'libs': {}}
+    if only:
+        with open(os.path.join('sgcore', 'samplelibs.json')) as fh:
+            out = json.load(fh)
     for lib, cfg in LIBS.items():
+        if only and lib not in only:
+            continue
         commit, rows = tree(os.path.join(root, cfg['dir']))
         files = []
         for kit, (inst, art, folder, pat, max_rr) in cfg['rules']:
@@ -194,4 +214,5 @@ def main(root):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    only = sys.argv[sys.argv.index('--only') + 1].split(',') if '--only' in sys.argv else None
+    main(sys.argv[1], only)
