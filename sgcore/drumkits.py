@@ -292,7 +292,7 @@ def break_edits(st, rnd, energy, section_bar, nbars):
         return None
     kind = rnd.choice(['rush', 'rush', 'reverse', 'stutter', 'pitchdown'] + (['rush32'] if c > 0.4 else []))
     if kind == 'reverse':
-        return 3.0, [(3.0, 'kick', 0.85, None), (3.0, 'snare', 0.9, 'rev')]
+        return 3.0, [(3.0, 'kick', 0.85, None), (3.5, 'snare', 0.5, 'cut'), (3.98, 'snare', 0.9, 'rev')]   # swells into the next downbeat
     if kind == 'stutter':
         return 3.0, [(3.0 + k / 4, 'snare', 0.45 + 0.1 * k, 'cut') for k in range(4)]
     if kind == 'pitchdown':

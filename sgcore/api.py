@@ -38,7 +38,7 @@ def describe(song):
                 duration=f"{int(dur // 60)}:{int(dur % 60):02d}", seconds=round(dur, 1), seed=song['seed'],
                 form=' > '.join(f"{s['name']}({s['bars']})" for s in song['sections']),
                 chords=k.roman(song['prog_main']), chords_alt=k.roman(song['prog_alt']),
-                instruments=_instruments(song), inst_ids=_inst_ids(song),
+                instruments=_instruments(song), inst_ids=_inst_ids(song), tracks=_tracks(song),
                 meter=song.get('meter', '4/4'),
                 bpm_quarter=round(song['bpm'] * 1.5) if song.get('meter') == '3/4' else song['bpm'],
                 arrangement=_arrangement(song),
@@ -93,6 +93,45 @@ def _instruments(song):
         elif t.get('switch_of') in out:                      # instrument rotation between sections
             where = ' & '.join({'A': 'verses', 'B': 'choruses', 'C': 'breaks'}[g] for g in t.get('groups', ()))
             out[t['switch_of']] += f' · {where}: ' + _nice(t['inst'])
+    return out
+
+
+TRACK_ROLE_LABEL = {'kick': 'Kick', 'snare': 'Snare / clap', 'top': 'Hats & percussion', 'bass': 'Bass', 'chords': 'Chords',
+                    'pad': 'Pad', 'arp': 'Arp', 'lead': 'Lead', 'fx': 'FX / texture'}
+
+
+DRUM_PART = {'chat': 'Closed hi-hat', 'ohat': 'Open hi-hat', 'rim': 'Rimshot', 'shaker': 'Shaker', 'clap': 'Clap', 'tamb': 'Tambourine',
+             'ride': 'Ride cymbal', 'crash': 'Crash cymbal', 'conga': 'Congas', 'snap': 'Finger snaps', 'woodblock': 'Wood block',
+             'tabla': 'Tabla', 'cowbell808': 'Cowbell', 'tom_hi': 'High tom (fills)', 'tom_mid': 'Mid tom (fills)',
+             'tom_lo': 'Low tom (fills)', 'bride': 'Build-up ride', 'lkick': 'Layered kick', 'lsnare': 'Layered snare',
+             'vinyl': 'Vinyl crackle', 'texture': 'Background texture', 'timp': 'Timpani', 'bodhran': 'Bodhran'}
+
+
+def _tracks(song):
+    """Every part that actually plays in this song (main parts, extras, layers, section switches, build-up drums ...),
+    so the editor can show and change each one."""
+    used = {}
+    for e in song['events']:
+        used[e.track] = used.get(e.track, 0) + 1
+    out = []
+    for t in song['st']['tracks']:
+        n = used.get(t['name'], 0)
+        if not n and t['layer'] != 'fx':
+            continue
+        if t['name'] == t['layer']:
+            what = TRACK_ROLE_LABEL.get(t['layer'], t['layer'])
+        elif t.get('switch_of'):
+            what = f"{TRACK_ROLE_LABEL.get(t['switch_of'], t['switch_of'])} (other sections)"
+        elif t.get('double_of'):
+            what = f"{TRACK_ROLE_LABEL.get(t['layer'], t['layer'])} layer"
+        elif t.get('counter'):
+            what = 'Counter-melody'
+        else:
+            what = DRUM_PART.get(t['name']) or DRUM_PART.get(t['inst']) or t['name'].replace('_', ' ').capitalize()
+        if t['name'] == t['inst'] and t['name'] in DRUM_PART and t['name'] != t['layer']:
+            what = DRUM_PART[t['name']]
+        out.append(dict(id=t['name'], layer=t['layer'], inst=t['inst'], sound=_nice(t['inst']), part=what, notes=n,
+                        drum=t['layer'] in ('kick', 'snare', 'top') or t['layer'] == 'fx'))
     return out
 
 

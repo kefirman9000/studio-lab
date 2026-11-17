@@ -17,6 +17,26 @@
   <img src="docs/screenshot-4.png" alt="Studio Lab - plugins" width="520">
 </p>
 
+<p align="center">
+  <img src="docs/screenshot-editor.png" alt="Studio Lab - song editor" width="100%">
+</p>
+
+## Hear it
+
+Short excerpts made by Studio Lab. Each one is rendered straight from the app, with no editing afterwards, using its
+built-in sounds only (no downloaded instruments or plugins):
+
+| Genre | Excerpt |
+|---|---|
+| Deep Dubstep (soundsystem) | [▶ C minor, 142 BPM](docs/samples/deep_dubstep.mp3) |
+| Liquid DnB | [▶ C dorian, 173 BPM](docs/samples/liquid_dnb.mp3) |
+| Future garage | [▶ Eb dorian, 128 BPM](docs/samples/future_garage.mp3) |
+| Nu-disco / disco lounge | [▶ Bb minor, 120 BPM](docs/samples/nu_disco.mp3) |
+| Mallet melodic house | [▶ A dorian, 119 BPM](docs/samples/mallet_house.mp3) |
+| Hard trap (brass & strings) | [▶ D minor, 152 BPM](docs/samples/hard_trap.mp3) |
+| 80s sophisti-pop / jazz-funk pop | [▶ Eb dorian, 100 BPM](docs/samples/sophisti_pop.mp3) |
+| Solo Piano Miniature | [▶ G major, 83 BPM](docs/samples/piano_miniature.mp3) |
+
 ## Getting started
 
 You need **Python 3.9 or newer** ([python.org](https://www.python.org/downloads/); on Windows tick *Add python.exe to PATH* while installing). The start files check this and tell you if your Python is missing or too old. Then download this repository (green **Code** button → **Download ZIP**) and unzip it, or clone it.
@@ -33,7 +53,19 @@ The app opens in your browser. Everything runs locally on your machine.
 
 ## Genres
 
-166 genres in three tabs - Electronic, Classic and Orchestral, each sorted into sub-groups (House & Disco, Drum & Bass & Breaks, Jazz, Swing & Big Band, Solo Piano ...) - from house, techno, trance, dubstep, drum & bass, funky breaks, hard dance and hopecore to hip hop, UK road rap, R&B, rock, 90s alt rock, metal, punk, jazz, big band, smooth jazz, country, bluegrass, reggae, salsa, soca, Afrobeats and raga, and from Baroque, Classical and Romantic forms (theme & variations, sonata, minuet & trio) to solo piano miniatures, film scores and the **Cinematic Journey** orchestral generator. Each genre has its own instruments, drum patterns, grooves, song forms and mix. **Build-ups** (ramps into choruses and drops) can be on, subtle (natural band-style fills, no EDM risers) or off, with 23 build-up styles to pick from; **Transition FX** (risers, reverse cymbals, impacts, tape stops) can be varied, fewer, drum fills only or off. The full list, with what each one does, is in [docs/GENRES.md](docs/GENRES.md).
+197 genres in three tabs - Electronic, Classic and Orchestral, each sorted into sub-groups (House & Disco, Drum & Bass & Breaks, Jazz, Swing & Big Band, Solo Piano ...) - from house, techno, trance, dubstep, drum & bass, funky breaks, hard dance and hopecore to hip hop, UK road rap, R&B, rock, 90s alt rock, metal, punk, jazz, big band, smooth jazz, country, bluegrass, reggae, salsa, soca, Afrobeats and raga, and from Baroque, Classical and Romantic forms (theme & variations, sonata, minuet & trio) to solo piano miniatures, film scores and the **Cinematic Journey** orchestral generator. Each genre has its own instruments, drum patterns, grooves, song forms and mix. Many are modelled bar by bar on reference records: where the kick, sub, hats and keys come in and drop out, how long each section runs, and how the builds work (often by taking things away, not by speeding up snare rolls). **Build-ups** (ramps into choruses and drops) can be on, subtle (natural band-style fills, no EDM risers) or off, with 23 build-up styles to pick from; **Transition FX** (risers, reverse cymbals, impacts, tape stops) can be varied, fewer, drum fills only or off. The full list, with what each one does, is in [docs/GENRES.md](docs/GENRES.md).
+
+## Song editor
+
+Every result has an **✏️ Edit** button that opens the song in the editor. Click a section on the timeline to re-roll
+one part, lengthen or shorten it, move it, duplicate or remove it, or mute parts in it. Below the timeline is
+**every sound playing in the song**: the main parts, extra parts, layers, the sounds that take over in other sections,
+and the build-up drums. Change any of them or switch it off, then preview it or render the full song. The notes stay
+exactly the same.
+
+**Open a past project:** drag any file from an earlier song onto the window, such as its MP3, WAV, MIDI or
+`_settings.json`. If the song is still in your output folder, it opens in the editor straight away. If not, it is
+rebuilt from its settings.
 
 ## Real instruments
 

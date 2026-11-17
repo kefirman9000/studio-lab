@@ -379,28 +379,65 @@ def meta():
     )
 
 
+def _lib_item(d, base, s=None):
+    if s is None:
+        with open(os.path.join(d, base + '_settings.json')) as fh:
+            s = json.load(fh)
+    files = {}
+    for ext, k in (('.mp3', 'mp3'), ('.wav', 'wav'), ('.mid', 'midi'), ('.mmp', 'lmms')):
+        if os.path.exists(os.path.join(d, base + ext)):
+            files[k] = '/files/' + base + ext
+    wf = os.path.join(d, base + '_waveform')
+    info = dict(s.get('info') or {})
+    info['files'] = {'folder': wf if os.path.isdir(wf) else d}
+    return dict(title=base, info=info, options=s.get('options') or {}, urls=files)
+
+
 def library():
     items = []
     d = out_dir()
     for f in sorted(os.listdir(d), key=lambda x: os.path.getmtime(os.path.join(d, x)), reverse=True):
         if f.endswith('_settings.json'):
             try:
-                with open(os.path.join(d, f)) as fh:
-                    s = json.load(fh)
-                base = f[:-len('_settings.json')]
-                files = {}
-                for ext, k in (('.mp3', 'mp3'), ('.wav', 'wav'), ('.mid', 'midi'), ('.mmp', 'lmms')):
-                    if os.path.exists(os.path.join(d, base + ext)):
-                        files[k] = '/files/' + base + ext
-                wf = os.path.join(d, base + '_waveform')
-                info = s.get('info', {})
-                info['files'] = {'folder': wf if os.path.isdir(wf) else d}
-                items.append(dict(title=base, info=info, options=s.get('options', {}), urls=files))
+                items.append(_lib_item(d, f[:-len('_settings.json')]))
             except Exception:
                 pass
         if len(items) >= 60:
             break
     return items
+
+
+PROJECT_SUFFIXES = ('_settings.json', '_PLUGIN_GUIDE.txt', '_samplepack', '_waveform', '_DAW', '_parts', '_stems',
+                    '.mp3', '.wav', '.mid', '.mmp', '.json', '.zip', '.flac')
+
+
+def project_base(name):
+    """'Song_house_C-minor_124bpm_seed5_settings.json' / '.mp3' / '_waveform' ... -> the project's base name."""
+    base = os.path.basename(str(name or '').replace('\\', '/'))
+    changed = True
+    while changed:
+        changed = False
+        for suf in PROJECT_SUFFIXES:
+            if base.lower().endswith(suf.lower()) and len(base) > len(suf):
+                base = base[:-len(suf)]
+                changed = True
+    return base
+
+
+def open_project(name=None, settings=None):
+    """A past project to open in the editor: from a dropped settings file, or any file it exported (the MP3, WAV,
+    MIDI, plugin guide ...) whose settings are still in your output folder."""
+    d = out_dir()
+    base = project_base(name) if name else ''
+    if base and os.path.exists(os.path.join(d, base + '_settings.json')):
+        return dict(_lib_item(d, base), found=True)
+    if isinstance(settings, dict):
+        opts = settings.get('options') if isinstance(settings.get('options'), dict) else settings
+        if not isinstance(opts, dict) or not opts.get('style'):
+            raise ValueError('that file has no Studio Lab settings in it')
+        Options.from_dict(opts)                                       # validates
+        return dict(title=base or 'Imported project', info=settings.get('info') or {}, options=opts, urls={}, found=False)
+    raise ValueError(f'no project called "{base}" in your output folder - drop its _settings.json file instead')
 
 
 def open_dir(p):
@@ -615,6 +652,11 @@ class Handler(BaseHTTPRequestHandler):
             except ValueError as e:
                 return self._json({'error': str(e)}, 400)
             return self._deny()
+        if p == '/api/project':
+            try:
+                return self._json(open_project(body.get('name'), body.get('settings')))
+            except ValueError as e:
+                return self._json({'error': str(e)}, 400)
         if p == '/api/generate':
             o = body.get('options', {})
             if isinstance(o, dict) and 'vst_rig' not in o:

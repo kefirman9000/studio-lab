@@ -184,7 +184,7 @@ class Renderer:
         sig = self.cache.get(key, False)
         if sig is False:
             try:
-                sig = sl.hit(name, vb, f'{idx % 4}')
+                sig = clean_hit(sl.hit(name, vb, f'{idx % 4}'))
                 if sig is not None and name.split(':')[0] in KIT_EQ and inst in KIT_EQ[name.split(':')[0]]:
                     sig = kit_eq(sig, KIT_EQ[name.split(':')[0]][inst])
                 if sig is not None and inst in ('kick', 'snare'):
@@ -322,8 +322,11 @@ class Renderer:
             evs = [Ev(e.track, e.beat, e.dur, e.midi, max(0.05, min(1.0, e.vel * t_)), e.glide, e.mod, e.strum, e.slide) for e in evs]
         kick = self.st.get('kick_track', 'kick')
         real_drums = is_drum and (self.st.get('real_kit') or self.st.get('real_perc')) and not tcfg.get('synth')
+        brk = self.st.get('break_seq') or {}
+        # kicks are never humanised (a layered kick would flam), and a break plays as one tight unit
+        tight = tcfg['name'] == kick or tcfg['layer'] == 'kick' or tcfg['name'] in brk or tcfg['name'] in ('lkick', 'lsnare')
         for i, ev in enumerate(evs):
-            s = int((self.t_of(ev.beat, human=(tcfg['name'] != kick), layer=tcfg['layer']) + getattr(ev, 'strum', 0.0) * self.spb) * SR)
+            s = int((self.t_of(ev.beat, human=not tight, layer=tcfg['layer']) + getattr(ev, 'strum', 0.0) * self.spb) * SR)
             sig = None
             if real_drums:
                 sig = self._real_drum(tcfg.get('real') or tcfg['inst'], ev, i)
@@ -331,6 +334,8 @@ class Renderer:
                 sig = self._drum(tcfg['name'], tcfg['inst']) if is_drum else self._note(tcfg, ev, p)
             if is_drum and ev.mod and sig is not None:      # break edits: reversed / re-pitched / cut-short hits
                 sig = drum_mod(sig, ev.mod)
+                if ev.mod == 'rev':                         # a reversed hit swells INTO its beat and ends on it
+                    s = max(0, s - sig.shape[-1])
             if ev.mod == 'pm' and tcfg['inst'].startswith('real:') and sig is not None:   # palm mute on the recorded guitar
                 sig = lp(hp(sig, 70), 1300).astype(np.float32)
                 k = sig.shape[-1]
@@ -863,11 +868,31 @@ def pitch_slide(x, semis, sec):
     return x[:, i0] * (1 - fr) + x[:, i0 + 1] * fr
 
 
+def clean_hit(x):
+    """A recorded one-shot, ready to fire: any pre-roll before the hit trimmed (so nothing sounds before
+    the beat), a 1 ms fade in and a short fade out (no clicks at either end)."""
+    if x is None or len(x) < 256:
+        return x
+    x = np.asarray(x, dtype=np.float32)
+    pk = float(np.max(np.abs(x))) + 1e-9
+    on = int(np.argmax(np.abs(x) > pk * 0.1))
+    start = max(0, on - int(0.0015 * SR))
+    x = x[start:].copy()
+    k = min(len(x) // 8, int(0.001 * SR))
+    if k > 1:
+        x[:k] *= np.linspace(0, 1, k, dtype=np.float32)
+    k = min(len(x) // 4, int(0.008 * SR))
+    if k > 1:
+        x[-k:] *= np.linspace(1, 0, k, dtype=np.float32)
+    return x
+
+
 def drum_mod(sig, mod):
     """'rev' a reversed hit (it swells into the next beat), 'cut' gated short, 'pt:N' re-pitched by N semitones."""
     if mod == 'rev':
         k = min(len(sig), int(0.35 * SR)) if sig.ndim == 1 else min(sig.shape[-1], int(0.35 * SR))
         out = sig[..., :k][..., ::-1].copy()
+        out[..., :k] *= np.linspace(0, 1, k, dtype=np.float32) ** 2      # fade in from the tail: no click at its start
         return out
     if mod == 'cut':
         k = min(sig.shape[-1], int(0.07 * SR))

@@ -810,6 +810,67 @@ def style_knob_defaults(opts):
     return replace(opts, **ch) if ch else opts
 
 
+# synth / soundfont pads that swell in slowly (recorded string sections switch to spiccato for short notes, so they're fine)
+SLOW_ATTACK = {'warmpad': 1.2, 'glasspad': 0.6, 'strings': 0.35, 'choir': 0.4, 'sf:slowstrings': 0.5, 'sf:choir': 0.4,
+               'real:choir': 0.4}
+
+
+def attack_of(t):
+    a = (t.get('p') or {}).get('a')
+    if a is not None:
+        return float(a)
+    inst = t.get('inst') or ''
+    return SLOW_ATTACK.get(inst, 0.0)
+
+
+def hold_slow_chords(evs, tracks, st, bpm=120):
+    """A slow-attack pad (warm pad, string section, choir) can't play short chord stabs: the notes never reach full
+    volume, then ring out after the beat as a smear of late, off-beat notes. On such a sound the chord is held from the
+    beat it starts on until it changes, as a keyboard player would on a pad patch."""
+    spb = 60.0 / max(40.0, float(bpm or 120))
+    for name, t in tracks.items():
+        if t.get('layer') not in ('chords', 'pad') or attack_of(t) < 0.3:
+            continue
+        mine = sorted((e for e in evs if e.track == name and e.midi is not None), key=lambda e: e.beat)
+        if not mine or sum(e.dur for e in mine) / len(mine) * spb >= attack_of(t) * 1.5:
+            continue                                             # already long notes: nothing to do
+        clusters = []
+        for e in mine:
+            if clusters and abs(clusters[-1][0] - e.beat) < 0.06:
+                clusters[-1][1].append(e)
+            else:
+                clusters.append([e.beat, [e]])
+        spans, k = [], 0
+        while k < len(clusters):
+            b0, notes = clusters[k]
+            pset = frozenset(e.midi for e in notes)
+            j = k + 1
+            end = max(e.beat + e.dur for e in notes)
+            while j < len(clusters) and frozenset(e.midi for e in clusters[j][1]) == pset and clusters[j][0] - end < 2.01:
+                end = max(e.beat + e.dur for e in clusters[j][1])
+                j += 1
+            for c in clusters[k + 1:j]:
+                for e in c[1]:
+                    e.midi = None                                # merged into the held chord
+            spans.append([b0, end, notes])
+            k = j
+        prev = None
+        for i, (b0, end, notes) in enumerate(spans):
+            start = float(int(b0 + 1e-6))
+            if prev is not None and start <= prev[0] + 1e-6:
+                start = b0
+            nxt = spans[i + 1][0] if i + 1 < len(spans) else end + 0.5
+            stop = min(nxt, end + 0.5)
+            for e in notes:
+                e.beat, e.dur, e.strum = start, max(0.25, stop - start - 0.02), 0.0
+            if prev is not None:
+                for e in prev[1]:
+                    e.dur = max(0.25, min(e.dur, start - e.beat - 0.02))
+            prev = (start, notes)
+    evs[:] = [e for e in evs if not (e.midi is None and tracks.get(e.track, {}).get('layer') in ('chords', 'pad')
+                                       and attack_of(tracks[e.track]) >= 0.3)]
+
+
 def compose(opts):
     from . import drumkits  # noqa: F401  (break patterns)
     from .styles import STYLE_ALIASES
@@ -1180,7 +1241,8 @@ def compose(opts):
                         if rnd_b.random() < 0.12 and pos > 0:
                             pos += ln
                             continue
-                        rates = st.get('wobble_rates') or ([1, 0.5, 0.5, 0.25, 1 / 3, 1 / 6] if energy > 0.3 else [1, 0.5])
+                        rates = (opts_s.get('alt') and st.get('wobble_rates_alt')) or st.get('wobble_rates') or \
+                            ([1, 0.5, 0.5, 0.25, 1 / 3, 1 / 6] if energy > 0.3 else [1, 0.5])   # A / B drop switch-up
                         rate = rnd_b.choice(rates)
                         m = rnd_b.choice([root, root, root + 12] if st.get('pedal_sub') else
                                          [root, root, root + 12, fold(key.deg(chord + 4, 2), lo)])
@@ -1421,6 +1483,7 @@ def compose(opts):
     elif st.get('plain_drops'):                          # the genre's drops just land: no risers, swells or impacts
         fx[:] = [f for f in fx if f[0] not in FX_SOUNDS or f[0] == 'crash']
     bar0 = apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_color, bar0)
+    hold_slow_chords(evs, tracks, st, bpm)
     shape_dynamics(evs, tracks, sections, st)
     in_evs = {id(e) for e in evs}
     st['tuned_notes'] = fix_clashes(evs + [v for v in vocal if id(v) not in in_evs], {**tracks, 'vocal': tracks.get('vocal') or
@@ -1444,6 +1507,15 @@ def compose(opts):
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
+    for name, t in tracks.items():                       # any part of this song, picked by its own name in the editor
+        pick = (opts.instruments or {}).get(name)
+        if not pick or t.get('user_pick') or (name == t['layer'] and not st.get('composer')):
+            continue
+        if pick == 'off':
+            t['off'] = True
+        elif t['layer'] in MELODIC_ROLES and isinstance(pick, str) and (pick in INSTRUMENTS or pick.startswith(('user:', 'vst:', 'sf:', 'real:'))):
+            t['fallback'], t['inst'], t['user_pick'] = t['inst'], pick, True
+    hold_slow_chords(evs, tracks, st, bpm)               # again: switched / re-picked parts may now be on a pad sound
     off = {n for n, t in tracks.items() if t.get('off')} if not st.get('composer') else set()
     if off:                                              # extra parts switched off in the Sound panel
         evs = [e for e in evs if e.track not in off]

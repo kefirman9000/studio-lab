@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.40.0
+- **Fixed: a pad that played smeared, off-beat notes.** When a slow, swelling sound (warm pad, string pad, choir) landed on a part that plays short chord stabs, the notes never reached full volume and rang on after the beat. Those parts now hold each chord from its beat until the chord changes.
+- **Fixed: a click / "something before the kick" on Amen-style breaks.** Recorded drum hits now have their pre-roll trimmed and short fades at both ends, kicks and break hits are never humanised (a layered kick no longer flams against the break), and reversed snares now swell into the beat and end on it.
+- **Song editor.** Every result and every Library song has an ✏️ **Edit** button. It opens the song with its section timeline and **every sound playing in it**: main parts, extras, layers, the sounds of other sections, and build-up and fill drums. Change any of them or switch it off, then preview or render. The notes stay the same.
+- **Open a past project by dropping it on the window**: its MP3 / WAV / MIDI / plugin guide or its `_settings.json`. It opens in the editor, or is rebuilt from its settings if the audio is gone.
+- **The Sound panel also lists everything your last song used**, so every sound you hear can be found and changed.
+- **31 new genres modelled on your reference tracks.** For each reference I measured bar by bar where the kick, sub, hats and keys come in and drop out, so the song forms, breakdowns and builds follow the records instead of a generic template:
+  - bass house, minimal club pop, future garage, glitchy IDM pop, UK bass / 130, nu-disco / disco lounge
+  - lo-fi bedroom rock, 90s new-age chant, mid-90s smooth rap, 80s sophisti-pop, early dubstep, acoustic folk-rock jam
+  - garage-house pop, hard trap (brass & strings), wonky / beat-scene bass, experimental field ambient, late-90s trance-pop, West-coast slap rap
+  - UK bassline, mid-fi synth-funk / chillwave, 90s Italo piano house, futuristic hip-hop bounce, soul-sample hip-hop, Tokyo deep house
+  - psychedelic synth-pop, 80s boogie rock, grime, spooky 60s surf, nu-metal, beat-switch trap (with dead-silent bars between beats), mallet melodic house
+- **Deep Dubstep follows its references more closely.**
+  - It starts with an intro that has no kick.
+  - The first section is long, and the 16-bar breakdown is half pads and half kick + sub.
+  - The first drop rolls slowly; the second switches up to tight 8th / 16th bass movement.
+- **Liquid DnB, melodic house and future bass now use song forms taken from your references.** Liquid DnB has a long intro with no kick and a drums-out lift before the drop. Melodic house has a long beatless intro, kick + sub without hats, and a long kick-out break.
+- Genres can name their own build-ups and transitions. Many of the new ones build by taking things away instead of speeding up snare rolls.
+- README: new screenshots, and short excerpts of eight genres to listen to.
+
 ## 1.39.1
 - **Deep Dubstep rebuilt from your four reference tracks.**
   - The sub now sits on one note (the root, now and then the flat 2nd) for long stretches.

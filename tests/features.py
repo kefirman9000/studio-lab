@@ -258,7 +258,8 @@ def test_amen_and_groups():
     assert mods and any(str(m).startswith('pt:') for m in mods)       # snare rushes / edits on phrase ends
     from sgcore.render import drum_mod
     x = np.random.randn(8000).astype(np.float32)
-    assert drum_mod(x, 'rev')[0] == x[min(len(x), int(0.35 * SR)) - 1] and len(drum_mod(x, 'pt:12')) < len(x)
+    r = drum_mod(x, 'rev')
+    assert r[0] == 0 and r[-1] == x[0] and len(drum_mod(x, 'pt:12')) < len(x)      # fades in, ends on the hit
     assert set(GROUP_OF) == set(STYLES)                       # every genre is filed in exactly one group
     assert sum(len(ids) for cat in GROUPS.values() for _, ids in cat) == len(STYLES)
     for cat, gs in GROUPS.items():
@@ -286,6 +287,73 @@ def test_no_console_windows():
     print('ok  helper programs run without console windows on Windows')
 
 
+def test_editor_and_sounds():
+    """Every sound in a song is listed and can be changed / switched off by name; slow pads never play smeared stabs;
+    a past project opens from any of its files."""
+    from sgcore.api import _tracks
+    from sgcore.compose import attack_of
+    from sgcore import app
+    s = song('future_bass', 1, variety=0.6)
+    tr = _tracks(s)
+    ids = {t['id'] for t in tr}
+    assert {'kick', 'bass', 'chords', 'lead'} <= ids and any(t['id'].endswith('_sw1') for t in tr)
+    sw = next(t['id'] for t in tr if t['id'].endswith('_sw1'))
+    s2 = song('future_bass', 1, variety=0.6, instruments={sw: 'off'})
+    assert not [e for e in s2['events'] if e.track == sw]
+    for st_ in ('melodic_techno', 'ukgarage', 'disco_funk', 'future_garage'):
+        x = song(st_, 1, variety=0.6)
+        for t in x['st']['tracks']:
+            if t['layer'] in ('chords', 'pad') and attack_of(t) >= 0.3:
+                assert all(abs(e.beat - round(e.beat)) < 1e-6 for e in x['events'] if e.track == t['name']), (st_, t['name'])
+    assert app.project_base('Night_house_C-minor_124bpm_seed5_PLUGIN_GUIDE.txt') == 'Night_house_C-minor_124bpm_seed5'
+    assert app.project_base(r'C:\\songs\\Night_house_seed5.mp3') == 'Night_house_seed5'
+    tmp = tempfile.mkdtemp()
+    old = app.out_dir
+    app.out_dir = lambda: tmp
+    try:
+        import json
+        with open(os.path.join(tmp, 'Night_house_seed5_settings.json'), 'w') as f:
+            json.dump(dict(options=dict(style='house', seed=5), info=dict(style='house', seed=5, sections=[])), f)
+        open(os.path.join(tmp, 'Night_house_seed5.mp3'), 'wb').close()
+        p = app.open_project('Night_house_seed5.mp3')
+        assert p['found'] and p['options']['style'] == 'house' and p['urls'].get('mp3')
+        p = app.open_project('elsewhere.json', dict(options=dict(style='trap', seed=3)))
+        assert not p['found'] and p['options']['style'] == 'trap'
+        try:
+            app.open_project('missing.wav')
+            raise AssertionError('should fail')
+        except ValueError:
+            pass
+    finally:
+        app.out_dir = old
+    print('ok  editor: every sound listed + changeable by name, held pad chords, open a past project from any file')
+
+
+def test_reference_genres():
+    """The reference-built genres follow their records' structures."""
+    from sgcore.styles import STYLES
+    new = ['bass_house', 'club_pop', 'future_garage', 'glitch_pop', 'uk_bass_130', 'nu_disco', 'lofi_rock', 'new_age_chant',
+           'smooth_90s_rap', 'sophisti_pop', 'early_dubstep', 'folk_jam', 'garage_house', 'hard_trap', 'wonky_beats',
+           'field_ambient', 'trance_pop_90s', 'bay_rap', 'bassline_140', 'midfi_synthfunk', 'piano_house_90s',
+           'futuristic_bounce', 'soul_sample_rap', 'tokyo_deep_house', 'psych_pop', 'boogie_rock', 'grime', 'spooky_surf',
+           'nu_metal', 'switch_trap', 'mallet_house']
+    for g in new:
+        assert g in STYLES, g
+        x = song(g, 3)
+        lo, hi = STYLES[g]['bpm']
+        assert lo <= x['bpm'] <= hi and x['events'], g
+    d = song('deep_dubstep', 2)
+    intro = [s_ for s_ in d['sections'] if s_['name'] == 'intro']
+    assert all('kick' not in s_['layers'] for s_ in intro)                         # no kick before the first drop
+    assert not [f for f in d['fx'] if f[0] in ('riser', 'impact', 'downlift')]
+    h = song('hard_trap', 2)
+    assert sum(1 for s_ in h['sections'] if s_['name'] == 'break' and 'kick' not in s_['layers']) >= 4   # 4-bar drop-outs
+    t = song('switch_trap', 2)
+    stops = [s_ for s_ in t['sections'] if s_['name'] == 'stop']
+    assert len(stops) == 2 and not [e for e in t['events'] for s_ in stops if in_section(e, s_)]    # dead silence
+    print('ok  31 reference genres; deep dubstep / hard trap / beat-switch structures')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -300,6 +368,8 @@ def main():
     test_builds_and_transitions()
     test_amen_and_groups()
     test_no_console_windows()
+    test_editor_and_sounds()
+    test_reference_genres()
     print('all good')
 
 
