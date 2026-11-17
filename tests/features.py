@@ -510,7 +510,16 @@ def test_bass_warp_trap():
     assert f0(y, 0.85, 0.98) < 0.8 * f0(y, 0.05, 0.3)                # the dive really falls
     y = INSTRUMENTS['808'](33, 1.0, {}, None, 'rise')
     assert f0(y, 0.85, 0.98) > 1.3 * f0(y, 0.05, 0.3)
-    print('ok  bass-warp trap: warped 808s, slides, 808-up switch-ups')
+    f = compose(Options(style='bass_warp_fast', seed=3))
+    assert 155 <= f['bpm'] <= 165
+    for x in f['sections']:
+        if x['opts'].get('bass_mod') == 'growl':
+            bn = [e for e in f['events'] if e.track == 'bass' and x['bar'] * 4 <= e.beat < (x['bar'] + x['bars']) * 4]
+            assert bn and all(e.mod == 'growl' for e in bn)          # the long distorted-808 stretch
+    assert any(e.track == 'bass_grit' for e in f['events'])                 # parallel driven 808 layer
+    assert any(e.track == 'chat' and str(e.mod).startswith('pt:') for e in f['events'])   # pitched hat rolls
+    assert not any(e.track.endswith('_layer') for e in f['events'])
+    print('ok  bass-warp trap (+ fast): warped 808s, slides, 808-up / growl switch-ups, parallel grit, pitched hat rolls')
 
 
 def main():

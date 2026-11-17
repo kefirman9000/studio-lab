@@ -1187,7 +1187,7 @@ def compose(opts):
                 if kick_name in tracks and rnd_d.random() < 0.12 * energy:
                     evs.append(Ev(kick_name, beat0 + rnd_d.choice((1.5, 2.5, 3.5)), 0.25, None, 0.75))
             if st.get('trap_hats') and not st.get('meter') and 'top' in layers and 'chat' not in st['drums']:
-                gen_trap_hats(evs, beat0, rnd_d, energy)
+                gen_trap_hats(evs, beat0, rnd_d, energy, bool(st.get('pitch_rolls')))
             if (st.get('fill') or energy > 0.6) and 'snare' in layers and b % 8 == 7 and snares and rnd_d.random() < (0.4 + 0.5 * energy) * (1 - S):
                 s = snares[0]
                 fills = [[13, 14, 15], [12, 13, 14, 15], [10, 13, 14, 15], [14, 15]] if G == 16 else \
@@ -1230,14 +1230,15 @@ def compose(opts):
                         e = hits[i + 1] if i + 1 < len(hits) else 16
                         m = root
                         r = rnd_b.random()
-                        if r < 0.15:
+                        o8, f8 = st.get('oct808', 0.15), st.get('fifth808', 0.10)   # how often the 808 jumps an octave / to the 5th
+                        if r < o8:
                             m = root + 12
-                        elif r < 0.25:
+                        elif r < o8 + f8:
                             m = fold(key.deg(chord + 4, 2), lo)
-                        glide = prev_bass if (prev_bass is not None and prev_bass != m and rnd_b.random() < 0.45) else None
+                        glide = prev_bass if (prev_bass is not None and prev_bass != m and rnd_b.random() < st.get('glide808', 0.45)) else None
                         warp = None
                         wp = float(st.get('warp_808') or 0)
-                        if wp and (e - s) >= 4 and str(tracks.get('bass', {}).get('inst', '')).endswith('808') and rnd_b.random() < wp:     # held notes get warped: dives, rises, wobbles, growls
+                        if wp and (e - s) >= st.get('warp_min', 4) and str(tracks.get('bass', {}).get('inst', '')).endswith('808') and rnd_b.random() < wp:     # held notes get warped: dives, rises, wobbles, growls
                             warp = rnd_b.choice(['dive', 'dive', 'rise', f'wob:{rnd_b.choice([3, 4, 5, 6, 8])}',
                                                  f'wob:{rnd_b.choice([3, 4, 5, 6, 8])}', 'growl'])
                         evs.append(Ev('bass', beat0 + s / 4, (e - s) / 4 * 0.95, m, 1.0, glide, warp))
@@ -1511,7 +1512,8 @@ def compose(opts):
     if (getattr(opts, 'transition_fx', 'auto') or 'auto') in ('fills', 'off'):   # no risers / cymbal swells / impacts
         fx[:] = [f for f in fx if f[0] not in FX_SOUNDS]
     elif st.get('plain_drops'):                          # the genre's drops just land: no risers, swells or impacts
-        fx[:] = [f for f in fx if f[0] not in FX_SOUNDS or f[0] == 'crash']
+        keep = {'crash'} | set(st.get('keep_fx') or [])     # (bass-warp keeps its tape stops)
+        fx[:] = [f for f in fx if f[0] not in FX_SOUNDS or f[0] in keep]
     bar0 = apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_color, bar0)
     if st.get('no_fx_sounds'):                          # surf / TV-theme bands: no cymbal FX, swells or sweeps at all
         fx[:] = [f for f in fx if f[0] not in FX_SOUNDS and f[0] not in ('lpsweep', 'hpsweep')]
@@ -1541,6 +1543,12 @@ def compose(opts):
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     for sec in sections:                                  # bass-warp switch-ups: the 808 jumps up, the sub drops out
+        bm = sec['opts'].get('bass_mod')                     # ... or a whole section of distorted, growling 808
+        if bm and str(tracks.get('bass', {}).get('inst', '')).endswith('808'):
+            b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+            for e in evs:
+                if b0 <= e.beat < b1 and e.track == 'bass':
+                    e.mod = bm
         up = int(sec['opts'].get('bass_up') or 0)              # target MIDI note (e.g. 40 = E2)
         if up:
             b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4

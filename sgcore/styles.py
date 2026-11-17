@@ -6565,15 +6565,16 @@ style('bass_warp_trap', 'Electronic',
       'with the beat switching up every few bars (drums dropping out, the 808 and kick alone, sudden gaps, new drum '
       'patterns, the 808 leaping two octaves up with the sub gone, then slamming back down), and a quiet, eerie melody under it all',
       bpm=(130, 150), scales=['minor', 'phrygian', 'harmonic_minor'], swing=0.5, human=0.0, form='bass_warp', kit='808',
-      trap_hats=True, chord_size=3, sc_depth=0.0, reverb=2.6, own_progs=True, no_rotation=True,
+      trap_hats=True, pitch_rolls=True, chord_size=3, sc_depth=0.45, sc_release=0.12, reverb=2.6, own_progs=True, no_rotation=True, no_layers=True,
       progs={'minor': [[0, 0, 3, 3], [0, 0, 2, 2], [0, 0, 5, 5], [0, 0, 6, 6]], 'phrygian': [[0, 0, 1, 1], [0, 0, 3, 3]],
              'harmonic_minor': [[0, 0, 4, 4], [0, 0, 5, 5]]},
-      kit_override=dict(kick=dict(pitch=48, punch=110, decay=14, drive=2.2, len=0.25)),
+      kit_override=dict(kick=dict(pitch=48, punch=110, decay=14, drive=2.2, len=0.25), chat=dict(bits=10, srate=24000),
+                       snare=dict(bits=12), clap=dict(bits=12)),
       drums={'kick': ['X.........X.....', 'X.....X...X.....', 'X.......X.X.....', 'X...............'],
              'snare': [HALF, '........X.....x.', '........X..x....'], 'clap': [HALF],
-             'chat': ['x.x.x.x.x.x.x.x.', 'xxx.x.xxx.x.xxx.', 'x...x...x...x...'], 'ohat': ['......x.......x.']},
+             'ohat': ['......x.......x.']},
       snare_tracks=['snare', 'clap'], build_family=['pause', 'none'], transition_moves=['gap', 'gap', 'none'],
-      plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.7,
+      plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.7, oct808=0.07, fifth808=0.05, glide808=0.3,
       chord_rh=['x---------------', 'x-------x-------'], chord_center=60, arp=dict(rate=2, mode='random', oct=5, prob=0.35),
       lead_rh=['x-------........', 'x---....x---....', '........x-------', 'x.x.....x.......'], repetition=0.85,
       gm_hint='Huge distorted 808 (long tail, very low: B0-E1) with slides, pitch dives / rises and wobble (pitch LFO); '
@@ -6581,7 +6582,9 @@ style('bass_warp_trap', 'Electronic',
       tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.2, db=-16),
               T('clap', 'snare', 'clap', rev=0.25, db=-20),
               T('chat', 'top', 'chat', pan=0.15, db=-27), T('ohat', 'top', 'ohat', pan=-0.2, db=-29),
-              T('bass', 'bass', '808', db=-8, p=dict(drive=1.8, decay=0.3, slide=0.07)),
+              T('bass', 'bass', '808', db=-7, sc=0.5, p=dict(drive=1.5, decay=0.3, slide=0.07)),
+              T('bass_grit', 'bass', '808', double_of='bass', octave=0, keep_inst=True, hp=170, presence=4, sc=0.9, db=-20,
+                p=dict(drive=7.0, decay=0.3, slide=0.07)),
               T('chords', 'chords', 'warmpad', rev=0.5, db=-28, p=dict(cut=1200)),
               T('pad', 'pad', 'choir', rev=0.6, db=-29),
               T('arp', 'arp', 'bell', rev=0.5, dly=0.35, pan=0.3, db=-29),
@@ -6594,6 +6597,68 @@ style('bass_warp_trap', 'Electronic',
                  arp=['bell', 'celesta', 'pluck', 'chip'],
                  lead=['phonkbell', 'bell', 'pluck', 'celesta', 'softlead']),
       label='Bass-warp trap (808 switch-ups)')
+
+
+# fast bass-warp (from the user's two 159-162 BPM references, played full-time, not half-time, and their hard-bass /
+# trap-hat production notes: clean sub + parallel driven 808, hard kick sidechain, crushed tops, pitched hat rolls): dotted 3-3-2 kicks with the 808
+# following them in short, sliding, warping notes, a snare / clap on every backbeat plus pickups, rolling 8th / 16th
+# hats; the switch-ups come every 4-8 bars (drums out, the 808 leaping up with no sub, the beat thinning to kick and 808)
+FORMS['bass_warp_fast'] = [('intro', 8, {'chords', 'lead', 'top', 'fx'}, {'filter_in': True}),
+                           ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True}),
+                           ('switch', 4, {'bass', 'top', 'lead'}, {'bass_up': 40, 'level': 0.6}),
+                           ('drop', 8, {'kick', 'snare', 'top', 'bass', 'lead'}, {'var': 1}),
+                           ('growl', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'alt': True, 'bass_mod': 'growl'}),
+                           ('growl', 16, {'kick', 'snare', 'top', 'bass', 'lead'}, {'alt': True, 'bass_mod': 'growl'}),
+                           ('switch', 4, {'kick', 'bass', 'fx'}, {'level': 0.8}),
+                           ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True}),
+                           ('break', 8, {'bass', 'chords', 'lead', 'pad'}, {'bass_up': 40, 'level': 0.5}),
+                           ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'drop': True}),
+                           ('switch', 4, {'bass', 'lead', 'top'}, {'level': 0.75}),
+                           ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'var': 1}),
+                           ('outro', 8, {'bass', 'chords', 'lead', 'fx'}, {'fade': True, 'bass_up': 52})]
+style('bass_warp_fast', 'Electronic',
+      'Bass-warp trap, fast: the same monstrous warping 808 at full speed (155-170 BPM, not half-time) - dotted 3-3-2 '
+      'kicks with the 808 bouncing on them in short, sliding, diving and wobbling notes, a hard snare and clap backbeat '
+      'with pickups, rolling 8th and 16th hats, a sinister bell or synth riff; switch-ups every few bars (drums out, '
+      'the 808 leaping up with the sub gone, kick and 808 alone), a long stretch of distorted, growling 808 before '
+      'the clean sub slams back, and an eerie no-sub break',
+      bpm=(155, 165), scales=['minor', 'phrygian', 'harmonic_minor'], swing=0.52, human=0.0, form='bass_warp_fast', kit='808',
+      trap_hats=True, pitch_rolls=True, chord_size=3, sc_depth=0.5, sc_release=0.1, reverb=2.2, own_progs=True, no_rotation=True, no_layers=True,
+      progs={'minor': [[0, 0, 3, 3], [0, 0, 2, 2], [0, 0, 5, 5], [0, 0, 6, 6]], 'phrygian': [[0, 0, 1, 1], [0, 1, 0, 1]],
+             'harmonic_minor': [[0, 0, 4, 4], [0, 0, 5, 5]]},
+      kit_override=dict(kick=dict(pitch=50, punch=120, decay=16, drive=2.6, len=0.22), chat=dict(bits=9, srate=22050),
+                       snare=dict(bits=11, drive=2.0), clap=dict(bits=11)),
+      drums={'kick': ['X..X..X.X..X..X.', 'X..X..X...X.....', 'X.....X.X..X....', 'X..X......X..X..'],
+             'snare': [BACKBEAT, '....X.......X.x.', '....X..x....X...', 'x...X...x...X...'], 'clap': [BACKBEAT],
+             'ohat': ['..x...x...x...x.', '................'], 'cowbell808': ['..........x.....', '......x.......x.', '................']},
+      snare_tracks=['snare', 'clap'], build_family=['stutter', 'tapestop', 'drumless', 'halftime'],
+      transition_moves=['gap', 'tapestop', 'gap', 'none'], keep_fx=['tapestop'],
+      plain_drops=True, bass_mode='808', bass_lo=21, warp_808=0.6, warp_min=3, oct808=0.12, fifth808=0.08, glide808=0.45,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=60, arp=dict(rate=2, mode='random', oct=5, prob=0.4),
+      lead_rh=['x..x..x.x..x..x.', 'x.x.x...x.x.x...', 'x---x---x-x-x---', 'x..x..x.........'], repetition=0.85,
+      gm_hint='Hard bass: a clean mono 808 sub (root notes, octave jumps, glides) + a parallel, heavily driven copy for the '
+              'mid growl, both sidechained hard to the kick; dotted 3-3-2 kicks; gritty sampled Memphis snare / clap '
+              '(bit-crushed); velocity-shaped 16th trap hats with pitched-up 32nd rolls into the snare; a cowbell now and '
+              'then; sinister bell or horror stab riff; stutters, tape stops and abrupt switch-ups; crushed tops, solid bottom',
+      tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.15, db=-15),
+              T('clap', 'snare', 'clap', rev=0.2, db=-19),
+              T('chat', 'top', 'chat', pan=0.15, db=-25), T('ohat', 'top', 'ohat', pan=-0.2, db=-28),
+              T('bass', 'bass', '808', db=-7, sc=0.55, p=dict(drive=1.6, decay=0.6, slide=0.05)),
+              T('bass_grit', 'bass', '808', double_of='bass', octave=0, keep_inst=True, hp=170, presence=5, sc=0.9, db=-19,
+                p=dict(drive=8.0, decay=0.6, slide=0.05)),
+              T('cowbell808', 'top', 'cowbell808', pan=0.25, db=-27),
+              T('chords', 'chords', 'warmpad', rev=0.45, db=-28, p=dict(cut=1200)),
+              T('pad', 'pad', 'choir', rev=0.55, db=-29),
+              T('arp', 'arp', 'bell', rev=0.4, dly=0.3, pan=0.3, db=-28),
+              T('lead', 'lead', 'phonkbell', rev=0.35, dly=0.25, db=-21),
+              T('texture', 'fx', 'texture', db=-36)],
+      master=dict(lufs=-8.5, air=-0.3, low=4.0, drive=0.05, max_gr=5.0),
+      pools=dict(bass=['808'],
+                 chords=['warmpad', 'glasspad', 'choir', 'strings'],
+                 pad=['choir', 'warmpad', 'glasspad'],
+                 arp=['bell', 'celesta', 'pluck', 'chip'],
+                 lead=['phonkbell', 'bell', 'leadsaw', 'pluck', 'chip']),
+      label='Bass-warp trap - fast (160)')
 
 
 # ============================== rules applied to all the genres above ========================================

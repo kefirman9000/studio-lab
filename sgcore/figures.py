@@ -52,14 +52,17 @@ def vary_melody(mel, how, key):
     return out
 
 
-def gen_trap_hats(evs, beat0, rnd, energy):
+def gen_trap_hats(evs, beat0, rnd, energy, pitch_rolls=False):
+    """Trap hats: 8ths with 16th doubles, accented downbeats, and short 16th / 32nd / triplet rolls that swell into the next
+    hit. pitch_rolls: the rolls are also pitched up step by step (phonk / bass-warp hats)."""
     pos = 0.0
     while pos < 4 - 1e-9:
         r = rnd.random()
         if r < 0.08 + 0.12 * energy and pos <= 3.5:
             n = rnd.choice([3, 4, 6])
             for k in range(n):
-                evs.append(Ev('chat', beat0 + pos + k * (0.5 / n), 0.1, None, 0.45 + 0.4 * k / n))
+                evs.append(Ev('chat', beat0 + pos + k * (0.5 / n), 0.1, None, 0.45 + 0.4 * k / n,
+                              None, f'pt:{2 * k}' if pitch_rolls else None))
             pos += 0.5
             continue
         if r < 0.32:

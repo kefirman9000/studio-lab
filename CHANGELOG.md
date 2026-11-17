@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.44.2
+- New genre **Bass-warp trap - fast (160)**, from your two 159-162 BPM references and your hard-bass / trap-hat production notes.
+  - **The tempo:** full speed, not half-time.
+  - **The bass:** dotted 3-3-2 kicks with the 808 bouncing on them in short, sliding, diving and wobbling notes. A clean mono 808 sub plus a parallel, heavily driven copy for the mid growl, both sidechained hard to the kick.
+  - **The drums:** gritty bit-crushed snare / clap and hats, and a cowbell now and then.
+  - **The switch-ups:** stutters, tape stops, gaps, the 808 leaping up with the sub gone, and a 32-bar stretch of distorted, growling 808 before the clean sub slams back.
+- **Bass-warp trap** (the original) retuned from your two songs:
+  - **Fewer moves:** fewer slides and octave / fifth jumps, so the 808 sits on the root more and the sub weighs more.
+  - **Same production:** the same parallel grit layer, kick sidechain, crushed tops and pitched hat rolls as the fast genre.
+  - **Sparser melody:** no automatic doubling of the melody parts.
+- **Trap hats can now pitch their rolls up** step by step (genres opt in), and the trap-hat generator now runs in the bass-warp genres (it was being skipped).
+- New genre building blocks: per-genre 808 behaviour (`oct808`, `fifth808`, `glide808`, `warp_min`), a whole section of growling 808 (`bass_mod`), and `keep_fx` (effects a genre keeps when its drops land plainly).
+
 ## 1.44.1
 - New genre **Bass-warp trap (808 switch-ups)**, from your three bass-heavy references (130-150 BPM in half-time, analysed in 2-bar blocks).
   - **The 808:** a monstrous, ultra-low 808 (down to B0, 70-90% of the energy) that never sits still. The roots flip every two bars and notes slide into each other. Held notes **warp**: pitch dives of up to an octave, octave rises, 2-3 semitone wobbles and growls (the 808 can now do all four).
