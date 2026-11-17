@@ -5840,7 +5840,7 @@ FORMS['spooky_surf'] = [('intro', 4, {'bass', 'kick', 'snare', 'top'}, {}),
 style('spooky_surf', 'Classic',
       'Spooky 60s surf / TV-theme rock: a fast, driving beat around 150 with a twangy, heavily reverbed electric guitar '
       'melody, a walking / chromatic bass line, stabbing brass and a cheesy combo organ - campy, creepy and fun',
-      bpm=(144, 160), scales=['minor', 'harmonic_minor', 'phrygian_dominant'], swing=0.5, human=0.008, form='spooky_surf',
+      no_fx_sounds=True, bpm=(144, 160), scales=['minor', 'harmonic_minor', 'phrygian_dominant'], swing=0.5, human=0.008, form='spooky_surf',
       chord_size=3, kit='acoustic', progs={'minor': [[0, 0, 5, 4], [0, 3, 0, 4]], 'harmonic_minor': [[0, 5, 1, 4]],
                                            'phrygian_dominant': [[0, 1, 0, 1]]},
       sc_depth=0.0, reverb=2.4, spring=True,
@@ -6272,7 +6272,7 @@ style('surf_rock', 'Classic',
       'Surf rock (early-60s instrumental surf): a fast, straight beat driven by the floor tom, a twangy guitar melody '
       'tremolo-picked in bursts on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and '
       'now and then a combo organ or sax - sunny, wet and full speed ahead',
-      bpm=(132, 156), scales=['major', 'mixolydian', 'minor', 'phrygian_dominant'], swing=0.5, human=0.008, form='surf_rock',
+      no_fx_sounds=True, bpm=(132, 156), scales=['major', 'mixolydian', 'minor', 'phrygian_dominant'], swing=0.5, human=0.008, form='surf_rock',
       chord_size=3, kit='acoustic', sc_depth=0.0, reverb=2.6, spring=True, fill=True,
       progs={'major': [[0, 3, 4, 3], [0, 5, 3, 4], [0, 0, 3, 3], [0, 3, 0, 4]], 'mixolydian': [[0, 6, 3, 0], [0, 6, 0, 6]],
              'minor': [[0, 5, 6, 0], [0, 6, 5, 4]], 'phrygian_dominant': [[0, 1, 0, 1], [0, 1, 6, 0]]},
@@ -6317,7 +6317,7 @@ style('monster_theme', 'Classic',
       '(root, a half step up, back, a half step down) played by the bass and a twangy baritone guitar together, '
       'punchy brass stabs, a bright brass-melody bridge in the relative major, a honking sax-section stretch, and a '
       'big chromatic stab ending - campy, creepy and catchy',
-      bpm=(146, 158), scales=['minor'], swing=0.5, human=0.007, form='monster_theme', chord_size=3, kit='acoustic',
+      no_fx_sounds=True, bpm=(146, 158), scales=['minor'], swing=0.5, human=0.007, form='monster_theme', chord_size=3, kit='acoustic',
       sc_depth=0.0, reverb=2.2, spring=True, fill=True, no_rotation=True, own_progs=True, no_layers=True, riff_locked=True,
       progs={'minor': [[0, 0, 0, 0], [0, 0, 5, 4], [2, 6, 5, 2]]},
       section_progs=dict(verse=[0, 0, 0, 0], main=[0, 0, 5, 4], alt=[2, 6, 5, 2]),
@@ -6343,6 +6343,56 @@ style('monster_theme', 'Classic',
                  arp=['sax', 'brass', 'organ'],
                  lead=['brass', 'sax', 'twang', 'organ']),
       label='Spooky surf - monster TV theme')
+
+
+# v1.43.3: late-90s pop house / dance-pop (from the user's references: a 123 BPM club-mix radio edit in A minor and a
+# 133 BPM dance-pop single): the full groove from bar one (or after a short pad intro), chords joining after 8 bars,
+# verse / chorus for a radio length with no EDM build-ups, one breakdown that drops the bass (kick and chords stay),
+# then the last choruses and a hard stop.
+FORMS['pop_house_90s'] = [('intro', 8, {'kick', 'top', 'bass', 'pad'}, {}),
+                          ('verse', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {'level': 0.86}),
+                          ('chorus', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead'}, {'crash': True}),
+                          ('verse', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {}),
+                          ('chorus', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead', 'arp'}, {'crash': True}),
+                          ('break', 12, {'kick', 'chords', 'pad', 'arp'}, {'alt': True, 'level': 0.66}),
+                          ('chorus', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead', 'arp'}, {'crash': True}),
+                          ('chorus', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead'}, {}),
+                          ('outro', 4, {'kick', 'top', 'bass', 'chords'}, {})]
+style('pop_house_90s', 'Electronic',
+      'Late-90s pop house / dance-pop: a radio song at house tempo (122-134) - a punchy four-on-the-floor with a clap '
+      'backbeat, shuffled 16th hats and open hats on the off-beats, a bouncing octave synth bass, sidechained string pads, '
+      'syncopated chord stabs and plucked guitar-like arps, a catchy synth hook for the chorus; no EDM build-ups, one '
+      'breakdown where the bass drops out, a hard stop',
+      bpm=(122, 134), scales=['minor', 'major', 'dorian'], swing=0.53, human=0.002, form='pop_house_90s', chord_size=4,
+      progs={'minor': [[0, 6, 5, 6], [0, 5, 6, 0], [5, 6, 0, 0], [0, 3, 6, 5]], 'major': [[0, 4, 5, 3], [3, 4, 0, 5], [5, 3, 0, 4]],
+             'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]},
+      sc_depth=0.45, sc_release=0.4, reverb=1.8, kit='909', build_family=['filter', 'hats', 'pickup', 'drumless'], plain_drops=True,
+      kit_override=dict(kick=dict(pitch=54, punch=140, decay=9, drive=2.0, click=0.5)),
+      drums={'kick': [FOUR], 'snare': [BACKBEAT], 'clap': [BACKBEAT], 'ohat': [OFFHAT],
+             'chat': ['x.xxx.xxx.xxx.xx', 'xxxxxxxxxxxxxxxx'], 'tamb': ['....x.......x...', '..x...x...x...x.']},
+      snare_tracks=['clap'],
+      bass=['R.O.R.O.R.O.R.O.', '..R...R...R...R.', 'R..R..R.R..R..R.'], bass_lo=31, bass_gate=0.6,
+      chord_rh=['..x..x....x..x..', 'x..x..x...x..x..', 'x---....x---....'], chord_center=62,
+      arp=dict(rate=2, mode='updown', oct=5, prob=0.75),
+      lead_rh=['x-x-x---x-x-x---', 'x---x-x-x-------', '..x-x-x-x---x---', 'x-x-x-x-x-------'], repetition=0.8,
+      gm_hint='909 / sampled kick + clap; shuffled 16th hats, off-beat open hat, tambourine; octave synth bass; '
+              'sidechained string pad; syncopated piano / synth chord stabs; plucked guitar or synth arp; synth hook lead',
+      tracks=[T('kick', 'kick', 'kick', db=-12, hp=50), T('snare', 'snare', 'snare', rev=0.15, db=-20),
+              T('clap', 'snare', 'clap', rev=0.25, db=-18),
+              T('ohat', 'top', 'ohat', pan=0.15, db=-26), T('chat', 'top', 'chat', pan=-0.2, db=-28),
+              T('tamb', 'top', 'tamb', pan=0.3, db=-27),
+              T('bass', 'bass', 'moogbass', sc=0.7, db=-10, p=dict(cut=900)),
+              T('chords', 'chords', 'stab', sc=0.6, rev=0.3, dly=0.2, db=-20, p=dict(cut=2400)),
+              T('pad', 'pad', 'strings', sc=0.8, rev=0.45, db=-24),
+              T('arp', 'arp', 'pluck', pan=0.25, rev=0.3, dly=0.3, sc=0.5, db=-25),
+              T('lead', 'lead', 'pluck_saw', rev=0.35, dly=0.25, sc=0.4, db=-20)],
+      master=dict(lufs=-9.0, air=1.6, low=1.3),
+      pools=dict(bass=['moogbass', 'sawbass', 'organbass', 'fmbass'],
+                 chords=['stab', 'm1piano', 'piano', 'organ', 'polysynth'],
+                 pad=['strings', 'warmpad', 'solina', 'glasspad'],
+                 arp=['pluck', 'guitar', 'pluck_saw', 'mutedgtr'],
+                 lead=['pluck_saw', 'softlead', 'polysynth', 'supersaw_lead']),
+      label='90s pop house / dance-pop')
 
 
 # ============================== rules applied to all the genres above ========================================

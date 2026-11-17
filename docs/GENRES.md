@@ -1,15 +1,16 @@
-# Studio Lab genres (207)
+# Studio Lab genres (208)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (108)
+## Electronic (109)
 
-### House & Disco (20)
+### House & Disco (21)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | 90s Italo piano house | `piano_house_90s` | 118-124 | Late-80s / early-90s Italo piano house: a clunky drum-machine four-on-the-floor around 120 with a busy, sampled-sounding hip-house break on top, big bright stabbing piano chords, a bouncy octave synth bass, and a soulful diva-style hook - raw, joyful and very Euro-club |
 | 90s club house (New York) | `nineties_club_house` | 122-126 | 90s club house (mid-90s New York): a punchy, swung 909 / sampled-drum groove with shuffled hats and tambourine, a deep driving bass, short filtered minor chord stabs bouncing on the offbeats, a touch of organ - minimal, hypnotic and made for the floor |
+| 90s pop house / dance-pop | `pop_house_90s` | 122-134 | Late-90s pop house / dance-pop: a radio song at house tempo (122-134) - a punchy four-on-the-floor with a clap backbeat, shuffled 16th hats and open hats on the off-beats, a bouncing octave synth bass, sidechained string pads, syncopated chord stabs and plucked guitar-like arps, a catchy synth hook for the chorus; no EDM build-ups, one breakdown where the bass drops out, a hard stop |
 | Acid House | `acid_house` | 122-128 | Acid house: squelching 303 lines, raw 909 drums, rave stabs |
 | Afro House | `afro_house` | 118-124 | Afro house: four-on-the-floor with rolling congas and shakers, deep bass, kalimba & marimba hooks, chants |
 | Bass house / UK bass | `bass_house` | 124-128 | Bass house / UK bass: a punchy four-on-the-floor around 126 with shuffled hats, a fat, distorted, talking bassline that wobbles and bends in the gaps between kicks, stabby organ / rave chords and vocal-chop style hooks; tops-only intro, short stop-start drops and a long drums-out breakdown before the last drop |

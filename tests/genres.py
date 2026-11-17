@@ -58,7 +58,12 @@ def main():
 
     # ---- arrangement: transitions + endings
     rock = compose(Options(style='rock', seed=21))
-    assert any(f[0] == 'swell' for f in rock['fx']) and not any(f[0] == 'fade' and f[1] >= rock['sections'][-1]['bar'] * 4 for f in rock['fx'])
+    assert not any(f[0] == 'fade' and f[1] >= rock['sections'][-1]['bar'] * 4 for f in rock['fx'])
+    assert any(f[0] == 'crash' for f in rock['fx'])                                # a live band: crashes ...
+    assert not any(f[0] in ('swell', 'riser', 'cymroll', 'wash', 'lpsweep', 'hpsweep') for f in rock['fx'])   # ... no studio FX
+    edm = [compose(Options(style='house', seed=sd)) for sd in (1, 2, 3)]
+    assert any(f[0] in ('riser', 'swell', 'wash', 'impact') for s_ in edm for f in s_['fx'])   # electronic keeps them
+    assert not compose(Options(style='surf_rock', seed=3))['fx']                   # surf: no cymbal FX at all
     assert rock['sections'][-1].get('ending') == 'hit'
     end = max(e.beat for e in rock['events'])
     assert end >= rock['sections'][-1]['bar'] * 4 + rock['sections'][-1]['bars'] * 4 - 0.01   # final hit after the outro

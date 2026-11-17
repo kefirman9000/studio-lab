@@ -7,7 +7,7 @@ lands in 'More' at the bottom of its tab until it is filed here.
 GROUPS = {
     'Electronic': [
         ('House & Disco', ['house', 'deep_house', 'tech_house', 'progressive_house', 'acid_house', 'afro_house', 'melodic_house',
-                           'organic_house', 'sunny_melodic_house', 'nineties_club_house', 'italo_disco', 'future_funk',
+                           'organic_house', 'sunny_melodic_house', 'nineties_club_house', 'pop_house_90s', 'italo_disco', 'future_funk',
                            'eurodance', 'bigroom', 'bass_house', 'nu_disco', 'tokyo_deep_house', 'piano_house_90s', 'garage_house', 'mallet_house']),
         ('Techno & Trance', ['techno', 'minimal', 'melodic_techno', 'new_beat', 'trance', 'uplifting_trance',
                              'progressive_trance', 'psytrance', 'trance_pop_90s', 'hard_trance', 'uk_bass_130']),

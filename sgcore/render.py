@@ -621,7 +621,8 @@ class Renderer:
                     self._add(fxbuf, c[-n:] * np.linspace(0.2, 0.55, n, dtype=np.float32), s + int(d * self.spb * SR) - n)
         if np.any(fxbuf):
             cur = active_rms_db(fxbuf)
-            fxbuf *= np.float32(10 ** ((ROLE_DB['fx'] + 3 - cur) / 20))
+            band = st.get('category') == 'Classic'           # a live band's crash sits in the kit, not on top of it
+            fxbuf *= np.float32(10 ** ((ROLE_DB['fx'] + (-1 if band else 3) - cur) / 20))
             fxbuf *= env32[None, :]
             rev_send += fxbuf * 0.3
             mix += fxbuf

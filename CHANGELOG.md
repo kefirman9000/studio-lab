@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.43.3
+- **Band genres sound like a band at transitions.**
+  - Rock, jazz, swing, funk, Latin, country, folk, blues, soul and gospel, world, and the acoustic side of pop no longer get studio transition FX: reverse-cymbal "tssss" swells, cymbal-roll swells, risers, noise washes, tape stops, impacts or filter sweeps. Their transitions are the band's own: fills, stops and a crash on the downbeat.
+  - That crash is now 4 dB lower, so it sits inside the kit.
+  - Hip-hop and produced styles (electro-funk, soca, new jack swing, modern R&B, pop, modern country) keep their FX, and so does every electronic genre.
+- **Surf rock, spooky surf and the monster TV theme have no cymbal FX at all.**
+- New genre **90s pop house / dance-pop**, from your two references (a 123 BPM club-mix radio edit and a 133 BPM dance-pop single).
+  - **The groove:** a full four-on-the-floor from bar 1 with a clap backbeat, shuffled 16th hats and off-beat open hats, a bouncing octave synth bass, sidechained string pads, syncopated chord stabs and a plucked arp.
+  - **The song:** verse and chorus at radio length with no EDM build-ups, one breakdown where the bass drops out, and a hard stop.
+
 ## 1.43.2
 - **Surf rock no longer sounds double-time.**
   - Tempo is now 132-156.

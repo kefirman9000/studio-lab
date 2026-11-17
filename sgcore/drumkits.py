@@ -322,7 +322,7 @@ GENRE_KIT.update({'dnb': 'dnb_rollers', 'liquid_dnb': 'liquid', 'neurofunk': 'ne
                   'acid_house': '606', 'pop': 'unruly', 'modern_country': 'unruly', 'soft_rock': 'dead70s'})
 CHOP.update({'jungle': 0.55, 'dnb': 0.15, 'neurofunk': 0.1, 'liquid_dnb': 0.08})
 GENRE_KIT.update({'hopecore': 'amen', 'alt_rock_90s': 'rock', 'bedroom_pop': '707',
-                  'electro_funk': 'dmx', 'ps1_game': 'think', 'nineties_club_house': '909', 'sunny_melodic_house': '909'})
+                  'electro_funk': 'dmx', 'ps1_game': 'think', 'nineties_club_house': '909', 'pop_house_90s': '909', 'sunny_melodic_house': '909'})
 CHOP.update({'hopecore': 0.45, 'ps1_game': 0.12})
 GENRE_KIT.update({'swing_tomtom': 'studio', 'big_band_50s': 'studio'})
 GENRE_KIT.update({k: 'vintage' for k in ('hauntology_melody', 'hauntology_campfire', 'hauntology_cold')})

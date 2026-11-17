@@ -1500,6 +1500,10 @@ def compose(opts):
     elif st.get('plain_drops'):                          # the genre's drops just land: no risers, swells or impacts
         fx[:] = [f for f in fx if f[0] not in FX_SOUNDS or f[0] == 'crash']
     bar0 = apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_color, bar0)
+    if st.get('no_fx_sounds'):                          # surf / TV-theme bands: no cymbal FX, swells or sweeps at all
+        fx[:] = [f for f in fx if f[0] not in FX_SOUNDS and f[0] not in ('lpsweep', 'hpsweep')]
+    elif natural_band(st):                               # live bands: a crash on the downbeat, never studio swells / sweeps
+        fx[:] = [f for f in fx if (f[0] not in FX_SOUNDS or f[0] == 'crash') and f[0] not in ('lpsweep', 'hpsweep')]
     hold_slow_chords(evs, tracks, st, bpm)
     shape_dynamics(evs, tracks, sections, st)
     in_evs = {id(e) for e in evs}
@@ -1982,6 +1986,24 @@ INST_FAMILIES = {
               'trumpetsection', 'piccolo', 'bassoon', 'harmonica', 'panflute', 'shakuhachi', 'violin', 'fiddle', 'cello'},
     'mallets': {'vibes', 'bell', 'celesta', 'marimba', 'kalimba', 'musicbox', 'steeldrum', 'xylophone', 'glock', 'tubular'},
 }
+
+
+NATURAL_GROUPS = {'Rock & Metal', 'Jazz', 'Swing & Big Band', 'Funk & Disco', 'Latin & Caribbean', 'Country, Folk & Blues',
+                  'Soul, R&B & Gospel', 'World', 'Pop & Indie'}
+STUDIO_FX = {'electro_funk', 'soca', 'groovy_soca', 'new_jack_swing', 'rnb', 'pop', 'bedroom_pop', 'modern_gospel', 'slow_jam',
+             'city_pop', 'modern_country'}
+
+
+def natural_band(st):
+    """A live-band genre: transitions are the band's own (fills, stops, a crash) - no reverse cymbals, risers or sweeps."""
+    name = st.get('name')
+    if st.get('category') != 'Classic' or name in STUDIO_FX or st.get('studio_fx'):
+        return False
+    try:
+        from .genre_groups import group_of
+        return group_of(name) in NATURAL_GROUPS
+    except Exception:
+        return False
 
 
 def inst_family(inst):

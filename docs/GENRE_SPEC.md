@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (207 genres)
+# Studio Lab - technical genre rules (208 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -631,6 +631,37 @@ Mallet-led melodic house / IDM-house: interlocking marimba, vibraphone and kalim
 - **Mix** {'lufs': -10.0, 'air': 1.0, 'low': 1.6, 'width': 1.2} · reverb 2.6 · sc_depth 0.35
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'repetition': 0.8}
 - **Sound brief** Marimba / vibes / kalimba arpeggios in interlocking patterns; deep rolling house kick, shakers, congas; sub bass; soft pads; a slowly unfolding lead
+
+### 90s pop house / dance-pop (`pop_house_90s`)
+
+Late-90s pop house / dance-pop: a radio song at house tempo (122-134) - a punchy four-on-the-floor with a clap backbeat, shuffled 16th hats and open hats on the off-beats, a bouncing octave synth bass, sidechained string pads, syncopated chord stabs and plucked guitar-like arps, a catchy synth hook for the chorus; no EDM build-ups, one breakdown where the bass drops out, a hard stop
+
+- **Tempo** 122-134 BPM · **scales** minor, major, dorian · swing 0.53 (unit 16) · humanise 0.002
+- **Progressions** {'minor': [[0, 6, 5, 6], [0, 5, 6, 0], [5, 6, 0, 0], [0, 3, 6, 5]], 'major': [[0, 4, 5, 3], [3, 4, 0, 5], [5, 3, 0, 4]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]} · chord_bars 1 · chord size 4
+- **Song form** `pop_house_90s`: intro 8 [bass, kick, pad, top] -> verse 16 [arp, bass, chords, kick, snare, top] (level=0.86) -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> break 12 [arp, chords, kick, pad] (alt, level=0.66) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> chorus 8 [bass, chords, kick, lead, pad, snare, top] -> outro 4 [bass, chords, kick, top] · form_scale 1
+- **Drums** **kick** `X...X...X...X...`; **snare** `....X.......X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `x.xxx.xxx.xxx.xx` / `xxxxxxxxxxxxxxxx`; **tamb** `....x.......x...` / `..x...x...x...x.`
+- **Drum kit** 909 · preset `909`
+- **Bass** `R.O.R.O.R.O.R.O.` / `..R...R...R...R.` / `R..R..R.R..R..R.` · mode `pattern` · lowest note 31
+- **Chord rhythm** `..x..x....x..x..` / `x..x..x...x..x..` / `x---....x---....`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.75}
+- **Lead rhythm** `x-x-x---x-x-x---` / `x---x-x-x-------` / `..x-x-x-x---x---` / `x-x-x-x-x-------`
+- **Build-ups** default `filter` · choices ['filter', 'hats', 'pickup', 'drumless'] · drops land plainly
+- **Traits** arrangement `groove_locked` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `progressive` · culture `underground_club` · texture `club_punchy` · rhythm `swung_16ths` · harmony `functional_tonal` · energy `flat_hypnotic`
+- **Instruments**
+  - kick (kick): `kick` -12 dB
+  - snare (snare): `snare` -20 dB · rev=0.15
+  - clap (snare): `clap` -18 dB · rev=0.25
+  - ohat (top): `ohat` -26 dB · pan=0.15
+  - chat (top): `chat` -28 dB · pan=-0.2
+  - tamb (top): `tamb` -27 dB · pan=0.3
+  - bass (bass): `moogbass` -10 dB · sc=0.7 · alternatives ['sawbass', 'organbass', 'fmbass']
+  - chords (chords): `stab` -20 dB · rev=0.3 · dly=0.2 · sc=0.6 · alternatives ['m1piano', 'piano', 'organ', 'polysynth']
+  - pad (pad): `strings` -24 dB · rev=0.45 · sc=0.8 · alternatives ['warmpad', 'solina', 'glasspad']
+  - arp (arp): `pluck` -25 dB · pan=0.25 · rev=0.3 · dly=0.3 · sc=0.5 · alternatives ['guitar', 'pluck_saw', 'mutedgtr']
+  - lead (lead): `pluck_saw` -20 dB · rev=0.35 · dly=0.25 · sc=0.4 · alternatives ['softlead', 'polysynth', 'supersaw_lead']
+- **Mix** {'lufs': -9.0, 'air': 1.6, 'low': 1.3} · reverb 1.8 · sc_depth 0.45
+- **Other rules** {'sc_release': 0.4, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 54, 'punch': 140, 'decay': 9, 'drive': 2.0, 'click': 0.5}}, 'snare_tracks': ['clap'], 'bass_gate': 0.6, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'repetition': 0.8}
+- **Sound brief** 909 / sampled kick + clap; shuffled 16th hats, off-beat open hat, tambourine; octave synth bass; sidechained string pad; syncopated piano / synth chord stabs; plucked guitar or synth arp; synth hook lead
 
 ## Techno & Trance
 
@@ -3569,7 +3600,7 @@ Spooky 60s surf / TV-theme rock: a fast, driving beat around 150 with a twangy, 
   - arp (arp): `organ` -24 dB · pan=0.3 · rev=0.25 · alternatives ['twang', 'guitar', 'piano']
   - lead (lead): `twang` -17 dB · rev=0.45 · dly=0.15 · alternatives ['guitar', 'organ', 'sf:cleanguitar']
 - **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 0.6, 'width': 1.1} · reverb 2.4 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 4, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'spring': True}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 4, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_fx_sounds': True, 'spring': True}
 - **Sound brief** Twangy reverb-drenched guitar melody (low strings); walking bass; brass stabs; combo organ; fast straight beat
 
 ### Nu-metal (`nu_metal`)
@@ -3626,7 +3657,7 @@ Surf rock (early-60s instrumental surf): a fast, straight beat driven by the flo
   - arp (arp): `organ` -24 dB · pan=-0.3 · rev=0.3 · alternatives ['guitar', 'twang', 'sax']
   - lead (lead): `twang` -18 dB · rev=0.55 · dly=0.12 · alternatives ['guitar', 'sax', 'sf:cleanguitar']
 - **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 2.0, 'width': 1.1} · reverb 2.6 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.012, 'voicing': 'close', 'lead_oct': 4, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'spring': True, 'repetition': 0.75}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.012, 'voicing': 'close', 'lead_oct': 4, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_fx_sounds': True, 'spring': True, 'repetition': 0.75}
 - **Sound brief** Twangy single-coil guitar (tremolo-picked, low strings) in a spring reverb tank; strummed rhythm guitar; electric bass; floor-tom surf beat; combo organ or tenor sax for a chorus
 
 ### Spooky surf - monster TV theme (`monster_theme`)
@@ -3655,7 +3686,7 @@ Spooky surf - 60s monster-sitcom theme: a driving 150 BPM surf beat under a low,
   - arp (arp): `sax` -22 dB · pan=-0.25 · rev=0.3 · alternatives ['brass', 'organ']
   - lead (lead): `brass` -17 dB · rev=0.35 · dly=0.1 · alternatives ['sax', 'twang', 'organ']
 - **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 1.5, 'width': 1.0} · reverb 2.2 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'spring': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'riff_locked': True, 'section_progs': {'verse': [0, 0, 0, 0], 'main': [0, 0, 5, 4], 'alt': [2, 6, 5, 2]}, 'repetition': 0.85}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_fx_sounds': True, 'spring': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'riff_locked': True, 'section_progs': {'verse': [0, 0, 0, 0], 'main': [0, 0, 5, 4], 'alt': [2, 6, 5, 2]}, 'repetition': 0.85}
 - **Sound brief** Twangy baritone / six-string guitar doubling the bass on a low chromatic riff (spring reverb); electric bass; brass section stabs; trumpet melody for the bridge; sax section; driving surf drums with ride
 
 ## Pop & Indie
