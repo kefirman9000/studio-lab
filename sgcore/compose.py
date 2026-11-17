@@ -1920,7 +1920,9 @@ def section_group(sec):
 SIGNATURE_STRICT = {'trap', 'boombap', 'rnb', 'lofi', 'uk_drill', 'luxury_rap', 'g_funk', 'neo_soul', 'new_jack_swing', 'alt_rnb',
                     'rage', 'plugg', 'hauntology_sunlit', 'hauntology_dark', 'memphis_phonk', 'orchestral_hiphop', 'jersey_club',
                     'country', 'modern_country', 'country_waltz', 'outlaw_country', 'western_swing', 'bluegrass',
-                    'smooth_jazz', 'smooth_funk', 'quiet_storm', 'jazz_rap', 'cloud_rap', 'slow_jam'}
+                    'smooth_jazz', 'smooth_funk', 'quiet_storm', 'jazz_rap', 'cloud_rap', 'slow_jam',
+                    'house', 'deep_house', 'tech_house', 'progressive_house', 'melodic_house', 'acid_house', 'trance',
+                    'uplifting_trance', 'progressive_trance', 'psytrance', 'techno', 'melodic_techno', 'bigroom'}
 SIGNATURE_SOUNDS = {'trap', 'boombap', 'rnb', 'lofi', 'uk_drill', 'luxury_rap', 'g_funk', 'neo_soul', 'new_jack_swing', 'alt_rnb',
                     'rage', 'plugg', 'hauntology_sunlit', 'hauntology_dark', 'phonk', 'house_phonk', 'memphis_phonk', 'brazilian_phonk', 'metal', 'punk', 'symphonic_metal', 'rock',
                     'epic_orchestral', 'epic_battle', 'epic_choir', 'heroic_anthem', 'symphonic_finale'}
@@ -1949,7 +1951,7 @@ def add_section_switch_tracks(st, opts, rnd):
         pool = list(POOLS.get(st.get('name') or opts.style, {}).get(role) or [])
         if len(set(pool)) == 1:                         # the genre has exactly one sound for this part (phonk cowbell)
             continue
-        if len(pool) < 3 and (st.get('name') or opts.style) not in SIGNATURE_SOUNDS:
+        if len(pool) < 3 and (st.get('name') or opts.style) not in SIGNATURE_SOUNDS | SIGNATURE_STRICT:
             pool += [x for x in pal.get(role, []) if x not in pool][:2]
         alts = [x for x in dict.fromkeys(pool) if x != main['inst'] and x in INSTRUMENTS or (isinstance(x, str) and x.startswith('sf:') and x != main['inst'])]
         if alts:

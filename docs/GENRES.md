@@ -37,7 +37,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hauntology | `hauntology` | 78-96 | Hauntology: warped-tape analog synths, slow dusty hip-hop breaks, nostalgic melodies and string-machine haze, all drifting like an old cassette |
 | Hauntology II (sunlit tape) | `hauntology_sunlit` | 84-100 | Hauntology II - sunlit tape (Boards of Canada, "Music Has the Right to Children"): warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
 | Hauntology III (dark film haze) | `hauntology_dark` | 66-84 | Hauntology III - dark film haze (Boards of Canada, "Geogaddi"): slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
-| House | `house` | 120-127 | Classic/deep house: four-on-the-floor, offbeat bass, chord stabs, pumping sidechain |
+| House | `house` | 120-127 | Classic / NYC house: four-on-the-floor 909, the bouncy M1 organ bass, offbeat piano and organ stabs, warm pads, pumping sidechain |
 | House Phonk | `house_phonk` | 128-142 | House phonk: four-on-the-floor phonk - distorted detuned cowbell hooks, punchy 808 bass on the offbeat, hard claps and Memphis vocal chops at club tempo |
 | Hyperpop | `hyperpop` | 150-170 | Hyperpop: maximal, bright and glitchy - distorted 808s, supersaws, chiptune sparkle |
 | Italo Disco | `italo_disco` | 116-126 | Italo disco / Eurodisco (early-mid 80s): four-on-the-floor with a gated-reverb snare on 2 and 4, a melodic octave synth bassline, bright Juno / Jupiter / DX7 arps and anthemic leads - cleaner and more synthetic than disco |
@@ -65,7 +65,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Reggaeton | `reggaeton` | 88-100 | Reggaeton: dembow rhythm, deep 808s, plucky synths, latin percussion |
 | Synth-pop | `synthpop` | 110-122 | Synth-pop: punchy LinnDrum-style beats, bright plucks, string pads, catchy leads |
 | Synthwave | `synthwave` | 90-112 | 80s synthwave/retrowave: gated-reverb snares, pulsing octave bass, supersaws, saw lead |
-| Tech House | `tech_house` | 124-128 | Tech house: rolling groovy bass, shakers & congas, sparse vocal chops |
+| Tech House | `tech_house` | 124-128 | Tech house: rolling, rubbery filtered bassline, 909 groove with congas, rims and shakers, percussive organ and synth stabs - minimal melody, all groove |
 | Techno | `techno` | 128-134 | Peak-time techno: distorted kick, rolling 16th bass, dub stabs drowned in delay |
 | Teen Pop ('99) | `teen_pop` | 92-112 | Late-90s teen pop: punchy dance-pop drums, dramatic minor chords, muted-guitar and synth-pluck riffs, string stabs, call-and-response hooks and a last-chorus key change |
 | Trance | `trance` | 132-140 | Uplifting trance: gated supersaw chords, rolling offbeat bass, euphoric leads |

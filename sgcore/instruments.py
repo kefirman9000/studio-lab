@@ -80,15 +80,18 @@ def i_supersaw(m, dur, p, glide=None, mod=None):
     f = float(mtof(m))
     env = adsr(dur * SR, p.get('a', 0.25), 0.6, 0.85, p.get('r', 0.6))
     n = len(env)
-    cents = np.array([-20, -12, -5, 0, 5, 12, 20]) * p.get('detune', 1.0)
+    # JP-8000-style supersaw: seven saws spread wide (the outer ones furthest), the centre voice a little louder,
+    # bright, and high-passed so the low end stays clean for the bass
+    cents = np.array([-38, -22, -9, 0, 9, 22, 38]) * p.get('detune', 1.0)
+    gains = np.array([0.8, 0.9, 1.0, 1.25, 1.0, 0.9, 0.8])
     L = np.zeros(n)
     R = np.zeros(n)
-    for i, c in enumerate(cents):
-        s = saw(f * 2 ** (c / 1200), n, _rng().random())
+    for i, (c, g) in enumerate(zip(cents, gains)):
+        s = saw(f * 2 ** (c / 1200), n, _rng().random()) * g
         th = (i / (len(cents) - 1)) * np.pi / 2
         L += s * np.cos(th)
         R += s * np.sin(th)
-    out = lp(np.vstack([L, R]), p.get('cut', 3000))
+    out = hp(lp(np.vstack([L, R]), p.get('cut', 3000) * 1.6), 140)
     return out * env / len(cents) * 1.6
 
 
@@ -1419,3 +1422,29 @@ INSTRUMENTS['ebass'] = i_ebass
 INSTRUMENT_INFO['ebass'] = 'Electric bass'
 ROLE_CHOICES['bass'] += ['ebass']
 GM_PROGRAM['ebass'] = 33
+
+
+
+def i_organbass(m, dur, p, glide=None, mod=None):
+    """The house organ bass (Korg M1 "Organ 2" style, Robin S / Crystal Waters / 90s NYC house): bright organ partials
+    with a hard key click that die away quickly, so each note is a punchy, rounded 'bonk' in the bass register."""
+    f = float(mtof(m))
+    n = int((min(dur, 1.2) + 0.08) * SR)
+    t = np.arange(n) / SR
+    y = np.zeros(n)
+    for ratio, amp, dk in ((1, 1.0, 3.0), (2, 0.75, 5.0), (3, 0.45, 7.0), (4, 0.3, 9.0), (6, 0.12, 12.0)):
+        if f * ratio < 12000:
+            y += amp * np.sin(2 * np.pi * f * ratio * t) * np.exp(-t * dk * p.get('decay', 1.0))
+    y += 0.25 * hp(noise(n), 2500) * np.exp(-t * 180)                      # key click
+    gate = np.ones(n)
+    g = int(dur * SR)
+    if g < n:
+        gate[g:] = np.exp(-np.arange(n - g) / (0.03 * SR))
+    y = soft(lp(y * gate, 3500) * 1.4, 1.3)
+    return np.vstack([y, y]) * 0.42 * np.minimum(t / 0.002, 1)
+
+
+INSTRUMENTS['organbass'] = i_organbass
+INSTRUMENT_INFO['organbass'] = 'House organ bass (M1-style)'
+ROLE_CHOICES['bass'] += ['organbass']
+GM_PROGRAM['organbass'] = 16

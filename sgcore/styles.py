@@ -217,11 +217,11 @@ style('house', 'Electronic', 'Classic/deep house: four-on-the-floor, offbeat bas
       tracks=[T('kick', 'kick', 'kick'), T('clap', 'snare', 'clap', rev=0.18),
               T('ohat', 'top', 'ohat', pan=0.15), T('chat', 'top', 'chat', pan=-0.2, db=-29),
               T('shaker', 'top', 'shaker', pan=0.35, db=-31),
-              T('bass', 'bass', 'sawbass', sc=1.0, p=dict(cut=1800)),
-              T('chords', 'chords', 'stab', sc=0.9, rev=0.25, dly=0.15, p=dict(cut=4500)),
-              T('pad', 'pad', 'supersaw', sc=1.0, rev=0.35, p=dict(cut=2200, a=0.3)),
-              T('arp', 'arp', 'pluck_saw', sc=0.8, rev=0.25, dly=0.3, pan=-0.25, db=-27),
-              T('lead', 'lead', 'pluck', sc=0.5, rev=0.3, dly=0.3, pan=0.1, p=dict(bright=7000, damp=0.997))],
+              T('bass', 'bass', 'organbass', sc=1.0),
+              T('chords', 'chords', 'piano', sc=0.9, rev=0.25, dly=0.15),
+              T('pad', 'pad', 'warmpad', sc=1.0, rev=0.35, p=dict(cut=1400)),
+              T('arp', 'arp', 'organ', sc=0.8, rev=0.25, dly=0.3, pan=-0.25, db=-27),
+              T('lead', 'lead', 'piano', sc=0.5, rev=0.3, dly=0.3, pan=0.1)],
       master=dict(lufs=-9.0, air=2.0, low=1.0))
 
 style('deep_house', 'Electronic', 'Deep house: warm organ & Rhodes 7th chords, round sub, shuffled shakers',
@@ -256,10 +256,10 @@ style('tech_house', 'Electronic', 'Tech house: rolling groovy bass, shakers & co
       tracks=[T('kick', 'kick', 'kick'), T('clap', 'snare', 'clap', rev=0.2), T('ohat', 'top', 'ohat', db=-27),
               T('shaker', 'top', 'shaker', pan=0.3, db=-29), T('conga', 'top', 'conga', pan=-0.3, db=-27),
               T('rim', 'top', 'rim', pan=0.2, db=-30),
-              T('bass', 'bass', 'fmbass', sc=1.0, p=dict(index=2.0, cut=1600, drive=2.0)),
+              T('bass', 'bass', 'sawbass', sc=1.0, p=dict(cut=900, d=0.14, s=0.0, fdecay=14)),
               T('chords', 'chords', 'organ', sc=0.8, rev=0.3, dly=0.3, db=-24),
               T('arp', 'arp', 'pluck_saw', sc=0.6, dly=0.35, pan=0.25, db=-29, p=dict(cut=3000)),
-              T('lead', 'lead', 'vox', sc=0.5, rev=0.3, dly=0.35)],
+              T('lead', 'lead', 'stab', sc=0.5, rev=0.3, dly=0.35)],
       master=dict(lufs=-8.5, air=1.5, low=1.5))
 
 style('progressive_house', 'Electronic', 'Progressive house: emotive plucks, wide supersaws, long builds and big drops',
@@ -290,7 +290,7 @@ style('trance', 'Electronic', 'Uplifting trance: gated supersaw chords, rolling 
               T('chat', 'top', 'chat', pan=-0.2, db=-30), T('ride', 'top', 'ride', pan=0.25, db=-31),
               T('bass', 'bass', 'sawbass', sc=1.0, p=dict(cut=1400, d=0.08, s=0.3)),
               T('chords', 'chords', 'supersaw', sc=0.9, rev=0.35, dly=0.15, p=dict(cut=5000, a=0.005, r=0.08)),
-              T('pad', 'pad', 'strings', sc=0.8, rev=0.5),
+              T('pad', 'pad', 'warmpad', sc=0.8, rev=0.5, p=dict(cut=2600, a=0.05), gate='xx.xx.x.xx.xx.x.'),
               T('arp', 'arp', 'pluck_saw', sc=0.8, rev=0.3, dly=0.4, pan=0.25, db=-26),
               T('lead', 'lead', 'supersaw_lead', sc=0.5, rev=0.4, dly=0.3)],
       master=dict(lufs=-8.5, air=2.5, low=1.0))
@@ -1996,7 +1996,7 @@ style('uplifting_trance', 'Electronic', 'Uplifting trance: emotional minor-key a
       tracks=[T('kick', 'kick', 'kick', db=-12), T('clap', 'snare', 'clap', rev=0.3, db=-19), T('ohat', 'top', 'ohat', db=-26),
               T('chat', 'top', 'chat', db=-29), T('ride', 'top', 'ride', db=-32),
               T('bass', 'bass', 'sawbass', sc=0.7, db=-15, p=dict(cut=1100, d=0.1, s=0.3)),
-              T('chords', 'chords', 'supersaw', sc=0.8, rev=0.4, db=-22), T('pad', 'pad', 'strings', sc=0.6, rev=0.5, db=-26),
+              T('chords', 'chords', 'supersaw', sc=0.8, rev=0.4, db=-22), T('pad', 'pad', 'warmpad', sc=0.6, rev=0.5, db=-26, p=dict(cut=2600, a=0.05), gate='xx.xx.x.xx.xx.x.'),
               T('arp', 'arp', 'pluck_saw', sc=0.5, dly=0.35, db=-24), T('lead', 'lead', 'supersaw_lead', sc=0.4, rev=0.4, dly=0.25, db=-18)],
       master=dict(lufs=-8.5, air=2.0, low=1.0))
 
@@ -2343,7 +2343,7 @@ style('progressive_trance', 'Electronic', 'Emotional progressive trance / melodi
               T('chat', 'top', 'chat', pan=-0.2, db=-31), T('ride', 'top', 'ride', pan=0.3, db=-31),
               T('bass', 'bass', 'sawbass', sc=1.0, p=dict(cut=900)),
               T('chords', 'chords', 'supersaw', sc=0.9, rev=0.4, db=-25, p=dict(cut=5000)),
-              T('pad', 'pad', 'strings', sc=0.6, rev=0.6, db=-27),
+              T('pad', 'pad', 'warmpad', sc=0.6, rev=0.6, db=-27, p=dict(cut=2600, a=0.05), gate='xx.xx.x.xx.xx.x.'),
               T('arp', 'arp', 'pluck_saw', sc=0.7, rev=0.35, dly=0.3, pan=-0.2, db=-27),
               T('lead', 'lead', 'supersaw_lead', sc=0.4, rev=0.45, dly=0.25, db=-19)],
       master=dict(lufs=-8.5, air=2.0, low=1.0))
@@ -3546,3 +3546,19 @@ for _n, _st in STYLES.items():
             if _own and _own in _l2:
                 _l2 = [_own] + [x for x in _l2 if x != _own]
             _pl[_r] = _l2 or [_own]
+
+
+# ----------------------------------------------------------------------------- 1.33: house & trance with their real sounds
+POOLS['house'].update(bass=['organbass', 'sawbass', 'fmbass', 'moogbass'], chords=['piano', 'stab', 'organ', 'epiano'],
+                      pad=['warmpad', 'strings', 'solina', 'glasspad'], arp=['organ', 'stab', 'piano'],
+                      lead=['piano', 'organ', 'stab'])
+POOLS['tech_house'].update(bass=['sawbass', 'fmbass', 'organbass', 'sinebass'], lead=['stab', 'organ', 'pluck_saw'])
+POOLS['deep_house'].setdefault('bass', ['sinebass', 'fmbass', 'organbass'])
+if 'organbass' not in POOLS['deep_house']['bass']:
+    POOLS['deep_house']['bass'].append('organbass')
+for _n in ('trance', 'uplifting_trance', 'progressive_trance'):
+    POOLS[_n]['pad'] = ['warmpad'] + [x for x in POOLS[_n].get('pad', []) if x != 'warmpad']
+STYLES['house']['desc'] = ('Classic / NYC house: four-on-the-floor 909, the bouncy M1 organ bass, offbeat piano and organ stabs, '
+                           'warm pads, pumping sidechain')
+STYLES['tech_house']['desc'] = ('Tech house: rolling, rubbery filtered bassline, 909 groove with congas, rims and shakers, '
+                                'percussive organ and synth stabs - minimal melody, all groove')

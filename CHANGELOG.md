@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.33.0
+House & trance with their real sounds:
+- **House**: the bouncy **M1-style organ bass** (new sound, the 90s NYC / Robin S bass), offbeat **piano** stabs (real Steinway), organ hits, warm pads - instead of a saw bass, supersaw pad and plucks.
+- **Tech house**: a rolling, rubbery filtered saw bass and percussive chord stabs.
+- **Trance / uplifting / progressive trance**: gated warm pads (the trance gate in the drops) instead of a string ensemble.
+- **Brighter, wider supersaw** (JP-8000 style: seven saws spread wider, a stronger centre voice, brighter and high-passed) - trance, progressive house, big room, future bass and everything else that uses it.
+- House, deep / tech / progressive / melodic house, acid house, all trance styles, techno, melodic techno and big room now keep their signature sounds instead of the variety setting swapping them, and section rotation only uses each genre's own sounds (no more 8-bit pulse in a progressive house break).
+- **Report a problem → 📋 Copy synth parameter list**: lists the knobs of the genre synths you have installed (OB-Xf, Odin 2, Monique, Six Sines, Surge XT, Dexed, Vital ...) so genre presets can be written for your exact plugins.
+
 ## 1.32.1
 - **Vinyl crackle is off by default** in every genre (lo-fi, boom bap, hauntology, vaporwave ...). Switch it on any time with Mix & master → Vinyl crackle → On. The tape wobble and dusty tone of those genres stay.
 

@@ -843,6 +843,10 @@ function diagModal(){
       the end of the log - short enough to paste straight into a chat. Same privacy rules as the report.</p>
     <div class="row"><button class="btn p" id="diagSum">📋 Copy technical summary</button><span class="hint" id="diagSumMsg"></span></div>
     <textarea id="diagSumText" rows="8" readonly style="width:100%;display:none;margin-top:8px;font-family:var(--mono);font-size:11px"></textarea>
+    <h3 style="margin-top:16px">Synth parameter list</h3>
+    <p class="hint">Lists the knobs of the genre synths you have installed (OB-Xf, Odin 2, Monique, Six Sines, Surge XT, Dexed, Vital ...).
+      Paste it to whoever is building genre sounds so presets can be written for your exact plugins. Takes a few seconds per plugin.</p>
+    <div class="row"><button class="btn" id="diagSyn">📋 Copy synth parameter list</button><span class="hint" id="diagSynMsg"></span></div>
     <h3 style="margin-top:16px">App window</h3>
     <div class="row"><label><input type="radio" name="winMode" value="app"> Own app window (no browser tabs)</label>
       <label><input type="radio" name="winMode" value="browser"> Browser tab</label>
@@ -858,6 +862,11 @@ function diagModal(){
     try{ await navigator.clipboard.writeText(r.text); $('#diagSumMsg').textContent='Copied - paste it into your message.' }
     catch(_){ ta.focus(); ta.select(); try{ document.execCommand('copy'); $('#diagSumMsg').textContent='Copied - paste it into your message.' }
       catch(__){ $('#diagSumMsg').textContent='Select the text below and copy it (Ctrl+C).' } } };
+  $('#diagSyn').onclick=async()=>{ $('#diagSynMsg').textContent='Reading your plugins…'; const r=await api('/api/diagnostics',{synths:true}); const ta=$('#diagSumText');
+    ta.value=r.text; ta.style.display='';
+    try{ await navigator.clipboard.writeText(r.text); $('#diagSynMsg').textContent='Copied - paste it into your message.' }
+    catch(_){ ta.focus(); ta.select(); try{ document.execCommand('copy'); $('#diagSynMsg').textContent='Copied - paste it into your message.' }
+      catch(__){ $('#diagSynMsg').textContent='Select the text above and copy it (Ctrl+C).' } } };
   $('#diagCopy').onclick=async()=>{ const r=await get(); try{ await navigator.clipboard.writeText(r.text); $('#diagMsg').textContent='Copied - paste it into your message.' }
     catch(_){ $('#diagMsg').textContent='Could not copy - use Save report instead.' } };
   (async()=>{ const cur=(META.window||'app'); $$('#modalBox [name=winMode]').forEach(r=>{ r.checked=r.value===cur;

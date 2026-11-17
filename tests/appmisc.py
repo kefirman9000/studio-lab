@@ -30,7 +30,8 @@ def main():
     sm = diagnostics.summary(jobs, 'it broke')
     assert sm.startswith('```') and 'TECHNICAL SUMMARY' in sm and 'boom' in sm and '"style": "trance"' in sm and 'lead: plugin failed' in sm
     assert home not in sm and len(sm) < 13000
-    print('ok  technical summary')
+    assert diagnostics.synth_params().startswith('```')
+    print('ok  technical summary, synth parameter list')
     test_journey()
     print('all good')
 

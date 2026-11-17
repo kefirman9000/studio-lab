@@ -305,3 +305,40 @@ def summary(jobs=None, note=''):
     if len(text) > 12000:
         text = text[:6000] + '\n... (shortened) ...\n' + text[-5800:]
     return '```\n' + text + '\n```\n'
+
+
+# ----------------------------------------------------------------------------- synth parameter report (for writing genre patches)
+REPORT_SYNTHS = ('ob-xf', 'obxf', 'odin', 'monique', 'six sines', 'sixsines', 'surge xt', 'dexed', 'vital', 'noisemaker')
+
+
+def synth_params(limit=400):
+    """Every installed genre synth's parameter names (and the choices of switch-type parameters) - paste this so genre
+    patches can be written for the exact plugin you have. Nothing personal is included."""
+    from . import vsthost, vstrigs
+    out = ['STUDIO LAB SYNTH PARAMETERS  ' + time.strftime('%Y-%m-%d %H:%M')]
+    try:
+        plugins = vstrigs.plugins_on_disk(refresh=True)
+    except Exception as e:
+        return f'```\ncould not scan plugins: {e}\n```\n'
+    seen = set()
+    for pl in plugins:
+        name = (pl.get('name') if isinstance(pl, dict) else str(pl)) or ''
+        path = pl.get('path') if isinstance(pl, dict) else None
+        low = name.lower()
+        if not path or not any(k in low for k in REPORT_SYNTHS) or low in seen or pl.get('is_effect'):
+            continue
+        seen.add(low)
+        try:
+            res = vsthost.probe(path, list_params=True) or {}
+        except Exception as e:
+            out.append(f'== {name}: could not load ({e})')
+            continue
+        params = res.get('params') or []
+        out.append(f'== {name}  ({os.path.splitext(os.path.basename(path))[1]}, {len(params)} parameters)')
+        for prm in params[:limit]:
+            ch = prm.get('choices') or []
+            out.append(f"{prm.get('name') or prm.get('attr')}" + (f"  [{' | '.join(ch[:12])}]" if ch else ''))
+    if len(out) == 1:
+        out.append('(none of OB-Xf, Odin 2, Monique, Six Sines, Surge XT, Dexed, Vital or TAL-NoiseMaker found)')
+    text = redact('\n'.join(out))
+    return '```\n' + text[:60000] + '\n```\n'
