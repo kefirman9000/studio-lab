@@ -37,10 +37,18 @@ from . import updater
 ROOT = updater.ROOT
 REAL_DIR = os.path.join(ROOT, 'sound_library', 'real')
 MANIFEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'samplelibs.json')
-LIB_ORDER = ['drums', 'percussion', 'strings', 'winds', 'keys', 'colors', 'archtop', 'twang', 'ebass', 'dbass']
+LIB_ORDER = ['drums', 'kit70s', 'kitbrush', 'kitrusty', 'percussion', 'strings', 'winds', 'keys', 'colors', 'archtop', 'twang',
+             'ebass', 'dbass']
+KIT_LIBS = ('drums', 'kit70s', 'kitbrush', 'kitrusty')
 BLURB = {
     'drums': 'A real acoustic drum kit (kick, snare, hats, ride, crash, toms) with 3 mic sounds: clean studio, big rock room and '
              'vintage lo-fi. Plays the rock, funk, disco, jazz and soul kits and the re-played breaks (Amen, Think, Funky Drummer ...).',
+    'kit70s': 'A dry, warm 70s soul / funk drum kit (Karoryfer Gogodze Phu Vol II, recorded to sound like early-70s records): '
+              'funk, Motown, soul jazz, neo-soul, blues, reggae, disco-funk.',
+    'kitbrush': 'A real drum kit played with brushes (Karoryfer Swirly Drums): jazz, swing, bebop, bossa nova, soul ballads, '
+                'quiet storm, country waltz and western swing.',
+    'kitrusty': 'A big, raw vintage rock kit (Karoryfer Big Rusty Drums - an oversized 1980s kit with a 24" kick): rock, indie, '
+                'punk and jam band.',
     'percussion': 'Real congas, bongos, shakers, tambourine, claps, cowbell, claves, guiro, woodblock, triangle - used in every genre that has them '
                   '(organic house, afro, latin, disco, pop ...).',
     'strings': 'A real string orchestra: violin, viola, cello and bass sections that play sustain, spiccato, pizzicato and tremolo, '

@@ -173,6 +173,9 @@ class Renderer:
             name = 'cowbell'                                # latin styles: a real campana, not an 808
         if not name:
             return None
+        from . import samplelibs as _sl
+        if kit and name.startswith(kit + ':') and not _sl.has(name, 'hit') and _sl.has('studio:' + name.split(':', 1)[1], 'hit'):
+            name = 'studio:' + name.split(':', 1)[1]          # a kit without cymbals borrows the studio kit's
         vb = round(max(0.05, min(1.0, ev.vel)) * 6) / 6
         key = ('realdrum', name, vb, idx % 4)
         sig = self.cache.get(key, False)

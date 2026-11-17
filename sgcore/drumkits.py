@@ -68,6 +68,9 @@ KIT_MENU = [
     ('studio', 'Real kits', 'Studio acoustic kit', 'acoustic', 'studio', None),
     ('rock', 'Real kits', 'Rock kit (big room)', 'acoustic', 'room', None),
     ('vintage', 'Real kits', 'Vintage / lo-fi kit', 'soft', 'lofi', None),
+    ('seventies', 'Real kits', '70s soul / funk kit (dry, warm)', 'acoustic', 'seventies', None),
+    ('brushes', 'Real kits', 'Jazz brushes kit', 'soft', 'brushes', None),
+    ('rusty', 'Real kits', 'Big vintage rock kit', 'acoustic', 'rusty', None),
     ('amen', 'Breaks (re-played)', BREAKS['amen']['label'] + ' - jungle, DnB', 'acoustic', None, 'amen'),
     ('think', 'Breaks (re-played)', BREAKS['think']['label'] + ' - DnB, breaks', 'acoustic', None, 'think'),
     ('funky_drummer', 'Breaks (re-played)', BREAKS['funky_drummer']['label'] + ' - boom bap', 'acoustic', None, 'funky_drummer'),
@@ -184,3 +187,10 @@ def bar_pattern(st, drum, slices):
     if not seq:
         return None
     return ''.join(seq[b][k * 4:(k + 1) * 4] for b, k in slices)
+
+
+# 1.35: genres that now default to the new real kits
+GENRE_KIT.update({k: 'brushes' for k in ('jazz', 'swing', 'bebop', 'modal_jazz', 'bossa_nova', 'soul_ballad', 'quiet_storm',
+                                          'country_waltz', 'western_swing')})
+GENRE_KIT.update({k: 'seventies' for k in ('funk', 'motown', 'soul_jazz', 'blues', 'reggae', 'disco_funk', 'gospel')})
+GENRE_KIT.update({k: 'rusty' for k in ('rock', 'indie_rock', 'punk', 'jam_band')})

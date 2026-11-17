@@ -360,7 +360,8 @@ def test_kits_and_bells():
     from sgcore.styles import BELLS, MALLETS, BELL_OK, MALLET_OK, STYLES
     # genre kits
     for st, kit in (('jungle', 'amen'), ('boombap', 'funky_drummer'), ('downtempo', 'back_to_life'), ('trap', '808'),
-                    ('trance', 'trance'), ('rock', 'rock'), ('synthwave', 'linn'), ('techno', 'techno')):
+                    ('trance', 'trance'), ('rock', 'rusty'), ('jazz', 'brushes'), ('funk', 'seventies'), ('metal', 'rock'),
+                    ('synthwave', 'linn'), ('techno', 'techno')):
         assert compose(Options(style=st, seed=2))['st'].get('kit_id') == kit, st
     # a break replaces the kit's patterns with its own 4-bar cycle; jungle chops it, a straight break doesn't
     j = compose(Options(style='jungle', seed=3))

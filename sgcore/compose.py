@@ -673,7 +673,7 @@ def apply_real(st, opts):
     if getattr(opts, 'user_drums', False):
         return
     name = opts.style
-    if sl.installed('drums'):
+    if any(sl.installed(x) for x in sl.KIT_LIBS):
         if st.get('kit_id'):                               # a chosen / genre kit says which mic, if any
             mic = st.get('want_real_kit')
             if mic and not sl.has(mic + ':kick'):

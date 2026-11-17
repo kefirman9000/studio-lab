@@ -137,6 +137,18 @@ TWANG = [('twang', 'sus', r'^Samples/green/ord/', r'_(mf|f)_rr[12]\.wav$|_p_rr1\
          ('twang', 'short', r'^Samples/green/stac/', r'', 2)]
 GROWLY = [('ebass', 'sus', r'^sustain/', r'_(p|f)_rr[12]\.wav$', 2), ('ebass', 'short', r'^staccato/', r'_rr[12]\.wav$', 2)]
 MEAT = [('dbass', 'sus', r'^Samples/pizz/', r'/[a-g]b?\d_vl[13]_rr[12]\.wav$', 2)]
+# Karoryfer CC0 drum kits (dry close mics, a few velocity layers, 2 round robins)
+_V = r'_vl(2|5|8|11|14)_rr[12]\.(wav|flac)$'
+SEVENTIES = [(k, 'hit', r'^Samples/retro_mic/' + f + r'_vl', r'_rr[12]\.wav$', 2) for k, f in
+             (('kick', 'ks'), ('snare', 'sc'), ('rim', 'ss'), ('chat', 'hc'), ('ohat', 'ho'), ('tom', 'tm'), ('ltom', 'tl'))]
+_VS = r'_vl(2|5|8|11)_rr[12](_top)?\.wav$'                  # Swirly snares: the top mic of top / bottom pairs
+BRUSHES = [(k, 'hit', r'^Samples/' + f + '/', _VS, 2) for k, f in
+           (('kick', 'kick_buzz'), ('snare', 'snare_main'), ('rim', 'snare_edge'), ('chat', 'hat_closed'), ('ohat', 'hat_open'),
+            ('ride', 'ride'), ('crash', 'crash'), ('tom', 'tom_mlow'), ('ltom', 'tom_floor'))]
+RUSTY = [(k, 'hit', r'^Samples/' + f, _V, 2) for k, f in
+         (('kick', 'kick_24/kick/kick/'), ('snare', 'snare_14/center/top/'), ('rim', 'snare_14/sidestick/top/'),
+          ('rimshot', 'snare_14/rimshot/top/'), ('chat', 'hihat_14/cl/cl/'), ('ohat', 'hihat_14/open/cl/'),
+          ('ride', 'ride_22/rd/cl/'), ('crash', 'crash_17/cr/cl/'), ('tom', 'tom_15/center/cl/'), ('ltom', 'tom_22/center/cl/'))]
 ARCHTOP = [('acguitar', 'ring', r'^Samples/acoustic/', r'/[a-g]b?\d_vl[24]_rr[12]_1\.wav$', 2)]
 THIN = {'grand': ({2, 4}, 2), 'upright_piano': ({1, 3}, None), 'harpsichord': (None, 2)}
 STRINGS = {'violins', 'violas', 'celli', 'basses', 'violin'}
@@ -160,6 +172,14 @@ LIBS = {
                   by='Karoryfer Samples', rules=[('', r) for r in GROWLY], ext='.wav', lower=True, shift=-12),
     'dbass': dict(repo='sfzinstruments/karoryfer.meatbass', dir='meatbass', title='Upright double bass (Karoryfer Meatbass)',
                   by='Karoryfer Samples', rules=[('', r) for r in MEAT], ext='.wav'),
+    'kit70s': dict(repo='sfzinstruments/karoryfer.gogodze-phu-vol-ii', dir='gogodze',
+                   title='70s soul drum kit (Karoryfer Gogodze Phu Vol II)', by='Karoryfer Samples',
+                   rules=[('seventies', r) for r in SEVENTIES], ext='.wav'),
+    'kitbrush': dict(repo='sfzinstruments/karoryfer.swirly-drums', dir='swirly', title='Brushes drum kit (Karoryfer Swirly Drums)',
+                     by='Karoryfer Samples', rules=[('brushes', r) for r in BRUSHES], ext='.wav'),
+    'kitrusty': dict(repo='sfzinstruments/karoryfer.big-rusty-drums', dir='rusty',
+                     title='Big vintage rock kit (Karoryfer Big Rusty Drums)', by='Karoryfer Samples',
+                     rules=[('rusty', r) for r in RUSTY], ext='.flac'),
     'drums': dict(repo='sfzinstruments/virtuosity_drums', dir='vdrums', title='Acoustic drum kits (Virtuosity Drums)',
                   by='Versilian Studios & Karoryfer', rules=[('studio', r) for r in vdrums('mid')] + [('lofi', r) for r in vdrums('lofi')] + [('room', r) for r in vdrums('room')],
                   ext='.flac'),

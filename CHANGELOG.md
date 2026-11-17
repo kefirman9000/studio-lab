@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.35.0
+- **Three more free real drum kits** in 🎻 Real instruments (CC0, Karoryfer Samples - same checked download as the others), each in the Kit menu and the default for the genres it suits:
+  - **70s soul / funk kit** (Gogodze Phu Vol II, 28 MB): dry and warm, recorded to sound like early-70s records - funk, Motown, soul jazz, blues, reggae, disco-funk, gospel.
+  - **Jazz brushes kit** (Swirly Drums, 15 MB): played with brushes - jazz, swing, bebop, modal jazz, bossa nova, soul ballads, quiet storm, country waltz, western swing.
+  - **Big vintage rock kit** (Big Rusty Drums, 6 MB): an oversized 1980s kit with a 24" kick - rock, indie, punk, jam band.
+  - A kit without cymbals (the 70s kit) borrows the studio kit's.
+
 ## 1.34.1
 Drums no longer sound clipped:
 - **Drum bus**: its glue compression and saturation used to depend on how loud the drums arrived - and they arrived 6-9 dB too hot, so every kick and snare was flattened by 2-3 dB (up to 6 dB in trap). It now works at a fixed level, compresses gently above the kit's own average with a slower attack, and only rounds the very top of a peak: hits keep their punch (about 0.5 dB lost instead of 2-3).
