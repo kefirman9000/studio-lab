@@ -1842,7 +1842,7 @@ style('rnb', 'Classic', 'R&B: lazy swung drums, Rhodes 9th chords, deep sub bass
       label='R&B / Neo-soul')
 
 style('swing', 'Classic', 'Big-band swing: walking bass, ride and hi-hat on 2 & 4, brass section shouts, a sax solo',
-      bpm=(132, 196), scales=['major', 'minor'], swing=0.66, swing_unit=8, human=0.01, chord_size=4,
+      bpm=(110, 160), scales=['major', 'minor'], swing=0.66, swing_unit=8, human=0.01, chord_size=4,
       kit='acoustic', form='jazz', bass_mode='walk', bass_lo=28, ghosts=True,
       progs={'major': [[0, 5, 1, 4], [1, 4, 0, 0], [0, 3, 1, 4], [2, 5, 1, 4]], 'minor': [[0, 3, 4, 0], [0, 5, 3, 4]]},
       drums={'ride': ['x...x.x.x...x.x.'], 'chat': ['....x.......x...'], 'kick': ['o...o...o...o...'],
@@ -1938,7 +1938,7 @@ style('indie_rock', 'Classic', 'Indie rock: jangly clean guitars in 8ths, melodi
       label='Indie Rock')
 
 style('salsa', 'Classic', 'Salsa: clave and cowbell, conga tumbao, piano montuno, anticipated bass and a blazing trumpet section',
-      bpm=(160, 200), scales=['minor', 'major', 'harmonic_minor'], human=0.006, kit='acoustic', form='salsa',
+      bpm=(84, 104), scales=['minor', 'major', 'harmonic_minor'], human=0.006, kit='acoustic', form='salsa',
       progs={'minor': [[0, 3, 4, 0], [0, 3, 6, 4], [0, 5, 3, 4]], 'major': [[0, 3, 4, 3], [0, 4, 0, 4], [1, 4, 0, 0]],
              'harmonic_minor': [[0, 3, 4, 0], [0, 4, 0, 4]]},
       drums=dict(woodblock=['x..x..x...x.x...'], cowbell808=['x.x.x.x.x.x.x.x.'],
@@ -2803,7 +2803,8 @@ style('bebop', 'Classic', 'Bebop: fast swing, dense 8th-note lines built from ch
               T('chords', 'chords', 'piano', rev=0.2, pan=-0.15, db=-23), T('lead', 'lead', 'sax', rev=0.25, db=-17)],
       master=dict(lufs=-14.0, air=1.2, low=0.8),
       pools=dict(chords=['piano', 'guitar'], lead=['sax', 'sf:tenorsax', 'trumpet', 'sf:trumpet']),
-      label='Bebop')
+      label='Bebop',
+      swing_unit=8)
 
 style('modal_jazz', 'Classic', 'Cool / modal jazz (Kind of Blue era): long stretches on one mode, medium tempo, lots of space, quartal-ish '
       'piano voicings, muted trumpet and tenor sax, brushes and ride, walking bass',
@@ -2819,7 +2820,8 @@ style('modal_jazz', 'Classic', 'Cool / modal jazz (Kind of Blue era): long stret
               T('chords', 'chords', 'piano', rev=0.25, pan=-0.15, db=-24), T('lead', 'lead', 'trumpet', rev=0.3, db=-18)],
       master=dict(lufs=-15.0, air=1.0, low=0.8),
       pools=dict(chords=['piano', 'epiano'], lead=['trumpet', 'sax', 'sf:tenorsax', 'flute']),
-      label='Cool / Modal Jazz')
+      label='Cool / Modal Jazz',
+      swing_unit=8)
 
 style('soul_jazz', 'Classic', 'Hard bop / soul jazz: organ trio grooves - Hammond B3 comping and bass, bluesy guitar and tenor sax, '
       'gospel-tinged harmony, hard swing or straight-8th backbeat',
@@ -2836,7 +2838,8 @@ style('soul_jazz', 'Classic', 'Hard bop / soul jazz: organ trio grooves - Hammon
               T('arp', 'arp', 'guitar', pan=0.3, db=-26), T('lead', 'lead', 'sax', rev=0.25, db=-17)],
       master=dict(lufs=-13.0, air=1.2, low=1.0),
       pools=dict(chords=['organ'], arp=['guitar'], lead=['sax', 'sf:tenorsax', 'guitar', 'organ']),
-      label='Soul Jazz / Hard Bop')
+      label='Soul Jazz / Hard Bop',
+      swing_unit=8)
 
 style('fusion', 'Classic', 'Jazz fusion / jazz-rock: straight 16th-note grooves, electric bass, Rhodes and synth leads, overdriven '
       'guitar, extended chords and virtuosic unison lines over a rock / funk rhythm section',
@@ -3208,7 +3211,7 @@ style('outlaw_country', 'Classic', 'Outlaw country (Johnny Cash, Waylon Jennings
 
 style('western_swing', 'Classic', 'Western swing / Texas swing (Bob Wills, Asleep at the Wheel): swung country dance band - twin '
       'fiddles, pedal steel, sixth-chord piano and guitar comping, walking upright bass, brushed swing drums',
-      bpm=(130, 180), scales=['major', 'mixolydian'], swing=0.66, swing_unit=8, human=0.008, kit='soft', form='song', slides=0.35,
+      bpm=(110, 160), scales=['major', 'mixolydian'], swing=0.66, swing_unit=8, human=0.008, kit='soft', form='song', slides=0.35,
       chord_size=4, progs={'major': [[0, 5, 1, 4], [0, 3, 0, 4], [0, 0, 1, 4], [2, 5, 1, 4]], 'mixolydian': [[0, 6, 3, 0]]},
       drums={'kick': ['X.......X.......'], 'snare': [BACKBEAT], 'ride': ['x..xx..xx..xx..x']}, snare_tracks=['snare'],
       bass=['R...F...A...O...', 'R...A...F...O...'], bass_lo=31,
@@ -4098,7 +4101,7 @@ style('swing_tomtom', 'Classic',
       'Swing-era big band (hot, tom-tom drive): a fast 1930s flag-waver in a minor key driven by the floor-tom groove, '
       'riffing trumpets and trombones, the sax section answering, a hot clarinet lead, a drum break and a roaring shout '
       'chorus',
-      bpm=(200, 228), scales=['minor', 'dorian', 'harmonic_minor'], swing=0.64, human=0.008, form='hotswing', chord_size=4,
+      bpm=(100, 120), scales=['minor', 'dorian', 'harmonic_minor'], swing=0.64, human=0.008, form='hotswing', chord_size=4,
       progs={'minor': [[0, 0, 0, 0], [0, 0, 3, 3], [0, 3, 4, 0]], 'dorian': [[0, 0, 3, 0]], 'harmonic_minor': [[0, 0, 4, 0], [0, 3, 4, 0]]},
       sc_depth=0.0, reverb=1.6, kit='acoustic', no_rotation=True,
       drums={'tom': ['X.x.X.x.X.x.X.x.', 'X.x.X.xxX.x.X.x.', 'X.xxX.x.X.xxX.x.'], 'kick': ['o...o...o...o...'],
@@ -4123,13 +4126,14 @@ style('swing_tomtom', 'Classic',
       master=dict(lufs=-13.0, air=0.6, low=0.8),
       pools=dict(bass=['upright', 'sf:acbass'], chords=['brass', 'sf:trumpetsection'], pad=['sax', 'brass'], arp=['piano'],
                  lead=['clarinet', 'trumpet', 'sax']),
-      label='Swing-era big band (hot, tom-tom)')
+      label='Swing-era big band (hot, tom-tom)',
+      swing_unit=8)
 
 style('big_band_50s', 'Classic',
       '50s big band (brassy and smooth): a medium-up swinging chart in a major key - walking bass, ride cymbal and '
       'hi-hat on 2 and 4, piano comping, a warm sax section, punchy trumpet and trombone hits that build to a shout '
       'chorus and a big final chord',
-      bpm=(128, 160), scales=['major'], swing=0.64, human=0.006, form='chart', chord_size=4,
+      bpm=(120, 150), scales=['major'], swing=0.64, human=0.006, form='chart', chord_size=4,
       progs={'major': [[0, 5, 1, 4], [1, 4, 0, 5], [0, 3, 1, 4], [2, 5, 1, 4]]},
       sc_depth=0.0, reverb=1.8, kit='acoustic', no_rotation=True,
       drums={'ride': ['x...x.x.x...x.x.'], 'chat': ['....x.......x...'], 'kick': ['o...o...o...o...'],
@@ -4155,7 +4159,8 @@ style('big_band_50s', 'Classic',
       master=dict(lufs=-12.0, air=1.0, low=0.6),
       pools=dict(bass=['upright', 'sf:acbass'], chords=['brass', 'sf:trumpetsection'], pad=['sax', 'strings'],
                  arp=['piano', 'vibes'], lead=['trumpet', 'sax', 'sf:trumpet', 'clarinet']),
-      label='50s big band (brassy, smooth)')
+      label='50s big band (brassy, smooth)',
+      swing_unit=8)
 
 
 

@@ -92,14 +92,14 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
-| 50s big band (brassy, smooth) | `big_band_50s` | 128-160 | 50s big band (brassy and smooth): a medium-up swinging chart in a major key - walking bass, ride cymbal and hi-hat on 2 and 4, piano comping, a warm sax section, punchy trumpet and trombone hits that build to a shout chorus and a big final chord |
+| 50s big band (brassy, smooth) | `big_band_50s` | 120-150 | 50s big band (brassy and smooth): a medium-up swinging chart in a major key - walking bass, ride cymbal and hi-hat on 2 and 4, piano comping, a warm sax section, punchy trumpet and trombone hits that build to a shout chorus and a big final chord |
 | 70s Soft Rock | `soft_rock` | 100-126 | 70s soft rock (California): steady groove, round melodic bass, strummed acoustic and clean electric guitars, Rhodes and organ, a smooth vocal-style lead |
 | 80s electro-funk / boogie | `electro_funk` | 84-100 | 80s electro-funk / boogie slow jam: a slow, heavy drum-machine groove with big claps, a rubbery Minimoog bass, poly-synth chord stabs and Rhodes, a sparkly bell arp and the gliding talk-box style synth lead |
 | 90s R&B Slow Jam | `slow_jam` | 58-72 | 90s R&B slow jam (Jodeci, Boyz II Men, Silk): candle-lit and swung - DX electric piano 9ths, finger snaps on 2 and 4, a deep sub bass, soft 16th hats, lush strings and a smooth clean-guitar line |
 | 90s alt rock | `alt_rock_90s` | 104-132 | 90s alternative rock: jangly clean arpeggios in the verses, crunchy distorted power chords that explode in the choruses, an eighth-note pick bass, a big dry room kit - catchy, major-key and a little melancholy, mastered with 90s dynamics |
 | Bebop | `bebop` | 180-260 | Bebop: fast swing, dense 8th-note lines built from chord tones, tensions and chromatic approach notes over rapid ii-V changes; ride and walking bass drive, piano comps rootless voicings |
 | Bedroom / indie pop | `bedroom_pop` | 108-122 | Bedroom / indie pop: a bouncy drum machine with a syncopated kick, warm synth bass, chorused clean guitar and soft poly synths, bubbly plucks and sparkly bells, sweet major chords with 7ths - dreamy, cute and loud |
-| Big Band Swing | `swing` | 132-196 | Big-band swing: walking bass, ride and hi-hat on 2 & 4, brass section shouts, a sax solo |
+| Big Band Swing | `swing` | 110-160 | Big-band swing: walking bass, ride and hi-hat on 2 & 4, brass section shouts, a sax solo |
 | Bluegrass | `bluegrass` | 112-150 | Bluegrass: Scruggs banjo rolls, the mandolin chop on 2 and 4, boom-chick guitar with G-runs, fiddle and the band taking breaks in turn |
 | Blues | `blues` | 80-120 | Blues shuffle: 12-bar form, swung grooves, piano, organ and expressive lead guitar |
 | Boom Bap | `boombap` | 84-96 | Boom bap hip hop: dusty swung drums, chopped piano loops, jazzy horn lines, deep bass doubled by upright |
@@ -138,7 +138,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Raga (sitar, tabla, tanpura) | `raga_fusion` | 84-112 | Raga (Hindustani-inspired): a tanpura drone the whole way, the sitar alone in a slow free alap with sliding meend, then a pulse, then the tabla enters for the gat in a 16-beat teental and the music speeds into a jhala climax |
 | Reggae | `reggae` | 70-90 | Reggae one-drop: offbeat skank chords, melodic bass, laid-back drums |
 | Rock | `rock` | 110-140 | Rock: driving drums, distorted power-chord guitars, solid bass, lead guitar |
-| Salsa | `salsa` | 160-200 | Salsa: clave and cowbell, conga tumbao, piano montuno, anticipated bass and a blazing trumpet section |
+| Salsa | `salsa` | 84-104 | Salsa: clave and cowbell, conga tumbao, piano montuno, anticipated bass and a blazing trumpet section |
 | Ska | `ska` | 120-164 | Ska: offbeat guitar & organ skank, fast walking bass, rimshot backbeat, punchy horn lines |
 | Smooth Jazz (Kenny G style) | `smooth_jazz` | 64-92 | Smooth jazz, Kenny G style ("Songbird", "Forever in Love"): a soprano sax soaring up high in long held notes with wide vibrato, scooping into every phrase, over lush 80s DX electric piano and pads, a warm fretless bass and soft, reverb-washed drums - romantic, slow and polished, with a key change for the last chorus |
 | Smooth Jazz-Funk | `smooth_funk` | 96-116 | Smooth jazz-funk (Grover Washington Jr., George Benson, Spyro Gyra): a funky slap-and-pop bass groove, crisp 16th hats, jazz-guitar octave melodies, sax answers, bright electric piano and stabby brass |
@@ -146,10 +146,10 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Soul Ballad (12/8) | `soul_ballad` | 48-66 | Soul / doo-wop ballad (12/8): triplet piano, slow backbeat, organ and strings, a big vocal-style lead |
 | Soul Jazz / Hard Bop | `soul_jazz` | 100-140 | Hard bop / soul jazz: organ trio grooves - Hammond B3 comping and bass, bluesy guitar and tenor sax, gospel-tinged harmony, hard swing or straight-8th backbeat |
 | Spaghetti Western | `western` | 88-120 | Spaghetti western: twangy reverb guitar, lonely trumpet, whistled tune, choir and galloping hooves |
-| Swing-era big band (hot, tom-tom) | `swing_tomtom` | 200-228 | Swing-era big band (hot, tom-tom drive): a fast 1930s flag-waver in a minor key driven by the floor-tom groove, riffing trumpets and trombones, the sax section answering, a hot clarinet lead, a drum break and a roaring shout chorus |
+| Swing-era big band (hot, tom-tom) | `swing_tomtom` | 100-120 | Swing-era big band (hot, tom-tom drive): a fast 1930s flag-waver in a minor key driven by the floor-tom groove, riffing trumpets and trombones, the sax section answering, a hot clarinet lead, a drum break and a roaring shout chorus |
 | Symphonic Metal | `symphonic_metal` | 120-170 | Symphonic metal: double-kick drums and power chords under choir, string ostinatos and a soaring lead |
 | Tango | `tango` | 108-126 | Tango: the marcato four and the 3-3-2 síncopa, bandoneon, dramatic violin, staccato piano and double bass, A-B-A with the chan-chan ending |
-| Western Swing | `western_swing` | 130-180 | Western swing / Texas swing (Bob Wills, Asleep at the Wheel): swung country dance band - twin fiddles, pedal steel, sixth-chord piano and guitar comping, walking upright bass, brushed swing drums |
+| Western Swing | `western_swing` | 110-160 | Western swing / Texas swing (Bob Wills, Asleep at the Wheel): swung country dance band - twin fiddles, pedal steel, sixth-chord piano and guitar comping, walking upright bass, brushed swing drums |
 
 ## Orchestral (23)
 

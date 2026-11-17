@@ -17,10 +17,10 @@ TEMPO = {
     'uk_drill': (130, 150), 'future_bass': (130, 160), 'hardstyle': (148, 162), 'synthwave': (80, 120), 'ambient': (40, 110),
     'pop': (90, 140), 'rock': (90, 160), 'metal': (80, 210), 'punk': (140, 210), 'lofi': (60, 95), 'boombap': (78, 102),
     'rnb': (60, 110), 'funk': (88, 122), 'disco': (108, 132), 'reggae': (60, 95), 'reggaeton': (85, 102), 'jazz': (90, 220),
-    'swing': (120, 220), 'bossa_nova': (110, 145), 'amapiano': (105, 118), 'afrobeats': (95, 120), 'garage': (128, 138),
+    'swing': (105, 165), 'bossa_nova': (110, 145), 'amapiano': (105, 118), 'afrobeats': (95, 120), 'garage': (128, 138),
     'ukgarage': (128, 138), 'bigroom': (124, 132), 'eurodance': (130, 145), 'hyperpop': (140, 180), 'kpop': (100, 140),
     'teen_pop': (88, 116), 'soft_rock': (95, 130), 'jam_band': (95, 135), 'luxury_rap': (130, 155), 'dancehall': (85, 108),
-    'country': (85, 140), 'bluegrass': (105, 160), 'gospel': (65, 125), 'motown': (95, 130), 'salsa': (150, 210),
+    'country': (85, 140), 'bluegrass': (105, 160), 'gospel': (65, 125), 'motown': (95, 130), 'salsa': (80, 106),   # salsa written in cut time: one bar = two of 2/2
     'tango': (100, 130), 'cumbia': (80, 108), 'jersey_club': (130, 150), 'baile_funk': (125, 136), 'hauntology': (70, 100),
     'braindance': (100, 180),
 }

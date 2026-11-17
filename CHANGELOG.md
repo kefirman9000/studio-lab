@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.38.1
+- **No more double-time genres.** Salsa was playing its whole two-bar clave inside one bar at 180 BPM - it now plays at the right speed (its patterns are written in cut time, so the tempo shows ~85-105). The hot tom-tom big band now sits around 100-120 BPM, swing 110-160, 50s big band 120-150, western swing 110-160.
+- Bebop, soul jazz, modal jazz and both big bands now swing their eighth notes (they were swinging sixteenths).
+- Checked every genre's tempo against its patterns: the fast ones are only the genres that are fast for real (drum & bass, jungle, breakcore, gabber, hardstyle, punk, metal, bebop, hopecore ...); dubstep, trap and similar keep their half-time feel.
+
 ## 1.38.0
 **New genres from your reference tracks** (named for the style, not the artist):
 - **Deep dubstep - rollers**: 140 half-time and steppers, a huge rolling sub, sparse skippy percussion into dub echoes, an optional squelchy acid line - mono and heavy.
