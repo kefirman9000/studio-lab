@@ -1,8 +1,8 @@
-# Studio Lab genres (164)
+# Studio Lab genres (166)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (82)
+## Electronic (84)
 
 ### House & Disco (14)
 
@@ -36,13 +36,14 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Trance | `trance` | 132-140 | Uplifting trance: gated supersaw chords, rolling offbeat bass, euphoric leads |
 | Uplifting Trance | `uplifting_trance` | 134-140 | Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw leads and plucky arps, a long piano / pad breakdown that explodes into the drop |
 
-### Dubstep, Garage & Bass (9)
+### Dubstep, Garage & Bass (10)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Brostep | `brostep` | 140-150 | Brostep: festival dubstep - snarling growls, wobbles and FM stabs trading bars in the drop over a clean sub, aggressive half-time drums, pitch dives, risers and hard stops |
 | Chillstep | `chillstep` | 138-144 | Chillstep (Blackmill, Seven Lions-ish ambient side): slow half-time dubstep at 140 with lush reverb pads, piano and gentle plucks drowned in delay, a soft rolling wobble and a warm sub - melancholic and floating |
-| Deep Dubstep (dark, minimal) | `deep_dubstep` | 138-142 | Deep / minimal dubstep: half-time 140 with the kick on 1 and the snare on 3, sparse shuffled 2-step percussion thrown into dub delays, a heavy clean sub carrying the track, one eerie motif, dub chord stabs and lots of dark negative space - soundsystem pressure, not festival brostep |
+| Deep Dubstep (soundsystem) | `deep_dubstep` | 138-142 | Deep dubstep (soundsystem): half-time 140, kick on 1 and snare on 3, a mono sub pinned to one note for minutes (the root, now and then the flat 2nd), a growling mid-bass that wobbles in strict 8ths and 16ths or swells slowly, skippy rims and shakers thrown into dub echoes, one dark motif, a long drums-only intro - and no snare-roll build-ups: the drop just lands, or everything stops for a beat first |
+| Deep Dubstep - sparse & eerie | `deep_dubstep_minimal` | 138-142 | Deep / minimal dubstep: half-time 140 with the kick on 1 and the snare on 3, sparse shuffled 2-step percussion thrown into dub delays, a heavy clean sub carrying the track, one eerie motif, dub chord stabs and lots of dark negative space - soundsystem pressure, not festival brostep |
 | Deep dubstep - rollers (sub-weight) | `deep_dubstep_rollers` | 138-142 | Deep dubstep - rollers: 140 half-time and steppers, a huge rolling sub that moves under everything, sparse skippy percussion thrown into dub echoes, a dark motif or a squelchy acid line, mono and heavy - built for a soundsystem |
 | Dubstep (classic UK) | `dubstep` | 138-142 | Dark / UK dubstep: half-time at 140, deep clean sub with a slow wobbling mid-bass, sparse syncopated drums, lots of space, dark atmospheres |
 | Future Bass | `future_bass` | 140-160 | Future bass: lush pitch-chopped supersaw chords, vocal chops, half-time trap drums |
@@ -66,7 +67,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Liquid DnB | `liquid_dnb` | 170-176 | Liquid drum & bass: rolling, swung two-step breaks at 174, warm melodic bass over a sine sub, Rhodes and jazzy 7th chords, lush pads, soulful leads |
 | Neurofunk | `neurofunk` | 172-176 | Neurofunk: tight, technical two-step at 174, dark and mechanical - growls, reese and FM stabs trading every bar over a sine sub, cold stabs and sparse atmospheres |
 
-### Hip-Hop, Trap & Phonk (12)
+### Hip-Hop, Trap & Phonk (13)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -82,6 +83,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Rage | `rage` | 150-165 | Rage (Playboi Carti, Trippie Redd, F1lthy-style): huge detuned supersaw synth leads and arps, distorted booming 808s, hard trap drums at 150+ - loud, bright and euphoric |
 | Trap | `trap` | 136-150 | Modern trap: half-time snares, rolling hi-hats, gliding 808s, dark bells |
 | UK Drill | `uk_drill` | 140-145 | UK/NY drill: sliding 808s, triplet hats, offbeat snares, dark piano & strings |
+| UK road rap | `uk_road_rap` | 146-156 | UK road rap: a dark, half-time London rap beat around 150 BPM - a huge mono 808 sub sliding between the root, its leading tone and the fifth, steady ticking 8th hats with the odd roll, a hard snare on the half-time backbeat, sparse kicks, and a moody harmonic-minor piano line over low strings and choir - roomy for the bars |
 
 ### Pop, R&B & Hopecore (7)
 

@@ -255,7 +255,7 @@ SAMPLER_ROLES = {k for k in SOUND_WORDS if k in ('strings', 'violin', 'pizz', 'h
 
 # genre flavour: which plugin family to reach for first, and a tone tweak (shifts filter cutoffs)
 STYLE_PREF = {
-    'progressive_trance': ['surge'], 'organic_house': ['dexed', 'tal'], 'disco_funk': ['dexed', 'tal'], 'deep_dubstep': ['surge'],
+    'progressive_trance': ['surge'], 'organic_house': ['dexed', 'tal'], 'disco_funk': ['dexed', 'tal'], 'deep_dubstep': ['surge'], 'deep_dubstep_minimal': ['surge'],
     'synthwave': ['tal'], 'synthpop': ['tal'], 'electro': ['tal'], 'vaporwave': ['tal', 'dexed'], 'eurodance': ['tal', 'surge'],
     'city_pop': ['dexed', 'tal'], 'house': ['tal'], 'deep_house': ['tal', 'dexed'], 'ukgarage': ['tal'],
     'trance': ['surge'], 'progressive_house': ['surge'], 'bigroom': ['surge'], 'hardstyle': ['surge'], 'future_bass': ['surge'],

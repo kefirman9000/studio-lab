@@ -36,7 +36,7 @@ SUBTLE = {'roll': 'pickup', 'triplet': 'pickup', 'kick_roll': 'pulse', 'stutter'
           'tapestop': 'pickup', 'pulse': 'pickup'}
 
 
-def build_sequence(default, forced, rnd, n=4, amount='auto'):
+def build_sequence(default, forced, rnd, n=4, amount='auto', family=None):
     """The build-up style for each build in the song. Each build in a song is a different one (until the genre runs
     out of ideas), the genre's own one only some of the time, so songs don't all ramp up the same way.
     amount: 'subtle' swaps the big EDM ramps for natural ones; 'off' = no build-ups at all."""
@@ -45,7 +45,7 @@ def build_sequence(default, forced, rnd, n=4, amount='auto'):
     if forced:
         seq = [default] * n
     else:
-        fam = list(BUILD_FAMILY.get(default, [default, 'pickup', 'stops']))
+        fam = list(family or BUILD_FAMILY.get(default, [default, 'pickup', 'stops']))   # a genre may name its own
         first = default if rnd.random() < 0.35 else rnd.choice(fam)
         seq, pool = [first], [b for b in fam if b != first]
         while len(seq) < n:
@@ -67,7 +67,7 @@ def build_sequence(default, forced, rnd, n=4, amount='auto'):
     return seq
 
 
-GENRE_BUILD = {'riddim': 'pause', 'chillstep': 'swell', 'jazz_rap': 'pause', 'cloud_rap': 'swell', 'slow_jam': 'lift', 'smooth_jazz': 'lift', 'smooth_funk': 'lift', 'quiet_storm': 'swell', 'g_funk': 'lift', 'neo_soul': 'lift', 'new_jack_swing': 'claps', 'alt_rnb': 'pause', 'rage': 'roll', 'plugg': 'hats', 'hauntology_sunlit': 'pause', 'hauntology_dark': 'pause', 'epic_orchestral': 'roll', 'epic_battle': 'roll', 'epic_choir': 'swell', 'heroic_anthem': 'roll', 'symphonic_finale': 'swell', 'italo_disco': 'lift', 'new_beat': 'filter', 'gabber': 'kick_roll', 'rave_hardcore': 'roll', 'future_funk': 'filter', 'bebop': 'lift', 'modal_jazz': 'lift', 'soul_jazz': 'lift', 'fusion': 'lift', 'classical_period': 'swell', 'romantic': 'swell', 'impressionism': 'swell', 'minimalism': 'swell', 'deep_dubstep': 'pause', 'progressive_trance': 'roll', 'organic_house': 'filter', 'disco_funk': 'lift', 'trance': 'roll', 'bigroom': 'roll', 'progressive_house': 'roll', 'electro': 'roll', 'eurodance': 'roll',
+GENRE_BUILD = {'riddim': 'pause', 'chillstep': 'swell', 'jazz_rap': 'pause', 'cloud_rap': 'swell', 'slow_jam': 'lift', 'smooth_jazz': 'lift', 'smooth_funk': 'lift', 'quiet_storm': 'swell', 'g_funk': 'lift', 'neo_soul': 'lift', 'new_jack_swing': 'claps', 'alt_rnb': 'pause', 'rage': 'roll', 'plugg': 'hats', 'hauntology_sunlit': 'pause', 'hauntology_dark': 'pause', 'epic_orchestral': 'roll', 'epic_battle': 'roll', 'epic_choir': 'swell', 'heroic_anthem': 'roll', 'symphonic_finale': 'swell', 'italo_disco': 'lift', 'new_beat': 'filter', 'gabber': 'kick_roll', 'rave_hardcore': 'roll', 'future_funk': 'filter', 'bebop': 'lift', 'modal_jazz': 'lift', 'soul_jazz': 'lift', 'fusion': 'lift', 'classical_period': 'swell', 'romantic': 'swell', 'impressionism': 'swell', 'minimalism': 'swell', 'deep_dubstep': 'pause', 'deep_dubstep_minimal': 'pause', 'progressive_trance': 'roll', 'organic_house': 'filter', 'disco_funk': 'lift', 'trance': 'roll', 'bigroom': 'roll', 'progressive_house': 'roll', 'electro': 'roll', 'eurodance': 'roll',
                'moombahton': 'roll', 'dnb': 'roll', 'jungle': 'stutter', 'hardstyle': 'kick_roll', 'future_bass': 'triplet',
                'hyperpop': 'triplet', 'dubstep': 'stutter', 'breakcore': 'stutter', 'house': 'filter', 'deep_house': 'filter',
                'tech_house': 'filter', 'techno': 'filter', 'minimal': 'filter', 'acid_house': 'filter', 'psytrance': 'filter',
@@ -78,7 +78,7 @@ GENRE_BUILD = {'riddim': 'pause', 'chillstep': 'swell', 'jazz_rap': 'pause', 'cl
                'soul_ballad': 'swell', 'braindance': 'stutter', 'hauntology': 'pause', 'brostep': 'roll', 'melodic_dubstep': 'roll',
                'neurofunk': 'stutter', 'liquid_dnb': 'filter', 'house_phonk': 'pause', 'memphis_phonk': 'pause', 'phonk': 'pause', 'brazilian_phonk': 'pause', 'uplifting_trance': 'roll',
                'melodic_house': 'filter', 'teen_pop': 'lift', 'luxury_rap': 'pause', 'jam_band': 'lift', 'soft_rock': 'lift',
-               'funky_breaks': 'stutter', 'piano_miniature': 'none'}
+               'funky_breaks': 'stutter', 'piano_miniature': 'none', 'uk_road_rap': 'pause'}
 
 
 BIG_SECTIONS = {'chorus', 'hook', 'climax', 'theme', 'drop'}
@@ -357,6 +357,7 @@ def add_transitions(sections, evs, fx, tracks, st, opts):
     moves = {'Electronic': ['swell', 'wash', 'tapestop', 'gap', 'crash', 'none', 'none', 'downlift'],
              'Classic': ['swell', 'cymroll', 'crash', 'crash', 'none', 'none', 'gap'],
              'Orchestral': ['cymroll', 'cymroll', 'swell', 'none', 'crash']}.get(cat, ['swell', 'crash', 'none', 'gap'])
+    moves = st.get('transition_moves') or moves                 # a genre's own way of moving between sections
     last_move = None
     for cur, nxt in zip(sections, sections[1:]):
         bigger = nxt['opts'].get('drop') or nxt['name'] in BIG_SECTIONS

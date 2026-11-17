@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.39.1
+- **Deep Dubstep rebuilt from your four reference tracks.**
+  - The sub now sits on one note (the root, now and then the flat 2nd) for long stretches.
+  - A mono mid-bass growls in strict 8ths and 16ths, or swells slowly.
+  - Kick on 1, snare on 3, skippy percussion thrown into dub echoes, and a long drums-only intro.
+  - Like the references, there are no snare-roll build-ups: the drop just lands, or everything stops for a beat first. Drops have no risers, reverse cymbals or impacts.
+  - The mix is mono and sub-heavy.
+- The previous Deep Dubstep is kept unchanged as **Deep Dubstep - sparse & eerie** (`deep_dubstep_minimal`).
+- Genres can now name their own build-ups and transitions (`build_family`, `transition_moves`, `plain_drops`).
+- New genre **UK road rap**, built from your reference: a dark half-time London rap beat at 146-156 BPM, with a huge mono 808 sub sliding between the root, the leading tone and the fifth, steady 8th hats with short rolls, sparse kicks, and a harmonic-minor piano line over low strings and choir, leaving room for the vocal.
+
 ## 1.39.0
 - **No more ffmpeg / console windows popping up on Windows.** Every helper program (the MP3 encoder, the plugin worker, git updates, the Defender scan, sample-library tools) now runs hidden.
 - **Build-ups you control.** A new **Build-ups** switch: On, Subtle (natural band-style lead-ins, no EDM ramps) or Off. A new **Transition FX** switch: Varied, Fewer, Drum fills only (no riser / cymbal / impact sounds) or Off (straight cuts). Both are saved with presets and available on the command line (`--builds`, `--transition-fx`).

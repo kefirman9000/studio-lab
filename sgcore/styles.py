@@ -2517,7 +2517,60 @@ style('memphis_phonk', 'Electronic', 'Memphis phonk: the original - slow, dusty 
 # v1.14: classic UK dubstep, emotional progressive trance, organic melodic house, 70s disco-funk
 # deep / minimal dubstep (half-time 140, sub-pressure, sparse shuffled drums, dub space): long DJ intro -> drop where the sub
 # enters -> stripped breakdown -> a silent beat -> second drop (mid-bass wobble allowed) -> long DJ outro
-FORMS['deep_dubstep'] = [('intro', 16, {'kick', 'top', 'pad', 'fx'}, {'filter_in': True}),
+# v1.39: deep dubstep rebuilt from reference tracks (the 2005-08 soundsystem sound and its modern heirs). What they share:
+# a sub that sits on ONE note (the tonic, now and then the flat 2nd - phrygian) for minutes, a mono mid-bass that
+# growls / wobbles in strict 8ths or 16ths (or swells slowly), kick on 1 + snare on 3, skippy percussion in dub
+# echoes, a long drums-only DJ intro - and no snare-roll build-ups: the drums just stop for a beat, or the drop
+# simply lands. (The previous version lives on as deep_dubstep_minimal.)
+FORMS['deep_dubstep'] = [('intro', 16, {'kick', 'top', 'fx'}, {'filter_in': True}),
+                         ('intro', 16, {'kick', 'snare', 'top', 'pad', 'fx', 'chords'}, {}),
+                         ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'fx'}, {'drop': True}),
+                         ('break', 16, {'kick', 'top', 'pad', 'fx', 'arp'}, {'alt': True}),
+                         ('build', 4, {'kick', 'snare', 'top', 'pad', 'bass'}, {'build': True}),
+                         ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'fx', 'arp'}, {'drop': True, 'alt': True}),
+                         ('outro', 16, {'kick', 'top', 'pad', 'fx'}, {'fade': True})]
+
+style('deep_dubstep', 'Electronic', 'Deep dubstep (soundsystem): half-time 140, kick on 1 and snare on 3, a mono sub pinned to one '
+      'note for minutes (the root, now and then the flat 2nd), a growling mid-bass that wobbles in strict 8ths and 16ths or '
+      'swells slowly, skippy rims and shakers thrown into dub echoes, one dark motif, a long drums-only intro - and no '
+      'snare-roll build-ups: the drop just lands, or everything stops for a beat first',
+      bpm=(138, 142), scales=['phrygian', 'minor'], swing=0.56, swing_unit=16, human=0.005, kit='punchy', form='deep_dubstep',
+      chord_size=3, sc_depth=0.15, reverb=2.8, delay_beats=0.75, dub=0.5, dub_beats=0.75,
+      progs={'phrygian': [[0, 0, 0, 0], [0, 0, 0, 1], [0, 1, 0, 0], [0, 0, 1, 0]], 'minor': [[0, 0, 0, 0], [0, 0, 5, 0], [0, 0, 0, 6]]},
+      own_progs=True, chord_bars=2,
+      kit_override={'kick': {'drive': 1.5, 'decay': 8, 'pitch': 47, 'punch': 110}, 'snare': {'snap': 1.4, 'decay': 9, 'tone': 190}},
+      drums={'kick': ['X.........X.....', 'X.........x.....', 'X.....x...X.....', 'X..........X....'],
+             'snare': ['........X.......', '........X......o'],
+             'rim': ['...x......x...x.', '......x.....x...', '...x..x....x....', '.....x.....x..x.'],
+             'shaker': ['..x...x.x.x...x.', '..x.x...x...x.x.'],
+             'chat': ['..x...x...x...x.', '....x.......x...', '..x.....x.....x.'],
+             'ohat': ['..............x.', '................', '......x.........']},
+      snare_tracks=['snare'], ghosts=False, fill=False,
+      build_family=['pause', 'none', 'pause', 'drumless'], transition_moves=['gap', 'none', 'none', 'crash'], plain_drops=True,
+      bass=['R---------------', 'R---------------', 'R-------R-------', 'R-----------R---'], bass_mode='wobble',
+      wobble_rates=[0.5, 0.5, 0.25, 0.5, 2, 4], wobble_lens=[16, 16, 8, 8, 4], pedal_sub=True, bass_lo=28,
+      chord_rh=['....x...........', '........x.......', 'x-------........', '....x.......x...'], chord_center=56,
+      arp=dict(rate=4, mode='random', oct=4, prob=0.2), lead_oct=5,
+      lead_rh=['x-------........', '........x---....', 'x---....x-......', '....x-------....'],
+      repetition=0.9, simplicity=0.5,
+      gm_hint='Mono sine sub on the tonic (flat 2nd now and then) + a growling mid-bass on an LFO in 8ths / 16ths; punchy '
+              'kick on 1, snare on 3 with a plate; rims, shakers and hats into a tape delay; one dark stab / bell motif; '
+              'long drums-only intro; no snare rolls',
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.4, db=-15, throw=0.8),
+              T('rim', 'top', 'rim', pan=0.25, rev=0.3, db=-27, throw=0.8), T('shaker', 'top', 'shaker', pan=-0.3, db=-32),
+              T('chat', 'top', 'chat', pan=-0.2, db=-30, throw=0.4), T('ohat', 'top', 'ohat', pan=0.3, rev=0.3, db=-31),
+              T('bass', 'bass', 'wobble', sc=0.3, db=-10, p=dict(cut=700, sub=1.4)),
+              T('chords', 'chords', 'stab', rev=0.5, dly=0.5, db=-27, p=dict(cut=1200), throw=0.5),
+              T('pad', 'pad', 'warmpad', rev=0.6, db=-33, p=dict(cut=700, a=0.8)),
+              T('arp', 'arp', 'bell', rev=0.6, dly=0.55, pan=0.3, db=-32),
+              T('lead', 'lead', 'stab', rev=0.5, dly=0.5, pan=-0.15, db=-25, p=dict(cut=1600)),
+              T('texture', 'fx', 'texture', rev=0.6, db=-37)],
+      master=dict(lufs=-10.0, air=0.5, low=2.2, width=0.35),
+      pools=dict(bass=['wobble', 'sinebass', 'growl', 'reese'], chords=['stab', 'organ', 'warmpad', 'epiano'],
+                 pad=['warmpad', 'strings', 'choir'], arp=['bell', 'pluck', 'organ'], lead=['stab', 'organ', 'bell', 'softlead']),
+      label='Deep Dubstep (soundsystem)')
+
+FORMS['deep_dubstep_minimal'] = [('intro', 16, {'kick', 'top', 'pad', 'fx'}, {'filter_in': True}),
                          ('intro', 8, {'kick', 'snare', 'top', 'pad', 'fx', 'chords'}, {}),
                          ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'fx'}, {'drop': True}),
                          ('break', 16, {'top', 'pad', 'chords', 'fx', 'arp'}, {'alt': True}),
@@ -2525,10 +2578,10 @@ FORMS['deep_dubstep'] = [('intro', 16, {'kick', 'top', 'pad', 'fx'}, {'filter_in
                          ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'fx', 'arp'}, {'drop': True, 'alt': True}),
                          ('outro', 16, {'kick', 'top', 'pad', 'fx'}, {'fade': True})]
 
-style('deep_dubstep', 'Electronic', 'Deep / minimal dubstep: half-time 140 with the kick on 1 and the snare on 3, sparse shuffled 2-step '
+style('deep_dubstep_minimal', 'Electronic', 'Deep / minimal dubstep: half-time 140 with the kick on 1 and the snare on 3, sparse shuffled 2-step '
       'percussion thrown into dub delays, a heavy clean sub carrying the track, one eerie motif, dub chord stabs and lots of dark '
       'negative space - soundsystem pressure, not festival brostep',
-      bpm=(138, 142), scales=['minor', 'phrygian'], swing=0.57, swing_unit=16, human=0.006, kit='punchy', form='deep_dubstep',
+      bpm=(138, 142), scales=['minor', 'phrygian'], swing=0.57, swing_unit=16, human=0.006, kit='punchy', form='deep_dubstep_minimal',
       chord_size=3, sc_depth=0.1, reverb=3.2, delay_beats=0.75,
       progs={'minor': [[0, 0, 0, 0], [0, 0, 5, 5], [0, 0, 0, 6], [0, 5, 0, 6]], 'phrygian': [[0, 0, 1, 0], [0, 0, 0, 1]]},
       kit_override={'kick': {'drive': 1.4, 'decay': 7, 'pitch': 46}, 'snare': {'snap': 1.4, 'decay': 8, 'tone': 190}},
@@ -2561,7 +2614,7 @@ style('deep_dubstep', 'Electronic', 'Deep / minimal dubstep: half-time 140 with 
       pools=dict(bass=['sinebass', 'wobble'], chords=['stab', 'organ', 'warmpad', 'epiano'],
                  pad=['warmpad', 'strings', 'glasspad', 'choir'], arp=['bell', 'celesta', 'pluck'],
                  lead=['stab', 'organ', 'bell', 'softlead']),
-      label='Deep Dubstep (dark, minimal)')
+      label='Deep Dubstep - sparse & eerie')
 
 style('progressive_trance', 'Electronic', 'Emotional progressive trance / melodic progressive house: simple emotive chords, a big singable lead, '
       'long builds, a piano breakdown and a clean, wide drop - melody over complexity',
@@ -3554,12 +3607,12 @@ style('cinematic_journey_low', 'Orchestral', 'Cinematic Journey - Dark & Low: th
 BELLS = {'bell', 'celesta', 'sf:glock', 'sf:musicbox', 'sf:tubular', 'glock', 'musicbox', 'tubular', 'sf:celesta'}
 MALLETS = {'marimba', 'kalimba', 'vibes', 'steeldrum', 'sf:marimba', 'sf:vibes', 'sf:kalimba', 'sf:steeldrum', 'sf:xylophone'}
 BELL_OK = {'adventure', 'ambient', 'braindance', 'brostep', 'chamber_pop', 'chillstep', 'cinematic', 'cloud_rap',
-           'deep_dubstep', 'downtempo', 'dubstep', 'epic_choir', 'epic_orchestral', 'fantasy_rpg', 'film_piano',
+           'deep_dubstep', 'deep_dubstep_minimal', 'downtempo', 'dubstep', 'epic_choir', 'epic_orchestral', 'fantasy_rpg', 'film_piano',
            'hauntology', 'hauntology_dark', 'hauntology_sunlit', 'holiday', 'hybrid_trailer', 'impressionism', 'lofi',
            'neoclassical', 'orchestral', 'orchestral_hiphop', 'plugg', 'rage', 'riddim', 'symphonic_finale',
            'tension', 'trap', 'waltz'}
 MALLET_OK = {'adventure', 'afro_house', 'afrobeats', 'amapiano', 'ambient', 'bossa_nova', 'braindance', 'chamber_pop',
-             'chillstep', 'cinematic', 'city_pop', 'cloud_rap', 'cumbia', 'dancehall', 'deep_dubstep', 'downtempo',
+             'chillstep', 'cinematic', 'city_pop', 'cloud_rap', 'cumbia', 'dancehall', 'deep_dubstep', 'deep_dubstep_minimal', 'downtempo',
              'dubstep', 'epic_choir', 'epic_orchestral', 'fantasy_rpg', 'film_piano', 'g_funk', 'hauntology',
              'hauntology_dark', 'hauntology_sunlit', 'holiday', 'hybrid_trailer', 'impressionism', 'jazz', 'jazz_rap',
              'liquid_dnb', 'lofi', 'minimalism', 'neo_soul', 'neoclassical', 'orchestral', 'orchestral_hiphop',
@@ -3576,7 +3629,7 @@ NO_BELL = {
     'dnb': dict(arp='stab', lead='leadsaw'), 'neurofunk': dict(arp='stab', lead='reese', chords='stab'),
     'jungle': dict(arp='stab', lead='vox'), 'breakcore': dict(arp='stab', lead='chip'),
     'dubstep': dict(arp='pluck_saw', lead='leadsaw'), 'brostep': dict(arp='pluck_saw', lead='leadsaw'),
-    'melodic_dubstep': dict(arp='pluck_saw', lead='supersaw_lead'), 'deep_dubstep': dict(arp='organ', lead='stab'),
+    'melodic_dubstep': dict(arp='pluck_saw', lead='supersaw_lead'), 'deep_dubstep': dict(arp='organ', lead='stab'), 'deep_dubstep_minimal': dict(arp='organ', lead='stab'),
     'future_bass': dict(arp='pluck_saw', lead='supersaw_lead'), 'ukgarage': dict(arp='organ', lead='vox'),
     'synthwave': dict(arp='pluck_saw', lead='leadsaw'), 'synthpop': dict(arp='pluck_saw', lead='polysynth'),
     'electro': dict(arp='pluck_saw', lead='leadsaw'), 'bigroom': dict(arp='pluck_saw', lead='supersaw_lead'),
@@ -4327,6 +4380,34 @@ style('funky_breaks', 'Electronic',
       pools=dict(bass=['fmbass', 'moogbass', 'acid'], chords=['guitar', 'sf:distguitar', 'epiano', 'clav'],
                  pad=['epiano', 'polysynth'], arp=['acid', 'pluck', 'bell'], lead=['whine', 'talkbox', 'softlead']),
       label='Funky breaks / glitch electro')
+
+
+# ============================== UK ROAD RAP (v1.39) ===========================================================
+style('uk_road_rap', 'Electronic',
+      'UK road rap: a dark, half-time London rap beat around 150 BPM - a huge mono 808 sub sliding between the root, '
+      'its leading tone and the fifth, steady ticking 8th hats with the odd roll, a hard snare on the half-time '
+      'backbeat, sparse kicks, and a moody harmonic-minor piano line over low strings and choir - roomy for the bars',
+      bpm=(146, 156), scales=['harmonic_minor', 'minor'], form='trap', kit='808', sc_depth=0.15,
+      progs={'harmonic_minor': [[0, 0, 5, 4], [0, 5, 0, 4], [0, 0, 3, 4]], 'minor': [[0, 0, 5, 6], [0, 5, 3, 4]]},
+      drums={'kick': ['X.........X.....', 'X.......X.....x.', 'X..........X....'], 'snare': [HALF, '........X......x'],
+             'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.xxx.', 'x.x.x.x.x.xxx.x.'], 'ohat': ['......x.........']},
+      snare_tracks=['snare'], bass_mode='808', bass_lo=28,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=60,
+      arp=dict(rate=2, mode='random', oct=5, prob=0.35),
+      lead_rh=['x---x---x-x-----', 'x-------x---x---', 'x---x-x-x-------', 'x-------x-------'], repetition=0.8,
+      gm_hint='808 kick + long sliding 808 sub (mono, root / leading tone / fifth); half-time snare; 8th hats with short '
+              'rolls; dark harmonic-minor piano melody; low strings and choir pad; plenty of space for vocals',
+      tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.2, db=-15),
+              T('chat', 'top', 'chat', pan=0.1, db=-26), T('ohat', 'top', 'ohat', pan=-0.1, db=-30),
+              T('bass', 'bass', '808', sc=0.3, db=-10, p=dict(decay=0.9)),
+              T('chords', 'chords', 'strings', rev=0.35, db=-25, p=dict(cut=2400)),
+              T('pad', 'pad', 'choir', rev=0.45, db=-29),
+              T('arp', 'arp', 'piano', dly=0.25, rev=0.3, db=-28),
+              T('lead', 'lead', 'piano', rev=0.35, db=-19)],
+      master=dict(lufs=-9.0, air=0.0, low=3.0, width=0.4),
+      pools=dict(chords=['strings', 'tremolo', 'piano'], pad=['choir', 'strings'], arp=['piano', 'pizz', 'bell'],
+                 lead=['piano', 'strings', 'bell', 'flute']),
+      label='UK road rap')
 
 
 # ============================== rules applied to all the genres above ========================================
