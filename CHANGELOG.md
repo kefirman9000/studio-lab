@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.42.0
+Genre research, round 1: production guides and genre write-ups checked against the genre settings.
+- **Sunny melodic house**: now follows your three Nora En Pure references. It uses their radio-edit shape: keys and pads with the hats joining, kick and sub without hats, 16 bars in full, a 12-bar kick-out breakdown carried by hats, keys and the lead, kick and sub alone, then the last 24 bars.
+- **Amapiano**: 108-115 BPM (112 at the centre). The log drum now bends between root and fifth into the kick's gaps, and the shakers are accented.
+- **Reggaeton**: drops take everything out but the bass, then come back on the snare.
+- **Dancehall**: modern riddim tempo (92-106), a verse / chorus song form, and a second off-beat rim pattern.
+- **Jersey club**: 130-142 BPM, with the real five-kick bar (spaced 4-4-3-3-2 sixteenths) and the kick-on-1-plus-cluster variant. The snare / clap is on 3, the hats sit on the off-beats, and a bed-squeak-style hit is added.
+- **Baile funk** and **afrobeats**: build-ups and tempo adjusted to the sources.
+- **Hardstyle**: its classic song shape. A DJ intro with kick and reverse bass, a mid-intro with the lead motif, a long melodic break, a snare-roll pre-drop, the climax, a harder mid-outro, then the outro.
+- New genre **Funk 150 / mandelao**: the 150 BPM Brazilian funk wave, with the tamborzao sped up, clipped claps, tom and rim fills, a blown-out 808, and beat drop-outs for chants.
+
 ## 1.41.0
 - **Every genre now suggests several sounds per part.** I audited all 198 genres. Each part's dropdown now starts with **"Suggested for this genre"**: the genre's own sound first, then 2-3 idiomatic alternatives (e.g. upright → acoustic / finger bass for jazz; distorted → overdriven guitar for rock; oboe / flute / horn for orchestral leads). 180 genres gained alternatives. Genre-defining sounds stay put: the 808 in trap / drill / phonk, the log drum in amapiano, the piano in Solo Piano.
 - **Re-roll sounds.**

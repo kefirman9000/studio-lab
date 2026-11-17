@@ -18,7 +18,7 @@ GROUPS = {
         ('Hip-Hop, Trap & Phonk', ['trap', 'uk_drill', 'uk_road_rap', 'rage', 'plugg', 'cloud_rap', 'luxury_rap', 'orchestral_hiphop',
                                    'jersey_club', 'phonk', 'memphis_phonk', 'house_phonk', 'brazilian_phonk', 'hard_trap', 'switch_trap', 'wonky_beats']),
         ('Pop, R&B & Hopecore', ['synthpop', 'kpop', 'teen_pop', 'hyperpop', 'alt_rnb', 'hopecore', 'hopecore_dreamy', 'club_pop', 'glitch_pop']),
-        ('Afro, Latin & Caribbean', ['afrobeats', 'amapiano', 'reggaeton', 'moombahton', 'dancehall', 'baile_funk']),
+        ('Afro, Latin & Caribbean', ['afrobeats', 'amapiano', 'reggaeton', 'moombahton', 'dancehall', 'baile_funk', 'funk_150']),
         ('Chill, Lo-fi & Ambient', ['lofi', 'downtempo', 'ambient', 'ambient_beat', 'vaporwave', 'new_age_chant', 'midfi_synthfunk']),
         ('Retro & Video Game', ['synthwave', 'chiptune', 'ps1_game']),
         ('Hauntology', ['hauntology', 'hauntology_sunlit', 'hauntology_dark', 'hauntology_melody', 'hauntology_lullaby',

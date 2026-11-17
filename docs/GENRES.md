@@ -1,8 +1,8 @@
-# Studio Lab genres (198)
+# Studio Lab genres (199)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (104)
+## Electronic (105)
 
 ### House & Disco (20)
 
@@ -75,7 +75,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Electro | `electro` | 125-132 | Electro: robotic 808 funk, FM bass grit, zappy leads |
 | Funky breaks / glitch electro | `funky_breaks` | 122-132 | Funky breaks / glitch electro (late-90s big beat & nu-skool breaks): a chopped, swung funk break around 125-130 BPM with stuttered edits, snare rushes and reversed hits, a fat rubbery bass that bends and slides, a warped, gliding synth lead, crunchy palm-muted guitar riffs doubled by the bass, Rhodes stabs - loud, bass-heavy and mono-tight |
 | Hardcore / Gabber | `gabber` | 170-195 | Hardcore / gabber (90s Rotterdam): 170-200 BPM four-on-the-floor of heavily distorted, pitched "gabber" kicks, screeching leads, hoovers and raw, confrontational energy |
-| Hardstyle | `hardstyle` | 148-154 | Hardstyle: distorted pitched kicks, screeching leads, euphoric supersaw melodies |
+| Hardstyle | `hardstyle` | 148-152 | Hardstyle: distorted pitched kicks, screeching leads, euphoric supersaw melodies |
 | Jungle | `jungle` | 160-172 | Jungle / breakbeat: chopped amen-style breaks, deep subs, rave stabs and dub pads |
 | Liquid DnB | `liquid_dnb` | 170-176 | Liquid drum & bass: rolling, swung two-step breaks at 174, warm melodic bass over a sine sub, Rhodes and jazzy 7th chords, lush pads, soulful leads |
 | Neurofunk | `neurofunk` | 172-176 | Neurofunk: tight, technical two-step at 174, dark and mechanical - growls, reese and FM stabs trading every bar over a sine sub, cold stabs and sparse atmospheres |
@@ -90,7 +90,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Drift Phonk | `phonk` | 145-165 | Drift phonk: a heavily distorted pitched 808 cowbell riff on loop, clipped growling 808s, rolling hats, dark minor / phrygian mood, chopped vocals and tape grit - made at 3 a.m., played too loud in a car |
 | Hard trap (brass & strings) | `hard_trap` | 136-156 | Hard trap (brass & strings, early 2010s - late 2010s): a menacing horn / string / choir loop in a minor key, huge distorted 808s pinned to the root, machine-gun hi-hat rolls, claps on the half-time backbeat, and the beat cutting out for 4 bars at a time so the 808 can slam back in |
 | House Phonk | `house_phonk` | 128-142 | House phonk: four-on-the-floor phonk - distorted detuned cowbell hooks, punchy 808 bass on the offbeat, hard claps and Memphis vocal chops at club tempo |
-| Jersey Club | `jersey_club` | 136-145 | Jersey club: kick triplets and bed-squeak bounce, chopped vocal hooks, sliding 808s |
+| Jersey Club | `jersey_club` | 130-142 | Jersey club: kick triplets and bed-squeak bounce, chopped vocal hooks, sliding 808s |
 | Luxury Rap | `luxury_rap` | 136-152 | Luxury rap: majestic soul and orchestral samples - lush strings, choir, horn stabs and piano - over booming 808s and crisp trap drums, slow and triumphant |
 | Memphis Phonk | `memphis_phonk` | 66-92 | Memphis phonk: the original - slow, dusty and lo-fi, eerie cowbell and piano loops, rattling 808 hats and cowbells, chopped vocal shouts, cassette grit |
 | Orchestral Hip Hop | `orchestral_hiphop` | 132-145 | Orchestral hip hop / drill: dramatic string stabs, choir, pizzicato, sliding 808s, rolling hats |
@@ -115,14 +115,15 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Synth-pop | `synthpop` | 110-122 | Synth-pop: punchy LinnDrum-style beats, bright plucks, string pads, catchy leads |
 | Teen Pop ('99) | `teen_pop` | 92-112 | Late-90s teen pop: punchy dance-pop drums, dramatic minor chords, muted-guitar and synth-pluck riffs, string stabs, call-and-response hooks and a last-chorus key change |
 
-### Afro, Latin & Caribbean (6)
+### Afro, Latin & Caribbean (7)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
-| Afrobeats | `afrobeats` | 100-116 | Afrobeats: bouncy syncopated percussion, warm guitar chops, marimba hooks |
-| Amapiano | `amapiano` | 108-116 | Amapiano: log-drum basslines, jazzy piano chords, rolling shakers, deep groove |
+| Afrobeats | `afrobeats` | 98-112 | Afrobeats: bouncy syncopated percussion, warm guitar chops, marimba hooks |
+| Amapiano | `amapiano` | 108-115 | Amapiano: log-drum basslines, jazzy piano chords, rolling shakers, deep groove |
 | Baile Funk | `baile_funk` | 126-134 | Baile funk (Brazilian funk carioca): tamborzao beat, booming 808, chanted vocal hooks, horn stabs |
-| Dancehall | `dancehall` | 88-104 | Dancehall: digital riddim, syncopated kick and snare, sub bass, synth stabs and chanted hooks |
+| Dancehall | `dancehall` | 92-106 | Dancehall: digital riddim, syncopated kick and snare, sub bass, synth stabs and chanted hooks |
+| Funk 150 / mandelao | `funk_150` | 145-155 | Funk 150 / mandelao (Brazilian funk): the tamborzao groove sped up to 150 BPM - a driving kick pattern, bright clipped claps, tom and rim fills, a blown-out distorted sub, minimal synth stabs and chanted hooks; raw, sparse and relentless, with the beat cutting out for call-and-response |
 | Moombahton | `moombahton` | 106-112 | Moombahton: dembow groove at 110 with big-room synths and heavy drops |
 | Reggaeton | `reggaeton` | 88-100 | Reggaeton: dembow rhythm, deep 808s, plucky synths, latin percussion |
 
