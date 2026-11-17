@@ -258,6 +258,10 @@ class Renderer:
                 kitp.update(self.st.get('drum_voice', {}).get(name, {}))     # e.g. high / mid / low toms
                 sig = DRUMS[inst](kitp)
             sig = (sig / (np.max(np.abs(sig)) + 1e-9)).astype(np.float32)
+            k = min(len(sig) // 4, int(0.006 * SR))          # never end a hit on a click
+            if k > 1:
+                sig = sig.copy()
+                sig[-k:] *= np.linspace(1.0, 0.0, k, dtype=np.float32)
             if self.st.get('gated_snare') and inst in ('snare', 'clap'):
                 sig = gated_reverb(sig)
             self.cache[('drum', name)] = sig
@@ -534,8 +538,7 @@ class Renderer:
                 stems.append(dict(name='fx', layer='fx', inst='fx', path=path))
         # ---- drum bus
         self.log('   drum bus: glue compression + saturation')
-        drums = compressor(drums.astype(np.float64), thresh=-14, ratio=3, attack=0.004, release=0.09)
-        drums = soft(drums * 1.2, 1.2) / 1.2
+        drums = drum_bus(drums, float(st.get('drum_drive', 0.25)))
         if stems_dir and np.any(drums):
             path = os.path.join(stems_dir, '00_drum_bus.wav')
             write_wav_float(path, drums)
@@ -578,6 +581,37 @@ class Renderer:
         self.stems = stems
         self.stem_env = env
         return mix
+
+
+def peak_round(x, ceiling_db=-1.0, above_db=2.5):
+    """Round off only the rare extreme peaks (more than `above_db` over the limiter's ceiling - a crash landing on a
+    kick) sample by sample, so the limiter doesn't have to duck the whole mix for them."""
+    c = 10 ** (ceiling_db / 20)
+    t = c * 10 ** (above_db / 20)
+    a = np.abs(x)
+    over = a > t
+    if not np.any(over):
+        return x
+    w = t * 0.5
+    y = np.where(over, np.sign(x) * (t + w * np.tanh((a - t) / w)), x)
+    return y
+
+
+def drum_bus(drums, drive=0.25):
+    """Drum-bus glue that behaves the same however loud the drums arrive: work at a fixed level (peaks at -6 dBFS),
+    compress gently a few dB above the kit's own average with a slow-enough attack that the hits keep their snap,
+    saturate with unity small-signal gain (only the very top of a peak rounds off), then restore the level."""
+    x = np.asarray(drums, dtype=np.float64)
+    pk = float(np.max(np.abs(x))) if x.size else 0.0
+    if pk < 1e-6:
+        return x
+    g = 0.5 / pk
+    y = x * g
+    ref = active_rms_db(y)
+    y = compressor(y, thresh=ref + 5.0, ratio=2.0, attack=0.012, release=0.12)
+    k = 1.0 + max(0.0, drive)
+    y = np.tanh(y * k) / k
+    return y / g
 
 
 def sp1200(x, rate=26040.0, bits=12):
@@ -695,11 +729,18 @@ def master(x, cfg, log=print):
         x = soft(x * 1.1, drv) / 1.1
     target = cfg.get('lufs', -10)
     g_db = target - lufs(x)
+    # never let the limiter squash the drum hits: at most `max_gr` dB of gain reduction on the loud peaks (99.9th
+    # percentile). A song that can't reach its loudness target without that ends up a little quieter, not distorted.
+    a = np.max(np.abs(x), axis=0)
+    p999 = float(np.percentile(a, 99.9)) + 1e-9
+    max_gr = float(cfg.get('max_gr', 3.0))
+    g_cap = max_gr + 20 * np.log10(10 ** (-1.0 / 20) / p999)
     y = x
     for _ in range(8):
-        y = limiter(x * 10 ** (g_db / 20), ceiling_db=-1.0)
+        g_db = min(g_db, g_cap)
+        y = limiter(peak_round(x * 10 ** (g_db / 20)), ceiling_db=-1.0)
         err = target - lufs(y)
-        if abs(err) < 0.1:
+        if abs(err) < 0.1 or (err > 0 and g_db >= g_cap - 1e-6):
             break
         g_db += err
     return y

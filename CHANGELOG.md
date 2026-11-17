@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.34.1
+Drums no longer sound clipped:
+- **Drum bus**: its glue compression and saturation used to depend on how loud the drums arrived - and they arrived 6-9 dB too hot, so every kick and snare was flattened by 2-3 dB (up to 6 dB in trap). It now works at a fixed level, compresses gently above the kit's own average with a slower attack, and only rounds the very top of a peak: hits keep their punch (about 0.5 dB lost instead of 2-3).
+- **Master limiter**: it was cutting drum peaks by 4-11 dB (up to 17 dB, and limiting half the time in phonk / hardstyle) to reach the loudness targets. It's now capped at ~3 dB on the loud peaks, rare extreme peaks are rounded off sample-by-sample first, and limiting happens about 1% of the time. Songs come out 1-2 LUFS quieter than before instead of distorted.
+- Every drum sound now fades over its last few milliseconds, so none can end on a click (the "hard" kit kick and the 8-bit kick did).
+
 ## 1.34.0
 Dubstep, more authentic:
 - **Dubstep (classic UK)**: dark chord stabs and horror-movie bells over the wobble and sub (the soft synth lead is gone).
