@@ -2818,6 +2818,72 @@ POOLS.update({
 
 
 # ---------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------- smooth jazz (1.30)
+style('smooth_jazz', 'Classic', 'Smooth jazz (Kenny G, Dave Koz, Boney James): a silky sax melody that scoops into its notes, lush '
+      'Rhodes major-7th and 9th chords, warm fretless-style bass, light drums with cross-stick, soft pads and clean jazz guitar',
+      bpm=(76, 100), scales=['major', 'dorian', 'minor'], swing=0.55, human=0.008, kit='soft', form='song_b', chord_size=5, slides=0.3,
+      own_progs=True, progs={'major': [[1, 4, 0, 0], [3, 2, 1, 4], [5, 1, 4, 0], [0, 5, 1, 4], [3, 4, 2, 5]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 2]],
+             'minor': [[0, 3, 6, 2], [5, 3, 1, 4]]},
+      drums={'kick': ['X.....X...X.....', 'X......X..X.....'], 'rim': ['....x.......x...'], 'chat': ['x.xxx.xxx.xxx.xx', 'x.x.x.x.x.x.x.x.'],
+             'shaker': ['..x...x...x...x.']}, snare_tracks=['rim'],
+      bass=['R-----..R-F-....', 'R---..R-..F-A...', 'R-..R-....R-F-..'], bass_lo=28,
+      chord_rh=['x-------..x-----', 'x---------x-....', 'x-----..x-------'], chord_center=62,
+      lead_rh=['x---x-x-x-------', '..x-x-x-x---....', 'x-------x-x-x---', 'x-.x-.x-x-------', '....x-x-x-x-x---'], lead_oct=4,
+      gm_hint='Tenor / soprano / alto sax; Rhodes (or DX7 e-piano); fretless bass; clean jazz guitar; light kit with cross-stick; string pad',
+      tracks=[T('kick', 'kick', 'kick', db=-17), T('rim', 'snare', 'rim', rev=0.3, db=-22), T('chat', 'top', 'chat', pan=0.2, db=-30),
+              T('shaker', 'top', 'shaker', pan=-0.3, db=-31), T('bass', 'bass', 'sf:fingerbass', db=-14, p=dict(cut=900)),
+              T('chords', 'chords', 'epiano', rev=0.35, dly=0.12, pan=-0.1, db=-19), T('pad', 'pad', 'warmpad', rev=0.5, db=-28),
+              T('arp', 'arp', 'acguitar', rev=0.3, pan=0.3, db=-26),
+              T('lead', 'lead', 'sax', rev=0.4, dly=0.15, db=-16)],
+      arp=dict(rate=2, mode='updown', oct=4, prob=0.35), master=dict(lufs=-12.0, air=1.4, low=1.2))
+
+style('smooth_funk', 'Classic', 'Smooth jazz-funk (Grover Washington Jr., George Benson, Spyro Gyra): a funky slap-and-pop bass '
+      'groove, crisp 16th hats, jazz-guitar octave melodies, sax answers, bright electric piano and stabby brass',
+      bpm=(96, 116), scales=['dorian', 'minor', 'major'], swing=0.54, human=0.006, kit='punchy', form='song_b', chord_size=4, slides=0.25,
+      own_progs=True, progs={'dorian': [[0, 3, 0, 3], [0, 6, 3, 2], [1, 4, 0, 0]], 'minor': [[0, 3, 6, 5], [5, 1, 4, 0]], 'major': [[1, 4, 0, 5], [3, 4, 2, 5]]},
+      drums={'kick': ['X.....X...X..X..', 'X..X..X...X.....'], 'snare': [BACKBEAT], 'chat': ['xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxx.xx'],
+             'ohat': ['......x.......x.']}, snare_tracks=['snare'], ghosts=True,
+      bass=['R.R...O.R..R..A.', 'R..R.O..R.R..O..', 'R.....R.O.R...F.'], bass_lo=28,
+      chord_rh=['..x...x...x..x..', 'x..x..x...x.....'], chord_center=64,
+      lead_rh=['x.x.x...x.x.....', 'x-x-..x-x-x-....', '..x.x.x.x---....', 'x..x..x.x.......'], lead_oct=4,
+      gm_hint='Slap bass; jazz guitar in octaves; tenor sax; Rhodes / DX e-piano; horn section stabs; tight funk kit',
+      tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.2, db=-18), T('chat', 'top', 'chat', pan=0.2, db=-28),
+              T('ohat', 'top', 'ohat', pan=-0.2, db=-30), T('bass', 'bass', 'sf:slapbass', db=-13),
+              T('chords', 'chords', 'epiano', rev=0.25, pan=-0.15, db=-21), T('pad', 'pad', 'brass', rev=0.3, db=-26),
+              T('lead', 'lead', 'acguitar', rev=0.3, dly=0.12, db=-17),
+              T('lead_oct', 'lead', 'acguitar', rev=0.3, db=-21, double_of='lead', octave=-12, keep_inst=True),
+              T('arp', 'arp', 'sax', rev=0.35, pan=0.25, db=-23)],
+      arp=dict(rate=4, mode='random', oct=4, prob=0.3), master=dict(lufs=-10.5, air=1.6, low=1.4))
+
+style('quiet_storm', 'Classic', 'Quiet storm / late-night smooth (Sade, Luther, late-night radio): slow and intimate - soft '
+      'Rhodes, a breathy sax, warm fretless bass, brushed snare and long string pads, all candle-light and velvet',
+      bpm=(62, 80), scales=['minor', 'dorian', 'major'], swing=0.56, human=0.012, kit='soft', form='song_b', chord_size=5, slides=0.35,
+      own_progs=True, progs={'minor': [[0, 5, 3, 4], [0, 3, 6, 2], [5, 3, 1, 4]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 2]], 'major': [[3, 2, 1, 0], [1, 4, 0, 5]]},
+      drums={'kick': ['X.........X.....', 'X......X..X.....'], 'rim': ['....x.......x...'], 'chat': ['x.x.x.x.x.x.x.x.']}, snare_tracks=['rim'],
+      bass=['R-------R---F---', 'R-----..R-F-....'], bass_lo=28,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=61, reverb=2.8,
+      lead_rh=['x-------x---....', '..x-x---x-------', 'x---x-----x-....', 'x-------x-x-----'], lead_oct=4,
+      gm_hint='Breathy tenor / alto sax; Rhodes; fretless bass; brushed kit; string pad; nylon or clean guitar',
+      tracks=[T('kick', 'kick', 'kick', db=-18), T('rim', 'snare', 'rim', rev=0.35, db=-23), T('chat', 'top', 'chat', db=-31),
+              T('bass', 'bass', 'sf:fingerbass', db=-14, p=dict(cut=700)),
+              T('chords', 'chords', 'epiano', rev=0.45, dly=0.15, db=-19), T('pad', 'pad', 'strings', rev=0.55, db=-26, swell=0.3),
+              T('lead', 'lead', 'sax', rev=0.5, dly=0.2, db=-16)],
+      master=dict(lufs=-13.0, air=1.0, low=1.3))
+
+LABELS.update({'smooth_jazz': 'Smooth Jazz', 'smooth_funk': 'Smooth Jazz-Funk', 'quiet_storm': 'Quiet Storm'})
+POOLS.update({
+    'smooth_jazz': dict(bass=['sf:fingerbass', 'moogbass', 'upright'], chords=['epiano', 'wurli', 'piano', 'acguitar'],
+                        pad=['warmpad', 'strings', 'glasspad'], arp=['acguitar', 'vibes', 'piano', 'epiano'],
+                        lead=['sax', 'flute', 'acguitar', 'twang', 'softlead', 'trumpet']),
+    'smooth_funk': dict(bass=['sf:slapbass', 'fmbass', 'moogbass', 'sf:fingerbass'], chords=['epiano', 'clav', 'wurli', 'piano'],
+                        pad=['brass', 'synthbrass', 'strings'], arp=['sax', 'brass', 'vibes'],
+                        lead=['acguitar', 'sax', 'twang', 'flute', 'trumpet']),
+    'quiet_storm': dict(bass=['sf:fingerbass', 'moogbass'], chords=['epiano', 'wurli', 'piano'], pad=['strings', 'warmpad', 'glasspad'],
+                        lead=['sax', 'acguitar', 'flute', 'softlead']),
+})
+ACOUSTIC_KIT.update({'smooth_jazz': 'acoustic', 'smooth_funk': 'acoustic', 'quiet_storm': 'room'})
+
+
 # ----------------------------------------------------------------------------- country styles (1.28)
 style('modern_country', 'Classic', 'Modern country / Nashville pop (Luke Combs, Morgan Wallen, Kacey Musgraves): big clean drums, '
       'driving 16th acoustic strum, electric bass on the root, twangy Telecaster riffs and pedal-steel swells, a big singalong chorus',
@@ -3189,7 +3255,7 @@ BELL_OK = {'deep_dubstep', 'epic_choir', 'epic_orchestral', 'symphonic_finale', 
            'adventure', 'tension', 'hauntology', 'chamber_pop', 'braindance', 'orchestral_hiphop', 'hybrid_trailer', 'lofi',
            'plugg', 'hauntology_sunlit', 'hauntology_dark', 'rage'}
 MALLET_OK = BELL_OK | {'minimalism', 'afrobeats', 'amapiano', 'afro_house', 'cumbia', 'salsa', 'dancehall', 'bossa_nova', 'jazz', 'swing',
-                       'lofi', 'organic_house', 'liquid_dnb', 'city_pop', 'downtempo', 'neo_soul', 'g_funk'}
+                       'lofi', 'organic_house', 'liquid_dnb', 'city_pop', 'downtempo', 'neo_soul', 'g_funk', 'smooth_jazz', 'smooth_funk'}
 # what a genre plays instead (by part); anything not listed falls back to its category
 NO_BELL = {
     'trance': dict(arp='pluck_saw', lead='supersaw_lead'), 'uplifting_trance': dict(arp='pluck_saw', lead='supersaw_lead'),

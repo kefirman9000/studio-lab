@@ -1,4 +1,4 @@
-# Studio Lab genres (133)
+# Studio Lab genres (136)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
@@ -74,7 +74,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Uplifting Trance | `uplifting_trance` | 134-140 | Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw leads and plucky arps, a long piano / pad breakdown that explodes into the drop |
 | Vaporwave | `vaporwave` | 60-80 | Vaporwave: slowed 80s nostalgia - lush Rhodes, sax, chorused pads, tape haze |
 
-## Classic (44)
+## Classic (47)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -111,11 +111,14 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Outlaw Country | `outlaw_country` | 100-140 | Outlaw country (Johnny Cash, Waylon Jennings, Willie Nelson): the freight-train boom-chicka-boom - palm-muted guitar on every 8th, slapback twang and a low baritone guitar melody, steady upright bass, brushed snare, harmonica |
 | Pop | `pop` | 95-122 | Pop: four-chord hooks, piano & guitar, punchy drums, sing-along lead line |
 | Punk | `punk` | 160-200 | Punk rock: fast down-picked power chords, driving 8th-note bass, pounding drums, shouty guitar hooks |
+| Quiet Storm | `quiet_storm` | 62-80 | Quiet storm / late-night smooth (Sade, Luther, late-night radio): slow and intimate - soft Rhodes, a breathy sax, warm fretless bass, brushed snare and long string pads, all candle-light and velvet |
 | R&B / Neo-soul | `rnb` | 66-98 | R&B: lazy swung drums, Rhodes 9th chords, deep sub bass, finger snaps and clean guitar licks |
 | Reggae | `reggae` | 70-90 | Reggae one-drop: offbeat skank chords, melodic bass, laid-back drums |
 | Rock | `rock` | 110-140 | Rock: driving drums, distorted power-chord guitars, solid bass, lead guitar |
 | Salsa | `salsa` | 160-200 | Salsa: clave and cowbell, conga tumbao, piano montuno, anticipated bass and a blazing trumpet section |
 | Ska | `ska` | 120-164 | Ska: offbeat guitar & organ skank, fast walking bass, rimshot backbeat, punchy horn lines |
+| Smooth Jazz | `smooth_jazz` | 76-100 | Smooth jazz (Kenny G, Dave Koz, Boney James): a silky sax melody that scoops into its notes, lush Rhodes major-7th and 9th chords, warm fretless-style bass, light drums with cross-stick, soft pads and clean jazz guitar |
+| Smooth Jazz-Funk | `smooth_funk` | 96-116 | Smooth jazz-funk (Grover Washington Jr., George Benson, Spyro Gyra): a funky slap-and-pop bass groove, crisp 16th hats, jazz-guitar octave melodies, sax answers, bright electric piano and stabby brass |
 | Soul Ballad (12/8) | `soul_ballad` | 48-66 | Soul / doo-wop ballad (12/8): triplet piano, slow backbeat, organ and strings, a big vocal-style lead |
 | Soul Jazz / Hard Bop | `soul_jazz` | 100-140 | Hard bop / soul jazz: organ trio grooves - Hammond B3 comping and bass, bluesy guitar and tenor sax, gospel-tinged harmony, hard swing or straight-8th backbeat |
 | Spaghetti Western | `western` | 88-120 | Spaghetti western: twangy reverb guitar, lonely trumpet, whistled tune, choir and galloping hooves |

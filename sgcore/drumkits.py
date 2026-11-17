@@ -92,7 +92,7 @@ GENRE_KIT = {
     'soft_rock': 'studio', 'funk': 'studio', 'disco': 'studio', 'disco_funk': 'studio', 'motown': 'studio', 'gospel': 'studio',
     'blues': 'studio', 'reggae': 'studio', 'ska': 'studio', 'jazz': 'studio', 'swing': 'studio', 'soul_ballad': 'studio',
     'country': 'studio', 'folk': 'studio', 'pop': 'studio', 'modern_country': 'studio', 'country_waltz': 'studio',
-    'outlaw_country': 'studio', 'western_swing': 'studio',
+    'outlaw_country': 'studio', 'western_swing': 'studio', 'smooth_jazz': 'studio', 'smooth_funk': 'studio', 'quiet_storm': 'studio',
     'rave_hardcore': 'amen', 'braindance': 'think', 'future_funk': '909', 'italo_disco': 'linn', 'new_beat': 'techno',
     'bebop': 'studio', 'modal_jazz': 'studio', 'soul_jazz': 'studio', 'fusion': 'studio',
 }

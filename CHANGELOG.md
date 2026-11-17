@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.30.0
+- **Smooth jazz**, three new genres (Classic tab):
+  - **Smooth Jazz** (Kenny G, Dave Koz, Boney James): the real tenor sax scooping into its notes over Rhodes 9th / major-7th chords, fretless-style bass, cross-stick drums, soft pads and the real acoustic guitar.
+  - **Smooth Jazz-Funk** (Grover Washington Jr., George Benson, Spyro Gyra): slap bass groove, jazz-guitar melody in octaves, sax answers, electric piano and brass.
+  - **Quiet Storm** (Sade, Luther, late-night radio): slow and intimate - soft Rhodes, breathy sax, fretless bass, brushed snare, swelling strings.
+  - They stay on jazz progressions (ii-V-I, I-vi-ii-V, iv-VII-III ...) instead of borrowing generic pop ones.
+
 ## 1.29.0
 Real guitars, real slides, more harmonica:
 - **Two new free real-guitar libraries** in 🎻 Real instruments (CC0 public domain, Karoryfer Samples, same download safety as the others):
