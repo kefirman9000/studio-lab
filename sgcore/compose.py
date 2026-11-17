@@ -1242,7 +1242,7 @@ def compose(opts):
                             pos += ln
                             continue
                         rates = (opts_s.get('alt') and st.get('wobble_rates_alt')) or st.get('wobble_rates') or \
-                            ([1, 0.5, 0.5, 0.25, 1 / 3, 1 / 6] if energy > 0.3 else [1, 0.5])   # A / B drop switch-up
+                            ([2, 1, 1, 0.5, 0.5, 1 / 3] if energy > 0.3 else [2, 1])   # half-bar / beat / 8th wubs; 16ths are a genre's own choice   # A / B drop switch-up
                         rate = rnd_b.choice(rates)
                         m = rnd_b.choice([root, root, root + 12] if st.get('pedal_sub') else
                                          [root, root, root + 12, fold(key.deg(chord + 4, 2), lo)])

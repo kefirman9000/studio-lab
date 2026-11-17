@@ -171,7 +171,8 @@ def main():
     for s, d in POOLS.items():
         for layer, pool in d.items():
             assert all(i in INSTRUMENTS or (i.startswith('sf:') and i[3:] in sfm.SAMPLED) for i in pool), (s, layer)
-            own = [t['inst'] for t in STYLES[s]['tracks'] if t['layer'] == layer]
+            own = [t['inst'] for t in STYLES[s]['tracks'] if t['name'] == layer] or \
+                [t['inst'] for t in STYLES[s]['tracks'] if t['layer'] == layer]          # the part's main track
             assert own and own[0] == pool[0], (s, layer)                        # the genre's own sound leads its pool
     hh = {t['inst'] for k in range(1, 13) for t in compose(Options(style='orchestral_hiphop', seed=k))['st']['tracks'] if t['layer'] == 'chords'}
     assert len(hh) >= 3 and hh <= set(POOLS['orchestral_hiphop']['chords']), hh   # varied, but only authentic choices

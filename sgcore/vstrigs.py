@@ -555,7 +555,9 @@ def plan(style, category=None):
         if pick:
             kind, ident, extra = pick
             row['uses'] = extra if kind == 'user' else f"{PLAYERS[PATCHES[ident]['player']]['name']} · {PATCHES[ident]['label']}"
-        elif inst in SAMPLER_ROLES and (category == 'Orchestral' or inst in ORCH_HINT):
+        elif inst == 'piano':                                  # BBC SO has no piano: point at a piano plugin instead
+            row['hint'] = 'save a piano sound you like (e.g. LABS "Soft Piano") and name it "piano"'
+        elif inst in SAMPLER_ROLES and category == 'Orchestral':   # band / folk genres keep their own fiddle, horns ...
             row['hint'] = 'save a BBC Symphony Orchestra / LABS sound named after this part (e.g. "BBC ' + ORCH_HINT.get(inst, inst) + '")'
         cands = ordered(ROLE_PATCHES.get(inst, []), style) if (category == 'Electronic' or inst in ANY_CATEGORY) else []
         using = PATCHES[pick[1]]['player'] if pick and pick[0] == 'patch' else None

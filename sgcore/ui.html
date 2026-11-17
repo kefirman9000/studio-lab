@@ -259,6 +259,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
     </div></details>
 
     <details class="card" open><summary>Sound</summary><div class="body" id="soundBody">
+      <div class="f wide" id="drumsHead"><div class="hint" style="margin-top:6px"><b>Drums &amp; tone</b></div></div>
       <div class="f"><label>Drum kit <span class="auto"><input type="checkbox" id="userDrums">my samples</span></label><select id="kit"></select>
         <div class="mutes"><span class="hint">mute</span><label class="auto"><input type="checkbox" data-mute="kick">kick</label><label class="auto"><input type="checkbox" data-mute="snare">snare / clap</label><label class="auto"><input type="checkbox" data-mute="top">hats &amp; perc</label><label class="auto"><input type="checkbox" data-mute="fx">FX</label></div></div>
       <div class="f wide" id="fusionBox" style="display:none"><label>Fusion — which style drives each part</label><div class="body" id="fusionParts" style="padding:0;grid-template-columns:1fr 1fr 1fr"></div></div>
@@ -404,17 +405,29 @@ function renderSelected(){
   const jParts=(isJourney(state.style)&&!state.blend.length)?(META.journey_parts||[]).filter(p=>state.style==='cinematic_journey_low'?!['vn_hi','flute','oboe'].includes(p.id):!['vc_mel','bsn'].includes(p.id)):null;
   const rows=jParts?jParts.map(p=>[p.id,p.name,p.layer,p.inst]):ROLES.map(([r,l])=>[r,l,r,defs[r]]);
   if(jParts){ const h=document.createElement('div'); h.className='f wide inst'; h.innerHTML='<div class="hint">🎬 Cinematic Journey: every player has its own sound. Leave on <b>Score default</b> for the real orchestra / your orchestra plugin.</div>'; $('#soundBody').appendChild(h); }
+  if(!jParts&&!state.blend.length){ const h=document.createElement('div'); h.className='f wide inst rrsounds';
+    h.innerHTML=`<div class="rr" style="margin:0"><button class="mini acc" data-snd-roll="all" title="Pick a different sound for every part from this genre's suggestions">🎲 Re-roll sounds</button><button class="mini" data-snd-roll="reset" title="Back to the genre's own sounds">↺ Genre sounds</button><span class="hint" style="margin-left:6px">Each part's list starts with the sounds that suit this genre. 🎲 next to a part tries another one.</span></div>`;
+    $('#soundBody').appendChild(h);
+    h.querySelector('[data-snd-roll=all]').onclick=()=>{ rerollSounds(state.style, state.instruments); renderSelected(); $('#status').textContent='New sounds picked from the genre\'s suggestions - press Preview to hear them.'; };
+    h.querySelector('[data-snd-roll=reset]').onclick=()=>{ state.instruments={}; renderSelected(); }; }
   rows.forEach(([r,label,role,defInst])=>{
     const w=document.createElement('div');w.className='f inst';
-    const groups={}; (META.roles[role]||[]).forEach(i=>{(groups[i.group||'Built-in']=groups[i.group||'Built-in']||[]).push(i)});
+    const pool=(!jParts&&!state.blend.length)?(((META.style_pools||{})[state.style]||{})[r]||[]):[];
+    const byId={}; (META.roles[role]||[]).forEach(i=>byId[i.id]=i);
+    const groups={}; if(pool.length) groups['Suggested for this genre']=pool.map(id=>byId[id]||{id,name:soundName(id)});
+    (META.roles[role]||[]).forEach(i=>{ if(pool.includes(i.id)) return; (groups[i.group||'Built-in']=groups[i.group||'Built-in']||[]).push(i)});
     const opts=Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${state.instruments[r]===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('');
     const dn=defInst?((META.roles[role]||[]).find(i=>i.id===defInst)||{name:defInst}).name:'none';
     const dl=state.blend.length?'Auto (from the fused styles)':jParts?`Score default (${dn})`:`Style default (${dn})`;
     const fxs=(META.effects||[]);
     const mute=jParts?'':`<span class="auto" title="Switch this part off (e.g. no lead for an instrumental bed)"><input type="checkbox" data-mute="${r}" ${state.muted.includes(r)?'checked':''}>mute</span>`;
-    w.innerHTML=`<label>${label} ${mute}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
+    const dice=pool.length>1?`<button class="ico" data-dice="${r}" title="Try another sound that suits this genre">🎲</button>`:'';
+    w.innerHTML=`<label>${label} ${dice} ${mute}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
       (fxs.length&&!jParts?`<select class="fxsel" title="Run this part through one of your effect plugins"><option value="">no effect plugin</option>${fxs.map(f=>`<option ${state.part_fx[r]===f?'selected':''}>${esc(f)}</option>`).join('')}</select>`:'');
     w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else delete state.instruments[r]; };
+    if(w.querySelector('[data-dice]')) w.querySelector('[data-dice]').onclick=e=>{ e.preventDefault(); const cur=state.instruments[r]||pool[0];
+      const opts=pool.filter(x=>x!==cur); const pick=opts[Math.floor(Math.random()*opts.length)];
+      if(pick===pool[0]) delete state.instruments[r]; else state.instruments[r]=pick; renderSelected(); };
     if(w.querySelector('.fxsel')) w.querySelector('.fxsel').onchange=e=>{ if(e.target.value) state.part_fx[r]=e.target.value; else delete state.part_fx[r]; };
     $('#soundBody').appendChild(w);
   });
@@ -437,11 +450,22 @@ function renderSelected(){
   if(more.length){ const h=document.createElement('div'); h.className='f wide inst';
     h.innerHTML='<div class="hint">Also playing in your last song - change or switch off any of them.</div>'; $('#soundBody').appendChild(h);
     more.forEach(tr=>{ const w=document.createElement('div'); w.className='f inst';
-      w.innerHTML=`<label>${esc(tr.part)} <span class="hint">${esc(tr.sound)}</span></label>`+soundSelect(tr, state.instruments[tr.id]);
+      EDSTYLE=state.style; w.innerHTML=`<label>${esc(tr.part)} <span class="hint">${esc(tr.sound)}</span></label>`+soundSelect(tr, state.instruments[tr.id]);
       const s=w.querySelector('[data-snd]'); if(s) s.onchange=()=>{ if(s.value) state.instruments[tr.id]=s.value; else delete state.instruments[tr.id]; };
       const c=w.querySelector('[data-on]'); if(c) c.onchange=()=>{ if(c.checked) delete state.instruments[tr.id]; else state.instruments[tr.id]='off'; };
       $('#soundBody').appendChild(w); }); }
+  // the sounds come first in the Sound panel, then drums & tone
+  const sb=$('#soundBody'), head=$('#drumsHead'); $$('#soundBody .inst').forEach(e=>sb.insertBefore(e, head));
   bindMutes();
+}
+function soundName(id){ for(const r of Object.keys(META.roles||{})){ const i=(META.roles[r]||[]).find(x=>x.id===id); if(i) return i.name; }
+  return String(id).replace(/^sf:/,'').replace(/_/g,' ')+(String(id).startsWith('sf:')?' (recorded)':''); }
+function rerollSounds(style, into){
+  const pools=(META.style_pools||{})[style]||{};
+  Object.entries(pools).forEach(([role,pool])=>{ if(!pool||pool.length<2) return; const cur=into[role]||pool[0];
+    const opts=pool.filter(x=>x!==cur); const pick=opts[Math.floor(Math.random()*opts.length)];
+    if(pick===pool[0]) delete into[role]; else into[role]=pick; });
+  return into;
 }
 function bindMutes(){
   $$('[data-mute]').forEach(c=>{ c.checked=state.muted.includes(c.dataset.mute);
@@ -638,7 +662,7 @@ function addResult(r, target){
     <div class="rr"><span class="lbl" title="Switch a part off (or back on) and hear this exact take again">On / off</span>${LAYERS.map(([k,n])=>`<span class="chip ${(r.options.muted||[]).includes(k)?'':'on'}" data-mu="${k}" style="cursor:pointer;font-size:11.5px;padding:2px 8px">${(r.options.muted||[]).includes(k)?'○':'●'} ${n}</span>`).join(' ')}</div>
     <div class="rr"><span class="lbl" title="🔒 keep this part in your next previews · ♥ you like this part (Surprise me learns from it)">Parts</span>${PARTSEED.map(([p])=>`<span class="pp">${p}<button class="ico" data-lk="${p}" title="Keep this ${p} part in new previews">🔒</button><button class="ico" data-lv="${p}" title="I like this ${p} part">♥</button></span>`).join('')}
       <span style="margin-left:auto"></span><button class="mini" data-a="ab" title="Compare two results back to back at matched loudness">A/B</button></div>
-    <div class="rr"><button class="mini acc" data-a="full">⬇ Full song from this</button><button class="mini acc" data-a="edit" title="Open this song in the editor: sections, parts and every sound in it">✏️ Edit</button><button class="mini" data-a="use">Use settings</button><button class="mini" data-a="save">★ Save preset</button>
+    <div class="rr"><button class="mini acc" data-a="full">⬇ Full song from this</button><button class="mini acc" data-a="edit" title="Open this song in the editor: sections, parts and every sound in it">✏️ Edit</button><button class="mini" data-a="sounds" title="The same song (same notes) played on different sounds that suit the genre">🎲 New sounds</button><button class="mini" data-a="use">Use settings</button><button class="mini" data-a="save">★ Save preset</button>
       <span style="margin-left:auto"></span><button class="rate" data-r="1" title="I like this">👍</button><button class="rate" data-r="-1" title="Not for me">👎</button></div>
     <div class="tl" title="Click a section to edit it"></div><div class="sedbox"></div>
     <div class="dragrow rr"></div>
@@ -689,6 +713,8 @@ function addResult(r, target){
   el.querySelector('[data-a=full]').onclick=()=>run(false,1,r.options);
   el.querySelector('[data-a=use]').onclick=()=>applyOptions(r.options);
   el.querySelector('[data-a=edit]').onclick=()=>openEditor(r);
+  el.querySelector('[data-a=sounds]').onclick=()=>{ const o=JSON.parse(JSON.stringify(r.options)); o.seed=r.seed;
+    o.instruments=rerollSounds(r.style, Object.assign({}, o.instruments||{})); $('#status').textContent='Same song, new sounds…'; run(true,1,o); };
   if(r.tracks&&r.style===state.style){ state.lastTracks=r.tracks; if(!target) renderSelected(); }
   el.querySelector('[data-a=save]').onclick=()=>savePreset(r.options);
   (target||$('#session')).insertBefore(el,(target||$('#session')).querySelector('.res'));
@@ -814,13 +840,17 @@ function setupTimeline(el, r){
   draw();
 }
 // ------------------------------------------------------------- song editor (any result, library song or dropped project)
+let EDSTYLE=null;
 function soundSelect(tr, pick){
   if(tr.drum) return `<label><input type="checkbox" data-on="${esc(tr.id)}" ${pick==='off'?'':'checked'}> playing</label>`;
-  const groups={}; (META.roles[tr.layer]||[]).forEach(i=>{(groups[i.group||'Built-in']=groups[i.group||'Built-in']||[]).push(i)});
+  const pool=((META.style_pools||{})[EDSTYLE]||{})[tr.layer]||[]; const byId={}; (META.roles[tr.layer]||[]).forEach(i=>byId[i.id]=i);
+  const groups={}; if(pool.length) groups['Suggested for this genre']=pool.map(id=>byId[id]||{id,name:soundName(id)});
+  (META.roles[tr.layer]||[]).forEach(i=>{ if(pool.includes(i.id)) return; (groups[i.group||'Built-in']=groups[i.group||'Built-in']||[]).push(i)});
   return `<select data-snd="${esc(tr.id)}"><option value="">Keep (${esc(tr.sound)})</option><option value="off" ${pick==='off'?'selected':''}>🔇 Off (silent)</option>`+
     Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${pick===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('')+'</select>';
 }
 function openEditor(r){
+  EDSTYLE=r.style;
   const ed=$('#editor'), box=$('#editorBox'); ed.style.display='block'; document.body.style.overflow='hidden';
   const picks=Object.assign({}, (r.options&&r.options.instruments)||{});
   const tracks=r.tracks||[];
@@ -830,7 +860,7 @@ function openEditor(r){
     <h4 style="margin:14px 0 4px">Every sound in this song</h4>
     ${tracks.length?`<div class="sounds">${tracks.map(tr=>`<div class="snd"><label><b>${esc(tr.part)}</b></label><div class="s">${esc(tr.sound)} · ${tr.notes} notes</div>${soundSelect(tr, picks[tr.id])}</div>`).join('')}</div>`
       :'<div class="hint">This song was made with an older version - press Preview below once to list its sounds.</div>'}
-    <div class="rr"><button class="btn s" data-e="prev" style="padding:7px 12px">▶ Preview with these sounds</button><button class="btn g" data-e="full" style="padding:7px 12px">⬇ Full song with these sounds</button><span class="hint" style="margin-left:8px">Same song, same notes - only the sounds you change are different.</span></div>`;
+    <div class="rr"><button class="btn s" data-e="roll" style="padding:7px 12px" title="Same song, new sounds picked from the genre's suggestions">🎲 Re-roll sounds</button><button class="btn s" data-e="prev" style="padding:7px 12px">▶ Preview with these sounds</button><button class="btn g" data-e="full" style="padding:7px 12px">⬇ Full song with these sounds</button><span class="hint" style="margin-left:8px">Same song, same notes - only the sounds you change are different.</span></div>`;
   if(r.urls&&(r.urls.mp3||r.urls.wav)){ addResult(Object.assign({}, r, {id:(r.id||'ed')+'_ed'}), $('#edCard'));
     setTimeout(()=>{ const cv=$('#edCard canvas'); if(cv) drawWave(cv, r.urls.mp3||r.urls.wav); }, 80); }
   const first=$('#edCard .blk'); if(first) first.click();
@@ -840,6 +870,7 @@ function openEditor(r){
     Object.keys(o.instruments).forEach(k=>{ if(!picks[k] && tracks.some(t=>t.id===k)) delete o.instruments[k]; }); return o; };
   box.querySelector('[data-e=close]').onclick=closeEditor;
   box.querySelector('[data-e=prev]').onclick=()=>run(true,1,opts(),null,res=>openEditor(res));
+  box.querySelector('[data-e=roll]').onclick=()=>{ rerollSounds(r.style, picks); run(true,1,opts(),null,res=>openEditor(res)); };
   box.querySelector('[data-e=full]').onclick=()=>run(false,1,opts(),null,res=>{ addResult(res); openEditor(res); });
 }
 function closeEditor(){ $('#editor').style.display='none'; document.body.style.overflow=''; $('#editorBox').innerHTML=''; }

@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.41.0
+- **Every genre now suggests several sounds per part.** I audited all 198 genres. Each part's dropdown now starts with **"Suggested for this genre"**: the genre's own sound first, then 2-3 idiomatic alternatives (e.g. upright → acoustic / finger bass for jazz; distorted → overdriven guitar for rock; oboe / flute / horn for orchestral leads). 180 genres gained alternatives. Genre-defining sounds stay put: the 808 in trap / drill / phonk, the log drum in amapiano, the piano in Solo Piano.
+- **Re-roll sounds.**
+  - **🎲 Re-roll sounds** in the Sound panel picks a different suggested sound for every part. A 🎲 next to each part tries another one for that part, and **↺ Genre sounds** goes back.
+  - **🎲 New sounds** on every result plays the exact same song on different sounds.
+  - The song editor has the same re-roll, and its dropdowns list the genre's suggestions first.
+- **The Sound panel is reorganised:** the part sounds come first, then drums & tone.
+- **Drum kits for 28 more genres:** e.g. a brushed kit for folk jam and holiday, a big 80s kit for sophisti-pop, a dead 70s kit for psych pop, a rock kit for boogie rock and nu-metal, a vintage kit for surf and soul-sample rap, and a re-played funk break for 90s new-age chant.
+- **Plugin hints:** band and folk genres no longer tell you to load a BBC orchestra violin for a fiddle. Piano parts point to a piano plugin.
+- **The dubstep wobble is slower by default** (half-bar, beat and 8th-note wubs; 16ths only where a genre asks for them), and the fastest bass-house / bassline / riddim rates are toned down.
+- Fix: a genre's own sound now always leads its list, even when it has several parts on the same layer (epic orchestral pads).
+
 ## 1.40.1
 - **A better dubstep wobble bass.**
   - **Bigger tone:** a fat unison saw + square stack with a little FM grit.

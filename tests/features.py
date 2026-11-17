@@ -354,6 +354,26 @@ def test_reference_genres():
     print('ok  32 reference genres; deep dubstep / hard trap / beat-switch structures')
 
 
+def test_sound_choices():
+    """Every genre part offers several idiomatic sounds (its own first); genre-defining ones (808, log drum, solo piano) stay."""
+    from sgcore.styles import STYLES, POOLS
+    thin = []
+    for k, st in STYLES.items():
+        if st.get('composer'):
+            continue
+        main = {t['layer']: t['inst'] for t in st['tracks'] if t['name'] == t['layer']}
+        for r, inst in main.items():
+            if r not in ('bass', 'chords', 'pad', 'arp', 'lead') or inst.startswith(('real:', 'vst:')):
+                continue
+            pool = (POOLS.get(k) or {}).get(r) or [inst]
+            assert pool[0] == inst, (k, r)
+            if len(pool) < 3 and inst not in ('808', 'logdrum', 'piano', 'chipbass', 'chip', 'tanpura', 'koto', 'sinebass', 'upright',
+                                              'cello', 'contrabass', 'organ', 'ebass', 'mandolin', 'guitar', 'choir'):
+                thin.append((k, r, pool))
+    assert len(thin) <= 6, thin
+    print('ok  every genre part has idiomatic alternative sounds (re-roll / suggestions)')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -370,6 +390,7 @@ def main():
     test_no_console_windows()
     test_editor_and_sounds()
     test_reference_genres()
+    test_sound_choices()
     print('all good')
 
 
