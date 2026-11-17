@@ -428,20 +428,47 @@ def i_acid(m, dur, p, glide=None, mod=None):
 
 
 def i_wobble(m, dur, p, glide=None, mod=None):
-    """Dubstep wobble: detuned saws through an LFO-swept resonant filter, clean sub underneath."""
+    """Dubstep wobble ("wub"): a fat unison saw + square stack with a touch of FM grit, through a resonant low-pass whose
+    cutoff an LFO sweeps exponentially (closed - open - closed, so each cycle says "wow"), plus a vowel formant that
+    follows it, then driven hard. The wobble lives above ~110 Hz; a clean, steady sine sub sits underneath so the low
+    end never pumps. mod = beats per LFO cycle (0.5 = 8ths, 0.25 = 16ths, 1/3 = triplets, 2 = slow half-bar swells).
+    p: cut (top of the sweep, Hz), sub (sub level), shape ('sine' | 'saw' | 'square' | 'tri'), res, grit."""
     f = float(mtof(m))
-    env = adsr(dur * SR, 0.005, 0.1, 1.0, 0.05)
+    env = adsr(dur * SR, 0.004, 0.08, 1.0, 0.04)
     n = len(env)
     t = np.arange(n) / SR
     rate_beats = mod if isinstance(mod, (int, float)) and mod else 0.5
     hz = 1.0 / (rate_beats * p.get('spb', 0.43))
-    lfo = 0.5 - 0.5 * np.cos(2 * np.pi * hz * t)
-    x = saw(f * 1.004, n) + saw(f * 0.996, n, 0.3) + 0.6 * square(f * 2, n, 0.1)
-    cut = 120 + p.get('cut', 2600) * lfo ** 1.5
-    y = svf_sweep(x, cut, q=4.0)
-    y = soft(y * 2.5, 2.0) * 0.5
+    ph = (hz * t) % 1.0
+    shape = p.get('shape', 'sine')
+    if shape == 'saw':                                   # snaps open, closes slowly: "WAAow"
+        lfo = (1 - ph) ** 1.6
+    elif shape == 'square':                              # choppy on / off "wob wob"
+        lfo = 0.5 + 0.5 * np.tanh(12 * np.sin(2 * np.pi * ph))
+    elif shape == 'tri':
+        lfo = 1 - np.abs(2 * ph - 1)
+    else:                                                # smooth "wow"
+        lfo = 0.5 - 0.5 * np.cos(2 * np.pi * ph)
+    lfo = uniform_smooth(lfo, int(0.002 * SR))
+    fo = f if f > 55 else f * 2                          # the mid layer speaks an octave up from very low roots
+    x = (saw(fo * 1.0045, n) + saw(fo * 0.9955, n, 0.37) + 0.8 * saw(fo, n, 0.71)) / 2.4
+    x += 0.55 * square(fo * 2, n, 0.13)
+    grit = float(p.get('grit', 1.2))
+    x += 0.25 * np.sin(2 * np.pi * fo * t + grit * np.sin(2 * np.pi * fo * 2 * t))
+    top = float(p.get('cut', 2600))
+    cut = 110.0 * (max(top, 200.0) / 110.0) ** lfo       # exponential sweep: even "vowel" movement to the ear
+    y = svf_sweep(x, cut, q=float(p.get('res', 5.0)))
+    y += 0.6 * svf_sweep(x, 350 + 1100 * lfo, q=6.0, mode='bandpass')   # 'oo' -> 'ah' formant riding the filter
+    y = soft(y * 3.0, 2.2) * 0.5
+    y = hp(hp(y, 120), 120)                              # 4th-order: the wobble keeps out of the sub's way
     sub = sine(f / 2 if f > 70 else f, n) * p.get('sub', 0.8)
     return (y + sub) * env
+
+
+def uniform_smooth(x, k):
+    if k <= 1:
+        return x
+    return np.convolve(x, np.ones(k) / k, mode='same')
 
 
 def i_fmbass(m, dur, p, glide=None, mod=None):

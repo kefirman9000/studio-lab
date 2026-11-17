@@ -5546,6 +5546,49 @@ style('mallet_house', 'Electronic',
       label='Mallet melodic house')
 
 
+# hard trance / hands-up (2000s): from the references - a DJ intro with kick + rolling bass from bar one, the bass
+# alone for a few bars, a hats-only lift, one long main section, a short dip, an 8-bar kick-out break with a classic
+# snare roll, a long last section and a short outro (the radio mixes cut straight to a 12-bar break)
+FORMS['hard_trance'] = [('intro', 16, {'kick', 'top', 'bass', 'fx'}, {}),
+                        ('intro', 8, {'bass', 'top', 'fx'}, {}),
+                        ('verse', 12, {'kick', 'snare', 'top', 'bass', 'arp'}, {'crash': True}),
+                        ('build', 8, {'top', 'bass', 'chords', 'arp', 'fx'}, {'build': True}),
+                        ('drop', 48, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp', 'fx'}, {'drop': True}),
+                        ('verse', 16, {'kick', 'snare', 'top', 'bass', 'arp'}, {}),
+                        ('break', 8, {'pad', 'chords', 'lead', 'fx'}, {'alt': True}),
+                        ('build', 4, {'top', 'snare', 'chords', 'lead'}, {'build': True}),
+                        ('drop', 40, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp', 'pad', 'fx'}, {'drop': True, 'alt': True}),
+                        ('outro', 8, {'kick', 'top', 'bass'}, {'fade': True})]
+style('hard_trance', 'Electronic',
+      'Hard trance / hands-up (2000s): a pounding 909 kick around 140 with offbeat open hats, a driving 16th-note rolling '
+      'bass pinned to the root, hard supersaw and hoover-style riffs, acid squelches and a catchy synth hook - short, '
+      'punchy breakdowns with a classic snare roll and long, relentless main sections',
+      bpm=(136, 144), scales=['minor', 'phrygian', 'harmonic_minor'], swing=0.5, human=0.0, form='hard_trance', chord_size=3,
+      kit='trance', progs={'minor': [[0, 0, 5, 6], [0, 5, 6, 4], [5, 6, 0, 0]], 'phrygian': [[0, 1, 0, 0]],
+                           'harmonic_minor': [[0, 5, 4, 4]]},
+      sc_depth=0.6, sc_release=0.2, reverb=2.4,
+      kit_override=dict(kick=dict(pitch=52, punch=160, decay=10, drive=2.4, click=0.7)),
+      drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'chat': ['xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxx.xx'],
+             'snare': ['................']},
+      snare_tracks=['clap', 'snare'], build_family=['roll', 'triplet', 'pause', 'filter'],
+      bass=['.RRR.RRR.RRR.RRR', 'RRRRRRRRRRRRRRRR', '..RR..RR..RR..RR'], bass_lo=31, bass_gate=0.5, pedal_sub=True,
+      chord_rh=['x.x..x.x..x.x...', 'x-x-x-x-x-x-x-x-', 'x..x..x...x..x..'], chord_center=60,
+      arp=dict(rate=4, mode='up', oct=5, prob=0.9),
+      lead_rh=['x.x..x.x..x.x.x.', 'x-x-x-x-x---x---', 'x..x..x.x.x.x...'],
+      gm_hint='Hard 909 kick + clap, open hats on the offbeat, 16th hats; rolling 16th bass on the root; hard supersaw / '
+              'hoover riff; 303 acid line; catchy synth lead; snare-roll builds',
+      tracks=[T('kick', 'kick', 'kick', db=-11), T('clap', 'snare', 'clap', rev=0.25, db=-16), T('snare', 'snare', 'snare', db=-17),
+              T('chat', 'top', 'chat', pan=0.2, db=-28), T('ohat', 'top', 'ohat', pan=-0.2, db=-26),
+              T('bass', 'bass', 'sawbass', sc=0.8, db=-12, p=dict(cut=700)),
+              T('chords', 'chords', 'supersaw', sc=0.7, rev=0.3, db=-19), T('pad', 'pad', 'warmpad', rev=0.5, db=-27),
+              T('arp', 'arp', 'acid', pan=0.2, dly=0.2, db=-25, p=dict(cut=900, res=8.0)),
+              T('lead', 'lead', 'hoover', rev=0.3, dly=0.2, db=-18)],
+      master=dict(lufs=-8.0, air=1.6, low=1.6, width=0.9),
+      pools=dict(bass=['sawbass', 'fmbass', 'moogbass'], chords=['supersaw', 'stab', 'polysynth'], pad=['warmpad', 'strings'],
+                 arp=['acid', 'pluck_saw'], lead=['hoover', 'supersaw_lead', 'leadsaw']),
+      label='Hard trance / hands-up')
+
+
 # ============================== rules applied to all the genres above ========================================
 # ----------------------------------------------------------------------------- real basses everywhere they belong
 # electric bass (Growlybass) for electric genres, upright (Meatbass) for acoustic / jazz ones

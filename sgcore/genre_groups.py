@@ -10,7 +10,7 @@ GROUPS = {
                            'organic_house', 'sunny_melodic_house', 'nineties_club_house', 'italo_disco', 'future_funk',
                            'eurodance', 'bigroom', 'bass_house', 'nu_disco', 'tokyo_deep_house', 'piano_house_90s', 'garage_house', 'mallet_house']),
         ('Techno & Trance', ['techno', 'minimal', 'melodic_techno', 'new_beat', 'trance', 'uplifting_trance',
-                             'progressive_trance', 'psytrance', 'trance_pop_90s', 'uk_bass_130']),
+                             'progressive_trance', 'psytrance', 'trance_pop_90s', 'hard_trance', 'uk_bass_130']),
         ('Dubstep, Garage & Bass', ['dubstep', 'brostep', 'riddim', 'melodic_dubstep', 'chillstep', 'deep_dubstep', 'deep_dubstep_minimal',
                                     'deep_dubstep_rollers', 'future_bass', 'ukgarage', 'future_garage', 'early_dubstep', 'bassline_140', 'grime']),
         ('Drum & Bass, Breaks & Hard', ['dnb', 'liquid_dnb', 'neurofunk', 'jungle', 'breakcore', 'braindance', 'rave_hardcore',

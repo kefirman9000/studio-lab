@@ -336,7 +336,7 @@ def test_reference_genres():
            'smooth_90s_rap', 'sophisti_pop', 'early_dubstep', 'folk_jam', 'garage_house', 'hard_trap', 'wonky_beats',
            'field_ambient', 'trance_pop_90s', 'bay_rap', 'bassline_140', 'midfi_synthfunk', 'piano_house_90s',
            'futuristic_bounce', 'soul_sample_rap', 'tokyo_deep_house', 'psych_pop', 'boogie_rock', 'grime', 'spooky_surf',
-           'nu_metal', 'switch_trap', 'mallet_house']
+           'nu_metal', 'switch_trap', 'mallet_house', 'hard_trance']
     for g in new:
         assert g in STYLES, g
         x = song(g, 3)
@@ -351,7 +351,7 @@ def test_reference_genres():
     t = song('switch_trap', 2)
     stops = [s_ for s_ in t['sections'] if s_['name'] == 'stop']
     assert len(stops) == 2 and not [e for e in t['events'] for s_ in stops if in_section(e, s_)]    # dead silence
-    print('ok  31 reference genres; deep dubstep / hard trap / beat-switch structures')
+    print('ok  32 reference genres; deep dubstep / hard trap / beat-switch structures')
 
 
 def main():

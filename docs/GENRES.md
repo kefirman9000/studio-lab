@@ -1,8 +1,8 @@
-# Studio Lab genres (197)
+# Studio Lab genres (198)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (103)
+## Electronic (104)
 
 ### House & Disco (20)
 
@@ -29,10 +29,11 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Tech House | `tech_house` | 124-128 | Tech house: rolling, rubbery filtered bassline, 909 groove with congas, rims and shakers, percussive organ and synth stabs - minimal melody, all groove |
 | Tokyo deep house | `tokyo_deep_house` | 120-125 | Tokyo deep house / city house: a clean four-on-the-floor around 122 with brushed shakers and offbeat hats, a melodic, walking deep-house bass, jazzy Rhodes and piano chords with 9ths and 11ths, airy strings and a breathy melody - elegant, nocturnal and urban |
 
-### Techno & Trance (10)
+### Techno & Trance (11)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
+| Hard trance / hands-up | `hard_trance` | 136-144 | Hard trance / hands-up (2000s): a pounding 909 kick around 140 with offbeat open hats, a driving 16th-note rolling bass pinned to the root, hard supersaw and hoover-style riffs, acid squelches and a catchy synth hook - short, punchy breakdowns with a classic snare roll and long, relentless main sections |
 | Late-90s trance-pop | `trance_pop_90s` | 130-138 | Late-90s vocal trance-pop / UK dance: a pumping four-on-the-floor around 134 with an offbeat octave bass, big warm string-synth and supersaw chords, a sweet vocal-style hook and plucked arps - euphoric and radio-sized, built of clear verses and choruses |
 | Melodic Techno | `melodic_techno` | 120-128 | Melodic techno: rolling 16th basslines, hypnotic arpeggios, big emotional pads and plucks |
 | Minimal | `minimal` | 124-128 | Minimal techno: sparse clicks and blips, deep sub, lots of space and delay |

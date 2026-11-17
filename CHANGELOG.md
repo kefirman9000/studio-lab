@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.40.1
+- **A better dubstep wobble bass.**
+  - **Bigger tone:** a fat unison saw + square stack with a little FM grit.
+  - **Movement:** a resonant filter sweeps exponentially, so each cycle says "wow", with a vowel formant riding along.
+  - **Clean low end:** the bass is driven hard, then split above ~120 Hz so the clean sine sub underneath never pumps.
+  - **LFO shapes:** smooth, saw ("WAAow"), choppy square or triangle, still synced to 8ths / 16ths / triplets / slow swells.
+- New genre **Hard trance / hands-up**, built from your references: a pounding 909 at ~140, a rolling 16th bass on the root, hard supersaw / hoover riffs, acid, and short snare-roll breakdowns between long main sections.
+
 ## 1.40.0
 - **Fixed: a pad that played smeared, off-beat notes.** When a slow, swelling sound (warm pad, string pad, choir) landed on a part that plays short chord stabs, the notes never reached full volume and rang on after the beat. Those parts now hold each chord from its beat until the chord changes.
 - **Fixed: a click / "something before the kick" on Amen-style breaks.** Recorded drum hits now have their pre-roll trimmed and short fades at both ends, kicks and break hits are never humanised (a layered kick no longer flams against the break), and reversed snares now swell into the beat and end on it.
