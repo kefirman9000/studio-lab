@@ -1377,3 +1377,19 @@ def d_anvil(p):
 
 
 DRUMS['anvil'] = d_anvil
+
+
+
+def i_twang(m, dur, p, glide=None, mod=None):
+    """Telecaster twang: a bright bridge-pickup pluck with a snappy attack, a little amp grit and spring-reverb sparkle -
+    the chicken-pickin' country lead guitar."""
+    y = i_pluck(m, min(dur, 1.6), dict(bright=p.get('bright', 9000), damp=p.get('damp', 0.993), r=0.18))
+    y = eq(eq(y, 'peak', 2600, 1.2, 6), 'peak', 180, 1.0, -4)
+    return soft(y * 2.2, 1.6) * 0.45
+
+
+INSTRUMENTS['twang'] = i_twang
+INSTRUMENT_INFO['twang'] = 'Telecaster twang guitar (country)'
+ROLE_CHOICES['lead'] += ['twang']
+ROLE_CHOICES['arp'] += ['twang']
+GM_PROGRAM['twang'] = 27

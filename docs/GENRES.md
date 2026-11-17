@@ -1,4 +1,4 @@
-# Studio Lab genres (129)
+# Studio Lab genres (133)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
@@ -74,7 +74,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Uplifting Trance | `uplifting_trance` | 134-140 | Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw leads and plucky arps, a long piano / pad breakdown that explodes into the drop |
 | Vaporwave | `vaporwave` | 60-80 | Vaporwave: slowed 80s nostalgia - lush Rhodes, sax, chorused pads, tape haze |
 
-## Classic (40)
+## Classic (44)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -89,7 +89,8 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Chamber Pop | `chamber_pop` | 90-124 | Chamber / orchestral pop: pop drums & piano with a string section, horns, pizzicato and glockenspiel |
 | City Pop | `city_pop` | 104-120 | City pop: 80s Japanese pop - slap-style bass, lush 7th chords, Rhodes, brass & sax |
 | Cool / Modal Jazz | `modal_jazz` | 110-150 | Cool / modal jazz (Kind of Blue era): long stretches on one mode, medium tempo, lots of space, quartal-ish piano voicings, muted trumpet and tenor sax, brushes and ride, walking bass |
-| Country | `country` | 92-132 | Country: train-beat drums, boom-chick bass, strummed acoustic, fiddle and twangy guitar licks |
+| Country (classic / honky-tonk) | `country` | 92-132 | Classic country / honky-tonk (Nashville, Bakersfield): boom-chick upright bass with walk-ups, strummed acoustic, chicken-pickin' Telecaster, honky-tonk piano fills, fiddle melody and pedal-steel swells and slides |
+| Country Waltz (3/4) | `country_waltz` | 84-112 | Country waltz (3/4, "Tennessee Waltz", Patsy Cline): a slow oom-pah-pah of upright bass and strummed guitar, brushed drums, weeping fiddle and pedal steel trading the melody, honky-tonk piano |
 | Cumbia | `cumbia` | 84-104 | Cumbia: guira scrape and congas, kick on one and three, offbeat guitar, accordion melodies |
 | Disco | `disco` | 112-124 | Disco / nu-disco: four-on-the-floor, octave bass, string sweeps, brass hits, funky guitar |
 | Disco Funk (70s) | `disco_funk` | 112-122 | 70s disco-funk: punchy dry four-on-the-floor, a syncopated electric-bass hook, chicken-scratch guitar, tight horn-section riffs, claps, congas and tambourine - bright, catchy party music |
@@ -103,9 +104,11 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Jazz | `jazz` | 100-160 | Jazz / swing: walking bass, ride-cymbal swing, piano comping with extended chords |
 | Jazz Fusion | `fusion` | 96-140 | Jazz fusion / jazz-rock: straight 16th-note grooves, electric bass, Rhodes and synth leads, overdriven guitar, extended chords and virtuosic unison lines over a rock / funk rhythm section |
 | Metal | `metal` | 140-180 | Metal: palm-muted power chords, double-kick drums, shredding lead guitar |
+| Modern Country | `modern_country` | 76-108 | Modern country / Nashville pop (Luke Combs, Morgan Wallen, Kacey Musgraves): big clean drums, driving 16th acoustic strum, electric bass on the root, twangy Telecaster riffs and pedal-steel swells, a big singalong chorus |
 | Motown / 60s Soul | `motown` | 100-126 | Motown / 60s soul: tambourine on every backbeat, melodic bass, piano and guitar chops, strings and horns |
 | Neo-Soul | `neo_soul` | 72-92 | Neo-soul (D'Angelo, Erykah Badu, J Dilla): drunk, behind-the-beat drums, lush Rhodes 9th and 11th chords, warm finger bass, soft guitar and flute answers |
 | New Jack Swing / 90s R&B | `new_jack_swing` | 100-114 | New jack swing / 90s R&B (Teddy Riley, Bell Biv DeVoe): hard swung 16th drums, big snare + clap backbeat, punchy synth-brass and stab chords, FM bass, bright electric piano |
+| Outlaw Country | `outlaw_country` | 100-140 | Outlaw country (Johnny Cash, Waylon Jennings, Willie Nelson): the freight-train boom-chicka-boom - palm-muted guitar on every 8th, slapback twang and a low baritone guitar melody, steady upright bass, brushed snare, harmonica |
 | Pop | `pop` | 95-122 | Pop: four-chord hooks, piano & guitar, punchy drums, sing-along lead line |
 | Punk | `punk` | 160-200 | Punk rock: fast down-picked power chords, driving 8th-note bass, pounding drums, shouty guitar hooks |
 | R&B / Neo-soul | `rnb` | 66-98 | R&B: lazy swung drums, Rhodes 9th chords, deep sub bass, finger snaps and clean guitar licks |
@@ -118,6 +121,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Spaghetti Western | `western` | 88-120 | Spaghetti western: twangy reverb guitar, lonely trumpet, whistled tune, choir and galloping hooves |
 | Symphonic Metal | `symphonic_metal` | 120-170 | Symphonic metal: double-kick drums and power chords under choir, string ostinatos and a soaring lead |
 | Tango | `tango` | 108-126 | Tango: marcato four-beat pulse, bandoneon, dramatic violin lines, staccato piano and double bass |
+| Western Swing | `western_swing` | 130-180 | Western swing / Texas swing (Bob Wills, Asleep at the Wheel): swung country dance band - twin fiddles, pedal steel, sixth-chord piano and guitar comping, walking upright bass, brushed swing drums |
 
 ## Orchestral (22)
 

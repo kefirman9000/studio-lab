@@ -219,7 +219,7 @@ def voice_chord(key, deg, size, center, voicing='close', color=None):
 VOICINGS = ['close', 'open', 'drop2', 'rootless', 'power']
 MELODY_STYLES = ['diatonic', 'pentatonic', 'blues', 'bebop']
 # how each genre's lead player phrases, and how its keyboard player voices chords (styles not listed: diatonic / style's own)
-GENRE_MELODY = {'g_funk': 'pentatonic', 'neo_soul': 'pentatonic', 'new_jack_swing': 'pentatonic', 'alt_rnb': 'pentatonic', 'rage': 'diatonic', 'plugg': 'pentatonic', 'hauntology_sunlit': 'diatonic', 'hauntology_dark': 'diatonic', 'epic_orchestral': 'diatonic', 'epic_battle': 'diatonic', 'epic_choir': 'diatonic', 'heroic_anthem': 'diatonic', 'symphonic_finale': 'diatonic', 'bebop': 'bebop', 'soul_jazz': 'blues', 'modal_jazz': 'diatonic', 'fusion': 'pentatonic', 'future_funk': 'pentatonic', 'italo_disco': 'diatonic', 'classical_period': 'diatonic', 'romantic': 'diatonic', 'impressionism': 'pentatonic', 'minimalism': 'diatonic', 'brazilian_phonk': 'blues', 'deep_dubstep': 'diatonic', 'progressive_trance': 'diatonic', 'organic_house': 'diatonic', 'disco_funk': 'pentatonic', 'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
+GENRE_MELODY = {'modern_country': 'pentatonic', 'country_waltz': 'pentatonic', 'outlaw_country': 'pentatonic', 'western_swing': 'pentatonic', 'g_funk': 'pentatonic', 'neo_soul': 'pentatonic', 'new_jack_swing': 'pentatonic', 'alt_rnb': 'pentatonic', 'rage': 'diatonic', 'plugg': 'pentatonic', 'hauntology_sunlit': 'diatonic', 'hauntology_dark': 'diatonic', 'epic_orchestral': 'diatonic', 'epic_battle': 'diatonic', 'epic_choir': 'diatonic', 'heroic_anthem': 'diatonic', 'symphonic_finale': 'diatonic', 'bebop': 'bebop', 'soul_jazz': 'blues', 'modal_jazz': 'diatonic', 'fusion': 'pentatonic', 'future_funk': 'pentatonic', 'italo_disco': 'diatonic', 'classical_period': 'diatonic', 'romantic': 'diatonic', 'impressionism': 'pentatonic', 'minimalism': 'diatonic', 'brazilian_phonk': 'blues', 'deep_dubstep': 'diatonic', 'progressive_trance': 'diatonic', 'organic_house': 'diatonic', 'disco_funk': 'pentatonic', 'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
                 'folk': 'pentatonic', 'afrobeats': 'pentatonic', 'amapiano': 'pentatonic', 'reggae': 'pentatonic',
                 'lofi': 'pentatonic', 'pop': 'pentatonic', 'disco': 'pentatonic', 'jazz': 'bebop', 'bossa_nova': 'bebop',
                 'western': 'pentatonic', 'chamber_pop': 'pentatonic', 'fantasy_rpg': 'pentatonic',
@@ -233,7 +233,7 @@ GENRE_VOICING = {'bebop': 'rootless', 'soul_jazz': 'rootless', 'modal_jazz': 'op
                  'deep_house': 'drop2', 'ukgarage': 'drop2', 'funk': 'drop2', 'disco': 'drop2', 'downtempo': 'drop2',
                  'neoclassical': 'open', 'chamber': 'open', 'fantasy_rpg': 'open', 'cinematic': 'open', 'orchestral': 'open',
                  'swing': 'drop2', 'gospel': 'open', 'rnb': 'drop2', 'waltz': 'open', 'tango': 'close'}
-GENRE_COLORS = {'g_funk': ['7', '9', 'triad'], 'neo_soul': ['9', '7', '9', 'add9'], 'new_jack_swing': ['7', '9', 'triad'], 'alt_rnb': ['7', 'add9', '9'], 'rage': ['triad'], 'plugg': ['add9', 'triad', '7'], 'hauntology_sunlit': ['add9', 'triad', 'sus2', '7'], 'hauntology_dark': ['triad', 'sus2', 'add9'], 'epic_orchestral': ['triad', 'sus4'], 'epic_battle': ['triad'], 'epic_choir': ['triad'], 'heroic_anthem': ['triad', 'sus4', 'add9'], 'symphonic_finale': ['triad', '7'], 'bebop': ['9', '7', '6'], 'modal_jazz': ['9', 'sus4', '7'], 'soul_jazz': ['7', '9'], 'fusion': ['9', 'add9', '7'], 'future_funk': ['7', '9'], 'italo_disco': ['triad', 'add9'], 'new_beat': ['triad'], 'gabber': ['triad'], 'rave_hardcore': ['triad', '7'], 'classical_period': ['triad'], 'romantic': ['7', 'triad', 'add9'], 'impressionism': ['add9', '9', 'sus2'], 'minimalism': ['triad', 'add9'], 'deep_dubstep': ['triad'], 'progressive_trance': ['triad', 'sus2', 'add9'], 'organic_house': ['add9', 'triad', 'sus2'], 'disco_funk': ['7', '9', 'triad'], 'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
+GENRE_COLORS = {'modern_country': ['triad', 'add9', 'sus2'], 'country_waltz': ['triad'], 'outlaw_country': ['triad', '7'], 'western_swing': ['6', '7', '9', '6'], 'g_funk': ['7', '9', 'triad'], 'neo_soul': ['9', '7', '9', 'add9'], 'new_jack_swing': ['7', '9', 'triad'], 'alt_rnb': ['7', 'add9', '9'], 'rage': ['triad'], 'plugg': ['add9', 'triad', '7'], 'hauntology_sunlit': ['add9', 'triad', 'sus2', '7'], 'hauntology_dark': ['triad', 'sus2', 'add9'], 'epic_orchestral': ['triad', 'sus4'], 'epic_battle': ['triad'], 'epic_choir': ['triad'], 'heroic_anthem': ['triad', 'sus4', 'add9'], 'symphonic_finale': ['triad', '7'], 'bebop': ['9', '7', '6'], 'modal_jazz': ['9', 'sus4', '7'], 'soul_jazz': ['7', '9'], 'fusion': ['9', 'add9', '7'], 'future_funk': ['7', '9'], 'italo_disco': ['triad', 'add9'], 'new_beat': ['triad'], 'gabber': ['triad'], 'rave_hardcore': ['triad', '7'], 'classical_period': ['triad'], 'romantic': ['7', 'triad', 'add9'], 'impressionism': ['add9', '9', 'sus2'], 'minimalism': ['triad', 'add9'], 'deep_dubstep': ['triad'], 'progressive_trance': ['triad', 'sus2', 'add9'], 'organic_house': ['add9', 'triad', 'sus2'], 'disco_funk': ['7', '9', 'triad'], 'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
                 'city_pop': ['7', '9', 'add9'], 'deep_house': ['7', '9', 'add9'], 'ukgarage': ['7', '9'], 'funk': ['7', '9'],
                 'blues': ['7'], 'downtempo': ['7', 'add9', '9'], 'neoclassical': ['triad', 'add9', 'add9', 'sus2'],
                 'baroque': ['triad'], 'chamber': ['triad', 'triad', '7'], 'holiday': ['triad', '6', '7', 'add9'],
@@ -615,7 +615,7 @@ def apply_sampled(st, opts):
         if not on or inst.startswith(('user:', 'vst:')) or t['layer'] not in MELODIC_ROLES:
             continue
         user_pick = bool(t.get('fallback'))
-        mapped = None if (user_pick or t.get('pooled')) else ACOUSTIC_MAP.get(name, {}).get(t['layer'])
+        mapped = None if (user_pick or t.get('pooled') or t.get('keep_inst')) else ACOUSTIC_MAP.get(name, {}).get(t['layer'])
         if mapped:
             target = mapped
         elif (inst in sfm.ACOUSTIC or inst in sfm.SF_ALIAS) and (cat in ('Orchestral', 'Classic') or engine == 'sampled'
@@ -807,7 +807,8 @@ PHRASE_FAMILY = {
                                  'deep_house', 'tech_house', 'city_pop', 'bossa_nova')},
     **{k: 'sparse' for k in ('deep_dubstep', 'ambient', 'downtempo', 'lofi', 'vaporwave', 'jazz', 'cinematic', 'orchestral', 'film_piano',
                              'adventure', 'tension', 'boombap', 'neoclassical', 'western', 'hybrid_trailer')},
-    **{k: 'sung' for k in ('chamber', 'fantasy_rpg', 'holiday', 'chamber_pop', 'symphonic_metal', 'gospel', 'rnb', 'motown',
+    **{k: 'sung' for k in ('modern_country', 'country_waltz', 'outlaw_country', 'western_swing',
+                           'chamber', 'fantasy_rpg', 'holiday', 'chamber_pop', 'symphonic_metal', 'gospel', 'rnb', 'motown',
                            'country', 'kpop', 'indie_rock', 'punk', 'cumbia', 'ska', 'dancehall')},
     **{k: 'busy' for k in ('bluegrass', 'salsa', 'swing', 'melodic_techno', 'baile_funk', 'jersey_club', 'afro_house', 'braindance')},
     'hauntology_sunlit': 'sparse', 'hauntology_dark': 'sparse', 'neo_soul': 'sung', 'alt_rnb': 'sung', 'g_funk': 'sung', 'plugg': 'sung',
@@ -1548,6 +1549,8 @@ def compose(opts):
     in_evs = {id(e) for e in evs}
     st['tuned_notes'] = fix_clashes(evs + [v for v in vocal if id(v) not in in_evs], {**tracks, 'vocal': tracks.get('vocal') or
                                     dict(layer='lead')}, key, st, sections)
+    if st.get('slides'):                                 # country: notes slide up into place (steel / fiddle / Telecaster)
+        add_slides(evs, tracks, st, key, random.Random(opts.seed * 41 + 3))
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
@@ -1590,7 +1593,7 @@ COUNTER_STYLES = {
     'soul_ballad': ['strings', 'organ', 'sax'], 'celtic_jig': ['flute', 'violin'], 'symphonic_metal': ['strings', 'choir'],
     'orchestral_hiphop': ['cello', 'horn'], 'city_pop': ['brass', 'strings'], 'disco': ['strings'], 'jazz': ['sax', 'brass'],
     'bossa_nova': ['flute', 'strings'], 'gospel': ['organ', 'choir'], 'motown': ['strings', 'brass'],
-    'country': ['violin', 'softlead', 'guitar'], 'swing': ['brass', 'clarinet'], 'tango': ['cello', 'violin', 'accordion'],
+    'country': ['pedalsteel', 'violin', 'twang'], 'modern_country': ['pedalsteel', 'twang'], 'country_waltz': ['pedalsteel', 'violin'], 'swing': ['brass', 'clarinet'], 'tango': ['cello', 'violin', 'accordion'],
     'kpop': ['strings', 'pluck', 'bell'], 'teen_pop': ['strings', 'pluck', 'vox'], 'luxury_rap': ['horn', 'strings', 'choir'],
     'soft_rock': ['organ', 'epiano', 'guitar'], 'jam_band': ['organ', 'piano'], 'uplifting_trance': ['pluck_saw', 'strings'], 'rnb': ['strings', 'guitar'], 'bluegrass': ['banjo', 'guitar'], 'salsa': ['flute', 'violin'],
 }
@@ -1852,6 +1855,24 @@ def add_layer_tracks(st, opts):
                                  double_of=t['name'], octave=octv))
 
 
+def add_slides(evs, tracks, st, key, rnd):
+    """Grace-note slides into the melody's longer notes: a quick note a whole step (or half step) below, the way a fiddle,
+    pedal steel or Telecaster bends and slides into pitch - the most recognisable country inflection."""
+    p = float(st.get('slides') or 0)
+    scale = {(key.root + x) % 12 for x in key.scale}
+    add = []
+    for e in evs:
+        t = tracks.get(e.track, {})
+        if t.get('layer') != 'lead' or e.midi is None or e.dur < 0.5 or rnd.random() > p:
+            continue
+        if abs(e.beat * 2 - round(e.beat * 2)) > 1e-6:      # on the beat or the off-beat 8th only
+            continue
+        below = e.midi - 2 if (e.midi - 2) % 12 in scale else e.midi - 1
+        g = 0.12 if e.dur < 1 else 0.18
+        add.append(Ev(e.track, max(0.0, e.beat - g), g, below, e.vel * 0.72))
+    evs += add
+
+
 def double_layers(evs, tracks):
     """The layer tracks play exactly the notes of the part they double (after tuning and dynamics)."""
     out = []
@@ -1885,7 +1906,8 @@ def section_group(sec):
 # genres whose lead sound is the genre - rotation only uses their own pool
 # rap, hip-hop and R&B genres: their signature sounds are swapped for alternatives far less often
 SIGNATURE_STRICT = {'trap', 'boombap', 'rnb', 'lofi', 'uk_drill', 'luxury_rap', 'g_funk', 'neo_soul', 'new_jack_swing', 'alt_rnb',
-                    'rage', 'plugg', 'hauntology_sunlit', 'hauntology_dark', 'memphis_phonk', 'orchestral_hiphop', 'jersey_club'}
+                    'rage', 'plugg', 'hauntology_sunlit', 'hauntology_dark', 'memphis_phonk', 'orchestral_hiphop', 'jersey_club',
+                    'country', 'modern_country', 'country_waltz', 'outlaw_country', 'western_swing', 'bluegrass'}
 SIGNATURE_SOUNDS = {'trap', 'boombap', 'rnb', 'lofi', 'uk_drill', 'luxury_rap', 'g_funk', 'neo_soul', 'new_jack_swing', 'alt_rnb',
                     'rage', 'plugg', 'hauntology_sunlit', 'hauntology_dark', 'phonk', 'house_phonk', 'memphis_phonk', 'brazilian_phonk', 'metal', 'punk', 'symphonic_metal', 'rock',
                     'epic_orchestral', 'epic_battle', 'epic_choir', 'heroic_anthem', 'symphonic_finale'}

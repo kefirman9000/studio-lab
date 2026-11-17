@@ -1526,19 +1526,21 @@ style('gospel', 'Classic', 'Gospel: Hammond organ and piano, choir, hand claps, 
               T('lead', 'lead', 'piano', rev=0.3, db=-18)],
       master=dict(lufs=-11.0, air=1.4, low=1.0))
 
-style('country', 'Classic', 'Country: train-beat drums, boom-chick bass, strummed acoustic, fiddle and twangy guitar licks',
-      bpm=(92, 132), scales=['major', 'mixolydian'], human=0.008, kit='soft', form='song', strum=0.012,
+style('country', 'Classic', 'Classic country / honky-tonk (Nashville, Bakersfield): boom-chick upright bass with walk-ups, '
+      'strummed acoustic, chicken-pickin\' Telecaster, honky-tonk piano fills, fiddle melody and pedal-steel swells and slides',
+      bpm=(92, 132), scales=['major', 'mixolydian'], human=0.008, kit='soft', form='song', strum=0.012, slides=0.45,
       progs={'major': [[0, 3, 4, 0], [0, 4, 3, 0], [0, 0, 3, 4], [0, 5, 3, 4], [3, 0, 4, 0]], 'mixolydian': [[0, 6, 3, 0]]},
       drums={'kick': ['X.......X.......', 'X...X...X...X...'], 'snare': [BACKBEAT, 'x.x.X.x.x.x.X.x.'], 'chat': ['x.x.x.x.x.x.x.x.']},
-      snare_tracks=['snare'], bass=['R...F...R...F...', 'R...F...R.F.A...', 'R.......F.......'], bass_lo=31,
+      snare_tracks=['snare'], bass=['R...F...R...F...', 'R...F...R.F.A...', 'R...F...R...A.F.'], bass_lo=31, bass_gate=0.55,
       chord_rh=['x.x.x.x.x.x.x.x.', 'x...x.x.x...x.x.', 'x---x---x---x---'], chord_center=57,
       arp=dict(rate=2, mode='updown', oct=4, prob=0.5),
       lead_rh=['x-x-x---x-x-....', 'x---x-x-x---....', 'x-x-x-x-x---x...', '..x-x-x-x---....'], fill=True,
       gm_hint='Acoustic steel guitar (strum); Telecaster licks; Fiddle; Pedal steel; Upright / electric bass',
       tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.25, db=-19), T('chat', 'top', 'chat', db=-28),
-              T('bass', 'bass', 'pluck', db=-16, p=dict(bright=1300, damp=0.996)),
+              T('bass', 'bass', 'upright', db=-16),
               T('chords', 'chords', 'guitar', pan=-0.25, rev=0.2, p=dict(bright=5500)),
-              T('arp', 'arp', 'guitar', pan=0.3, rev=0.25, db=-25, p=dict(bright=7000)),
+              T('arp', 'arp', 'twang', pan=0.3, rev=0.3, dly=0.12, db=-24),
+              T('keys', 'chords', 'piano', pan=0.15, rev=0.25, db=-26, chorus=0.35, double_of='chords', octave=12, keep_inst=True),
               T('lead', 'lead', 'violin', rev=0.3, db=-18, p=dict(vib=12))],
       master=dict(lufs=-11.0, air=1.5, low=0.9))
 
@@ -1808,7 +1810,7 @@ LABELS.update({'waltz': 'Waltz (3/4)', 'celtic_jig': 'Celtic Jig (6/8)', 'soul_b
 ACOUSTIC_MAP.update({
     'waltz': {'bass': 'cello'}, 'celtic_jig': {'bass': 'acbass', 'chords': 'nylon', 'lead': 'fiddle'},
     'soul_ballad': {'bass': 'fingerbass'}, 'gospel': {'bass': 'fingerbass'},
-    'country': {'bass': 'acbass', 'chords': 'steelguitar', 'arp': 'cleanguitar', 'lead': 'fiddle'},
+    'country': {'bass': 'acbass', 'chords': 'steelguitar', 'lead': 'fiddle'},
     'bluegrass': {'bass': 'acbass', 'chords': 'steelguitar', 'arp': 'banjo', 'lead': 'fiddle'},
     'motown': {'bass': 'fingerbass', 'arp': 'cleanguitar'}, 'swing': {'bass': 'acbass', 'chords': 'trumpetsection', 'lead': 'tenorsax'},
     'ska': {'bass': 'fingerbass', 'chords': 'cleanguitar', 'lead': 'trumpet'},
@@ -1831,9 +1833,9 @@ POOLS.update({
                         pad=['organ', 'strings', 'choir'], lead=['sax', 'sf:tenorsax', 'vox', 'guitar', 'organ', 'strings']),
     'gospel': dict(bass=['pluck', 'sf:fingerbass', 'fmbass'], chords=['organ', 'piano', 'epiano'], pad=['choir', 'organ', 'strings'],
                    arp=['piano', 'organ', 'epiano'], lead=['piano', 'organ', 'vox', 'choir', 'sax', 'guitar']),
-    'country': dict(bass=['pluck', 'sf:acbass', 'sf:fingerbass'], chords=['guitar', 'sf:steelguitar', 'sf:cleanguitar', 'piano', 'banjo'],
-                    arp=['guitar', 'sf:cleanguitar', 'banjo', 'piano'],
-                    lead=['violin', 'sf:fiddle', 'guitar', 'sf:cleanguitar', 'softlead', 'piano']),
+    'country': dict(bass=['upright', 'sf:acbass', 'sf:fingerbass'], chords=['guitar', 'sf:steelguitar', 'sf:cleanguitar', 'piano', 'banjo'],
+                    arp=['twang', 'guitar', 'banjo', 'sf:cleanguitar'],
+                    lead=['violin', 'sf:fiddle', 'twang', 'pedalsteel', 'harmonica', 'piano']),
     'bluegrass': dict(bass=['pluck', 'sf:acbass'], chords=['guitar', 'sf:steelguitar', 'banjo'], arp=['banjo', 'guitar', 'sf:banjo'],
                       lead=['violin', 'sf:fiddle', 'banjo', 'guitar', 'sf:steelguitar']),
     'motown': dict(bass=['pluck', 'sf:fingerbass'], chords=['piano', 'guitar', 'sf:cleanguitar', 'organ', 'epiano'],
@@ -2816,6 +2818,90 @@ POOLS.update({
 
 
 # ---------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------- country styles (1.28)
+style('modern_country', 'Classic', 'Modern country / Nashville pop (Luke Combs, Morgan Wallen, Kacey Musgraves): big clean drums, '
+      'driving 16th acoustic strum, electric bass on the root, twangy Telecaster riffs and pedal-steel swells, a big singalong chorus',
+      bpm=(76, 108), scales=['major', 'mixolydian'], human=0.006, kit='punchy', form='song', strum=0.01, slides=0.4, chord_size=3,
+      progs={'major': [[0, 4, 5, 3], [0, 3, 4, 0], [5, 3, 0, 4], [0, 3, 5, 4], [3, 0, 4, 5]], 'mixolydian': [[0, 6, 3, 0]]},
+      drums={'kick': ['X.......X.X.....', 'X.....X.X.......'], 'snare': [BACKBEAT], 'chat': ['x.x.x.x.x.x.x.x.'],
+             'tamb': ['....x.......x...']}, snare_tracks=['snare'],
+      bass=['R.R.R.R.R.R.R.R.', 'R...R...R...F...', 'R.....R.R...F...'], bass_lo=31,
+      chord_rh=['x.xxx.xxx.xxx.xx', 'x.x.x.xxx.x.x.xx'], chord_center=57, arp=dict(rate=2, mode='updown', oct=4, prob=0.55),
+      lead_rh=['x-x-x---x-x-....', 'x---x-x-x---....', '..x-x-x-x---x---', 'x---x---x-x-x---'],
+      gm_hint='Acoustic steel guitar (16th strum); Telecaster; pedal steel; electric bass; big clean kit; piano / B3 pads',
+      tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.3, db=-17), T('chat', 'top', 'chat', db=-28),
+              T('tamb', 'top', 'tamb', pan=0.3, db=-29), T('bass', 'bass', 'sf:fingerbass', db=-15),
+              T('chords', 'chords', 'guitar', pan=-0.25, rev=0.2, p=dict(bright=6000)),
+              T('pad', 'pad', 'pedalsteel', rev=0.45, pan=0.25, db=-25),
+              T('arp', 'arp', 'twang', pan=0.3, rev=0.3, dly=0.15, db=-24),
+              T('lead', 'lead', 'twang', rev=0.3, dly=0.15, db=-19)],
+      master=dict(lufs=-10.0, air=1.8, low=1.4))
+
+style('country_waltz', 'Classic', 'Country waltz (3/4, "Tennessee Waltz", Patsy Cline): a slow oom-pah-pah of upright bass and '
+      'strummed guitar, brushed drums, weeping fiddle and pedal steel trading the melody, honky-tonk piano',
+      meter='3/4', bpm=(84, 112), scales=['major'], human=0.01, kit='soft', form='song', form_scale=1, slides=0.5, chord_size=3,
+      progs={'major': [[0, 3, 4, 0], [0, 0, 4, 4], [0, 3, 0, 4], [0, 5, 1, 4]]},
+      drums={'kick': ['X...........'], 'snare': ['....x...x...', '....x...x.x.']}, snare_tracks=['snare'],
+      bass=['R.....F.....', 'R.....F...A.'], bass_lo=31, bass_gate=0.6,
+      chord_rh=['..x.x...x.x.', '..x-x---x-x-'], chord_center=58, arp=dict(rate=2, mode='updown', oct=5, prob=0.5),
+      lead_rh=['x---x-x-x---', 'x-----x---x-', 'x---------x-', 'x-x-x-x-----'], lead_oct=5,
+      gm_hint='Fiddle; pedal steel; acoustic guitar; upright bass; brushes; honky-tonk piano',
+      tracks=[T('kick', 'kick', 'kick', db=-20), T('snare', 'snare', 'snare', rev=0.3, db=-24),
+              T('bass', 'bass', 'upright', db=-16), T('chords', 'chords', 'guitar', pan=-0.2, rev=0.25, p=dict(bright=5000)),
+              T('keys', 'chords', 'piano', pan=0.2, rev=0.25, db=-27, chorus=0.35, double_of='chords', octave=12, keep_inst=True),
+              T('pad', 'pad', 'pedalsteel', rev=0.45, pan=0.25, db=-24),
+              T('lead', 'lead', 'violin', rev=0.35, db=-17, p=dict(vib=14))],
+      master=dict(lufs=-13.0, air=1.2, low=0.8))
+
+style('outlaw_country', 'Classic', 'Outlaw country (Johnny Cash, Waylon Jennings, Willie Nelson): the freight-train boom-chicka-boom - '
+      'palm-muted guitar on every 8th, slapback twang and a low baritone guitar melody, steady upright bass, brushed snare, harmonica',
+      bpm=(100, 140), scales=['major', 'mixolydian', 'minor'], human=0.008, kit='soft', form='song', slides=0.4, chord_size=3,
+      progs={'major': [[0, 3, 4, 0], [0, 0, 3, 4], [0, 4, 0, 4]], 'mixolydian': [[0, 6, 0, 3], [0, 6, 3, 0]], 'minor': [[0, 5, 0, 4], [0, 3, 0, 4]]},
+      drums={'kick': ['X.......X.......', 'X...X...X...X...'], 'snare': ['oxoxXxoxoxoxXxox', 'x.x.X.x.x.x.X.x.']}, snare_tracks=['snare'],
+      bass=['R...F...R...F...', 'R...F...R.F.A...'], bass_lo=28, bass_gate=0.5,
+      chord_rh=['x.x.x.x.x.x.x.x.', 'xxxxxxxxxxxxxxxx'], chord_center=55, arp=dict(rate=2, mode='up', oct=4, prob=0.6),
+      lead_rh=['x---x-x-x---....', 'x-x-x---x-------', 'x---x---x-x-....'], lead_oct=4,
+      gm_hint='Palm-muted acoustic ("boom-chicka"); baritone / Telecaster with slapback; upright bass; brushes; harmonica',
+      tracks=[T('kick', 'kick', 'kick', db=-18), T('snare', 'snare', 'snare', rev=0.2, db=-21),
+              T('bass', 'bass', 'upright', db=-15), T('chords', 'chords', 'mutedgtr', pan=-0.2, rev=0.15, db=-21),
+              T('pad', 'pad', 'harmonica', rev=0.35, pan=0.3, db=-27),
+              T('lead', 'lead', 'twang', rev=0.25, dly=0.12, db=-18)],
+      delay_beats=0.25, master=dict(lufs=-11.0, air=1.0, low=1.0))
+
+style('western_swing', 'Classic', 'Western swing / Texas swing (Bob Wills, Asleep at the Wheel): swung country dance band - twin '
+      'fiddles, pedal steel, sixth-chord piano and guitar comping, walking upright bass, brushed swing drums',
+      bpm=(130, 180), scales=['major', 'mixolydian'], swing=0.66, swing_unit=8, human=0.008, kit='soft', form='song', slides=0.35,
+      chord_size=4, progs={'major': [[0, 5, 1, 4], [0, 3, 0, 4], [0, 0, 1, 4], [2, 5, 1, 4]], 'mixolydian': [[0, 6, 3, 0]]},
+      drums={'kick': ['X.......X.......'], 'snare': [BACKBEAT], 'ride': ['x..xx..xx..xx..x']}, snare_tracks=['snare'],
+      bass=['R...F...A...O...', 'R...A...F...O...'], bass_lo=31,
+      chord_rh=['....x.......x...', '..x...x...x...x.'], chord_center=60, arp=dict(rate=2, mode='updown', oct=5, prob=0.45),
+      lead_rh=['x-x-x-x-x---....', 'x.x.x.x.x-x-x---', 'x---x-x-x-x-x---', 'x-x-x---x-x-x---'], lead_oct=5,
+      gm_hint='Twin fiddles (harmony); pedal steel; piano; rhythm guitar; upright bass; brushes / ride',
+      tracks=[T('kick', 'kick', 'kick', db=-20), T('snare', 'snare', 'snare', rev=0.25, db=-22), T('ride', 'top', 'ride', db=-27),
+              T('bass', 'bass', 'upright', db=-15), T('chords', 'chords', 'piano', pan=0.2, rev=0.2, db=-22),
+              T('pad', 'pad', 'pedalsteel', rev=0.4, pan=-0.25, db=-25),
+              T('lead', 'lead', 'violin', rev=0.3, pan=-0.1, db=-17, p=dict(vib=10)),
+              T('lead2', 'lead', 'violin', rev=0.3, pan=0.15, db=-21, double_of='lead', octave=-12, p=dict(vib=10))],
+      master=dict(lufs=-12.0, air=1.2, low=0.8))
+
+LABELS.update({'country': 'Country (classic / honky-tonk)', 'modern_country': 'Modern Country', 'country_waltz': 'Country Waltz (3/4)',
+               'outlaw_country': 'Outlaw Country', 'western_swing': 'Western Swing'})
+POOLS.update({
+    'modern_country': dict(bass=['sf:fingerbass', 'upright', 'moogbass'], chords=['guitar', 'sf:steelguitar', 'piano', 'sf:cleanguitar'],
+                           pad=['pedalsteel', 'organ', 'strings'], arp=['twang', 'guitar', 'banjo', 'piano'],
+                           lead=['twang', 'pedalsteel', 'violin', 'sf:fiddle', 'harmonica']),
+    'country_waltz': dict(bass=['upright', 'sf:acbass'], chords=['guitar', 'sf:steelguitar', 'piano'], pad=['pedalsteel', 'organ', 'strings'],
+                          lead=['violin', 'sf:fiddle', 'pedalsteel', 'harmonica', 'twang']),
+    'outlaw_country': dict(bass=['upright', 'sf:acbass'], chords=['mutedgtr', 'guitar', 'sf:steelguitar'], pad=['harmonica', 'organ', 'pedalsteel'],
+                           lead=['twang', 'guitar', 'harmonica', 'violin']),
+    'western_swing': dict(bass=['upright', 'sf:acbass'], chords=['piano', 'guitar', 'sf:cleanguitar'], pad=['pedalsteel', 'organ'],
+                          lead=['violin', 'sf:fiddle', 'pedalsteel', 'twang', 'sax', 'clarinet']),
+})
+ACOUSTIC_MAP.update({'modern_country': {'chords': 'steelguitar'}, 'country_waltz': {'bass': 'acbass', 'chords': 'steelguitar', 'lead': 'fiddle'},
+                     'outlaw_country': {'bass': 'acbass'}, 'western_swing': {'bass': 'acbass', 'lead': 'fiddle'}})
+ACOUSTIC_KIT.update({'country_waltz': 'room', 'outlaw_country': 'room', 'western_swing': 'room', 'modern_country': 'acoustic'})
+
+
 # ----------------------------------------------------------------------------- rap, hip hop & R&B (1.27)
 style('g_funk', 'Classic', 'G-funk (West Coast, early-90s Dre / Warren G): laid-back swung 16ths, fat Moog bass, Rhodes and '
       'string-pad chords, and the whiny high portamento synth lead floating over everything',

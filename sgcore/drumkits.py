@@ -91,7 +91,8 @@ GENRE_KIT = {
     'rock': 'rock', 'indie_rock': 'rock', 'punk': 'rock', 'metal': 'rock', 'symphonic_metal': 'rock', 'jam_band': 'rock',
     'soft_rock': 'studio', 'funk': 'studio', 'disco': 'studio', 'disco_funk': 'studio', 'motown': 'studio', 'gospel': 'studio',
     'blues': 'studio', 'reggae': 'studio', 'ska': 'studio', 'jazz': 'studio', 'swing': 'studio', 'soul_ballad': 'studio',
-    'country': 'studio', 'folk': 'studio', 'pop': 'studio',
+    'country': 'studio', 'folk': 'studio', 'pop': 'studio', 'modern_country': 'studio', 'country_waltz': 'studio',
+    'outlaw_country': 'studio', 'western_swing': 'studio',
     'rave_hardcore': 'amen', 'braindance': 'think', 'future_funk': '909', 'italo_disco': 'linn', 'new_beat': 'techno',
     'bebop': 'studio', 'modal_jazz': 'studio', 'soul_jazz': 'studio', 'fusion': 'studio',
 }

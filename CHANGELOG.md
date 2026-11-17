@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.28.0
+Country, made authentic - and four more country styles:
+- **Country (classic / honky-tonk)** reworked: upright bass in a boom-chick with walk-ups (was a generic pluck), strummed acoustic with **honky-tonk piano** (a detuned piano, an octave up) doubling it, **chicken-pickin' Telecaster** fills (new "Telecaster twang" sound), real fiddle on the melody, pedal steel swells and pedal-steel answers.
+- **Slides**: country melodies now slide up into their longer notes from a step below - the fiddle / steel / Telecaster inflection that makes it sound country.
+- **New styles**: **Modern Country** (Nashville pop: big drums, 16th acoustic strum, Telecaster riffs, steel), **Country Waltz** (3/4 Tennessee-waltz: oom-pah-pah, weeping fiddle and steel), **Outlaw Country** (Johnny Cash / Waylon freight-train boom-chicka-boom, palm-muted guitar, slapback baritone twang, harmonica), **Western Swing** (Bob Wills: swung dance band, twin fiddles, steel, sixth-chord piano, walking bass).
+- Country genres keep their signature sounds (fiddle, steel, twang) instead of the variety setting swapping them out.
+- New sound for any part: **Telecaster twang guitar**.
+
 ## 1.27.0
 Rap, hip-hop and R&B overhaul, plus Boards of Canada-style hauntology:
 - **Fixed sounds**: Boom Bap's melody is a jazzy sax/flute/horn line (was a synth string pad) over sine bass doubled by upright; R&B's lead is clean guitar (was a robotic vowel synth); Trap's chords are dark piano (was a pluck). The vowel-synth "vox" is gone from Trap and R&B pools.
