@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.43.1
+From your exported songs (jazz, funk, rock, bossa nova, lo-fi, drum & bass, house, spooky surf), each re-created from its seed and measured against your reference tracks.
+- **Fix: the genre's own instrument sometimes never played.** Instrument rotation (other sounds for verses / breaks) treated lo-fi's "B" sections and jazz's "head" as verses. The swapped-in sound then covered the whole song: your lo-fi had two guitars and no Rhodes, and your jazz had no main lead. The genre's own sound now always keeps the sections where it plays most.
+- **Rotation swaps stay in the same instrument family:** keys with keys, guitars with guitars, synth leads with synth leads, horns with winds. No more twang guitar in a house verse or piano in a surf arp. The "Lots" rotation setting still allows any swap.
+- **Mixes rebalanced against your references:**
+  - **Jazz:** the upright bass was over half the mix. It's now 5 dB lower and high-passed, the kick is feathered, and piano and horns are up.
+  - **House:** less sub in the kick, more bass, chords and pads.
+  - **Funk:** brighter hats, kick and bass down, keys up.
+  - **Lo-fi:** softer kick, more hats.
+  - **DnB:** chords high-passed, bass up.
+- New genre **Surf rock (60s)**: the regular, sunny version of spooky surf. A floor-tom surf beat, twangy guitar tremolo-picked on the low strings in spring reverb, strummed rhythm guitar, root-fifth bass, combo organ or sax for a chorus, and a drums-only tom break.
+
 ## 1.43.0
 Genre research, round 2 (your reference tracks), your genre-spec review, and genre traits.
 - **Genre traits ("Character").**

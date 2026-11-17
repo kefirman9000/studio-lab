@@ -423,6 +423,22 @@ def test_traits_and_review():
     print('ok  genre traits on every genre + per-song overrides, sustained vs plucked moog bass, review genres, no artist names')
 
 
+def test_rotation_keeps_genre_sound():
+    """v1.43.1: instrument rotation never replaces the genre's own part everywhere, and only swaps within a family."""
+    from collections import Counter
+    from sgcore.compose import Options, compose, inst_family
+    for g, sd in (('lofi', 898228), ('jazz', 203796), ('house', 503576), ('spooky_surf', 640674)):
+        for v in (0.5, 0.9):
+            s = compose(Options(style=g, seed=sd, variety=v))
+            used = Counter(e.track for e in s['events'])
+            for t in s['st']['tracks']:
+                if t.get('switch_of') in ('lead', 'chords', 'pad', 'arp') and used.get(t['name']):
+                    main = next(x for x in s['st']['tracks'] if x['name'] == t['switch_of'])
+                    assert used.get(main['name']), (g, v, main['name'], 'never plays')
+                    assert inst_family(t['inst']) == inst_family(main['inst']), (g, t['name'], t['inst'], main['inst'])
+    print('ok  instrument rotation: the genre sound keeps its sections, swaps stay in the same family')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -441,6 +457,7 @@ def main():
     test_reference_genres()
     test_sound_choices()
     test_traits_and_review()
+    test_rotation_keeps_genre_sound()
     print('all good')
 
 

@@ -26,7 +26,7 @@ GROUPS = {
     ],
     'Classic': [
         ('Rock & Metal', ['rock', 'indie_rock', 'alt_rock_90s', 'punk', 'soft_rock', 'jam_band', 'jam_rock_80s', 'metal',
-                          'symphonic_metal', 'lofi_rock', 'boogie_rock', 'nu_metal', 'spooky_surf']),
+                          'symphonic_metal', 'lofi_rock', 'boogie_rock', 'nu_metal', 'spooky_surf', 'surf_rock']),
         ('Pop & Indie', ['pop', 'bedroom_pop', 'chamber_pop', 'city_pop', 'holiday', 'sophisti_pop', 'psych_pop']),
         ('Funk & Disco', ['funk', 'disco', 'disco_funk', 'smooth_funk', 'electro_funk']),
         ('Soul, R&B & Gospel', ['motown', 'soul_ballad', 'gospel', 'modern_gospel', 'rnb', 'neo_soul', 'new_jack_swing', 'quiet_storm', 'slow_jam']),

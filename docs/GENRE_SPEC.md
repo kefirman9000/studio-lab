@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (205 genres)
+# Studio Lab - technical genre rules (206 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -46,10 +46,10 @@ Classic / NYC house: four-on-the-floor 909, the bouncy M1 organ bass, offbeat pi
   - ohat (top): `ohat`  dB · pan=0.15
   - chat (top): `chat` -29 dB · pan=-0.2
   - shaker (top): `shaker` -31 dB · pan=0.35
-  - bass (bass): `organbass`  dB · sc=1.0 · alternatives ['sawbass', 'fmbass', 'moogbass']
-  - chords (chords): `m1piano` -21 dB · rev=0.25 · dly=0.15 · sc=0.9 · alternatives ['organ', 'stab', 'epiano']
-  - pad (pad): `warmpad`  dB · rev=0.35 · sc=1.0 · alternatives ['strings', 'solina', 'glasspad']
-  - arp (arp): `organ` -27 dB · pan=-0.25 · rev=0.25 · dly=0.3 · sc=0.8 · alternatives ['stab', 'piano', 'twang']
+  - bass (bass): `organbass` -13 dB · sc=1.0 · alternatives ['sawbass', 'fmbass', 'moogbass']
+  - chords (chords): `m1piano` -18 dB · rev=0.25 · dly=0.15 · sc=0.9 · alternatives ['organ', 'stab', 'epiano']
+  - pad (pad): `warmpad` -21 dB · rev=0.35 · sc=1.0 · alternatives ['strings', 'solina', 'glasspad']
+  - arp (arp): `organ` -27 dB · pan=-0.25 · rev=0.25 · dly=0.3 · sc=0.8 · alternatives ['stab', 'piano']
   - lead (lead): `m1piano`  dB · pan=0.1 · rev=0.3 · dly=0.3 · sc=0.5 · alternatives ['organ', 'stab', 'epiano']
   - conga (top): `conga` -29 dB · pan=-0.3
 - **Mix** {'lufs': -9.0, 'air': 2.0, 'low': 1.0} · reverb 1.8 · sc_depth 0.55
@@ -1460,7 +1460,7 @@ Drum & bass: two-step breaks at 174, growling reese bass, wide pads
   - snare (snare): `snare` -16 dB · rev=0.2
   - chat (top): `chat` -26 dB · pan=0.2
   - ride (top): `ride` -31 dB · pan=-0.25
-  - bass (bass): `reese`  dB · sc=1.0 · alternatives ['sawbass', 'sinebass', 'fmbass']
+  - bass (bass): `reese` -11 dB · sc=1.0 · alternatives ['sawbass', 'sinebass', 'fmbass']
   - chords (chords): `epiano` -24 dB · rev=0.3 · sc=0.6 · alternatives ['warmpad', 'piano', 'strings', 'stab', 'wurli']
   - pad (pad): `supersaw`  dB · rev=0.4 · sc=0.8 · alternatives ['warmpad', 'strings', 'choir', 'glasspad']
   - arp (arp): `stab` -28 dB · pan=0.25 · rev=0.3 · dly=0.3 · sc=0.6 · alternatives ['pluck_saw', 'epiano', 'pluck']
@@ -2738,10 +2738,10 @@ Lo-fi hip hop: swung boom-bap, jazzy 7th/9th Rhodes chords, warm bass, vinyl + t
 - **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
 - **Traits** arrangement `atmospheric_drift` · density `sparse` · feel `loose_human` · melody `long_lyrical` · bass `sub_only` · drop `long_build` · variation `sectional` · culture `bedroom_lofi` · texture `lofi_degraded` · rhythm `swung_16ths` · harmony `functional_tonal` · energy `slow_build`
 - **Instruments**
-  - kick (kick): `kick`  dB
+  - kick (kick): `kick` -15 dB
   - snare (snare): `snare`  dB · rev=0.2
   - rim (top): `rim` -30 dB · pan=0.25
-  - chat (top): `chat` -28 dB · pan=-0.15
+  - chat (top): `chat` -24 dB · pan=-0.15
   - bass (bass): `sinebass`  dB · sc=0.6 · alternatives ['sf:acbass', 'sf:fingerbass', '808']
   - chords (chords): `epiano`  dB · rev=0.25 · sc=0.8 · alternatives ['piano', 'sf:nylon', 'guitar', 'organ', 'wurli']
   - lead (lead): `pluck`  dB · pan=0.2 · rev=0.3 · dly=0.2 · alternatives ['epiano', 'flute', 'sax', 'kalimba', 'bell', 'sf:cleanguitar', 'vibes']
@@ -3601,6 +3601,34 @@ Nu-metal / alt-metal (late 90s - early 2000s): down-tuned, chugging power-chord 
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 46, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'own_progs': True, 'riff_lo': 33, 'riff_chorus': 0.6}
 - **Sound brief** Down-tuned 7-string chug riffs with rests; clanky slap bass; hip-hop-ish hard drums; eerie clean guitar; scratch noises
 
+### Surf rock (60s) (`surf_rock`)
+
+Surf rock (early-60s instrumental surf): a fast, straight beat driven by the floor tom, a twangy guitar melody tremolo-picked on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and now and then a combo organ or sax - sunny, wet and full speed ahead
+
+- **Tempo** 150-176 BPM · **scales** major, mixolydian, minor, phrygian_dominant · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'major': [[0, 3, 4, 3], [0, 5, 3, 4], [0, 0, 3, 3], [0, 3, 0, 4]], 'mixolydian': [[0, 6, 3, 0], [0, 6, 0, 6]], 'minor': [[0, 5, 6, 0], [0, 6, 5, 4]], 'phrygian_dominant': [[0, 1, 0, 1], [0, 1, 6, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `surf_rock`: intro 4 [kick, lead, snare, top] -> A 16 [bass, chords, kick, lead, snare, top] (crash) -> B 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> break 4 [kick, snare, top] -> solo 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> A 16 [bass, chords, kick, lead, snare, top] (crash) -> outro 4 [bass, chords, kick, lead, snare, top] · form_scale 1
+- **Drums** **kick** `X.......X.......` / `X.....X.X.......`; **snare** `....X.......X...` / `....X.......X.x.`; **chat** `x.x.x.x.x.x.x.x.`; **tom** `x.x.x.x.x.x.x.x.` / `x.xxx.x.x.xxx.x.`
+- **Drum kit** vintage · preset `acoustic`
+- **Bass** `R.R.F.F.R.R.F.F.` / `R...F...O...F...` / `R.F.R.F.R.F.A.A.` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x.x.x.x.x.x.x.x.` / `x..x..x.x..x..x.` / `x---x---x---x---`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `xxxxxxxxx-x-x---` / `xxxxxxxxxxxxx---` / `x-x-x-x-xxxxx---` / `xxxx..xxxx..x---`
+- **Build-ups** default `(category default)` · choices ['pickup', 'stops'] · transitions ['crash', 'none', 'none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `wet_and_spacious` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -13 dB
+  - snare (snare): `snare` -16 dB · rev=0.35
+  - chat (top): `chat` -26 dB
+  - tom (top): `tom` -18 dB · pan=-0.2 · rev=0.3
+  - bass (bass): `ebass` -12 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'upright']
+  - chords (chords): `guitar` -23 dB · pan=0.25 · rev=0.35 · alternatives ['acguitar', 'twang', 'organ']
+  - arp (arp): `organ` -24 dB · pan=-0.3 · rev=0.3 · alternatives ['guitar', 'twang', 'sax']
+  - lead (lead): `twang` -18 dB · rev=0.55 · dly=0.12 · alternatives ['guitar', 'sax', 'sf:cleanguitar']
+- **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 2.0, 'width': 1.1} · reverb 2.6 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.012, 'voicing': 'close', 'lead_oct': 4, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'spring': True, 'repetition': 0.75}
+- **Sound brief** Twangy single-coil guitar (tremolo-picked, low strings) in a spring reverb tank; strummed rhythm guitar; electric bass; floor-tom surf beat; combo organ or tenor sax for a chorus
+
 ## Pop & Indie
 
 ### Pop (`pop`)
@@ -3854,12 +3882,12 @@ Funk: the one, syncopated 16th grooves, slap / finger bass, clavinet chops, chic
 - **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
 - **Traits** arrangement `groove_locked` · density `medium` · feel `live_drums` · melody `call_and_response` · bass `rolling_groove` · drop `groove_drop` · variation `progressive` · culture `underground_club` · texture `dry_and_upfront` · rhythm `swung_16ths` · harmony `static_vamp` · energy `flat_hypnotic`
 - **Instruments**
-  - kick (kick): `kick`  dB
+  - kick (kick): `kick` -15 dB
   - snare (snare): `snare`  dB · rev=0.15
-  - chat (top): `chat` -28 dB · pan=0.2
-  - ohat (top): `ohat` -29 dB
-  - bass (bass): `ebass`  dB · alternatives ['sf:slapbass', 'sf:fingerbass', 'moogpluck']
-  - chords (chords): `clav` -23 dB · pan=-0.25 · alternatives ['epiano', 'sf:muted', 'wurli', 'organ', 'guitar']
+  - chat (top): `chat` -22 dB · pan=0.2
+  - ohat (top): `ohat` -25 dB
+  - bass (bass): `ebass` -17 dB · alternatives ['sf:slapbass', 'sf:fingerbass', 'moogpluck']
+  - chords (chords): `clav` -19 dB · pan=-0.25 · alternatives ['epiano', 'sf:muted', 'wurli', 'organ', 'guitar']
   - horns (chords): `brass` -22 dB · pan=0.15 · rev=0.2
   - pad (pad): `organ` -28 dB · pan=0.25 · rev=0.3 · alternatives ['brass', 'strings', 'synthbrass']
   - arp (arp): `mutedgtr` -26 dB · pan=0.35 · alternatives ['sf:muted', 'guitar', 'clav']
@@ -4441,14 +4469,14 @@ Jazz / swing: walking bass, ride-cymbal swing, piano comping with extended chord
 - **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
 - **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `live_drums` · melody `call_and_response` · bass `walking` · drop `groove_drop` · variation `theme_and_variations` · culture `jazz_club` · texture `dry_and_upfront` · rhythm `triplet_feel` · harmony `jazz_extensions` · energy `peaks_and_valleys`
 - **Instruments**
-  - ride (top): `ride` -24 dB · pan=0.3
+  - ride (top): `ride` -27 dB · pan=0.3
   - chat (top): `chat` -29 dB · pan=-0.2
-  - kick (kick): `kick` -24 dB
+  - kick (kick): `kick` -29 dB
   - snare (snare): `snare` -26 dB
-  - bass (bass): `upright` -15 dB · alternatives ['sf:acbass', 'sf:fingerbass']
-  - chords (chords): `piano` -21 dB · rev=0.2 · alternatives ['epiano', 'guitar', 'organ', 'vibes', 'wurli']
-  - arp (arp): `piano` -25 dB · rev=0.2 · alternatives ['guitar', 'epiano', 'vibes']
-  - lead (lead): `brass` -19 dB · rev=0.25 · alternatives ['sax', 'sf:tenorsax', 'sf:mutedtrumpet', 'piano', 'guitar', 'flute', 'clarinet', 'trumpet', 'vibes']
+  - bass (bass): `upright` -20 dB · alternatives ['sf:acbass', 'sf:fingerbass']
+  - chords (chords): `piano` -18 dB · rev=0.2 · alternatives ['epiano', 'guitar', 'organ', 'vibes', 'wurli']
+  - arp (arp): `piano` -22 dB · rev=0.2 · alternatives ['guitar', 'epiano', 'vibes']
+  - lead (lead): `brass` -16 dB · rev=0.25 · alternatives ['sax', 'sf:tenorsax', 'sf:mutedtrumpet', 'piano', 'guitar', 'flute', 'clarinet', 'trumpet', 'vibes']
 - **Mix** {'lufs': -14.0, 'air': 1.0, 'low': 0.5} · reverb 2.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'comp_snare': True}
 

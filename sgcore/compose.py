@@ -1934,7 +1934,7 @@ def double_layers(evs, tracks):
     return out
 
 
-SECTION_GROUPS = {'B': {'chorus', 'hook', 'drop', 'climax', 'theme', 'main', 'loop'},
+SECTION_GROUPS = {'B': {'chorus', 'hook', 'drop', 'climax', 'theme', 'main', 'loop', 'B', 'head', 'refrain'},
                   'C': {'break', 'bridge', 'calm', 'outro', 'C', 'breakdown', 'interlude', 'solo'}}
 
 
@@ -1959,6 +1959,31 @@ SIGNATURE_STRICT = {'trap', 'boombap', 'rnb', 'lofi', 'uk_drill', 'luxury_rap', 
 SIGNATURE_SOUNDS = {'trap', 'boombap', 'rnb', 'lofi', 'uk_drill', 'luxury_rap', 'g_funk', 'neo_soul', 'new_jack_swing', 'alt_rnb',
                     'rage', 'plugg', 'hauntology_sunlit', 'hauntology_dark', 'phonk', 'house_phonk', 'memphis_phonk', 'brazilian_phonk', 'metal', 'punk', 'symphonic_metal', 'rock',
                     'epic_orchestral', 'epic_battle', 'epic_choir', 'heroic_anthem', 'symphonic_finale'}
+
+
+INST_FAMILIES = {
+    'keys': {'piano', 'epiano', 'wurli', 'm1piano', 'organ', 'clav', 'fmpiano', 'upright_piano', 'harpsichord', 'grand', 'rhodes'},
+    'guitar': {'guitar', 'acguitar', 'nylon', 'twang', 'mutedgtr', 'cleanguitar', 'distgtr', 'overdrive', 'jazzguitar', 'steelgtr',
+               'banjo', 'mandolin', 'sitar', 'koto', 'oud', 'pedalsteel'},
+    'synth': {'leadsaw', 'softlead', 'supersaw_lead', 'supersaw', 'polysynth', 'hoover', 'pluck', 'pluck_saw', 'chip', 'stab',
+              'synthbrass', 'acid', 'screech', 'square_lead', 'vox', 'saw_lead'},
+    'pad': {'warmpad', 'glasspad', 'solina', 'strings', 'slowstrings', 'choir', 'tremolo', 'violins', 'violas'},
+    'winds': {'sax', 'tenorsax', 'altosax', 'flute', 'clarinet', 'oboe', 'brass', 'trumpet', 'mutedtrumpet', 'trombone', 'horn',
+              'trumpetsection', 'piccolo', 'bassoon', 'harmonica', 'panflute', 'shakuhachi', 'violin', 'fiddle', 'cello'},
+    'mallets': {'vibes', 'bell', 'celesta', 'marimba', 'kalimba', 'musicbox', 'steeldrum', 'xylophone', 'glock', 'tubular'},
+}
+
+
+def inst_family(inst):
+    """Instrument family of a sound name ('sf:' / 'real:' prefixes ignored); unknown sounds are their own family."""
+    base = str(inst).split(':', 1)[-1]
+    for fam, names in INST_FAMILIES.items():
+        if base in names:
+            return fam
+    for fam, names in INST_FAMILIES.items():          # e.g. 'cowbell_808' -> no; 'piano_soft' -> keys
+        if any(base.startswith(n) for n in names if len(n) > 3):
+            return fam
+    return base
 
 
 def add_section_switch_tracks(st, opts, rnd):
@@ -1987,6 +2012,9 @@ def add_section_switch_tracks(st, opts, rnd):
         if len(pool) < 3 and (st.get('name') or opts.style) not in SIGNATURE_SOUNDS | SIGNATURE_STRICT:
             pool += [x for x in pal.get(role, []) if x not in pool][:2]
         alts = [x for x in dict.fromkeys(pool) if x != main['inst'] and x in INSTRUMENTS or (isinstance(x, str) and x.startswith('sf:') and x != main['inst'])]
+        if mode != 'lots':                               # mid-song swaps stay in the same family (keys <-> keys, horns <-> winds)
+            fam = inst_family(main['inst'])
+            alts = [x for x in alts if inst_family(x) == fam]
         if alts:
             cands.append((role, main, alts))
     rnd.shuffle(cands)
@@ -2014,6 +2042,16 @@ def switch_sections(evs, tracks, sections):
     if not alts:
         return
     spans = [(s_['bar'] * 4, (s_['bar'] + s_['bars']) * 4, section_group(s_)) for s_ in sections]
+    notes = {}                                            # where each rotated part actually plays: {role: {group: notes}}
+    for e in evs:
+        if e.track in alts:
+            g = next((g for b0, b1, g in spans if b0 <= e.beat < b1), None)
+            if g:
+                notes.setdefault(e.track, {})[g] = notes.get(e.track, {}).get(g, 0) + 1
+    for role, to in alts.items():                         # the genre's own instrument always keeps its biggest sections
+        have = notes.get(role, {})
+        if have and set(have) <= set(to):
+            to.pop(max(have, key=have.get), None)
     for e in evs:
         to = alts.get(e.track)
         if not to:
