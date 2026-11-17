@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.39.0
+- **No more ffmpeg / console windows popping up on Windows.** Every helper program (the MP3 encoder, the plugin worker, git updates, the Defender scan, sample-library tools) now runs hidden.
+- **Build-ups you control.** A new **Build-ups** switch: On, Subtle (natural band-style lead-ins, no EDM ramps) or Off. A new **Transition FX** switch: Varied, Fewer, Drum fills only (no riser / cymbal / impact sounds) or Off (straight cuts). Both are saved with presets and available on the command line (`--builds`, `--transition-fx`).
+- **More varied, more natural build-ups.** Ten new styles: groove + short fill, ride-cymbal crescendo, stop-time hits, marching snare, tom groove, mallet cymbal roll, kick pulse, noise wash, tape stop, and nothing at all. Each build in a song is now a different one, and snare and clap rolls ramp up in several different shapes instead of the same speed-up every time.
+- **No more reverse cymbal before every chorus.** Each transition is now one of several lead-ins: a reverse cymbal, a mallet roll, a noise wash, a tape stop, a moment of silence, just a crash, or nothing. The same lead-in never comes twice in a row. Drops alternate between an impact and a falling noise sweep.
+- **Better Amen (and Think) breaks.** Chops now keep the backbeat, because snare slices land on 2 and 4. There is a set of classic jungle re-edits, and phrase ends get snare rushes that rise in pitch, reversed snares, stutters and pitch-downs. The break also gets the 12-bit sampler grit, and its pitch rises with the tempo like a sped-up record.
+- **Genres sorted into sub-groups** inside each tab (House & Disco, Techno & Trance, Dubstep & Bass, Drum & Bass / Breaks & Hard, Hip-Hop / Trap & Phonk, Jazz, Swing & Big Band, Country / Folk & Blues, Solo Piano, Classical Eras ...). Click a group header to collapse it. docs/GENRES.md is grouped the same way.
+- New genre **Solo Piano Miniature**, built from your reference track: one soft, felt-muffled upright in wide close-mic stereo, a rocking 8th-note left hand swaying between two chords, and a plain singing melody, at about 78 BPM.
+- New genre **Funky breaks / glitch electro**, built from your two references: a chopped, swung funk break at 122-132 BPM with edits, a rubbery sliding bass, a warped gliding lead, palm-muted guitar riffs doubled by the bass, and Rhodes stabs.
+
 ## 1.38.1
 - **No more double-time genres.** Salsa was playing its whole two-bar clave inside one bar at 180 BPM - it now plays at the right speed (its patterns are written in cut time, so the tempo shows ~85-105). The hot tom-tom big band now sits around 100-120 BPM, swing 110-160, 50s big band 120-150, western swing 110-160.
 - Bebop, soul jazz, modal jazz and both big bands now swing their eighth notes (they were swinging sixteenths).

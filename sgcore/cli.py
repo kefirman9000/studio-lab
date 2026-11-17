@@ -42,8 +42,11 @@ def main(argv=None):
     ap.add_argument('--rotation', choices=['auto', 'off', 'some', 'lots'], help='instruments changing between verses / choruses / breaks')
     ap.add_argument('--groove', choices=['straight', 'dilla', 'laidback', 'afro', 'dembow', 'jazz', 'house', 'funk'])
     ap.add_argument('--lead', choices=['hook', 'arp', 'riff', 'ostinato', 'bell', 'call', 'chops'], help='lead style (default: genre)')
-    ap.add_argument('--build', choices=['roll', 'triplet', 'kick_roll', 'filter', 'stutter', 'pause', 'lift', 'swell', 'hats', 'claps', 'toms',
-                                        'halftime', 'drumless'], help='build-up style (default: the genre\'s, varied per song)')
+    from .arrange import BUILD_STYLES, BUILD_AMOUNTS, TRANSITION_FX
+    ap.add_argument('--build', choices=BUILD_STYLES, help='build-up style (default: the genre\'s, varied per song)')
+    ap.add_argument('--builds', choices=BUILD_AMOUNTS, help='build-ups: auto | subtle (natural, no EDM ramps) | off')
+    ap.add_argument('--transition-fx', choices=TRANSITION_FX,
+                    help='risers / reverse cymbals / impacts: auto | fewer | fills (drum fills only) | off')
     ap.add_argument('--vinyl', choices=['on', 'off'], help='vinyl crackle (default: genre decides)')
     ap.add_argument('--bass-rhythm', choices=['kick'], help='kick = bass plays with the kick drum')
     ap.add_argument('--ending', choices=['auto', 'hit', 'fade'])
@@ -105,7 +108,8 @@ def main(argv=None):
                 o['part_fx'] = dict(x.split('=', 1) for x in a.fx)
             for k, v in (('melody_style', a.melody), ('voicing', a.voicing), ('chord_color', a.chord_color), ('groove', a.groove),
                          ('bass_rhythm', a.bass_rhythm), ('ending', a.ending), ('counter', a.counter), ('layering', a.layering),
-                         ('lead_style', a.lead), ('build_style', a.build)):
+                         ('lead_style', a.lead), ('build_style', a.build),
+                         ('builds', a.builds), ('transition_fx', a.transition_fx)):
                 if v:
                     o[k] = v
             if a.level:

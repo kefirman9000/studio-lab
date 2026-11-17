@@ -14,13 +14,13 @@ If you own a recording of a break, put its hits in "My sounds" and tick "my samp
 # X accent, x normal, o ghost. Classic transcriptions of the drummer's pattern.
 BREAKS = {
     'amen': dict(
-        label='Amen-style break', bpm=(136, 176), mic='lofi', pitch=1.5, swing=0.5,
+        label='Amen-style break', bpm=(136, 176), mic='lofi', pitch=1.5, swing=0.5, orig_bpm=137, bits=12, srate=30000,
         drums={'kick': ['X.X.......XX....', 'X.X.......XX....', 'X.X.......X.....', '..XX......X.....'],
                'snare': ['....X..x.x..X..x', '....X..x.x..X..x', '....X..x.x....X.', '.x..X..x.x....X.'],
                'ride': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.......'],
                'crash': ['................', '................', '................', '..........X.....']}),
     'think': dict(
-        label='Think-style break', bpm=(110, 176), mic='lofi', pitch=1.0, swing=0.52,
+        label='Think-style break', bpm=(110, 176), mic='lofi', pitch=1.0, swing=0.52, orig_bpm=114, bits=12, srate=32000,
         drums={'kick': ['X.......X.X.....', 'X.X.......X..X..', 'X.......X.X.....', 'X.X.......X.....'],
                'snare': ['....X..x.x..X...', '....X..x....X.x.', '....X..x.x..X...', '.o..X..x....X..x'],
                'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x...', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.....'],
@@ -177,6 +177,8 @@ def configure(st, kit_id, style, opts):
         st['break'] = brk
         st['want_real_kit'] = b['mic']
         st['break_pitch'] = b['pitch']
+        st['break_orig_bpm'] = b.get('orig_bpm')         # sped-up record: the pitch rises with the tempo (no time-stretch)
+        st['break_sampler'] = (b.get('bits'), b.get('srate'))   # the 12-bit sampler it was chopped on
         st['break_chop'] = CHOP.get(style, 0.0) if not getattr(opts, 'kit', None) or style in CHOP else 0.0
         st['swing'] = max(st.get('swing', 0.5), b['swing'])
         st['break_seq'] = b['drums']
@@ -230,22 +232,74 @@ def install_break(st, tracks_list):
         st['snare_tracks'] = ['lsnare', 'snare']
 
 
+def _slice_roles(seq):
+    """For each (bar, beat) slice of the break: does it open on the backbeat snare, on a kick, or neither."""
+    roles = {}
+    for bar in range(4):
+        for k in range(4):
+            sn = (seq.get('snare') or ['.' * 16] * 4)[bar][k * 4]
+            kk = (seq.get('kick') or ['.' * 16] * 4)[bar][k * 4]
+            roles[(bar, k)] = 'snare' if sn in 'Xx' else ('kick' if kk in 'Xx' else 'other')
+    return roles
+
+
+# classic re-arrangements of the four bars (bar, beat) - the edits jungle producers kept coming back to
+EDITS = [
+    [(0, 0), (0, 1), (2, 2), (3, 3)],        # the bar, with the crash-bar's tail
+    [(0, 0), (0, 1), (0, 0), (0, 3)],        # kick-kick restart on beat 3
+    [(3, 0), (0, 1), (1, 2), (2, 3)],        # starts on the 'skipping' last bar
+    [(0, 0), (2, 3), (1, 2), (0, 1)],        # snare-heavy, backwards half
+    [(0, 0), (0, 1), (1, 0), (2, 1)],        # two-step-ish: kick, snare, kick, snare
+    [(2, 0), (2, 1), (0, 2), (3, 1)],
+]
+
+
 def chop_map(st, bar, rnd, energy, section_bar):
-    """Which (bar of the break, beat) each beat of this bar plays: straight, or chopped jungle-style."""
+    """Which (bar of the break, beat) each beat of this bar plays: straight, or chopped jungle-style. Chops keep the
+    backbeat: a slice that opens on the snare lands on beats 2 and 4, kick slices on 1 and 3 - so the edit still
+    grooves instead of tripping over itself."""
     straight = [(bar % 4, k) for k in range(4)]
     c = float(st.get('break_chop') or 0.0)
     if c <= 0 or section_bar % 8 == 0 or rnd.random() > c * (0.35 + 0.65 * energy):
         return straight
+    if rnd.random() < 0.45:
+        return list(rnd.choice(EDITS))
+    roles = st.get('_break_roles') or _slice_roles(st['break_seq'])
+    st['_break_roles'] = roles
+    snares = [sl for sl, r in roles.items() if r == 'snare']
+    others = [sl for sl, r in roles.items() if r != 'snare']
     out = []
     for k in range(4):
-        if k == 0 and rnd.random() < 0.6:
+        if k == 0 and rnd.random() < 0.7:
             out.append(straight[0])                     # the downbeat usually stays put, so the groove still lands
+        elif rnd.random() < 0.35:
+            out.append(straight[k])
         else:
-            out.append((rnd.randrange(4), rnd.randrange(4)))
+            out.append(rnd.choice(snares if k % 2 == 1 and snares else others or snares))
     if c > 0.7 and rnd.random() < 0.4:                  # breakcore: stutter one beat
         j = rnd.randrange(1, 4)
         out[j] = out[j - 1]
     return out
+
+
+def break_edits(st, rnd, energy, section_bar, nbars):
+    """Phrase-end edits on a chopped break (jungle / breakcore / DnB): None, or (from_beat, [(beat, drum, vel, mod)])
+    to replace the last beat(s) of this bar. Snare rushes rising in pitch, a reversed snare into the downbeat, a
+    stuttered ghost-note roll."""
+    c = float(st.get('break_chop') or 0.0)
+    end_of_phrase = section_bar % 4 == 3 or section_bar == nbars - 1
+    if c <= 0 or not end_of_phrase or rnd.random() > 0.1 + c * 0.8 * (0.4 + 0.6 * energy):
+        return None
+    kind = rnd.choice(['rush', 'rush', 'reverse', 'stutter', 'pitchdown'] + (['rush32'] if c > 0.4 else []))
+    if kind == 'reverse':
+        return 3.0, [(3.0, 'kick', 0.85, None), (3.0, 'snare', 0.9, 'rev')]
+    if kind == 'stutter':
+        return 3.0, [(3.0 + k / 4, 'snare', 0.45 + 0.1 * k, 'cut') for k in range(4)]
+    if kind == 'pitchdown':
+        return 2.0, [(2.0 + k / 2, 'snare', 0.9 - 0.08 * k, 'pt:%d' % (-2 * k)) for k in range(4)]
+    if kind == 'rush32':
+        return 3.0, [(3.0 + k / 8, 'snare', 0.4 + 0.07 * k, 'pt:%d' % k) for k in range(8)]
+    return 2.0, [(2.0 + k / 4, 'snare', 0.4 + 0.06 * k, 'pt:%d' % (k // 2)) for k in range(8)]
 
 
 def bar_pattern(st, drum, slices):
@@ -272,3 +326,8 @@ GENRE_KIT.update({'hopecore': 'amen', 'alt_rock_90s': 'rock', 'bedroom_pop': '70
 CHOP.update({'hopecore': 0.45, 'ps1_game': 0.12})
 GENRE_KIT.update({'swing_tomtom': 'studio', 'big_band_50s': 'studio'})
 GENRE_KIT.update({k: 'vintage' for k in ('hauntology_melody', 'hauntology_campfire', 'hauntology_cold')})
+
+
+# 1.39: funky breaks / glitch electro - a chopped Think break with jungle-style edits
+GENRE_KIT.update({'funky_breaks': 'think'})
+CHOP.update({'funky_breaks': 0.35})

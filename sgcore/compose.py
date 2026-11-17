@@ -8,7 +8,7 @@ from .instruments import KITS, INSTRUMENTS, PALETTES
 from .theory import (Key, parse_progression, parse_key, color_fits, declutter, voice_chord, VOICINGS, fold, parse_rhythm,
                      grid_of, grid_steps, lead_voicing, Ev, chord_tones_deg, COLORS)
 from .figures import gen_riff, vary_melody, gen_trap_hats, gen_acid_pattern
-from .arrange import (BIG_SECTIONS, _track_of, BUILD_STYLES, build_sequence, GENRE_BUILD, add_build_drums, add_build_fx,
+from .arrange import (BIG_SECTIONS, _track_of, BUILD_STYLES, FX_SOUNDS, build_sequence, GENRE_BUILD, add_build_drums, add_build_fx,
                       add_transitions, apply_ending)
 
 VEL = {'X': 1.0, 'x': 0.78, 'o': 0.5}
@@ -68,7 +68,9 @@ class Options:
     vocal_guide: bool = False     # also play the vocal guide melody (it is always in the MIDI export)
     bass_rhythm: str = None       # None = style | kick (bass plays with the kick drum)
     lead_style: str = None        # None = genre | hook | arp | riff | ostinato | bell | call | chops
-    build_style: str = None       # None = genre (varies per song) | roll | triplet | kick_roll | filter | stutter | pause | lift | swell | hats | claps | toms | halftime | drumless
+    build_style: str = None       # None = genre (varies per song) | roll | triplet | kick_roll | filter | stutter | pause | lift | swell | hats | claps | toms | halftime | drumless | pickup | ride | march | tomgroove | pulse | stops | tapestop | cymbal | wash | none
+    builds: str = 'auto'          # build-ups into big sections: auto | subtle (natural, no EDM ramps) | off
+    transition_fx: str = 'auto'   # risers, reverse cymbals, impacts, tape stops ...: auto | fewer | fills (drum fills only) | off
     groove: str = None            # None = genre feel | straight | dilla | laidback | afro | dembow | jazz | house | funk
     mood: str = None              # dark | happy | chill | epic | dreamy | aggressive | melancholic | energetic | mysterious | romantic
     counter: str = None           # None = genre decides | on | off  (a second line answering the lead: celli, horns, flute ...)
@@ -920,7 +922,8 @@ def compose(opts):
     st['build_style'] = bsel if bsel in BUILD_STYLES else GENRE_BUILD.get(sname) or \
         {'Classic': 'lift', 'Orchestral': 'swell'}.get(st.get('category'), 'roll')
     st['build_home'] = st['build_style']
-    st['build_seq'] = build_sequence(st['build_style'], bool(bsel in BUILD_STYLES), random.Random(f'{opts.seed}-build-{sname}'))
+    st['build_seq'] = build_sequence(st['build_style'], bool(bsel in BUILD_STYLES), random.Random(f'{opts.seed}-build-{sname}'),
+                                     amount=getattr(opts, 'builds', 'auto') or 'auto')
     g = getattr(opts, 'groove', None)
     st['groove'] = None if g == 'straight' else (g if g in GROOVES else STYLE_GROOVE.get(sname))
     pad_voicing = rnd.choice(['close', 'close', 'open'])
@@ -1033,8 +1036,10 @@ def compose(opts):
             st['build_style'] = bs = seq[min(n_builds, len(seq) - 1)]
             n_builds += 1
             st.setdefault('builds_used', []).append(bs)
-            if bs in ('hats', 'claps', 'toms', 'drumless', 'halftime'):   # these builds bring their own drums (or none)
+            if bs in ('hats', 'claps', 'toms', 'drumless', 'halftime', 'tomgroove', 'march'):   # their own drums (or none)
                 layers -= {'kick', 'snare', 'top'}
+            elif bs == 'pulse':
+                layers -= {'snare', 'top'}
             if bs in ('filter', 'kick_roll'):
                 layers |= {'kick', 'snare', 'top'} if bs == 'filter' else {'kick'}
             elif bs == 'pause':
@@ -1086,6 +1091,15 @@ def compose(opts):
                     for step in GS:
                         if step % 4 != 0 and step not in used and rnd_d.random() < 0.06 + 0.12 * energy:
                             evs.append(Ev(dname, beat0 + step / 4, 0.25, None, 0.28))
+            if slices is not None and 'snare' in layers and st.get('break_chop'):
+                edit = drumkits.break_edits(st, rnd_d, energy, b, nbars)
+                if edit:                                    # a jungle edit on the phrase's last beat(s)
+                    frm, hits = edit
+                    brk = set(st['break_seq']) | {'lsnare', 'lkick'}
+                    evs[:] = [e for e in evs if not (e.track in brk and beat0 + frm <= e.beat < beat0 + 4 and e.track != 'ride')]
+                    for pos, dn, v, mod in hits:
+                        if dn in tracks:
+                            evs.append(Ev(dn, beat0 + pos, 0.25, None, v, mod=mod))
             if st.get('comp_snare') and 'snare' in layers and snares and snares[0] in tracks:
                 # jazz comping: sparse, irregular snare accents on off-beats, the odd kick "bomb"
                 for step in (2, 6, 7, 10, 11, 14, 15):
@@ -1335,10 +1349,17 @@ def compose(opts):
                     last.midi = min(tonic, key=lambda m: abs(m - last.midi))
                     last.dur = max(last.dur, sec_start + nbars * 4 - last.beat - 0.1)
         if opts_s.get('build'):
-            add_build_fx(fx, st.get('build_style', 'roll'), sec_start, nbars, riser=st.get('build_home') not in ('lift', 'swell', 'pause'))
+            add_build_fx(fx, st.get('build_style', 'roll'), sec_start, nbars,
+                         riser=st.get('build_home') not in ('lift', 'swell', 'pause') and st.get('category') == 'Electronic'
+                         and (getattr(opts, 'builds', 'auto') or 'auto') == 'auto',
+                         rnd=random.Random(f'{opts.seed}-bfx-{sec_start}'))
+        if opts_s.get('drop') and (getattr(opts, 'transition_fx', 'auto') or 'auto') in ('auto', 'fewer'):
+            if rnd_d.random() < (0.35 if getattr(opts, 'transition_fx', 'auto') == 'fewer' else 0.6):
+                fx.append(('impact', sec_start, 0))
+            elif rnd_d.random() < 0.4:
+                fx.append(('downlift', sec_start, 4))
         if opts_s.get('drop'):
             fx.append(('crash', sec_start, 0))
-            fx.append(('impact', sec_start, 0))
         if opts_s.get('crash'):
             fx.append(('crash', sec_start, 0))
         if opts_s.get('filter_in'):
@@ -1394,6 +1415,8 @@ def compose(opts):
                 if e.glide is not None:
                     e.glide -= 12
     add_transitions(sections, evs, fx, tracks, st, opts)
+    if (getattr(opts, 'transition_fx', 'auto') or 'auto') in ('fills', 'off'):   # no risers / cymbal swells / impacts
+        fx[:] = [f for f in fx if f[0] not in FX_SOUNDS]
     bar0 = apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_color, bar0)
     shape_dynamics(evs, tracks, sections, st)
     in_evs = {id(e) for e in evs}

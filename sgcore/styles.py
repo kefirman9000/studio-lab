@@ -4266,6 +4266,69 @@ style('hauntology_cold', 'Electronic',
       label='Hauntology - cold dystopian synths')
 
 
+# ============================== SOLO PIANO MINIATURE (v1.39) =================================================
+# A short, intimate solo-piano piece: one close-miked upright played very softly and very evenly (the near-mechanical
+# touch of a player piano), a rocking 8th-note left-hand figure under a plain, singing right-hand tune. No band, no
+# drums, no swells - just the instrument in a small room, with the hammers and felt close enough to hear.
+FORMS['piano_miniature'] = [
+    ('A', 8, {'arp', 'bass', 'lead'}, {}),
+    ('A2', 8, {'arp', 'bass', 'lead'}, {'var': 'dim'}),
+    ('bridge', 8, {'arp', 'bass', 'lead'}, {'alt': True}),
+    ('A3', 8, {'arp', 'bass', 'lead'}, {'level': 0.95, 'level_to': 1.0}),
+    ('end', 2, {'arp', 'bass'}, {'fade': True}),
+]
+style('piano_miniature', 'Orchestral',
+      'Solo piano miniature: a short, tender piece for one softly played, felt-muffled upright, close-miked in wide '
+      'stereo - an unbroken rocking 8th-note left hand swaying between two chords, a plain, singing right-hand tune on '
+      'top, a middle part that lifts to new chords and a gentle swell before it simply stops; no other instruments',
+      bpm=(74, 84), scales=['major'], human=0.004, form='piano_miniature', chord_size=3, chord_bars=1, own_progs=True,
+      progs={'major': [[0, 3, 0, 3], [0, 3, 0, 3], [3, 4, 3, 4], [0, 3, 0, 4], [0, 3, 5, 3]]},
+      reverb=0.9, sc_depth=0.0, voicing='open', no_transition_fx=True,
+      drums={}, bass=['R---------------', 'R-------O-------'], bass_lo=40,
+      chord_rh=['x---------------'], chord_center=51, arp=dict(rate=2, mode='updown', oct=3),
+      lead_rh=['x-------x---x---', 'x---x---x-------', 'x-----x-x-------', 'x---x---x---x-xx'], lead_oct=4,
+      repetition=0.8, melody_range=0.35,
+      gm_hint='One acoustic piano only (left-hand 8th-note broken chords + right-hand melody), very soft and even, '
+              'muffled felt tone, close wide stereo mic, dry room; ~78 BPM; two-chord sway (I-IV), middle part IV-V',
+      tracks=[T('bass', 'bass', 'piano', rev=0.08, pan=-0.45, db=-17, lp=1300, touch=0.6),
+              T('arp', 'arp', 'piano', rev=0.08, pan=-0.15, db=-20, lp=1500, touch=0.55),
+              T('lead', 'lead', 'piano', rev=0.08, pan=0.35, db=-18, lp=1900, touch=0.65)],
+      master=dict(lufs=-19.0, air=-9.0, low=4.0, width=1.25, gentle=True),
+      rubato=0.08,
+      pools=dict(bass=['piano'], arp=['piano'], lead=['piano']),
+      label='Solo Piano Miniature')
+
+
+# ============================== FUNKY BREAKS / GLITCH ELECTRO (v1.39) =========================================
+style('funky_breaks', 'Electronic',
+      'Funky breaks / glitch electro (late-90s big beat & nu-skool breaks): a chopped, swung funk break around 125-130 BPM '
+      'with stuttered edits, snare rushes and reversed hits, a fat rubbery bass that bends and slides, a warped, '
+      'gliding synth lead, crunchy palm-muted guitar riffs doubled by the bass, Rhodes stabs - loud, bass-heavy and mono-tight',
+      bpm=(122, 132), scales=['minor', 'dorian'], swing=0.54, human=0.004, form='edm_b', chord_size=4,
+      progs={'minor': [[0, 0, 5, 6], [0, 3, 0, 6], [0, 6, 5, 6], [0, 0, 3, 4]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]},
+      sc_depth=0.35, reverb=1.4, kit='think', lead_glide=True,
+      drums={'kick': ['X.....x...X..x..', 'X.x.......X.....', 'X.....x.x.X...x.'], 'snare': ['....X..o.o..X..o', '....X.......X.o.'],
+             'chat': ['x.xxx.xxx.xxx.xx', 'x.x.x.x.x.x.x.x.'], 'ohat': ['..............x.']},
+      bass=['R-.R..O.R-.R..Ob', 'R..R.-O...R-.RA.', 'R-..R.O.R-..O.R.'], bass_lo=28, bass_gate=0.7,
+      chord_rh=['x-..x-....x-....', '..x-..x-..x-..x-', 'x-....x-..x-....'], chord_center=60,
+      arp=dict(rate=4, mode='up', oct=5, prob=0.55),
+      lead_rh=['x---x-x-x-------', '..x-x---x-x-x---', 'x-------x-x-x-x-', 'x-x-....x---x---'],
+      riffs=['pp.pp.ppX-pp.pp.', 'X-.pp.ppX-.pp.pp', 'pp.f-pp.m-pp.b--', 'p.ppp.ppb-p.ppm-'], riff_lo=40, riff_chorus=0.55,
+      gm_hint='Chopped funk break (Think / Hot Pants style) with edits; rubbery FM / Moog bass with slides; warped portamento '
+              'lead; distorted palm-muted guitar riff doubled by the bass; Rhodes stabs; acid squelch fills',
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.15, db=-15),
+              T('chat', 'top', 'chat', pan=0.15, db=-27), T('ohat', 'top', 'ohat', pan=-0.15, db=-29),
+              T('bass', 'bass', 'fmbass', db=-11, drive=0.4),
+              T('chords', 'chords', 'guitar', db=-18, p=dict(dist=1, bright=4200), amp=30),
+              T('pad', 'pad', 'epiano', rev=0.25, db=-25, chorus=0.3),
+              T('arp', 'arp', 'acid', pan=0.25, dly=0.2, db=-27),
+              T('lead', 'lead', 'whine', rev=0.25, dly=0.25, db=-17)],
+      master=dict(lufs=-9.5, air=-0.5, low=4.0, width=0.75),
+      pools=dict(bass=['fmbass', 'moogbass', 'acid'], chords=['guitar', 'sf:distguitar', 'epiano', 'clav'],
+                 pad=['epiano', 'polysynth'], arp=['acid', 'pluck', 'bell'], lead=['whine', 'talkbox', 'softlead']),
+      label='Funky breaks / glitch electro')
+
+
 # ============================== rules applied to all the genres above ========================================
 # ----------------------------------------------------------------------------- real basses everywhere they belong
 # electric bass (Growlybass) for electric genres, upright (Meatbass) for acoustic / jazz ones

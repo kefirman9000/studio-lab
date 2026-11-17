@@ -3,6 +3,7 @@ import json
 import os
 import shutil
 import subprocess
+from .proc import NOWIN
 import time
 
 import numpy as np
@@ -287,7 +288,7 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
         mp3 = wav[:-4] + '.mp3'
         subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', wav, '-codec:a', 'libmp3lame', '-b:a', '320k',
                         '-metadata', f'title={name}', '-metadata', f"genre={info['style']}", '-metadata', 'artist=Studio Lab', mp3],
-                       check=True)
+                       check=True, **NOWIN)
         files['mp3'] = mp3
     if not preview:
         from . import exporters

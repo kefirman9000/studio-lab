@@ -22,6 +22,7 @@ import json
 import os
 import struct
 import subprocess
+from .proc import NOWIN
 import sys
 import threading
 import urllib.parse
@@ -182,7 +183,7 @@ def _flac_decoder(log):
     except Exception:
         log('Installing the FLAC reader (soundfile) ...')
         cmd = [sys.executable, '-m', 'pip', 'install', '--user', 'soundfile']
-        p = subprocess.run(cmd, capture_output=True, text=True)
+        p = subprocess.run(cmd, capture_output=True, text=True, **NOWIN)
         if p.returncode != 0:
             raise RuntimeError('could not install soundfile: ' + (p.stderr or '')[-400:])
         import importlib
@@ -434,7 +435,7 @@ ORCH = {
     'mutedgtr': ('solo', 'twang'), 'cleanguitar': ('solo', 'twang'), 'acguitar': ('ring', 'acguitar'), 'twang': ('solo', 'twang'), 'ocarina': ('solo', 'ocarina'),
 }
 # styles whose piano is a worn upright rather than a concert grand
-UPRIGHT_STYLES = {'lofi', 'boombap', 'hauntology', 'vaporwave', 'memphis_phonk', 'blues', 'soul_ballad', 'folk', 'western', 'motown'}
+UPRIGHT_STYLES = {'piano_miniature', 'lofi', 'boombap', 'hauntology', 'vaporwave', 'memphis_phonk', 'blues', 'soul_ballad', 'folk', 'western', 'motown'}
 PIPE_ORGAN_STYLES = {'epic_choir', 'baroque', 'cinematic', 'tension', 'hybrid_trailer', 'symphonic_metal', 'adventure', 'romantic'}
 SHORT_NOTE = 0.24          # seconds: notes this short are played with the short articulation (spiccato / staccato)
 

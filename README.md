@@ -33,7 +33,7 @@ The app opens in your browser. Everything runs locally on your machine.
 
 ## Genres
 
-162 genres in three groups - Electronic, Classic and Orchestral - from house, techno, trance, dubstep, drum & bass, hard dance and hopecore to hip hop, R&B, rock, 90s alt rock, metal, punk, jazz, big band, smooth jazz, country, bluegrass, reggae, salsa, soca, Afrobeats and raga, and from Baroque, Classical and Romantic forms (theme & variations, sonata, minuet & trio) to film scores and the **Cinematic Journey** orchestral generator. Each genre has its own instruments, drum patterns, grooves, song forms and mix. The full list, with what each one does, is in [docs/GENRES.md](docs/GENRES.md).
+164 genres in three tabs - Electronic, Classic and Orchestral, each sorted into sub-groups (House & Disco, Drum & Bass & Breaks, Jazz, Swing & Big Band, Solo Piano ...) - from house, techno, trance, dubstep, drum & bass, funky breaks, hard dance and hopecore to hip hop, R&B, rock, 90s alt rock, metal, punk, jazz, big band, smooth jazz, country, bluegrass, reggae, salsa, soca, Afrobeats and raga, and from Baroque, Classical and Romantic forms (theme & variations, sonata, minuet & trio) to solo piano miniatures, film scores and the **Cinematic Journey** orchestral generator. Each genre has its own instruments, drum patterns, grooves, song forms and mix. **Build-ups** (ramps into choruses and drops) can be on, subtle (natural band-style fills, no EDM risers) or off, with 23 build-up styles to pick from; **Transition FX** (risers, reverse cymbals, impacts, tape stops) can be varied, fewer, drum fills only or off. The full list, with what each one does, is in [docs/GENRES.md](docs/GENRES.md).
 
 ## Real instruments
 

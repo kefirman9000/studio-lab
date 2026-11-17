@@ -218,6 +218,74 @@ def test_new_genres():
     print('ok  new instruments, reference genres, bluegrass breaks, funk horns, jig form + drone, G-funk glide')
 
 
+def test_builds_and_transitions():
+    from sgcore.arrange import BUILD_STYLES, FX_SOUNDS, build_sequence, NATURAL_BUILDS
+    import random
+    for bs in BUILD_STYLES:                                  # every build style composes
+        for st_ in ('house', 'rock'):
+            song(st_, 2, build_style=bs)
+    for st_ in ('trance', 'pop', 'dnb'):
+        off = song(st_, 3, builds='off', transition_fx='off')
+        assert not [f for f in off['fx'] if f[0] in ('riser', 'swell', 'wash', 'cymroll', 'tapestop', 'hpsweep', 'downlift')]
+        assert set(off['st'].get('builds_used', [])) <= {'none'}
+        fills = song(st_, 3, transition_fx='fills')
+        last = max(s_['bar'] for s_ in fills['sections']) * 4
+        assert not [f for f in fills['fx'] if f[0] in FX_SOUNDS and f[1] < last]
+    seq = build_sequence('roll', False, random.Random(1), n=4, amount='subtle')
+    assert all(b in NATURAL_BUILDS for b in seq) and all(a != b for a, b in zip(seq, seq[1:]))
+    seq = build_sequence('roll', False, random.Random(4), n=4)
+    assert len(set(seq)) == 4                                # each build in a song is a different one
+    kinds = set()
+    for seed in range(8):
+        kinds |= {f[0] for f in song('house', seed)['fx']}
+    assert len({'wash', 'cymroll', 'tapestop', 'swell', 'riser', 'downlift'} & kinds) >= 3   # varied lead-ins
+    print('ok  build-ups: off / subtle / 23 styles; transition FX: fewer / fills / off; varied lead-ins')
+
+
+def test_amen_and_groups():
+    from sgcore import drumkits
+    from sgcore.styles import STYLES
+    from sgcore.genre_groups import GROUP_OF, GROUPS
+    import random
+    st = {'break_chop': 0.6, 'break_seq': drumkits.BREAKS['amen']['drums']}
+    roles = drumkits._slice_roles(st['break_seq'])
+    rnd = random.Random(3)
+    for bar in range(200):
+        m = drumkits.chop_map(st, bar, rnd, 0.9, bar % 8 + 1)
+        assert len(m) == 4 and all(sl in roles for sl in m)
+    j = song('jungle', 5)
+    mods = {e.mod for e in j['events'] if e.track in ('snare', 'kick') and e.mod}
+    assert mods and any(str(m).startswith('pt:') for m in mods)       # snare rushes / edits on phrase ends
+    from sgcore.render import drum_mod
+    x = np.random.randn(8000).astype(np.float32)
+    assert drum_mod(x, 'rev')[0] == x[min(len(x), int(0.35 * SR)) - 1] and len(drum_mod(x, 'pt:12')) < len(x)
+    assert set(GROUP_OF) == set(STYLES)                       # every genre is filed in exactly one group
+    assert sum(len(ids) for cat in GROUPS.values() for _, ids in cat) == len(STYLES)
+    for cat, gs in GROUPS.items():
+        assert all(STYLES[k]['category'] == cat for _, ids in gs for k in ids)
+    p = song('piano_miniature', 2, variety=0.95)
+    assert {t['layer'] for t in p['st']['tracks']} == {'bass', 'arp', 'lead'} and not [f for f in p['fx'] if f[0] != 'fade']
+    assert all('piano' in t['inst'] for t in p['st']['tracks'])
+    print('ok  amen: backbeat-aware chops, phrase-end edits; genre groups; solo piano miniature')
+
+
+def test_no_console_windows():
+    """Every helper program (ffmpeg, the plugin worker, git, Defender ...) starts hidden on Windows."""
+    import re
+    for fn in sorted(os.listdir(os.path.join(ROOT, 'sgcore'))):
+        if not fn.endswith('.py') or fn in ('proc.py',):
+            continue
+        src = open(os.path.join(ROOT, 'sgcore', fn), encoding='utf-8').read()
+        for m in re.finditer(r'subprocess\.run\(', src):
+            k, depth = m.end(), 1
+            while depth:
+                depth += (src[k] == '(') - (src[k] == ')')
+                k += 1
+            call = src[m.start():k]
+            assert 'NOWIN' in call or 'creationflags' in call or "'hdiutil'" in call or "'pkgutil'" in call, (fn, call[:80])
+    print('ok  helper programs run without console windows on Windows')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -229,6 +297,9 @@ def main():
     test_contrabassoon_role()
     test_drum_kits()
     test_new_genres()
+    test_builds_and_transitions()
+    test_amen_and_groups()
+    test_no_console_windows()
     print('all good')
 
 

@@ -4,31 +4,66 @@ from .theory import COLORS, Ev, fold, grid_of, voice_chord
 
 
 BUILD_STYLES = ['roll', 'triplet', 'kick_roll', 'filter', 'stutter', 'pause', 'lift', 'swell', 'hats', 'claps', 'toms',
-                'halftime', 'drumless']
+                'halftime', 'drumless', 'pickup', 'ride', 'march', 'tomgroove', 'pulse', 'stops', 'tapestop', 'cymbal',
+                'wash', 'none']
+# the ones a live band / natural record would do: no accelerating rolls, no EDM risers
+NATURAL_BUILDS = ['pickup', 'ride', 'tomgroove', 'march', 'stops', 'cymbal', 'lift', 'pause', 'toms', 'none']
+BUILD_AMOUNTS = ['auto', 'subtle', 'off']          # how hard the songs ramp up into the big sections
+TRANSITION_FX = ['auto', 'fewer', 'fills', 'off']  # risers / reverse cymbals / impacts: all, fewer, drum fills only, nothing
+FX_SOUNDS = {'riser', 'swell', 'cymroll', 'wash', 'impact', 'crash', 'tapestop', 'downlift'}
 
 
 # a genre's own build-up first, then the other ones that suit it - each song (and each build in a song) picks from these
 BUILD_FAMILY = {
-    'roll': ['roll', 'triplet', 'claps', 'hats', 'drumless', 'swell', 'halftime'],
-    'triplet': ['triplet', 'roll', 'hats', 'drumless', 'claps'],
-    'kick_roll': ['kick_roll', 'roll', 'drumless', 'halftime'],
-    'filter': ['filter', 'hats', 'drumless', 'claps', 'toms'],
-    'stutter': ['stutter', 'halftime', 'drumless', 'roll', 'hats'],
-    'pause': ['pause', 'drumless', 'halftime', 'hats'],
-    'lift': ['lift', 'toms', 'claps', 'hats'],
-    'swell': ['swell', 'toms', 'drumless'],
+    'roll': ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup'],
+    'triplet': ['triplet', 'roll', 'hats', 'drumless', 'wash', 'pulse', 'stops'],
+    'kick_roll': ['kick_roll', 'roll', 'drumless', 'halftime', 'pulse', 'tapestop', 'wash'],
+    'filter': ['filter', 'hats', 'drumless', 'wash', 'pulse', 'tapestop', 'pickup', 'ride'],
+    'stutter': ['stutter', 'halftime', 'drumless', 'tapestop', 'hats', 'stops', 'wash'],
+    'pause': ['pause', 'drumless', 'halftime', 'tapestop', 'pickup', 'stops', 'wash'],
+    'lift': ['lift', 'pickup', 'toms', 'ride', 'stops', 'tomgroove', 'march', 'claps'],
+    'swell': ['swell', 'cymbal', 'tomgroove', 'march', 'pickup', 'drumless', 'ride'],
+    'hats': ['hats', 'pulse', 'filter', 'pickup', 'wash', 'claps'],
+    'claps': ['claps', 'pickup', 'hats', 'stops', 'lift', 'pulse'],
+    'toms': ['toms', 'tomgroove', 'pickup', 'ride', 'stops', 'cymbal'],
+    'ride': ['ride', 'pickup', 'lift', 'stops', 'cymbal', 'toms'],
+    'march': ['march', 'cymbal', 'tomgroove', 'swell', 'pickup'],
+    'tomgroove': ['tomgroove', 'march', 'toms', 'pickup', 'cymbal'],
+    'pickup': ['pickup', 'ride', 'stops', 'lift', 'toms', 'none'],
 }
+SUBTLE = {'roll': 'pickup', 'triplet': 'pickup', 'kick_roll': 'pulse', 'stutter': 'pickup', 'drumless': 'pause',
+          'halftime': 'pause', 'hats': 'ride', 'claps': 'pickup', 'filter': 'pickup', 'swell': 'cymbal', 'wash': 'pickup',
+          'tapestop': 'pickup', 'pulse': 'pickup'}
 
 
-def build_sequence(default, forced, rnd, n=4):
-    """The build-up style for each build in the song: never the same one twice in a row, and the genre's own one
-    only some of the time, so songs (and the builds inside one song) don't all ramp up the same way."""
+def build_sequence(default, forced, rnd, n=4, amount='auto'):
+    """The build-up style for each build in the song. Each build in a song is a different one (until the genre runs
+    out of ideas), the genre's own one only some of the time, so songs don't all ramp up the same way.
+    amount: 'subtle' swaps the big EDM ramps for natural ones; 'off' = no build-ups at all."""
+    if amount == 'off':
+        return ['none'] * n
     if forced:
-        return [default] * n
-    fam = BUILD_FAMILY.get(default, [default])
-    seq = [default if rnd.random() < 0.4 else rnd.choice(fam)]
-    while len(seq) < n:
-        seq.append(rnd.choice([b for b in fam if b != seq[-1]] or fam))
+        seq = [default] * n
+    else:
+        fam = list(BUILD_FAMILY.get(default, [default, 'pickup', 'stops']))
+        first = default if rnd.random() < 0.35 else rnd.choice(fam)
+        seq, pool = [first], [b for b in fam if b != first]
+        while len(seq) < n:
+            if not pool:
+                pool = [b for b in fam if b != seq[-1]] or fam
+            pick = rnd.choice(pool)
+            pool.remove(pick)
+            seq.append(pick)
+    if amount == 'subtle':                          # natural ones only: the usual swap, or another natural one
+        out = []
+        for b in seq:
+            if b not in NATURAL_BUILDS or b == 'none':
+                b = SUBTLE.get(b, 'pickup') if rnd.random() < 0.4 else \
+                    rnd.choice(['pickup', 'ride', 'stops', 'lift', 'pause', 'cymbal', 'tomgroove', 'toms'])
+            if out and b == out[-1]:
+                b = rnd.choice([x for x in ('pickup', 'ride', 'stops', 'lift', 'cymbal') if x != b])
+            out.append(b)
+        seq = out
     return seq
 
 
@@ -42,7 +77,8 @@ GENRE_BUILD = {'riddim': 'pause', 'chillstep': 'swell', 'jazz_rap': 'pause', 'cl
                'jersey_club': 'pause', 'baile_funk': 'stutter', 'punk': 'roll', 'waltz': 'swell', 'celtic_jig': 'swell',
                'soul_ballad': 'swell', 'braindance': 'stutter', 'hauntology': 'pause', 'brostep': 'roll', 'melodic_dubstep': 'roll',
                'neurofunk': 'stutter', 'liquid_dnb': 'filter', 'house_phonk': 'pause', 'memphis_phonk': 'pause', 'phonk': 'pause', 'brazilian_phonk': 'pause', 'uplifting_trance': 'roll',
-               'melodic_house': 'filter', 'teen_pop': 'lift', 'luxury_rap': 'pause', 'jam_band': 'lift', 'soft_rock': 'lift'}
+               'melodic_house': 'filter', 'teen_pop': 'lift', 'luxury_rap': 'pause', 'jam_band': 'lift', 'soft_rock': 'lift',
+               'funky_breaks': 'stutter', 'piano_miniature': 'none'}
 
 
 BIG_SECTIONS = {'chorus', 'hook', 'climax', 'theme', 'drop'}
@@ -69,8 +105,9 @@ def add_build_drums(evs, st, tracks, snares, kick, b, nbars, beat0, rnd):
             if last and pos >= 3.5:
                 break
             evs.append(Ev(track, beat0 + pos, 0.25, None, 0.35 + 0.6 * (b + pos / 4) / nbars))
+    sec0 = int(beat0 - 4 * b) // 4                      # each build in a song gets its own ramp shape
     if bs == 'roll' and snare:
-        roll(snare, (1, 2, 4, 8))
+        roll(snare, [(1, 2, 4, 8), (2, 2, 4, 4), (1, 2, 2, 4), (2, 4, 4, 8), (1, 1, 2, 4)][sec0 % 5])
     elif bs == 'triplet' and snare:
         roll(snare, (1, 1.5, 3, 6))                     # triplet subdivisions
     elif bs == 'kick_roll' and kick in tracks:
@@ -105,7 +142,8 @@ def add_build_drums(evs, st, tracks, snares, kick, b, nbars, beat0, rnd):
     elif bs == 'claps':                                 # claps on 2 and 4, then 8ths, then 16ths
         clap = 'clap' if 'clap' in tracks else snare
         if clap:
-            div = 0.5 if pb < 0.5 else (2 if pb < 0.8 else 4)
+            div = [(0.5, 2, 4), (0.5, 1, 2), (0.5, 0.5, 2), (1, 2, 2)][sec0 % 4]
+            div = div[0] if pb < 0.5 else (div[1] if pb < 0.8 else div[2])
             for k in range(int(4 * div)):
                 pos = k / div
                 if div == 0.5:
@@ -130,6 +168,57 @@ def add_build_drums(evs, st, tracks, snares, kick, b, nbars, beat0, rnd):
             else:
                 for k in range(8):
                     evs.append(Ev(snare, beat0 + k / 2 if k < 4 else beat0 + 2 + (k - 4) / 4, 0.25, None, 0.5 + 0.06 * k))
+    elif bs == 'pickup' and last:                       # the groove just carries on - a short fill on the last beat
+        toms = ensure_toms(st, tracks) if rnd.random() < 0.5 else None
+        figs = [(3.0, 3.25, 3.5, 3.75), (3.5, 3.75), (3.0, 3.5, 3.75), (2.5, 3.0, 3.5), (3.25, 3.5, 3.75)]
+        fig = rnd.choice(figs)
+        evs[:] = [e for e in evs if not (e.track in (snare, *(toms or [])) and e.beat >= beat0 + fig[0])]
+        for k, pos in enumerate(fig):
+            name = toms[min(2, k)] if toms and k < len(fig) - 1 else snare
+            if name:
+                evs.append(Ev(name, beat0 + pos, 0.25, None, 0.6 + 0.3 * k / max(1, len(fig) - 1)))
+    elif bs == 'ride':                                  # a ride (or crash) on every 8th, getting louder, bell on the beat
+        cym = ensure_drum(st, tracks, 'bride', 'ride', 'top', -24, 0.3)
+        for k in range(8 if not last else 7):
+            evs.append(Ev(cym, beat0 + k / 2, 0.25, None, (0.35 + 0.45 * (b + k / 8) / nbars) * (1.0 if k % 2 == 0 else 0.75)))
+        if last and snare:
+            for pos in (3.0, 3.5, 3.75):
+                evs.append(Ev(snare, beat0 + pos, 0.25, None, 0.8))
+    elif bs == 'march' and snare:                       # a marching snare: rudiments, crescendo, no speeding up
+        pats = ['X.xxX.x.X.xxX.x.', 'X.x.X.xxX.x.X.xx', 'X.xxX.xxX.xxX.x.'] if grid_of(st) == 16 else ['X.xX.xX.xX.x']
+        pat = pats[b % len(pats)] if not last else ('X.xxX.xxxxxxxxxx' if grid_of(st) == 16 else 'X.xX.xxxxxxx')
+        g = len(pat)
+        for k, c in enumerate(pat):
+            if c != '.':
+                v = (0.3 + 0.55 * (b + k / g) / nbars) * (1.0 if c == 'X' else 0.7)
+                evs.append(Ev(snare, beat0 + 4 * k / g, 0.25, None, v))
+                if c == 'X' and rnd.random() < 0.3:          # a flam
+                    evs.append(Ev(snare, beat0 + 4 * k / g - 0.04, 0.25, None, v * 0.5))
+    elif bs == 'tomgroove':                             # floor toms carry a rolling tribal groove
+        toms = ensure_toms(st, tracks)
+        pat = [(0, 2), (0.75, 1), (1.5, 2), (2, 1), (2.5, 0), (3, 2), (3.5, 1)] if not last else \
+              [(0, 2), (0.75, 1), (1.5, 2), (2, 1), (2.5, 0), (2.75, 0), (3, 1), (3.25, 1), (3.5, 2), (3.75, 2)]
+        for pos, t in pat:
+            evs.append(Ev(toms[t], beat0 + pos, 0.25, None, 0.4 + 0.5 * (b + pos / 4) / nbars))
+    elif bs == 'pulse' and kick in tracks:              # the beat thins to a steady kick pulse, then holds its breath
+        for k in range(4):
+            if not (last and k == 3):
+                evs.append(Ev(kick, beat0 + k, 0.25, None, 0.6 + 0.35 * (b + k / 4) / nbars))
+        if last and snare:
+            for pos in (3.0, 3.25, 3.5):
+                evs.append(Ev(snare, beat0 + pos, 0.25, None, 0.7))
+    elif bs == 'stops' and b >= nbars - 2:             # the band plays stop-time hits together
+        hits = stop_hits(beat0 - (b - (nbars - 2)) * 4 if b == nbars - 1 else beat0, b == nbars - 1)
+        drum_like = {n for n, t in tracks.items() if t.get('layer') in ('kick', 'snare', 'top')}
+        evs[:] = [e for e in evs if not (e.track in drum_like and beat0 <= e.beat < beat0 + 4)]
+        for pos in hits:
+            if kick in tracks:
+                evs.append(Ev(kick, beat0 + pos, 0.25, None, 0.9))
+            if snare:
+                evs.append(Ev(snare, beat0 + pos, 0.25, None, 0.85))
+    elif bs == 'cymbal' and last and snare:            # a mallet cymbal roll (fx) - the drums just mark the last beat
+        evs.append(Ev(snare, beat0 + 3.5, 0.25, None, 0.7))
+        evs.append(Ev(snare, beat0 + 3.75, 0.25, None, 0.85))
     if bs in ('filter', 'kick_roll', 'lift') and last:   # kick drops out on the final beat
         evs[:] = [e for e in evs if not (e.track == kick and e.beat >= beat0 + 3)]
 
@@ -146,10 +235,75 @@ def ensure_toms(st, tracks):
     return names
 
 
-def add_build_fx(fx, bs, start, nbars, riser=True):
+def ensure_drum(st, tracks, name, inst, layer, db, pan):
+    if name not in tracks:
+        t = dict(name=name, layer=layer, inst=inst, pan=pan, rev=0.1, dly=0.0, sc=0.0, db=db, hp=None, drive=None, p={})
+        tracks[name] = t
+        st['tracks'].append(t)
+    return name
+
+
+STOP_FIGURES = [[0, 1.5, 3.0], [0, 0.75, 1.5, 3.0], [0, 2.0, 3.0, 3.5], [0, 1.0, 2.5], [0, 1.5, 2.5, 3.5]]
+
+
+def stop_hits(pair_start, second):
+    """Beats (within the bar) of the band's stop-time hits for a 'stops' build; the same figure for the build's drums
+    and its silences. The second bar answers the first."""
+    fig = STOP_FIGURES[int(pair_start) // 4 % len(STOP_FIGURES)]
+    return [0, 1.0, 2.0, 2.5, 3.0, 3.25, 3.5] if second else fig
+
+
+def stop_gaps(beat0, hits, hit_len=0.4):
+    out = []
+    for k, h in enumerate(hits):
+        nxt = hits[k + 1] if k + 1 < len(hits) else 4.0
+        if nxt - h > hit_len + 0.1:
+            out.append(('gap', beat0 + h + hit_len, nxt - h - hit_len))
+    return out
+
+
+def _end_fx(rnd, end, riser):
+    """How the last bar leads into the next section - varied, not always a reverse cymbal."""
+    kind = rnd.choice(['swell', 'cymroll', 'wash', None, None] if riser else ['swell', 'cymroll', None, None])
+    if kind == 'cymroll':
+        return [('cymroll', end - 2, 2)]
+    if kind == 'wash':
+        return [('wash', end - 4, 4)]
+    if kind == 'swell':
+        return [('swell', end - rnd.choice([2, 4]), 2 if rnd.random() < 0.4 else 4)]
+    return []
+
+
+def add_build_fx(fx, bs, start, nbars, riser=True, rnd=None):
     end = start + nbars * 4
+    rnd = rnd or random.Random(int(start) * 7 + len(bs))
+    if bs in ('none', 'pickup', 'march', 'tomgroove', 'ride'):     # natural builds: the drums do it all
+        if bs in ('march', 'tomgroove') and rnd.random() < 0.4:
+            fx.append(('cymroll', end - 2, 2))
+        return
+    if bs == 'cymbal':
+        fx.append(('cymroll', end - min(8, nbars * 4), min(8, nbars * 4)))
+        return
+    if bs == 'stops':
+        if nbars >= 2:
+            fx.extend(stop_gaps(end - 8, stop_hits(end - 8, False)))
+        fx.extend(stop_gaps(end - 4, stop_hits(end - 8, True), 0.2))
+        return
+    if bs == 'tapestop':
+        fx.append(('tapestop', end - 2, 1.5))
+        fx.append(('gap', end - 0.5, 0.5))
+        return
+    if bs == 'wash':
+        fx.append(('wash', start, nbars * 4))
+        fx.append(('hpsweep', start, nbars * 4))
+        fx.append(('gap', end - 0.5, 0.5))
+        return
+    if bs == 'pulse':
+        fx.append(('hpsweep', start, nbars * 4))
+        fx.append(('riser', start, nbars * 4) if riser else ('wash', end - 4, 4))
+        return
     if bs in ('hats', 'claps', 'drumless') and not riser:     # band / pop / film styles: a swell, never an EDM riser
-        fx.append(('swell', end - 4, 4))
+        fx.extend(_end_fx(rnd, end, False))
         fx.append(('gap', end - 0.5, 0.5))
         return
     if bs in ('hats', 'claps'):
@@ -157,50 +311,80 @@ def add_build_fx(fx, bs, start, nbars, riser=True):
         fx.append(('gap', end - 0.5, 0.5))
         return
     if bs == 'toms':
-        fx.append(('swell', end - 4, 4))
+        fx.extend(_end_fx(rnd, end, False))
         return
     if bs == 'halftime':
         fx.append(('hpsweep', start, nbars * 4))
-        fx.append(('swell', end - 4, 4))
+        fx.extend(_end_fx(rnd, end, riser))
         fx.append(('gap', end - 1, 1))
         return
-    if bs == 'drumless':                                # drums out: only the riser, a filter and a reverse swell
-        fx.append(('riser', end - min(8, nbars * 2), min(8, nbars * 2)))
+    if bs == 'drumless':                                # drums out: a riser or noise wash, a filter, a lead-in
+        fx.append(('riser', end - min(8, nbars * 2), min(8, nbars * 2)) if riser and rnd.random() < 0.6 else ('wash', start, nbars * 4))
         fx.append(('hpsweep', start, nbars * 4))
-        fx.append(('swell', end - 4, 4))
+        fx.extend(_end_fx(rnd, end, riser))
         fx.append(('gap', end - 0.5, 0.5))
         return
     if bs in ('roll', 'triplet', 'kick_roll', 'stutter'):
-        fx.append(('riser', start, nbars * 4))
+        fx.append(('riser', start, nbars * 4) if riser or rnd.random() < 0.3 else ('wash', start, nbars * 4))
         fx.append(('hpsweep', start, nbars * 4))
         fx.append(('gap', end - (1.0 if bs == 'stutter' else 0.5), 1.0 if bs == 'stutter' else 0.5))
     elif bs == 'filter':                                # long filter, short riser, kick-out
         fx.append(('hpsweep', start, nbars * 4))
         fx.append(('riser', end - 8, 8))
         fx.append(('gap', end - 1, 1))
-    elif bs == 'pause':                                 # the band drops out, a swell, straight back in
-        fx.append(('swell', end - 4, 4))
+    elif bs == 'pause':                                 # the band drops out, a lead-in, straight back in
+        fx.extend(_end_fx(rnd, end, riser))
         fx.append(('gap', end - 0.5, 0.5))
     elif bs == 'lift':
-        fx.append(('swell', end - 4, 4))
+        fx.extend(_end_fx(rnd, end, False))
     elif bs == 'swell':
-        fx.append(('riser', start, nbars * 4))
+        fx.append(('riser', start, nbars * 4) if riser else ('cymroll', end - min(8, nbars * 4), min(8, nbars * 4)))
         fx.append(('swell', end - 4, 4))
 
 
 def add_transitions(sections, evs, fx, tracks, st, opts):
-    """A fill and a reverse-cymbal swell into every bigger section (chorus, drop, climax), in the genre's idiom:
-    tom fills for band styles, snare fills for electronic ones."""
+    """A fill and a lead-in into every bigger section (chorus, drop, climax), in the genre's idiom: tom fills for band
+    styles, snare fills for electronic ones; the lead-in changes each time (reverse cymbal, mallet roll, noise wash,
+    tape stop, a moment of silence, just a crash - or nothing). opts.transition_fx: auto | fewer | fills | off."""
     from .instruments import DRUMS
     rnd = random.Random(opts.seed * 13 + 5)
     cat = st.get('category')
+    mode = getattr(opts, 'transition_fx', 'auto') or 'auto'
+    if mode == 'off' or st.get('no_transition_fx'):
+        return
     snare = next((s for s in st.get('snare_tracks', []) if s in tracks), None)
+    # how each transition is marked - a mix of moves, never the same one twice in a row (and mostly no reverse cymbal)
+    moves = {'Electronic': ['swell', 'wash', 'tapestop', 'gap', 'crash', 'none', 'none', 'downlift'],
+             'Classic': ['swell', 'cymroll', 'crash', 'crash', 'none', 'none', 'gap'],
+             'Orchestral': ['cymroll', 'cymroll', 'swell', 'none', 'crash']}.get(cat, ['swell', 'crash', 'none', 'gap'])
+    last_move = None
     for cur, nxt in zip(sections, sections[1:]):
         bigger = nxt['opts'].get('drop') or nxt['name'] in BIG_SECTIONS
         if not bigger or cur['opts'].get('build'):
             continue
         end = (cur['bar'] + cur['bars']) * 4
-        fx.append(('swell', end - 4, 4))
+        if mode == 'fewer' and rnd.random() < 0.5:
+            continue
+        move = rnd.choice([m for m in moves if m != last_move] or moves)
+        last_move = move
+        if mode != 'fills':
+            if move == 'swell':
+                d = 2 if rnd.random() < 0.4 else 4
+                fx.append(('swell', end - d, d))
+            elif move == 'cymroll':
+                fx.append(('cymroll', end - 2, 2))
+            elif move == 'wash':
+                fx.append(('wash', end - 4, 4))
+            elif move == 'tapestop' and st.get('category') == 'Electronic':
+                fx.append(('tapestop', end - 1.5, 1.0))
+                fx.append(('gap', end - 0.5, 0.5))
+                continue                                    # the tape stop is the fill
+            elif move == 'downlift':
+                fx.append(('downlift', end, 4))
+            elif move == 'crash':
+                fx.append(('crash', end, 0))
+        if move == 'gap':
+            fx.append(('gap', end - 0.5, 0.5))
         if 'snare' not in cur['layers'] or not snare or rnd.random() > (0.55 + 0.45 * opts.energy) * (1 - 0.8 * float(getattr(opts, 'simplicity', 0) or 0)):
             continue
         beats = 2 if cat == 'Classic' else rnd.choice([1, 1, 2])

@@ -6,6 +6,7 @@ import os
 import re
 import shutil
 import subprocess
+from .proc import NOWIN
 import sys
 import tempfile
 import time
@@ -234,7 +235,7 @@ def install(log=print):
     """pip-install pedalboard for the current Python (needs internet)."""
     cmd = [sys.executable, '-m', 'pip', 'install', '--user', '--upgrade', 'pedalboard']
     log('Installing VST support: ' + ' '.join(cmd))
-    p = subprocess.run(cmd, capture_output=True, text=True)
+    p = subprocess.run(cmd, capture_output=True, text=True, **NOWIN)
     log((p.stdout or '')[-2000:])
     if p.returncode != 0:
         log((p.stderr or '')[-2000:])
@@ -281,7 +282,7 @@ def _run(job, timeout):
     env['PYTHONPATH'] = ROOT + os.pathsep + env.get('PYTHONPATH', '')
     try:
         subprocess.run([sys.executable, '-m', 'sgcore.vst_worker', path], cwd=ROOT, env=env, timeout=timeout,
-                       capture_output=True)
+                       capture_output=True, **NOWIN)
     except subprocess.TimeoutExpired:
         return {'ok': False, 'error': 'the plugin took too long and was stopped'}, d
     try:

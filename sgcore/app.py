@@ -356,12 +356,13 @@ def bg_job(fn):
 
 
 def meta():
+    from .genre_groups import group_of, rank, order
     by_cat = {c: [] for c in CATEGORIES}
-    for k, v in STYLES.items():
-        by_cat[v['category']].append(dict(id=k, name=label(k), desc=v['desc'], bpm=v['bpm']))
+    for k, v in sorted(STYLES.items(), key=lambda kv: rank(kv[0])):
+        by_cat[v['category']].append(dict(id=k, name=label(k), desc=v['desc'], bpm=v['bpm'], group=group_of(k)))
     return dict(
         version=updater.local_version(), repo=updater.repo(), ffmpeg=have_ffmpeg(), output_dir=out_dir(),
-        categories=by_cat, moods=list(MOODS), scales=list(SCALES), keys=NOTE_NAMES,
+        categories=by_cat, group_order={c: order(c) for c in CATEGORIES}, moods=list(MOODS), scales=list(SCALES), keys=NOTE_NAMES,
         roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Built-in (suits this part)') for i in lst] + real_insts(r) + vst_insts(r) + user_insts()
                + other_insts(r, lst) for r, lst in ROLE_CHOICES.items()},
         effects=vst_effects(), voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],

@@ -76,7 +76,8 @@ def apply():
     if os.path.isdir(os.path.join(ROOT, '.git')):
         # running from a git clone: a plain pull is safest
         import subprocess
-        out = subprocess.run(['git', '-C', ROOT, 'pull', '--ff-only'], capture_output=True, text=True)
+        from .proc import NOWIN
+        out = subprocess.run(['git', '-C', ROOT, 'pull', '--ff-only'], capture_output=True, text=True, **NOWIN)
         if out.returncode == 0:
             return dict(ok=True, message=out.stdout.strip() or 'Updated', version=local_version())
     if not r or '/' not in r or any(c in r for c in ' ?#\\'):

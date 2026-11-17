@@ -190,6 +190,13 @@ class Renderer:
                 if sig is not None and inst in ('kick', 'snare'):
                     sig = tame_transient(sig, 13.0 if inst == 'kick' else 15.0, 6.0)
                 semis = float(self.st.get('break_pitch') or 0.0)
+                ob = self.st.get('break_orig_bpm')
+                if ob and self.st.get('break_seq') and inst in ('kick', 'snare', 'ride', 'chat', 'ohat', 'crash'):
+                    # a sped-up record: every 10% faster is ~1.6 semitones higher (half of it - real jungle also re-tuned)
+                    semis += max(-3.0, min(5.0, 0.5 * 12 * math.log2((60.0 / self.spb) / ob)))
+                bs_ = self.st.get('break_sampler') or (None, None)
+                if sig is not None and self.st.get('break_seq') and (bs_[0] or bs_[1]) and inst in ('kick', 'snare', 'ride', 'chat', 'ohat', 'crash'):
+                    sig = crush(sig, int(bs_[0] or 16), float(bs_[1] or SR)).astype(np.float32)
                 if sig is not None and semis and kit and name.split(':')[0] in (kit, rs):
                     # breaks: the kit tuned up / down like a sped-up / slowed record
                     r = 2 ** (semis / 12.0)
@@ -309,6 +316,10 @@ class Renderer:
             tcfg = dict(tcfg, inst=tcfg.get('fallback') or 'pluck_saw', p={})
         is_drum = tcfg['inst'] in DRUMS
         p = None if is_drum else self._params(tcfg)
+        if tcfg.get('touch'):                                 # a lighter (or heavier) touch: softer velocity layers
+            from .theory import Ev
+            t_ = float(tcfg['touch'])
+            evs = [Ev(e.track, e.beat, e.dur, e.midi, max(0.05, min(1.0, e.vel * t_)), e.glide, e.mod, e.strum, e.slide) for e in evs]
         kick = self.st.get('kick_track', 'kick')
         real_drums = is_drum and (self.st.get('real_kit') or self.st.get('real_perc')) and not tcfg.get('synth')
         for i, ev in enumerate(evs):
@@ -318,6 +329,8 @@ class Renderer:
                 sig = self._real_drum(tcfg.get('real') or tcfg['inst'], ev, i)
             if sig is None:
                 sig = self._drum(tcfg['name'], tcfg['inst']) if is_drum else self._note(tcfg, ev, p)
+            if is_drum and ev.mod and sig is not None:      # break edits: reversed / re-pitched / cut-short hits
+                sig = drum_mod(sig, ev.mod)
             if ev.mod == 'pm' and tcfg['inst'].startswith('real:') and sig is not None:   # palm mute on the recorded guitar
                 sig = lp(hp(sig, 70), 1300).astype(np.float32)
                 k = sig.shape[-1]
@@ -480,6 +493,7 @@ class Renderer:
         gaps = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'gap']
         lpsweeps = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'lpsweep']
         hpsweeps = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'hpsweep']
+        tapestops = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'tapestop']
         # ---- energy contour + fades
         env = np.ones(L)
         for sec in song['sections']:
@@ -488,8 +502,8 @@ class Renderer:
             e = 1 - (1 - e) * (0.5 + song['energy'])
             if sec['opts'].get('level') is not None:      # written-out dynamics (Cinematic Journey): pp ... ff
                 env[s0:s1] = np.linspace(sec['opts']['level'], sec['opts'].get('level_to', sec['opts']['level']), max(0, s1 - s0))
-            elif sec['opts'].get('build'):
-                env[s0:s1] = np.linspace(0.72, 0.95, s1 - s0)
+            elif sec['opts'].get('build') and (getattr(opts, 'builds', 'auto') or 'auto') != 'off':
+                env[s0:s1] = np.linspace(0.72 if (getattr(opts, 'builds', 'auto') or 'auto') == 'auto' else 0.86, 0.95, s1 - s0)
             else:
                 env[s0:s1] = e
         env = uniform_filter1d(env, int(0.25 * SR))
@@ -531,6 +545,8 @@ class Renderer:
                 buf *= uniform_filter1d(g, int(0.5 * SR))
             if tcfg.get('hp'):
                 buf = hp(buf, tcfg['hp']).astype(np.float32)
+            if tcfg.get('lp'):                                # a muffled, felted tone
+                buf = lp(buf, tcfg['lp']).astype(np.float32)
             if tcfg['layer'] in ('chords', 'pad', 'arp'):
                 for s0, s1 in lpsweeps:
                     sweep_region(buf, s0, s1, 'lp', 250, 18000)
@@ -553,6 +569,9 @@ class Renderer:
                 buf[1] *= np.float32(np.sin(th) * np.sqrt(2))
             if duck is not None and tcfg['sc']:
                 buf *= (1 - duck * np.float32(min(1.0, sc_depth * tcfg['sc'])))[None, :]
+            for s0, s1 in tapestops:
+                if tcfg['layer'] != 'fx':
+                    tape_stop(buf, s0, s1)
             for s0, s1 in gaps:
                 if tcfg['layer'] != 'fx':
                     buf[:, s0:s1] = 0
@@ -587,6 +606,10 @@ class Renderer:
                     self._add(fxbuf, fx_riser(d * self.spb).astype(np.float32) * 0.6, s)
                 elif kind == 'cymroll' and d > 0:             # suspended cymbal roll (soft mallets), swelling to the edge
                     self._add(fxbuf, fx_cymroll(max(0.5, self._bt(b + d) - self._bt(b))), s)
+                elif kind == 'wash' and d > 0:                # a filtered noise wash opening up (no synth tone)
+                    self._add(fxbuf, fx_wash(max(0.5, self._bt(b + d) - self._bt(b))), s)
+                elif kind == 'downlift' and d > 0:            # noise falling away after the downbeat
+                    self._add(fxbuf, fx_wash(max(0.5, self._bt(b + d) - self._bt(b)), down=True), s)
                 elif kind == 'swell' and d > 0:               # reverse cymbal leading into the next section
                     c = self._drum('crash')[::-1]
                     n = min(len(c), int(d * self.spb * SR))
@@ -838,6 +861,64 @@ def pitch_slide(x, semis, sec):
     if x.ndim == 1:
         return x[i0] * (1 - fr) + x[i0 + 1] * fr
     return x[:, i0] * (1 - fr) + x[:, i0 + 1] * fr
+
+
+def drum_mod(sig, mod):
+    """'rev' a reversed hit (it swells into the next beat), 'cut' gated short, 'pt:N' re-pitched by N semitones."""
+    if mod == 'rev':
+        k = min(len(sig), int(0.35 * SR)) if sig.ndim == 1 else min(sig.shape[-1], int(0.35 * SR))
+        out = sig[..., :k][..., ::-1].copy()
+        return out
+    if mod == 'cut':
+        k = min(sig.shape[-1], int(0.07 * SR))
+        out = sig[..., :k].copy()
+        out[..., -int(0.01 * SR):] *= np.linspace(1, 0, int(0.01 * SR), dtype=np.float32)
+        return out
+    if isinstance(mod, str) and mod.startswith('pt:'):
+        try:
+            semis = float(mod[3:])
+        except ValueError:
+            return sig
+        if not semis:
+            return sig
+        r = 2 ** (semis / 12.0)
+        n = sig.shape[-1]
+        pos = np.arange(0, n - 1, r)
+        i0 = pos.astype(np.int64)
+        fr = (pos - i0).astype(np.float32)
+        return (sig[..., i0] * (1 - fr) + sig[..., i0 + 1] * fr).astype(np.float32)
+    return sig
+
+
+def fx_wash(sec, down=False):
+    """A noise wash: a low-passed noise bed whose filter opens up (or, down=True, closes and fades after a drop)."""
+    n = int(sec * SR)
+    w = np.linspace(0, 1, n)
+    if down:
+        w = w[::-1]
+    x = np.random.default_rng(23).standard_normal((2, n))
+    lo, mid, hi = lp(x, 500), lp(hp(x, 500), 3500), hp(x, 3500)
+    out = lo * (1 - w) ** 2 + mid * 2 * w * (1 - w) * 1.3 + hi * w ** 2 * 1.2
+    env = w ** (1.8 if not down else 1.2)
+    k = min(n, int(0.03 * SR))
+    if not down:
+        env[-k:] *= np.linspace(1, 0, k)
+    return (hp(out, 150) * env * 0.5).astype(np.float32)
+
+
+def tape_stop(buf, s0, s1):
+    """The tape slows to a halt over s0..s1 (pitch and speed falling together), then silence."""
+    n = min(s1, buf.shape[1]) - s0
+    if n <= 4:
+        return
+    speed = (1 - np.linspace(0, 1, n)) ** 1.4
+    pos = s0 + np.cumsum(speed)
+    pos = np.clip(pos, 0, buf.shape[1] - 2)
+    i0 = pos.astype(np.int64)
+    fr = (pos - i0).astype(np.float32)
+    seg = buf[:, i0] * (1 - fr) + buf[:, i0 + 1] * fr
+    seg *= np.linspace(1, 0.2, n, dtype=np.float32) ** 0.5
+    buf[:, s0:s0 + n] = seg
 
 
 def fx_cymroll(sec):

@@ -9,6 +9,7 @@ No check can prove a file is free of malware; these are the strongest checks ava
 import json
 import os
 import subprocess
+from .proc import NOWIN
 import sys
 import time
 import urllib.error
@@ -37,7 +38,7 @@ def defender_scan(path, timeout=600):
         return dict(ran=False, clean=None, detail='Microsoft Defender is not available on this computer')
     try:
         r = subprocess.run([exe, '-Scan', '-ScanType', '3', '-File', path, '-DisableRemediation'],
-                           capture_output=True, text=True, timeout=timeout)
+                           capture_output=True, text=True, timeout=timeout, **NOWIN)
     except Exception as e:
         return dict(ran=False, clean=None, detail=f'Defender could not run ({e})')
     out = (r.stdout or '') + (r.stderr or '')
