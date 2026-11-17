@@ -232,7 +232,32 @@ def _chipnoise(n, rate):
     return np.repeat(v, hold)[:n]
 
 
+def d_hardkick(p):
+    """Hard dance kick (hardstyle / gabber / hardcore): a clicky punch on top of a long pitched body that is driven into
+    heavy, asymmetric distortion so it 'screams' - the tail carries a note (tuned to the key by the composer), then a
+    band-pass shapes the distortion into the mid-range bite. tail 1 = hardstyle, 2 = gabber (shorter, squarer, nastier)."""
+    tail = p.get('tail', 1.0)
+    n = int(p.get('len', 0.5) * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 52)
+    f = f0 + p.get('punch', 300) * np.exp(-t * p.get('sweep', 26)) + f0 * 0.6 * np.exp(-t * 6)
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR)
+    env = np.exp(-t * p.get('decay', 3.5)) * np.clip((p.get('len', 0.5) - t) / 0.04, 0, 1)
+    drv = p.get('drive', 10.0)
+    x = body * env
+    dist = np.tanh(x * drv + 0.25 * tail) - np.tanh(0.25 * tail)                # asymmetric: even harmonics, 'rawness'
+    if tail >= 2:
+        dist = np.sign(dist) * np.abs(dist) ** 0.5                             # gabber: clipped nearly square
+    bite = bp(dist, 250, 2400) * (0.6 + 0.3 * tail)
+    sub = lp(dist, 140)
+    click = bp(noise(n), 1800, 8000) * np.exp(-t * 260) * p.get('click', 0.6)
+    y = sub * 1.1 + bite + click + 0.4 * np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 20)
+    return fade_out(soft(y, 1.4), 0.02)
+
+
 def d_kick(p):
+    if p.get('tail'):
+        return d_hardkick(p)
     n = int(p.get('len', 0.5) * SR)
     t = np.arange(n) / SR
     f = p.get('pitch', 48) + p.get('punch', 120) * np.exp(-t * p.get('sweep', 40))
@@ -465,7 +490,10 @@ def i_piano(m, dur, p, glide=None, mod=None):
 
 
 def i_guitar(m, dur, p, glide=None, mod=None):
-    """Plucked electric guitar (Karplus-Strong + pickup/cab filtering)."""
+    """Plucked electric guitar (Karplus-Strong + pickup/cab filtering). mod 'pm' = palm-muted (choked, dark, thumpy)."""
+    if mod == 'pm':
+        y = i_pluck(m, min(dur, 0.16), dict(bright=1600, damp=0.97, r=0.05))
+        return eq(y, 'peak', 160, 1.0, 5.0) * 0.8
     y = i_pluck(m, dur, dict(bright=p.get('bright', 6500), damp=p.get('damp', 0.997), r=0.15))
     y = eq(y, 'peak', 2400, 1.0, 4.0)
     if p.get('dist'):
@@ -1489,3 +1517,129 @@ INSTRUMENTS.update({'screech': i_screech, 'riddim': i_riddim})
 INSTRUMENT_INFO.update({'screech': 'Screech bass (brostep)', 'riddim': 'Riddim bass (chopped)'})
 ROLE_CHOICES['bass'] += ['screech', 'riddim']
 GM_PROGRAM.update({'screech': 81, 'riddim': 39})
+
+
+
+# =============================================================================
+#  v1.36: M1 house piano, folk & latin instruments rebuilt, tuned log drum
+# =============================================================================
+
+def i_m1piano(m, dur, p, glide=None, mod=None):
+    """Korg M1 'Piano 16'' - the bright, glassy, slightly hollow house piano (Crystal Waters, Robin S, every 90s piano
+    house record): a hard hammer 'ding', upper partials that die fast, a short looped sustain and a big 3 kHz presence."""
+    f = float(mtof(m))
+    ring = min(dur + 0.5, 3.0)
+    n = int(ring * SR)
+    t = np.arange(n) / SR
+    amps = (1.0, 0.85, 0.5, 0.55, 0.3, 0.32, 0.16, 0.14, 0.1, 0.08, 0.06)
+    y = np.zeros(n)
+    for k, a in enumerate(amps, 1):
+        fk = k * f * (1 + 0.0003 * k * k)
+        if fk > 15000:
+            break
+        dk = 2.2 + 1.4 * k
+        y += a * np.sin(2 * np.pi * fk * t + k) * (np.exp(-t * dk) * 0.8 + 0.2 * np.exp(-t * 0.9))   # the looped tail
+    y += 0.12 * bp(noise(n), 2000, 7000) * np.exp(-t * 90)                    # hammer
+    g = int(dur * SR)
+    if g < n:
+        y[g:] *= np.exp(-np.arange(n - g) / (0.07 * SR))
+    y = eq(eq(hp(y, 160), 'peak', 3100, 0.9, 5.0), 'highshelf', 7500, 0.7, 3.0)
+    y = soft(y * 0.9, 1.2) * np.minimum(t / 0.001, 1) * 0.32
+    return np.vstack([y, np.roll(y, 90)])
+
+
+def i_accordion2(m, dur, p, glide=None, mod=None):
+    """Accordion with three reeds - one in tune, one sharp and one flat (the 'wet' musette tuning of cumbia, vallenato
+    and French musette), narrow-pulse reed buzz, a bellows push at the attack and a little air."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.025, 0.15, 0.9, 0.1)
+    n = len(env)
+    t = np.arange(n) / SR
+    wet = p.get('musette', 12)
+    x = np.zeros(n)
+    for c, a in ((0.0, 1.0), (wet, 0.8), (-wet * 0.9, 0.8)):
+        fc = f * 2 ** (c / 1200)
+        x += a * (square(fc, n, pw=0.22) * 0.55 + saw(fc, n) * 0.45)
+    x += 0.4 * square(f * 0.5, n, pw=0.3)                                     # the bassoon reed an octave down
+    y = lp(x, p.get('cut', 4200))
+    y = eq(eq(y, 'peak', 1250, 1.2, 5.0), 'peak', 2900, 2.0, 3.0)
+    y += 0.03 * bp(noise(n), 800, 4000) * np.exp(-t * 6)                       # air at the bellows push
+    push = 1 + 0.25 * np.exp(-t * 9) + 0.035 * np.sin(2 * np.pi * 0.7 * t)
+    y = hp(y, 110) * env * push * 0.2
+    return np.vstack([y, np.roll(y, 160)])
+
+
+def i_bandoneon(m, dur, p, glide=None, mod=None):
+    """Bandoneon (tango): two reeds an octave apart, dry (no musette beating), dark and reedy with a breathy, slightly
+    plaintive attack - Piazzolla's instrument."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.05, 0.25, 0.85, 0.15)
+    n = len(env)
+    t = np.arange(n) / SR
+    fv = vibrato(f, n, rate=5.2, cents=4, delay=0.5)
+    x = square(fv, n, pw=0.33) * 0.6 + saw(fv, n) * 0.4 + 0.55 * square(fv * 0.5, n, pw=0.4)
+    y = lp(x, p.get('cut', 2700))
+    y = eq(eq(y, 'peak', 700, 1.0, 4.0), 'peak', 1600, 1.4, 2.0)
+    y += 0.05 * bp(noise(n), 500, 2500) * np.exp(-t * 8)
+    y = hp(y, 100) * env * (1 + 0.2 * np.exp(-t * 6)) * 0.24
+    return np.vstack([y, np.roll(y, 110)])
+
+
+def i_banjo2(m, dur, p, glide=None, mod=None):
+    """5-string banjo: a steel string plucked with a metal fingerpick (sharp click, very bright), ringing through a
+    drum-head bridge - nasal resonances around 400 Hz, 1.2 kHz and 3 kHz, short sustain, plenty of 'plunk'."""
+    y = i_pluck(m, max(0.35, min(dur, 1.0)), dict(bright=p.get('bright', 12000), damp=0.991, r=0.12))
+    n = len(y)
+    t = np.arange(n) / SR
+    head = bp(y, 300, 520) * 1.2 + bp(y, 1000, 1500) * 1.4 + bp(y, 2600, 3600) * 1.8 + y * 0.5
+    click = hp(noise(n), 3000) * np.exp(-t * 400) * 0.25
+    out = (hp(head, 180) + click) * np.exp(-t * 3.6)
+    return out * 0.9
+
+
+def i_pedalsteel2(m, dur, p, glide=None, mod=None):
+    """Pedal steel: the volume pedal swells each note in, the bar slides up into pitch (and the pedals bend the
+    neighbouring strings), with the glassy single-coil pickup and the sweet slow shimmer of a steel tone."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, p.get('a', 0.22), 0.6, 0.9, 0.7)
+    n = len(env)
+    t = np.arange(n) / SR
+    up = p.get('slide', -120 if (int(m) % 3) else -200)
+    fv = f * 2 ** ((up * np.exp(-t * 7)) / 1200) * 2 ** ((5 * np.sin(2 * np.pi * 5.0 * t) * np.clip(t - 0.6, 0, 1)) / 1200)
+    ph = 2 * np.pi * np.cumsum(fv) / SR
+    x = np.sin(ph) + 0.5 * np.sin(2 * ph) + 0.3 * np.sin(3 * ph) + 0.15 * np.sin(4 * ph) + 0.08 * np.sin(5 * ph)
+    y = eq(eq(x, 'peak', 2300, 1.5, 4.0), 'peak', 200, 1.0, -3.0)
+    y = soft(y * 0.8, 1.2) * env * 0.3
+    return np.vstack([y, np.roll(y, 300)])
+
+
+def i_logdrum2(m, dur, p, glide=None, mod=None):
+    """Amapiano log drum (the MDU / Kabza 'yanos' log): a tuned, hollow knock - sine + soft square body that drops in
+    pitch from above, a woody click, a filter that closes as it rings and a little drive; glides between notes."""
+    f = float(mtof(m))
+    if f < 55:
+        f *= 2                                                               # it lives above the sub, around 55-110 Hz
+    n = int((min(dur, 1.0) + 0.3) * SR)
+    t = np.arange(n) / SR
+    f_start = float(mtof(glide)) * (2 if float(mtof(glide)) < 55 else 1) if glide is not None else f * 1.9
+    fr = f + (f_start - f) * np.exp(-t * (40 if glide is None else 22))
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    body = np.sin(ph) + 0.35 * np.sign(np.sin(ph)) * np.abs(np.sin(ph)) ** 0.6 + 0.3 * np.sin(2 * ph) * np.exp(-t * 9)
+    knock = bp(noise(n), 600, 2200) * np.exp(-t * 160) * 0.5
+    y = svf_sweep(body, 300 + 2600 * np.exp(-t * 14), q=1.4) + 0.5 * np.sin(ph) + knock
+    y *= np.exp(-t * p.get('decay', 4.0)) * np.minimum(t / 0.0015, 1)
+    g = int(dur * SR)
+    if g < n:
+        y[g:] *= np.exp(-np.arange(n - g) / (0.05 * SR))
+    y = soft(y * 1.8, 1.8) * 0.6
+    return np.vstack([y, y])
+
+
+INSTRUMENTS.update({'m1piano': i_m1piano, 'accordion': i_accordion2, 'bandoneon': i_bandoneon, 'banjo': i_banjo2,
+                    'pedalsteel': i_pedalsteel2, 'logdrum': i_logdrum2})
+INSTRUMENT_INFO.update({'m1piano': 'House piano (M1-style)', 'bandoneon': 'Bandoneon (tango)'})
+ROLE_CHOICES['chords'] += ['m1piano', 'bandoneon']
+ROLE_CHOICES['lead'] += ['m1piano', 'bandoneon']
+ROLE_CHOICES['arp'] += ['m1piano']
+ROLE_CHOICES['pad'] += ['bandoneon']
+GM_PROGRAM.update({'m1piano': 1, 'bandoneon': 23})

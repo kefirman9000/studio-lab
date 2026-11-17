@@ -9,6 +9,7 @@ from scipy.ndimage import uniform_filter1d
 
 from . import dsp
 from .dsp import (SR, hp, lp, eq, soft, compressor, limiter, lufs, active_rms_db, make_ir, reverb, pingpong,
+                  make_spring_ir, dub_delay,
                   sweep_region, write_wav_float)
 from .instruments import INSTRUMENTS, DRUMS, fx_riser, fx_impact, fx_vinyl, fx_texture
 from .compose import SECTION_ENERGY, GROOVES
@@ -309,6 +310,10 @@ class Renderer:
                 sig = self._real_drum(tcfg.get('real') or tcfg['inst'], ev, i)
             if sig is None:
                 sig = self._drum(tcfg['name'], tcfg['inst']) if is_drum else self._note(tcfg, ev, p)
+            if ev.mod == 'pm' and tcfg['inst'].startswith('real:') and sig is not None:   # palm mute on the recorded guitar
+                sig = lp(hp(sig, 70), 1300).astype(np.float32)
+                k = sig.shape[-1]
+                sig = sig * np.exp(-np.arange(k) / (0.07 * SR)).astype(np.float32)
             if getattr(ev, 'slide', 0) and not is_drum:          # slide / bend up into the note
                 sig = pitch_slide(sig, float(ev.slide), min(0.22, max(0.07, self._dsec(ev.beat, ev.dur) * 0.3)))
             if tcfg.get('vibfx') and not is_drum and ev.dur >= 0.75:   # expressive delayed vibrato on held notes (sax, voice)
@@ -321,7 +326,7 @@ class Renderer:
             self._add(buf, sig * ev.vel, s)
         if self.st.get('sampler') and tcfg['layer'] in ('chords', 'lead', 'arp', 'pad') and np.any(buf):
             buf = sp1200(buf)                             # the sampled-loop grit of an SP-1200 / MPC
-        if tcfg.get('amp') and tcfg['inst'].startswith('real:'):
+        if tcfg.get('amp') and (tcfg['inst'].startswith('real:') or tcfg['inst'] in ('guitar', 'mutedgtr')):
             buf = guitar_amp(buf, float(tcfg['amp']))
         if tcfg.get('drive'):
             buf = (soft(buf * (1 + tcfg['drive'] * 3), 1.5) / (1 + tcfg['drive'])).astype(np.float32)
@@ -329,6 +334,8 @@ class Renderer:
             buf = self._gate(buf, tcfg['gate'])
         if tcfg.get('chorus'):
             buf = chorus(buf, float(tcfg['chorus']))
+        if tcfg.get('leslie_fx') and np.any(buf):
+            buf = leslie(buf, float(tcfg['leslie_fx']), float(tcfg.get('overdrive', 0.0)))
         return buf
 
     def _gate(self, buf, pattern):
@@ -386,6 +393,25 @@ class Renderer:
             self.vst_failures = getattr(self, 'vst_failures', []) + [f'{tcfg["name"]}: {e}']
             return None
 
+    def throw_mask(self, b2s, amount):
+        """Where the dub engineer opens the echo send: the last beat (sometimes two) of most 2-bar phrases, and a
+        whole-bar throw at the end of 8-bar phrases. Short fades so the send never clicks."""
+        L = self.length
+        m = np.zeros(L, dtype=np.float32)
+        rng = random.Random(self.song['seed'] + 7)
+        for bar in range(1, self.song['total_bars'], 2):
+            if (bar + 1) % 8 == 0:
+                b0, b1 = bar * 4, bar * 4 + 4
+            elif rng.random() < 0.35 + 0.4 * amount:
+                b0 = bar * 4 + rng.choice((2.0, 3.0, 3.0, 3.5))
+                b1 = bar * 4 + 4
+            else:
+                continue
+            s0, s1 = b2s(b0), min(L, b2s(b1))
+            if s1 > s0:
+                m[s0:s1] = 1
+        return uniform_filter1d(m, int(0.012 * SR))
+
     def kick_times(self):
         kn = self.st.get('kick_track', 'kick')
         return sorted(self.t_of(e.beat, human=False) for e in self.song['events'] if e.track == kn)
@@ -417,6 +443,10 @@ class Renderer:
         rev_send = np.zeros((2, L), dtype=np.float32)
         dly_send = np.zeros((2, L), dtype=np.float32)
         b2s = lambda b: int(self.t_of(b, human=False) * SR)
+        dub_send, throw = None, None
+        if st.get('dub'):                                 # dub mixing: the engineer 'throws' a hit into the tape echo
+            dub_send = np.zeros((2, L), dtype=np.float32)
+            throw = self.throw_mask(b2s, float(st['dub']))
         gaps = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'gap']
         lpsweeps = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'lpsweep']
         hpsweeps = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'hpsweep']
@@ -501,6 +531,8 @@ class Renderer:
                 rev_send += buf * np.float32(tcfg['rev'] * opts.reverb)
             if tcfg['dly']:
                 dly_send += buf * np.float32(tcfg['dly'] * opts.delay)
+            if dub_send is not None and tcfg.get('throw'):
+                dub_send += buf * throw[None, :] * np.float32(tcfg['throw'] * max(0.3, opts.delay))
             if tcfg['layer'] in ('kick', 'snare', 'top'):
                 drums += buf
             else:
@@ -551,7 +583,7 @@ class Renderer:
         self.log('   reverb + delay returns')
         returns = np.zeros_like(mix)
         if np.any(rev_send):
-            ir = make_ir(st['reverb'])
+            ir = make_spring_ir(st['reverb']) if st.get('spring') else make_ir(st['reverb'])
             rv = eq(reverb(rev_send.astype(np.float64), ir), 'lowshelf', 300, 0.7, -4.0)
             if st.get('fx_reverb'):                      # the genre's reverb plugin (Dragonfly), level-matched to the built-in
                 from . import fxrig
@@ -570,6 +602,11 @@ class Renderer:
             returns += dl * 0.45
             if np.any(rev_send):
                 returns += reverb(dl * 0.3, ir) * 0.3
+        if dub_send is not None and np.any(dub_send):
+            self.log('   dub throws: tape echo + spring')
+            dd = dub_delay(dub_send.astype(np.float64), float(st.get('dub_beats', 0.75)) * self.spb)
+            dd += reverb(dd * 0.5, make_spring_ir(1.6)) * 0.5
+            returns += dd * 0.8
         if fade_end is not None:
             returns[:, fade_end:] *= 0
             ramp = min(int(0.5 * SR), fade_end)
@@ -634,6 +671,8 @@ def sp1200(x, rate=26040.0, bits=12):
 def guitar_amp(x, gain):
     """A guitar amp + 4x12 cabinet for the recorded electric: tighten the lows, clip hard (asymmetric, like a valve
     stage), then the speaker's mid bump and top roll-off. gain ~3 = crunch, 10-20 = rock lead, 25+ = metal."""
+    if gain >= 24:
+        return metal_amp(x, gain)
     y = hp(x.astype(np.float64), 110)
     peak = float(np.max(np.abs(y))) + 1e-9
     g = 1.0 + gain * 1.5
@@ -641,6 +680,48 @@ def guitar_amp(x, gain):
     y = np.tanh(y + 0.15) - np.tanh(0.15)
     y = eq(eq(y, 'peak', 1800, 0.9, 4.0), 'peak', 400, 1.0, -2.0)
     y = lp(hp(y, 90), 5200)
+    return (y / (np.max(np.abs(y)) + 1e-9) * peak).astype(np.float32)
+
+
+def leslie(x, speed=6.5, overdrive=0.0):
+    """Leslie 122 rotary speaker for the Hammond: the tube preamp's growl, then a crossover at 800 Hz - the treble horn
+    and the bass drum rotor spin at different speeds (the drum a little slower, so they drift against each other),
+    each giving a doppler pitch wobble plus a volume / brightness swirl, picked up by two mics left and right.
+    speed ~0.8 = 'chorale' (slow), ~6.5 = 'tremolo' (fast, gospel / rock)."""
+    x = np.asarray(x, dtype=np.float64)
+    peak = float(np.max(np.abs(x))) + 1e-9
+    mono = (x[0] + x[-1]) * 0.5 / peak
+    if overdrive > 0:
+        mono = np.tanh(mono * (1 + 4 * overdrive)) / np.tanh(1 + 4 * overdrive)
+    n = mono.shape[0]
+    t = np.arange(n) / SR
+    lo, hi = lp(mono, 800, 2), hp(mono, 800, 2)
+    idx = np.arange(n, dtype=np.float64)
+    out = np.zeros((2, n))
+    for band, rate, depth, am in ((hi, speed, 0.00034, 0.32), (lo, speed * 0.86, 0.00018, 0.18)):
+        for c, ph in ((0, 0.0), (1, np.pi * 0.55)):
+            lfo = np.sin(2 * np.pi * rate * t + ph)
+            d = (0.0006 + depth * (1 + lfo)) * SR                       # the horn moving toward / away from the mic
+            y = np.interp(idx - d, idx, band)
+            out[c] += y * (1 + am * lfo)
+    out = eq(out, 'peak', 2500, 1.0, 1.5)
+    return (out / (np.max(np.abs(out)) + 1e-9) * peak).astype(np.float32)
+
+
+def metal_amp(x, gain):
+    """High-gain rig: a tube-screamer style boost in front (cuts the lows so the chugs stay tight), two clipping stages,
+    the scooped mids of a modern high-gain head, then a 4x12 with its 100 Hz thump and fizz roll-off. Each side gets a
+    slightly different cab (a double-tracked rhythm guitar)."""
+    x = np.asarray(x, dtype=np.float64)
+    peak = float(np.max(np.abs(x))) + 1e-9
+    y = eq(hp(x / peak, 380, 1), 'peak', 750, 0.8, 6.0)
+    y = np.tanh(y * (gain * 0.9) + 0.1) - np.tanh(0.1)
+    y = hp(y, 60)
+    y = np.tanh(y * 3.0)
+    y = eq(eq(y, 'peak', 650, 0.7, -5.0), 'peak', 110, 0.9, 4.0)
+    y = eq(y, 'peak', 2600, 1.0, 3.0)
+    l, r = lp(y[0], 5600, 2), lp(y[-1], 5000, 2)
+    y = np.vstack([l, eq(r, 'peak', 1700, 1.2, 1.5)])
     return (y / (np.max(np.abs(y)) + 1e-9) * peak).astype(np.float32)
 
 

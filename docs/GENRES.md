@@ -1,4 +1,4 @@
-# Studio Lab genres (141)
+# Studio Lab genres (142)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
@@ -75,7 +75,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | UK Drill | `uk_drill` | 140-145 | UK/NY drill: sliding 808s, triplet hats, offbeat snares, dark piano & strings |
 | UK Garage | `ukgarage` | 130-134 | UK garage / 2-step: skippy shuffled drums, organ stabs, vocal chops, sub bass |
 | Uplifting Trance | `uplifting_trance` | 134-140 | Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw leads and plucky arps, a long piano / pad breakdown that explodes into the drop |
-| Vaporwave | `vaporwave` | 60-80 | Vaporwave: slowed 80s nostalgia - lush Rhodes, sax, chorused pads, tape haze |
+| Vaporwave | `vaporwave` | 58-74 | Vaporwave: slowed 80s nostalgia - lush Rhodes, sax, chorused pads, tape haze |
 
 ## Classic (49)
 
@@ -131,7 +131,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Tango | `tango` | 108-126 | Tango: marcato four-beat pulse, bandoneon, dramatic violin lines, staccato piano and double bass |
 | Western Swing | `western_swing` | 130-180 | Western swing / Texas swing (Bob Wills, Asleep at the Wheel): swung country dance band - twin fiddles, pedal steel, sixth-chord piano and guitar comping, walking upright bass, brushed swing drums |
 
-## Orchestral (22)
+## Orchestral (23)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -153,6 +153,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hybrid Trailer | `hybrid_trailer` | 90-120 | Hybrid trailer: pulsing spiccato ostinatos, braams, taiko, distorted synth bass, huge choir |
 | Impressionism | `impressionism` | 56-80 | Impressionism (Debussy / Ravel): modal and lydian colours, parallel gliding chords, blurred harmony, harp and flute over muted strings and piano washes, flexible pulse - atmosphere over function |
 | Minimalism | `minimalism` | 120-160 | Minimalism (Reich / Glass / Adams): a steady pulse of repeating cells on marimba, piano and strings, shifting by gradual additive / phasing processes over slow diatonic harmony |
+| Minuet & trio | `minuet` | 104-132 | Minuet & trio (3/4, Mozart / Haydn / Bach): an elegant courtly dance in binary phrases with ornamented repeats, a quieter contrasting trio, then the minuet da capo - strings, harpsichord or fortepiano, a pair of horns |
 | Neoclassical | `neoclassical` | 60-82 | Neoclassical / modern classical: intimate piano figures, slow string swells, solo cello |
 | Orchestral | `orchestral` | 66-96 | Classical / romantic orchestra: lyrical violin melody, string harmony, harp, horns |
 | Romantic Orchestra | `romantic` | 60-92 | Romantic orchestra (Tchaikovsky / Brahms): expansive lyrical themes with rubato, rich chromatic harmony, full strings with continuous vibrato, horns and woodwinds, swelling ppp-to-fff dynamics |

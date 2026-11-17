@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.36.0
+The genres that needed the most work (everything except vocals):
+- **Metal, symphonic metal, punk**: real riffs instead of strummed chords - palm-muted chugs, gallops, ringing power chords and the metal riff notes (b2, minor 3rd, tritone), with the bass doubling the riff. Choruses switch to driving open power chords. A new **high-gain amp** (boost, two clipping stages, scooped mids, 4x12 cab, slightly different left / right like a double-tracked guitar) on both the synth and the recorded guitar; double-kick and gallop kick patterns.
+- **Hardstyle / gabber**: a proper **hard dance kick** - punchy click over a long distorted body that is **tuned to the song's key** (hardstyle) or clipped nearly square (gabber). Hardstyle's reverse bass now swells between the kicks.
+- **Psytrance**: short, tight, key-tuned kick and a clipped rolling 16th bass with no sidechain pumping (the bass sits between the kicks).
+- **Rave hardcore**: rave stabs instead of the vocal-synth arp.
+- **Reggae / ska / dancehall**: **dub mixing** - the snare, rim, skank and melody get "thrown" into a tape echo at phrase ends (band-limited repeats that darken and saturate), plus a **spring reverb** tank.
+- **Hammond organs** now go through a modelled **Leslie** rotary speaker (horn + drum rotor, doppler and swirl, tube growl): fast for gospel, soul jazz, funk and jam band; slow "chorale" for rock, blues, soul ballads, reggae.
+- **House**: a new **M1-style house piano** (the bright, glassy 90s piano-house sound) for chords and piano riffs.
+- **Tech house**: rolling, interlocking percussion - bongos, congas, tambourine, rim shots and accented shakers.
+- **Vaporwave**: slower, sampler grit (SP-1200 style), chorused Rhodes, heavier tape warble, darker top.
+- **Salsa**: a real **piano montuno** (syncopated chord tones in octaves, alternating with the clave) and horn hits. **Afrobeats**: highlife-style picked guitar patterns over Rhodes. **Tango**: a new **bandoneon**.
+- **Rebuilt instruments**: accordion (three reeds, musette beating, bellows push), banjo (metal fingerpick, drum-head resonances), pedal steel (volume-pedal swell, bar slides, glassy pickup), and the amapiano **log drum** (hollow tuned knock that drops in pitch, closing filter, glides).
+- **Classical genres are written in real forms**: Baroque - binary dance form (with ornamented repeats) or a Bach-style prelude; Classical period - **theme & variations** (ornamented, Alberti, theme in the bass, tutti) or a compact **sonata form**; Romantic - a lyric slow movement (the theme sinks to the celli, then climaxes); Impressionism - an arch form with harp shimmer. Sections end on written-out V-I cadences with the melody landing on the tonic.
+- **New genre: Minuet & trio** (3/4): minuet, ornamented repeat, trio, minuet da capo.
+
 ## 1.35.1
 Genre VSTs downloads fixed:
 - **"Microsoft Defender found a threat: CmdTool: Failed with hr = 0x80004005" was wrong**: that message means Defender's scanner couldn't run (usually Defender is switched off or another antivirus is in charge) - it never found anything. Studio Lab read it as a threat and refused every plugin. A scan that can't run is now reported as "could not scan - not a threat" and the install continues with the other checks (checksum, and VirusTotal if you set it up). Only a real detection (exit code 2 / "found N threats") blocks an install.

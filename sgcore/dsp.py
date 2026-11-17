@@ -200,6 +200,44 @@ def pingpong(x, delay_s, fb=0.45, taps=6, cut=4000):
     return out
 
 
+def make_spring_ir(decay=1.8):
+    """Spring reverb tank: a dispersive 'boing' (falling chirp), a metallic comb ring and a band-limited splash - the
+    sound of the reverb in a guitar amp / King Tubby's mixing desk."""
+    n = int(decay * 1.1 * SR)
+    t = np.arange(n) / SR
+    env = np.exp(-6.9 * t / decay)
+    ir = np.zeros((2, n))
+    for c in range(2):
+        nz = noise(n)
+        body = signal.lfilter([1.0], [1.0] + [0.0] * (int(0.031 * SR + c * 37) - 1) + [-0.55], nz * 0.5)
+        f = 2200 * np.exp(-t * 9) + 380                 # the dispersive chirp that makes springs 'drip'
+        chirp = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 7)
+        ir[c] = (body + chirp * 0.35) * env
+    ir = hp(lp(ir, 4200), 350)
+    ir[:, :120] *= np.linspace(0, 1, 120)
+    ir /= np.sqrt(np.sum(ir ** 2) / 2)
+    return ir
+
+
+def dub_delay(x, delay_s, fb=0.62, n_rep=12, lo=300, hi=2600, drift=0.02):
+    """Tape echo for dub throws: band-limited repeats that darken and pitch-drift as they decay, ping-ponging."""
+    d = int(delay_s * SR)
+    n = x.shape[1]
+    out = np.zeros_like(x)
+    tap = hp(lp((x[0] + x[1]) * 0.5, hi, 1), lo, 1)
+    for k in range(1, n_rep + 1):
+        s = k * d + int(k * drift * d * ((-1) ** k) * 0.1)
+        if s >= n:
+            break
+        g = fb ** (k - 1)
+        if g < 0.02:
+            break
+        out[(k - 1) % 2, s:] += tap[:n - s] * g
+        tap = lp(tap, max(900, hi - 150 * k), 1)
+        tap = soft(tap * 1.3, 1.2) / 1.3              # tape saturation builds on each pass
+    return out
+
+
 def _smooth_gr(gr_db, attack, release, block=32):
     """Asymmetric attack/release smoothing of gain reduction, computed at block rate."""
     n = len(gr_db)

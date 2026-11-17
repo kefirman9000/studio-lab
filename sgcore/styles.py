@@ -3628,3 +3628,184 @@ POOLS['brostep'].update(lead=['supersaw_lead', 'leadsaw'], arp=['pluck_saw', 'be
 BELL_OK.add('brostep')
 POOLS['melodic_dubstep'].update(bass=['reese', 'growl', 'wobble'], lead=['supersaw_lead', 'pluck_saw', 'piano'])
 POOLS['brostep']['bass'] = ['growl', 'wobble', 'screech', 'reese']
+
+
+# ============================== v1.36: the genres flagged as 'not sure' =====================================
+def _trk(style_, name):
+    return next((t for t in STYLES[style_]['tracks'] if t['name'] == name), None)
+
+
+# --- vaporwave: the slowed, chopped, sampled sound - sampler grit, a warbling tape, chorused Rhodes, darker top
+STYLES['vaporwave'].update(sampler=True, bpm=(58, 74))
+STYLES['vaporwave']['master'] = dict(STYLES['vaporwave']['master'], wobble=1.8, air=-3.0, low=1.4)
+_trk('vaporwave', 'chords').update(chorus=0.6)
+_trk('vaporwave', 'pad').update(chorus=0.5)
+
+# --- reggae / ska: dub mixing - echo throws on the snare, skank and melody, a spring reverb tank, a slow Leslie organ
+STYLES['reggae'].update(dub=0.55, dub_beats=0.75, spring=True)
+for _n, _v in (('snare', 0.9), ('rim', 0.7), ('arp', 0.55), ('lead', 0.45), ('chords', 0.3)):
+    if _trk('reggae', _n):
+        _trk('reggae', _n)['throw'] = _v
+_trk('reggae', 'chords').update(p=dict(_trk('reggae', 'chords')['p'], leslie=0.0), leslie_fx=0.9, overdrive=0.15)
+STYLES['ska'].update(dub=0.25, dub_beats=0.5, spring=True)
+for _n, _v in (('snare', 0.5), ('rim', 0.4), ('lead', 0.35)):
+    if _trk('ska', _n):
+        _trk('ska', _n)['throw'] = _v
+STYLES['dancehall'].update(dub=0.3, dub_beats=0.75)
+for _t in STYLES['dancehall']['tracks']:
+    if _t['layer'] in ('snare', 'lead'):
+        _t['throw'] = 0.45
+
+# --- organs through a real rotary speaker (fast for gospel / soul jazz, chorale for rock & blues pads)
+for _s, _n, _spd, _od in (('gospel', 'chords', 6.4, 0.45), ('soul_jazz', 'chords', 6.0, 0.35), ('blues', 'pad', 0.9, 0.2),
+                          ('jam_band', 'pad', 6.0, 0.3), ('rock', 'pad', 0.9, 0.35), ('soft_rock', 'pad', 0.8, 0.1),
+                          ('soul_ballad', 'pad', 0.8, 0.1), ('indie_rock', 'pad', 0.9, 0.2), ('ska', 'pad', 0.9, 0.2),
+                          ('funk', 'pad', 6.0, 0.3)):
+    _t = _trk(_s, _n)
+    if _t and _t['inst'] == 'organ':
+        _t.update(p=dict(_t['p'], leslie=0.0), leslie_fx=_spd, overdrive=_od)
+
+# --- house: the Korg M1 piano for the chords and piano riffs (not a concert grand)
+_trk('house', 'chords').update(inst='m1piano', db=-21)
+_trk('house', 'lead').update(inst='m1piano')
+POOLS.setdefault('house', {})
+POOLS['house']['chords'] = ['m1piano', 'organ', 'stab', 'epiano']
+POOLS['house']['lead'] = ['m1piano', 'organ', 'stab']
+for _s in ('eurodance', 'italo_disco'):
+    if _s in POOLS:
+        POOLS[_s]['chords'] = list(dict.fromkeys(POOLS[_s].get('chords', []) + ['m1piano']))
+
+# --- tech house: rolling, interlocking percussion - bongos, congas, tambourine and rim shots that never sit still
+STYLES['tech_house']['drums'].update({
+    'conga': ['..o..x.o...o.x..', 'x..o.x...o.ox...', '..o.x..o.o..x.o.'],
+    'bongo': ['.x.x..x..x.x..xx', '...x.x.x...x.xx.', 'x.x..x.x.x..x.x.'],
+    'tamb': ['..x...x...x...x.', '..x...x...x.x.x.'],
+    'rim': ['...o.......o..o.', '.o....o..o....o.', '...o..o....o.o..'],
+    'shaker': ['oxoxoxoxoxoxoxox', 'oxxoxxoxoxxoxxox']})
+STYLES['tech_house']['tracks'] += [T('bongo', 'top', 'conga', pan=0.4, db=-29), T('tamb', 'top', 'tamb', pan=-0.35, db=-31)]
+STYLES['tech_house'].setdefault('drum_voice', {})['bongo'] = dict(pitch=380)
+
+# --- metal / punk: real riffs (palm-muted chugs, power chords, b2 and tritone riff notes), double kick, a high-gain rig
+_METAL_RIFFS = ['pp.pp.ppX-pp.pp.', 'p.ppp.ppb-p.ppm-', 'p.ppp.ppp.ppp.pp', 'X---pppppppppppp', 'pp.f-pp.m-pp.b--',
+                'ppppX-ppppm-ppb-', 'X-.pp.ppX-.pp.pp']
+for _s in ('metal', 'symphonic_metal'):
+    STYLES[_s].update(riffs=_METAL_RIFFS, riff_lo=38, riff_chorus=0.35, voicing='power')
+    STYLES[_s]['drums']['kick'] = ['XxXxXxXxXxXxXxXx', 'X.X.X.X.X.X.X.X.', 'XxXxXxXxX.X.XxXx', 'X.xxX.xxX.xxX.xx']
+    for _t in STYLES[_s]['tracks']:
+        if _t['inst'] == 'guitar':
+            _amp = {'chords': 32, 'arp': 26, 'lead': 18}.get(_t['name'], 20)
+            _t.update(p=dict(_t['p'], dist=0), amp=_amp, drive=None)
+            if _t['name'] == 'chords':
+                _t.update(pan=0.0, db=-16)
+STYLES['metal']['kit_override'] = {**STYLES['metal'].get('kit_override', {}),
+                                   'kick': dict(pitch=60, punch=200, sweep=60, decay=14, drive=2.0, len=0.25, click=0.9)}
+STYLES['punk'].update(riffs=['p.p.p.p.p.p.p.p.', 'x.x.x.x.x.x.x.x.', 'p.p.p.p.X-x.x.x.', 'X.x.x.x.q.q.q.q.'], riff_lo=40,
+                      riff_chorus=0.0)
+for _t in STYLES['punk']['tracks']:
+    if _t['inst'] == 'guitar':
+        _t.update(p=dict(_t['p'], dist=0), amp=24 if _t['name'] == 'chords' else 16, drive=None)
+POWER_CHORDS.add('punk')
+
+# --- hard dance: distorted, key-tuned kicks; the reverse bass between them; psy's short rolling bass
+STYLES['hardstyle'].update(tune_kick=True, kick_shape=dict(tail=1.0, punch=320, sweep=22, decay=3.0, drive=12.0, len=0.5, click=0.7))
+_trk('hardstyle', 'bass').update(p=dict(cut=1600, reverse=True, fdecay=6), db=-18)
+STYLES['gabber'].update(tune_kick=True, kick_shape=dict(tail=2.0, punch=420, sweep=30, decay=4.5, drive=18.0, len=0.42, click=0.8))
+STYLES['rave_hardcore']['tracks'] = [dict(t, inst='stab', p=dict(cut=2600)) if t['name'] == 'arp' else t
+                                     for t in STYLES['rave_hardcore']['tracks']]
+POOLS.setdefault('rave_hardcore', {})['arp'] = ['stab', 'piano', 'm1piano', 'hoover']
+STYLES['psytrance'].update(tune_kick=True, bass_gate=0.45, sc_depth=0.0,
+                           kick_shape=dict(pitch=50, punch=220, sweep=36, decay=15, drive=2.6, len=0.26, click=0.6))
+_trk('psytrance', 'bass').update(p=dict(cut=1600, d=0.05, s=0.0, fdecay=32), sc=0.0)
+
+# --- latin / afro: the salsa piano montuno, highlife-style afrobeats guitar, horn hits, bandoneon for tango
+STYLES['salsa']['arp'] = dict(rate=1, mode='montuno', oct=4, rh=['x.xx.x.xx.x.x.x.', '.x.x.xx..x.x.xx.'])
+_trk('salsa', 'arp').update(db=-21, pan=-0.15)
+_trk('salsa', 'chords').update(inst='brass', db=-23, rev=0.25)
+STYLES['salsa']['chord_rh'] = ['x.....x...x.....', '..x...x..x..x...', 'x..x..x.........']
+STYLES['afrobeats']['arp'] = dict(rate=1, mode='updown', oct=5, rh=['..x.x..x..x.x..x', '.x..x.x..x..x.x.', 'x..x.x..x.x..x..'])
+_trk('afrobeats', 'arp').update(inst='guitar', p=dict(bright=7500, damp=0.994), db=-23, pan=0.25, rev=0.15, dly=0.15)
+_trk('afrobeats', 'chords').update(inst='epiano', db=-24)
+POOLS.setdefault('afrobeats', {})['arp'] = ['guitar', 'marimba', 'kalimba', 'pluck']
+_trk('tango', 'pad').update(inst='bandoneon', db=-23)
+POOLS.setdefault('tango', {})['pad'] = ['bandoneon', 'accordion', 'strings']
+POOLS['tango']['lead'] = ['violin', 'bandoneon', 'accordion']
+
+# --- classical forms: the pieces are written in the forms of their period, not loop-and-chorus
+BINARY_FORM = [
+    ('A', 8, {'chords', 'bass', 'lead', 'pad'}, {}),
+    ('A', 8, {'chords', 'bass', 'lead', 'arp', 'pad'}, {'var': 'dim'}),
+    ('B', 8, {'chords', 'bass', 'lead', 'pad'}, {'alt': True}),
+    ('B', 8, {'chords', 'bass', 'lead', 'arp', 'pad'}, {'alt': True, 'var': 'dim', 'cad': True}),
+]
+PRELUDE_FORM = [                       # Bach-style prelude: one unbroken figuration over a walking harmony
+    ('A', 8, {'arp', 'bass', 'pad'}, {'arp': {'rate': 1, 'mode': 'updown', 'oct': 4, 'prob': None}}),
+    ('B', 8, {'arp', 'bass', 'pad'}, {'alt': True, 'arp': {'rate': 1, 'mode': 'updown', 'oct': 4, 'prob': None}}),
+    ('A', 8, {'arp', 'bass', 'pad', 'chords'}, {'arp': {'rate': 1, 'mode': 'up', 'oct': 4, 'prob': None}}),
+    ('coda', 4, {'arp', 'bass', 'pad', 'chords'}, {'cad': True, 'arp': {'rate': 2, 'mode': 'updown', 'oct': 4, 'prob': None}}),
+]
+THEME_VAR_FORM = [                     # theme and variations (Mozart 'Ah vous dirai-je', Haydn)
+    ('theme', 8, {'chords', 'bass', 'lead', 'pad'}, {'cad': True}),
+    ('var', 8, {'chords', 'bass', 'lead', 'pad', 'arp'}, {'var': 'dim', 'cad': True}),
+    ('var', 8, {'arp', 'bass', 'lead', 'pad'}, {'arp': {'mode': 'alberti', 'rate': 1, 'oct': 4}, 'cad': True}),
+    ('var', 8, {'chords', 'bass', 'lead', 'pad', 'kick'}, {'var': 'bass'}),
+    ('theme', 8, {'chords', 'bass', 'lead', 'pad', 'arp', 'kick'}, {'var': 'oct', 'cad': True}),
+]
+SONATA_FORM = [                        # a compact sonata-allegro: two themes, development, recapitulation, coda
+    ('A', 8, {'chords', 'bass', 'lead', 'pad', 'arp'}, {}),
+    ('B', 8, {'chords', 'bass', 'lead', 'pad'}, {'alt': True, 'cad': True}),
+    ('dev', 8, {'chords', 'bass', 'lead', 'arp', 'kick'}, {'alt': True, 'var': 'dim', 'arp': {'rate': 1, 'mode': 'updown', 'prob': None}}),
+    ('A', 8, {'chords', 'bass', 'lead', 'pad', 'arp', 'kick'}, {}),
+    ('coda', 4, {'chords', 'bass', 'pad', 'kick'}, {'cad': True}),
+]
+MINUET_FORM = [                        # minuet - trio - minuet da capo (one engine bar = two bars of 3/4)
+    ('A', 4, {'chords', 'bass', 'lead'}, {}),
+    ('A', 4, {'chords', 'bass', 'lead', 'pad'}, {'var': 'dim', 'cad': True}),
+    ('B', 4, {'chords', 'bass', 'lead'}, {'alt': True}),
+    ('A', 4, {'chords', 'bass', 'lead', 'pad'}, {'cad': True}),
+    ('trio', 8, {'arp', 'bass', 'lead', 'pad'}, {'alt': True, 'cad': True}),
+    ('A', 4, {'chords', 'bass', 'lead', 'pad', 'kick'}, {'cad': True}),
+]
+LYRIC_FORM = [                         # a Romantic slow movement: the theme grows, sinks to the celli, climaxes, dies away
+    ('intro', 4, {'pad', 'bass'}, {'filter_in': True}),
+    ('A', 8, {'chords', 'bass', 'lead', 'pad'}, {}),
+    ('A', 8, {'chords', 'bass', 'lead', 'pad', 'arp'}, {'var': 'bass'}),
+    ('B', 8, {'chords', 'bass', 'lead', 'pad', 'arp', 'kick'}, {'alt': True}),
+    ('climax', 8, {'chords', 'bass', 'lead', 'pad', 'arp', 'kick'}, {'var': 'oct'}),
+    ('coda', 4, {'chords', 'bass', 'pad'}, {'cad': True, 'fade': True}),
+]
+ARCH_FORM = [                          # impressionist arch: mist - the melody - a shimmering middle - mist again
+    ('intro', 4, {'pad', 'arp'}, {'filter_in': True, 'arp': {'rate': 0.5, 'mode': 'updown'}}),
+    ('A', 8, {'chords', 'bass', 'lead', 'pad'}, {}),
+    ('B', 8, {'pad', 'arp', 'lead', 'bass'}, {'alt': True, 'arp': {'rate': 0.5, 'mode': 'updown', 'oct': 5}}),
+    ('A', 8, {'chords', 'bass', 'lead', 'pad', 'arp'}, {}),
+    ('outro', 4, {'pad', 'arp'}, {'fade': True, 'arp': {'rate': 1, 'mode': 'updown'}}),
+]
+FORMS.update(binary=BINARY_FORM, prelude=PRELUDE_FORM, theme_var=THEME_VAR_FORM, sonata=SONATA_FORM, minuet=MINUET_FORM,
+             lyric=LYRIC_FORM, arch=ARCH_FORM)
+STYLES['baroque']['forms'] = ['binary', 'prelude', 'binary']
+STYLES['classical_period']['forms'] = ['theme_var', 'sonata']
+STYLES['romantic']['forms'] = ['lyric', 'cinematic']
+STYLES['impressionism']['forms'] = ['arch', 'orchestral']
+
+style('minuet', 'Orchestral', 'Minuet & trio (3/4, Mozart / Haydn / Bach): an elegant courtly dance in binary phrases with ornamented '
+      'repeats, a quieter contrasting trio, then the minuet da capo - strings, harpsichord or fortepiano, a pair of horns',
+      meter='3/4', bpm=(104, 132), scales=['major', 'minor'], human=0.006, form='minuet', form_scale=1, reverb=2.2,
+      progs={'major': [[0, 4, 0, 4], [0, 3, 4, 0], [0, 1, 4, 0], [0, 5, 1, 4]], 'minor': [[0, 4, 0, 4], [0, 3, 4, 0]]},
+      chord_size=3, chord_bars=1, drums={'timp': ['X...........', '............']}, kick_track='timp',
+      bass=['R...R...R...', 'R.......F...', 'R...F...R...'], bass_lo=36, bass_gate=0.6,
+      chord_rh=['....x...x...', '....x...x-..'], chord_center=62, arp=dict(rate=1, mode='alberti', oct=5),
+      lead_rh=['x---x-x-x---', 'x-x-x-x-x---', 'x---x---x-x-', 'x-xxx-x-x---'], lead_oct=5, repetition=0.65,
+      gm_hint='Violins (melody); harpsichord / fortepiano; violas & celli (pah-pah); basses; a pair of horns',
+      tracks=[T('timp', 'kick', 'timp', rev=0.4, db=-30),
+              T('bass', 'bass', 'cello', rev=0.3, db=-20, p=dict(a=0.02)),
+              T('chords', 'chords', 'harpsichord', rev=0.3, pan=-0.2, db=-23),
+              T('pad', 'pad', 'horn', rev=0.4, db=-31),
+              T('arp', 'arp', 'harpsichord', rev=0.3, pan=0.2, db=-25),
+              T('lead', 'lead', 'violin', rev=0.3, pan=0.1, db=-18)],
+      master=dict(lufs=-16.0, air=1.0, low=0.5))
+LABELS['minuet'] = 'Minuet & trio'
+POOLS['minuet'] = dict(chords=['harpsichord', 'piano', 'strings', 'pizz'], lead=['violin', 'flute', 'oboe', 'piano'],
+                       arp=['harpsichord', 'piano', 'harp'], bass=['cello', 'contrabass'], pad=['horn', 'strings'])
+POOLS['afrobeats']['chords'] = ['epiano', 'piano', 'sf:cleanguitar', 'guitar', 'organ']
+POOLS['salsa']['chords'] = ['brass', 'sf:trumpetsection', 'piano']
+POOLS['salsa']['arp'] = ['piano', 'epiano', 'vibes', 'marimba']

@@ -22,7 +22,8 @@ LAYERS = ['kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead', 'fx']
 MELODIC_ROLES = ['bass', 'chords', 'pad', 'arp', 'lead']
 SECTION_ENERGY = {'intro': 0.72, 'verse': 0.85, 'drop': 1.0, 'break': 0.68, 'outro': 0.8, 'hook': 1.0, 'A': 0.9,
                   'B': 1.0, 'C': 0.75, 'chorus': 1.0, 'bridge': 0.8, 'head': 0.95, 'solo': 0.9, 'rise': 0.8,
-                  'theme': 0.95, 'calm': 0.65, 'climax': 1.0, 'loop': 1.0}
+                  'theme': 0.95, 'calm': 0.65, 'climax': 1.0, 'loop': 1.0,
+                  'var': 0.95, 'dev': 0.97, 'coda': 0.85, 'trio': 0.8}
 
 
 @dataclass
@@ -315,6 +316,56 @@ class Ev:
         self.track, self.beat, self.dur, self.midi, self.vel, self.glide, self.mod = track, beat, dur, midi, vel, glide, mod
         self.strum = strum                       # beats after the chord's own position (strummed chords move as one)
         self.slide = slide                       # semitones the note slides up from (fiddle / steel / guitar / harmonica)
+
+
+RIFF_OFF = {'p': 0, 'X': 0, 'x': 0, 'b': 1, 'm': 3, 'q': 5, 'f': 6, 'g': 7, 'n': 10, 'o': 12}
+
+
+def gen_riff(pat, key, chord, lo=40):
+    """A guitar riff bar from a 16-step pattern: 'p' palm-muted chug on the chord's root, 'X'/'x' a ringing power chord
+    (accent / normal), and the metal riff notes off the root - 'b' b2, 'm' minor 3rd, 'q' 4th, 'f' tritone, 'g' 5th,
+    'n' b7, 'o' octave. '-' holds, '.' rests. Returns (step, length, root midi, kind)."""
+    root = key.deg(chord, 2) % 12
+    r0 = lo + ((root - lo) % 12)
+    out = []
+    for step, l, c in parse_rhythm(pat):
+        if c not in RIFF_OFF:
+            continue
+        out.append((step, l, r0 + RIFF_OFF[c], c))
+    return out
+
+
+def vary_melody(mel, how, key):
+    """Classical variation technique on a phrase. 'dim' (diminution / ornamented variation): every note of a beat or
+    longer is broken into running eighths that walk by scale step toward the next note, keeping the theme's pitches on
+    the beats - the way a Baroque or Classical composer decorates the second time round."""
+    if how != 'dim' or not mel:
+        return mel
+    pcs = sorted({(key.root + x) % 12 for x in key.scale})
+
+    def step(m, d):
+        m += d
+        while m % 12 not in pcs:
+            m += d
+        return m
+    out = []
+    for i, (bt, du, m, v) in enumerate(mel):
+        if du < 0.99:
+            out.append((bt, du, m, v))
+            continue
+        nxt = mel[i + 1][2] if i + 1 < len(mel) else m
+        n = int(du / 0.5)
+        cur = m
+        for k in range(n):
+            out.append((bt + k * 0.5, 0.45, cur, v * (1.0 if k == 0 else 0.82)))
+            left = n - k - 1
+            if nxt > cur and left > 0:
+                cur = step(cur, 1)
+            elif nxt < cur and left > 0:
+                cur = step(cur, -1)
+            elif left > 0:                                  # same note next: a turn around it
+                cur = step(cur, 1 if k % 2 == 0 else -1)
+    return out
 
 
 def chord_tones_deg(chord, lo, hi):
@@ -757,6 +808,8 @@ def resolve_style(opts, rnd=None, mood=None):
     if not kit_id:
         for k, v in st.get('kit_override', {}).items():
             kit[k] = {**kit.get(k, {}), **v}
+    if st.get('kick_shape') and not getattr(opts, 'kit', None):    # the genre's own kick, whatever drum preset it sits on
+        kit['kick'] = {**kit.get('kick', {}), **st['kick_shape']}
     st['kitparams'] = kit
     drumkits.install_break(st, st['tracks'])
     if opts.swing is not None:
@@ -1099,6 +1152,9 @@ def compose(opts):
         else:
             scale = opts.scale or rnd.choice(scales)
     key = Key(root, scale)
+    if st.get('tune_kick') and (st.get('kitparams') or {}).get('kick') is not None:
+        km = 28 + ((root - 28) % 12)                     # hard dance / psy: the kick's tail is tuned to the key (41-78 Hz)
+        st['kitparams'] = dict(st['kitparams'], kick=dict(st['kitparams']['kick'], pitch=round(440.0 * 2 ** ((km - 69) / 12), 2)))
     if st.get('composer') == 'journey':
         from .journey import compose_journey
         return compose_journey(st, opts, key, bpm, random.Random(opts.seed * 977 + 11))
@@ -1175,6 +1231,8 @@ def compose(opts):
     tracks = {t['name']: t for t in st['tracks']}
     muted = set(opts.muted or [])
     # ---- form
+    if st.get('forms') and isinstance(st['form'], str) and getattr(opts, 'structure', 'auto') in (None, '', 'auto'):
+        st['form'] = random.Random(opts.seed * 31 + 7).choice(st['forms'])     # classical genres: one of their forms
     form = list(FORMS[st['form']]) if isinstance(st['form'], str) else list(st['form'])
     if opts.structure == 'loop':
         form = [('loop', 16, set(l for l in ['kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead', 'fx']), {})]
@@ -1205,6 +1263,7 @@ def compose(opts):
         arp['rate'] = max(0.5, arp['rate'] / 2)
     elif cx < 0.22:
         arp['rate'] = min(4, arp['rate'] * 2)
+    arp_base = arp
     base_form = []
     for (sname, nbars, layers, opts_s) in form:
         if not opts_s.get('build') and opts.structure != 'loop':
@@ -1240,6 +1299,8 @@ def compose(opts):
         if ed.get('bars') and not opts_s.get('build'):
             nbars = max(2, min(64, int(ed['bars'])))
         rnd_d, rnd_b, rnd_c = sec_rng('drums', uid, ed), sec_rng('bass', uid, ed), sec_rng('chords', uid, ed)
+        arp = dict(arp_base, **opts_s['arp']) if opts_s.get('arp') else arp_base      # a variation's own figuration
+        var = opts_s.get('var')
         layers = set(layers) - set(ed.get('mute') or [])   # (switched-off parts are removed at the end: same take)
         if energy > 0.75 and opts_s.get('drop'):
             layers |= {'arp'}
@@ -1272,12 +1333,19 @@ def compose(opts):
         pchoice = {name: rnd_d.choice(pats) for name, pats in st['drums'].items()}
         bass_pat = rnd_b.choice(st['bass'])
         chord_pat = rnd_c.choice(st['chord_rh'])
+        riff_pat = None
+        if st.get('riffs') and st.get('voicing') == 'power' and S < 0.6:     # metal / punk: verses are riffs
+            big = opts_s.get('drop') or sname in BIG_SECTIONS
+            if not big or rnd_c.random() < st.get('riff_chorus', 0.3):
+                riff_pat = rnd_c.choice(st['riffs'])
         prev_bass = None
         for b in range(nbars):
             bar = bar0 + b
             beat0 = bar * 4
             chord = prog[(b // cb) % len(prog)]
             nxt = prog[((b + 1) // cb) % len(prog)]
+            if opts_s.get('cad') and b >= nbars - 2:             # a written-out perfect cadence closes the section: V - I
+                chord, nxt = (4, 0) if b == nbars - 2 else (0, 0)
             last_of_4 = (b % 4 == 3)
             # ---------------- drums
             slices = drumkits.chop_map(st, bar, rnd_d, energy, b) if st.get('break_seq') else None
@@ -1319,8 +1387,13 @@ def compose(opts):
                     evs.append(Ev(s, beat0 + step / 4, 0.25, None, 0.55 + 0.1 * k))
             if opts_s.get('build'):
                 add_build_drums(evs, st, tracks, snares, kick_name, b, nbars, beat0, rnd_d)
+            riff = gen_riff(riff_pat, key, chord, st.get('riff_lo', 40)) if riff_pat else None
             # ---------------- bass
-            if 'bass' in layers and 'bass' in tracks:
+            if 'bass' in layers and 'bass' in tracks and riff:      # the bass doubles the guitar riff an octave down
+                for step, l, m, c in riff:
+                    m = fold(m - 12, st['bass_lo'])
+                    evs.append(Ev('bass', beat0 + step / 4, (0.4 if c == 'p' else l / 4 * 0.92), m, 0.9 if c == 'p' else 1.0))
+            elif 'bass' in layers and 'bass' in tracks and not (var == 'bass' and 'lead' in layers):
                 lo = st['bass_lo']
                 root = fold(key.deg(chord, 2), lo)
                 mode = st['bass_mode']
@@ -1438,7 +1511,16 @@ def compose(opts):
             if b % cb == 0 and chord_color not in ('sus2', 'sus4', 'add9no3') and rnd_c.random() < 0.15 * (1 - S) \
                     and not (opts_s.get('drop') or sname in BIG_SECTIONS):
                 bar_col = rnd_c.choice(['sus4', 'sus2', chord_color])   # a sus colour now and then (chords + pad agree)
-            if 'chords' in layers and 'chords' in tracks and chord_pat and (b % cb == 0):
+            if 'chords' in layers and 'chords' in tracks and riff:
+                for step, l, m, c in riff:
+                    if c == 'p':                                  # palm-muted chug: root + fifth, choked short
+                        for i, n_ in enumerate((m, m + 7)):
+                            evs.append(Ev('chords', beat0 + step / 4, min(l, 2) / 4 * 0.6, n_, rnd_c.uniform(0.72, 0.82), mod='pm'))
+                    else:
+                        for i, n_ in enumerate((m, m + 7, m + 12)):
+                            evs.append(Ev('chords', beat0 + step / 4, l / 4 * 0.95, n_, 0.95 if c != 'x' else 0.85,
+                                          strum=i * 0.008))
+            elif 'chords' in layers and 'chords' in tracks and chord_pat and (b % cb == 0):
                 col = bar_col if st.get('voicing', 'close') != 'power' and chord_size <= 4 else None
                 notes = voice_chord(key, chord, chord_size, st.get('chord_center', 62), st.get('voicing', 'close'), col)
                 if st.get('voicing', 'close') in ('close', 'open'):
@@ -1477,7 +1559,18 @@ def compose(opts):
                     seq = [lo_, hi_, mid_, hi_]
                 rate = arp['rate']
                 u = 16 / G                                       # a grid step in 16ths (4/3 in triple meters)
-                for k in range(int(G / rate)):
+                if arp.get('rh'):                                # a written figure: montuno, highlife guitar, guajeo...
+                    rh = arp['rh'] if isinstance(arp['rh'], str) else arp['rh'][b % len(arp['rh'])]
+                    if arp['mode'] == 'montuno':                 # salsa piano: chord tones in octaves, anticipating the clave
+                        seq = [tones[0], tones[1], tones[2], tones[1]] if len(tones) > 2 else seq
+                    for k, (step, l, c) in enumerate(parse_rhythm(rh)):
+                        m = rnd_c.choice(seq) if arp['mode'] == 'random' else seq[k % len(seq)]
+                        acc = c == 'X'
+                        vel = (0.95 if acc else 0.78) * rnd_c.uniform(0.92, 1.0)
+                        evs.append(Ev('arp', beat0 + step * u / 4, max(0.2, l * u / 4 * 0.85), m, vel))
+                        if arp['mode'] == 'montuno':
+                            evs.append(Ev('arp', beat0 + step * u / 4, max(0.2, l * u / 4 * 0.85), m - 12, vel * 0.85))
+                for k in range(0 if arp.get('rh') else int(G / rate)):
                     if arp.get('prob') and rnd_c.random() > arp['prob']:
                         continue
                     m = rnd_c.choice(seq) if arp['mode'] == 'random' else seq[k % len(seq)]
@@ -1487,13 +1580,33 @@ def compose(opts):
         if 'lead' in layers and 'lead' in tracks:
             soft_lead = 0.75 if sname in ('break', 'bridge', 'C', 'calm') else 1.0
             reps = int(math.ceil(nbars / ph))
+            src_mel = vary_melody(mel, var, key) if var in ('dim', 'aug') else mel
+            n0 = len(evs)
             for r in range(reps):
-                for (bt, du, m, v) in mel:
+                for (bt, du, m, v) in src_mel:
                     beat = sec_start + r * ph * 4 + bt
                     if beat < sec_start + nbars * 4 - 0.01:
                         if opts_s.get('build') and beat >= sec_start + nbars * 4 - 2:
                             continue
                         evs.append(Ev('lead', beat, du, m, v * soft_lead))
+            new = [e for e in evs[n0:] if e.track == 'lead']
+            if var == 'bass' and 'bass' in tracks and new:      # the theme sinks to the celli / basses; the top rests
+                lo = st['bass_lo']
+                for e in new:
+                    e.track = 'bass'
+                    e.midi = e.midi - 24
+                    while e.midi < lo:
+                        e.midi += 12
+                    while e.midi > lo + 22:
+                        e.midi -= 12
+            elif var == 'oct':                                  # tutti statement: the theme doubled an octave down
+                evs.extend(Ev('lead', e.beat, e.dur, e.midi - 12, e.vel * 0.8) for e in new)
+            if opts_s.get('cad') and new:                       # the melody comes home on the tonic and holds
+                last = max(new, key=lambda e: e.beat)
+                tonic = [m for m in range(last.midi - 7, last.midi + 8) if (m - key.root) % 12 == 0]
+                if tonic:
+                    last.midi = min(tonic, key=lambda m: abs(m - last.midi))
+                    last.dur = max(last.dur, sec_start + nbars * 4 - last.beat - 0.1)
         if opts_s.get('build'):
             add_build_fx(fx, st.get('build_style', 'roll'), sec_start, nbars, riser=st.get('build_home') not in ('lift', 'swell', 'pause'))
         if opts_s.get('drop'):
