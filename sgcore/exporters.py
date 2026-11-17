@@ -6,7 +6,8 @@ from .instruments import DRUMS, GM_PROGRAM, INSTRUMENT_INFO
 
 GM_DRUM = {'kick': 36, 'chipkick': 36, 'snare': 38, 'chipsnare': 38, 'clap': 39, 'chat': 42, 'chiphat': 42,
            'ohat': 46, 'shaker': 70, 'ride': 51, 'rim': 37, 'crash': 49, 'tom': 45, 'cowbell808': 56,
-           'conga': 63, 'taiko': 41, 'timp': 43, 'snap': 39, 'tamb': 54, 'woodblock': 76}
+           'conga': 63, 'taiko': 41, 'timp': 43, 'snap': 39, 'tamb': 54, 'woodblock': 76,
+           'bodhran': 41, 'timbale': 65, 'tabla': 60, 'bayan': 61}
 
 
 

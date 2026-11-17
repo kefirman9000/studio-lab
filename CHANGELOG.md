@@ -1,5 +1,48 @@
 # Changelog
 
+## 1.38.0
+**New genres from your reference tracks** (named for the style, not the artist):
+- **Deep dubstep - rollers**: 140 half-time and steppers, a huge rolling sub, sparse skippy percussion into dub echoes, an optional squelchy acid line - mono and heavy.
+- **Melodic deep house (sunny, piano & strings)**: warm 122-124 groove, shakers and congas, rolling melodic bass, bright piano, lush strings, long breakdowns.
+- **90s club house (New York)**: swung 909 / sampled drums, tambourine, deep bass, short filtered minor chord stabs on the offbeats.
+- **Bedroom / indie pop**: bouncy drum machine, warm synth bass, chorused clean guitar, bubbly plucks and bells, loud and dreamy.
+- **80s electro-funk / boogie**: slow heavy DMX groove, big claps, Minimoog bass, poly-synth stabs, and a new **talk-box style synth** lead that glides.
+- **Ambient beat (dark, sub-heavy)**: half-time drums tucked under washed-out pads, a long 808 sub, distant bells.
+- **90s video game (PS1-era)**: sample-based breaks, slap/synth bass, ROM strings and brass stabs, all through a crunchy 22 kHz console sound.
+- **90s alt rock**: jangly clean verses, distorted double-tracked power-chord choruses, pick bass, big dry room kit.
+- **Jam-band rock (80s, upbeat)**: two drummers left and right, chiming rhythm guitar, melodic bass, 80s keys and organ, noodling lead and long solo jams.
+- **Hopecore (euphoric breaks)** and **Hopecore (dreamy, slow)**.
+- **Swing-era big band (hot, tom-tom)**: a fast 1930s minor-key flag-waver on the floor-tom groove, riffing brass, sax section, clarinet lead, a drum break and a shout chorus.
+- **50s big band (brassy, smooth)**: a medium-up swinging major-key chart - walking bass, ride and hi-hat on 2 and 4, piano comping, sax section, trumpet and trombone hits building to a shout chorus.
+- Also **Soca / calypso** (steel pan, iron, brass hits), **Raga** (tanpura drone, sitar with meend, tabla; alap - jor - gat - jhala) and **Japanese zen** (koto, shakuhachi-style flute, taiko).
+
+**Drum kits**
+- **Drum & bass kits**: modern DnB layers a tight electronic two-step kick and a crisp snare over a break (the break's kick filtered so the layered kick owns the low end) - *Modern DnB (Think)*, *Amen rollers*, *Neurofunk* (hard, distorted, compressed break), *Liquid*, *Jungle* (raw Amen, crisp piccolo snare) and a *DnB drum machine*. DnB, liquid, neurofunk and jungle now use them by default.
+- Two more re-played breaks (**Hot Pants-style**, **Skull Snaps-style**) and five more drum machines: **CR-78**, **TR-606**, **TR-707**, **DMX** (8-bit) and a **distorted phonk 808** (old sample-based machines get their real bit depth and sample rate).
+- Two more free real kits, **Karoryfer Unruly Drums** (a tight modern studio kit and a dirty one), and **Karoryfer Frankensnare** - real snares that replace a kit's own: a crisp steel piccolo (DnB), an ash piccolo (jungle), a dead muffled 70s snare (soft rock) and a huge one for a **Big 80s kit** with gated reverb. Both CC0, in 🎻 Real instruments.
+- Every kit is in the drum kit menu; genres were assigned their natural kit (pop and modern country: modern studio kit, soft rock: dead 70s snare, acid house: 606, phonk: distorted 808, jazz rap: Skull Snaps).
+
+**New free plugin: RipplerX** (GPL-3.0, official GitHub release zip): physically modelled marimba, vibes, kalimba, harp, music box, bells, tubular bells and gongs - used for those parts in any genre once installed from 🎚 Genre VSTs.
+
+**Genres made more authentic**
+- **Funk**: clavinet chords, 16th "chicken-scratch" muted guitar, horn stabs on the accents only.
+- **Bluegrass**: Scruggs banjo rolls with the drone string, the **mandolin chop** on 2 and 4, boom-chick guitar with **G-runs**, and the band taking **breaks in turn** (banjo, mandolin, fiddle, guitar).
+- **Celtic jig**: AABB tune form, **bodhrán**, **tin whistle** doubling the fiddle, a soft pipe drone.
+- **Tango**: A-B-A form, the 3-3-2 síncopa in piano and bass, the chan-chan ending.
+- **City pop**: its own syncopated finger-bass lines. **Bossa nova**: the batida guitar figure.
+- **Techno**: the modern **rumble** (kick into a dark reverb, ducked) and slow filter sweeps over 16-32 bars.
+- **Synthwave**: 80s song form with a **sax / guitar solo**, tom fills. **Reggaeton**: dembow variations, nylon guitar riff, 808 slides.
+- **G-funk**: the high gliding **whine** lead. **Drum & bass**: the reese bass now slowly moves.
+- **Salsa**: son form with montuno and **mambo** horn section, the anticipated **tumbao** bass, **timbales** and paila.
+- **Ambient**: **tape loops of different lengths** that drift against each other. **Lo-fi / boom bap**: chords **chopped like a sampled record**, sampler grit, ducked under the kick.
+- New instruments: mandolin, tin whistle, uilleann pipes, pipe drones, sitar, tanpura, koto, bodhrán, timbales, tabla.
+- Genres with a designed kit (hardstyle, gabber, deep dubstep ...) no longer have it randomly swapped for another kit, and ensemble genres keep each instrument on its own part.
+
+**App**
+- **Every part is customizable**: the Sound panel now also lists each genre's extra parts (horn stabs, a second guitar, the tin whistle, solo instruments ...) - change their sound or switch them off. A genre's extra parts keep their own sound instead of being reshuffled.
+- The **Parts** panel is gone: each sound has a small **mute** box next to it (and kick / snare / hats / FX next to the drum kit).
+- The window no longer scrolls away from the editor when you turn a knob or press a key - the page itself is locked; only the columns scroll.
+
 ## 1.37.0
 - **Fixed: the app did not start on Python 3.9, 3.10 or 3.11** (one line of the DAW export used syntax only Python 3.12 understands). The tests now also run on Python 3.9.
 - The Windows and Mac start files say clearly when Python is missing or too old (with the download link) instead of failing silently; so does the app itself when it is started without a console window.

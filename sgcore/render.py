@@ -8,7 +8,7 @@ import numpy as np
 from scipy.ndimage import uniform_filter1d
 
 from .dsp import (SR, hp, lp, eq, soft, compressor, limiter, lufs, active_rms_db, make_ir, reverb, pingpong,
-                  make_spring_ir, dub_delay,
+                  make_spring_ir, dub_delay, svf_sweep,
                   sweep_region, write_wav_float)
 from .instruments import INSTRUMENTS, DRUMS, fx_riser, fx_impact, fx_vinyl, fx_texture
 from .compose import SECTION_ENERGY, GROOVES
@@ -163,7 +163,10 @@ class Renderer:
         from . import samplelibs as sl
         kit, perc = self.st.get('real_kit'), self.st.get('real_perc')
         name = None
-        if kit and inst in sl.KIT_PARTS and inst != 'clap':
+        rs = self.st.get('real_snare')
+        if kit and inst == 'snare' and rs and sl.has(rs + ':snare', 'hit'):
+            name = rs + ':snare'                           # a kit with a different snare (e.g. a crisp piccolo for DnB)
+        elif kit and inst in sl.KIT_PARTS and inst != 'clap':
             name = kit + ':' + sl.KIT_PARTS[inst]
         elif inst == 'clap' and kit and perc:
             name = 'clap'
@@ -182,8 +185,12 @@ class Renderer:
         if sig is False:
             try:
                 sig = sl.hit(name, vb, f'{idx % 4}')
+                if sig is not None and name.split(':')[0] in KIT_EQ and inst in KIT_EQ[name.split(':')[0]]:
+                    sig = kit_eq(sig, KIT_EQ[name.split(':')[0]][inst])
+                if sig is not None and inst in ('kick', 'snare'):
+                    sig = tame_transient(sig, 13.0 if inst == 'kick' else 15.0, 6.0)
                 semis = float(self.st.get('break_pitch') or 0.0)
-                if sig is not None and semis and kit and name.startswith(kit + ':'):
+                if sig is not None and semis and kit and name.split(':')[0] in (kit, rs):
                     # breaks: the kit tuned up / down like a sped-up / slowed record
                     r = 2 ** (semis / 12.0)
                     pos = np.arange(0, len(sig) - 1, r)
@@ -260,6 +267,8 @@ class Renderer:
                 kitp = dict(self.st.get('kitparams', {}).get(inst, {}))
                 kitp.update(self.st.get('drum_voice', {}).get(name, {}))     # e.g. high / mid / low toms
                 sig = DRUMS[inst](kitp)
+                if kitp.get('bits') or kitp.get('srate'):         # sample-based drum machines: their low bit depth / rate
+                    sig = crush(sig, int(kitp.get('bits') or 16), float(kitp.get('srate') or SR))
             sig = (sig / (np.max(np.abs(sig)) + 1e-9)).astype(np.float32)
             k = min(len(sig) // 4, int(0.006 * SR))          # never end a hit on a click
             if k > 1:
@@ -301,7 +310,7 @@ class Renderer:
         is_drum = tcfg['inst'] in DRUMS
         p = None if is_drum else self._params(tcfg)
         kick = self.st.get('kick_track', 'kick')
-        real_drums = is_drum and (self.st.get('real_kit') or self.st.get('real_perc'))
+        real_drums = is_drum and (self.st.get('real_kit') or self.st.get('real_perc')) and not tcfg.get('synth')
         for i, ev in enumerate(evs):
             s = int((self.t_of(ev.beat, human=(tcfg['name'] != kick), layer=tcfg['layer']) + getattr(ev, 'strum', 0.0) * self.spb) * SR)
             sig = None
@@ -333,6 +342,15 @@ class Renderer:
             buf = self._gate(buf, tcfg['gate'])
         if tcfg.get('chorus'):
             buf = chorus(buf, float(tcfg['chorus']))
+        if tcfg.get('sweep') and np.any(buf):             # techno: a filter that opens and closes over 16-32 bars
+            lo_hz, hi_hz, bars = tcfg['sweep']
+            n = buf.shape[1]
+            t = np.arange(n) / SR
+            period = max(1.0, bars * 4 * self.spb)
+            cut = lo_hz * (hi_hz / lo_hz) ** (0.5 - 0.5 * np.cos(2 * np.pi * t / period))
+            buf = np.vstack([svf_sweep(buf[c], cut, q=0.9) for c in range(buf.shape[0])]).astype(np.float32)
+        if tcfg['name'] == self.st.get('kick_track', 'kick') and self.st.get('rumble') and np.any(buf):
+            buf = self._rumble(buf, float(self.st['rumble']))
         if tcfg.get('leslie_fx') and np.any(buf):
             buf = leslie(buf, float(tcfg['leslie_fx']), float(tcfg.get('overdrive', 0.0)))
         return buf
@@ -391,6 +409,19 @@ class Renderer:
             self.log(f'   {tcfg["name"]}: plugin failed ({e}) - using the built-in sound instead')
             self.vst_failures = getattr(self, 'vst_failures', []) + [f'{tcfg["name"]}: {e}']
             return None
+
+    def _rumble(self, kick, amount):
+        """The modern techno 'rumble': the kick sent into a long dark reverb, low-passed to a tonal sub-bass cloud,
+        driven, then ducked hard by the kick itself so it swells in the gaps between kicks."""
+        k = kick.astype(np.float64)
+        ir = make_ir(2.4, predelay=0.0, bright=0.3)
+        tail = lp(reverb(k, ir), 140, 2)
+        tail = np.tanh(tail / (np.max(np.abs(tail)) + 1e-9) * 2.5)
+        env = uniform_filter1d(np.abs(k).max(axis=0), int(0.03 * SR))
+        duck = 1 - np.clip(env / (env.max() + 1e-9) * 2.2, 0, 1)
+        duck = uniform_filter1d(duck, int(0.02 * SR))
+        peak = float(np.max(np.abs(k))) + 1e-9
+        return (k + tail * duck * peak * 0.45 * amount).astype(np.float32)
 
     def throw_mask(self, b2s, amount):
         """Where the dub engineer opens the echo send: the last beat (sometimes two) of most 2-bar phrases, and a
@@ -651,6 +682,56 @@ def drum_bus(drums, drive=0.25):
     k = 1.0 + max(0.0, drive)
     y = np.tanh(y * k) / k
     return y / g
+
+
+# the engineer's EQ on a kit's raw close mics (the Unruly kick is a huge, boomy 20" with little beater click)
+KIT_EQ = {'unruly': {'kick': [('hp', 38), ('peak', 55, 1.0, -4.0), ('peak', 3800, 1.0, 7.0)]},
+          'dirty': {'kick': [('hp', 38), ('peak', 55, 1.0, -4.0), ('peak', 2500, 1.0, 5.0)]}}
+
+
+def kit_eq(x, chain):
+    y = x.astype(np.float64)
+    for band in chain:
+        if not isinstance(band, tuple):
+            continue
+        if band[0] == 'hp':
+            y = hp(y, band[1])
+        else:
+            y = eq(y, 'peak', band[1], band[2], band[3])
+    return (y / (np.max(np.abs(y)) + 1e-9)).astype(np.float32)
+
+
+def tame_transient(x, max_crest=15.0, most=5.0):
+    """Close-miked kicks / snares can peak 20 dB above their body, which stops the master getting them loud without
+    limiting. Round off just the very first spike (gently, like tape) so the hit's crest is at most ~15 dB."""
+    n = min(len(x), int(0.12 * SR))
+    if n < 64:
+        return x
+    pk = float(np.max(np.abs(x))) + 1e-9
+    rms = float(np.sqrt(np.mean(x[:n].astype(np.float64) ** 2))) + 1e-9
+    crest = 20 * np.log10(pk / rms)
+    if crest <= max_crest:
+        return x
+    cut = min(most, crest - max_crest)
+    thr = pk * 10 ** (-cut / 20)
+    y = x.astype(np.float64)
+    over = np.abs(y) > thr * 0.7
+    k = thr * 0.7
+    y[over] = np.sign(y[over]) * (k + (thr - k) * np.tanh((np.abs(y[over]) - k) / (thr - k)))
+    return (y / (np.max(np.abs(y)) + 1e-9)).astype(np.float32)
+
+
+def crush(x, bits=8, rate=25000.0):
+    """Old drum-machine sample playback: sample-and-hold to a lower rate, fewer bits (one-shots, mono or stereo)."""
+    x = np.asarray(x, dtype=np.float64)
+    step = max(1.0, SR / float(rate))
+    n = x.shape[-1]
+    idx = (np.floor(np.arange(n) / step) * step).astype(np.int64)
+    y = x[..., idx]
+    q = 2 ** (bits - 1)
+    pk = float(np.max(np.abs(y))) + 1e-9
+    y = np.round(y / pk * q) / q * pk
+    return lp(y, min(rate * 0.45, SR * 0.45))
 
 
 def sp1200(x, rate=26040.0, bits=12):

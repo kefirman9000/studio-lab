@@ -33,11 +33,11 @@ The app opens in your browser. Everything runs locally on your machine.
 
 ## Genres
 
-142 genres in three groups - Electronic, Classic and Orchestral - from house, techno, trance, dubstep, drum & bass and hard dance to hip hop, R&B, rock, metal, punk, jazz, smooth jazz, country, reggae, salsa and Afrobeats, and from Baroque, Classical and Romantic forms (theme & variations, sonata, minuet & trio) to film scores and the **Cinematic Journey** orchestral generator. Each genre has its own instruments, drum patterns, grooves, song forms and mix. The full list, with what each one does, is in [docs/GENRES.md](docs/GENRES.md).
+158 genres in three groups - Electronic, Classic and Orchestral - from house, techno, trance, dubstep, drum & bass, hard dance and hopecore to hip hop, R&B, rock, 90s alt rock, metal, punk, jazz, big band, smooth jazz, country, bluegrass, reggae, salsa, soca, Afrobeats and raga, and from Baroque, Classical and Romantic forms (theme & variations, sonata, minuet & trio) to film scores and the **Cinematic Journey** orchestral generator. Each genre has its own instruments, drum patterns, grooves, song forms and mix. The full list, with what each one does, is in [docs/GENRES.md](docs/GENRES.md).
 
 ## Real instruments
 
-Click **🎻 Real instruments** to download free recorded instruments (all public domain / CC0, checked by checksum): an orchestra (strings, brass, woodwinds, harp, mallets), a Steinway grand and an upright, guitars, an electric and an upright bass, percussion, and four real drum kits - a studio kit, a 70s soul kit, a brushed jazz kit and a big rock kit. Each genre picks the parts and the kit that suit it; anything not downloaded is played by the built-in synths.
+Click **🎻 Real instruments** to download free recorded instruments (all public domain / CC0, checked by checksum): an orchestra (strings, brass, woodwinds, harp, mallets), a Steinway grand and an upright, guitars, an electric and an upright bass, percussion, and six real drum kits - a studio kit, a 70s soul kit, a brushed jazz kit, a big rock kit, a modern studio kit and a dirty one - plus a collection of real snares (crisp DnB piccolo, dead 70s, huge 80s). The drum kit menu also has drum machines (808, 909, CR-78, 606, 707, DMX, LinnDrum ...), re-played breaks and dedicated drum & bass kits. Each genre picks the parts and the kit that suit it; anything not downloaded is played by the built-in synths.
 
 ## Privacy
 
@@ -50,7 +50,7 @@ Click **⟳ Updates** in the top-right corner. Your files, presets and settings 
 
 ## Genre VSTs
 
-Studio Lab finds the plugins installed on your computer and uses them automatically. Click **🎚 Genre VSTs** to download free, open-source plugins - **Surge XT**, **Dexed** and **JC303** instruments, plus **Dragonfly Reverb** (halls, rooms, plates) and **Airwindows Consolidated** (mixing effects) - and play each genre through the plugin that defines its sound: a 303 for acid, supersaws for trance, a DX7 electric piano for city pop. Plugins you already own, like TAL-NoiseMaker, are used too; save sounds from any plugin with names like "Serum supersaw" or "BBC strings" and matching parts use them.
+Studio Lab finds the plugins installed on your computer and uses them automatically. Click **🎚 Genre VSTs** to download free, open-source plugins - **Surge XT**, **Dexed**, **JC303** and **RipplerX** (modelled mallets, bells and harp) instruments, plus **Dragonfly Reverb** (halls, rooms, plates) and **Airwindows Consolidated** (mixing effects) - and play each genre through the plugin that defines its sound: a 303 for acid, supersaws for trance, a DX7 electric piano for city pop. Plugins you already own, like TAL-NoiseMaker, are used too; save sounds from any plugin with names like "Serum supersaw" or "BBC strings" and matching parts use them.
 
 **Orchestra plugins** (BBC Symphony Orchestra, LABS, Kontakt ...): save one sound per section and articulation - e.g. "BBC strings legato", "BBC strings spiccato", "BBC strings pizzicato", "BBC celli", "BBC horns", "BBC low brass", "BBC flute" - and every part that plays strings, celli, horns or woodwinds uses the right one, in any genre. Try the orchestral genres: Neoclassical, Chamber, Baroque, Fantasy RPG, Hybrid Trailer, Cinematic, Waltz, Orchestral Hip Hop, Symphonic Metal. The easiest way to set this up is **🎹 VST → 🎻 Set up my orchestra**, which walks you through each section. Long notes then swell with the mod wheel (CC1), just as a player would ride it.
 

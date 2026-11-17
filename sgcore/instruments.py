@@ -30,8 +30,10 @@ def i_reese(m, dur, p, glide=None, mod=None):
     env = adsr(dur * SR, 0.01, 0.3, 0.9, 0.1)
     n = len(env)
     t = np.arange(n) / SR
-    L = saw(f * 0.993, n) + saw(f * 1.004, n, 0.3)
-    R = saw(f * 1.007, n, 0.6) + saw(f * 0.996, n, 0.1)
+    mv = p.get('move', 1.0)                       # the reese 'moves': its detune slowly widens and narrows (DnB)
+    d = 1 + (0.006 + 0.004 * mv * np.sin(2 * np.pi * 0.23 * t + 1.0))
+    L = saw(f / d, n) + saw(f * (1 + (d - 1) * 0.6), n, 0.3)
+    R = saw(f * d, n, 0.6) + saw(f / (1 + (d - 1) * 0.6), n, 0.1)
     wob = 0.5 + 0.5 * np.sin(2 * np.pi * 0.7 * t)
     cut = p.get('cut', 900)
     L = filt_env(L, cut * 0.5, cut * 1.6, wob)
@@ -267,12 +269,17 @@ def d_kick(p):
 
 
 def d_snare(p):
-    n = int(0.35 * SR)
+    """Snare: a pitched shell tone + band-passed wire noise. Optional: crack (a hard stick transient - the crisp DnB
+    snare), nlo / nhi (the wire band), tdecay (how long the shell rings), drive (a squashed, distorted neuro snare)."""
+    n = int(p.get('len', 0.35) * SR)
     t = np.arange(n) / SR
     tf = p.get('tone', 185)
-    tone = (np.sin(2 * np.pi * tf * t) * 0.6 + np.sin(2 * np.pi * tf * 1.8 * t) * 0.3) * np.exp(-t * 28)
-    nz = bp(noise(n), 1200, 9000) * np.exp(-t * p.get('decay', 16))
-    return fade_out(soft(tone * p.get('body', 0.7) + nz * p.get('snap', 0.9), 1.3), 0.02)
+    tone = (np.sin(2 * np.pi * tf * t) * 0.6 + np.sin(2 * np.pi * tf * 1.8 * t) * 0.3) * np.exp(-t * p.get('tdecay', 28))
+    nz = bp(noise(n), p.get('nlo', 1200), p.get('nhi', 9000)) * np.exp(-t * p.get('decay', 16))
+    y = tone * p.get('body', 0.7) + nz * p.get('snap', 0.9)
+    if p.get('crack'):
+        y += p['crack'] * hp(noise(n), 2500) * np.exp(-t * 600)
+    return fade_out(soft(y, p.get('drive', 1.3)), 0.02)
 
 
 def d_clap(p):
@@ -289,14 +296,14 @@ def d_clap(p):
 def d_chat(p):
     n = int(0.12 * SR)
     t = np.arange(n) / SR
-    x = hp(0.6 * _metallic(n) + 0.5 * noise(n), 7000)
+    x = hp(p.get('metal', 0.6) * _metallic(n) + 0.5 * noise(n), p.get('hp', 7000))
     return fade_out(x * np.exp(-t * p.get('decay', 70)), 0.01)
 
 
 def d_ohat(p):
     n = int(0.6 * SR)
     t = np.arange(n) / SR
-    x = hp(0.6 * _metallic(n) + 0.5 * noise(n), 6500)
+    x = hp(p.get('metal', 0.6) * _metallic(n) + 0.5 * noise(n), p.get('hp', 6500))
     return fade_out(x * np.exp(-t * p.get('decay', 8)), 0.05)
 
 
@@ -426,7 +433,7 @@ def i_wobble(m, dur, p, glide=None, mod=None):
     env = adsr(dur * SR, 0.005, 0.1, 1.0, 0.05)
     n = len(env)
     t = np.arange(n) / SR
-    rate_beats = mod or 0.5
+    rate_beats = mod if isinstance(mod, (int, float)) and mod else 0.5
     hz = 1.0 / (rate_beats * p.get('spb', 0.43))
     lfo = 0.5 - 0.5 * np.cos(2 * np.pi * hz * t)
     x = saw(f * 1.004, n) + saw(f * 0.996, n, 0.3) + 0.6 * square(f * 2, n, 0.1)
@@ -721,6 +728,40 @@ KITS = {
     # 80s LinnDrum-style: round kick, big snare with a fat body (the gated-reverb era)
     'linn': dict(kick=dict(pitch=56, punch=80, sweep=28, decay=10, drive=1.3, click=0.35), snare=dict(tone=210, snap=1.0, body=1.2, decay=7),
                  clap=dict(tail=6), chat=dict(decay=55), ohat=dict(decay=6)),
+    # drum & bass: a tight, short, clicky kick that leaves room for the sub, and the crisp, cracking layered snare
+    'dnb': dict(kick=dict(pitch=52, punch=190, sweep=70, decay=14, drive=2.2, len=0.32, click=0.75),
+                snare=dict(tone=245, snap=1.5, body=0.8, decay=17, tdecay=40, nlo=1800, nhi=11000, crack=0.7, len=0.28),
+                chat=dict(decay=95, hp=8500), ohat=dict(decay=9, hp=7500)),
+    # neurofunk: harder kick, a compressed, distorted snare with a longer noisy tail
+    'neuro': dict(kick=dict(pitch=50, punch=230, sweep=60, decay=11, drive=3.5, len=0.34, click=0.8),
+                  snare=dict(tone=220, snap=1.8, body=0.9, decay=11, tdecay=30, nlo=1500, nhi=10000, crack=0.9, drive=3.0, len=0.32),
+                  chat=dict(decay=110, hp=9000), ohat=dict(decay=10, hp=8000)),
+    # liquid: rounder kick, a softer snare with more shell
+    'liquid': dict(kick=dict(pitch=50, punch=140, sweep=50, decay=10, drive=1.6, len=0.4, click=0.45),
+                   snare=dict(tone=210, snap=1.1, body=1.0, decay=16, tdecay=26, nlo=1400, nhi=9500, crack=0.35),
+                   chat=dict(decay=80, hp=8000), ohat=dict(decay=8)),
+    # Roland CR-78 (late-70s preset rhythm box): soft round kick, thin tinny snare, short metallic 'tss' hats
+    'cr78': dict(kick=dict(pitch=62, punch=35, sweep=40, decay=15, drive=1.1, len=0.3, click=0.05),
+                 snare=dict(tone=330, snap=0.55, body=0.5, decay=26, tdecay=45, nlo=2500, nhi=8000, len=0.22),
+                 chat=dict(decay=140, hp=9000, metal=0.9), ohat=dict(decay=14, hp=8500, metal=0.9)),
+    # Roland TR-606 (Drumatix): small, snappy, bright - acid & electro
+    '606': dict(kick=dict(pitch=58, punch=70, sweep=45, decay=13, drive=1.4, len=0.35, click=0.3),
+                snare=dict(tone=260, snap=1.3, body=0.4, decay=22, nlo=2000, nhi=10000, len=0.25),
+                chat=dict(decay=120, hp=8500, metal=0.8), ohat=dict(decay=11, hp=8000, metal=0.8)),
+    # Roland TR-707 (mid-80s sample-based): punchy 'digital' kick and snare, 6-bit hats
+    '707': dict(kick=dict(pitch=54, punch=110, sweep=38, decay=11, drive=1.8, len=0.45, click=0.4, bits=8, srate=25000),
+                snare=dict(tone=205, snap=1.35, body=0.75, decay=12, crack=0.3, bits=8, srate=25000),
+                clap=dict(tail=10, bits=8, srate=25000), chat=dict(decay=75, bits=6, srate=25000),
+                ohat=dict(decay=7, bits=6, srate=25000)),
+    # Oberheim DMX (early-80s hip hop, Run-DMC, electro-funk): fat 8-bit kick and snare
+    'dmx': dict(kick=dict(pitch=52, punch=95, sweep=30, decay=8, drive=2.0, len=0.6, click=0.35, bits=8, srate=24000),
+                snare=dict(tone=190, snap=1.2, body=1.1, decay=10, tdecay=22, bits=8, srate=24000),
+                clap=dict(tail=9, bits=8, srate=24000), chat=dict(decay=70, bits=8, srate=24000),
+                ohat=dict(decay=6, bits=8, srate=24000)),
+    # distorted phonk 808: clipped long kick, crunchy snare
+    'phonk808': dict(kick=dict(pitch=48, punch=100, decay=4, drive=4.5, len=0.9, click=0.3),
+                     snare=dict(tone=240, snap=1.4, body=0.6, decay=15, drive=2.6, bits=10, srate=22050),
+                     clap=dict(tail=11), chat=dict(decay=85, bits=10, srate=22050), ohat=dict(decay=9)),
 }
 
 
@@ -1327,7 +1368,7 @@ def i_growl(m, dur, p, glide=None, mod=None):
     env = adsr(dur * SR, 0.004, 0.1, 1.0, 0.04)
     n = len(env)
     t = np.arange(n) / SR
-    hz = 1.0 / ((mod or 0.5) * p.get('spb', 0.43))
+    hz = 1.0 / ((mod if isinstance(mod, (int, float)) and mod else 0.5) * p.get('spb', 0.43))
     lfo = 0.5 - 0.5 * np.cos(2 * np.pi * hz * t)
     idx = 1.5 + 5.0 * lfo                                      # FM depth swells with the LFO
     ph = 2 * np.pi * np.cumsum(np.full(n, f)) / SR
@@ -1487,7 +1528,7 @@ def i_screech(m, dur, p, glide=None, mod=None):
     n = len(env)
     t = np.arange(n) / SR
     bend = 2 ** ((-5 * np.exp(-t * 18)) / 12)                     # whines up into the note
-    hz = 1.0 / ((mod or 0.25) * p.get('spb', 0.43))
+    hz = 1.0 / ((mod if isinstance(mod, (int, float)) and mod else 0.25) * p.get('spb', 0.43))
     lfo = 0.5 - 0.5 * np.cos(2 * np.pi * hz * t)
     ph = 2 * np.pi * np.cumsum(f * bend) / SR
     x = np.sin(ph + (3.0 + 6.0 * lfo) * np.sin(ph * 3.01)) + 0.4 * saw(f * 1.01, n)
@@ -1503,7 +1544,7 @@ def i_riddim(m, dur, p, glide=None, mod=None):
     env = adsr(dur * SR, 0.002, 0.05, 1.0, 0.02)
     n = len(env)
     t = np.arange(n) / SR
-    hz = 1.0 / ((mod or 1 / 3) * p.get('spb', 0.43))
+    hz = 1.0 / ((mod if isinstance(mod, (int, float)) and mod else 1 / 3) * p.get('spb', 0.43))
     gate = (np.sin(2 * np.pi * hz * t) > -0.2).astype(np.float64)
     gate = np.convolve(gate, np.ones(64) / 64, mode='same')       # click-free chops
     x = square(f, n, 0.0) + 0.7 * saw(f * 1.006, n) + 0.5 * square(f * 2.003, n, 0.25)
@@ -1643,3 +1684,255 @@ ROLE_CHOICES['lead'] += ['m1piano', 'bandoneon']
 ROLE_CHOICES['arp'] += ['m1piano']
 ROLE_CHOICES['pad'] += ['bandoneon']
 GM_PROGRAM.update({'m1piano': 1, 'bandoneon': 23})
+
+
+
+# =============================================================================
+#  v1.38: folk & world instruments - mandolin, tin whistle, uilleann pipes, sitar, koto, tanpura; bodhrán, timbales, tabla
+# =============================================================================
+
+def i_mandolin(m, dur, p, glide=None, mod=None):
+    """Mandolin: paired steel courses (two strings a few cents apart) picked hard - bright, short, metallic. Long notes are
+    played the mandolin way, tremolo-picked; mod 'chop' = the bluegrass chop (a choked, percussive chord stroke)."""
+    if mod == 'chop':
+        y = i_pluck(m, 0.06, dict(bright=3500, damp=0.95, r=0.03))
+        y = y + 0.4 * bp(noise(len(y)), 1500, 6000) * np.exp(-np.arange(len(y)) / SR * 90)
+        return hp(y, 250) * 0.8
+    pp = dict(bright=p.get('bright', 9000), damp=0.994, r=0.15)
+    if dur > 0.6:                                         # tremolo picking: ~13 strokes a second
+        step = 1 / 13.0
+        n = int((dur + 0.15) * SR)
+        y = np.zeros(n)
+        k = 0
+        while k * step < dur:
+            s = int(k * step * SR)
+            hit = i_pluck(m + (0.04 if k % 2 else 0.0), step + 0.05, dict(pp, r=0.05)) * (0.85 + 0.15 * (k % 2 == 0))
+            y[s:s + len(hit)] += hit[:n - s]
+            k += 1
+    else:
+        y = i_pluck(m, dur, pp) + 0.8 * i_pluck(m + 0.07, dur, pp)
+    y = eq(eq(hp(y, 200), 'peak', 1100, 1.2, 4.0), 'peak', 3200, 1.5, 3.0)
+    return np.vstack([y, np.roll(y, 70)]) * 0.5
+
+
+def i_tinwhistle(m, dur, p, glide=None, mod=None):
+    """Tin whistle / penny whistle: an almost pure tone with a breathy chiff at the start, light, late vibrato and a
+    quick 'cut' (a grace note from above) on accented notes - the Irish ornament."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.02, 0.1, 0.9, 0.06)
+    n = len(env)
+    t = np.arange(n) / SR
+    fv = vibrato(f, n, rate=5.8, cents=10, delay=0.35)
+    cut = np.where(t < 0.035, 2 ** (3 / 12), 1.0) if p.get('cut', True) and dur > 0.2 else 1.0
+    ph = 2 * np.pi * np.cumsum(fv * cut) / SR
+    x = np.sin(ph) + 0.12 * np.sin(2 * ph) + 0.05 * np.sin(3 * ph)
+    breath = bp(noise(n), f * 1.5, min(f * 6, 16000)) * (0.25 * np.exp(-t * 30) + 0.04)
+    return (x + breath) * env * 0.3
+
+
+def i_pipes(m, dur, p, glide=None, mod=None):
+    """Uilleann pipes chanter: a sweet, reedy double-reed tone (narrow pulse through nasal formants), bellows-blown so the
+    notes join smoothly, with a soft, constant drone a couple of octaves down unless p drone=0."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.03, 0.1, 0.95, 0.08)
+    n = len(env)
+    t = np.arange(n) / SR
+    fv = f * 2 ** ((3 * np.sin(2 * np.pi * 4.5 * t)) / 1200)
+    x = square(fv, n, pw=0.18) * 0.6 + saw(fv, n) * 0.4
+    y = eq(eq(eq(lp(x, 5000), 'peak', 1300, 2.0, 7.0), 'peak', 2600, 2.5, 5.0), 'peak', 400, 1.0, -4.0)
+    if p.get('drone', 0.0):
+        y += p['drone'] * lp(saw(f / 4, n) + 0.6 * saw(f / 4 * 1.5, n), 1200)
+    return hp(y, 150) * env * 0.22
+
+
+def i_drone(m, dur, p, glide=None, mod=None):
+    """Bagpipe / pipe drones: tonic and fifth, buzzy reeds, never stopping (use long notes)."""
+    f = float(mtof(m))
+    n = int((dur + 0.3) * SR)
+    t = np.arange(n) / SR
+    x = sum(a * (square(f * r * 2 ** (c / 1200), n, pw=0.3) * 0.5 + saw(f * r * 2 ** (c / 1200), n) * 0.5)
+            for r, a, c in ((1.0, 1.0, 0), (1.0, 0.7, 4), (1.5, 0.5, -3), (0.5, 0.6, 2)))
+    env = np.minimum(t / 0.3, 1) * np.clip((dur + 0.3 - t) / 0.3, 0, 1)
+    y = eq(lp(x, 2200), 'peak', 900, 1.5, 4.0) * env * 0.1
+    return np.vstack([y, np.roll(y, 200)])
+
+
+def _jawari(y, amount):
+    """The sitar / tanpura bridge: the string grazes a curved bridge, so its tone 'buzzes' - a level-dependent clip that
+    brightens as the note decays (jawari)."""
+    env = np.abs(signal.lfilter([0.002], [1, -0.998], np.abs(y))) + 1e-4
+    return y + amount * np.tanh(y / (env * 0.6)) * env
+
+
+def i_sitar(m, dur, p, glide=None, mod=None):
+    """Sitar: a plucked steel string over the buzzing jawari bridge, a cloud of sympathetic strings ringing behind it,
+    and meend - the pulled-string glide into the note (from below when glide is set, a small bend otherwise)."""
+    f = float(mtof(m))
+    n = int((min(dur, 3.5) + 0.8) * SR)
+    t = np.arange(n) / SR
+    if glide is not None:
+        f0 = float(mtof(glide))
+        fr = f + (f0 - f) * np.exp(-t * 9)
+    else:
+        fr = f * 2 ** ((-30 * np.exp(-t * 14)) / 1200)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    x = sum(np.sin(k * ph) * (0.9 ** k) * np.exp(-t * (1.2 + 0.25 * k)) for k in range(1, 16))
+    x += 0.4 * hp(noise(n), 2500) * np.exp(-t * 250)                       # the mizrab (wire plectrum)
+    y = _jawari(x, p.get('buzz', 1.2))
+    symp = signal.lfilter([1.0], [1.0] + [0.0] * (int(SR / (f * 2)) - 1) + [-0.6], hp(y, 1500) * 0.15)
+    y = eq(hp(y + symp, 120), 'peak', 2500, 1.5, 4.0)
+    g = int(dur * SR) + int(0.4 * SR)
+    if g < n:
+        y[g:] *= np.exp(-np.arange(n - g) / (0.1 * SR))
+    return np.vstack([y, np.roll(y, 150)]) * 0.12
+
+
+def i_tanpura(m, dur, p, glide=None, mod=None):
+    """Tanpura drone: the four strings plucked in their slow cycle (Pa, Sa, Sa, low Sa), each buzzing and ringing into
+    the next - played as one long note per chord."""
+    f = float(mtof(m))
+    n = int((dur + 1.5) * SR)
+    out = np.zeros(n)
+    cyc = (1.5, 2.0, 2.0, 1.0)
+    step = 0.9
+    k = 0
+    while k * step < dur:
+        s = int(k * step * SR)
+        fr = f * cyc[k % 4] / 2
+        L = min(n - s, int(3.0 * SR))
+        t = np.arange(L) / SR
+        ph = 2 * np.pi * fr * t
+        x = sum(np.sin(j * ph) * (0.85 ** j) for j in range(1, 20)) * np.exp(-t * 0.9)
+        out[s:s + L] += _jawari(x, 1.5)[:L] * 0.5
+        k += 1
+    y = lp(hp(out, 80), 6000) * 0.09
+    return np.vstack([y, np.roll(y, 240)])
+
+
+def i_koto(m, dur, p, glide=None, mod=None):
+    """Koto: a silk / nylon string over a movable bridge, plucked with ivory picks - a twangy, hollow attack, a quick
+    pitch dip as the pick releases, and the left hand pressing the string to bend the note up a step on long notes."""
+    f = float(mtof(m))
+    y = i_pluck(m, min(dur, 2.5), dict(bright=6000, damp=0.995, r=0.5))
+    n = len(y)
+    t = np.arange(n) / SR
+    if dur > 0.8 and p.get('press', True):                 # oshide: the pressed bend up after the pluck
+        bend = np.clip((t - 0.45) / 0.2, 0, 1) * 1.0
+        idx = np.cumsum(2 ** (bend / 12))
+        idx = np.clip(idx, 0, n - 1)
+        y = np.interp(idx, np.arange(n), y)
+    y = eq(eq(hp(y, 140), 'peak', 600, 1.0, 4.0), 'peak', 2200, 1.6, 5.0)
+    y += 0.25 * bp(noise(n), 2000, 7000) * np.exp(-t * 300)
+    return np.vstack([y, np.roll(y, 90)]) * 0.55 * (1 if f else 1)
+
+
+def d_bodhran(p):
+    """Bodhrán: a goatskin frame drum hit with a double-ended tipper - a low, pitch-dropping boom (the hand on the back
+    of the skin sets the pitch) with the tipper's dry slap."""
+    n = int(0.5 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 85)
+    f = f0 * (1 + 0.35 * np.exp(-t * 25))
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * p.get('decay', 9))
+    y += 0.45 * bp(noise(n), 500, 3500) * np.exp(-t * 90)
+    return fade_out(soft(y, 1.3), 0.03)
+
+
+def d_timbale(p):
+    """Timbales: shallow metal-shelled drums, hit near the rim - a high, ringing, slightly metallic 'ping' with a sharp
+    stick attack. pitch ~ 500 (macho) / 380 (hembra); 'paila' = the cáscara pattern on the metal shell."""
+    n = int(0.6 * SR)
+    t = np.arange(n) / SR
+    if p.get('paila'):
+        x = hp(noise(n), 2500) * np.exp(-t * 120) + 0.4 * np.sin(2 * np.pi * 2900 * t) * np.exp(-t * 60)
+        return fade_out(x, 0.02)
+    f0 = p.get('pitch', 480)
+    x = (np.sin(2 * np.pi * f0 * t) + 0.5 * np.sin(2 * np.pi * f0 * 2.31 * t) + 0.3 * np.sin(2 * np.pi * f0 * 3.7 * t)) \
+        * np.exp(-t * 11)
+    x += 0.6 * bp(noise(n), 2000, 9000) * np.exp(-t * 180)
+    return fade_out(x, 0.05)
+
+
+def d_tabla(p):
+    """Tabla dayan ('na' / 'tin'): a tuned, ringing treble drum - the black syahi patch gives it harmonic overtones -
+    with a short finger slap."""
+    n = int(0.7 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 300)
+    x = sum(a * np.sin(2 * np.pi * f0 * r * t) * np.exp(-t * d) for r, a, d in ((1, 1.0, 6), (2, 0.6, 8), (3, 0.4, 11), (4, 0.25, 14)))
+    x += 0.5 * bp(noise(n), 1500, 7000) * np.exp(-t * 220)
+    return fade_out(x, 0.05)
+
+
+def d_bayan(p):
+    """Tabla bayan ('ge'): the big bass drum of the pair - a deep boom whose pitch the heel of the hand slides up."""
+    n = int(0.9 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 75)
+    f = f0 * (1 + 0.5 * (1 - np.exp(-t * 6)))
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 4.5) + 0.2 * bp(noise(n), 300, 2000) * np.exp(-t * 60)
+    return fade_out(y, 0.08)
+
+
+INSTRUMENTS.update({'mandolin': i_mandolin, 'tinwhistle': i_tinwhistle, 'pipes': i_pipes, 'drone': i_drone, 'sitar': i_sitar,
+                    'tanpura': i_tanpura, 'koto': i_koto})
+DRUMS.update({'bodhran': d_bodhran, 'timbale': d_timbale, 'tabla': d_tabla, 'bayan': d_bayan})
+INSTRUMENT_INFO.update({'mandolin': 'Mandolin', 'tinwhistle': 'Tin whistle', 'pipes': 'Uilleann pipes', 'drone': 'Pipe drones',
+                        'sitar': 'Sitar', 'tanpura': 'Tanpura (drone)', 'koto': 'Koto'})
+for _r, _l in (('chords', ['mandolin', 'koto', 'sitar']), ('arp', ['mandolin', 'koto', 'sitar']),
+               ('lead', ['mandolin', 'tinwhistle', 'pipes', 'sitar', 'koto']), ('pad', ['drone', 'tanpura'])):
+    ROLE_CHOICES[_r] += _l
+GM_PROGRAM.update({'mandolin': 25, 'tinwhistle': 78, 'pipes': 109, 'drone': 109, 'sitar': 104, 'tanpura': 104, 'koto': 107})
+
+
+def i_whine(m, dur, p, glide=None, mod=None):
+    """G-funk 'whine': the high Minimoog lead of West Coast rap - a soft square / sine blend that glides from the note
+    before (portamento) and sings with a slow, wide vibrato."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.03, 0.2, 0.9, 0.15)
+    n = len(env)
+    t = np.arange(n) / SR
+    if glide is not None:
+        f0 = float(mtof(glide))
+        fr = f + (f0 - f) * np.exp(-t / p.get('porta', 0.07))
+    else:
+        fr = np.full(n, f)
+    fr = fr * 2 ** ((p.get('vib', 22) * np.clip((t - 0.25) / 0.3, 0, 1) * np.sin(2 * np.pi * 5.2 * t)) / 1200)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    x = 0.7 * np.sin(ph) + 0.35 * np.sign(np.sin(ph)) * 0.5 + 0.15 * np.sin(2 * ph)
+    y = lp(x, p.get('cut', 3200)) * env * 0.35
+    return np.vstack([y, np.roll(y, 120)])
+
+
+VOWELS = {'u': (320, 800, 2500), 'o': (450, 850, 2600), 'a': (750, 1250, 2650), 'e': (450, 1900, 2600), 'i': (300, 2300, 3000)}
+
+
+def i_talkbox(m, dur, p, glide=None, mod=None):
+    """Talk-box style synth (Roger Troutman / Zapp, 80s electro-funk): a bright saw + square played through moving vowel
+    formants, so each note 'speaks' - opening from 'oo' to 'ah' and closing again. A synth sound, no words."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.02, 0.15, 0.9, 0.12)
+    n = len(env)
+    t = np.arange(n) / SR
+    if glide is not None:
+        fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.06)
+    else:
+        fr = np.full(n, f)
+    fr = fr * 2 ** ((10 * np.clip((t - 0.3) / 0.3, 0, 1) * np.sin(2 * np.pi * 5.5 * t)) / 1200)
+    src = saw(fr, n) * 0.7 + square(fr, n, pw=0.3) * 0.3
+    seq = p.get('vowels', ('u', 'a', 'o'))
+    pos = np.clip(t / max(dur, 0.15), 0, 1) * (len(seq) - 1)
+    out = np.zeros(n)
+    for k in range(3):                                    # three moving formants
+        fk = np.array([VOWELS[v][k] for v in seq], float)
+        cut = np.interp(pos, np.arange(len(seq)), fk)
+        out += svf_sweep(src, cut, q=6.0 - k * 1.2, mode='bandpass') * (1.0, 0.6, 0.35)[k]
+    y = hp(out, 150) * env * 0.5
+    return np.vstack([y, np.roll(y, 90)])
+
+
+INSTRUMENTS.update({'whine': i_whine, 'talkbox': i_talkbox})
+INSTRUMENT_INFO.update({'whine': 'G-funk whine lead (Minimoog glide)', 'talkbox': 'Talk-box style synth'})
+ROLE_CHOICES['lead'] += ['whine', 'talkbox']
+ROLE_CHOICES['chords'] += ['talkbox']
+GM_PROGRAM.update({'whine': 80, 'talkbox': 81})

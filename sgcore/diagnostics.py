@@ -308,7 +308,7 @@ def summary(jobs=None, note=''):
 
 
 # ----------------------------------------------------------------------------- synth parameter report (for writing genre patches)
-REPORT_SYNTHS = ('ob-xf', 'obxf', 'odin', 'monique', 'six sines', 'sixsines', 'surge xt', 'dexed', 'vital', 'noisemaker')
+REPORT_SYNTHS = ('ob-xf', 'obxf', 'odin', 'monique', 'six sines', 'sixsines', 'surge xt', 'dexed', 'vital', 'noisemaker', 'jc303', 'ripplerx')
 
 
 def synth_params(limit=400):

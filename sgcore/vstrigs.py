@@ -30,6 +30,7 @@ PLAYERS = {
     'dexed': dict(name='Dexed', match=_matcher('dexed'), kind='synth', pack='dexed'),
     'jc303': dict(name='JC303', match=_matcher('jc303', 'jc 303'), kind='synth', pack='jc303'),
     'nekobi': dict(name='Nekobi', match=_matcher('nekobi'), kind='synth', pack=None),
+    'ripplerx': dict(name='RipplerX', match=_matcher('ripplerx'), kind='synth', pack='ripplerx'),
     'kars': dict(name='Kars', match=_matcher('kars'), kind='synth', pack=None),
     'bbcso': dict(name='BBC Symphony Orchestra', match=_matcher('bbc symphony orchestra'), kind='sampler', pack=None),
     'labs': dict(name='Spitfire LABS', match=_matcher('labs', exclude=('kilohearts',)), kind='sampler', pack=None),
@@ -41,7 +42,7 @@ PLAYERS = {
 }
 
 OFF, ON = 0.0, 1.0
-ACID_STYLES = {'acid_house', 'techno', 'minimal', 'psytrance', 'tech_house', 'electro', 'breakcore'}   # a 303 bassline only where it belongs
+ACID_STYLES = {'acid_house', 'techno', 'minimal', 'psytrance', 'tech_house', 'electro', 'breakcore', 'deep_dubstep_rollers'}   # a 303 bassline only where it belongs
 # ----------------------------------------------------------------------------- patches
 # keys: plugin parameter names ("A|B" = try A, then B). float = knob position 0..1, str = choice label.
 PATCHES = {
@@ -111,6 +112,16 @@ PATCHES = {
         'Waveform': 'triangle', 'Cutoff': 0.26, 'VCF Resonance': 0.85, 'Env Mod': 0.7, 'Decay': 0.4, 'Accent': 0.6, 'Volume': 0.8}),
     'nekobi.bass': dict(player='nekobi', label='303 bassline', only=ACID_STYLES, required=['Cutoff'], params={
         'Waveform': 'triangle', 'Cutoff': 0.4, 'VCF Resonance': 0.3, 'Env Mod': 0.35, 'Decay': 0.55, 'Accent': 0.4, 'Volume': 0.8}),
+    # ---- RipplerX: physical modelling (mallet / exciter into modelled resonators), its factory programs by name
+    'ripplerx.marimba': dict(player='ripplerx', label='Modelled marimba', program=['Marimba'], params={}),
+    'ripplerx.vibes': dict(player='ripplerx', label='Modelled vibraphone', program=['Vibes'], params={}),
+    'ripplerx.kalimba': dict(player='ripplerx', label='Modelled kalimba', program=['Kalimba'], params={}),
+    'ripplerx.harp': dict(player='ripplerx', label='Modelled harp', program=['Harp'], params={}),
+    'ripplerx.musicbox': dict(player='ripplerx', label='Modelled music box', program=['Sankyo'], params={}),
+    'ripplerx.bells': dict(player='ripplerx', label='Modelled bells', program=['Bells'], params={}),
+    'ripplerx.tubes': dict(player='ripplerx', label='Modelled tubular bells', program=['Tubes'], params={}),
+    'ripplerx.gong': dict(player='ripplerx', label='Modelled gong', program=['Gong'], params={}),
+    'ripplerx.crystal': dict(player='ripplerx', label='Modelled crystal / glass', program=['Crystal'], params={}),
     # ---- Kars: Karplus-Strong plucked string
     'kars.pluck': dict(player='kars', label='Plucked string', required=['Release'], params={
         'Sustain': OFF, 'Release': 0.15, 'Volume': 0.8}),
@@ -191,14 +202,15 @@ ROLE_PATCHES = {
     'chip': ['tal.square_lead'],
     'vox': ['dexed.voice'],
     'piano': ['dexed.piano'], 'harpsichord': ['dexed.harpsichord'], 'flute': ['dexed.flute'],
-    'epiano': ['dexed.epiano'], 'clav': ['dexed.clav'], 'marimba': ['dexed.marimba'], 'bell': ['dexed.bells', 'dexed.chime', 'dexed.vibes'],
-    'celesta': ['dexed.chime', 'dexed.vibes'],
-    'steeldrum': ['dexed.steeldrum'], 'kalimba': ['dexed.koto'], 'cowbell': [], 'cowbell_808': [], 'cowbell_long': [], 'cowbell_dist': [], 'cowbell_crushed': [], 'organ': ['dexed.organ'],
+    'epiano': ['dexed.epiano'], 'clav': ['dexed.clav'], 'marimba': ['ripplerx.marimba', 'dexed.marimba'], 'bell': ['ripplerx.bells', 'dexed.bells', 'dexed.chime', 'ripplerx.crystal'],
+    'celesta': ['ripplerx.musicbox', 'dexed.chime', 'dexed.vibes'],
+    'steeldrum': ['dexed.steeldrum'], 'kalimba': ['ripplerx.kalimba', 'dexed.koto'], 'cowbell': [], 'cowbell_808': [], 'cowbell_long': [], 'cowbell_dist': [], 'cowbell_crushed': [], 'organ': ['dexed.organ'],
     'polysynth': ['tal.pluck', 'tal.analog_pad', 'surge.pluck'], 'synthbrass': ['tal.brass_stab', 'dexed.brass'],
     'moogbass': ['tal.fat_bass', 'tal.saw_bass', 'surge.saw_bass'], 'glasspad': ['surge.wide_pad', 'dexed.chime'],
-    'solina': ['tal.strings'], 'wurli': ['dexed.epiano'], 'vibes': ['dexed.vibes'],
+    'solina': ['tal.strings'], 'wurli': ['dexed.epiano'], 'vibes': ['ripplerx.vibes', 'dexed.vibes'], 'tubular': ['ripplerx.tubes', 'dexed.bells'],
+    'harp': ['ripplerx.harp'], 'musicbox': ['ripplerx.musicbox'], 'koto': ['dexed.koto'], 'gong': ['ripplerx.gong'],
 }
-ANY_CATEGORY = {'epiano', 'clav', 'marimba', 'steeldrum', 'kalimba', 'fmbass'}   # FM keys also suit funk, city pop, bossa, reggae
+ANY_CATEGORY = {'epiano', 'clav', 'marimba', 'steeldrum', 'kalimba', 'fmbass', 'vibes', 'koto', 'tubular', 'gong', 'musicbox', 'harp'}   # FM keys also suit funk, city pop, bossa, reggae
 
 # your own saved VST sounds (any plugin): a sound whose name contains one of these words plays that kind of part.
 # Sample players (BBC SO, LABS) can only be used this way; for synths it lets e.g. "Serum supersaw" beat the built-in rig.

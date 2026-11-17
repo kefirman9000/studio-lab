@@ -8,6 +8,8 @@ app checks after download. Run from the repo root with shallow, blob-less clones
     git clone --depth 1 --filter=blob:none --no-checkout https://github.com/sfzinstruments/virtuosity_drums <dir>/vdrums
     git clone --depth 1 --filter=blob:none --no-checkout https://github.com/sfzinstruments/karoryfer.black-and-green-guitars <dir>/bng
     git clone --depth 1 --filter=blob:none --no-checkout https://github.com/sfzinstruments/karoryfer.shinyguitar <dir>/shiny
+    git clone --depth 1 --filter=blob:none --no-checkout https://github.com/sfzinstruments/karoryfer.unruly-drums <dir>/unruly
+    git clone --depth 1 --filter=blob:none --no-checkout https://github.com/sfzinstruments/karoryfer.frankensnare <dir>/frankensnare
     python tools/make_samplelib_manifest.py <dir>                     (all libraries)
     python tools/make_samplelib_manifest.py <dir> --only twang,archtop  (just these, merged into the existing file)
 (never use `git ls-tree -l` on these clones: it downloads every sample to report its size)
@@ -149,6 +151,22 @@ RUSTY = [(k, 'hit', r'^Samples/' + f, _V, 2) for k, f in
          (('kick', 'kick_24/kick/kick/'), ('snare', 'snare_14/center/top/'), ('rim', 'snare_14/sidestick/top/'),
           ('rimshot', 'snare_14/rimshot/top/'), ('chat', 'hihat_14/cl/cl/'), ('ohat', 'hihat_14/open/cl/'),
           ('ride', 'ride_22/rd/cl/'), ('crash', 'crash_17/cr/cl/'), ('tom', 'tom_15/center/cl/'), ('ltom', 'tom_22/center/cl/'))]
+_U = r'_vl(2|4|6|8)_rr[12]\.flac$'
+_U6 = r'_vl(2|4|6)_rr[12]\.flac$'
+UNRULY = [(kit, (part, 'hit', r'^Samples/' + folder + r'/rr[12]/' + name + r'_vl', pat, 2))
+          for kit, part, folder, name, pat in (
+              ('unruly', 'kick', 'k20/out', 'kick_clean', _U), ('unruly', 'snare', 's14/top', 's14_center', _U),
+              ('unruly', 'rim', 's14/top', 's14_sstick', _U6), ('unruly', 'rimshot', 's14/top', 's14_rimshot', _U6),
+              ('unruly', 'chat', 'h14/cl', 'hh_closed_tip', _U6), ('unruly', 'ohat', 'h14/cl', 'hh_open_tip', _U6),
+              ('unruly', 'ride', 'r20/cl', 'ride_bow', _U), ('unruly', 'crash', 'c16/cl', 'cr_bow', r'_vl(2|4)_rr[12]\.flac$'),
+              ('unruly', 'tom', 's13/top', 's13_tom_clean', _U),
+              ('dirty', 'kick', 'k20/out', 'kick_dirtiest', _U), ('dirty', 'snare', 's13/top', 's13_center', _U),
+              ('dirty', 'rim', 's13/top', 's13_sstick', _U6), ('dirty', 'chat', 'h14/cl', 'hh_loose_tip', _U6),
+              ('dirty', 'ohat', 'h14/cl', 'hh_open_tip', _U6), ('dirty', 'crash', 'c16/cl', 'cr_edge', r'_vl(2|4)_rr[12]\.flac$'),
+              ('dirty', 'tom', 's13/top', 's13_tom_dirty', _U))]
+# Frankensnare: single snares that replace a kit's own (crisp steel piccolo for DnB, ash piccolo for jungle ...)
+FRANKEN = [(kit, ('snare', 'hit', r'^Samples/' + folder + r'/top/', r'_vl(2|4|6|7)_rr[12]\.flac$', 2))
+           for kit, folder in (('crisp', '12_basic'), ('piccolo', '10_basic'), ('deadsnare', '14p_muted'), ('bigsnare', '20_basic'))]
 ARCHTOP = [('acguitar', 'ring', r'^Samples/acoustic/', r'/[a-g]b?\d_vl[24]_rr[12]_1\.wav$', 2)]
 THIN = {'grand': ({2, 4}, 2), 'upright_piano': ({1, 3}, None), 'harpsichord': (None, 2)}
 STRINGS = {'violins', 'violas', 'celli', 'basses', 'violin'}
@@ -180,6 +198,10 @@ LIBS = {
     'kitrusty': dict(repo='sfzinstruments/karoryfer.big-rusty-drums', dir='rusty',
                      title='Big vintage rock kit (Karoryfer Big Rusty Drums)', by='Karoryfer Samples',
                      rules=[('rusty', r) for r in RUSTY], ext='.flac'),
+    'kitunruly': dict(repo='sfzinstruments/karoryfer.unruly-drums', dir='unruly',
+                      title='Modern & dirty drum kits (Karoryfer Unruly Drums)', by='Karoryfer Samples', rules=UNRULY, ext='.flac'),
+    'snares': dict(repo='sfzinstruments/karoryfer.frankensnare', dir='frankensnare',
+                   title='Snare collection (Karoryfer Frankensnare)', by='Karoryfer Samples', rules=FRANKEN, ext='.flac'),
     'drums': dict(repo='sfzinstruments/virtuosity_drums', dir='vdrums', title='Acoustic drum kits (Virtuosity Drums)',
                   by='Versilian Studios & Karoryfer', rules=[('studio', r) for r in vdrums('mid')] + [('lofi', r) for r in vdrums('lofi')] + [('room', r) for r in vdrums('room')],
                   ext='.flac'),

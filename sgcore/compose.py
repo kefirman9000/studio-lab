@@ -337,7 +337,8 @@ def apply_variety(st, opts, rnd):
             sd = ps.get(part) if ps.get(part) is not None else opts.seed * 1009 + PART_K[part]
             part_rng[role] = random.Random(f'{sd}-{role}-{owner}-variety')
         rr = part_rng[role]
-        free = role not in (opts.instruments or {}) and not t.get('user_pick') and not chip_locked and not t.get('double_of')
+        free = role not in (opts.instruments or {}) and not t.get('user_pick') and not chip_locked and not t.get('double_of') \
+            and (t['name'] == role or st.get('composer') or t.get('switch_of'))     # a genre's named extra parts keep their sound
         keep_sig = owner in SIGNATURE_STRICT                  # rap / R&B: the genre's own sound is the usual one
         if free and pool and rr.random() < ((0.2 + 0.3 * v) if keep_sig else (0.55 + 0.4 * v)):
             # the genre's own pool: its signature sound a little likelier, every other one an authentic alternative;
@@ -367,7 +368,8 @@ def apply_variety(st, opts, rnd):
             t['dly'] = max(t['dly'], 0.2) * rnd.uniform(0.7, 1.3)
         tracks.append(t)
     st['tracks'] = tracks
-    if not opts.kit and not st.get('kit_id') and st.get('category') != 'Orchestral' and rd.random() < 0.35 * v:
+    if not opts.kit and not st.get('kit_id') and st.get('category') != 'Orchestral' and not st.get('kit_override') \
+            and not st.get('kick_shape') and rd.random() < 0.35 * v:      # genres with a designed kit keep it
         kit = dict(KITS[rd.choice(['808', '909', 'punchy', 'soft', 'default'])])
         st['kitparams'] = kit
     elif st.get('kitparams', {}).get('kick'):
@@ -526,11 +528,11 @@ def resolve_style(opts, rnd=None, mood=None):
     for t in st['tracks']:
         t = dict(t)
         t['p'] = dict(t['p'])
-        if st.get('composer'):                          # through-composed scores: every player has its own pick
+        if st.get('composer') or t['name'] != t['layer']:   # scores and a genre's extra parts: each has its own pick
             new = opts.instruments.get(t['name']) if t['layer'] in MELODIC_ROLES else None
         else:
             new = opts.instruments.get(t['layer']) if t['layer'] in MELODIC_ROLES else None
-        if new == 'off' and st.get('composer'):         # a Journey player switched off in the Sound panel
+        if new == 'off':                                 # a player / extra part switched off in the Sound panel
             t['off'] = True
             new = None
         if isinstance(new, str) and new.startswith(('vstp:', 'vstd:', 'vstq:')):
@@ -843,7 +845,8 @@ def compose(opts):
     from . import fxrig
     fxrig.plan(st, opts.style, bool(getattr(opts, 'vst_rig', False)))
     by_name = {t['name']: t for t in st['tracks']}
-    st['tracks'] = [t for t in st['tracks'] if not (t.get('double_of') and by_name.get(t['double_of'], {}).get('inst') == t['inst'])]
+    st['tracks'] = [t for t in st['tracks'] if not (t.get('double_of') and not t.get('keep_inst')
+                                                    and by_name.get(t['double_of'], {}).get('inst') == t['inst'])]
     energy = float(opts.energy)
     cx = float(opts.complexity)
     bpm = opts.bpm or rnd.randint(*st['bpm'])
@@ -1045,7 +1048,7 @@ def compose(opts):
             variations.append((sec_start, sec_start + nbars * 4, int(ed['vary'])))
         pchoice = {name: rnd_d.choice(pats) for name, pats in st['drums'].items()}
         bass_pat = rnd_b.choice(st['bass'])
-        chord_pat = rnd_c.choice(st['chord_rh'])
+        chord_pat = opts_s.get('chord_rh') or rnd_c.choice(st['chord_rh'])     # a section can have its own (tango ending)
         riff_pat = None
         if st.get('riffs') and st.get('voicing') == 'power' and S < 0.6:     # metal / punk: verses are riffs
             big = opts_s.get('drop') or sname in BIG_SECTIONS
@@ -1249,7 +1252,9 @@ def compose(opts):
                 for step, l, c in hits:
                     dur = l / 4 * (cb if l == 16 else 1) * 0.95
                     for i, m in enumerate(notes):
-                        evs.append(Ev('chords', beat0 + step / 4, dur, m, rnd_c.uniform(0.75, 0.92), strum=i * st.get('strum', 0.0)))
+                        vel = rnd_c.uniform(0.95, 1.0) if c == 'X' else rnd_c.uniform(0.75, 0.92)     # 'X' = an accent
+                        evs.append(Ev('chords', beat0 + step / 4, dur, m, vel, strum=i * st.get('strum', 0.0),
+                                      mod='acc' if c == 'X' else None))
             # ---------------- pad
             if 'pad' in layers and 'pad' in tracks and (b % cb == 0):
                 notes = voice_chord(key, chord, min(4, chord_size), st.get('chord_center', 62) - 2, pad_voicing,
@@ -1258,6 +1263,9 @@ def compose(opts):
                 pcol = bar_col if bar_col in ('sus2', 'sus4') and color_fits(key, chord, bar_col) else None
                 notes = declutter(notes, key, chord, pcol)
                 vl_prev['pad'] = notes
+                if st.get('pad_drone'):                         # pipes / tanpura: one long tonic, whatever the chords do
+                    c0 = st.get('chord_center', 62) - 12
+                    notes = [c0 + ((key.root - c0) % 12)]
                 for m in notes:
                     evs.append(Ev('pad', beat0, 4 * cb * 0.98, m, 0.8))
             # ---------------- arp
@@ -1267,6 +1275,12 @@ def compose(opts):
                 seq = tones + [tones[0] + 12]
                 if arp['mode'] == 'updown':
                     seq = seq + seq[-2:0:-1]
+                elif arp['mode'] == 'roll':                      # Scruggs banjo roll: thumb-index-middle with the high drone string
+                    drone = 12 * (arp['oct'] + 1) + 7 + ((key.root - 7) % 12)
+                    if drone <= tones[-1]:
+                        drone += 12
+                    seq = [tones[1], tones[2] if len(tones) > 2 else tones[0] + 12, drone, tones[0], tones[2] if len(tones) > 2 else tones[1],
+                           drone, tones[1], drone]
                 elif arp['mode'] == 'alberti':                   # Classical-era accompaniment: low - high - middle - high
                     lo_, mid_, hi_ = tones[0] - 12, tones[1] - 12 if len(tones) > 2 else tones[0] - 5, tones[-1] - 12
                     seq = [lo_, hi_, mid_, hi_]
@@ -1387,9 +1401,26 @@ def compose(opts):
                                     dict(layer='lead')}, key, st, sections)
     if st.get('slides'):                                 # country: notes slide up into place (steel / fiddle / Telecaster)
         add_slides(evs, tracks, st, key, random.Random(opts.seed * 41 + 3))
+    if st.get('lead_glide'):                             # G-funk / talk-box: the lead slides from note to note
+        prev = None
+        for e in sorted((e for e in evs if e.track == 'lead' and e.midi is not None), key=lambda e: e.beat):
+            if prev is not None and e.beat - (prev.beat + prev.dur) < 0.3 and e.midi != prev.midi and e.glide is None:
+                e.glide = prev.midi
+            prev = e
+    if st.get('solos'):                                  # bluegrass / synthwave: instruments take turns at the solos
+        rotate_solos(evs, tracks, sections, st)
+    if st.get('g_run'):
+        add_g_runs(evs, tracks, sections, key)
+    if st.get('eno_loops'):
+        eno_loops(evs, st['eno_loops'], bar0 * 4)
+    if any(t.get('chops') for t in tracks.values()):
+        chop_samples(evs, tracks, random.Random(opts.seed * 53 + 1))
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
+    off = {n for n, t in tracks.items() if t.get('off')} if not st.get('composer') else set()
+    if off:                                              # extra parts switched off in the Sound panel
+        evs = [e for e in evs if e.track not in off]
     if muted:                                            # parts you switched off: everything else stays note-for-note
         evs = [e for e in evs if tracks.get(e.track, {}).get('layer') not in muted]
     sname ='+'.join([opts.style] + [b for b in (opts.blend or []) if b != opts.style])
@@ -1710,6 +1741,75 @@ def add_slides(evs, tracks, st, key, rnd):
             e.slide = 1.0                                   # a quick half-step bend now and then
 
 
+def rotate_solos(evs, tracks, sections, st):
+    """Solo sections pass the melody round the band, like a bluegrass jam or an 80s sax / guitar break: each 'solo'
+    section is played by the next instrument in st['solos'] (track names); everywhere else the lead keeps the tune."""
+    order = [n for n in st['solos'] if n in tracks]
+    if not order:
+        return
+    k = 0
+    for sec in sections:
+        if sec['name'] not in ('solo', 'break_solo'):
+            continue
+        to = order[k % len(order)]
+        k += 1
+        b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+        for e in evs:
+            if e.track == 'lead' and b0 <= e.beat < b1:
+                e.track = to
+
+
+def add_g_runs(evs, tracks, sections, key):
+    """The bluegrass guitar 'G run': at the end of each section the rhythm guitar walks up from below into the tonic."""
+    trk = 'gtr' if 'gtr' in tracks else ('chords' if 'chords' in tracks else None)
+    if not trk:
+        return
+    t0 = 40 + ((key.root - 40) % 12)
+    for sec in sections:
+        if 'chords' not in sec['layers'] or sec['bars'] < 4:
+            continue
+        end = (sec['bar'] + sec['bars']) * 4
+        run = [t0 - 5, t0 - 3, t0 - 2, t0 - 1]
+        for i, m in enumerate(run):
+            evs.append(Ev(trk, end - 2 + i * 0.5, 0.45, m, 0.85))
+
+
+def eno_loops(evs, loops, total_beats):
+    """Brian Eno's tape loops (Music for Airports): each part repeats its own phrase on its own cycle length, so the parts
+    drift against each other and the music never lines up the same way twice."""
+    for name, period in loops.items():
+        mine = sorted((e for e in evs if e.track == name), key=lambda e: e.beat)
+        if not mine:
+            continue
+        start = mine[0].beat
+        cell = [e for e in mine if e.beat < start + period]
+        evs[:] = [e for e in evs if e.track != name]
+        t = start
+        while t < total_beats - 1:
+            for e in cell:
+                b = t + (e.beat - start)
+                if b < total_beats - 1:
+                    evs.append(Ev(name, b, e.dur, e.midi, e.vel, e.glide, e.mod))
+            t += period
+
+
+def chop_samples(evs, tracks, rnd):
+    """Lo-fi / boom-bap: chords played like a chopped record - long chords are re-triggered in sampler slices
+    (the attack comes back each time, slightly uneven), the way an MPC chop of a sampled Rhodes sounds."""
+    out = []
+    for e in evs:
+        t = tracks.get(e.track, {})
+        if not t.get('chops') or e.midi is None or e.dur < 1.4:
+            out.append(e)
+            continue
+        cuts = rnd.choice(((0, 1.5, 2.5), (0, 0.75, 1.5, 2.5), (0, 2, 2.75), (0, 1, 1.75, 3)))
+        cuts = [c for c in cuts if c < e.dur - 0.2]
+        for i, c in enumerate(cuts):
+            nxt = cuts[i + 1] if i + 1 < len(cuts) else e.dur
+            out.append(Ev(e.track, e.beat + c, max(0.2, nxt - c - 0.05), e.midi, e.vel * (1.0 if i == 0 else 0.88), e.glide, e.mod))
+    evs[:] = out
+
+
 def double_layers(evs, tracks):
     """The layer tracks play exactly the notes of the part they double (after tuning and dynamics)."""
     out = []
@@ -1718,12 +1818,14 @@ def double_layers(evs, tracks):
         if not src:
             continue
         o = t.get('octave', 0)
+        acc_only, max_d = t.get('accents'), t.get('max_dur')
         for e in evs:
-            if e.track == src and e.midi is not None:
+            if e.track == src and e.midi is not None and (not acc_only or e.mod == 'acc'):   # accents: horn stabs
                 m = e.midi + o
                 if not 28 <= m <= 100:
                     m = e.midi
-                out.append(Ev(name, e.beat, e.dur, m, e.vel * 0.9, None if e.glide is None else e.glide + (m - e.midi), e.mod))
+                out.append(Ev(name, e.beat, min(e.dur, max_d) if max_d else e.dur, m, e.vel * 0.9,
+                              None if e.glide is None else e.glide + (m - e.midi), e.mod))
     return out
 
 
@@ -1759,8 +1861,8 @@ def add_section_switch_tracks(st, opts, rnd):
     (e.g. Rhodes verse, piano chorus, guitar bridge). The main instrument keeps the big sections."""
     from .styles import POOLS
     mode = getattr(opts, 'rotation', 'auto') or 'auto'
-    if mode == 'off' or opts.structure == 'loop':
-        return
+    if mode == 'off' or opts.structure == 'loop' or (st.get('no_rotation') and mode == 'auto'):
+        return                                           # ensemble genres keep each instrument on its own part
     v = float(getattr(opts, 'variety', 0.5))
     n_roles = {'some': 1, 'lots': 3}.get(mode, 1 if v < 0.45 else (2 if v < 0.8 else 3))
     if mode == 'auto' and random.Random(f'{opts.seed}-rot-on').random() > 0.35 + 0.6 * v:

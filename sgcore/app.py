@@ -32,6 +32,20 @@ SETTINGS = os.path.join(ROOT, 'settings.json')
 PRESETS = os.path.join(ROOT, 'presets')
 
 
+
+EXTRA_LABELS = {'horns': 'Horn stabs', 'stabs': 'Brass stabs', 'gtr': 'Rhythm guitar', 'whistle': 'Tin whistle (with the tune)',
+                'keys': 'Keys (with the chords)', 'saws': 'Supersaws (with the chords)', 'chords_r': 'Second guitar (double-tracked)',
+                'bass_up': 'Upper bass (doubling)', 'solo_banjo': 'Banjo breaks', 'solo_mando': 'Mandolin breaks',
+                'solo_gtr': 'Guitar breaks / solo', 'solo_sax': 'Sax solo', 'solo_keys': 'Keys solo', 'celli': 'Celli (doubling)',
+                'lead_oct': 'Lead an octave down', 'counter': 'Counter-melody'}
+
+
+def extra_label(t):
+    """A readable name for a genre's extra part in the Sound panel."""
+    if t['name'] in EXTRA_LABELS:
+        return EXTRA_LABELS[t['name']]
+    return t['name'].replace('_', ' ').capitalize() + f" ({t['layer']})"
+
 def load_settings():
     try:
         with open(SETTINGS) as f:
@@ -356,7 +370,11 @@ def meta():
                                                                          __import__('sgcore.drumkits', fromlist=['MENU']).MENU],
         window=load_settings().get('window', 'app'), genre_kits=__import__('sgcore.drumkits', fromlist=['GENRE_KIT']).GENRE_KIT, journey_presets=__import__('sgcore.journey', fromlist=['PRESETS']).PRESETS, journey_parts=[dict(id=n, name=l, layer=next(t['layer'] for t in STYLES['cinematic_journey']['tracks'] if t['name'] == n), inst=next(t['inst'] for t in STYLES['cinematic_journey']['tracks'] if t['name'] == n)) for n, l in __import__('sgcore.journey', fromlist=['PLAYERS']).PLAYERS], parts=[dict(id=p, name=PART_LABELS[p]) for p in FUSION_PARTS],
         labels={k: label(k) for k in STYLES},
-        style_defaults={k: {t['layer']: t['inst'] for t in v['tracks'] if t['layer'] in ROLE_CHOICES} for k, v in STYLES.items()},
+        style_defaults={k: {t['layer']: t['inst'] for t in sorted(v['tracks'], key=lambda t: t['name'] == t['layer'])
+                            if t['layer'] in ROLE_CHOICES} for k, v in STYLES.items()},
+        style_extras={k: [dict(id=t['name'], layer=t['layer'], inst=t['inst'], name=extra_label(t)) for t in v['tracks']
+                          if t['layer'] in ROLE_CHOICES and t['name'] != t['layer']]
+                      for k, v in STYLES.items() if not v.get('composer')},
     )
 
 

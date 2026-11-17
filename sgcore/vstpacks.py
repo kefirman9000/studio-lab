@@ -46,6 +46,12 @@ PACKS = [
     dict(id='jc303', name='JC303', maker='midilab', license='GPL-3.0', repo='midilab/jc303', page='https://midilab.co/jc303/',
          size='~10 MB', plays='TB-303 acid bass (acid house, techno, psytrance)', bundles=[r'^jc303$'],
          assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.zip$'], 'linux': [r'linux.*{arch}.*\.zip$', r'linux.*\.zip$']}),
+    dict(id='ripplerx', name='RipplerX', maker='tiagolr', license='GPL-3.0', repo='tiagolr/ripplerx',
+         page='https://github.com/tiagolr/ripplerx', size='~7 MB',
+         plays='physically modelled marimba, vibes, kalimba, harp, music box, bells, tubular bells and gongs '
+               '(afro, latin, soca, amapiano, ambient, lullaby, orchestral colours)',
+         bundles=[r'^ripplerx$'],
+         assets={'windows': [r'ripplerx-win.*\.zip$'], 'mac': [r'ripplerx-mac.*\.zip$'], 'linux': [r'ripplerx-linux.*\.zip$']}),
     dict(id='dragonfly', name='Dragonfly Reverb', maker='Michael Willis', license='GPL-3.0', repo='michaelwillis/dragonfly-reverb',
          page='https://michaelwillis.github.io/dragonfly-reverb/', size='~10 MB', kind='effect',
          plays='hall, plate and room reverbs - each genre\'s reverb runs through the right one (hall for orchestral & trance, '

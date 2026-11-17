@@ -37,9 +37,9 @@ from . import updater
 ROOT = updater.ROOT
 REAL_DIR = os.path.join(ROOT, 'sound_library', 'real')
 MANIFEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'samplelibs.json')
-LIB_ORDER = ['drums', 'kit70s', 'kitbrush', 'kitrusty', 'percussion', 'strings', 'winds', 'keys', 'colors', 'archtop', 'twang',
+LIB_ORDER = ['drums', 'kit70s', 'kitbrush', 'kitrusty', 'kitunruly', 'snares', 'percussion', 'strings', 'winds', 'keys', 'colors', 'archtop', 'twang',
              'ebass', 'dbass']
-KIT_LIBS = ('drums', 'kit70s', 'kitbrush', 'kitrusty')
+KIT_LIBS = ('drums', 'kit70s', 'kitbrush', 'kitrusty', 'kitunruly')
 BLURB = {
     'drums': 'A real acoustic drum kit (kick, snare, hats, ride, crash, toms) with 3 mic sounds: clean studio, big rock room and '
              'vintage lo-fi. Plays the rock, funk, disco, jazz and soul kits and the re-played breaks (Amen, Think, Funky Drummer ...).',
@@ -49,6 +49,10 @@ BLURB = {
                 'quiet storm, country waltz and western swing.',
     'kitrusty': 'A big, raw vintage rock kit (Karoryfer Big Rusty Drums - an oversized 1980s kit with a 24" kick): rock, indie, '
                 'punk and jam band.',
+    'kitunruly': 'Two more real kits (Karoryfer Unruly Drums): a tight, punchy modern studio kit (pop, modern country) and a '
+                 'dirty one with a saturated kick and trashy snare - pick them in the drum kit menu.',
+    'snares': 'A collection of real snares (Karoryfer Frankensnare) that replace a kit\'s own: a crisp steel piccolo for drum & '
+              'bass, an ash piccolo for jungle, a dead muffled 70s snare for soft rock and a huge one for 80s ballads.',
     'percussion': 'Real congas, bongos, shakers, tambourine, claps, cowbell, claves, guiro, woodblock, triangle - used in every genre that has them '
                   '(organic house, afro, latin, disco, pop ...).',
     'strings': 'A real string orchestra: violin, viola, cello and bass sections that play sustain, spiccato, pizzicato and tremolo, '

@@ -50,12 +50,31 @@ BREAKS = {
                'snare': ['....X.......X...', '....X.......X...', '....X.......X...', '....X.......X.xx'],
                'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.']}),
 }
+BREAKS.update({
+    'hot_pants': dict(
+        label='Hot Pants-style break', bpm=(100, 176), mic='lofi', pitch=1.0, swing=0.53,
+        drums={'kick': ['X.....X...X..X..', 'X.....X.X.X.....', 'X.....X...X..X..', 'X.X...X...X.....'],
+               'snare': ['....X..o.o..X.o.', '.o..X..o.o..X...', '....X..o.o..X.o.', '.o..X..o.o..X.oX'],
+               'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x...'],
+               'ohat': ['...............x', '................', '...............x', '................']}),
+    'skull_snaps': dict(
+        label='Skull Snaps-style break (big, dry, heavy)', bpm=(84, 176), mic='lofi', pitch=-0.5, swing=0.52,
+        drums={'kick': ['X.........X.....', 'X.X.......X.....', 'X.........X..X..', 'X.X.......X.....'],
+               'snare': ['....X..o....X...', '....X..o....X..o', '....X..o....X...', '....X..o..o.X...'],
+               'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.']}),
+})
+# drum & bass: modern DnB layers a tight electronic kick and a crisp snare (the classic two-step) over a break that
+# plays the ghost notes and hats underneath - the break's own kick is filtered so the layered kick owns the low end.
+TWO_STEP = {'lkick': ['X.........X.....', 'X.........X.....', 'X.X.......X.....', 'X.........X..X..', 'X.........X.X...'],
+            'lsnare': ['....X.......X...', '....X.......X...', '....X.......X..o']}
 BREAK_TRACKS = {'kick': ('kick', 'kick', -13, 0.0), 'snare': ('snare', 'snare', -16, 0.0), 'ride': ('top', 'ride', -26, 0.25),
                 'chat': ('top', 'chat', -25, 0.2), 'ohat': ('top', 'ohat', -27, 0.25), 'crash': ('top', 'crash', -26, -0.2),
                 'conga': ('top', 'conga', -23, -0.3), 'shaker': ('top', 'shaker', -29, 0.35)}
 
 # ----------------------------------------------------------------------------- the kit menu
-# id -> (group, label, synth preset used when nothing else applies, real-kit mic or None, break or None)
+# id -> (group, label, synth preset used when nothing else applies, real-kit mic or None, break or None[, extras])
+# extras: layer = the synth preset of a layered two-step kick/snare over the break (DnB); snare = a real snare from the
+#         Frankensnare library in place of the kit's own; gated = 80s gated-reverb snare
 KIT_MENU = [
     ('808', 'Drum machines', 'TR-808 (rap, trap, drill)', '808', None, None),
     ('909', 'Drum machines', 'TR-909 (house)', '909', None, None),
@@ -77,6 +96,28 @@ KIT_MENU = [
     ('apache', 'Breaks (re-played)', BREAKS['apache']['label'] + ' - hip-hop, breaks', 'acoustic', None, 'apache'),
     ('back_to_life', 'Breaks (re-played)', BREAKS['back_to_life']['label'] + ' - downtempo, trip-hop', 'acoustic', None, 'back_to_life'),
     ('levee', 'Breaks (re-played)', BREAKS['levee']['label'] + ' - trip-hop, big beat', 'acoustic', None, 'levee'),
+    ('hot_pants', 'Breaks (re-played)', BREAKS['hot_pants']['label'] + ' - jungle, DnB, funk', 'acoustic', None, 'hot_pants'),
+    ('skull_snaps', 'Breaks (re-played)', BREAKS['skull_snaps']['label'] + ' - hip-hop, DnB', 'acoustic', None, 'skull_snaps'),
+    # drum & bass
+    ('dnb_rollers', 'Drum & bass', 'Modern DnB: two-step kick + crisp snare over a Think break', 'acoustic', None, 'think',
+     dict(layer='dnb', snare='crisp')),
+    ('dnb_amen', 'Drum & bass', 'Amen rollers: two-step layered over the Amen', 'acoustic', None, 'amen', dict(layer='dnb', snare='crisp')),
+    ('neuro', 'Drum & bass', 'Neurofunk: hard, distorted snare, compressed break', 'acoustic', None, 'hot_pants', dict(layer='neuro')),
+    ('liquid', 'Drum & bass', 'Liquid: rounder kick, softer snare, shuffled Think', 'acoustic', None, 'think', dict(layer='liquid')),
+    ('jungle_raw', 'Drum & bass', 'Jungle: raw Amen, pitched up, crisp piccolo snare', 'acoustic', None, 'amen', dict(snare='piccolo')),
+    ('dnb_machine', 'Drum & bass', 'DnB drum machine (no break): tight & crisp', 'dnb', None, None),
+    # more machines
+    ('cr78', 'Drum machines', 'CR-78-style rhythm box (soft, vintage)', 'cr78', None, None),
+    ('606', 'Drum machines', 'TR-606-style (small, snappy - acid, electro)', '606', None, None),
+    ('707', 'Drum machines', 'TR-707-style (punchy 80s digital)', '707', None, None),
+    ('dmx', 'Drum machines', 'DMX-style (fat 8-bit 80s hip-hop)', 'dmx', None, None),
+    ('phonk808', 'Drum machines', 'Distorted 808 (phonk, crunchy)', 'phonk808', None, None),
+    # more real kits
+    ('unruly', 'Real kits', 'Modern studio kit (tight, punchy)', 'acoustic', 'unruly', None),
+    ('dirty', 'Real kits', 'Dirty kit (saturated kick, trashy snare)', 'acoustic', 'dirty', None),
+    ('crisp_kit', 'Real kits', 'Studio kit + crisp steel piccolo snare', 'acoustic', 'studio', None, dict(snare='crisp')),
+    ('dead70s', 'Real kits', 'Studio kit + dead muffled 70s snare', 'acoustic', 'studio', None, dict(snare='deadsnare')),
+    ('big80s', 'Real kits', 'Big 80s kit (huge snare, gated reverb)', 'acoustic', 'rusty', None, dict(snare='bigsnare', gated=True)),
 ]
 MENU = {k[0]: k for k in KIT_MENU}
 
@@ -104,7 +145,7 @@ CHOP = {'braindance': 0.75, 'rave_hardcore': 0.3, 'jungle': 0.55, 'breakcore': 0
 
 
 def menu():
-    return [dict(id=k, group=g, label=l) for k, g, l, _, _, _ in KIT_MENU]
+    return [dict(id=e[0], group=e[1], label=e[2]) for e in KIT_MENU]
 
 
 def effective(opts, style, st):
@@ -120,10 +161,15 @@ def configure(st, kit_id, style, opts):
     entry = MENU.get(kit_id)
     if not entry:
         return kit_id                                   # a plain synth preset name ('acoustic', 'default' ...)
-    _, _, _, preset, mic, brk = entry
+    preset, mic, brk = entry[3], entry[4], entry[5]
+    extra = entry[6] if len(entry) > 6 else {}
     st['kit_id'] = kit_id
-    if kit_id == 'linn':
+    if kit_id == 'linn' or extra.get('gated'):
         st['gated_snare'] = True                       # the 80s gated-reverb snare
+    if extra.get('snare'):
+        st['real_snare'] = extra['snare']
+    if extra.get('layer'):
+        st['break_layer'] = extra['layer']
     if mic:
         st['want_real_kit'] = mic
     if brk:
@@ -162,6 +208,26 @@ def install_break(st, tracks_list):
     st['kick_track'] = 'kick'
     st['trap_hats'] = False
     st['ghosts'] = False
+    layer = st.get('break_layer')
+    if layer:                                            # DnB: two-step kick + snare on top, the break underneath
+        from .instruments import KITS
+        from . import samplelibs as sl
+        kp = KITS.get(layer, {})
+        for t in tracks_list:
+            if t['name'] == 'kick':
+                t.update(hp=170, db=(t.get('db') or -13) - 4)    # the break's kick: thump filtered out, knock kept
+            elif t['name'] == 'snare':
+                t.update(db=(t.get('db') or -16) - 3)
+            if layer == 'neuro' and t['name'] in seq:            # neuro: the break squashed and driven hard
+                t['drive'] = 0.6
+        tracks_list += [dict(name='lkick', layer='kick', inst='kick', pan=0.0, rev=0.0, dly=0.0, sc=0.0, db=-11, hp=None,
+                             drive=None, p={}, synth=True),
+                        dict(name='lsnare', layer='snare', inst='snare', pan=0.0, rev=0.1, dly=0.0, sc=0.0, db=-14, hp=None,
+                             drive=None, p={}, synth=not (st.get('real_snare') and sl.installed('snares')))]
+        st['drums'].update({k: list(v) for k, v in TWO_STEP.items()})
+        st['drum_voice'] = dict(st.get('drum_voice') or {}, lkick=dict(kp.get('kick', {})), lsnare=dict(kp.get('snare', {})))
+        st['kick_track'] = 'lkick'
+        st['snare_tracks'] = ['lsnare', 'snare']
 
 
 def chop_map(st, bar, rnd, energy, section_bar):
@@ -194,3 +260,14 @@ GENRE_KIT.update({k: 'brushes' for k in ('jazz', 'swing', 'bebop', 'modal_jazz',
                                           'country_waltz', 'western_swing')})
 GENRE_KIT.update({k: 'seventies' for k in ('funk', 'motown', 'soul_jazz', 'blues', 'reggae', 'disco_funk', 'gospel')})
 GENRE_KIT.update({k: 'rusty' for k in ('rock', 'indie_rock', 'punk', 'jam_band')})
+
+
+# 1.38: drum & bass kits, more machines and real kits
+GENRE_KIT.update({'dnb': 'dnb_rollers', 'liquid_dnb': 'liquid', 'neurofunk': 'neuro', 'jungle': 'jungle_raw',
+                  'jazz_rap': 'skull_snaps', 'phonk': 'phonk808', 'memphis_phonk': 'phonk808', 'brazilian_phonk': 'phonk808',
+                  'acid_house': '606', 'pop': 'unruly', 'modern_country': 'unruly', 'soft_rock': 'dead70s'})
+CHOP.update({'jungle': 0.55, 'dnb': 0.15, 'neurofunk': 0.1, 'liquid_dnb': 0.08})
+GENRE_KIT.update({'hopecore': 'amen', 'alt_rock_90s': 'rock', 'bedroom_pop': '707',
+                  'electro_funk': 'dmx', 'ps1_game': 'think', 'nineties_club_house': '909', 'sunny_melodic_house': '909'})
+CHOP.update({'hopecore': 0.45, 'ps1_game': 0.12})
+GENRE_KIT.update({'swing_tomtom': 'studio', 'big_band_50s': 'studio'})

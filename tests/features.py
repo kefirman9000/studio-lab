@@ -166,6 +166,58 @@ def test_contrabassoon_role():
     print('ok  bassoon and contrabassoon parts pick their own saved sounds')
 
 
+def test_drum_kits():
+    from sgcore import drumkits
+    from sgcore.instruments import KITS
+    for e in drumkits.KIT_MENU:                          # every kit's synth preset exists
+        assert e[3] in KITS or e[3] == 'acoustic', e
+    d = song('dnb', 2)
+    tr = {t['name']: t for t in d['st']['tracks']}
+    assert d['st']['kit_id'] == 'dnb_rollers' and tr['lkick'].get('synth') and tr['kick'].get('hp')     # layered two-step
+    assert d['st']['kick_track'] == 'lkick' and any(e.track == 'lsnare' for e in d['events'])
+    for k, st in (('jungle_raw', 'jungle'), ('neuro', 'neurofunk'), ('liquid', 'liquid_dnb')):
+        assert song(st, 1)['st']['kit_id'] == k, st
+    for k in ('cr78', '707', 'dmx', 'unruly', 'big80s'):
+        assert song('pop', 1, kit=k)['st']['kit_id'] == k
+    from sgcore.render import crush, tame_transient
+    x = np.sin(np.linspace(0, 200, 4000)).astype(np.float32)
+    assert crush(x, 8, 22050).shape == x.shape
+    spike = np.r_[np.ones(10), np.full(8000, 0.02)].astype(np.float32)
+    assert tame_transient(spike, 13, 6).shape == spike.shape
+    print('ok  drum kits: DnB layered two-step, new machines, real kits, snare swaps')
+
+
+def test_new_genres():
+    from sgcore.styles import STYLES
+    from sgcore.instruments import INSTRUMENTS, DRUMS
+    for i in ('mandolin', 'tinwhistle', 'pipes', 'drone', 'sitar', 'tanpura', 'koto', 'whine', 'talkbox'):
+        y = INSTRUMENTS[i](64, 0.8, {}, 60, None)
+        assert np.all(np.isfinite(y)) and np.max(np.abs(y)) > 0.01, i
+    for d in ('bodhran', 'timbale', 'tabla', 'bayan'):
+        assert np.max(np.abs(DRUMS[d]({}))) > 0.01, d
+    names = ('deep_dubstep_rollers', 'sunny_melodic_house', 'bedroom_pop', 'electro_funk', 'ambient_beat', 'ps1_game', 'soca',
+             'raga_fusion', 'japanese_zen', 'alt_rock_90s', 'nineties_club_house', 'hopecore', 'hopecore_dreamy', 'jam_rock_80s')
+    for n in names:
+        assert n in STYLES, n
+    bg = song('bluegrass', 2)
+    trk = {e.track for e in bg['events']}
+    assert {'solo_banjo', 'solo_mando', 'gtr'} <= trk, trk                     # breaks go round the band; guitar boom-chick
+    assert any(e.track == 'chords' for e in bg['events'])
+    f = song('funk', 2)
+    horns = [e for e in f['events'] if e.track == 'horns']
+    assert horns and all(e.dur <= 0.23 for e in horns)                         # horn stabs on the accents only
+    j = song('celtic_jig', 1)
+    assert j['st']['form'] == 'jig' and [s_['name'] for s_ in j['sections']][:4] == ['A', 'A', 'B', 'B']
+    pads = {e.midi % 12 for e in j['events'] if e.track == 'pad'}
+    assert pads == {j['key'].root % 12}                                         # the pipes drone on the tonic
+    g = song('g_funk', 2)
+    assert sum(1 for e in g['events'] if e.track == 'lead' and e.glide is not None) > 10   # the whine glides
+    a = song('ambient', 2)
+    arp = sorted(e.beat for e in a['events'] if e.track.startswith('arp'))
+    assert arp
+    print('ok  new instruments, reference genres, bluegrass breaks, funk horns, jig form + drone, G-funk glide')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -175,6 +227,8 @@ def main():
     test_section_loop()
     test_styles_self_contained()
     test_contrabassoon_role()
+    test_drum_kits()
+    test_new_genres()
     print('all good')
 
 

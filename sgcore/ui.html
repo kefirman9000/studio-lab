@@ -13,7 +13,7 @@
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.45 var(--font)}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg);color:var(--text);font:14px/1.45 var(--font)}
 button,input,select{font:inherit;color:inherit}
 a{color:var(--acc2)}
 .app{display:grid;grid-template-rows:56px 1fr;height:100vh}
@@ -83,13 +83,14 @@ input[type=range]{width:100%;accent-color:var(--acc)}
 .knob.off{opacity:.35;cursor:default}
 .knob:focus-visible .kbg{stroke:var(--acc)}
 .knob:hover .kbg{fill:var(--line)}
-input.knobbed{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+input.knobbed{position:fixed;left:0;top:0;opacity:0;pointer-events:none;width:1px;height:1px}
 .lv{display:inline-flex;flex-direction:column;align-items:center;gap:2px;margin-right:10px}
 .seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:2px}
 .seg button{flex:1;border:0;background:none;padding:5px 4px;border-radius:7px;cursor:pointer;font-size:12.5px;color:var(--muted)}
 .seg button.on{background:var(--chipon);color:#fff}
 .row{display:flex;gap:6px;align-items:center}
 .ibtn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 9px;cursor:pointer}
+.mutes{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin-top:6px}
 .auto{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;cursor:pointer}
 .layers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;grid-column:1/-1}
 .layers .chip{text-align:center}
@@ -247,7 +248,9 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
     </div></details>
 
     <details class="card" open><summary>Sound</summary><div class="body" id="soundBody">
-      <div class="f"><label>Drum kit <span class="auto"><input type="checkbox" id="userDrums">my samples</span></label><select id="kit"></select></div>
+      <div class="f"><label>Drum kit <span class="auto"><input type="checkbox" id="userDrums">my samples</span></label><select id="kit"></select>
+        <div class="mutes"><span class="hint">mute</span><label class="auto"><input type="checkbox" data-mute="kick">kick</label><label class="auto"><input type="checkbox" data-mute="snare">snare / clap</label><label class="auto"><input type="checkbox" data-mute="top">hats &amp; perc</label><label class="auto"><input type="checkbox" data-mute="fx">FX</label></div></div>
+      <div class="f wide" id="fusionBox" style="display:none"><label>Fusion — which style drives each part</label><div class="body" id="fusionParts" style="padding:0;grid-template-columns:1fr 1fr 1fr"></div></div>
       <div class="f"><label>Vinyl crackle</label><select id="vinyl"><option value="">Off</option><option value="on">On</option></select></div>
       <div class="f"><label>Brightness <b id="brightnessV"></b></label><input type="range" id="brightness" min="-100" max="100" value="0"></div>
       <div class="f"><label>Melody style <span class="hint">how the lead phrases</span></label><select id="melStyle"></select></div>
@@ -268,10 +271,6 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
         <div class="levels" id="levels"></div></div>
     </div></details>
 
-    <details class="card" open><summary>Parts <span class="hint" style="margin-left:6px">click to switch a part off - e.g. no lead for an instrumental bed</span></summary><div class="body">
-      <div class="layers" id="layers"></div>
-      <div class="f wide" id="fusionBox" style="display:none"><label>Fusion — which style drives each part</label><div class="body" id="fusionParts" style="padding:0;grid-template-columns:1fr 1fr 1fr"></div></div>
-    </div></details>
 
     <div class="bar">
       <div class="locks rr" id="locks" style="display:none"></div>
@@ -391,22 +390,38 @@ function renderSelected(){
     const dn=defInst?((META.roles[role]||[]).find(i=>i.id===defInst)||{name:defInst}).name:'none';
     const dl=state.blend.length?'Auto (from the fused styles)':jParts?`Score default (${dn})`:`Style default (${dn})`;
     const fxs=(META.effects||[]);
-    w.innerHTML=`<label>${label}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
+    const mute=jParts?'':`<span class="auto" title="Switch this part off (e.g. no lead for an instrumental bed)"><input type="checkbox" data-mute="${r}" ${state.muted.includes(r)?'checked':''}>mute</span>`;
+    w.innerHTML=`<label>${label} ${mute}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
       (fxs.length&&!jParts?`<select class="fxsel" title="Run this part through one of your effect plugins"><option value="">no effect plugin</option>${fxs.map(f=>`<option ${state.part_fx[r]===f?'selected':''}>${esc(f)}</option>`).join('')}</select>`:'');
     w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else delete state.instruments[r]; };
     if(w.querySelector('.fxsel')) w.querySelector('.fxsel').onchange=e=>{ if(e.target.value) state.part_fx[r]=e.target.value; else delete state.part_fx[r]; };
     $('#soundBody').appendChild(w);
   });
+  // the genre's extra parts (horn stabs, a second guitar, solo instruments ...) - every sound in the song can be changed
+  const extras=(!jParts&&!state.blend.length)?((META.style_extras||{})[state.style]||[]):[];
+  if(extras.length){ const h=document.createElement('div'); h.className='f wide inst';
+    h.innerHTML='<div class="hint">Extra parts in this genre - change their sound or switch them off.</div>'; $('#soundBody').appendChild(h); }
+  extras.forEach(x=>{
+    const w=document.createElement('div'); w.className='f inst';
+    const groups={}; (META.roles[x.layer]||[]).forEach(i=>{(groups[i.group||'Built-in']=groups[i.group||'Built-in']||[]).push(i)});
+    const opts=Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${state.instruments[x.id]===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('');
+    const dn=((META.roles[x.layer]||[]).find(i=>i.id===x.inst)||{name:x.inst}).name;
+    w.innerHTML=`<label>${esc(x.name)}</label><select><option value="">Style default (${esc(dn)})</option><option value="off" ${state.instruments[x.id]==='off'?'selected':''}>🔇 Off (silent)</option>${opts}</select>`;
+    w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments[x.id]=e.target.value; else delete state.instruments[x.id]; };
+    $('#soundBody').appendChild(w);
+  });
+  bindMutes();
+}
+function bindMutes(){
+  $$('[data-mute]').forEach(c=>{ c.checked=state.muted.includes(c.dataset.mute);
+    c.onchange=()=>{ const k=c.dataset.mute; state.muted=c.checked?[...new Set([...state.muted,k])]:state.muted.filter(x=>x!==k);
+      $$(`[data-mute="${k}"]`).forEach(o=>o.checked=c.checked); }; });
 }
 function renderMoods(){
   const m=$('#moods');m.innerHTML='';
   [null,...META.moods].forEach(x=>{const c=document.createElement('span');c.className='chip'+(state.mood===x?' on':'');c.textContent=x?x[0].toUpperCase()+x.slice(1):'Neutral';c.onclick=()=>{state.mood=x;renderMoods()};m.appendChild(c)});
 }
-function renderLayers(){
-  const l=$('#layers');l.innerHTML='';
-  LAYERS.forEach(([k,n])=>{const c=document.createElement('span');const on=!state.muted.includes(k);c.className='chip'+(on?' on':'');c.textContent=(on?'● ':'○ ')+n;
-    c.onclick=()=>{state.muted=on?[...state.muted,k]:state.muted.filter(x=>x!==k);renderLayers()};l.appendChild(c)});
-}
+function renderLayers(){ bindMutes(); }       // parts are muted with the small 'mute' boxes in Sound
 function renderOuts(){
   const o=$('#outs');o.innerHTML='<span class="hint" style="align-self:center">Full song exports:</span>';
   OUTS.forEach(([k,n])=>{ if(k==='mp3'&&!META.ffmpeg) return;
@@ -504,6 +519,10 @@ function applyOptions(o){
 // ------------------------------------------------------------- knobs: every slider becomes a rotary knob
 // drag up/down (Shift = fine), scroll wheel or arrow keys to turn; double-click resets. The hidden slider underneath
 // keeps its value, events and disabled state, so all the existing settings code works unchanged.
+// the app lays itself out in the window (each column scrolls on its own): the page itself must never scroll, or a knob
+// turn / focus change can push the whole editor up and leave an empty screen
+window.addEventListener('scroll', ()=>{ if(window.scrollY||window.scrollX) window.scrollTo(0,0); }, {passive:true});
+document.addEventListener('scroll', e=>{ const t=e.target; if(t===document||t===document.documentElement||t===document.body){ document.documentElement.scrollTop=0; document.body.scrollTop=0; } }, true);
 function initKnobs(){
   const VD=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value'), DD=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'disabled');
   $$('input[type=range]').forEach(inp=>{
@@ -524,7 +543,7 @@ function initKnobs(){
     const set=v=>{ v=Math.min(max,Math.max(min,Math.round(v/step)*step)); v=+v.toFixed(4); if(+inp.value===v) return; inp.value=v;
       inp.dispatchEvent(new Event('input',{bubbles:true})); inp.dispatchEvent(new Event('change',{bubbles:true})); };
     let sy=0, sv=0, drag=false;
-    k.addEventListener('pointerdown',e=>{ if(inp.disabled) return; drag=true; sy=e.clientY; sv=+inp.value; k.setPointerCapture(e.pointerId); e.preventDefault(); });
+    k.addEventListener('pointerdown',e=>{ if(inp.disabled) return; drag=true; sy=e.clientY; sv=+inp.value; k.setPointerCapture(e.pointerId); e.preventDefault(); k.focus({preventScroll:true}); });
     k.addEventListener('pointermove',e=>{ if(drag) set(sv+(sy-e.clientY)/(e.shiftKey?600:160)*(max-min)); });
     k.addEventListener('pointerup',()=>drag=false); k.addEventListener('pointercancel',()=>drag=false);
     k.addEventListener('wheel',e=>{ if(inp.disabled) return; e.preventDefault(); set(+inp.value+(e.deltaY<0?1:-1)*Math.max(step,(max-min)/40)); },{passive:false});
@@ -846,7 +865,7 @@ function diagModal(){
     <div class="row"><button class="btn p" id="diagSum">📋 Copy technical summary</button><span class="hint" id="diagSumMsg"></span></div>
     <textarea id="diagSumText" rows="8" readonly style="width:100%;display:none;margin-top:8px;font-family:var(--mono);font-size:11px"></textarea>
     <h3 style="margin-top:16px">Synth parameter list</h3>
-    <p class="hint">Lists the knobs of the genre synths you have installed (OB-Xf, Odin 2, Monique, Six Sines, Surge XT, Dexed, Vital ...).
+    <p class="hint">Lists the knobs of the genre synths you have installed (Surge XT, Dexed, JC303, RipplerX, Vital ...).
       Paste it to whoever is building genre sounds so presets can be written for your exact plugins. Takes a few seconds per plugin.</p>
     <div class="row"><button class="btn" id="diagSyn">📋 Copy synth parameter list</button><span class="hint" id="diagSynMsg"></span></div>
     <h3 style="margin-top:16px">App window</h3>
