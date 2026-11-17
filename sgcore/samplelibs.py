@@ -412,7 +412,7 @@ ORCH = {
     'pipeorgan': ('solo', 'pipeorgan'), 'fmpiano': ('solo', 'fmpiano'),
     'harp': ('ring', 'harp'), 'marimba': ('ring', 'marimba'), 'vibes': ('ring', 'vibes'), 'xylophone': ('ring', 'xylophone'),
     'glock': ('ring', 'glock'), 'tubular': ('ring', 'tubular'), 'kalimba': ('ring', 'kalimba'),
-    'sax': ('solo', 'sax'), 'tenorsax': ('solo', 'sax'), 'harmonica': ('solo', 'harmonica'), 'acguitar': ('ring', 'acguitar'), 'twang': ('solo', 'twang'), 'ocarina': ('solo', 'ocarina'),
+    'sax': ('solo', 'sax'), 'tenorsax': ('solo', 'sax'), 'harmonica': ('solo', 'harmonica'), 'sopsax': ('solo', 'sax'), 'acguitar': ('ring', 'acguitar'), 'twang': ('solo', 'twang'), 'ocarina': ('solo', 'ocarina'),
 }
 # styles whose piano is a worn upright rather than a concert grand
 UPRIGHT_STYLES = {'lofi', 'boombap', 'hauntology', 'vaporwave', 'memphis_phonk', 'blues', 'soul_ballad', 'folk', 'western', 'motown'}
@@ -506,6 +506,7 @@ CHOICES = [
     ('kalimba', 'Kalimba', 'colors', ('arp', 'lead')),
     ('sax', 'Tenor sax', 'colors', ('lead',)),
     ('harmonica', 'Harmonica', 'colors', ('lead',)),
+    ('sopsax', 'Soprano sax (high sax)', 'colors', ('lead',)),
     ('acguitar', 'Acoustic guitar', 'archtop', ('chords', 'arp', 'lead', 'bass')),
     ('twang', 'Twang electric guitar', 'twang', ('lead', 'arp', 'chords')),
     ('ocarina', 'Ocarina', 'colors', ('lead',)),

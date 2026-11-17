@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.30.1
+- **Smooth Jazz is now Kenny G style**: a new **Soprano sax** sound soaring up high in long held notes with a delayed, widening vibrato and scoops into every phrase, over lush 80s DX electric piano and pads, fretless-style bass and soft reverb-washed drums; slow ballad tempos, romantic major-key progressions and a key change for the last chorus in most songs. The sax stays a soloist (no doubling).
+- New expressive vibrato for held notes on recorded instruments (used by the soprano sax).
+
 ## 1.30.0
 - **Smooth jazz**, three new genres (Classic tab):
   - **Smooth Jazz** (Kenny G, Dave Koz, Boney James): the real tenor sax scooping into its notes over Rhodes 9th / major-7th chords, fretless-style bass, cross-stick drums, soft pads and the real acoustic guitar.

@@ -304,6 +304,8 @@ class Renderer:
                 sig = self._drum(tcfg['name'], tcfg['inst']) if is_drum else self._note(tcfg, ev, p)
             if getattr(ev, 'slide', 0) and not is_drum:          # slide / bend up into the note
                 sig = pitch_slide(sig, float(ev.slide), min(0.22, max(0.07, self._dsec(ev.beat, ev.dur) * 0.3)))
+            if tcfg.get('vibfx') and not is_drum and ev.dur >= 0.75:   # expressive delayed vibrato on held notes (sax, voice)
+                sig = pitch_vibrato(sig, float(tcfg['vibfx']), self._dsec(ev.beat, ev.dur))
             if tcfg.get('swell') and not is_drum and ev.dur >= 2:     # bowed / blown swell: the note grows out of nothing
                 n = min(sig.shape[-1], int(self._dsec(ev.beat, ev.dur) * float(tcfg['swell']) * SR))
                 if n > 16:
@@ -572,6 +574,24 @@ class Renderer:
         self.stems = stems
         self.stem_env = env
         return mix
+
+
+def pitch_vibrato(x, amount, note_sec):
+    """Delayed, widening vibrato on a held note (a sax player's 'Kenny G' vibrato): starts straight, then ~5.5 Hz
+    wobbling up to ~35 cents at amount 1."""
+    x = np.asarray(x, dtype=np.float32)
+    n = x.shape[-1]
+    t = np.arange(n) / SR
+    onset = min(0.35, note_sec * 0.3)
+    depth = np.clip((t - onset) / 0.5, 0, 1) * 35.0 * amount                 # cents
+    r = 2.0 ** (depth * np.sin(2 * np.pi * 5.4 * t) / 1200.0)                # playback rate = pitch
+    pos = np.concatenate([[0.0], np.cumsum(r[:-1])])
+    pos = pos[pos < n - 1]
+    i0 = pos.astype(np.int64)
+    fr = (pos - i0).astype(np.float32)
+    if x.ndim == 1:
+        return x[i0] * (1 - fr) + x[i0 + 1] * fr
+    return x[:, i0] * (1 - fr) + x[:, i0 + 1] * fr
 
 
 def pitch_slide(x, semis, sec):

@@ -1400,3 +1400,9 @@ INSTRUMENT_INFO['acguitar'] = 'Acoustic guitar'
 for _r in ('chords', 'arp', 'lead'):
     ROLE_CHOICES[_r] += ['acguitar']
 GM_PROGRAM['acguitar'] = 25
+
+
+INSTRUMENTS['sopsax'] = INSTRUMENTS['sax']             # synth stand-in until a recorded sax is installed
+INSTRUMENT_INFO['sopsax'] = 'Soprano sax'
+ROLE_CHOICES['lead'] += ['sopsax']
+GM_PROGRAM['sopsax'] = 64

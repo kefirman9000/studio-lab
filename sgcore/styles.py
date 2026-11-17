@@ -2819,23 +2819,24 @@ POOLS.update({
 
 # ---------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------- smooth jazz (1.30)
-style('smooth_jazz', 'Classic', 'Smooth jazz (Kenny G, Dave Koz, Boney James): a silky sax melody that scoops into its notes, lush '
-      'Rhodes major-7th and 9th chords, warm fretless-style bass, light drums with cross-stick, soft pads and clean jazz guitar',
-      bpm=(76, 100), scales=['major', 'dorian', 'minor'], swing=0.55, human=0.008, kit='soft', form='song_b', chord_size=5, slides=0.3,
-      own_progs=True, progs={'major': [[1, 4, 0, 0], [3, 2, 1, 4], [5, 1, 4, 0], [0, 5, 1, 4], [3, 4, 2, 5]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 2]],
-             'minor': [[0, 3, 6, 2], [5, 3, 1, 4]]},
-      drums={'kick': ['X.....X...X.....', 'X......X..X.....'], 'rim': ['....x.......x...'], 'chat': ['x.xxx.xxx.xxx.xx', 'x.x.x.x.x.x.x.x.'],
-             'shaker': ['..x...x...x...x.']}, snare_tracks=['rim'],
-      bass=['R-----..R-F-....', 'R---..R-..F-A...', 'R-..R-....R-F-..'], bass_lo=28,
-      chord_rh=['x-------..x-----', 'x---------x-....', 'x-----..x-------'], chord_center=62,
-      lead_rh=['x---x-x-x-------', '..x-x-x-x---....', 'x-------x-x-x---', 'x-.x-.x-x-------', '....x-x-x-x-x---'], lead_oct=4,
-      gm_hint='Tenor / soprano / alto sax; Rhodes (or DX7 e-piano); fretless bass; clean jazz guitar; light kit with cross-stick; string pad',
-      tracks=[T('kick', 'kick', 'kick', db=-17), T('rim', 'snare', 'rim', rev=0.3, db=-22), T('chat', 'top', 'chat', pan=0.2, db=-30),
-              T('shaker', 'top', 'shaker', pan=-0.3, db=-31), T('bass', 'bass', 'sf:fingerbass', db=-14, p=dict(cut=900)),
-              T('chords', 'chords', 'epiano', rev=0.35, dly=0.12, pan=-0.1, db=-19), T('pad', 'pad', 'warmpad', rev=0.5, db=-28),
-              T('arp', 'arp', 'acguitar', rev=0.3, pan=0.3, db=-26),
-              T('lead', 'lead', 'sax', rev=0.4, dly=0.15, db=-16)],
-      arp=dict(rate=2, mode='updown', oct=4, prob=0.35), master=dict(lufs=-12.0, air=1.4, low=1.2))
+style('smooth_jazz', 'Classic', 'Smooth jazz, Kenny G style ("Songbird", "Forever in Love"): a soprano sax soaring up high in long '
+      'held notes with wide vibrato, scooping into every phrase, over lush 80s DX electric piano and pads, a warm fretless bass and '
+      'soft, reverb-washed drums - romantic, slow and polished, with a key change for the last chorus',
+      bpm=(64, 92), scales=['major'], swing=0.52, human=0.006, kit='soft', form='song_b', chord_size=5, slides=0.55, own_progs=True,
+      solo_lead=True,
+      progs={'major': [[0, 3, 1, 4], [0, 5, 3, 4], [3, 4, 2, 5], [0, 2, 3, 4], [5, 3, 0, 4], [1, 4, 0, 0]]}, reverb=3.0, repetition=0.8,
+      drums={'kick': ['X.........X.....', 'X......X..X.....'], 'snare': [BACKBEAT], 'chat': ['x.x.x.x.x.x.x.x.'],
+             'shaker': ['x.x.x.x.x.x.x.x.']}, snare_tracks=['snare'],
+      bass=['R-------R---F---', 'R-----..R-F-....', 'R---..R-R---A---'], bass_lo=28,
+      chord_rh=['x---------------', 'x-------x-------', 'x-----..x-------'], chord_center=64,
+      lead_rh=['x---------x-x-x-', 'x-------x---x---', '....x-x-x-------', 'x-----x-x-------', 'x---------------'], lead_oct=5,
+      gm_hint='Soprano sax (lots of vibrato); DX7 "E.Piano 1"; lush poly pads / strings; fretless bass; soft drum machine + big reverb snare',
+      tracks=[T('kick', 'kick', 'kick', db=-18), T('snare', 'snare', 'snare', rev=0.6, db=-22), T('chat', 'top', 'chat', pan=0.2, db=-31),
+              T('shaker', 'top', 'shaker', pan=-0.3, db=-31), T('bass', 'bass', 'sf:fingerbass', db=-15, p=dict(cut=800)),
+              T('chords', 'chords', 'epiano', rev=0.45, dly=0.12, pan=-0.1, db=-19), T('pad', 'pad', 'glasspad', rev=0.6, db=-26, swell=0.3),
+              T('arp', 'arp', 'acguitar', rev=0.4, pan=0.3, db=-27),
+              T('lead', 'lead', 'sopsax', rev=0.55, dly=0.18, db=-15, vibfx=1.0)],
+      arp=dict(rate=2, mode='updown', oct=4, prob=0.3), master=dict(lufs=-12.5, air=1.8, low=1.0))
 
 style('smooth_funk', 'Classic', 'Smooth jazz-funk (Grover Washington Jr., George Benson, Spyro Gyra): a funky slap-and-pop bass '
       'groove, crisp 16th hats, jazz-guitar octave melodies, sax answers, bright electric piano and stabby brass',
@@ -2870,11 +2871,11 @@ style('quiet_storm', 'Classic', 'Quiet storm / late-night smooth (Sade, Luther, 
               T('lead', 'lead', 'sax', rev=0.5, dly=0.2, db=-16)],
       master=dict(lufs=-13.0, air=1.0, low=1.3))
 
-LABELS.update({'smooth_jazz': 'Smooth Jazz', 'smooth_funk': 'Smooth Jazz-Funk', 'quiet_storm': 'Quiet Storm'})
+LABELS.update({'smooth_jazz': 'Smooth Jazz (Kenny G style)', 'smooth_funk': 'Smooth Jazz-Funk', 'quiet_storm': 'Quiet Storm'})
 POOLS.update({
-    'smooth_jazz': dict(bass=['sf:fingerbass', 'moogbass', 'upright'], chords=['epiano', 'wurli', 'piano', 'acguitar'],
-                        pad=['warmpad', 'strings', 'glasspad'], arp=['acguitar', 'vibes', 'piano', 'epiano'],
-                        lead=['sax', 'flute', 'acguitar', 'twang', 'softlead', 'trumpet']),
+    'smooth_jazz': dict(bass=['sf:fingerbass', 'moogbass'], chords=['epiano', 'piano', 'polysynth'],
+                        pad=['glasspad', 'warmpad', 'strings'], arp=['acguitar', 'vibes', 'piano', 'epiano'],
+                        lead=['sopsax', 'sax', 'flute', 'acguitar']),
     'smooth_funk': dict(bass=['sf:slapbass', 'fmbass', 'moogbass', 'sf:fingerbass'], chords=['epiano', 'clav', 'wurli', 'piano'],
                         pad=['brass', 'synthbrass', 'strings'], arp=['sax', 'brass', 'vibes'],
                         lead=['acguitar', 'sax', 'twang', 'flute', 'trumpet']),

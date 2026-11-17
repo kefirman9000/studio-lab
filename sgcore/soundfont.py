@@ -348,7 +348,7 @@ SAMPLED = {
     'strings': (0, 48, 'String ensemble', 1.0), 'slowstrings': (0, 49, 'Slow strings', 1.2),
     'choir': (0, 52, 'Choir aahs', 1.2), 'trumpet': (0, 56, 'Trumpet', 0.5), 'trombone': (0, 57, 'Trombone', 0.5),
     'tuba': (0, 58, 'Tuba', 0.5), 'horn': (0, 60, 'French horns', 0.7), 'brass': (0, 61, 'Brass section', 0.5),
-    'sax': (0, 65, 'Alto sax', 0.4), 'oboe': (0, 68, 'Oboe', 0.4), 'bassoon': (0, 70, 'Bassoon', 0.4),
+    'sax': (0, 65, 'Alto sax', 0.4), 'sopranosax': (0, 64, 'Soprano sax', 0.4), 'oboe': (0, 68, 'Oboe', 0.4), 'bassoon': (0, 70, 'Bassoon', 0.4),
     'clarinet': (0, 71, 'Clarinet', 0.4), 'piccolo': (0, 72, 'Piccolo', 0.4), 'flute': (0, 73, 'Flute', 0.5),
     'acbass': (0, 32, 'Acoustic bass', 0.5), 'fingerbass': (0, 33, 'Finger bass', 0.4), 'kalimba': (0, 108, 'Kalimba', 1.0),
     'steeldrum': (0, 114, 'Steel drums', 1.0), 'taikodrum': (0, 116, 'Taiko', 1.5),
@@ -370,13 +370,13 @@ SAMPLED_ONLY = ['nylon', 'cleanguitar', 'muted', 'odguitar', 'distguitar', 'acba
 FALLBACK = {'nylon': 'guitar', 'cleanguitar': 'guitar', 'muted': 'mutedgtr', 'odguitar': 'guitar', 'distguitar': 'guitar',
             'acbass': 'upright', 'fingerbass': 'moogbass', 'pickbass': 'pluck', 'slapbass': 'fmbass', 'viola': 'violin',
             'contrabass': 'cello', 'slowstrings': 'strings', 'bandoneon': 'accordion', 'steelguitar': 'guitar', 'fiddle': 'violin', 'trumpetsection': 'brass',
-            'mutedtrumpet': 'trumpet', 'trombone': 'horn', 'tuba': 'horn', 'bassoon': 'clarinet', 'piccolo': 'flute', 'tenorsax': 'sax', 'taikodrum': 'timpani'}
+            'mutedtrumpet': 'trumpet', 'trombone': 'horn', 'tuba': 'horn', 'bassoon': 'clarinet', 'piccolo': 'flute', 'tenorsax': 'sax', 'sopranosax': 'sax', 'taikodrum': 'timpani'}
 # electronic genres only swap instruments that are obviously acoustic
 ELECTRONIC_SWAP = {'piano', 'epiano', 'guitar', 'violin', 'harp', 'flute', 'sax', 'marimba', 'kalimba', 'steeldrum',
                    'celesta', 'pizz', 'clav', 'cello', 'harpsichord', 'oboe', 'clarinet', 'spiccato', 'tremolo',
                    'upright', 'mutedgtr', 'vibes', 'harmonica', 'trumpet', 'contrabass', 'trombone', 'tuba', 'bassoon'}
 # orchestra sections the General MIDI bank only has as one ensemble sound
-SF_ALIAS = {'violins': 'strings', 'violas': 'strings', 'acguitar': 'steelguitar', 'twang': 'cleanguitar'}
+SF_ALIAS = {'sopsax': 'sopranosax', 'violins': 'strings', 'violas': 'strings', 'acguitar': 'steelguitar', 'twang': 'cleanguitar'}
 
 
 def fallback_for(name):
