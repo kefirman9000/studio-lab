@@ -206,7 +206,7 @@ ROLE_PATCHES = {
     'celesta': ['ripplerx.musicbox', 'dexed.chime', 'dexed.vibes'],
     'steeldrum': ['dexed.steeldrum'], 'kalimba': ['ripplerx.kalimba', 'dexed.koto'], 'cowbell': [], 'cowbell_808': [], 'cowbell_long': [], 'cowbell_dist': [], 'cowbell_crushed': [], 'organ': ['dexed.organ'],
     'polysynth': ['tal.pluck', 'tal.analog_pad', 'surge.pluck'], 'synthbrass': ['tal.brass_stab', 'dexed.brass'],
-    'moogbass': ['tal.fat_bass', 'tal.saw_bass', 'surge.saw_bass'], 'glasspad': ['surge.wide_pad', 'dexed.chime'],
+    'moogbass': ['tal.fat_bass', 'tal.saw_bass', 'surge.saw_bass'], 'moogpluck': ['tal.saw_bass', 'tal.fat_bass', 'surge.saw_bass'], 'glasspad': ['surge.wide_pad', 'dexed.chime'],
     'solina': ['tal.strings'], 'wurli': ['dexed.epiano'], 'vibes': ['ripplerx.vibes', 'dexed.vibes'], 'tubular': ['ripplerx.tubes', 'dexed.bells'],
     'harp': ['ripplerx.harp'], 'musicbox': ['ripplerx.musicbox'], 'koto': ['dexed.koto'], 'gong': ['ripplerx.gong'],
 }
@@ -236,7 +236,7 @@ SOUND_WORDS = {
     'upright': ['upright', 'double bass', 'acoustic bass'], 'vibes': ['vibraphone', 'vibes'],
     'wurli': ['wurli', 'wurlitzer'], 'harmonica': ['harmonica', 'harp mic'], 'pedalsteel': ['pedal steel', 'lap steel', 'steel guitar'],
     'mutedgtr': ['muted guitar', 'palm mute', 'palm muted'], 'polysynth': ['juno', 'polysynth', 'poly synth'],
-    'synthbrass': ['synth brass', 'prophet brass', 'ob brass'], 'moogbass': ['moog', 'minimoog', 'model d'],
+    'synthbrass': ['synth brass', 'prophet brass', 'ob brass'], 'moogbass': ['moog', 'minimoog', 'model d'], 'moogpluck': ['moog', 'minimoog', 'model d'],
     'glasspad': ['glass pad'], 'solina': ['solina', 'string machine', 'string ensemble synth'],
     'violins': ['violins legato', 'violins 1', 'violins', 'violin', 'strings legato', 'strings'],
     'violas': ['violas', 'viola', 'strings'],

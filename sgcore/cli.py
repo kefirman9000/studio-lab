@@ -45,6 +45,9 @@ def main(argv=None):
     from .arrange import BUILD_STYLES, BUILD_AMOUNTS, TRANSITION_FX
     ap.add_argument('--build', choices=BUILD_STYLES, help='build-up style (default: the genre\'s, varied per song)')
     ap.add_argument('--builds', choices=BUILD_AMOUNTS, help='build-ups: auto | subtle (natural, no EDM ramps) | off')
+    ap.add_argument('--trait', action='append', metavar='CATEGORY=VALUE',
+                    help='override a genre trait, e.g. --trait density=sparse --trait energy=slow_build (see docs/GENRE_SPEC.md)')
+    ap.add_argument('--surprise-traits', action='store_true', help='each song changes two of its genre traits at random')
     ap.add_argument('--transition-fx', choices=TRANSITION_FX,
                     help='risers / reverse cymbals / impacts: auto | fewer | fills (drum fills only) | off')
     ap.add_argument('--vinyl', choices=['on', 'off'], help='vinyl crackle (default: genre decides)')
@@ -112,6 +115,10 @@ def main(argv=None):
                          ('builds', a.builds), ('transition_fx', a.transition_fx)):
                 if v:
                     o[k] = v
+            if a.trait or a.surprise_traits:
+                o['traits'] = dict(x.split('=', 1) for x in (a.trait or []))
+                if a.surprise_traits:
+                    o['traits']['_surprise'] = True
             if a.level:
                 o['part_levels'] = {k: float(v) for k, v in (x.split('=', 1) for x in a.level)}
             if a.mute:

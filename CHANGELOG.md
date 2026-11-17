@@ -1,5 +1,37 @@
 # Changelog
 
+## 1.43.0
+Genre research, round 2 (your reference tracks), your genre-spec review, and genre traits.
+- **Genre traits ("Character").**
+  - Every genre now carries twelve rule categories: arrangement, density, human feel, melodic behaviour, bass personality, drop / payoff, variation, context, texture & space, rhythmic feel, harmony and energy curve.
+  - Most are read from each genre's own rules. Deep dubstep, classic house, jump-up, gospel and a few others are declared by hand.
+  - Change any trait in the new **Character** card (or `--trait density=sparse` on the command line) and it steers the song. For example: sparse / dense / evolving parts, a slow-build or peaks-and-valleys energy curve, robotic vs loose feel, sub-only / walking / 808 bass, sudden vs long-build drops, dry vs massive reverb, static vamps or jazz extensions, and switch-up bass changes every 2 bars.
+  - **🎲 Surprise me** changes two of them per song.
+  - With no traits chosen, songs are exactly as before.
+- **Moog bass is now a sustained bass.** The filter opens on the attack and settles half-open, so held notes stay full in house, synthwave, liquid and pop. The plucked, snap-shut version is now its own sound, **Moog-style bass (plucked, funk)**, used by G-funk, nu-disco, neo-soul, synth-funk and the funk & disco genres.
+- **Fix: pianos turning up as leads in synth genres.** Piano is no longer a lead alternative in 22 synth-led electronic genres (trap, drill, trance, garage, chillstep ...). Piano-led genres keep it.
+- **From the reference tracks:**
+  - **Tango** gets loud / soft section dynamics and a 108-132 tempo.
+  - **Bossa nova** runs 116-148.
+  - **New jack swing** keeps its drums constant through the whole song.
+  - **Cumbia** keeps the whole band constant and adds an accordion solo section.
+  - **Soca** is full power from start to finish.
+- **New genres:**
+  - **Groovy soca** (the slower lane, 114-132).
+  - **Baroque organ** (toccata form, pipe organ, free tempo).
+  - **Jump-up DnB:** a rubbery talking wobble bass that switches every few bars.
+  - **Dark synthwave:** slower, minor, a pulsing analog bass.
+  - **Modern gospel:** choir, organ, piano and 808, with a bridge and a lifted last chorus.
+  - **Neurofunk (lighter):** clearer chords and a hummable lead.
+- **From your spec review:**
+  - **Hauntology variants:** warmer scales, slower tempos, more tape wobble and a texture layer. The original Hauntology is unchanged.
+  - **Swing:** acid and progressive house get a touch of swing.
+  - **Chord length:** long progressive and cinematic genres sometimes hold each chord for two bars.
+  - **Low drums:** timpani, taiko and other lowest drums are labelled as the genre's "kick-role" part in the editor and the spec.
+  - **Deep dubstep:** the sound briefs spell out half-time (kick on 1, snare on 3) and the sub vs mid-bass balance.
+- **No artist names:** genre descriptions and labels no longer name artists, songs or albums.
+- **docs/GENRE_SPEC.md:** every genre's full technical rules, now with its traits, for review by you or another AI.
+
 ## 1.42.0
 Genre research, round 1: production guides and genre write-ups checked against the genre settings.
 - **Sunny melodic house**: now follows your three Nora En Pure references. It uses their radio-edit shape: keys and pads with the hats joining, kick and sub without hats, 16 bars in full, a 12-bar kick-out breakdown carried by hats, keys and the lead, kick and sub alone, then the last 24 bars.

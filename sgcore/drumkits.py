@@ -341,3 +341,5 @@ GENRE_KIT.update({'holiday': 'brushes', 'western': 'vintage', 'chamber_pop': 'st
                   'bay_rap': '808', 'futuristic_bounce': '808', 'hard_trap': '808', 'switch_trap': '808', 'club_pop': '707',
                   'garage_house': 'punchy', 'future_garage': 'vintage', 'grime': 'punchy'})
 GENRE_KIT.update({'funk_150': '808'})
+GENRE_KIT.setdefault('new_jack_swing', 'linn')       # SP-1200 / drum-machine era, gated snare
+GENRE_KIT.update({'jump_up': 'dnb_amen', 'dark_synthwave': 'linn'})

@@ -120,7 +120,7 @@ INST_CAT = {
     'harp': 'orchestral', 'horn': 'orchestral', 'timpani': 'orchestral', 'celesta': 'orchestral',
     'spiccato': 'strings', 'tremolo': 'strings', 'cello': 'strings', 'harpsichord': 'keys', 'clarinet': 'orchestral',
     'oboe': 'orchestral', 'braam': 'brass',
-    'polysynth': 'pad', 'synthbrass': 'brass', 'moogbass': 'bass', 'glasspad': 'pad', 'solina': 'strings', 'wurli': 'epiano',
+    'polysynth': 'pad', 'synthbrass': 'brass', 'moogbass': 'bass', 'moogpluck': 'bass', 'glasspad': 'pad', 'solina': 'strings', 'wurli': 'epiano',
     'vibes': 'keys', 'upright': 'bass', 'mutedgtr': 'guitar', 'harmonica': 'lead', 'trumpet': 'brass', 'pedalsteel': 'guitar',
     'accordion': 'keys', 'banjo': 'guitar',
     'logdrum': 'bass', 'marimba': 'keys', 'kalimba': 'keys', 'steeldrum': 'fm', 'sax': 'brass', 'flute': 'orchestral', 'clav': 'keys',

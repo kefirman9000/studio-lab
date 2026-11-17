@@ -1210,7 +1210,28 @@ def i_synthbrass(m, dur, p, glide=None, mod=None):
 
 
 def i_moogbass(m, dur, p, glide=None, mod=None):
-    """Moog-style bass: fat saw + square through a 24 dB ladder-ish filter with a punchy envelope - funk, disco, synthwave."""
+    """Moog-style bass, sustained: fat saw + square through a 24 dB ladder-ish filter that opens on the attack and then
+    SETTLES half-open, so a held note stays round and full (house, synthwave, liquid, pop, electronic). The plucked,
+    snap-shut version is 'moogpluck' (funk / disco / G-funk)."""
+    if p.get('pluck'):
+        return i_moogpluck(m, dur, p, glide, mod)
+    f = float(mtof(m))
+    gate = dur * SR
+    env = adsr(gate, p.get('a', 0.004), p.get('d', 0.35), p.get('s', 0.88), p.get('r', 0.08))
+    n = len(env)
+    t = np.arange(n) / SR
+    x = saw(f, n) + 0.8 * square(f * 2 ** (-4 / 1200), n, pw=0.5) + 0.6 * square(f * 0.5, n)
+    sus = p.get('fsus', 0.55)                          # where the filter settles (0 = closed, 1 = fully open)
+    fe = sus + (1 - sus) * np.exp(-t / p.get('fd', 0.3))
+    cut = p.get('cut', 500)
+    y = filt_env(x, cut * 0.8, cut * 3.5, fe)
+    y = lp(y, cut * 5)
+    y = soft(y * 1.5, 1.3)
+    return hp(y, 30) * env * 0.5
+
+
+def i_moogpluck(m, dur, p, glide=None, mod=None):
+    """Plucked Moog bass: the filter snaps shut in ~0.1 s and the level drops - the bouncy funk / disco / G-funk bass."""
     f = float(mtof(m))
     gate = dur * SR
     env = adsr(gate, 0.002, p.get('d', 0.25), p.get('s', 0.7), 0.06)
@@ -1350,19 +1371,19 @@ def i_pedalsteel(m, dur, p, glide=None, mod=None):
     return np.vstack([y, np.roll(y, 220)]) * env * 0.35
 
 
-INSTRUMENTS.update({'polysynth': i_polysynth, 'synthbrass': i_synthbrass, 'moogbass': i_moogbass, 'glasspad': i_glasspad,
+INSTRUMENTS.update({'polysynth': i_polysynth, 'synthbrass': i_synthbrass, 'moogbass': i_moogbass, 'moogpluck': i_moogpluck, 'glasspad': i_glasspad,
                     'solina': i_solina, 'wurli': i_wurli, 'vibes': i_vibes, 'upright': i_upright, 'mutedgtr': i_mutedgtr,
                     'harmonica': i_harmonica, 'trumpet': i_trumpet, 'pedalsteel': i_pedalsteel})
-INSTRUMENT_INFO.update({'polysynth': 'Juno-style poly synth', 'synthbrass': 'Synth brass (Prophet / OB)', 'moogbass': 'Moog-style bass',
+INSTRUMENT_INFO.update({'polysynth': 'Juno-style poly synth', 'synthbrass': 'Synth brass (Prophet / OB)', 'moogbass': 'Moog-style bass (sustained)', 'moogpluck': 'Moog-style bass (plucked, funk)',
                         'glasspad': 'Glass pad', 'solina': 'String machine (Solina)', 'wurli': 'Wurlitzer electric piano',
                         'vibes': 'Vibraphone', 'upright': 'Upright bass', 'mutedgtr': 'Palm-muted guitar', 'harmonica': 'Harmonica',
                         'trumpet': 'Trumpet', 'pedalsteel': 'Pedal steel guitar'})
-ROLE_CHOICES['bass'] += ['moogbass', 'upright']
+ROLE_CHOICES['bass'] += ['moogbass', 'moogpluck', 'upright']
 ROLE_CHOICES['chords'] += ['polysynth', 'synthbrass', 'wurli', 'solina', 'vibes', 'mutedgtr']
 ROLE_CHOICES['pad'] += ['glasspad', 'solina', 'polysynth', 'synthbrass', 'pedalsteel']
 ROLE_CHOICES['arp'] += ['polysynth', 'vibes', 'mutedgtr', 'wurli']
 ROLE_CHOICES['lead'] += ['synthbrass', 'polysynth', 'vibes', 'harmonica', 'trumpet', 'pedalsteel', 'wurli']
-GM_PROGRAM.update({'polysynth': 90, 'synthbrass': 62, 'moogbass': 38, 'glasspad': 92, 'solina': 50, 'wurli': 4, 'vibes': 11,
+GM_PROGRAM.update({'polysynth': 90, 'synthbrass': 62, 'moogbass': 39, 'moogpluck': 38, 'glasspad': 92, 'solina': 50, 'wurli': 4, 'vibes': 11,
                    'upright': 32, 'mutedgtr': 28, 'harmonica': 22, 'trumpet': 56, 'pedalsteel': 26})
 
 

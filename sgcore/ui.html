@@ -245,7 +245,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f"><label>Swing <span class="auto"><input type="checkbox" id="swingAuto" checked>style</span></label><input type="range" id="swing" min="50" max="75" value="55" disabled></div>
       <div class="f"><label>Humanize <b id="humanizeV"></b></label><input type="range" id="humanize" min="0" max="200" value="100"></div>
       <div class="f wide"><label>Variety <span class="hint">how much each song re-imagines its style: instruments, tones, grooves, arrangement</span><b id="varietyV"></b></label><input type="range" id="variety" min="0" max="100" value="55"></div>
-      <div class="f"><label>Groove feel <span class="hint">timing of each part</span></label><select id="groove"><option value="">Genre feel</option><option value="straight">Straight (on the grid)</option><option value="dilla">Lazy hip-hop (J Dilla)</option><option value="laidback">Laid back (reggae)</option><option value="afro">Afro swing</option><option value="dembow">Dembow push</option><option value="jazz">Jazz (ride on top)</option><option value="house">House (late hats)</option><option value="funk">Funk (pushed 16ths)</option></select></div>
+      <div class="f"><label>Groove feel <span class="hint">timing of each part</span></label><select id="groove"><option value="">Genre feel</option><option value="straight">Straight (on the grid)</option><option value="dilla">Lazy hip-hop (drunk, late snares)</option><option value="laidback">Laid back (reggae)</option><option value="afro">Afro swing</option><option value="dembow">Dembow push</option><option value="jazz">Jazz (ride on top)</option><option value="house">House (late hats)</option><option value="funk">Funk (pushed 16ths)</option></select></div>
       <div class="f"><label>Lead style <span class="hint">how the lead line is built</span></label><select id="leadStyle"><option value="">Genre default</option><option value="hook">Hook (sung-style melody)</option><option value="arp">Arpeggio (trance, synthwave)</option><option value="riff">Riff (rock, funk)</option><option value="ostinato">Ostinato (techno)</option><option value="bell">Bell motif (trap)</option><option value="call">Call &amp; response (afro, reggae)</option><option value="chops">Vocal-chop stabs (house, garage)</option></select></div>
       <div class="f"><label title="Verses, choruses and breaks play parts on different instruments from the genre's own pool">Instrument rotation</label><select id="rotation"><option value="auto">Auto (with Variety)</option><option value="off">Off - one instrument per part</option><option value="some">Some - one part changes</option><option value="lots">Lots - several parts change</option></select></div>
       <div class="f"><label title="How hard songs ramp up into choruses and drops">Build-ups <span class="hint">ramps into big sections</span></label><select id="builds"><option value="auto">On (genre style)</option><option value="subtle">Subtle - natural, no EDM ramps</option><option value="off">Off - no build-ups</option></select></div>
@@ -256,6 +256,11 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f"><label>Counter-melody <span class="hint">a second line answering the lead</span></label><select id="counter"><option value="">Genre decides</option><option value="on">Always</option><option value="off">Never</option></select></div>
       <div class="f"><label>Layered sounds <span class="hint">parts doubled by a second instrument</span></label><select id="layering"><option value="">Genre &amp; variety decide</option><option value="more">More layers</option><option value="off">Off (one instrument per part)</option></select></div>
       <div class="f"><label>Vocal guide <span class="hint">a singable melody - always in MIDI exports</span></label><label class="auto" style="margin-top:6px"><input type="checkbox" id="vocalGuide"> hear it in the song</label></div>
+    </div></details>
+
+    <details class="card"><summary>Character <span class="hint">genre traits - change one to get a different kind of song in the same genre</span></summary><div class="body" id="traitsBody">
+      <div class="f wide"><label class="auto"><input type="checkbox" id="traitSurprise"> 🎲 Surprise me - each song changes two of density, energy curve, variation, drop or texture</label>
+        <button class="btn" id="traitReset" type="button" style="margin-left:8px">↺ Genre traits</button></div>
     </div></details>
 
     <details class="card" open><summary>Sound</summary><div class="body" id="soundBody">
@@ -505,7 +510,25 @@ function renderJourney(){
     else if(state.jOff.length<J_ACTS.length-1) state.jOff.push(a); renderJourney(); });
   $('#jBbc').checked=!!state.orch_plugin;
 }
-function refresh(){ if(window.showGenreKit) showGenreKit();renderStyles();renderSelected();renderJourney();}
+function refresh(){ if(window.showGenreKit) showGenreKit();renderStyles();renderSelected();renderJourney();renderTraits();}
+const nice=v=>String(v).replace(/_/g,' ');
+function renderTraits(){
+  const body=$('#traitsBody'); if(!body||!META.traits_meta) return;
+  const gt=(META.genre_traits||{})[state.style]||{};
+  META.traits_meta.forEach(c=>{
+    let sel=$('#tr_'+c.id);
+    if(!sel){ const f=document.createElement('div'); f.className='f';
+      f.innerHTML=`<label>${c.name}</label><select id="tr_${c.id}" data-trait="${c.id}"></select>`; body.appendChild(f); sel=$('#tr_'+c.id); }
+    const cur=sel.value;
+    sel.innerHTML=`<option value="">Genre: ${gt[c.id]?nice(gt[c.id]):'default'}</option>`+c.values.map(v=>`<option value="${v}">${nice(v)}</option>`).join('');
+    sel.value=c.values.includes(cur)?cur:'';
+  });
+  if($('#traitReset')) $('#traitReset').onclick=()=>setTraits(null);
+}
+function traitOpts(){ const t={}; document.querySelectorAll('[data-trait]').forEach(s=>{ if(s.value) t[s.dataset.trait]=s.value; });
+  if($('#traitSurprise')&&$('#traitSurprise').checked) t._surprise=true; return Object.keys(t).length?t:null; }
+function setTraits(t){ t=t||{}; document.querySelectorAll('[data-trait]').forEach(s=>{ s.value=t[s.dataset.trait]||''; });
+  if($('#traitSurprise')) $('#traitSurprise').checked=!!t._surprise; }
 
 function options(){
   const o={style:state.style, seed:+$('#seed').value||1, blend:state.blend, blend_parts:state.blend_parts, mood:state.mood,
@@ -532,6 +555,7 @@ function options(){
   if($('#leadStyle').value) o.lead_style=$('#leadStyle').value;
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
   o.builds=$('#builds').value||'auto'; o.transition_fx=$('#transFx').value||'auto';
+  { const tr=traitOpts(); if(tr) o.traits=tr; }
   if($('#vinyl').value) o.vinyl=$('#vinyl').value==='on';
   if(state.orch_plugin) o.orch_plugin=true;
   if($('#songName').value.trim()) o.title=$('#songName').value.trim();
@@ -563,7 +587,7 @@ function applyOptions(o){
   $('#swingAuto').checked=o.swing==null; if(o.swing!=null)$('#swing').value=o.swing*100;
   $('#scAuto').checked=o.sidechain==null; if(o.sidechain!=null)$('#sidechain').value=o.sidechain*100;
   $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#userDrums').checked=!!o.user_drums;
-  $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#builds').value=o.builds||'auto'; $('#transFx').value=o.transition_fx||'auto'; $('#vinyl').value=o.vinyl===true?'on':''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#vocalGuide').checked=!!o.vocal_guide;
+  $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#builds').value=o.builds||'auto'; renderTraits(); setTraits(o.traits); $('#transFx').value=o.transition_fx||'auto'; $('#vinyl').value=o.vinyl===true?'on':''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#vocalGuide').checked=!!o.vocal_guide;
   $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';
   LEVELS.forEach(([k,n,layers])=>{ $('#lv_'+k).value=(o.part_levels||{})[layers[0]]||0; });
   if(o.journey){ const j=o.journey; state.jOff=J_ACTS.map(a=>a[0]).filter(a=>j.acts&&!j.acts.includes(a)); $('#jPiano').value=(j.piano??.6)*100; $('#jRubato').value=(j.rubato??.5)*100;

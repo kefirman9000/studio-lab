@@ -62,6 +62,7 @@ class Options:
     melody_style: str = None      # None = genre default | diatonic | pentatonic | blues | bebop
     voicing: str = None           # None = genre default | close | open | drop2 | rootless | power
     chord_color: str = None       # None = varies per song | triad | 7 | add9 | 9 | 6 | sus2 | sus4
+    traits: dict = None           # genre-trait overrides {category: value} (see sgcore/traits.py); {'_surprise': True} = random
     part_levels: dict = field(default_factory=dict)   # layer -> dB offset (-12..+6), e.g. {'lead': -3}
     part_fx: dict = field(default_factory=dict)       # layer -> effect plugin name (e.g. {'lead': 'ValhallaSupermassive'})
     ending: str = 'auto'          # auto | hit (final chord + crash) | fade
@@ -883,6 +884,8 @@ def compose(opts):
     elif any(b in _J for b in (opts.blend or [])):
         opts = replace(opts, blend=[b for b in opts.blend if b not in _J])
     user_opts = opts
+    from . import traits as _traits
+    opts = _traits.apply_opts(opts, opts.style)
     opts = style_knob_defaults(opts)
     opts = apply_simplicity(opts)
     opts, mood = apply_mood(opts)
@@ -897,6 +900,7 @@ def compose(opts):
     rnd_b = prng('bass', 4)           # bass lines
     rnd_c = prng('chords', 5)         # chord rhythms, arps, voicing choices
     st = resolve_style(opts, random.Random(opts.seed * 7 + 3), mood)
+    st = _traits.apply_style(st, opts, opts.style)
     if not st.get('composer'):                           # through-composed scores keep their exact orchestration
         st = apply_variety(st, opts, random.Random(opts.seed * 7919 + 17))
         add_counter_track(st, opts)
@@ -995,6 +999,8 @@ def compose(opts):
         cb = min(4, cb * 2)
     elif getattr(opts, 'chord_speed', None) == 'fast' and cb >= 2:
         cb = cb // 2
+    elif st.get('slow_chords') and not getattr(opts, 'chord_speed', None) and rnd.random() < st['slow_chords']:
+        cb = min(4, cb * 2)                             # long progressive / cinematic songs: now and then 2 bars per chord
     st['chord_bars'] = cb
     chord_size = st['chord_size'] + (1 if cx > 0.72 else 0) - (1 if cx < 0.28 and st['chord_size'] > 3 else 0)
     chord_size = max(3, min(5, chord_size))
@@ -1014,6 +1020,7 @@ def compose(opts):
     if st.get('forms') and isinstance(st['form'], str) and getattr(opts, 'structure', 'auto') in (None, '', 'auto'):
         st['form'] = random.Random(opts.seed * 31 + 7).choice(st['forms'])     # classical genres: one of their forms
     form = list(FORMS[st['form']]) if isinstance(st['form'], str) else list(st['form'])
+    form = _traits.shape_form(form, opts, opts.style)
     if opts.structure == 'loop':
         form = [('loop', 16, set(l for l in ['kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead', 'fx']), {})]
     elif opts.structure == 'club':

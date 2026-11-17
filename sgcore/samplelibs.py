@@ -436,7 +436,7 @@ ORCH = {
 }
 # styles whose piano is a worn upright rather than a concert grand
 UPRIGHT_STYLES = {'piano_miniature', 'lofi', 'boombap', 'hauntology', 'vaporwave', 'memphis_phonk', 'blues', 'soul_ballad', 'folk', 'western', 'motown'}
-PIPE_ORGAN_STYLES = {'epic_choir', 'baroque', 'cinematic', 'tension', 'hybrid_trailer', 'symphonic_metal', 'adventure', 'romantic'}
+PIPE_ORGAN_STYLES = {'baroque_organ', 'epic_choir', 'baroque', 'cinematic', 'tension', 'hybrid_trailer', 'symphonic_metal', 'adventure', 'romantic'}
 SHORT_NOTE = 0.24          # seconds: notes this short are played with the short articulation (spiccato / staccato)
 
 

@@ -76,7 +76,7 @@ GENRE_BUILD = {'riddim': 'pause', 'chillstep': 'swell', 'jazz_rap': 'pause', 'cl
                'symphonic_metal': 'roll', 'kpop': 'lift', 'melodic_techno': 'filter', 'afro_house': 'filter',
                'jersey_club': 'pause', 'baile_funk': 'stutter', 'punk': 'roll', 'waltz': 'swell', 'celtic_jig': 'swell',
                'soul_ballad': 'swell', 'braindance': 'stutter', 'hauntology': 'pause', 'brostep': 'roll', 'melodic_dubstep': 'roll',
-               'neurofunk': 'stutter', 'liquid_dnb': 'filter', 'house_phonk': 'pause', 'memphis_phonk': 'pause', 'phonk': 'pause', 'brazilian_phonk': 'pause', 'uplifting_trance': 'roll',
+               'neurofunk': 'stutter', 'neurofunk_lite': 'roll', 'jump_up': 'roll', 'dark_synthwave': 'filter', 'modern_gospel': 'swell', 'liquid_dnb': 'filter', 'house_phonk': 'pause', 'memphis_phonk': 'pause', 'phonk': 'pause', 'brazilian_phonk': 'pause', 'uplifting_trance': 'roll',
                'melodic_house': 'filter', 'teen_pop': 'lift', 'luxury_rap': 'pause', 'jam_band': 'lift', 'soft_rock': 'lift',
                'funky_breaks': 'stutter', 'piano_miniature': 'none', 'uk_road_rap': 'pause'}
 

@@ -104,7 +104,9 @@ DRUM_PART = {'chat': 'Closed hi-hat', 'ohat': 'Open hi-hat', 'rim': 'Rimshot', '
              'ride': 'Ride cymbal', 'crash': 'Crash cymbal', 'conga': 'Congas', 'snap': 'Finger snaps', 'woodblock': 'Wood block',
              'tabla': 'Tabla', 'cowbell808': 'Cowbell', 'tom_hi': 'High tom (fills)', 'tom_mid': 'Mid tom (fills)',
              'tom_lo': 'Low tom (fills)', 'bride': 'Build-up ride', 'lkick': 'Layered kick', 'lsnare': 'Layered snare',
-             'vinyl': 'Vinyl crackle', 'texture': 'Background texture', 'timp': 'Timpani', 'bodhran': 'Bodhran'}
+             'vinyl': 'Vinyl crackle', 'texture': 'Background texture', 'timp': 'Timpani', 'bodhran': 'Bodhran',
+             'taiko': 'Taiko drums', 'bdrum': 'Orchestral bass drum', 'bayan': 'Tabla (bass drum)', 'chipkick': 'Chip kick',
+             'tom': 'Tom-toms'}
 
 
 def _tracks(song):

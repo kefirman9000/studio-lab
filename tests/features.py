@@ -374,6 +374,55 @@ def test_sound_choices():
     print('ok  every genre part has idiomatic alternative sounds (re-roll / suggestions)')
 
 
+def test_traits_and_review():
+    """v1.43: genre traits (12 rule categories) on every genre, steering per song; review fixes."""
+    import re
+    import numpy as np
+    from sgcore.compose import Options, compose
+    from sgcore.styles import STYLES
+    from sgcore.traits import CATEGORIES, all_traits, infer
+    from sgcore.instruments import INSTRUMENTS
+    from sgcore.dsp import SR
+    T = all_traits()
+    assert set(T) == set(STYLES)
+    for k, tr in T.items():
+        for c, (_, vals) in CATEGORIES.items():
+            assert tr[c] in vals, (k, c, tr[c])
+    assert infer('deep_dubstep', STYLES['deep_dubstep'])['bass'] == 'sub_only'
+    # no traits -> identical song; a trait changes it, and the genre's own rules stay untouched
+    a = compose(Options(style='house', seed=4))
+    b = compose(Options(style='house', seed=4, traits={}))
+    assert [(e.track, e.beat, e.midi) for e in a['events']] == [(e.track, e.beat, e.midi) for e in b['events']]
+    c = compose(Options(style='house', seed=4, traits={'bass': '808_slide', 'feel': 'robotic', 'energy': 'sudden_contrasts'}))
+    assert c['st']['bass_mode'] == '808' and c['st']['swing'] == 0.5
+    assert STYLES['house']['bass_mode'] != '808'
+    lv = [x['opts'].get('level') for x in c['sections'] if x['name'] in ('break', 'drop')]
+    assert 0.5 in lv and 1.0 in lv, lv
+    sp = compose(Options(style='house', seed=4, traits={'density': 'sparse'}))
+    assert not any(e.track == 'arp' for e in sp['events'])
+    s1 = compose(Options(style='trap', seed=9, traits={'_surprise': True}))
+    assert len(s1['st'].get('traits_used') or {}) == 2
+    # moog bass: sustained by default (filter stays open), the plucked one is its own sound
+    def bright(name, at):
+        y = INSTRUMENTS[name](36, 1.0, {'cut': 600})
+        y = y if y.ndim == 1 else y[0]
+        seg = y[int(at * SR):int(at * SR) + 4096] * np.hanning(4096)
+        spec = np.abs(np.fft.rfft(seg))
+        return float((spec * np.fft.rfftfreq(4096, 1 / SR)).sum() / spec.sum())
+    assert bright('moogbass', 0.8) > 1.8 * bright('moogpluck', 0.8)
+    assert any(t['inst'] == 'moogpluck' for t in STYLES['g_funk']['tracks'])
+    # review additions + no artist / band names in genre descriptions or labels
+    for g in ('jump_up', 'dark_synthwave', 'modern_gospel', 'neurofunk_lite'):
+        assert g in STYLES and not any(t['inst'] == 'vox' for t in STYLES[g]['tracks']), g
+    names = r'Boards of Canada|Kenny G|Skrillex|Excision|Rusko|Weeknd|Dilla|Nujabes|Blackmill|Patsy Cline|Bob Wills|Johnny Cash|Teddy Riley'
+    from sgcore.styles import label
+    for k, st in STYLES.items():
+        assert not re.search(names, st['desc'] + ' ' + str(label(k))), k
+    assert STYLES['hauntology']['bpm'] == (78, 96)                   # the original hauntology is left as it was
+    assert any(t['name'] == 'texture' for t in STYLES['hauntology_sunlit']['tracks'])
+    print('ok  genre traits on every genre + per-song overrides, sustained vs plucked moog bass, review genres, no artist names')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -391,6 +440,7 @@ def main():
     test_editor_and_sounds()
     test_reference_genres()
     test_sound_choices()
+    test_traits_and_review()
     print('all good')
 
 
