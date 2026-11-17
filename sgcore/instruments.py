@@ -44,6 +44,9 @@ def i_reese(m, dur, p, glide=None, mod=None):
 
 
 def i_808(m, dur, p, glide=None, mod=None):
+    """Trap 808: a sine with a long tail and drive, sliding from the previous note. `mod` warps one note (bass-warp
+    genres): 'dive' (falls up to an octave as it ends), 'rise' (shoots up an octave), 'wob:<Hz>' (a 2-3 semitone pitch
+    wobble), 'growl' (extra drive + square grit)."""
     f = float(mtof(m))
     gate = int(dur * SR)
     n = gate + int(0.04 * SR)
@@ -53,11 +56,22 @@ def i_808(m, dur, p, glide=None, mod=None):
         freq = f + (f0 - f) * np.exp(-t / p.get('slide', 0.09))      # the classic trap 808 slide
     else:
         freq = np.full(n, f)
+    w = str(mod) if isinstance(mod, str) else ''
+    if w == 'dive' or w == 'rise':
+        start = 0.45 * gate / SR
+        k = np.clip((t - start) / max(0.05, dur - start), 0, 1) ** 1.6
+        freq = freq * 2 ** ((-12 if w == 'dive' else 12) * k / 12)
+    elif w.startswith('wob'):
+        rate = float(w.split(':')[1]) if ':' in w else 5.0
+        depth = min(1.0, t[-1] / 0.25) * 2.5                       # semitones, easing in after the attack
+        freq = freq * 2 ** (depth * np.sin(2 * np.pi * rate * t) * np.minimum(t / 0.15, 1) / 12)
     y = np.sin(2 * np.pi * np.cumsum(freq) / SR)
+    if w == 'growl':
+        y = y + 0.35 * np.sign(y) * np.abs(y) ** 0.5
     amp = np.exp(-t * p.get('decay', 0.9)) * np.minimum(t / 0.002, 1)
     rel = np.ones(n)
     rel[gate:] = np.linspace(1, 0, n - gate)
-    return soft(y * amp * rel, p.get('drive', 2.4))
+    return soft(y * amp * rel, p.get('drive', 2.4) * (1.8 if w == 'growl' else 1.0))
 
 
 def i_sinebass(m, dur, p, glide=None, mod=None):

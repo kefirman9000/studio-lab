@@ -1235,7 +1235,12 @@ def compose(opts):
                         elif r < 0.25:
                             m = fold(key.deg(chord + 4, 2), lo)
                         glide = prev_bass if (prev_bass is not None and prev_bass != m and rnd_b.random() < 0.45) else None
-                        evs.append(Ev('bass', beat0 + s / 4, (e - s) / 4 * 0.95, m, 1.0, glide))
+                        warp = None
+                        wp = float(st.get('warp_808') or 0)
+                        if wp and (e - s) >= 4 and str(tracks.get('bass', {}).get('inst', '')).endswith('808') and rnd_b.random() < wp:     # held notes get warped: dives, rises, wobbles, growls
+                            warp = rnd_b.choice(['dive', 'dive', 'rise', f'wob:{rnd_b.choice([3, 4, 5, 6, 8])}',
+                                                 f'wob:{rnd_b.choice([3, 4, 5, 6, 8])}', 'growl'])
+                        evs.append(Ev('bass', beat0 + s / 4, (e - s) / 4 * 0.95, m, 1.0, glide, warp))
                         prev_bass = m
                 elif mode == 'acid':
                     half = (b % 2) * 16
@@ -1535,6 +1540,16 @@ def compose(opts):
         chop_samples(evs, tracks, random.Random(opts.seed * 53 + 1))
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
+    for sec in sections:                                  # bass-warp switch-ups: the 808 jumps up, the sub drops out
+        up = int(sec['opts'].get('bass_up') or 0)              # target MIDI note (e.g. 40 = E2)
+        if up:
+            b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+            for e in evs:
+                if b0 <= e.beat < b1 and tracks.get(e.track, {}).get('layer') == 'bass' and e.midi is not None:
+                    k = 12 * max(0, -((e.midi - up) // 12))          # up whole octaves until it reaches the target register
+                    e.midi += k
+                    if e.glide is not None:
+                        e.glide += k
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
     for name, t in tracks.items():                       # any part of this song, picked by its own name in the editor
         pick = (opts.instruments or {}).get(name)

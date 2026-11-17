@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.44.1
+- New genre **Bass-warp trap (808 switch-ups)**, from your three bass-heavy references (130-150 BPM in half-time, analysed in 2-bar blocks).
+  - **The 808:** a monstrous, ultra-low 808 (down to B0, 70-90% of the energy) that never sits still. The roots flip every two bars and notes slide into each other. Held notes **warp**: pitch dives of up to an octave, octave rises, 2-3 semitone wobbles and growls (the 808 can now do all four).
+  - **The switch-ups:** every few bars, the drums drop out, the 808 and kick play alone, sudden gaps hit, or new drum patterns take over. The 808 **leaps two octaves up with the sub gone** for 8 bars, then slams back down.
+  - **Around it:** a no-sub breakdown, and a quiet, eerie bell / choir melody under it all.
+- New genre building block: a section can move its bass up to a set register (`bass_up`).
+
 ## 1.44.0
 - **The song editor can change drums.**
   - A **Drum kit** menu swaps the whole kit.

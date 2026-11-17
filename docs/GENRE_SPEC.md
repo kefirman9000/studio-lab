@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (211 genres)
+# Studio Lab - technical genre rules (212 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -2315,6 +2315,37 @@ Beat-switch trap (late 2010s): one track, several beats - dark psychedelic synth
 - **Mix** {'lufs': -8.0, 'air': 1.2, 'low': 2.6, 'width': 0.7} · reverb 2.4 · sc_depth 0.2
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 50, 'punch': 100, 'decay': 12, 'drive': 2.0, 'len': 0.3}}, 'snare_tracks': ['clap', 'snare'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': '', 'no_rotation': False, 'pedal_sub': True}
 - **Sound brief** Huge distorted 808; trap kit with rolls; dark psychedelic synth loops (detuned keys, reversed pads); hard beat switches with silent bars between them
+
+### Bass-warp trap (808 switch-ups) (`bass_warp_trap`)
+
+Bass-warp trap: a dark half-time beat at 130-146 BPM built around a monstrous, ultra-low 808 that never sits still - roots flipping every two bars, slides between notes, pitch dives and octave rises, wobbling and growling notes - with the beat switching up every few bars (drums dropping out, the 808 and kick alone, sudden gaps, new drum patterns, the 808 leaping two octaves up with the sub gone, then slamming back down), and a quiet, eerie melody under it all
+
+- **Tempo** 130-150 BPM · **scales** minor, phrygian, harmonic_minor · swing 0.5 (unit 16) · humanise 0.0
+- **Progressions** {'minor': [[0, 0, 3, 3], [0, 0, 2, 2], [0, 0, 5, 5], [0, 0, 6, 6]], 'phrygian': [[0, 0, 1, 1], [0, 0, 3, 3]], 'harmonic_minor': [[0, 0, 4, 4], [0, 0, 5, 5]]} · chord_bars 1 · chord size 3
+- **Song form** `bass_warp`: intro 8 [chords, fx, lead] (filter_in) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> up 8 [bass, chords, kick, snare, top] (bass_up=40, level=0.6) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> switch 4 [bass, fx, kick] (alt) -> break 8 [bass, chords, lead, pad] (alt, bass_up=40, level=0.5) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> switch 4 [bass, lead] (level=0.75) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> outro 8 [bass, chords, fx] (fade, bass_up=40) · form_scale 1
+- **Drums** **kick** `X.........X.....` / `X.....X...X.....` / `X.......X.X.....` / `X...............`; **snare** `........X.......` / `........X.....x.` / `........X..x....`; **clap** `........X.......`; **chat** `x.x.x.x.x.x.x.x.` / `xxx.x.xxx.x.xxx.` / `x...x...x...x...`; **ohat** `......x.......x.`
+- **Drum kit** 808 · preset `808`
+- **Bass** `R.......R.......` · mode `808` · lowest note 23
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.35}
+- **Lead rhythm** `x-------........` / `x---....x---....` / `........x-------` / `x.x.....x.......`
+- **Build-ups** default `pause` · choices ['pause', 'none'] · transitions ['gap', 'gap', 'none'] · drops land plainly
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `robotic` · melody `minimal_motivic` · bass `808_slide` · drop `groove_drop` · variation `sectional` · culture `street` · texture `wet_and_spacious` · rhythm `half_time` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -14 dB
+  - snare (snare): `snare` -16 dB · rev=0.2
+  - clap (snare): `clap` -20 dB · rev=0.25
+  - chat (top): `chat` -27 dB · pan=0.15
+  - ohat (top): `ohat` -29 dB · pan=-0.2
+  - bass (bass): `808` -8 dB
+  - chords (chords): `warmpad` -28 dB · rev=0.5 · alternatives ['glasspad', 'choir', 'strings']
+  - pad (pad): `choir` -29 dB · rev=0.6 · alternatives ['warmpad', 'glasspad']
+  - arp (arp): `bell` -29 dB · pan=0.3 · rev=0.5 · dly=0.35 · alternatives ['celesta', 'pluck', 'chip']
+  - lead (lead): `phonkbell` -22 dB · rev=0.45 · dly=0.3 · alternatives ['bell', 'pluck', 'celesta', 'softlead']
+  - texture (fx): `texture` -36 dB
+- **Mix** {'lufs': -8.5, 'air': -0.5, 'low': 4.0, 'drive': 0.05, 'max_gr': 5.0} · reverb 2.6 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 48, 'punch': 110, 'decay': 14, 'drive': 2.2, 'len': 0.25}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': '', 'own_progs': True, 'no_rotation': True, 'warp_808': 0.7, 'repetition': 0.85}
+- **Sound brief** Huge distorted 808 (long tail, very low: B0-E1) with slides, pitch dives / rises and wobble (pitch LFO); sparse trap kit with hat rolls; dark bell / music box or pluck melody; quiet choir / pad; lots of space
 
 ## Pop, R&B & Hopecore
 

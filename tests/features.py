@@ -485,6 +485,34 @@ def test_v144_drums_layers_new_genres():
     print('ok  editor drum swaps, no flam layers, liquid DnB x2, boogie riff + keys, unified parts panel')
 
 
+def test_bass_warp_trap():
+    """v1.44.1: bass-warp trap - warped 808 notes (dives, rises, wobbles, growls), slides, switch-up sections where the
+    808 jumps up with no sub, and the warps really bend the pitch."""
+    import numpy as np
+    from collections import Counter
+    from sgcore.compose import Options, compose
+    from sgcore.instruments import INSTRUMENTS
+    from sgcore.dsp import SR
+    s = compose(Options(style='bass_warp_trap', seed=3))
+    b = [e for e in s['events'] if e.track == 'bass']
+    kinds = Counter(str(e.mod).split(':')[0] for e in b if e.mod)
+    assert {'dive', 'rise', 'wob', 'growl'} <= set(kinds), kinds
+    assert sum(e.glide is not None for e in b) > 10
+    for x in s['sections']:
+        notes = [e.midi for e in b if x['bar'] * 4 <= e.beat < (x['bar'] + x['bars']) * 4]
+        if x['opts'].get('bass_up') and notes:
+            assert min(notes) >= 40, (x['name'], min(notes))
+    def f0(y, a, b_):
+        seg = y[int(a * SR):int(b_ * SR)]
+        z = np.where(np.diff(np.signbit(seg)))[0]
+        return SR / (2 * np.mean(np.diff(z))) if len(z) > 4 else 0
+    y = INSTRUMENTS['808'](33, 1.0, {}, None, 'dive')
+    assert f0(y, 0.85, 0.98) < 0.8 * f0(y, 0.05, 0.3)                # the dive really falls
+    y = INSTRUMENTS['808'](33, 1.0, {}, None, 'rise')
+    assert f0(y, 0.85, 0.98) > 1.3 * f0(y, 0.05, 0.3)
+    print('ok  bass-warp trap: warped 808s, slides, 808-up switch-ups')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -506,6 +534,7 @@ def main():
     test_rotation_keeps_genre_sound()
     test_surf_and_monster_theme()
     test_v144_drums_layers_new_genres()
+    test_bass_warp_trap()
     print('all good')
 
 

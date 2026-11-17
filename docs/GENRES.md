@@ -1,8 +1,8 @@
-# Studio Lab genres (211)
+# Studio Lab genres (212)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (111)
+## Electronic (112)
 
 ### House & Disco (21)
 
@@ -85,10 +85,11 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Neurofunk | `neurofunk` | 172-176 | Neurofunk: tight, technical two-step at 174, dark and mechanical - growls, reese and FM stabs trading every bar over a sine sub, cold stabs and sparse atmospheres |
 | Neurofunk (lighter) | `neurofunk_lite` | 172-176 | Neurofunk, lighter and more melodic: the tight 174 two-step and a dark reese, but with clearer chords, a pad underneath and a lead you can hum - less extreme sound design than full neurofunk |
 
-### Hip-Hop, Trap & Phonk (16)
+### Hip-Hop, Trap & Phonk (17)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
+| Bass-warp trap (808 switch-ups) | `bass_warp_trap` | 130-150 | Bass-warp trap: a dark half-time beat at 130-146 BPM built around a monstrous, ultra-low 808 that never sits still - roots flipping every two bars, slides between notes, pitch dives and octave rises, wobbling and growling notes - with the beat switching up every few bars (drums dropping out, the 808 and kick alone, sudden gaps, new drum patterns, the 808 leaping two octaves up with the sub gone, then slamming back down), and a quiet, eerie melody under it all |
 | Beat-switch trap | `switch_trap` | 140-156 | Beat-switch trap (late 2010s): one track, several beats - dark psychedelic synths and a huge distorted 808, with the beat cutting out, a bar of dead silence, and a completely new loop and drum pattern taking over two or three times; hard, theatrical and unpredictable |
 | Brazilian Phonk | `brazilian_phonk` | 130-150 | Brazilian phonk: baile-funk bounce under phonk grit - syncopated tamborzao drums, a distorted pitched cowbell riff, heavy distorted sub, chopped vocal shouts; gritty and danceable |
 | Cloud Rap | `cloud_rap` | 60-76 | Cloud rap: dreamy, washed-out and ethereal - huge reverb pads and choir-like haze, a soft melody drowned in echo, slow half-time drums and a deep, gentle 808 |

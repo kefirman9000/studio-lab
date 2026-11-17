@@ -6545,6 +6545,57 @@ style('boogie_blues_rock', 'Classic',
       label='Boogie blues-rock (slide)')
 
 
+# v1.44.1: bass-warp trap, from the user's two reference tracks (130-146 BPM in half-time, analysed in 2-bar blocks):
+# (+ a third reference, 148 BPM) the 808 is 70-90% of the energy, sits extremely low (B0-E1) and never stays still - roots flipping every 2 bars,
+# slides between notes, pitch dives / rises of up to an octave, 2-3 semitone wobbles, growls; the beat switches up every
+# few bars (drums out, 808 + kick alone, a gap, a new drum pattern), one no-sub breakdown, and a dark, quiet melody.
+FORMS['bass_warp'] = [('intro', 8, {'chords', 'lead', 'fx'}, {'filter_in': True}),
+                      ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True}),
+                      ('up', 8, {'kick', 'snare', 'top', 'bass', 'chords'}, {'bass_up': 40, 'level': 0.6}),
+                      ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'alt': True}),
+                      ('switch', 4, {'kick', 'bass', 'fx'}, {'alt': True}),
+                      ('break', 8, {'bass', 'chords', 'lead', 'pad'}, {'alt': True, 'bass_up': 40, 'level': 0.5}),
+                      ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True}),
+                      ('switch', 4, {'bass', 'lead'}, {'level': 0.75}),
+                      ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'alt': True}),
+                      ('outro', 8, {'bass', 'chords', 'fx'}, {'fade': True, 'bass_up': 40})]
+style('bass_warp_trap', 'Electronic',
+      'Bass-warp trap: a dark half-time beat at 130-146 BPM built around a monstrous, ultra-low 808 that never sits still - '
+      'roots flipping every two bars, slides between notes, pitch dives and octave rises, wobbling and growling notes - '
+      'with the beat switching up every few bars (drums dropping out, the 808 and kick alone, sudden gaps, new drum '
+      'patterns, the 808 leaping two octaves up with the sub gone, then slamming back down), and a quiet, eerie melody under it all',
+      bpm=(130, 150), scales=['minor', 'phrygian', 'harmonic_minor'], swing=0.5, human=0.0, form='bass_warp', kit='808',
+      trap_hats=True, chord_size=3, sc_depth=0.0, reverb=2.6, own_progs=True, no_rotation=True,
+      progs={'minor': [[0, 0, 3, 3], [0, 0, 2, 2], [0, 0, 5, 5], [0, 0, 6, 6]], 'phrygian': [[0, 0, 1, 1], [0, 0, 3, 3]],
+             'harmonic_minor': [[0, 0, 4, 4], [0, 0, 5, 5]]},
+      kit_override=dict(kick=dict(pitch=48, punch=110, decay=14, drive=2.2, len=0.25)),
+      drums={'kick': ['X.........X.....', 'X.....X...X.....', 'X.......X.X.....', 'X...............'],
+             'snare': [HALF, '........X.....x.', '........X..x....'], 'clap': [HALF],
+             'chat': ['x.x.x.x.x.x.x.x.', 'xxx.x.xxx.x.xxx.', 'x...x...x...x...'], 'ohat': ['......x.......x.']},
+      snare_tracks=['snare', 'clap'], build_family=['pause', 'none'], transition_moves=['gap', 'gap', 'none'],
+      plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.7,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=60, arp=dict(rate=2, mode='random', oct=5, prob=0.35),
+      lead_rh=['x-------........', 'x---....x---....', '........x-------', 'x.x.....x.......'], repetition=0.85,
+      gm_hint='Huge distorted 808 (long tail, very low: B0-E1) with slides, pitch dives / rises and wobble (pitch LFO); '
+              'sparse trap kit with hat rolls; dark bell / music box or pluck melody; quiet choir / pad; lots of space',
+      tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.2, db=-16),
+              T('clap', 'snare', 'clap', rev=0.25, db=-20),
+              T('chat', 'top', 'chat', pan=0.15, db=-27), T('ohat', 'top', 'ohat', pan=-0.2, db=-29),
+              T('bass', 'bass', '808', db=-8, p=dict(drive=1.8, decay=0.3, slide=0.07)),
+              T('chords', 'chords', 'warmpad', rev=0.5, db=-28, p=dict(cut=1200)),
+              T('pad', 'pad', 'choir', rev=0.6, db=-29),
+              T('arp', 'arp', 'bell', rev=0.5, dly=0.35, pan=0.3, db=-29),
+              T('lead', 'lead', 'phonkbell', rev=0.45, dly=0.3, db=-22),
+              T('texture', 'fx', 'texture', db=-36)],
+      master=dict(lufs=-8.5, air=-0.5, low=4.0, drive=0.05, max_gr=5.0),
+      pools=dict(bass=['808'],
+                 chords=['warmpad', 'glasspad', 'choir', 'strings'],
+                 pad=['choir', 'warmpad', 'glasspad'],
+                 arp=['bell', 'celesta', 'pluck', 'chip'],
+                 lead=['phonkbell', 'bell', 'pluck', 'celesta', 'softlead']),
+      label='Bass-warp trap (808 switch-ups)')
+
+
 # ============================== rules applied to all the genres above ========================================
 # ----------------------------------------------------------------------------- real basses everywhere they belong
 # electric bass (Growlybass) for electric genres, upright (Meatbass) for acoustic / jazz ones
