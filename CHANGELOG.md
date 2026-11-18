@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.56.4
+- **Drop a voice clip straight on the 🎤 Voice sample box** to load it (it lights up as you drag over it). It's named after the file and picked straight away. Dropping anywhere else still opens a project or uses the song as a reference.
+
+
 ## 1.56.3
 - **Voice samples are easier to find**: a new **🎤 Voice sample** card above Parts, with its own "Load a voice sample…" button - load a clip and it's picked straight away, with the use / pitch / how-often choices right there. (It was tucked under Feel, and loading one meant going through 🎛 My samples.)
 - **Switch-up 808 - mallets: the arpeggios now lock to the beat.** Every beat starts the run again from the bottom (up one beat, down the next) with the first note of each beat accented and the off-beat half a step down, instead of one long run drifting across the beats with random gaps. Their echoes are timed to the beat, their reverb is shorter, they duck a little with the kick, and the DJ pitch edits leave them alone.

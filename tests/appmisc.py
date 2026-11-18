@@ -74,6 +74,7 @@ def test_ui_sound_menus():
     dup = [k for k, v in ids.items() if v > 1]
     assert not dup, f'duplicate element ids in ui.html: {dup}'              # (#prog was both a box and the progress bar)
     assert ui.index('id="voxCard"') < ui.index('<summary>Parts') and 'id="voxQuickUp"' in ui     # voice samples: own card, easy to find
+    assert '<details class="card dropzone" open id="voxCard">' in ui and "vc.addEventListener('drop'" in ui   # drop a clip on it
     print('ok  part sound menus save your pick; no duplicate element ids')
 
 
