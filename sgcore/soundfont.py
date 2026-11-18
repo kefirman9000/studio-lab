@@ -367,7 +367,7 @@ SAMPLED_ONLY = ['nylon', 'cleanguitar', 'muted', 'odguitar', 'distguitar', 'acba
                 'viola', 'contrabass', 'slowstrings', 'trumpet', 'mutedtrumpet', 'trombone', 'tuba',
                 'bassoon', 'piccolo', 'tenorsax']
 # built-in synth stand-ins for when the library is missing (or a sample can't be played)
-FALLBACK = {'nylon': 'guitar', 'cleanguitar': 'guitar', 'muted': 'mutedgtr', 'odguitar': 'guitar', 'distguitar': 'guitar',
+FALLBACK = {'nylon': 'acguitar', 'cleanguitar': 'guitar', 'muted': 'mutedgtr', 'odguitar': 'guitar', 'distguitar': 'guitar',
             'acbass': 'upright', 'fingerbass': 'ebass', 'pickbass': 'ebass', 'slapbass': 'fmbass', 'viola': 'violin',
             'contrabass': 'cello', 'slowstrings': 'strings', 'bandoneon': 'accordion', 'steelguitar': 'guitar', 'fiddle': 'violin', 'trumpetsection': 'brass',
             'mutedtrumpet': 'trumpet', 'trombone': 'horn', 'tuba': 'horn', 'bassoon': 'clarinet', 'piccolo': 'flute', 'tenorsax': 'sax', 'sopranosax': 'sax', 'taikodrum': 'timpani'}

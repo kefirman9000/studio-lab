@@ -46,6 +46,10 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] in ('generate', 'gen', 'cli'):
         from sgcore.cli import main
         main(sys.argv[2:])
+    elif len(sys.argv) > 1 and sys.argv[1] == 'daisy':      # Daisy Bell (1892) sung by a creepy computer voice
+        from sgcore import daisy
+        out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(os.path.abspath(__file__)), 'songs')
+        print(daisy.render(out)['files'])
     elif len(sys.argv) > 1 and sys.argv[1] in ('vsts', 'vst'):
         from sgcore.cli import vsts_main
         vsts_main(sys.argv[2:])

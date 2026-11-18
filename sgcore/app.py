@@ -719,6 +719,16 @@ class Handler(BaseHTTPRequestHandler):
             path, name = str(body.get('path', '')), str(body.get('name', 'My sound'))[:60]
             existing = body.get('existing')
             return self._json({'job': bg_job(lambda log: vsthost.create_sound(path, name, existing))})
+        if p == '/api/special/daisy':                    # Daisy Bell (1892) sung by a creepy computer voice
+            from . import daisy
+
+            def job(log):
+                r = daisy.render(out_dir(), log=log, wind_down=bool(body.get('wind_down', True)))
+                rel = lambda v: '/files/' + os.path.relpath(v, out_dir()).replace(os.sep, '/')
+                r['urls'] = {k: rel(v) for k, v in r['files'].items()}
+                r['folder'] = os.path.dirname(r['files']['wav'])
+                return r
+            return self._json({'job': bg_job(job)})
         if p == '/api/vst/scan':                         # orchestra detection: one plugin window, every instrument
             from . import vsthost
             path, prefix = str(body.get('path', '')), str(body.get('prefix', 'BBC'))[:12]

@@ -623,6 +623,30 @@ def test_drummer_percussion_and_beat_feels():
     print('ok  drummer settings, percussion sets, beat feels')
 
 
+def test_new_genres_and_daisy():
+    """1.51: 40 new genres compose with their own grooves; the Daisy Bell computer voice sings in tune."""
+    import numpy as np
+    from sgcore import daisy
+    from sgcore.compose import OWN_GROOVE
+    from sgcore.styles import STYLES
+    for g in ('french_house', 'trip_hop', 'footwork', 'juke', 'footwork_soulful', 'footwork_dark', 'hard_techno', 'afrobeat',
+              'dub', 'corridos_tumbados', 'samba', 'gypsy_jazz', 'ragtime', 'bhangra', 'anime_opening'):
+        assert g in STYLES, g
+    for seed in (1, 2, 3):                                   # footwork keeps its triplet-feel kicks (no generic patterns)
+        ks = {round(e.beat % 4, 2) for e in compose(Options(style='footwork', seed=seed))['events'] if e.track == 'kick'}
+        assert 0.75 in ks or 1.5 in ks, ks
+    rk = [round(e.beat % 4, 2) for e in compose(Options(style='reggae', seed=2))['events'] if e.track == 'kick']
+    assert 'reggae' in OWN_GROOVE and rk.count(2.0) > 0.8 * len(rk), rk     # the one-drop: kick on beat 3 (build-ups aside)
+    assert sum(b for _, _, b in daisy.MELODY) == 99 and len(daisy.CHORDS) == 33
+    y = daisy.sing([(0.0, 0.6, 69, 'd aI'), (0.6, 0.6, 76, 'z i')])
+    seg = y[int(0.3 * SR):int(0.55 * SR)]
+    spec = np.abs(np.fft.rfft(seg * np.hanning(len(seg))))
+    f = np.fft.rfftfreq(len(seg), 1 / SR)
+    harm = f[np.argmax(spec * (f < 1000))]
+    assert abs(harm / 440.0 - round(harm / 440.0)) < 0.05, harm   # the sung 'Dai' sits on A440 (or a harmonic of it)
+    print('ok  40 new genres, protected grooves, Daisy Bell computer voice')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -650,6 +674,7 @@ def main():
     test_lead_runs_and_ebass()
     test_drum_style_vs_sounds_and_orchestra_detection()
     test_drummer_percussion_and_beat_feels()
+    test_new_genres_and_daisy()
     print('all good')
 
 

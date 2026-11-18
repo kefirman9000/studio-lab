@@ -282,6 +282,15 @@ EXTRA_CHORD_RH = {
 }
 
 
+# genres whose drum pattern IS the genre (a one-drop, dembow, clave, tumbao, footwork's triplet kicks ...): the variety
+# pass never mixes the generic extra drum patterns into them - a reggae song with a kick on 1 and 3 isn't reggae
+OWN_GROOVE = {'reggae', 'dub', 'ska', 'reggaeton', 'dancehall', 'moombahton', 'soca', 'groovy_soca', 'salsa', 'cumbia',
+              'bossa_nova', 'samba', 'bachata', 'merengue', 'baile_funk', 'funk_150', 'brazilian_phonk', 'afrobeat', 'afrobeats',
+              'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke',
+              'baltimore_club', 'jersey_club', 'uk_drill', 'ukgarage', 'speed_garage', 'freestyle', 'electro', 'nola_brass',
+              'tango', 'celtic_jig', 'swing_tomtom', 'western_swing', 'country', 'outlaw_country', 'surf_rock'}
+
+
 def groove_family(st):
     kicks = st['drums'].get(st.get('kick_track', 'kick'), [])
     if any(k == FOURX for k in kicks):
@@ -318,8 +327,9 @@ def apply_variety(st, opts, rnd):
         return random.Random(f'{sd}-variety')
     drums = {k: list(p) for k, p in st['drums'].items()}
     rd = r_for('drums')
+    own = (st.get('name') or opts.style) in OWN_GROOVE
     for name in drums:
-        bank = EXTRA_DRUMS.get(fam, {}).get(name, [])
+        bank = [] if own else EXTRA_DRUMS.get(fam, {}).get(name, [])
         if bank and rd.random() < 0.3 + 0.6 * v:
             drums[name] += rd.sample(bank, min(len(bank), 1 + int(2 * v)))
     st['drums'] = drums

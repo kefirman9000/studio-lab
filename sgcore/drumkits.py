@@ -398,3 +398,12 @@ GENRE_KIT.update({'jump_up': 'dnb_amen', 'dark_synthwave': 'linn'})
 # 1.51: big band and bebop are played with sticks on the ride (brushes stay for ballads, bossa and small-combo jazz);
 # metal gets a tight modern kit instead of the big rock room
 GENRE_KIT.update({'swing': 'studio', 'bebop': 'studio', 'metal': 'unruly'})
+
+# 1.51 new genres: the kit each plays by default (trip-hop on the big-room Levee break, big beat on a heavy break)
+GENRE_KIT.update({'french_house': '909', 'trip_hop': 'levee', 'big_beat': 'skull_snaps', 'footwork': '808', 'juke': '808',
+                  'footwork_soulful': '808', 'footwork_dark': '808', 'hard_techno': 'techno', 'uk_hardcore': 'hard',
+                  'dub_techno': 'soft', 'electro_swing': 'punchy', 'darkwave_ebm': 'linn', 'baltimore_club': '808',
+                  'hi_nrg': 'linn', 'freestyle': '808', 'witch_house': '808', 'latin_trap': '808', 'brazilian_bass': '909',
+                  'afrobeat': 'seventies', 'dub': 'seventies', 'nola_brass': 'studio', 'shoegaze': 'rusty', 'post_rock': 'studio',
+                  'pop_punk': 'rock', 'doom_metal': 'rock', 'anime_opening': 'unruly', 'musical_theatre': 'studio'})
+CHOP.update({'big_beat': 0.2, 'trip_hop': 0.0})

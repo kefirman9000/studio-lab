@@ -313,6 +313,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
         <button class="btn s" id="varBtn" title="Four previews with different seeds">⧉ 4 Variations</button>
         <button class="btn g" id="fullBtn">⬇ Full song</button>
         <button class="btn s" id="surpriseBtn" title="Random style, fusion and mood">✦ Surprise me</button>
+        <button class="btn s" id="daisyBtn" title="Daisy Bell (1892) sung by a creepy early-computer voice - it winds down at the end">🤖 Daisy Bell</button>
       </div>
       <div class="outs" id="outs"></div>
       <div class="prog" id="prog"><i></i></div>
@@ -720,7 +721,7 @@ async function run(preview, count, opts, section, onResult, varyPart, extra){
   };
   poll();
 }
-function setBusy(b){['#prevBtn','#varBtn','#fullBtn','#surpriseBtn'].forEach(s=>$(s).disabled=b);$('#prog').style.display=b?'block':'none';if(!b)$('#prog>i').style.width='0'}
+function setBusy(b){['#prevBtn','#varBtn','#fullBtn','#surpriseBtn','#daisyBtn'].forEach(s=>$(s).disabled=b);$('#prog').style.display=b?'block':'none';if(!b)$('#prog>i').style.width='0'}
 
 function addResult(r, target){
   $('#emptyS')&&($('#emptyS').style.display='none');
@@ -1467,6 +1468,21 @@ async function init(){
   $('#folderBtn').onclick=()=>api('/api/open',{});
   $('#presetBtn').onclick=presetsModal;
   $('#hubBtn').onclick=()=>openHub();
+  $('#daisyBtn').onclick=async()=>{ if(busy) return; busy=true; setBusy(true); $('#daisyBtn').disabled=true; $('#status').textContent='The computer is warming up its voice…';
+    const {job}=await api('/api/special/daisy',{});
+    pollJob(job, j=>{ busy=false; setBusy(false); $('#daisyBtn').disabled=false; const r=j.results[0];
+      if(j.status!=='done'||!r){ $('#status').textContent='Error: '+(j.error||'could not render'); return; }
+      $('#status').textContent='Daisy Bell is ready - files are in your output folder.';
+      $('#emptyS')&&($('#emptyS').style.display='none');
+      const el=document.createElement('div'); el.className='res new';
+      el.innerHTML=`<div class="tt">🤖 “Daisy Bell (A Bicycle Built for Two)” · computer voice</div>
+        <div class="mt">Harry Dacre, 1892 (public domain) · C major · 3/4 · ${r.bpm} BPM · ${esc(r.duration)}</div>
+        <audio controls src="${r.urls.mp3||r.urls.wav}" style="width:100%;margin-top:8px"></audio>
+        <div class="hint" style="margin-top:6px">${esc(r.lyrics)}</div>
+        <div class="files">${Object.entries(r.urls).map(([k,u])=>`<a href="${u}" download>${k.toUpperCase()}</a>`).join('')}<a href="#" class="dOpen">📁 Open folder</a></div>`;
+      el.querySelector('.dOpen').onclick=e=>{ e.preventDefault(); api('/api/open',{path:r.folder}); };
+      $('#session').insertBefore(el,$('#session').querySelector('.res')); el.querySelector('audio').play().catch(()=>{}); },
+      l=>{ const last=(l||'').split('\n').filter(Boolean).pop(); if(last) $('#status').textContent=last; }); };
   $('#diagBtn').onclick=()=>diagModal();
   (function watchPlugins(){ let seen=false;
     const t=async()=>{ let st; try{ st=await api('/api/vststatus',{}); }catch(e){ return; }
