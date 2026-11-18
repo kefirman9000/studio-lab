@@ -224,6 +224,11 @@ def add_build_drums(evs, st, tracks, snares, kick, b, nbars, beat0, rnd):
 
 
 def ensure_toms(st, tracks):
+    if st.get('hand_drums'):                           # tabla / dholak / darbuka / cajon genres: fills on their own drums
+        hi = next((n for n in st.get('snare_tracks', []) if n in tracks), None)
+        lo = st.get('kick_track', 'kick')
+        if hi and lo in tracks:
+            return [hi, hi, lo]
     names = []
     for name, pitch, pan in (('tom_hi', 190, 0.25), ('tom_mid', 140, 0.0), ('tom_lo', 100, -0.25)):
         if name not in tracks:

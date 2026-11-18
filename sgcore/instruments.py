@@ -2136,3 +2136,207 @@ def d_bongo_lo(p):
 
 
 DRUMS.update({'bongo': d_bongo, 'bongo_lo': d_bongo_lo})
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+#  v1.53: world instruments - saz, oud, veena, khaen, phin, tres, gamelan; mridangam, darbuka, cajon, gong
+# ---------------------------------------------------------------------------------------------------------------------
+def _pluck(f, n, bright=0.9, decay=1.6, B=0.0002, partials=18, tdec=0.3):
+    """A plucked string: stiff-string partials, each dying faster the higher it is."""
+    t = np.arange(n) / SR
+    y = np.zeros(n)
+    for k in range(1, partials + 1):
+        fk = f * k * np.sqrt(1 + B * k * k)
+        if fk > 16000:
+            break
+        y += (bright ** k) / k ** 0.5 * np.sin(2 * np.pi * fk * t + k) * np.exp(-t * (decay + tdec * k))
+    return y
+
+
+def i_saz(m, dur, p, glide=None, mod=None):
+    """Baglama / saz (Turkish long-necked lute): thin steel strings in doubled courses, plucked hard with a plectrum -
+    a bright, metallic, slightly buzzy twang that rings, with the two strings of a course a few cents apart."""
+    f = float(mtof(m))
+    n = int((min(dur, 2.5) + 0.6) * SR)
+    t = np.arange(n) / SR
+    y = _pluck(f, n, 0.9, 2.2, 0.0003) + 0.8 * _pluck(f * 2 ** (4 / 1200), n, 0.9, 2.4, 0.0003)
+    y = _jawari(y * 0.5, p.get('buzz', 0.5))
+    y += 0.3 * hp(noise(n), 3000) * np.exp(-t * 300)
+    y = eq(hp(y, 160), 'peak', 3000, 1.2, 3.0)
+    g = int(dur * SR) + int(0.15 * SR)
+    if g < n:
+        y[g:] *= np.exp(-np.arange(n - g) / (0.08 * SR))
+    return np.vstack([y, np.roll(y, 120)]) * 0.11
+
+
+def i_oud(m, dur, p, glide=None, mod=None):
+    """Oud: the fretless, round-backed Arabic lute - gut / nylon courses plucked with a long risha: warm, dark and
+    woody, a soft thump and a short, singing decay."""
+    f = float(mtof(m))
+    n = int((min(dur, 2.0) + 0.4) * SR)
+    t = np.arange(n) / SR
+    if glide is not None:
+        f0 = float(mtof(glide))
+        fr = f + (f0 - f) * np.exp(-t * 12)
+        ph = 2 * np.pi * np.cumsum(fr) / SR
+        y = sum((0.72 ** k) / k ** 0.3 * np.sin(k * ph) * np.exp(-t * (2.5 + 0.6 * k)) for k in range(1, 12))
+    else:
+        y = _pluck(f, n, 0.72, 2.5, 0.0001, 12, 0.6) + 0.7 * _pluck(f * 2 ** (3 / 1200), n, 0.72, 2.6, 0.0001, 12, 0.6)
+    y += 0.4 * lp(noise(n), 900) * np.exp(-t * 60)                    # the body thump
+    y = eq(lp(hp(y, 90), 5000), 'peak', 250, 1.0, 3.0)
+    g = int(dur * SR) + int(0.1 * SR)
+    if g < n:
+        y[g:] *= np.exp(-np.arange(n - g) / (0.07 * SR))
+    return np.vstack([y, np.roll(y, 90)]) * 0.13
+
+
+def i_veena(m, dur, p, glide=None, mod=None):
+    """Saraswati veena (Carnatic): a deep, rich plucked string over a big wooden resonator - like a sitar without the
+    sympathetic cloud, rounder, with gamaka (the note is pressed and swung around its pitch)."""
+    y = i_sitar(m - 12 if m > 72 else m, dur, dict(p, buzz=p.get('buzz', 0.55)), glide, mod)
+    y = np.vstack([eq(lp(c, 4500), 'peak', 300, 1.0, 3.0) for c in y]) * 1.1
+    return y
+
+
+def i_khaen(m, dur, p, glide=None, mod=None):
+    """Khaen (Lao / Isan mouth organ): bamboo pipes with free reeds, played as chords with a drone - a breathy,
+    soft-reedy organ with a pulsing breath."""
+    y = i_harmonium(m, dur, dict(p, beat=p.get('beat', 2.0), bellows=0.12))
+    n = y.shape[1]
+    t = np.arange(n) / SR
+    puff = 1.0 + 0.18 * np.sin(2 * np.pi * p.get('pulse', 3.2) * t)      # rhythmic breathing
+    return np.vstack([lp(c, 3500) * puff for c in y]) * 0.95
+
+
+def i_phin(m, dur, p, glide=None, mod=None):
+    """Phin (Thai / Isan electric lute): two or three metal strings, a drone string ringing along, bright and twangy -
+    the sound of molam and Thai funk."""
+    f = float(mtof(m))
+    n = int((min(dur, 1.6) + 0.5) * SR)
+    y = _pluck(f, n, 0.88, 3.0, 0.0002) + 0.35 * _pluck(f * 0.5, n, 0.8, 2.0, 0.0002)   # the drone string
+    y = np.tanh(y * 1.6) * 0.7                                        # a little pickup / amp crunch
+    y = eq(hp(y, 180), 'peak', 2400, 1.0, 4.0)
+    g = int(dur * SR) + int(0.1 * SR)
+    if g < n:
+        y[g:] *= np.exp(-np.arange(n - g) / (0.08 * SR))
+    return np.vstack([np.roll(y, 60), y]) * 0.12
+
+
+def i_tres(m, dur, p, glide=None, mod=None):
+    """Cuban tres: three doubled steel courses (the middle one in octaves) - a bright, jangly, slightly out-of-unison
+    pluck that drives the son montuno."""
+    f = float(mtof(m))
+    n = int((min(dur, 1.5) + 0.4) * SR)
+    y = _pluck(f, n, 0.86, 3.2, 0.0002) + 0.75 * _pluck(f * 2 ** (6 / 1200), n, 0.86, 3.3, 0.0002) \
+        + 0.4 * _pluck(f * 2, n, 0.8, 3.8, 0.0002)
+    y = eq(hp(y, 140), 'peak', 2000, 1.0, 2.5)
+    g = int(dur * SR) + int(0.08 * SR)
+    if g < n:
+        y[g:] *= np.exp(-np.arange(n - g) / (0.06 * SR))
+    return np.vstack([y, np.roll(y, 100)]) * 0.09
+
+
+def i_gamelan(m, dur, p, glide=None, mod=None):
+    """Gamelan metallophone (saron / gender): a bronze bar struck with a mallet - inharmonic bell partials and the
+    'ombak', the slow beating between two instruments tuned a few hertz apart; it rings on until damped."""
+    f = float(mtof(m))
+    ring = p.get('ring', 2.2)
+    n = int((max(dur, 0.3) + ring) * SR)
+    t = np.arange(n) / SR
+    y = np.zeros(n)
+    for df in (0.0, p.get('ombak', 6.0)):
+        for r, a, d in ((1.0, 1.0, 0.9), (2.76, 0.45, 2.2), (5.4, 0.2, 4.5), (8.9, 0.08, 8.0)):
+            y += a * np.sin(2 * np.pi * (f * r + df) * t) * np.exp(-t * d)
+    y += 0.3 * bp(noise(n), 1000, 5000) * np.exp(-t * 90)
+    y = hp(y, 120) * 0.1
+    g = int(dur * SR) + int(0.25 * SR)
+    if p.get('damp') and g < n:
+        y[g:] *= np.exp(-np.arange(n - g) / (0.05 * SR))
+    return np.vstack([y, np.roll(y, 160)])
+
+
+def d_gong(p):
+    """Gong ageng: the great hanging gong - a deep, slowly swelling hum with a wobbling, shimmering bloom."""
+    n = int(4.0 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 58)
+    y = sum(a * np.sin(2 * np.pi * f0 * r * t * (1 - 0.004 * np.exp(-t * 2))) * np.exp(-t * d)
+            for r, a, d in ((1.0, 1.0, 0.6), (2.02, 0.5, 0.9), (2.98, 0.3, 1.2), (4.1, 0.15, 1.8)))
+    y *= (1 - np.exp(-t * 18)) * (1 + 0.25 * np.sin(2 * np.pi * 3.2 * t))
+    return fade_out(y * 0.9, 0.5)
+
+
+def d_kempul(p):
+    """Kempul / kenong: the smaller hanging and kettle gongs that mark the cycle - a pitched, ringing 'nong'."""
+    return d_gong(dict(p, pitch=p.get('pitch', 150)))[: int(2.0 * SR)] * fade_out(np.ones(int(2.0 * SR)), 0.3)
+
+
+def d_mridangam(p):
+    """Mridangam right head ('ta / nam / din'): a strongly pitched, ringing treble with clear harmonic overtones."""
+    n = int(0.6 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 330)
+    x = sum(a * np.sin(2 * np.pi * f0 * r * t) * np.exp(-t * d) for r, a, d in ((1, 1.0, 7), (2, 0.7, 9), (3, 0.45, 12), (4, 0.3, 16)))
+    x += 0.5 * bp(noise(n), 1800, 7000) * np.exp(-t * 200)
+    return fade_out(x, 0.05)
+
+
+def d_mridangam_lo(p):
+    """Mridangam left head ('tham'): the bass side - a dull, deep thump with a short pitch rise."""
+    n = int(0.5 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 95)
+    f = f0 * (1 + 0.25 * (1 - np.exp(-t * 10)))
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 8) + 0.3 * bp(noise(n), 150, 1200) * np.exp(-t * 70)
+    return fade_out(y, 0.05)
+
+
+def d_darbuka(p):
+    """Darbuka 'doum': the goblet drum struck in the centre - a deep, round boom."""
+    n = int(0.55 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 90)
+    f = f0 * (1 + 0.3 * np.exp(-t * 25))
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 7) + 0.2 * bp(noise(n), 200, 2000) * np.exp(-t * 90)
+    return fade_out(y, 0.05)
+
+
+def d_darbuka_tek(p):
+    """Darbuka 'tek / ka': the rim struck with a finger - a sharp, bright, ringing crack."""
+    n = int(0.25 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 700)
+    x = sum(a * np.sin(2 * np.pi * f0 * r * t) * np.exp(-t * d) for r, a, d in ((1, 1.0, 30), (1.7, 0.6, 40), (2.6, 0.4, 50)))
+    x += 0.8 * bp(noise(n), 2500, 9000) * np.exp(-t * 160)
+    return fade_out(x * 0.8, 0.03)
+
+
+def d_cajon(p):
+    """Cajon bass: the box's front struck in the middle - a woody, boomy low thud."""
+    n = int(0.4 * SR)
+    t = np.arange(n) / SR
+    f = p.get('pitch', 85) * (1 + 0.5 * np.exp(-t * 30))
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 11) + 0.35 * bp(noise(n), 100, 900) * np.exp(-t * 50)
+    return fade_out(y, 0.04)
+
+
+def d_cajon_slap(p):
+    """Cajon slap: struck near the top edge - the snare wires behind it buzz."""
+    n = int(0.3 * SR)
+    t = np.arange(n) / SR
+    y = 0.6 * np.sin(2 * np.pi * 240 * t) * np.exp(-t * 30) + 0.9 * bp(noise(n), 1500, 8000) * np.exp(-t * 22)
+    return fade_out(y * 0.8, 0.03)
+
+
+INSTRUMENTS.update({'saz': i_saz, 'oud': i_oud, 'veena': i_veena, 'khaen': i_khaen, 'phin': i_phin, 'tres': i_tres,
+                    'gamelan': i_gamelan})
+DRUMS.update({'gong': d_gong, 'kempul': d_kempul, 'mridangam': d_mridangam, 'mridangam_lo': d_mridangam_lo,
+              'darbuka': d_darbuka, 'darbuka_tek': d_darbuka_tek, 'cajon': d_cajon, 'cajon_slap': d_cajon_slap})
+INSTRUMENT_INFO.update({'saz': 'Saz / baglama (Turkish lute)', 'oud': 'Oud', 'veena': 'Veena (Carnatic)',
+                        'khaen': 'Khaen (mouth organ)', 'phin': 'Phin (Thai lute)', 'tres': 'Tres (Cuban guitar)',
+                        'gamelan': 'Gamelan metallophone'})
+ROLE_CHOICES['lead'] += ['saz', 'oud', 'veena', 'phin', 'gamelan']
+ROLE_CHOICES['arp'] += ['saz', 'oud', 'phin', 'tres', 'gamelan']
+ROLE_CHOICES['chords'] += ['tres', 'khaen']
+ROLE_CHOICES['pad'] += ['khaen']
+GM_PROGRAM.update({'saz': 107, 'oud': 24, 'veena': 104, 'khaen': 109, 'phin': 105, 'tres': 25, 'gamelan': 13})

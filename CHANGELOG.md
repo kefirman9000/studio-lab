@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.53.0
+- **19 new genres**:
+  - *South Asian*: **Qawwali** (Sufi: lead line answered by the chorus, harmonium, tabla, dholak, hand claps, speeding up towards ecstasy), **Bollywood / filmi** (60s-70s: swinging dholak and bongos, strings, sitar and bansuri), **Ghazal** (slow and poetic: sitar, harmonium, gentle tabla, santoor), and **Carnatic kriti** in Hindu devotional (veena alapana, then pallavi / anupallavi / charanam with mridangam, kanjira and ghatam).
+  - *Psych & world rock*: **Anatolian psych rock** (saz in the Hicaz mode, fuzz guitar, combo organ, darbuka), **Thai funk / molam** (phin and khaen over a funk beat with ching), **Chicha** (Peruvian psychedelic cumbia), **Desert blues** (Tuareg interlocking guitars, claps, hand drums).
+  - *Jazz*: **Ethio-jazz** (a hypnotic minor groove, vibraphone, horn riffs, organ), **Exotica / tiki lounge** (vibes, congas and bongos, strings, flute bird calls).
+  - *Rock*: **Garage rock** (60s fuzz and Farfisa-style organ, tambourine), **Rockabilly** (slap bass, twang with slapback, 12-bar shuffle), **Post-punk** (melodic chorus bass, trebly angular guitars), and **Krautrock / motorik** in Electronic (the endless straight beat, pulsing bass, layers fading in).
+  - *Latin & world*: **Flamenco rumba** (rasgueado guitar, falsetas, palmas, cajon), **Son cubano** (tres montuno, son clave, bongos, maracas, trumpet), **Klezmer** (a slow free doina on clarinet, then the band jumps into a fast freylekhs), **Gamelan** (metallophones in the pelog scale, gongs closing each cycle, kendang), **Rai** (darbuka maqsum, oud, accordion, synth lead in Hijaz).
+- **New instruments**: saz / baglama, oud, veena, khaen, phin, tres, gamelan metallophone; mridangam, darbuka (doum and tek), cajon, gong and kempul. New scales: pelog and Ukrainian dorian.
+- **Hand-drum genres never get rock toms**: every fill and build-up in tabla / dholak / darbuka / cajon / bongo genres is played on the genre's own drums.
+- **12 new samples in the README** (Hear it): a Hindu bhajan groove, the monster TV theme, outlaw country, stoner raga, Anatolian psych, ethio-jazz, qawwali, flamenco, rockabilly, gamelan, raw juke and garage rock.
+- Tests no longer leave their rendered previews behind (a full test run used to leave ~1.5 GB in the temp folder).
+
 ## 1.52.1
 - **Four more Hindu devotional genres, led by drums and sitar** - each opens either on the sitar alone over the tanpura drone or on the drums alone:
   - *Bhajan - sitar & tabla*: the sitar unfolds the raga alone, the tabla plays the cycle by itself for a moment, then the song begins with the sitar on the melody.

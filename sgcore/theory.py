@@ -9,6 +9,8 @@ SCALES = {
     'phrygian_dominant': [0, 1, 4, 5, 7, 8, 10],   # 'Spanish' / Hijaz: dramatic, exotic - phonk, dark electronic, metal
     'melodic_minor': [0, 2, 3, 5, 7, 9, 11],       # jazz minor: minor with a bright top - jazz, sophisticated electronic
     'bhairav': [0, 1, 4, 5, 7, 8, 11],             # raga Bhairav (morning devotion): komal Re and Dha, shuddha Ga and Ni
+    'pelog': [0, 1, 3, 6, 7, 8, 10],               # Javanese pelog (nearest 12-tone fit): gamelan
+    'ukrainian_dorian': [0, 2, 3, 6, 7, 9, 10],    # klezmer 'mi sheberakh': minor with a raised 4th
 }
 
 

@@ -103,7 +103,7 @@ class Options:
 
 MELODY_STYLES = ['diatonic', 'pentatonic', 'blues', 'bebop']
 # how each genre's lead player phrases, and how its keyboard player voices chords (styles not listed: diatonic / style's own)
-GENRE_MELODY = {'riddim': 'diatonic', 'chillstep': 'diatonic', 'jazz_rap': 'blues', 'cloud_rap': 'pentatonic', 'slow_jam': 'pentatonic', 'smooth_jazz': 'pentatonic', 'smooth_funk': 'blues', 'quiet_storm': 'pentatonic', 'modern_country': 'pentatonic', 'country_waltz': 'pentatonic', 'outlaw_country': 'pentatonic', 'western_swing': 'pentatonic', 'g_funk': 'pentatonic', 'neo_soul': 'pentatonic', 'new_jack_swing': 'pentatonic', 'alt_rnb': 'pentatonic', 'rage': 'diatonic', 'plugg': 'pentatonic', 'hauntology_sunlit': 'diatonic', 'hauntology_dark': 'diatonic', 'epic_orchestral': 'diatonic', 'epic_battle': 'diatonic', 'epic_choir': 'diatonic', 'heroic_anthem': 'diatonic', 'symphonic_finale': 'diatonic', 'bebop': 'bebop', 'soul_jazz': 'blues', 'modal_jazz': 'diatonic', 'fusion': 'pentatonic', 'future_funk': 'pentatonic', 'italo_disco': 'diatonic', 'classical_period': 'diatonic', 'romantic': 'diatonic', 'impressionism': 'pentatonic', 'minimalism': 'diatonic', 'brazilian_phonk': 'blues', 'deep_dubstep': 'diatonic', 'deep_dubstep_minimal': 'diatonic', 'progressive_trance': 'diatonic', 'organic_house': 'diatonic', 'disco_funk': 'pentatonic', 'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
+GENRE_MELODY = {'ethio_jazz': 'pentatonic', 'thai_funk': 'pentatonic', 'desert_blues': 'pentatonic', 'chicha': 'diatonic', 'garage_rock': 'blues', 'rockabilly': 'blues', 'exotica': 'diatonic', 'riddim': 'diatonic', 'chillstep': 'diatonic', 'jazz_rap': 'blues', 'cloud_rap': 'pentatonic', 'slow_jam': 'pentatonic', 'smooth_jazz': 'pentatonic', 'smooth_funk': 'blues', 'quiet_storm': 'pentatonic', 'modern_country': 'pentatonic', 'country_waltz': 'pentatonic', 'outlaw_country': 'pentatonic', 'western_swing': 'pentatonic', 'g_funk': 'pentatonic', 'neo_soul': 'pentatonic', 'new_jack_swing': 'pentatonic', 'alt_rnb': 'pentatonic', 'rage': 'diatonic', 'plugg': 'pentatonic', 'hauntology_sunlit': 'diatonic', 'hauntology_dark': 'diatonic', 'epic_orchestral': 'diatonic', 'epic_battle': 'diatonic', 'epic_choir': 'diatonic', 'heroic_anthem': 'diatonic', 'symphonic_finale': 'diatonic', 'bebop': 'bebop', 'soul_jazz': 'blues', 'modal_jazz': 'diatonic', 'fusion': 'pentatonic', 'future_funk': 'pentatonic', 'italo_disco': 'diatonic', 'classical_period': 'diatonic', 'romantic': 'diatonic', 'impressionism': 'pentatonic', 'minimalism': 'diatonic', 'brazilian_phonk': 'blues', 'deep_dubstep': 'diatonic', 'deep_dubstep_minimal': 'diatonic', 'progressive_trance': 'diatonic', 'organic_house': 'diatonic', 'disco_funk': 'pentatonic', 'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
                 'folk': 'pentatonic', 'afrobeats': 'pentatonic', 'amapiano': 'pentatonic', 'reggae': 'pentatonic',
                 'lofi': 'pentatonic', 'pop': 'pentatonic', 'disco': 'pentatonic', 'jazz': 'bebop', 'bossa_nova': 'bebop',
                 'western': 'pentatonic', 'chamber_pop': 'pentatonic', 'fantasy_rpg': 'pentatonic',
@@ -286,7 +286,7 @@ EXTRA_CHORD_RH = {
 # pass never mixes the generic extra drum patterns into them - a reggae song with a kick on 1 and 3 isn't reggae
 OWN_GROOVE = {'reggae', 'dub', 'ska', 'reggaeton', 'dancehall', 'moombahton', 'soca', 'groovy_soca', 'salsa', 'cumbia',
               'bossa_nova', 'samba', 'bachata', 'merengue', 'baile_funk', 'funk_150', 'brazilian_phonk', 'afrobeat', 'afrobeats',
-              'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'bhajan', 'kirtan', 'aarti', 'santoor_raga', 'sitar_bhajan', 'tabla_bhajan', 'drum_kirtan', 'jugalbandi', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house',
+              'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'bhajan', 'kirtan', 'aarti', 'santoor_raga', 'sitar_bhajan', 'tabla_bhajan', 'drum_kirtan', 'jugalbandi', 'qawwali', 'carnatic_kriti', 'ghazal', 'bollywood', 'klezmer', 'gamelan', 'rai', 'son_cubano', 'flamenco_rumba', 'chicha', 'krautrock', 'rockabilly', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house',
               'baltimore_club', 'jersey_club', 'uk_drill', 'ukgarage', 'speed_garage', 'freestyle', 'electro', 'nola_brass',
               'tango', 'celtic_jig', 'swing_tomtom', 'western_swing', 'country', 'outlaw_country', 'surf_rock'}
 
@@ -1651,7 +1651,13 @@ def compose(opts):
                 total_bars=bar0, prog_main=prog_main, prog_alt=prog_alt, prog_verse=prog_verse, chord_color=chord_color,
                 modulate=modulate, st=st, opts=opts, user_opts=user_opts, vocal=vocal,
                 energy=energy)
-    if st.get('accel') and bar0 > 0:                     # kirtan: starts slow and speeds up chant by chant (a laya build)
+    if st.get('sec_tempo') and bar0 > 0:                 # tempo steps by section (klezmer: a slow, free doina, then the dance)
+        tm = []
+        for sec in sections:
+            f = st['sec_tempo'].get(sec['name'], 1.0)
+            tm += [(sec['bar'] * 4.0, bpm * f), ((sec['bar'] + sec['bars']) * 4.0 - 0.01, bpm * f)]
+        song['tempo_map'] = tm
+    elif st.get('accel') and bar0 > 0:                     # kirtan: starts slow and speeds up chant by chant (a laya build)
         f0, f1 = st['accel']
         tm = [(sec['bar'] * 4.0, bpm * (f0 + (f1 - f0) * (sec['bar'] / bar0) ** 1.4)) for sec in sections]
         tm.append((bar0 * 4.0, bpm * f1))

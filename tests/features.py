@@ -369,7 +369,7 @@ def test_sound_choices():
             assert pool[0] == inst, (k, r)
             if len(pool) < 3 and inst not in ('808', 'logdrum', 'piano', 'chipbass', 'chip', 'tanpura', 'koto', 'sinebass', 'upright',
                                               'cello', 'contrabass', 'organ', 'ebass', 'mandolin', 'guitar', 'choir',
-                                              'sitar', 'harmonium', 'santoor'):
+                                              'sitar', 'harmonium', 'santoor', 'veena', 'gamelan', 'saz', 'phin', 'khaen', 'tres', 'oud'):
                 thin.append((k, r, pool))
     assert len(thin) <= 6, thin
     print('ok  every genre part has idiomatic alternative sounds (re-roll / suggestions)')
@@ -514,6 +514,39 @@ def test_hindu_devotional():
             assert tr['lead']['inst'] == 'sitar' and not any(t['inst'] in ('violin', 'violins') for t in s['st']['tracks'])
             assert not any(e.track.startswith('tom') for e in s['events'])
     print('ok  Hindu devotional: raga phrasing + meend, hand drums & fills, no EDM fx, kirtan accelerando, call & response')
+
+
+def test_world_and_rock_genres_153():
+    """v1.53: 19 more genres - each with its defining sounds, its own drums, and the right feel."""
+    from sgcore.compose import Options, compose
+    want = {'qawwali': {'harmonium', 'choir'}, 'bollywood': {'dholak'}, 'carnatic_kriti': {'tanpura'}, 'ghazal': {'sitar', 'harmonium'},
+            'anatolian_psych': {'guitar'}, 'ethio_jazz': set(), 'thai_funk': set(), 'chicha': set(),
+            'desert_blues': set(), 'exotica': set(), 'garage_rock': {'guitar'}, 'rockabilly': set(),
+            'krautrock': set(), 'post_punk': set(), 'flamenco_rumba': set(), 'klezmer': set(), 'gamelan': {'gamelan'},
+            'rai': set(), 'son_cubano': set()}  # (defining parts only - the rest may roll alternatives)
+    drums = {'qawwali': {'tabla', 'claps'}, 'carnatic_kriti': {'mridangam', 'mridangam_lo'}, 'anatolian_psych': {'darbuka'},
+             'thai_funk': {'ching'}, 'chicha': {'timbale', 'guiro'}, 'flamenco_rumba': {'cajon', 'palmas'},
+             'gamelan': {'gong', 'kendang'}, 'rai': {'darbuka', 'darbuka_tek'}, 'son_cubano': {'clave', 'bongo'},
+             'garage_rock': {'tamb'}, 'exotica': {'conga', 'bongo'}}
+    hand = {'qawwali', 'bollywood', 'carnatic_kriti', 'ghazal', 'flamenco_rumba', 'gamelan', 'rai', 'son_cubano'}
+    for g, insts in want.items():
+        for sd in (1, 2):
+            s = compose(Options(style=g, seed=sd))
+            ins = {t['inst'] for t in s['st']['tracks']}
+            used = {e.track for e in s['events']}
+            assert insts <= ins, (g, ins)
+            assert drums.get(g, set()) <= used, (g, used)
+            assert any(e.track == 'lead' for e in s['events']), g
+            if g in hand:
+                assert not any(x.startswith('tom') for x in used), g
+    assert compose(Options(style='qawwali', seed=1))['tempo_map'][-1][1] > compose(Options(style='qawwali', seed=1))['bpm'] * 1.3
+    k = compose(Options(style='klezmer', seed=2))
+    assert k['tempo_map'][0][1] == k['bpm'] * 0.5 and k['tempo_map'][-1][1] == k['bpm']          # slow doina, then the dance
+    gm = compose(Options(style='gamelan', seed=1))
+    assert gm['key'].scale_name == 'pelog'
+    sl = [t['inst'] for s_ in (1, 2, 3) for t in compose(Options(style='ghazal', seed=s_))['st']['tracks'] if t['name'] == 'lead']
+    assert set(sl) == {'sitar'}
+    print('ok  19 world / rock genres: defining sounds, own drums, qawwali speeds up, klezmer doina -> dance, gamelan pelog')
 
 
 def test_v144_drums_layers_new_genres():
@@ -764,6 +797,7 @@ def main():
     test_rotation_keeps_genre_sound()
     test_surf_and_monster_theme()
     test_hindu_devotional()
+    test_world_and_rock_genres_153()
     test_v144_drums_layers_new_genres()
     test_bass_warp_trap()
     test_christmas_orchestral()

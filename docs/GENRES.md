@@ -1,8 +1,8 @@
-# Studio Lab genres (269)
+# Studio Lab genres (288)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (140)
+## Electronic (141)
 
 ### House & Disco (26)
 
@@ -177,7 +177,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Juke / ghetto house - raw (130) | `juke_raw` | 128-134 | Juke / ghetto house - raw (130): stripped to the drums - a syncopated kick (1, the "a" of 2, the "e" of 4), claps and hand percussion locked in the same off-kilter pattern every bar, dense 16th hats, a huge sub under the kick and one repeated vocal chop. A long drums-only intro, breakdowns that drop to almost nothing, then the full groove slams back - no build-ups, all repetition |
 | Juke house - bouncy (126) | `juke_house` | 124-128 | Juke house (126): bouncy and hypnotic - a 3-3-2 tresillo kick, hi-hats on the off-grid spots against it, claps every five 16ths for a rolling cross-rhythm, a busy 16th percussion loop, a fat sub following the kick and one bright, catchy major-key synth riff on top. Plateaus and breakdowns, no snare ramps |
 
-### Retro & Video Game (5)
+### Retro & Video Game (6)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -185,6 +185,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Chiptune | `chiptune` | 140-160 | 8-bit chiptune: pulse-wave leads, triangle bass, noise drums, lightning arpeggios |
 | Dark Synthwave | `dark_synthwave` | 85-105 | Dark synthwave (neon-noir): slower and minor - a heavy pulsing analog bass, cold supersaw chords, string-machine fog, a lonely saw lead and a stark gated drum machine; night-drive rather than sunset |
 | Darkwave / EBM | `darkwave_ebm` | 112-130 | Darkwave / EBM: cold 80s machines - a driving 16th-note sequenced bass, stomping kick, gated snare, icy polysynth chords and choir pads, a stern detuned lead - dark, danceable and mechanical |
+| Krautrock / motorik | `krautrock` | 120-140 | Krautrock / motorik (70s Germany): the endless, straight motorik beat that never changes, a bass pulsing eighth notes on one chord, drones and sequenced synths fading in layer by layer, a distant guitar - hypnotic, forward-moving repetition |
 | Synthwave | `synthwave` | 90-112 | 80s synthwave/retrowave: gated-reverb snares, pulsing octave bass, supersaws, saw lead |
 
 ### Hauntology (7)
@@ -199,9 +200,9 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hauntology II (sunlit tape) | `hauntology_sunlit` | 82-96 | Hauntology II - sunlit tape: warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
 | Hauntology III (dark film haze) | `hauntology_dark` | 64-80 | Hauntology III - dark film haze: slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
 
-## Classic (100)
+## Classic (118)
 
-### Rock & Metal (22)
+### Rock & Metal (25)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -210,6 +211,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | 90s alt rock | `alt_rock_90s` | 104-132 | 90s alternative rock: jangly clean arpeggios in the verses, crunchy distorted power chords that explode in the choruses, an eighth-note pick bass, a big dry room kit - catchy, major-key and a little melancholy, mastered with 90s dynamics |
 | Boogie blues-rock (slide) | `boogie_blues_rock` | 95-125 | Boogie blues-rock (bar-band slide boogie): a heavy, swaggering shuffle around 95-125 BPM in E, G, A or D - the bass and a raunchy rhythm guitar locked on the boogie riff (root, third, fifth, sixth, flat seventh), a fat backbeat, a distorted slide guitar answering every line and taking a solo chorus, a honking tenor sax for another; 12-bar choruses at full tilt, dry and mid-heavy, ending on a hit |
 | Doom / stoner metal | `doom_metal` | 55-80 | Doom / stoner metal: crushingly slow and heavy - huge, fuzzed-out down-tuned riffs, a lumbering half-time beat with massive crashes, a bass locked to the guitar and a wailing, bluesy lead |
+| Garage rock (60s, fuzz & organ) | `garage_rock` | 128-160 | Garage rock (60s): raw, loud and simple - fuzz guitars bashing three chords, a cheap combo organ riffing, a driving bass, tambourine on every beat and a slightly sloppy, pounding beat |
 | Indie Rock | `indie_rock` | 108-140 | Indie rock: jangly clean guitars in 8ths, melodic bass, straight-ahead drums, a hooky guitar lead |
 | Jam Band | `jam_band` | 100-132 | Jam band / psychedelic Americana: noodling clean lead guitar, melodic wandering bass, organ, loose two-drummer groove, long improvised sections |
 | Jam-band rock (80s, upbeat) | `jam_rock_80s` | 108-126 | Jam-band rock (80s, upbeat sing-along): a bright, bouncing major-key groove from two drummers, chiming chorused rhythm guitar, a melodic bass that never sits still, 80s digital keys and organ, and a clean lead guitar that noodles around the tune - then stretches out in long solo jams |
@@ -217,9 +219,11 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Metal | `metal` | 140-180 | Metal: palm-muted power chords, double-kick drums, shredding lead guitar |
 | Nu-metal | `nu_metal` | 94-106 | Nu-metal / alt-metal (late 90s - early 2000s): down-tuned, chugging power-chord riffs with lots of rests and syncopation around 95-105, a slapping, clanky bass, a groovy half-hip-hop beat with hard snares, scratchy turntable-ish noises and eerie clean guitar lines in the gaps |
 | Pop-punk / emo | `pop_punk` | 150-190 | Pop-punk / emo: fast and bright - a driving skate beat and off-beat snare, eighth-note power chords and root-note bass, a catchy lead guitar hook, big gang-vocal style choruses and crash-heavy fills |
+| Post-punk | `post_punk` | 132-160 | Post-punk (late 70s / early 80s): a melodic, chorus-drenched bass carrying the tune high on the neck, angular, trebly guitar lines, a cold synth pad and tight, insistent drums - dark, nervy and driving |
 | Post-rock | `post_rock` | 80-120 | Post-rock: long, instrumental slow builds - clean delayed guitars and tremolo-picked melodies over a patient bass and drums that start sparse and swell to a huge, cymbal-washed crescendo; strings and glockenspiel colour |
 | Punk | `punk` | 160-200 | Punk rock: fast down-picked power chords, driving 8th-note bass, pounding drums, shouty guitar hooks |
 | Rock | `rock` | 110-140 | Rock: driving drums, distorted power-chord guitars, solid bass, lead guitar |
+| Rockabilly (slap bass & twang) | `rockabilly` | 156-190 | Rockabilly (50s): a slapped upright bass clicking on every beat, a brushed snare shuffle, a strummed rhythm guitar and a twangy hollow-body lead with slapback echo - fast, swinging 12-bar rock and roll |
 | Shoegaze | `shoegaze` | 100-130 | Shoegaze: a wall of sound - loud, washed-out, heavily distorted and reverbed guitars, a steady straight-8ths beat with a splashy ride, a melodic bass, swirling pads and a soft, buried lead - dreamy and enormous |
 | Spooky 60s surf / TV theme | `spooky_surf` | 144-160 | Spooky 60s surf / TV-theme rock: a fast, driving beat around 150 with a twangy, heavily reverbed electric guitar melody, a walking / chromatic bass line, stabbing brass and a cheesy combo organ - campy, creepy and fun |
 | Spooky surf - monster TV theme | `monster_theme` | 146-158 | Spooky surf - 60s monster-sitcom theme: a driving 150 BPM surf beat under a low, creeping chromatic riff (root, a half step up, back, a half step down) played by the bass and a twangy baritone guitar together, punchy brass stabs, a bright brass-melody bridge in the relative major, a honking sax-section stretch, and a big chromatic stab ending - campy, creepy and catchy |
@@ -279,12 +283,14 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Soul-sample hip-hop | `soul_sample_rap` | 70-90 | Soul-sample hip-hop (mid-2000s): a slow, heavy, swung beat around 70-90 under a looped, sped-up soul sample - warm piano / Rhodes and strings chopped into a 2- or 4-bar loop with a pitched-up vocal-like line, a thick kick, a cracking snare, a deep simple bass - one loop all the way through, verses and hooks set apart by a part or two |
 | West-coast slap rap | `bay_rap` | 104-116 | West-coast slap rap (Bay Area / Sacramento): a bouncy, mid-tempo slap around 104-116 with snappy claps and snaps, a knocking kick, a rubbery, sliding 808 that bounces between two notes, plucky synths and a whistle-like lead - hard, playful and party-ready |
 
-### Jazz (8)
+### Jazz (10)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Bebop | `bebop` | 180-260 | Bebop: fast swing, dense 8th-note lines built from chord tones, tensions and chromatic approach notes over rapid ii-V changes; ride and walking bass drive, piano comps rootless voicings |
 | Cool / Modal Jazz | `modal_jazz` | 110-150 | Cool / modal jazz (late-50s): long stretches on one mode, medium tempo, lots of space, quartal-ish piano voicings, muted trumpet and tenor sax, brushes and ride, walking bass |
+| Ethio-jazz (vibes & horns) | `ethio_jazz` | 88-108 | Ethio-jazz (70s Addis Ababa): a hypnotic minor groove that never lets go - an ostinato bass, congas over the drums, a smoky horn section riffing, an organ comping and the vibraphone singing pentatonic Ethiopian melodies (tizita / ambassel) |
+| Exotica / tiki lounge | `exotica` | 90-118 | Exotica / tiki lounge (50s): a lush, dreamy island fantasy - vibraphone melodies, congas and bongos, a soft brushed ride, an upright bass, rich seventh chords on piano, sweeping strings and flute bird-call trills |
 | Gypsy jazz (manouche) | `gypsy_jazz` | 140-220 | Gypsy jazz / jazz manouche: no drums - an acoustic guitar playing the driving "la pompe" rhythm (a low strum on 1 and 3, a sharp chop on 2 and 4), a walking upright bass, and a lead acoustic guitar and violin trading fast, swinging, arpeggio-filled lines |
 | Jazz | `jazz` | 100-160 | Jazz / swing: walking bass, ride-cymbal swing, piano comping with extended chords |
 | Jazz Fusion | `fusion` | 96-140 | Jazz fusion / jazz-rock: straight 16th-note grooves, electric bass, Rhodes and synth leads, overdriven guitar, extended chords and virtuosic unison lines over a rock / funk rhythm section |
@@ -317,7 +323,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Outlaw Country | `outlaw_country` | 100-140 | Outlaw country: the freight-train boom-chicka-boom - palm-muted guitar on every 8th, slapback twang and a low baritone guitar melody, steady upright bass, brushed snare, harmonica |
 | Spaghetti Western | `western` | 88-120 | Spaghetti western: twangy reverb guitar, lonely trumpet, whistled tune, choir and galloping hooves |
 
-### Latin & Caribbean (13)
+### Latin & Caribbean (15)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -326,6 +332,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Corridos tumbados (3/4) | `corridos_tumbados` | 96-128 | Corridos tumbados: modern Mexican street ballads in a swaying 3/4 - a tuba bassline on the beat, a strummed 12-string guitar, a requinto guitar spinning fast runs between the lines, no drums - laid-back, minor-key and proud |
 | Cumbia | `cumbia` | 84-104 | Cumbia: guira scrape and congas, kick on one and three, offbeat guitar, accordion melodies |
 | Dub | `dub` | 66-84 | Dub reggae: the reggae rhythm stripped to drum and bass and remixed live - a deep, round bassline up front, one-drop drums, organ and guitar skanks thrown into long echoes and spring reverb, parts dropping in and out |
+| Flamenco rumba (guitar & palmas) | `flamenco_rumba` | 100-126 | Flamenco rumba: a nylon guitar driving fast rasgueado strums on the Andalusian cadence, falsetas (melodic runs) flashing between them, palmas (hand claps) and the cajon - fiery and joyful |
 | Groovy soca | `groovy_soca` | 114-132 | Groovy soca (Trinidad carnival, slower lane): a rolling four-on-the-floor around 115-132 with the iron / brake-drum bell on the off-beats, a smooth syncopated bass, warm synth and steel-pan chords, brass hits and a sweet vocal-style hook - made for wining and swaying rather than jumping |
 | Merengue | `merengue` | 130-160 | Merengue (Dominican): fast and driving - the tambora drum slapping its pattern, a relentless güira, conga, a pumping bass, piano and a sax section blowing fast repeated riffs (or accordion, in the older perico ripiao style) |
 | Reggae | `reggae` | 70-90 | Reggae one-drop: offbeat skank chords, melodic bass, laid-back drums |
@@ -333,17 +340,38 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Samba | `samba` | 92-104 | Samba (Brazil): a bright 2-feel carnival groove - the surdo booming on the second beat, a tight caixa snare, pandeiro and shaker 16ths, tamborim and agogô patterns, a cavaquinho strumming syncopated chords, a 7-string guitar bass line and a flute or sax melody |
 | Ska | `ska` | 120-164 | Ska: offbeat guitar & organ skank, fast walking bass, rimshot backbeat, punchy horn lines |
 | Soca / calypso | `soca` | 150-162 | Soca / calypso (Trinidad carnival): fast four-on-the-floor with the soca snare and iron (brake drum) driving the offbeats, a bouncing syncopated bass, steel pan melodies and chords, brass hits and bright synths - pure jump-up |
+| Son cubano (tres & bongos) | `son_cubano` | 88-108 | Son cubano: the tres guitar repeating its montuno, the son clave and maracas, the bongosero's martillo, an anticipated upright bass and a bright trumpet melody - the root of salsa, relaxed and swaying |
 | Tango | `tango` | 108-132 | Tango: the marcato four and the 3-3-2 síncopa, bandoneon, dramatic violin, staccato piano and double bass, A-B-A with the chan-chan ending |
 
-### World (3)
+### World (6)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Bhangra | `bhangra` | 92-108 | Bhangra (Punjabi): the dhol drum driving its swung, galloping chaal rhythm, a bright tumbi riff on one high string, chimta jingles, a harmonium drone and chords, a synth bass and a big, celebratory hook |
+| Gamelan (Javanese) | `gamelan` | 62-86 | Gamelan (Java / Bali): an ensemble of bronze metallophones and gongs - the saron playing the core melody in steady beats, the bonang weaving faster patterns around it, the kendang drum leading, and the great gong closing every cycle; the pelog scale and the shimmering beat between paired instruments |
 | Japanese zen (koto, shakuhachi) | `japanese_zen` | 66-84 | Japanese zen / traditional-inspired: koto plucks and pressed bends, a breathy shakuhachi-style flute, a soft taiko and wood blocks, lots of space - calm, modal and spacious |
+| Klezmer (clarinet & accordion) | `klezmer` | 124-150 | Klezmer: a slow, free, crying doina on the clarinet over a held chord - then the band kicks in for a fast freylekhs dance: oom-pah bass and accordion off-beats, the fiddle and clarinet trading the freygish melody, faster and wilder to the end |
 | Raga (sitar, tabla, tanpura) | `raga_fusion` | 84-112 | Raga (Hindustani-inspired): a tanpura drone the whole way, the sitar alone in a slow free alap with sliding meend, then a pulse, then the tabla enters for the gat in a 16-beat teental and the music speeds into a jhala climax |
+| Rai (darbuka & oud) | `rai` | 96-116 | Rai (Algeria / North Africa): the darbuka in a rolling maqsum rhythm with tambourine and claps, a punchy synth bass, accordion or synth off-beats, the oud filling between lines and a wailing lead in the Hijaz mode - danceable, emotional, Mediterranean |
 
-### Hindu devotional (8)
+### South Asian (3)
+
+| Genre | id | BPM | Current description |
+|---|---|---|---|
+| Bollywood / filmi (60s-70s) | `bollywood` | 108-128 | Bollywood / filmi (60s-70s): a swinging dholak-and-bongo groove, a big string section sweeping in, sitar and bansuri trading the hooks, a walking bass and a dramatic song form with orchestral interludes - golden-age Hindi film song |
+| Ghazal (sitar, harmonium, tabla) | `ghazal` | 62-80 | Ghazal: slow, romantic and poetic - each couplet sung tenderly over a gentle tabla, a harmonium following the voice, a sitar opening and the santoor glittering between the lines, then the refrain returning - longing, intimate, late-night |
+| Qawwali (Sufi, harmonium & claps) | `qawwali` | 88-100 | Qawwali (Sufi devotional): the lead singer's line answered by the chorus of the party, over a pumping harmonium, tabla and dholak and the group's hand claps - a slow, free opening, then the same lines repeated and repeated, faster and faster, towards ecstasy |
+
+### Psych & World Rock (4)
+
+| Genre | id | BPM | Current description |
+|---|---|---|---|
+| Anatolian psych rock (saz & fuzz) | `anatolian_psych` | 100-126 | Anatolian psych rock (70s Turkey): fuzz guitars and a combo organ over a driving rock beat with darbuka, the baglama / saz playing snaking melodies in the Hicaz makam - its exotic augmented second - and long, hypnotic psychedelic jams |
+| Chicha (psychedelic cumbia) | `chicha` | 88-104 | Chicha (Peruvian psychedelic cumbia): the cumbia beat on timbales, guiro and congas, a rolling bass, a combo organ and a twangy, wobbly psychedelic guitar playing the melody - Andean tunes through surf and wah |
+| Desert blues (Tuareg guitars) | `desert_blues` | 96-116 | Desert blues (Tuareg / Sahara): interlocking, hypnotic electric guitar loops on a pentatonic scale, a rolling bass, hand claps and hand drums, a lilting swung groove and long repetitions that slowly build - trance-like and dusty |
+| Thai funk / molam (phin & khaen) | `thai_funk` | 112-132 | Thai funk / molam: the phin's bright, twangy lute riffs and the breathy chords of the khaen mouth organ over a tight funk beat with ching cymbals and congas, a bouncing bass and wah-fuzz guitar - Isan party music meets 70s funk |
+
+### Hindu devotional (9)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -351,6 +379,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Bhajan (harmonium, dholak, manjira) | `bhajan` | 78-98 | Bhajan (Hindu devotional song): a simple, heartfelt melody that winds up and down in raga phrases - aroha and avaroha - with meend glides, the harmonium following the singer, a tanpura drone, the dholak in an 8-beat keherwa and bright manjira cymbals keeping time; a free opening, then the refrain (sthayi) and verses (antara) that climb higher - warm, repetitive, easy to sing along to |
 | Bhajan - sitar & tabla | `sitar_bhajan` | 80-100 | Bhajan - sitar & tabla: opens on the sitar alone over the tanpura drone, slowly unfolding the raga; then the tabla plays the cycle by itself for a moment before the devotional song begins - the sitar carrying the melody in rising and falling raga phrases, harmonium chords and manjira underneath |
 | Bhajan groove - tabla, dholak & bongos | `tabla_bhajan` | 92-112 | Bhajan groove - tabla, dholak & bongos: the drums start alone - tabla, dholak, bongos and manjira locking into a rolling 8-beat keherwa - then the drone and the sitar come in on top; a drum break in the middle and a drums-only ending. Percussion up front, the sitar singing the devotional melody |
+| Carnatic kriti (veena & mridangam) | `carnatic_kriti` | 76-96 | Carnatic kriti (South Indian devotional song): a free alapana on the veena over the tanpura, then the composed song - pallavi, anupallavi, charanam - with the mridangam's ringing strokes, kanjira and ghatam in an 8-beat adi tala, and the bansuri (venu) answering the melody |
 | Devotional raga (santoor) | `santoor_raga` | 70-96 | Devotional raga on santoor: a morning or evening raga for prayer and meditation - the santoor's bell-like mallet strikes and shimmering strings rising and falling through the raga (aroha / avaroha) in sparkling cascades, over a tanpura drone; a free, slow alap, then a pulse, then the tabla enters and it gathers speed to a glittering jhala |
 | Kirtan (call & response, speeding up) | `kirtan` | 90-100 | Kirtan (call-and-response chanting): a leader sings a short line of divine names and the group answers it, over and over - harmonium pumping chords, a tanpura drone, kartal / manjira cymbals and a dholak (or khol) - starting slow and calm and speeding up chant by chant until it is ecstatic, then settling on a last slow line |
 | Kirtan - drums & sitar (speeding up) | `drum_kirtan` | 90-100 | Kirtan - drums & sitar: the dholak, bongos and kartal start it off alone, then the sitar calls each line and the group answers, over a harmonium and drone - speeding up chant by chant, with drum breaks between, until it is a wild, ecstatic drum-driven chant |

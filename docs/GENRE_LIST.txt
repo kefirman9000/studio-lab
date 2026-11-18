@@ -1,13 +1,13 @@
-STUDIO LAB - ALL 269 GENRES  (version 1.52.1)
+STUDIO LAB - ALL 288 GENRES  (version 1.53.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = added today
+* = new in 1.53
 
 ========================================================================
-ELECTRONIC  (140)
+ELECTRONIC  (141)
 ========================================================================
 
 House & Disco  (26)
-    House  [house]
+    house  [house]
     Deep House  [deep_house]
     Tech House  [tech_house]
     Progressive House  [progressive_house]
@@ -35,11 +35,11 @@ House & Disco  (26)
     Brazilian bass  [brazilian_bass]
 
 Techno & Trance  (13)
-    Techno  [techno]
-    Minimal  [minimal]
+    techno  [techno]
+    minimal  [minimal]
     Melodic Techno  [melodic_techno]
     New Beat  [new_beat]
-    Trance  [trance]
+    trance  [trance]
     Uplifting Trance  [uplifting_trance]
     Progressive Trance (emotional)  [progressive_trance]
     Psytrance  [psytrance]
@@ -76,13 +76,13 @@ Drum & Bass, Breaks & Hard  (17)
     Neurofunk  [neurofunk]
     Neurofunk (lighter)  [neurofunk_lite]
     Jump-up DnB  [jump_up]
-    Jungle  [jungle]
+    jungle  [jungle]
     Breakcore  [breakcore]
     Braindance / IDM  [braindance]
     Breakbeat Hardcore / Rave  [rave_hardcore]
     Hardstyle  [hardstyle]
     Hardcore / Gabber  [gabber]
-    Electro  [electro]
+    electro  [electro]
     Funky breaks / glitch electro  [funky_breaks]
     Big beat  [big_beat]
     UK hardcore / happy hardcore  [uk_hardcore]
@@ -136,7 +136,7 @@ Afro, Latin & Caribbean  (8)
 Chill, Lo-fi & Ambient  (9)
     Lo-fi Hip Hop  [lofi]
     Downtempo  [downtempo]
-    Ambient  [ambient]
+    ambient  [ambient]
     Ambient beat (dark, sub-heavy)  [ambient_beat]
     Vaporwave  [vaporwave]
     90s new-age chill (chant)  [new_age_chant]
@@ -152,12 +152,13 @@ Footwork & Juke  (6)
     Juke / ghetto house - raw (130)  [juke_raw]
     Juke house - bouncy (126)  [juke_house]
 
-Retro & Video Game  (5)
-    Synthwave  [synthwave]
+Retro & Video Game  (6)
+    synthwave  [synthwave]
     Dark Synthwave  [dark_synthwave]
     Chiptune  [chiptune]
     90s video game (PS1-era)  [ps1_game]
     Darkwave / EBM  [darkwave_ebm]
+  * Krautrock / motorik  [krautrock]
 
 Hauntology  (7)
     Hauntology  [hauntology]
@@ -169,18 +170,18 @@ Hauntology  (7)
     Hauntology - cold dystopian synths  [hauntology_cold]
 
 ========================================================================
-CLASSIC  (100)
+CLASSIC  (118)
 ========================================================================
 
-Rock & Metal  (22)
-    Rock  [rock]
+Rock & Metal  (25)
+    rock  [rock]
     Indie Rock  [indie_rock]
     90s alt rock  [alt_rock_90s]
     Punk  [punk]
     70s Soft Rock  [soft_rock]
     Jam Band  [jam_band]
     Jam-band rock (80s, upbeat)  [jam_rock_80s]
-    Metal  [metal]
+    metal  [metal]
     Symphonic Metal  [symphonic_metal]
     Lo-fi bedroom rock  [lofi_rock]
     80s boogie rock  [boogie_rock]
@@ -188,16 +189,19 @@ Rock & Metal  (22)
     Nu-metal  [nu_metal]
     Spooky 60s surf / TV theme  [spooky_surf]
     Spooky surf - monster TV theme  [monster_theme]
-  * Spooky surf - organ & brass  [monster_organ]
+    Spooky surf - organ & brass  [monster_organ]
     Surf rock (60s)  [surf_rock]
     Shoegaze  [shoegaze]
     Post-rock  [post_rock]
     Pop-punk / emo  [pop_punk]
     Doom / stoner metal  [doom_metal]
-  * Stoner rock - raga / psych (sitar, tabla)  [stoner_raga]
+    Stoner rock - raga / psych (sitar, tabla)  [stoner_raga]
+  * Garage rock (60s, fuzz & organ)  [garage_rock]
+  * Rockabilly (slap bass & twang)  [rockabilly]
+  * Post-punk  [post_punk]
 
 Pop & Indie  (9)
-    Pop  [pop]
+    pop  [pop]
     Bedroom / indie pop  [bedroom_pop]
     Chamber Pop  [chamber_pop]
     City Pop  [city_pop]
@@ -208,8 +212,8 @@ Pop & Indie  (9)
     Anime opening (J-rock)  [anime_opening]
 
 Funk & Disco  (6)
-    Funk  [funk]
-    Disco  [disco]
+    funk  [funk]
+    disco  [disco]
     Disco Funk (70s)  [disco_funk]
     Smooth Jazz-Funk  [smooth_funk]
     80s electro-funk / boogie  [electro_funk]
@@ -235,8 +239,8 @@ Hip-Hop  (7)
     West-coast slap rap  [bay_rap]
     Futuristic hip-hop bounce (early 2000s)  [futuristic_bounce]
 
-Jazz  (8)
-    Jazz  [jazz]
+Jazz  (10)
+    jazz  [jazz]
     Bebop  [bebop]
     Cool / Modal Jazz  [modal_jazz]
     Soul Jazz / Hard Bop  [soul_jazz]
@@ -244,6 +248,8 @@ Jazz  (8)
     Smooth Jazz (soprano sax)  [smooth_jazz]
     Gypsy jazz (manouche)  [gypsy_jazz]
     Ragtime / stride piano  [ragtime]
+  * Ethio-jazz (vibes & horns)  [ethio_jazz]
+  * Exotica / tiki lounge  [exotica]
 
 Swing & Big Band  (5)
     Big Band Swing  [swing]
@@ -259,17 +265,17 @@ Country, Folk & Blues  (10)
     Outlaw Country  [outlaw_country]
     Spaghetti Western  [western]
     Bluegrass  [bluegrass]
-    Folk  [folk]
+    folk  [folk]
     Celtic Jig (6/8)  [celtic_jig]
-    Blues  [blues]
+    blues  [blues]
     Acoustic folk-rock jam  [folk_jam]
 
-Latin & Caribbean  (13)
+Latin & Caribbean  (15)
     Bossa Nova  [bossa_nova]
     Salsa  [salsa]
     Cumbia  [cumbia]
     Tango  [tango]
-    Reggae  [reggae]
+    reggae  [reggae]
     Ska  [ska]
     Soca / calypso  [soca]
     Groovy soca  [groovy_soca]
@@ -278,21 +284,38 @@ Latin & Caribbean  (13)
     Bachata  [bachata]
     Merengue  [merengue]
     Samba  [samba]
+  * Son cubano (tres & bongos)  [son_cubano]
+  * Flamenco rumba (guitar & palmas)  [flamenco_rumba]
 
-World  (3)
+World  (6)
     Raga (sitar, tabla, tanpura)  [raga_fusion]
     Japanese zen (koto, shakuhachi)  [japanese_zen]
     Bhangra  [bhangra]
+  * Klezmer (clarinet & accordion)  [klezmer]
+  * Gamelan (Javanese)  [gamelan]
+  * Rai (darbuka & oud)  [rai]
 
-Hindu devotional  (8)
-  * Bhajan (harmonium, dholak, manjira)  [bhajan]
-  * Bhajan - sitar & tabla  [sitar_bhajan]
-  * Bhajan groove - tabla, dholak & bongos  [tabla_bhajan]
-  * Kirtan (call & response, speeding up)  [kirtan]
-  * Kirtan - drums & sitar (speeding up)  [drum_kirtan]
-  * Aarti (temple bells & prayer)  [aarti]
-  * Devotional raga (santoor)  [santoor_raga]
-  * Sitar & tabla jugalbandi  [jugalbandi]
+South Asian  (3)
+  * Qawwali (Sufi, harmonium & claps)  [qawwali]
+  * Bollywood / filmi (60s-70s)  [bollywood]
+  * Ghazal (sitar, harmonium, tabla)  [ghazal]
+
+Psych & World Rock  (4)
+  * Anatolian psych rock (saz & fuzz)  [anatolian_psych]
+  * Thai funk / molam (phin & khaen)  [thai_funk]
+  * Chicha (psychedelic cumbia)  [chicha]
+  * Desert blues (Tuareg guitars)  [desert_blues]
+
+Hindu devotional  (9)
+    Bhajan (harmonium, dholak, manjira)  [bhajan]
+    Bhajan - sitar & tabla  [sitar_bhajan]
+    Bhajan groove - tabla, dholak & bongos  [tabla_bhajan]
+    Kirtan (call & response, speeding up)  [kirtan]
+    Kirtan - drums & sitar (speeding up)  [drum_kirtan]
+    Aarti (temple bells & prayer)  [aarti]
+    Devotional raga (santoor)  [santoor_raga]
+    Sitar & tabla jugalbandi  [jugalbandi]
+  * Carnatic kriti (veena & mridangam)  [carnatic_kriti]
 
 ========================================================================
 ORCHESTRAL  (29)

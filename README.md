@@ -28,6 +28,18 @@ built-in sounds only (no downloaded instruments or plugins):
 
 | Genre | Excerpt |
 |---|---|
+| Bhajan groove - tabla, dholak & bongos (Hindu devotional) | [▶ Eb mixolydian, 112 BPM](docs/samples/tabla_bhajan.mp3) |
+| Spooky surf - monster TV theme | [▶ Bb minor, 156 BPM](docs/samples/monster_theme.mp3) |
+| Outlaw country | [▶ Eb mixolydian, 112 BPM](docs/samples/outlaw_country.mp3) |
+| Stoner rock - raga / psych (sitar & tabla) | [▶ Bb phrygian, 87 BPM](docs/samples/stoner_raga.mp3) |
+| Anatolian psych rock (saz & fuzz) | [▶ Bb phrygian dominant, 121 BPM](docs/samples/anatolian_psych.mp3) |
+| Ethio-jazz (vibes & horns) | [▶ Eb minor, 108 BPM](docs/samples/ethio_jazz.mp3) |
+| Qawwali (harmonium & claps) | [▶ Bb harmonic minor, 98 BPM](docs/samples/qawwali.mp3) |
+| Flamenco rumba (guitar & palmas) | [▶ Bb phrygian, 121 BPM](docs/samples/flamenco_rumba.mp3) |
+| Rockabilly (slap bass & twang) | [▶ Eb mixolydian, 168 BPM](docs/samples/rockabilly.mp3) |
+| Gamelan (Javanese) | [▶ Bb pelog, 83 BPM](docs/samples/gamelan.mp3) |
+| Juke / ghetto house - raw | [▶ Bb minor, 133 BPM](docs/samples/juke_raw.mp3) |
+| Garage rock (60s fuzz & organ) | [▶ Eb dorian, 140 BPM](docs/samples/garage_rock.mp3) |
 | Deep Dubstep (soundsystem) | [▶ C minor, 142 BPM](docs/samples/deep_dubstep.mp3) |
 | Liquid DnB | [▶ C dorian, 173 BPM](docs/samples/liquid_dnb.mp3) |
 | Future garage | [▶ Eb dorian, 128 BPM](docs/samples/future_garage.mp3) |
@@ -69,7 +81,7 @@ The app opens in your browser. Everything runs locally on your machine.
 
 ## Genres
 
-269 genres in three tabs - Electronic, Classic and Orchestral, each sorted into sub-groups (House & Disco, Drum & Bass & Breaks, Jazz, Swing & Big Band, Solo Piano ...) - from house, techno, trance, dubstep, drum & bass, funky breaks, hard dance and hopecore to hip hop, UK road rap, R&B, rock, 90s alt rock, metal, punk, jazz, big band, smooth jazz, country, bluegrass, reggae, salsa, soca, Afrobeats, raga and Hindu devotional music (bhajan, kirtan, aarti, sitar & tabla jugalbandi, santoor raga), and from Baroque, Classical and Romantic forms (theme & variations, sonata, minuet & trio) to solo piano miniatures, film scores and the **Cinematic Journey** orchestral generator. Each genre has its own instruments, drum patterns, grooves, song forms and mix. Many are modelled bar by bar on reference records: where the kick, sub, hats and keys come in and drop out, how long each section runs, and how the builds work (often by taking things away, not by speeding up snare rolls). **Build-ups** (ramps into choruses and drops) can be on, subtle (natural band-style fills, no EDM risers) or off, with 23 build-up styles to pick from; **Transition FX** (risers, reverse cymbals, impacts, tape stops) can be varied, fewer, drum fills only or off. **Character** gives every genre twelve high-level traits: arrangement, density, human feel, melodic behaviour, bass personality, drop style, variation, context, texture, rhythmic feel, harmony and energy curve. Change any of them (or tick 🎲 Surprise me) to get a different kind of song in the same genre, e.g. a sparse slow-build house track or a switch-up-heavy one. The full list, with what each one does, is in [docs/GENRES.md](docs/GENRES.md) (a plain one-line-per-genre list, grouped as in the app: [docs/GENRE_LIST.txt](docs/GENRE_LIST.txt)). Every genre's complete technical rules, traits included, are in [docs/GENRE_SPEC.md](docs/GENRE_SPEC.md) for review.
+288 genres in three tabs - Electronic, Classic and Orchestral, each sorted into sub-groups (House & Disco, Drum & Bass & Breaks, Jazz, Swing & Big Band, Solo Piano ...) - from house, techno, trance, dubstep, drum & bass, funky breaks, hard dance and hopecore to hip hop, UK road rap, R&B, rock, 90s alt rock, metal, punk, jazz, big band, smooth jazz, country, bluegrass, reggae, salsa, soca, Afrobeats, raga and Hindu devotional music (bhajan, kirtan, aarti, sitar & tabla jugalbandi, santoor raga), and from Baroque, Classical and Romantic forms (theme & variations, sonata, minuet & trio) to solo piano miniatures, film scores and the **Cinematic Journey** orchestral generator. Each genre has its own instruments, drum patterns, grooves, song forms and mix. Many are modelled bar by bar on reference records: where the kick, sub, hats and keys come in and drop out, how long each section runs, and how the builds work (often by taking things away, not by speeding up snare rolls). **Build-ups** (ramps into choruses and drops) can be on, subtle (natural band-style fills, no EDM risers) or off, with 23 build-up styles to pick from; **Transition FX** (risers, reverse cymbals, impacts, tape stops) can be varied, fewer, drum fills only or off. **Character** gives every genre twelve high-level traits: arrangement, density, human feel, melodic behaviour, bass personality, drop style, variation, context, texture, rhythmic feel, harmony and energy curve. Change any of them (or tick 🎲 Surprise me) to get a different kind of song in the same genre, e.g. a sparse slow-build house track or a switch-up-heavy one. The full list, with what each one does, is in [docs/GENRES.md](docs/GENRES.md) (a plain one-line-per-genre list, grouped as in the app: [docs/GENRE_LIST.txt](docs/GENRE_LIST.txt)). Every genre's complete technical rules, traits included, are in [docs/GENRE_SPEC.md](docs/GENRE_SPEC.md) for review.
 
 ## Daisy Bell
 

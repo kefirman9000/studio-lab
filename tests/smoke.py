@@ -4,6 +4,7 @@
    python -m tests.smoke --shard 2/3   (every third genre, starting with the second - CI runs the shards in parallel)"""
 import os
 import sys
+import shutil
 import tempfile
 import time
 import xml.dom.minidom
@@ -24,6 +25,13 @@ def main():
     if '--shard' in sys.argv:
         k, n = (int(x) for x in sys.argv[sys.argv.index('--shard') + 1].split('/'))
     out = tempfile.mkdtemp()
+    try:
+        _run(full, k, n, out)
+    finally:
+        shutil.rmtree(out, ignore_errors=True)          # previews of every genre add up to ~200 MB per run
+
+
+def _run(full, k, n, out):
     t0 = time.time()
     for i, s in enumerate(STYLES):
         if i % n != k - 1:
