@@ -1661,9 +1661,15 @@ def compose(opts):
                 e.midi += k
                 if e.glide is not None:
                     e.glide += k
+    if st.get('hi_bass'):                                # the 808 stays down low; when it leaps up / is raised it hands
+        hand_up_bass(evs, tracks, st, opts)              # those notes to a mid-bass (reese / growl / FM) - no squeaky 808
+    for e in evs:                                        # a high 808 sounds far louder than a low one at the same level
+        t = tracks.get(e.track, {})                      # (the ear is much more sensitive at 100-200 Hz than at 40 Hz):
+        if t.get('layer') == 'bass' and str(t.get('inst', '')).endswith('808') and e.midi is not None and e.midi > 33:
+            e.vel *= 10 ** (-min(9.0, 0.45 * (e.midi - 33)) / 20)   # notes leaping up or raised to E2+ are turned down
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
     if st.get('dj_fx'):                                  # DJ edits: pitched hat moves, down / up-tuned lead notes, slowdowns
-        dj_effects(evs, fx, tracks, sections, float(st['dj_fx']), random.Random(opts.seed * 73 + 11))
+        dj_effects(evs, fx, tracks, sections, float(st['dj_fx']), random.Random(opts.seed * 73 + 11), st.get('dj_slow'))
     if st.get('chopped'):                                # chopped & screwed: the DJ catches a beat twice
         screw_chops(evs, sections, float(st['chopped']), random.Random(opts.seed * 71 + 9))
     if getattr(opts, 'vox_sample', None):                # your voice sample, chopped into the song
@@ -2510,7 +2516,7 @@ def switch_basses(evs, tracks, sections, st):
 HAT_INSTS = {'chat', 'ohat', 'chiphat', 'shaker', 'tamb', 'ride'}
 
 
-def dj_effects(evs, fx, tracks, sections, amount, rnd):
+def dj_effects(evs, fx, tracks, sections, amount, rnd, slow=None):
     """DJ-style edits (from the user's reference): bars where the hats climb or dive in pitch, swoop down inside each
     hit or drop an octave; lead notes that are down-tuned or up-tuned (the end of a note diving an octave, a note
     pulled up a fifth, a phrase played a whole tone flat); and a fake DJ slowdown - the record dragged by hand - in the
@@ -2557,7 +2563,7 @@ def dj_effects(evs, fx, tracks, sections, amount, rnd):
                             e.bend = list(e.bend or []) + [('fall', 7.0)]
                         else:
                             e.bend = [('meend', -12.0, 0.5)] + list(e.bend or [])
-        if (sec['opts'].get('drop') or sec['name'] in ('drop', 'grind')) and sec['bar'] > 0 and rnd.random() < 0.6 * amount:
+        if (sec['opts'].get('drop') or sec['name'] in ('drop', 'grind')) and sec['bar'] > 0 and rnd.random() < (0.6 * amount if slow is None else slow):
             beg = sec['bar'] * 4 - rnd.choice([4, 2])
             fx[:] = [f for f in fx if not (f[0] == 'tapestop' and beg - 2 <= f[1] < sec['bar'] * 4)]
             fx.append(('djslow', beg, sec['bar'] * 4 - beg))
@@ -2699,6 +2705,52 @@ def voice_sample_part(evs, tracks, st, sections, opts, bpm, rnd):
     st['tracks'].append(t)
     tracks['voxsample'] = t
     evs += out
+
+
+def hand_up_bass(evs, tracks, st, opts):
+    """Bass-warp / shadow 808 genres: an 808 played up around D2 and above stops sounding like an 808 (thin, loud,
+    squeaky). Those notes - the octave leaps, the raised switch-ups, breaks and outros - go to a second, mid-range bass
+    instead (a reese, growl or FM bass, distorted like the reference's no-sub sections); the 808 keeps the low notes."""
+    cfg = st['hi_bass'] if isinstance(st['hi_bass'], dict) else {}
+    at = int(cfg.get('at', 38))
+    main = tracks.get('bass')
+    if not main or not str(main.get('inst', '')).endswith('808'):
+        return
+    doubles = {n for n, t in tracks.items() if t.get('double_of') == 'bass'}
+    hi = [e for e in evs if e.track == 'bass' and e.midi is not None and e.midi >= at]
+    if not hi:
+        return
+    pool = cfg.get('pool') or ['reese', 'growl', 'fmbass']
+    inst = (opts.instruments or {}).get('bass_hi') or random.Random(opts.seed * 83 + 3).choice(pool)
+    t = dict(name='bass_hi', layer='bass', inst=inst, pan=0.0, rev=0.1, dly=0.0, sc=0.5, db=float(cfg.get('db', -17)),
+             hp=70, drive=None, p=dict(cfg.get('p') or {'cut': 1600}))
+    st['tracks'].append(t)
+    tracks['bass_hi'] = t
+    gone = {(round(e.beat, 4)) for e in hi}
+    for e in hi:
+        e.track, e.glide, e.mod = 'bass_hi', None, (2 if inst == 'growl' else None)
+        while e.midi > int(cfg.get('top', 52)):          # a mid-bass, not a lead: never above E3
+            e.midi -= 12
+        e.vel = min(1.0, e.vel)
+    evs[:] = [e for e in evs if not (e.track in doubles and e.midi is not None and e.midi >= at and round(e.beat, 4) in gone)]
+    if st.get('switchups'):                              # moving / folding notes can make two bars alike again
+        rnd = random.Random(opts.seed * 89 + 1)
+        bars = {}
+        for e in evs:
+            if e.track in ('bass', 'bass_hi') and e.midi is not None:
+                bars.setdefault(int(e.beat // 4), []).append(e)
+        prev = None
+        for b in sorted(bars):
+            sig = sorted((round(e.beat % 4, 2), e.midi, str(e.mod)) for e in bars[b])
+            if sig == prev:
+                es = sorted(bars[b], key=lambda e: e.beat)
+                if len(es) > 1 and rnd.random() < 0.5:   # a gap at the end of the bar ...
+                    evs.remove(es[-1])
+                else:                                    # ... or one note an octave away
+                    e = rnd.choice(es)
+                    e.midi += 12 if e.midi + 12 <= 52 else -12
+                sig = None
+            prev = sig
 
 
 def screw_chops(evs, sections, amount, rnd):

@@ -35,7 +35,31 @@ def main():
     test_journey()
     test_mp3_without_ffmpeg()
     test_ui_sound_menus()
+    test_remembered_prefs()
     print('all good')
+
+
+def test_remembered_prefs():
+    """1.56: the theme and other app settings, and the window size, are kept in settings.json (the page's own storage is
+    lost when the app starts on another port or the window keeps no storage), and come back on the next launch."""
+    import json
+    import tempfile
+    from sgcore import app, appwindow, updater
+    ui = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'sgcore', 'ui.html')).read()
+    assert ui.index("'__SL_UIPREFS__'") < ui.index('state={closed:')           # restored before anything reads it
+    old_s, old_r = app.SETTINGS, updater.ROOT
+    d = tempfile.mkdtemp()
+    app.SETTINGS = os.path.join(d, 'settings.json')
+    updater.ROOT = d
+    try:
+        app.save_settings({'ui_prefs': {'sl_theme': '{"main":"#000000"}'}, 'window_geom': {'w': 1200, 'h': 800, 'x': 30, 'y': 40}})
+        assert json.load(open(app.SETTINGS))['ui_prefs']['sl_theme'].startswith('{')
+        assert appwindow.last_geometry() == (1200, 800, (30, 40))
+        app.save_settings({'window_geom': {'w': 5, 'h': 5}})
+        assert appwindow.last_geometry()[:2] == (1440, 920)                      # nonsense sizes fall back
+    finally:
+        app.SETTINGS, updater.ROOT = old_s, old_r
+    print('ok  theme / settings and window size remembered across launches')
 
 
 def test_ui_sound_menus():

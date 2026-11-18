@@ -38,12 +38,34 @@ def find_browser():
     return None
 
 
+def last_geometry():
+    """The window's size and position from last time (the page reports it whenever the window is resized)."""
+    try:
+        import json
+        with open(os.path.join(updater.ROOT, 'settings.json')) as f:
+            g = json.load(f).get('window_geom') or {}
+        w, h = int(g.get('w', 1440)), int(g.get('h', 920))
+        x, y = g.get('x'), g.get('y')
+        if not (900 <= w <= 10000 and 600 <= h <= 10000):
+            w, h = 1440, 920
+        pos = (int(x), int(y)) if x is not None and y is not None and -200 < int(x) < 8000 and -50 < int(y) < 5000 else None
+        return w, h, pos
+    except Exception:
+        return 1440, 920, None
+
+
 def open_window(url, quit_app):
-    """Open the app window. Returns 'webview' (blocks until closed), 'app' or 'browser'."""
+    """Open the app window - the same size and place as last time. Returns 'webview' (blocks until closed), 'app' or
+    'browser'."""
+    w, h, pos = last_geometry()
     try:
         import webview  # pywebview (optional)
-        webview.create_window('Studio Lab', url, width=1440, height=920, min_size=(900, 600))
-        webview.start()
+        kw = dict(x=pos[0], y=pos[1]) if pos else {}
+        webview.create_window('Studio Lab', url, width=w, height=h, min_size=(900, 600), **kw)
+        try:
+            webview.start(private_mode=False)            # keep the page's own storage between launches
+        except TypeError:                                 # (older pywebview)
+            webview.start()
         quit_app()
         return 'webview'
     except ImportError:
@@ -54,8 +76,11 @@ def open_window(url, quit_app):
     if exe:
         profile = os.path.join(updater.ROOT, '.appwindow')       # its own profile -> its own window & taskbar entry
         try:
-            p = subprocess.Popen([exe, f'--app={url}', f'--user-data-dir={profile}', '--window-size=1440,920',
-                                  '--no-first-run', '--no-default-browser-check', '--disable-features=Translate'],
+            args = [exe, f'--app={url}', f'--user-data-dir={profile}', f'--window-size={w},{h}',
+                    '--no-first-run', '--no-default-browser-check', '--disable-features=Translate']
+            if pos:
+                args.insert(3, f'--window-position={pos[0]},{pos[1]}')
+            p = subprocess.Popen(args,
                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
             def watch():

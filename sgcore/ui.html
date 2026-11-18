@@ -379,6 +379,8 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 <div id="dropHint">Drop a song - one of your Studio Lab projects opens in the editor, any other song becomes a reference</div>
 
 <script>
+// settings remembered by the app itself (settings.json), so the theme and the rest survive a different port or window
+(function(){ const P='__SL_UIPREFS__'; try{ if(P&&typeof P==='object') for(const [k,v] of Object.entries(P)) if(localStorage.getItem(k)!==v) localStorage.setItem(k,v); }catch(e){} })();
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const LEVELS=[['drums','Drums',['kick','snare','top']],['bass','Bass',['bass']],['chords','Chords',['chords']],['pad','Pad',['pad']],['arp','Arp',['arp']],['lead','Lead',['lead']]];
 let META=null, state={closed:(()=>{try{return JSON.parse(localStorage.getItem('sl_closed')||'{}')}catch(_){return {}}})(), orch_plugin:(()=>{try{return !!localStorage.getItem('sl_orch_plugin')}catch(_){return false}})(), style:'house', part_fx:{}, levels:{}, octaves:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
@@ -433,6 +435,13 @@ window.addEventListener('resize',()=>{ if(!vizRaf) vizDraw(true); });
 
 
 const TOKEN='__SL_TOKEN__';
+let _prefT=null;
+function syncPrefs(){ clearTimeout(_prefT); _prefT=setTimeout(()=>{ try{ const prefs={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.startsWith('sl_')) prefs[k]=localStorage.getItem(k); }
+  fetch('/api/uiprefs',{method:'POST',headers:{'X-Studio-Token':TOKEN,'Content-Type':'application/json'},body:JSON.stringify({prefs,window:{w:window.outerWidth,h:window.outerHeight,x:window.screenX,y:window.screenY}})}).catch(()=>{}); }catch(e){} },700); }
+(function(){ try{ const S=Storage.prototype, set=S.setItem, rm=S.removeItem;
+  S.setItem=function(k,v){ set.call(this,k,v); if(this===window.localStorage&&String(k).startsWith('sl_')) syncPrefs(); };
+  S.removeItem=function(k){ rm.call(this,k); if(this===window.localStorage&&String(k).startsWith('sl_')) syncPrefs(); }; }catch(e){} })();
+window.addEventListener('resize',()=>syncPrefs());
 async function api(path, body){
   const h={'X-Studio-Token':TOKEN};
   const r=await fetch(path, body?{method:'POST',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify(body)}:{headers:h, credentials:'same-origin'});

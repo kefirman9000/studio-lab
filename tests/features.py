@@ -700,7 +700,7 @@ def test_bass_warp_trap():
     from sgcore.instruments import INSTRUMENTS
     from sgcore.dsp import SR
     s = compose(Options(style='bass_warp_trap', seed=3))
-    b = [e for e in s['events'] if e.track == 'bass']
+    b = [e for e in s['events'] if e.track in ('bass', 'bass_hi')]
     kinds = Counter(str(e.mod).split(':')[0] for e in b if e.mod)
     assert {'dive', 'rise', 'wob', 'growl'} <= set(kinds), kinds
     assert sum(e.glide is not None for e in b) > 10
@@ -725,6 +725,12 @@ def test_bass_warp_trap():
     assert any(e.track == 'bass_grit' for e in f['events'])                 # parallel driven 808 layer
     assert any(e.track == 'chat' and str(e.mod).startswith('pt:') for e in f['events'])   # pitched hat rolls
     assert not any(e.track.endswith('_layer') for e in f['events'])
+    for x in (s, f):                                                      # the 808 stays low; raised / leaping notes
+        b8 = [e for e in x['events'] if e.track == 'bass']                 # go to a mid-bass (reese / growl / FM)
+        hb = [e for e in x['events'] if e.track == 'bass_hi']
+        assert b8 and hb and max(e.midi for e in b8) < 38 and 38 <= min(e.midi for e in hb) and max(e.midi for e in hb) <= 52
+        assert next(t for t in x['st']['tracks'] if t['name'] == 'bass_hi')['inst'] in ('reese', 'growl', 'fmbass')
+        assert not any(e.track == 'bass_grit' and e.midi >= 38 for e in x['events'])
     print('ok  bass-warp trap (+ fast): warped 808s, slides, 808-up / growl switch-ups, parallel grit, pitched hat rolls')
 
 
@@ -738,7 +744,7 @@ def test_shadow_808():
     assert 155 <= STYLES['shadow_808']['bpm'][0] and STYLES['shadow_808']['bass_lo'] <= 24
     for seed in (3, 11):
         s = compose(Options(style='shadow_808', seed=seed))
-        b = [e for e in s['events'] if e.track == 'bass']
+        b = [e for e in s['events'] if e.track in ('bass', 'bass_hi')]
         sig = {}
         for e in b:
             sig.setdefault(int(e.beat // 4), []).append((round(e.beat % 4, 2), e.midi, e.mod))
@@ -867,6 +873,11 @@ def test_dj_effects():
     assert mods['pt'] > 10 and mods['sw'] > 0, mods
     assert any(e.bend and any(b[0] in ('fall', 'shift', 'meend') for b in e.bend) for e in s['events'] if e.track == 'lead')
     assert any(f[0] == 'djslow' for f in s['fx'])
+    for seed in (1, 2, 3):                                                  # chopped & screwed: the same DJ edits, slower
+        c = compose(Options(style='screwed_slab', seed=seed))
+        assert c['bpm'] <= 72 and any(f[0] == 'djslow' for f in c['fx'])
+        assert any(str(e.mod).startswith(('pt:', 'sw:')) for e in c['events'] if e.track == 'chat')
+        assert c['st'].get('switchups') and c['st']['master']['vintage_lp'] <= 5000   # dark: low end, not high end
     x = np.sin(2 * np.pi * 440 * np.arange(SR) / SR).astype(np.float32)
     assert drum_mod(x, 'sw:0:-12').shape[-1] == x.shape[-1] - 1 or drum_mod(x, 'sw:0:-12').shape[-1] > 0.6 * SR
     buf = np.vstack([x, x]).copy()

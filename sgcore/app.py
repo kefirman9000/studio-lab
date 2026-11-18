@@ -597,6 +597,8 @@ class Handler(BaseHTTPRequestHandler):
         if p in ('/', '/index.html'):
             with open(os.path.join(HERE, 'ui.html'), 'rb') as f:
                 page = f.read().replace(b'__SL_TOKEN__', TOKEN.encode())
+            prefs = json.dumps(load_settings().get('ui_prefs') or {}).replace('</', '<\\/')   # theme etc. from last time
+            page = page.replace(b"'__SL_UIPREFS__'", prefs.encode())
             self.send_response(200)
             self.send_header('Content-Type', 'text/html; charset=utf-8')
             self.send_header('Content-Length', str(len(page)))
@@ -957,6 +959,21 @@ class Handler(BaseHTTPRequestHandler):
             with open(RATINGS, 'w') as f:
                 json.dump(rs[-500:], f)
             return self._json(taste())
+        if p == '/api/uiprefs':                          # the app's own settings (theme, visualizer, window size ...)
+            prefs = body.get('prefs')                    # kept in settings.json, so they survive a new port / profile
+            if isinstance(prefs, dict):
+                clean = {str(k)[:40]: str(v)[:4000] for k, v in list(prefs.items())[:60] if str(k).startswith('sl_')}
+                win = body.get('window')
+                upd = {'ui_prefs': clean}
+                if isinstance(win, dict):
+                    try:
+                        w = {k: int(win[k]) for k in ('w', 'h', 'x', 'y') if k in win}
+                        if 600 <= w.get('w', 0) <= 10000 and 400 <= w.get('h', 0) <= 10000:
+                            upd['window_geom'] = w
+                    except (TypeError, ValueError):
+                        pass
+                save_settings(upd)
+            return self._json({'ok': True})
         if p == '/api/taste':
             return self._json(taste())
         if p == '/api/sounds':

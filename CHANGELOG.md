@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.56.1
+- **The bass no longer goes squeaky-high in the DJ-smokey style genres** (Bass-warp trap, Bass-warp fast, Shadow 808, Shadow 808 - DJ edits). The 808 now stays down low; whenever the bass leaps up or is raised (the switch-ups, breaks, octave jumps and outro), those notes are handed to a second, distorted mid-bass - a reese, growl or FM bass, picked per song - like the no-sub sections of the reference. It never goes above E3, and it's levelled so those parts no longer jump out louder than the drops. Together with 1.56.0's fix for the torn-speaker fizz on hard-driven 808 notes.
+- **Fixed: the 808 getting very loud in parts**: any 808 notes still played higher up are turned down to match how loud they sound (the ear is far more sensitive at 100-200 Hz than at 40 Hz).
+- **Chopped & screwed now gets the full DJ treatment, just slower**: fake vinyl slowdowns into nearly every hook, stuttered and repeated beats (more chops), hats and lead notes sinking and rising in pitch, the 808 switching up bar to bar with dead stops and rolls, and tape stops - over a darker, heavier mix (more low end, the top end rolled off). It now has hooks to slow down into (verse / hook / break form).
+- **The app remembers your theme and window size.** Theme, visualizer and the other app settings are now kept in Studio Lab's own settings file (the window used to lose them when it opened on a different port or kept no storage), and the window opens at the size and place you left it.
+
+
 ## 1.56.0
 - **New genre: Shadow 808** (Electronic → Hip-Hop, Trap & Phonk), modelled bar by bar on your DJ Smokey reference (162 BPM, phrygian, 80% of the energy in the sub, almost mono, nearly nothing above 8 kHz). The 808 never plays the same bar twice: grinding root / flat-2nd 8ths, leaps of one or two octaves that slide back down, 16th rolls, dives, wobbles, bars of folded, buzzing 808 with the sub gone, chopped stabs, sudden gaps and dead stops where the drums cut out. The last bar of every 4-bar phrase leaves space.
 - **New genre: Shadow 808 - DJ edits**: the same beat cut up like a DJ is playing with it - **fake DJ slowdowns before the drops** (the record dragged by hand, sinking in pitch, then the drop slams in), hats that climb, dive, swoop and drop an octave, pitched rolls diving into the next bar, a lead that gets down-tuned, up-tuned and played a tone flat, plus chops and tape stops. Shadow 808 gets a lighter dose of the same edits.
