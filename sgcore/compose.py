@@ -1283,8 +1283,12 @@ def compose(opts):
                         cur = min(cand, key=lambda c: abs(c - (cur + (tgt - cur) * 0.5)) + rnd_b.random() * 4)
                         notes.append(cur)
                     notes.append(tgt + rnd_b.choice([-1, 1]))
+                    skips = st.get('walk_skips', 0.2) if S < 0.6 else 0
                     for q, m in enumerate(notes):
                         evs.append(Ev('bass', beat0 + q, 0.92, m, 0.95 if q == 0 else 0.82))
+                        if q and rnd_b.random() < skips:             # big-band "skip": a triplet ghost pickup into the beat
+                            evs[-1].dur = 0.6
+                            evs.append(Ev('bass', beat0 + q - 1 / 3, 0.28, notes[q - 1], 0.55))
                 else:
                     gate = st.get('bass_gate', 0.92)
                     bp_ = st['bass'][b % len(st['bass'])] if st.get('bass_cycle') else bass_pat   # boogie: up one bar, down the next

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.49.0
+- Walking bass "skips" (from big-band / swing MIDIs): about one beat in five gets a soft triplet ghost pickup into it, like a real upright player. New style key `walk_skips` (default 0.2; walk-mode genres).
+- Synthwave / dark synthwave (night-drive ref): half-time kick, 8th-note bass that rests on the downbeat, v–iv–III–i descent.
+- Motown / 60s pop (brassy-pop ref): two-step kick and bass, iii–ii sway.
+
 ## 1.48.0
 - Liquid DnB lead run-ups (from a liquid-anthem lead MIDI): before a long held lead note that follows a gap, a fast 16th-note arpeggio sweeps up through the key in thirds into it. New style key `lead_runs` (probability); on for liquid_euphoric and liquid_dancefloor.
 
