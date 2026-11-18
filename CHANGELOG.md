@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.47.0
+- Reference-MIDI pass (≈30 files): new grooves and progressions for future bass (bouncy kick), hard trance (one-chord vamp, offbeat bass), trap (i–bVI sway), 2000s R&B (sparse syncopated kicks and matching bass, IV–vi–I, i–ii dorian vamp), synthpop (skippy kick, ii–V–I–vi), jam band (stop-time boogie bass, dotted vamp bass, two-chord vamps), folk jam / soft rock (push-kick bass), bluegrass (two-beat bass), disco (up to 130 BPM, i–iv vamp, driving and pushed bass), disco-funk (vi–IV–I, post-disco kick), nu-disco (bVI–i sway, boogie bass), funk (one-chord vamp, double-kick pickups) and smooth funk (busy 16th bass).
+
 ## 1.46.2
 - More reference-MIDI patterns: i–bIII sway, bVI–bIII–i–bVII, offbeat tambourine, octave-bounce 8th bass and a 128 BPM floor for eurodance; i–bIII–ii–i dorian sway and a sparse dotted bass for melodic / deep house; i–i–bIII–iv loop and dotted rolling bass for progressive / uplifting trance.
 
