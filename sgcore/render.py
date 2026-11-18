@@ -987,6 +987,8 @@ def master(x, cfg, log=print):
         x = eq(x, 'peak', 320, 1.0, -1.5)
     x = eq(x, 'peak', 3000, 0.8, 0.5)
     x = eq(x, 'highshelf', 9000, 0.7, cfg.get('air', 1.5))
+    if cfg.get('vintage_lp'):        # a 60s tape / tube top end: rolls off above this (Hz) - dark, warm, bass-forward
+        x = lp(x, float(cfg['vintage_lp']))
     if cfg.get('lofi'):
         x = lp(x, 9500)
         x = tape_wobble(x, cfg.get('wobble', 1.0))

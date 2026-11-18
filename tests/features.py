@@ -647,6 +647,43 @@ def test_new_genres_and_daisy():
     print('ok  40 new genres, protected grooves, Daisy Bell computer voice')
 
 
+def test_storage_cleanup():
+    """Old previews go; unkept songs older than the limit are trimmed to MIDI + settings (or deleted); kept songs and
+    files that aren't Studio Lab projects are never touched."""
+    import json
+    import time as _t
+    from sgcore import storage
+    d = tempfile.mkdtemp()
+    os.makedirs(os.path.join(d, 'previews'))
+    old = _t.time() - 30 * 86400
+
+    def song(base, kept=False, age=old):
+        with open(os.path.join(d, base + '_settings.json'), 'w') as f:
+            json.dump({'options': {'style': 'house'}, 'kept': kept}, f)
+        for ext in ('.mp3', '.wav', '.mid'):
+            open(os.path.join(d, base + ext), 'wb').write(b'x' * 1000)
+        os.makedirs(os.path.join(d, base + '_stems'))
+        open(os.path.join(d, base + '_stems', 'drums.wav'), 'wb').write(b'x' * 5000)
+        for p in os.listdir(d):
+            if p.startswith(base):
+                os.utime(os.path.join(d, p), (age, age))
+    song('Old_one'); song('Kept_one', kept=True); song('New_one', age=_t.time())
+    open(os.path.join(d, 'my_own_track.wav'), 'wb').write(b'x' * 100)
+    pv = os.path.join(d, 'previews', 'p.mp3'); open(pv, 'wb').write(b'x'); os.utime(pv, (old, old))
+    r = storage.clean(d, storage.policy({}))
+    assert r['previews'] == 1 and r['trimmed'] == 1 and r['deleted'] == 0, r
+    left = set(os.listdir(d))
+    assert {'Old_one_settings.json', 'Old_one.mid'} <= left and not {'Old_one.mp3', 'Old_one.wav', 'Old_one_stems'} & left
+    assert {'Kept_one.mp3', 'Kept_one_stems', 'New_one.mp3', 'my_own_track.wav'} <= left
+    assert storage.is_trimmed(d, 'Old_one') and not storage.is_trimmed(d, 'Kept_one')
+    storage.set_kept(d, 'Kept_one', False)
+    os.utime(os.path.join(d, 'Kept_one_settings.json'), (old, old))
+    r = storage.clean(d, storage.policy({'storage': {'mode': 'delete', 'days': 7}}))
+    assert r['deleted'] == 2 and not any(f.startswith(('Kept_one', 'Old_one')) for f in os.listdir(d)), os.listdir(d)
+    assert 'my_own_track.wav' in os.listdir(d) and storage.policy({'storage': {'mode': 'bogus', 'days': 0}}) == {'mode': 'midi', 'days': 1}
+    print('ok  storage clean-up: previews, trimmed / deleted / kept songs, other files untouched')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -675,6 +712,7 @@ def main():
     test_drum_style_vs_sounds_and_orchestra_detection()
     test_drummer_percussion_and_beat_feels()
     test_new_genres_and_daisy()
+    test_storage_cleanup()
     print('all good')
 
 

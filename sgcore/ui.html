@@ -741,7 +741,7 @@ function addResult(r, target){
     <div class="rr"><span class="lbl" title="Switch a part off (or back on) and hear this exact take again">On / off</span>${LAYERS.map(([k,n])=>`<span class="chip ${(r.options.muted||[]).includes(k)?'':'on'}" data-mu="${k}" style="cursor:pointer;font-size:11.5px;padding:2px 8px">${(r.options.muted||[]).includes(k)?'○':'●'} ${n}</span>`).join(' ')}</div>
     <div class="rr"><span class="lbl" title="🔒 keep this part in your next previews · ♥ you like this part (Surprise me learns from it)">Parts</span>${PARTSEED.map(([p])=>`<span class="pp">${p}<button class="ico" data-lk="${p}" title="Keep this ${p} part in new previews">🔒</button><button class="ico" data-lv="${p}" title="I like this ${p} part">♥</button></span>`).join('')}
       <span style="margin-left:auto"></span><button class="mini" data-a="ab" title="Compare two results back to back at matched loudness">A/B</button></div>
-    <div class="rr"><button class="mini acc" data-a="full">⬇ Full song from this</button><button class="mini acc" data-a="edit" title="Open this song in the editor: sections, parts and every sound in it">✏️ Edit</button><button class="mini" data-a="sounds" title="The same song (same notes) played on different sounds that suit the genre">🎲 New sounds</button><button class="mini" data-a="use">Use settings</button><button class="mini" data-a="save">★ Save preset</button>
+    <div class="rr"><button class="mini acc" data-a="full">⬇ Full song from this</button><button class="mini acc" data-a="edit" title="Open this song in the editor: sections, parts and every sound in it">✏️ Edit</button><button class="mini" data-a="sounds" title="The same song (same notes) played on different sounds that suit the genre">🎲 New sounds</button><button class="mini" data-a="use">Use settings</button><button class="mini" data-a="save">★ Save preset</button>${(!r.preview&&(r.project||r.lib_title))?`<button class="mini ${r.kept?'acc':''}" data-a="keep" title="Kept songs are never trimmed or deleted by the clean-up">${r.kept?'⭐ Kept':'☆ Keep'}</button>`:''}
       <span style="margin-left:auto"></span><button class="rate" data-r="1" title="I like this">👍</button><button class="rate" data-r="-1" title="Not for me">👎</button></div>
     <div class="tl" title="Click a section to edit it"></div><div class="sedbox"></div>
     <div class="dragrow rr"></div>
@@ -796,6 +796,11 @@ function addResult(r, target){
     o.instruments=rerollSounds(r.style, Object.assign({}, o.instruments||{})); $('#status').textContent='Same song, new sounds…'; run(true,1,o); };
   if(r.tracks&&r.style===state.style){ state.lastTracks=r.tracks; if(!target) renderSelected(); }
   el.querySelector('[data-a=save]').onclick=()=>savePreset(r.options);
+  if(el.querySelector('[data-a=keep]')) el.querySelector('[data-a=keep]').onclick=async e=>{ const b=e.currentTarget;
+    const res=await api('/api/library/keep',{name:r.project||r.lib_title, keep:!r.kept});
+    if(res.ok){ r.kept=res.kept; b.textContent=r.kept?'⭐ Kept':'☆ Keep'; b.classList.toggle('acc',r.kept);
+      $('#status').textContent=r.kept?'Kept - the clean-up will never touch this song.':'No longer kept - the clean-up may trim it later.'; }
+    else $('#status').textContent=res.error||'Could not change that.'; };
   (target||$('#session')).insertBefore(el,(target||$('#session')).querySelector('.res'));
   if(!target && r.preview) togglePlay(r.id,url,btn,cv);
 }
@@ -849,9 +854,34 @@ async function drawWave(cv,url,pos){
     g.fillStyle=played?'#29d3b2':'#3a3f57'; g.fillRect(x,(h-bh)/2,Math.max(1,bw-1),bh); });
 }
 async function loadLibrary(){
-  const lib=await api('/api/library'); const box=$('#library'); box.innerHTML='';
-  if(!lib.length){box.innerHTML='<div class="empty"><div class="big">🗂</div>Full songs you create show up here.</div>';return}
-  lib.forEach(it=>{ const i=it.info||{}; addResult({...i, id:'lib'+it.title, preview:false, options:it.options, urls:it.urls, files:{waveform:it.urls.waveform}}, box); });
+  const [lib,S]=await Promise.all([api('/api/library'), api('/api/storage',{})]); const box=$('#library'); box.innerHTML='';
+  // storage: what the clean-up does with songs you haven't kept
+  const st=document.createElement('div'); st.className='sel'; st.style.margin='0 0 10px';
+  const u=S.usage||{};
+  st.innerHTML=`<b>🧹 Storage</b> <span class="hint">previews ${u.previews_mb} MB · kept songs ${u.kept_mb} MB (${u.kept}) · other songs ${u.other_mb} MB (${u.other})</span>
+    <div class="row" style="gap:6px;margin-top:6px;flex-wrap:wrap"><span class="hint">Songs you haven't ⭐ kept, after</span>
+      <select id="stDays" style="width:auto">${[1,3,7,14,30,90].map(d=>`<option value="${d}" ${S.days==d?'selected':''}>${d} day${d>1?'s':''}</option>`).join('')}</select>
+      <select id="stMode" style="width:auto"><option value="midi" ${S.mode==='midi'?'selected':''}>keep only MIDI + settings (re-render any time)</option>
+        <option value="delete" ${S.mode==='delete'?'selected':''}>delete completely</option><option value="off" ${S.mode==='off'?'selected':''}>keep everything (no clean-up)</option></select>
+      <button class="mini" id="stClean">Clean now</button></div>
+    <div class="hint" style="margin-top:4px">Previews are always cleared after a day. Only Studio Lab songs are touched - nothing else in the folder.</div>`;
+  box.appendChild(st);
+  const saveSt=async()=>{ await api('/api/storage',{mode:$('#stMode').value, days:+$('#stDays').value}); $('#status').textContent='Storage setting saved.'; };
+  $('#stMode').onchange=saveSt; $('#stDays').onchange=saveSt;
+  $('#stClean').onclick=async()=>{ const r=await api('/api/storage/clean',{}); $('#status').textContent=`Cleaned: ${r.previews} previews, ${r.trimmed} songs trimmed, ${r.deleted} deleted - ${r.freed_mb} MB freed.`; loadLibrary(); };
+  if(!lib.length){box.insertAdjacentHTML('beforeend','<div class="empty"><div class="big">🗂</div>Full songs you create show up here.</div>');return}
+  lib.forEach(it=>{ const i=it.info||{};
+    if(it.trimmed){                                     // audio cleared to save space: MIDI + settings remain
+      const el=document.createElement('div'); el.className='res';
+      el.innerHTML=`<div class="tt">${esc(i.name?'“'+i.name+'” · ':'')}${esc(styleName((it.options||{}).style||''))}</div>
+        <div class="mt">${esc(i.key||'')} · ${i.bpm||''} BPM · seed ${i.seed||''} · <span class="tag">audio cleared to save space</span></div>
+        <div class="rr"><button class="mini acc" data-tr="render">⟳ Re-render (same song)</button>${it.urls.midi?`<a class="mini" href="${it.urls.midi}" download>♪ MIDI</a>`:''}
+          <button class="mini ${it.kept?'acc':''}" data-tr="keep">${it.kept?'⭐ Kept':'☆ Keep'}</button><button class="mini" data-tr="use">Use settings</button></div>`;
+      el.querySelector('[data-tr=render]').onclick=()=>{ $$('.rtabs button')[0].click(); run(false,1,it.options); };
+      el.querySelector('[data-tr=use]').onclick=()=>applyOptions(it.options);
+      el.querySelector('[data-tr=keep]').onclick=async e=>{ const r=await api('/api/library/keep',{name:it.title, keep:!it.kept}); if(r.ok){ it.kept=r.kept; e.currentTarget.textContent=it.kept?'⭐ Kept':'☆ Keep'; e.currentTarget.classList.toggle('acc',it.kept);} };
+      box.appendChild(el); return; }
+    addResult({...i, id:'lib'+it.title, preview:false, options:it.options, urls:it.urls, files:{waveform:it.urls.waveform}, lib_title:it.title, kept:it.kept}, box); });
 }
 async function savePreset(o){
   const name=prompt('Name this preset:', styleName((o||options()).style)+' '+((o||options()).mood||''));

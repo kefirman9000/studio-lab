@@ -286,7 +286,7 @@ EXTRA_CHORD_RH = {
 # pass never mixes the generic extra drum patterns into them - a reggae song with a kick on 1 and 3 isn't reggae
 OWN_GROOVE = {'reggae', 'dub', 'ska', 'reggaeton', 'dancehall', 'moombahton', 'soca', 'groovy_soca', 'salsa', 'cumbia',
               'bossa_nova', 'samba', 'bachata', 'merengue', 'baile_funk', 'funk_150', 'brazilian_phonk', 'afrobeat', 'afrobeats',
-              'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke',
+              'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house',
               'baltimore_club', 'jersey_club', 'uk_drill', 'ukgarage', 'speed_garage', 'freestyle', 'electro', 'nola_brass',
               'tango', 'celtic_jig', 'swing_tomtom', 'western_swing', 'country', 'outlaw_country', 'surf_rock'}
 
@@ -1048,11 +1048,12 @@ def compose(opts):
     if st.get('meter'):
         st['lead_device'] = 'hook'                     # the device figures are 16th-note based
     bsel = getattr(opts, 'build_style', None)
-    st['build_style'] = bsel if bsel in BUILD_STYLES else GENRE_BUILD.get(sname) or \
-        {'Classic': 'lift', 'Orchestral': 'swell'}.get(st.get('category'), 'roll')
+    from .arrange import default_build, DROPOUT, DROPOUT_FAMILY
+    st['build_style'] = bsel if bsel in BUILD_STYLES else default_build(sname, st)
     st['build_home'] = st['build_style']
+    fam = DROPOUT_FAMILY if (sname in DROPOUT and not st.get('build_family')) else st.get('build_family')
     st['build_seq'] = build_sequence(st['build_style'], bool(bsel in BUILD_STYLES), random.Random(f'{opts.seed}-build-{sname}'),
-                                     amount=getattr(opts, 'builds', 'auto') or 'auto', family=st.get('build_family'))
+                                     amount=getattr(opts, 'builds', 'auto') or 'auto', family=fam)
     g = getattr(opts, 'groove', None)
     st['groove'] = None if g == 'straight' else (g if g in GROOVES else STYLE_GROOVE.get(sname))
     pad_voicing = rnd.choice(['close', 'close', 'open'])

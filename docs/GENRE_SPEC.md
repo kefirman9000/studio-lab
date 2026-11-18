@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (257 genres)
+# Studio Lab - technical genre rules (259 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -676,8 +676,8 @@ French house / filter house: a looped disco sample swept through a filter, four-
 - **Chord rhythm** `x..x..x...x..x..` / `..x...x...x...x.` / `x.x...x.x.x...x.`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5, 'prob': 0.7}
 - **Lead rhythm** `x-.x-.x---x-x-..` / `x-x-x---..x-x---` / `..x-x-x-..x-x-x-`
-- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
-- **Traits** arrangement `groove_locked` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `underground_club` · texture `club_punchy` · rhythm `swung_16ths` · harmony `static_vamp` · energy `flat_hypnotic`
+- **Build-ups** default `filter` · choices ['filter', 'hats', 'drumless', 'wash', 'pulse', 'tapestop', 'pickup', 'ride']
+- **Traits** arrangement `groove_locked` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `progressive` · culture `underground_club` · texture `club_punchy` · rhythm `swung_16ths` · harmony `static_vamp` · energy `flat_hypnotic`
 - **Instruments**
   - kick (kick): `kick`  dB
   - clap (snare): `clap` -20 dB · rev=0.15
@@ -705,8 +705,8 @@ Electro swing: 1930s-40s swing on a house beat - a swung four-on-the-floor, walk
 - **Chord rhythm** `x..x....x..x....` / `..x...x...x...x.` / `x...x...x...x...`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
 - **Lead rhythm** `x-x-x---x-x-x---` / `x--x--x-x-------` / `x-x-x-x-x---x---`
-- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
-- **Traits** arrangement `tension_release` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `walking` · drop `long_build` · variation `progressive` · culture `underground_club` · texture `club_punchy` · rhythm `triplet_feel` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Build-ups** default `filter` · choices ['filter', 'hats', 'drumless', 'wash', 'pulse', 'tapestop', 'pickup', 'ride']
+- **Traits** arrangement `tension_release` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `walking` · drop `groove_drop` · variation `progressive` · culture `underground_club` · texture `club_punchy` · rhythm `triplet_feel` · harmony `functional_tonal` · energy `peaks_and_valleys`
 - **Instruments**
   - kick (kick): `kick` -12 dB
   - clap (snare): `clap` -18 dB · rev=0.2
@@ -764,8 +764,8 @@ Hi-NRG (80s): fast, glossy club pop - four-on-the-floor with handclaps, a relent
 - **Chord rhythm** `x..x..x.x..x..x.` / `..x...x...x...x.`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
 - **Lead rhythm** `x-x-x---x-x-x---` / `x---x---x-x-x---` / `x-------x-x-x-x-`
-- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
-- **Traits** arrangement `groove_locked` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `underground_club` · texture `club_punchy` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `flat_hypnotic`
+- **Build-ups** default `lift` · choices ['lift', 'pickup', 'toms', 'ride', 'stops', 'tomgroove', 'march', 'claps']
+- **Traits** arrangement `groove_locked` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `progressive` · culture `underground_club` · texture `club_punchy` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `flat_hypnotic`
 - **Instruments**
   - kick (kick): `kick` -12 dB
   - snare (snare): `snare` -16 dB · rev=0.3
@@ -1086,7 +1086,7 @@ Late-90s vocal trance-pop / UK dance: a pumping four-on-the-floor around 134 wit
 - **Chord rhythm** `x-x-x-x-x-x-x-x-` / `x---x---x---x---` / `..x...x...x...x.`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5, 'prob': 0.8}
 - **Lead rhythm** `x---x-x-x-------` / `x-x-x---x-x-....` / `x-------x---x---`
-- **Build-ups** default `(category default)` · choices ['roll', 'filter', 'pause']
+- **Build-ups** default `roll` · choices ['roll', 'filter', 'pause']
 - **Traits** arrangement `tension_release` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `underground_club` · texture `wet_and_spacious` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
 - **Instruments**
   - kick (kick): `kick` -12 dB
@@ -1115,7 +1115,7 @@ Hard trance / hands-up (2000s): a pounding 909 kick around 140 with offbeat open
 - **Chord rhythm** `x.x..x.x..x.x...` / `x-x-x-x-x-x-x-x-` / `x..x..x...x..x..`
 - **Arp** {'rate': 4, 'mode': 'up', 'oct': 5, 'prob': 0.9}
 - **Lead rhythm** `x.x..x.x..x.x.x.` / `x-x-x-x-x---x---` / `x..x..x.x.x.x...`
-- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'pause', 'filter']
+- **Build-ups** default `roll` · choices ['roll', 'triplet', 'pause', 'filter']
 - **Traits** arrangement `tension_release` · density `medium` · feel `robotic` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `warehouse` · texture `club_punchy` · rhythm `on_the_grid` · harmony `functional_tonal` · energy `peaks_and_valleys`
 - **Instruments**
   - kick (kick): `kick` -11 dB
@@ -1145,8 +1145,8 @@ Hard techno (2020s): 145-160 BPM, a distorted, saturated kick with a rumbling su
 - **Chord rhythm** `x.........x.....` / `..x.......x...x.`
 - **Arp** {'rate': 4, 'mode': 'up', 'oct': 4}
 - **Lead rhythm** `x...x...x...x...` / `x-x-x-x-x-x-x-x-` / `x---------------`
-- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
-- **Traits** arrangement `hypnotic_minimal` · density `medium` · feel `robotic` · melody `minimal_motivic` · bass `rolling_groove` · drop `long_build` · variation `low` · culture `underground_club` · texture `club_punchy` · rhythm `on_the_grid` · harmony `static_vamp` · energy `flat_hypnotic`
+- **Build-ups** default `filter` · choices ['filter', 'hats', 'drumless', 'wash', 'pulse', 'tapestop', 'pickup', 'ride']
+- **Traits** arrangement `hypnotic_minimal` · density `medium` · feel `robotic` · melody `minimal_motivic` · bass `rolling_groove` · drop `groove_drop` · variation `low` · culture `underground_club` · texture `club_punchy` · rhythm `on_the_grid` · harmony `static_vamp` · energy `flat_hypnotic`
 - **Instruments**
   - kick (kick): `kick` -10 dB
   - clap (snare): `clap` -19 dB · rev=0.25
@@ -1658,8 +1658,8 @@ Midtempo bass: 100-110 BPM, dark and heavy - a punchy kick and huge snare on 2 a
 - **Chord rhythm** `x.....x...x.....` / `x...............`
 - **Arp** {'rate': 4, 'mode': 'up', 'oct': 5, 'prob': 0.6}
 - **Lead rhythm** `x---x---x-x-x---` / `x-------x-------` / `x-x-x---........`
-- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
-- **Traits** arrangement `tension_release` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `uk_soundsystem` · texture `club_punchy` · rhythm `on_the_grid` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Build-ups** default `pause` · choices ['pause', 'drumless', 'halftime', 'tapestop', 'pickup', 'stops', 'wash']
+- **Traits** arrangement `tension_release` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `rolling_groove` · drop `sudden` · variation `progressive` · culture `uk_soundsystem` · texture `club_punchy` · rhythm `on_the_grid` · harmony `functional_tonal` · energy `peaks_and_valleys`
 - **Instruments**
   - kick (kick): `kick` -11 dB
   - snare (snare): `snare` -13 dB · rev=0.3
@@ -2146,7 +2146,7 @@ Big beat: huge, loud, sampled-sounding breakbeats around 130, a squelchy acid li
 - **Chord rhythm** `x.....x...x.....` / `x..x......x.....`
 - **Arp** {'rate': 4, 'mode': 'up', 'oct': 4, 'prob': 0.8}
 - **Lead rhythm** `x-------x-------` / `x---x---x---x---` / `x-------........`
-- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Build-ups** default `roll` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
 - **Traits** arrangement `tension_release` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `uk_soundsystem` · texture `club_punchy` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
 - **Instruments**
   - kick (kick): `kick` -12 dB
@@ -2174,7 +2174,7 @@ UK hardcore / happy hardcore: 170+ BPM four-on-the-floor, bouncing off-beat octa
 - **Chord rhythm** `x.xx.xx.x.xx.xx.` / `x..x..x.x..x..x.` / `x-x-x-x-x-x-x-x-`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
 - **Lead rhythm** `x-x-x---x-x-x---` / `x---x---x-x-x---` / `x-x-x-x-x-------`
-- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Build-ups** default `roll` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
 - **Traits** arrangement `tension_release` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `uk_soundsystem` · texture `club_punchy` · rhythm `on_the_grid` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
 - **Instruments**
   - kick (kick): `kick` -11 dB
@@ -2764,8 +2764,8 @@ Witch house: slowed, occult and hazy - half-time trap drums dragged down to 70, 
 - **Chord rhythm** `x---------------`
 - **Arp** {'rate': 2, 'mode': 'down', 'oct': 5, 'prob': 0.5}
 - **Lead rhythm** `x-------x-------` / `x---------------` / `....x-------x---`
-- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
-- **Traits** arrangement `atmospheric_drift` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `808_slide` · drop `long_build` · variation `sectional` · culture `street` · texture `wet_and_spacious` · rhythm `half_time` · harmony `static_vamp` · energy `slow_build`
+- **Build-ups** default `pause` · choices ['pause', 'drumless', 'halftime', 'tapestop', 'pickup', 'stops', 'wash']
+- **Traits** arrangement `atmospheric_drift` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `808_slide` · drop `sudden` · variation `sectional` · culture `street` · texture `wet_and_spacious` · rhythm `half_time` · harmony `static_vamp` · energy `slow_build`
 - **Instruments**
   - kick (kick): `kick` -13 dB
   - snare (snare): `snare` -17 dB · rev=0.5
@@ -2794,8 +2794,8 @@ Latin trap: half-time trap with a Latin accent - booming 808, rattling hats, a d
 - **Chord rhythm** `x---------------` / `x.......x.......`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
 - **Lead rhythm** `x-x-x---x-......` / `x--x--x-x-------` / `..x-x-x-x---....`
-- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
-- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `808_slide` · drop `long_build` · variation `sectional` · culture `street` · texture `club_punchy` · rhythm `half_time` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Build-ups** default `pause` · choices ['pause', 'drumless', 'halftime', 'tapestop', 'pickup', 'stops', 'wash']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `808_slide` · drop `sudden` · variation `sectional` · culture `street` · texture `club_punchy` · rhythm `half_time` · harmony `functional_tonal` · energy `peaks_and_valleys`
 - **Instruments**
   - kick (kick): `kick` -12 dB
   - snare (snare): `snare` -16 dB · rev=0.2
@@ -3116,8 +3116,8 @@ Latin freestyle (80s): electro drum-machine beats with Latin syncopation - an 80
 - **Chord rhythm** `x..x..x...x..x..` / `x.....x...x.....`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
 - **Lead rhythm** `x-x-x---x-x-x---` / `x--x--x-x-------` / `x-x-x-x-x---x---`
-- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
-- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Build-ups** default `lift` · choices ['lift', 'pickup', 'toms', 'ride', 'stops', 'tomgroove', 'march', 'claps']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
 - **Instruments**
   - kick (kick): `kick` -12 dB
   - clap (snare): `clap` -16 dB · rev=0.2
@@ -3729,6 +3729,59 @@ Experimental footwork: polyrhythmic, percussion-driven 160 - interlocking toms, 
 - **Mix** {'lufs': -9.0, 'air': 1.0, 'low': 1.6} · reverb 2.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
 
+### Juke / ghetto house - raw (130) (`juke_raw`)
+
+Juke / ghetto house - raw (130): stripped to the drums - a syncopated kick (1, the "a" of 2, the "e" of 4), claps and hand percussion locked in the same off-kilter pattern every bar, dense 16th hats, a huge sub under the kick and one repeated vocal chop. A long drums-only intro, breakdowns that drop to almost nothing, then the full groove slams back - no build-ups, all repetition
+
+- **Tempo** 128-134 BPM · **scales** minor · swing 0.5 (unit 16) · humanise 0.001
+- **Progressions** {'minor': [[0, 0, 0, 0], [0, 0, 5, 5]]} · chord_bars 1 · chord size 3
+- **Song form** `juke_raw`: intro 16 [snare, top] -> main 32 [bass, kick, lead, snare, top] -> break 8 [top] (level=0.45) -> main 32 [bass, chords, kick, lead, snare, top] -> break 8 [snare, top] (level=0.5) -> main 32 [bass, chords, kick, lead, snare, top] -> outro 16 [snare, top] · form_scale 1
+- **Drums** **kick** `X......X.....X..` / `X.X....X.....X..` / `X..X...X.....X..` / `X.X....X.X..X..X`; **clap** `..X..X.X..X..X..` / `..X..XXX..X..X..`; **chat** `x.xxx.xxx.xxx.xx` / `x.x.x.x.x.x.x.x.`; **rim** `X.X.X.........X.` / `..X..x.X.x.xx.x.`
+- **Drum kit** 808 · preset `808`
+- **Bass** `R......R.....R..` / `R.R....R.....R..` · mode `808` · lowest note 26
+- **Chord rhythm** `..x.......x.....` / `x...............`
+- **Arp** {'rate': 2, 'mode': 'up', 'oct': 5, 'prob': 0.2}
+- **Lead rhythm** `x.x.....x.x.....` / `x.......x.......` / `..x..x.x..x.....`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `sparse` · feel `robotic` · melody `minimal_motivic` · bass `808_slide` · drop `long_build` · variation `low` · culture `underground_club` · texture `club_punchy` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -11 dB
+  - clap (snare): `clap` -17 dB · rev=0.1
+  - chat (top): `chat` -29 dB
+  - rim (top): `rim` -24 dB · pan=0.3
+  - bass (bass): `808` -10 dB · alternatives ['sinebass', 'reese']
+  - chords (chords): `stab` -24 dB · rev=0.2 · alternatives ['organ', 'vox']
+  - lead (lead): `vox` -20 dB · rev=0.15 · dly=0.15 · alternatives ['stab', 'pluck']
+- **Mix** {'lufs': -9.0, 'air': 0.6, 'low': 2.5, 'width': 0.9} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'repetition': 0.95, 'no_rotation': True, 'no_layers': True}
+
+### Juke house - bouncy (126) (`juke_house`)
+
+Juke house (126): bouncy and hypnotic - a 3-3-2 tresillo kick, hi-hats on the off-grid spots against it, claps every five 16ths for a rolling cross-rhythm, a busy 16th percussion loop, a fat sub following the kick and one bright, catchy major-key synth riff on top. Plateaus and breakdowns, no snare ramps
+
+- **Tempo** 124-128 BPM · **scales** major, dorian · swing 0.5 (unit 16) · humanise 0.001
+- **Progressions** {'major': [[0, 0, 4, 4], [0, 3, 0, 3], [0, 0, 0, 0]], 'dorian': [[0, 3, 0, 3]]} · chord_bars 1 · chord size 3
+- **Song form** `juke_house`: intro 16 [bass, kick, snare, top] -> groove 16 [bass, chords, kick, snare, top] -> main 16 [bass, chords, kick, lead, snare, top] -> break 8 [pad, snare, top] (level=0.6) -> main 32 [bass, chords, kick, lead, snare, top] -> break 8 [lead, pad, snare, top] (level=0.6) -> main 32 [bass, chords, kick, lead, snare, top] -> outro 16 [bass, kick, snare, top] · form_scale 1
+- **Drums** **kick** `X..X..X.X....X..` / `X..X..X......X..` / `X..X..X.X....XX.`; **clap** `...X....X....X..` / `X.....X.....X...`; **chat** `...X..X.X.X..X..` / `..XX..X...X.XXX.` / `...X...X..X..X..`; **shaker** `xoxxxoxxxoxxxoxx`
+- **Drum kit** 808 · preset `808`
+- **Bass** `R..R..R.R....R..` / `R..R..R......R..` · mode `pattern` · lowest note 28
+- **Chord rhythm** `..x..x.x..x..x..` / `x.......x.......`
+- **Arp** {'rate': 4, 'mode': 'up', 'oct': 5, 'prob': 0.3}
+- **Lead rhythm** `..x..x.x..x..x..` / `x..x..x.x.x.x...` / `x.x..x.x..x.x...`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `robotic` · melody `minimal_motivic` · bass `rolling_groove` · drop `long_build` · variation `low` · culture `underground_club` · texture `club_punchy` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -11 dB
+  - clap (snare): `clap` -17 dB · rev=0.15
+  - chat (top): `chat` -27 dB
+  - shaker (top): `shaker` -29 dB · pan=0.3
+  - bass (bass): `sinebass` -11 dB · sc=0.5 · alternatives ['808', 'fmbass']
+  - chords (chords): `stab` -23 dB · rev=0.2 · sc=0.4 · alternatives ['organ', 'polysynth']
+  - pad (pad): `warmpad` -27 dB · rev=0.4 · alternatives ['glasspad', 'strings']
+  - lead (lead): `pluck_saw` -18 dB · rev=0.25 · dly=0.2 · alternatives ['leadsaw', 'polysynth', 'pluck']
+- **Mix** {'lufs': -8.5, 'air': 1.2, 'low': 2.0, 'width': 1.0} · reverb 2.0 · sc_depth 0.2
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'repetition': 0.9, 'no_rotation': True}
+
 ## Retro & Video Game
 
 ### Synthwave (`synthwave`)
@@ -3860,8 +3913,8 @@ Darkwave / EBM: cold 80s machines - a driving 16th-note sequenced bass, stomping
 - **Chord rhythm** `x-------x-------` / `x---x---x---x---`
 - **Arp** {'rate': 4, 'mode': 'up', 'oct': 5}
 - **Lead rhythm** `x---x---x-x-x---` / `x-------x---x---` / `x-x-x---x-------`
-- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
-- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `sectional` · culture `underground_club` · texture `dry_and_upfront` · rhythm `on_the_grid` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Build-ups** default `lift` · choices ['lift', 'pickup', 'toms', 'ride', 'stops', 'tomgroove', 'march', 'claps']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `underground_club` · texture `dry_and_upfront` · rhythm `on_the_grid` · harmony `functional_tonal` · energy `peaks_and_valleys`
 - **Instruments**
   - kick (kick): `kick` -12 dB
   - snare (snare): `snare` -15 dB · rev=0.35
@@ -4420,7 +4473,7 @@ Spooky 60s surf / TV-theme rock: a fast, driving beat around 150 with a twangy, 
 - **Song form** `spooky_surf`: intro 4 [bass, kick, snare, top] -> A 16 [bass, chords, kick, lead, snare, top] -> B 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> A 16 [bass, chords, kick, lead, snare, top] (crash) -> B 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> outro 8 [bass, chords, kick, lead, snare, top] · form_scale 1
 - **Drums** **kick** `X.......X.......` / `X.....X.X.......`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`; **ride** `x.xxx.xxx.xxx.xx`
 - **Drum kit** vintage · preset `acoustic`
-- **Bass** `R.F.R.F.O.F.R.A.` / `R...F...R...A...` · mode `walk` · lowest note 31
+- **Bass** `R.F.R.F.O.F.R.A.` / `R...F...R...A...` · mode `walk` · lowest note 38
 - **Chord rhythm** `x...x...x...x...` / `x.x.....x.x.....`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
 - **Lead rhythm** `x-x-x-x-x---x---` / `x---x-x-x-x-x---` / `x-x-x---x-x-x---`
@@ -4431,11 +4484,12 @@ Spooky 60s surf / TV-theme rock: a fast, driving beat around 150 with a twangy, 
   - snare (snare): `snare` -15 dB · rev=0.3
   - chat (top): `chat` -27 dB
   - ride (top): `ride` -30 dB
-  - bass (bass): `ebass` -14 dB · alternatives ['upright', 'sf:fingerbass', 'sf:pickbass']
+  - bass (bass): `ebass` -9 dB · alternatives ['upright', 'sf:fingerbass', 'sf:pickbass']
+  - rumble (bass): `twang` -14 dB · pan=-0.15 · rev=0.45
   - chords (chords): `brass` -20 dB · rev=0.3 · alternatives ['organ', 'synthbrass', 'sf:trumpetsection']
   - arp (arp): `organ` -24 dB · pan=0.3 · rev=0.25 · alternatives ['twang', 'guitar', 'piano']
   - lead (lead): `twang` -17 dB · rev=0.45 · dly=0.15 · alternatives ['guitar', 'organ', 'sf:cleanguitar']
-- **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 0.6, 'width': 1.1} · reverb 2.4 · sc_depth 0.0
+- **Mix** {'lufs': -11.0, 'air': -0.5, 'low': 0.5, 'width': 1.25, 'vintage_lp': 7500} · reverb 2.4 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 4, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_fx_sounds': True, 'spring': True}
 - **Sound brief** Twangy reverb-drenched guitar melody (low strings); walking bass; brass stabs; combo organ; fast straight beat
 
@@ -4472,12 +4526,12 @@ Nu-metal / alt-metal (late 90s - early 2000s): down-tuned, chugging power-chord 
 
 Surf rock (early-60s instrumental surf): a fast, straight beat driven by the floor tom, a twangy guitar melody tremolo-picked in bursts on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and now and then a combo organ or sax - sunny, wet and full speed ahead
 
-- **Tempo** 132-156 BPM · **scales** major, mixolydian, minor, phrygian_dominant · swing 0.5 (unit 16) · humanise 0.008
+- **Tempo** 146-160 BPM · **scales** major, mixolydian, minor, phrygian_dominant · swing 0.5 (unit 16) · humanise 0.008
 - **Progressions** {'major': [[0, 3, 4, 3], [0, 5, 3, 4], [0, 0, 3, 3], [0, 3, 0, 4]], 'mixolydian': [[0, 6, 3, 0], [0, 6, 0, 6]], 'minor': [[0, 5, 6, 0], [0, 6, 5, 4]], 'phrygian_dominant': [[0, 1, 0, 1], [0, 1, 6, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `surf_rock`: intro 4 [kick, lead, snare, top] -> A 16 [bass, chords, kick, lead, snare, top] (crash) -> B 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> break 4 [kick, snare, top] -> solo 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> A 16 [bass, chords, kick, lead, snare, top] (crash) -> outro 4 [bass, chords, kick, lead, snare, top] · form_scale 1
 - **Drums** **kick** `X.......X.......` / `X.....X.X.......`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`; **tom** `x...x...x...x...` / `x...x...x.x.x...`
 - **Drum kit** vintage · preset `acoustic`
-- **Bass** `R...F...R...F...` / `R...F...O...F...` / `R.R.F...R.R.F...` · mode `pattern` · lowest note 31
+- **Bass** `R...F...R...F...` / `R...F...O...F...` / `R.R.F...R.R.F...` · mode `pattern` · lowest note 38
 - **Chord rhythm** `x...x...x...x...` / `x..x..x.x.......` / `x---x---x---x---`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
 - **Lead rhythm** `x-x-x-x-x---x---` / `x.x.x.x.x.x.x---` / `x---x-x-x-x-x---` / `x-x-x-x-xxxx----`
@@ -4486,13 +4540,14 @@ Surf rock (early-60s instrumental surf): a fast, straight beat driven by the flo
 - **Instruments**
   - kick (kick): `kick` -13 dB
   - snare (snare): `snare` -16 dB · rev=0.35
-  - chat (top): `chat` -26 dB
+  - chat (top): `chat` -29 dB
   - tom (top): `tom` -18 dB · pan=-0.2 · rev=0.3
-  - bass (bass): `ebass` -12 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'upright']
+  - bass (bass): `ebass` -9 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'upright']
+  - rumble (bass): `twang` -14 dB · pan=-0.15 · rev=0.45
   - chords (chords): `guitar` -23 dB · pan=0.25 · rev=0.35 · alternatives ['acguitar', 'twang', 'organ']
   - arp (arp): `organ` -24 dB · pan=-0.3 · rev=0.3 · alternatives ['guitar', 'twang', 'sax']
   - lead (lead): `twang` -18 dB · rev=0.55 · dly=0.12 · alternatives ['guitar', 'sax', 'sf:cleanguitar']
-- **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 2.0, 'width': 1.1} · reverb 2.6 · sc_depth 0.0
+- **Mix** {'lufs': -11.0, 'air': -0.5, 'low': 0.5, 'width': 1.25, 'vintage_lp': 7500} · reverb 2.6 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.012, 'voicing': 'close', 'lead_oct': 4, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_fx_sounds': True, 'spring': True, 'repetition': 0.75}
 - **Sound brief** Twangy single-coil guitar (tremolo-picked, low strings) in a spring reverb tank; strummed rhythm guitar; electric bass; floor-tom surf beat; combo organ or tenor sax for a chorus
 
@@ -4505,7 +4560,7 @@ Spooky surf - 60s monster-sitcom theme: a driving 150 BPM surf beat under a low,
 - **Song form** `monster_theme`: intro 4 [bass, kick, snare, top] -> A 16 [bass, chords, kick, snare, top] (crash) -> bridge 8 [bass, chords, kick, lead, snare, top] (alt, crash) -> horns 12 [arp, bass, chords, kick, snare, top] -> bridge 8 [bass, chords, kick, lead, snare, top] (alt, crash) -> A 16 [bass, chords, kick, snare, top] (crash) -> A 8 [bass, chords, kick, lead, snare, top] -> outro 4 [bass, chords, kick, lead, snare, top] · form_scale 1
 - **Drums** **kick** `X.......X.......` / `X.....X.X.......`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`; **ride** `x.x.x.x.x.x.x.x.`
 - **Drum kit** vintage · preset `acoustic`
-- **Bass** `R.R.u.R.d.R.R...` / `R.u.R.d.R.R.u.R.` / `R.R.R.u.R.d.R...` · mode `pattern` · lowest note 28
+- **Bass** `R.R.u.R.d.R.R...` / `R.u.R.d.R.R.u.R.` / `R.R.R.u.R.d.R...` · mode `pattern` · lowest note 36
 - **Chord rhythm** `..x...x...x...x.` / `x.......x.x.....` / `....x.......x.x.`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 4, 'prob': 0.7}
 - **Lead rhythm** `x-x-x---x-x-x---` / `x---x-x-x-------` / `x-x-x-x-x---x---`
@@ -4516,12 +4571,12 @@ Spooky surf - 60s monster-sitcom theme: a driving 150 BPM surf beat under a low,
   - snare (snare): `snare` -15 dB · rev=0.3
   - chat (top): `chat` -27 dB
   - ride (top): `ride` -28 dB
-  - bass (bass): `ebass` -11 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'upright']
-  - riff (bass): `twang` -13 dB · rev=0.45
+  - bass (bass): `ebass` -8 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'upright']
+  - riff (bass): `twang` -10 dB · rev=0.45
   - chords (chords): `brass` -23 dB · pan=0.25 · rev=0.3 · alternatives ['synthbrass', 'organ', 'sf:trumpetsection']
   - arp (arp): `sax` -22 dB · pan=-0.25 · rev=0.3 · alternatives ['brass', 'organ']
   - lead (lead): `brass` -17 dB · rev=0.35 · dly=0.1 · alternatives ['sax', 'twang', 'organ']
-- **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 1.5, 'width': 1.0} · reverb 2.2 · sc_depth 0.0
+- **Mix** {'lufs': -11.0, 'air': -0.5, 'low': 0.5, 'width': 1.2, 'vintage_lp': 7500} · reverb 2.2 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_fx_sounds': True, 'spring': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'riff_locked': True, 'section_progs': {'verse': [0, 0, 0, 0], 'main': [0, 0, 5, 4], 'alt': [2, 6, 5, 2]}, 'repetition': 0.85}
 - **Sound brief** Twangy baritone / six-string guitar doubling the bass on a low chromatic riff (spring reverb); electric bass; brass section stabs; trumpet melody for the bridge; sax section; driving surf drums with ride
 

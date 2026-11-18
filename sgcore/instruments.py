@@ -1516,7 +1516,21 @@ DRUMS['anvil'] = d_anvil
 
 def i_twang(m, dur, p, glide=None, mod=None):
     """Telecaster twang: a bright bridge-pickup pluck with a snappy attack, a little amp grit and spring-reverb sparkle -
-    the chicken-pickin' country lead guitar."""
+    the chicken-pickin' country lead guitar. p['trem'] (picks per second): tremolo picking - the note re-picked fast for
+    its whole length, the surf-guitar rumble (alternate picks slightly softer)."""
+    rate = float(p.get('trem') or 0)
+    if rate > 0 and dur > 1.5 / rate:
+        step = int(SR / rate)
+        n = int(dur * SR) + int(0.25 * SR)
+        y = np.zeros(n)
+        pick = i_pluck(m, 2.2 / rate, dict(bright=p.get('bright', 7000), damp=p.get('damp', 0.99), r=0.05))
+        pick = pick if pick.ndim == 1 else pick.mean(axis=0)
+        for k, i in enumerate(range(0, int(dur * SR), step)):
+            seg = pick[:n - i] * (1.0 if k % 2 == 0 else 0.8)
+            y[i:i + len(seg)] *= 0.35                       # the new pick damps the ringing one
+            y[i:i + len(seg)] += seg
+        y = eq(eq(y, 'peak', 2600, 1.2, 5), 'peak', 180, 1.0, -2)
+        return soft(y * 2.0, 1.6) * 0.42
     y = i_pluck(m, min(dur, 1.6), dict(bright=p.get('bright', 9000), damp=p.get('damp', 0.993), r=0.18))
     y = eq(eq(y, 'peak', 2600, 1.2, 6), 'peak', 180, 1.0, -4)
     return soft(y * 2.2, 1.6) * 0.45

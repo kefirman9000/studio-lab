@@ -92,6 +92,17 @@ def plugin_prefs():
                 os=st.get('os') or host_os(), found=found)
 
 
+def storage_loop():
+    """Tidy the output folder at start-up and then every hour (old previews; unkept songs per the storage setting)."""
+    from . import storage
+    while True:
+        try:
+            storage.clean(out_dir(), storage.policy(load_settings()), log=print)
+        except Exception as e:
+            print('storage clean-up skipped:', e)
+        time.sleep(3600)
+
+
 def startup_detect():
     """Scan plugin folders; if any plugin the genre rigs can play is installed, make sure VST support is ready."""
     try:
@@ -250,6 +261,8 @@ def worker():
                 rel = lambda v: '/files/' + os.path.relpath(v, out_dir()).replace(os.sep, '/')
                 info['urls'] = {k: rel(v) for k, v in info['files'].items() if k != 'waveform' and isinstance(v, str) and os.path.isfile(v)}
                 info['part_urls'] = {k: rel(v) for k, v in (info.get('parts') or {}).items()}
+                if not item['preview'] and isinstance(info['files'].get('wav') or info['files'].get('mp3'), str):
+                    info['project'] = project_base(info['files'].get('wav') or info['files'].get('mp3'))   # for ⭐ Keep
                 info.pop('parts', None)
                 info['id'] = uuid.uuid4().hex[:8]
                 job['results'].append(info)
@@ -399,7 +412,8 @@ def _lib_item(d, base, s=None):
     wf = os.path.join(d, base + '_waveform')
     info = dict(s.get('info') or {})
     info['files'] = {'folder': wf if os.path.isdir(wf) else d}
-    return dict(title=base, info=info, options=s.get('options') or {}, urls=files)
+    return dict(title=base, info=info, options=s.get('options') or {}, urls=files, kept=bool(s.get('kept')),
+                trimmed=not any(k in files for k in ('mp3', 'wav')))
 
 
 def library():
@@ -719,6 +733,28 @@ class Handler(BaseHTTPRequestHandler):
             path, name = str(body.get('path', '')), str(body.get('name', 'My sound'))[:60]
             existing = body.get('existing')
             return self._json({'job': bg_job(lambda log: vsthost.create_sound(path, name, existing))})
+        if p == '/api/storage':                          # read / change the clean-up setting, with space used
+            from . import storage
+            st_ = load_settings()
+            if body.get('mode') in storage.MODES or 'days' in body:
+                cur = storage.policy(st_)
+                if body.get('mode') in storage.MODES:
+                    cur['mode'] = body['mode']
+                if 'days' in body:
+                    cur['days'] = body['days']
+                st_['storage'] = storage.policy({'storage': cur})
+                save_settings(st_)
+            return self._json(dict(storage.policy(load_settings()), usage=storage.usage(out_dir()), modes=list(storage.MODES)))
+        if p == '/api/storage/clean':
+            from . import storage
+            res = storage.clean(out_dir(), storage.policy(load_settings()))
+            return self._json(dict(res, usage=storage.usage(out_dir())))
+        if p == '/api/library/keep':                     # ⭐ Keep: this song is never trimmed or deleted
+            from . import storage
+            base = project_base(str(body.get('name', '')))
+            if not base or not os.path.exists(storage.settings_path(out_dir(), base)):
+                return self._json({'ok': False, 'error': 'song not found in the output folder'})
+            return self._json({'ok': True, 'kept': storage.set_kept(out_dir(), base, bool(body.get('keep', True)))})
         if p == '/api/special/daisy':                    # Daisy Bell (1892) sung by a creepy computer voice
             from . import daisy
 
@@ -922,6 +958,7 @@ def run(port=8765, open_browser=True, window='auto'):
     diagnostics.capture()
     threading.Thread(target=worker, daemon=True).start()
     threading.Thread(target=startup_detect, daemon=True).start()
+    threading.Thread(target=storage_loop, daemon=True).start()
     for p in range(port, port + 20):
         try:
             srv = ThreadingHTTPServer(('127.0.0.1', p), Handler)

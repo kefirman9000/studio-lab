@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.51.3
+- **Build-ups no longer default to a snare roll.** 64 genres had no build-up of their own and fell back to a snare ramp - lo-fi, ambient, trap, deep and garage house, hauntology, footwork and more. Each genre now gets a build-up that fits its beat: a filter sweep for four-on-the-floor, a drop-out for half-time / dembow / garage / syncopated beats, a stutter or half-time switch for breakbeats, a swell where there are no drums. Snare and kick ramps stay only where they belong (trance, big room, drum & bass, dubstep, hardstyle, rave, UK hardcore, big beat ...), and even there not on every build.
+- **Juke, footwork, gqom, dub techno, minimal and similar never ramp**: their builds are drop-outs - the groove falls away to percussion or nothing and slams straight back.
+- **Two new juke genres from your references** (studied hit by hit on a 16th grid):
+  - *Juke / ghetto house - raw (130)*: kick on 1, the "a" of 2 and the "e" of 4; claps and hand percussion in the same off-kilter pattern every bar; dense 16th hats; a huge sub; a long drums-only intro; breakdowns to almost nothing; one repeated vocal chop - no build-ups, all repetition.
+  - *Juke house - bouncy (126)*: a 3-3-2 tresillo kick, hats on the off-grid spots, claps every five 16ths for a rolling cross-rhythm, a busy 16th percussion loop, a fat sub and one bright major-key synth riff.
+- **Surf rock, spooky surf and the monster TV theme, re-tuned to your 60s TV-theme reference** (around 154 BPM, kick 1 & 3, snare 2 & 4, 8th hats): a low tremolo-picked twang guitar rumble on the bass line (the twang guitar can now tremolo-pick, about 15 picks a second like the record), a dark, bass-heavy 60s mix (a new vintage tape top-end roll-off in mastering) and wider stereo. Tone balance now within ~2 dB of the reference.
+- **Daisy Bell: every syllable at the same volume.** Each sung note is levelled automatically (a note used to jump louder or softer depending on whether one of its harmonics landed on a vocal resonance).
+- **Storage clean-up** (Library → 🧹 Storage): previews are cleared after a day; songs you haven't ⭐ kept are, after 1-90 days (default 7), either trimmed to their MIDI + settings file - the Library offers ⟳ Re-render, which rebuilds the exact same song - or deleted completely, or left alone. ⭐ Keep on any full song (result card or Library) protects it. Only Studio Lab songs are touched.
+
 ## 1.51.2
 - **Daisy Bell says "Daisy" again, not "Die-easy".** The first syllable was spelled with the "eye" vowel instead of "ay", and every two-part vowel (ay, eye, oh) glided for over a third of the note - so long notes sang a separate "ee" before the next consonant. The main vowel is now held and only glides to its end sound in the last moment, as a singer does. Both voices.
 

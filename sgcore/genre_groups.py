@@ -20,7 +20,7 @@ GROUPS = {
         ('Pop, R&B & Hopecore', ['synthpop', 'kpop', 'teen_pop', 'hyperpop', 'alt_rnb', 'hopecore', 'hopecore_dreamy', 'hopecore_breaks', 'club_pop', 'glitch_pop', 'freestyle']),
         ('Afro, Latin & Caribbean', ['afrobeats', 'amapiano', 'reggaeton', 'moombahton', 'dancehall', 'baile_funk', 'funk_150', 'gqom']),
         ('Chill, Lo-fi & Ambient', ['lofi', 'downtempo', 'ambient', 'ambient_beat', 'vaporwave', 'new_age_chant', 'midfi_synthfunk', 'trip_hop', 'berlin_school']),
-        ('Footwork & Juke', ['footwork', 'footwork_soulful', 'footwork_dark', 'juke']),
+        ('Footwork & Juke', ['footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house']),
         ('Retro & Video Game', ['synthwave', 'dark_synthwave', 'chiptune', 'ps1_game', 'darkwave_ebm']),
         ('Hauntology', ['hauntology', 'hauntology_sunlit', 'hauntology_dark', 'hauntology_melody', 'hauntology_lullaby',
                         'hauntology_campfire', 'hauntology_cold']),

@@ -470,3 +470,35 @@ def apply_ending(sections, evs, fx, tracks, st, opts, key, chord_size, chord_col
         fx.append(('impact', end, 0))
     last['ending'] = 'hit'
     return total_bars + 1                          # the hit rings out into the render's tail
+
+
+# genres where a snare ramp really is the sound (rave / trance / big beat): named explicitly, never a fallback
+GENRE_BUILD.update({'uk_hardcore': 'roll', 'hard_trance': 'roll', 'trance_pop_90s': 'roll', 'big_beat': 'roll', 'hi_nrg': 'lift',
+                    'freestyle': 'lift', 'darkwave_ebm': 'lift', 'electro_swing': 'filter', 'french_house': 'filter',
+                    'hard_techno': 'filter', 'latin_trap': 'pause', 'midtempo_bass': 'pause', 'witch_house': 'pause'})
+# genres that never ramp: the groove just drops out (to percussion, to nothing) and slams back - juke, footwork,
+# ghetto house, gqom, dub techno, minimal ... each build in these songs is one of these
+DROPOUT_FAMILY = ['pause', 'drumless', 'stops', 'none', 'none']
+DROPOUT = {'juke', 'juke_raw', 'juke_house', 'footwork', 'footwork_soulful', 'footwork_dark', 'gqom', 'dub_techno', 'minimal',
+           'baltimore_club', 'jersey_club', 'uk_funky', 'deep_house', 'tech_house', 'dub', 'berlin_school', 'trip_hop'}
+
+
+def default_build(name, st):
+    """A genre with no build-up of its own gets one that fits its beat - not a snare roll by default."""
+    if name in DROPOUT:
+        return 'pause'
+    if name in GENRE_BUILD:
+        return GENRE_BUILD[name]
+    if st.get('category') == 'Orchestral':
+        return 'swell'
+    from .drummer import beat_feel
+    try:
+        feel = beat_feel(name)
+    except Exception:
+        feel = ''
+    if feel == 'no drums' or '/' in feel and feel[0].isdigit():
+        return 'swell'
+    if st.get('category') == 'Classic':
+        return 'lift'
+    return {'four-on-the-floor': 'filter', 'half-time': 'pause', 'dembow / clave': 'pause', 'breakbeat': 'stutter',
+            'swing / shuffle': 'pause', 'two-step': 'pause', 'backbeat': 'pause', 'syncopated': 'pause'}.get(feel, 'pause')

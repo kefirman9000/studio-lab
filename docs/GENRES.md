@@ -1,8 +1,8 @@
-# Studio Lab genres (257)
+# Studio Lab genres (259)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (138)
+## Electronic (140)
 
 ### House & Disco (26)
 
@@ -166,7 +166,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Trip-hop | `trip_hop` | 76-96 | Trip-hop: slow, heavy, dusty breakbeats, a deep sub, dark minor Rhodes and string chords, a haunting theremin-like lead, harpsichord or vibes colour and vinyl crackle - moody, cinematic and smoky |
 | Vaporwave | `vaporwave` | 58-74 | Vaporwave: slowed 80s nostalgia - lush Rhodes, sax, chorused pads, tape haze |
 
-### Footwork & Juke (4)
+### Footwork & Juke (6)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -174,6 +174,8 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Footwork - dark & percussive | `footwork_dark` | 156-164 | Experimental footwork: polyrhythmic, percussion-driven 160 - interlocking toms, rims and hand drums against the triplet kicks, cold sparse stabs and drones instead of chords, sudden gaps and stutters |
 | Footwork - soulful (jazzy chops) | `footwork_soulful` | 156-162 | Soulful footwork: the 160 triplet-kick rhythm under warm, jazzy chopped soul and R&B - Rhodes 7th chords, string and sax snippets, a pitched-up vocal hook and a round 808 - dreamy and fast at once |
 | Juke / ghetto house | `juke` | 148-160 | Chicago juke / ghetto house: a faster, harder house cousin of footwork - a pounding 808 four-on-the-floor with extra kicks, claps, repeated chopped vocal phrases and a rumbling 808 bass, raw and hypnotic |
+| Juke / ghetto house - raw (130) | `juke_raw` | 128-134 | Juke / ghetto house - raw (130): stripped to the drums - a syncopated kick (1, the "a" of 2, the "e" of 4), claps and hand percussion locked in the same off-kilter pattern every bar, dense 16th hats, a huge sub under the kick and one repeated vocal chop. A long drums-only intro, breakdowns that drop to almost nothing, then the full groove slams back - no build-ups, all repetition |
+| Juke house - bouncy (126) | `juke_house` | 124-128 | Juke house (126): bouncy and hypnotic - a 3-3-2 tresillo kick, hi-hats on the off-grid spots against it, claps every five 16ths for a rolling cross-rhythm, a busy 16th percussion loop, a fat sub following the kick and one bright, catchy major-key synth riff on top. Plateaus and breakdowns, no snare ramps |
 
 ### Retro & Video Game (5)
 
@@ -221,7 +223,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Shoegaze | `shoegaze` | 100-130 | Shoegaze: a wall of sound - loud, washed-out, heavily distorted and reverbed guitars, a steady straight-8ths beat with a splashy ride, a melodic bass, swirling pads and a soft, buried lead - dreamy and enormous |
 | Spooky 60s surf / TV theme | `spooky_surf` | 144-160 | Spooky 60s surf / TV-theme rock: a fast, driving beat around 150 with a twangy, heavily reverbed electric guitar melody, a walking / chromatic bass line, stabbing brass and a cheesy combo organ - campy, creepy and fun |
 | Spooky surf - monster TV theme | `monster_theme` | 146-158 | Spooky surf - 60s monster-sitcom theme: a driving 150 BPM surf beat under a low, creeping chromatic riff (root, a half step up, back, a half step down) played by the bass and a twangy baritone guitar together, punchy brass stabs, a bright brass-melody bridge in the relative major, a honking sax-section stretch, and a big chromatic stab ending - campy, creepy and catchy |
-| Surf rock (60s) | `surf_rock` | 132-156 | Surf rock (early-60s instrumental surf): a fast, straight beat driven by the floor tom, a twangy guitar melody tremolo-picked in bursts on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and now and then a combo organ or sax - sunny, wet and full speed ahead |
+| Surf rock (60s) | `surf_rock` | 146-160 | Surf rock (early-60s instrumental surf): a fast, straight beat driven by the floor tom, a twangy guitar melody tremolo-picked in bursts on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and now and then a combo organ or sax - sunny, wet and full speed ahead |
 | Symphonic Metal | `symphonic_metal` | 120-170 | Symphonic metal: double-kick drums and power chords under choir, string ostinatos and a soaring lead |
 
 ### Pop & Indie (9)

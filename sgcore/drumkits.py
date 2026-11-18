@@ -407,3 +407,4 @@ GENRE_KIT.update({'french_house': '909', 'trip_hop': 'levee', 'big_beat': 'skull
                   'afrobeat': 'seventies', 'dub': 'seventies', 'nola_brass': 'studio', 'shoegaze': 'rusty', 'post_rock': 'studio',
                   'pop_punk': 'rock', 'doom_metal': 'rock', 'anime_opening': 'unruly', 'musical_theatre': 'studio'})
 CHOP.update({'big_beat': 0.2, 'trip_hop': 0.0})
+GENRE_KIT.update({'juke_raw': '808', 'juke_house': '808'})

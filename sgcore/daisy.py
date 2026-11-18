@@ -157,10 +157,20 @@ def sing(notes, rng=None, formant_scale=1.0, tilt=0.6):
     ph_ = np.cumsum(f0 / SR)
     src = (2 * (ph_ % 1.0) - 1.0) * (f0 > 0)
     src = signal.lfilter([1.0], [1, -tilt], src) * 0.4      # more tilt = a softer, rounder, less buzzy voice
-    voice = _resonate(src * vamp, targ, (90, 120, 170), n)
-    voiced = voice[vamp > 0.9]
-    vref = float(np.sqrt(np.mean(voiced ** 2))) if voiced.size else 0.1
-    voice = voice / (vref + 1e-9) * 0.25                  # vowels at a fixed level; consonants are set against it
+    voice = _resonate(src * vamp, targ, (120, 150, 200), n)
+    # every sung syllable at the same loudness: a narrow resonance makes a note louder or softer depending on whether one
+    # of its harmonics happens to land on it, so each note's vowel is levelled to one target (smoothly, ~12 ms)
+    gain = np.ones(n)
+    for start, dur, midi, ph in notes:
+        i0, i1 = int(start * SR), min(n, int((start + dur) * SR))
+        sel = vamp[i0:i1] > 0.5
+        if sel.sum() < 64:
+            continue
+        r = float(np.sqrt(np.mean(voice[i0:i1][sel] ** 2)))
+        gain[i0:i1] = np.clip(0.25 / (r + 1e-9), 0.05, 20.0)
+    kg = np.exp(-1 / (0.012 * SR))
+    gain = signal.lfilter([1 - kg], [1, -kg], gain, zi=[gain[0] * kg])[0]
+    voice = voice * gain
     # consonant noise
     noise = np.zeros(n)
     for a, b, lo, hi, lvl, burst in nband:
