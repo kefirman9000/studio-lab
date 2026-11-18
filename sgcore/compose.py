@@ -9,7 +9,7 @@ from .theory import (Key, parse_progression, parse_key, color_fits, declutter, v
                      grid_of, grid_steps, lead_voicing, Ev, chord_tones_deg, COLORS)
 from . import drummer
 from .figures import gen_riff, vary_melody, gen_trap_hats, gen_acid_pattern
-from .arrange import (BIG_SECTIONS, _track_of, BUILD_STYLES, FX_SOUNDS, build_sequence, GENRE_BUILD, add_build_drums, add_build_fx,
+from .arrange import (BIG_SECTIONS, _track_of, BUILD_STYLES, FX_SOUNDS, build_sequence, add_build_drums, add_build_fx,
                       add_transitions, apply_ending)
 
 VEL = {'X': 1.0, 'x': 0.78, 'o': 0.5}

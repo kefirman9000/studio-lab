@@ -114,7 +114,6 @@ def sing(notes, rng=None, formant_scale=1.0, tilt=0.6):
     nb = n // BLOCK + 1
     f0 = np.zeros(n)
     vamp = np.zeros(n)
-    namp = np.zeros(n)
     nband = []                                            # (start, end, lo, hi, level, burst)
     targ = [np.full(nb, 500.0), np.full(nb, 1500.0), np.full(nb, 2600.0)]
     prev = None
