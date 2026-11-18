@@ -546,7 +546,7 @@ Late-80s / early-90s Italo piano house: a clunky drum-machine four-on-the-floor 
 - **Tempo** 118-124 BPM · **scales** major, minor · swing 0.52 (unit 16) · humanise 0.003
 - **Progressions** {'major': [[0, 5, 3, 4], [0, 4, 5, 3], [1, 4, 0, 0]], 'minor': [[0, 6, 5, 6], [0, 5, 3, 4]]} · chord_bars 1 · chord size 4
 - **Song form** `piano_house_90s`: intro 8 [bass, chords, kick] -> verse 32 [bass, chords, kick, lead, snare, top] -> break 8 [bass, chords, kick] (alt) -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> break 8 [bass, chords, kick, pad] (build) -> chorus 32 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 16 [bass, chords, kick, top] (fade) · form_scale 1
-- **Drums** **kick** `X..X....X.......` / `X..XX...X.......` / `X...X...X...X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `x.xxx.xxx.xxx.xx`; **tamb** `....x.......x...`
+- **Drums** **kick** `X...X...X...X...` / `X..XX...X...X...` / `X...X...X...X..x`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `x.xxx.xxx.xxx.xx`; **tamb** `....x.......x...`
 - **Drum kit** 909 · preset `909`
 - **Bass** `R.O.R.O.R.O.R.O.` / `R..R..O.R..R..O.` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x..x..x...x..x..` / `x.x..x.x..x..x..` / `..x...x...x...x.`
@@ -786,7 +786,7 @@ Melodic techno: rolling 16th basslines, hypnotic arpeggios, big emotional pads a
 - **Tempo** 120-128 BPM · **scales** minor, phrygian, harmonic_minor · swing 0.5 (unit 16) · humanise 0.0
 - **Progressions** {'minor': [[0, 5, 2, 6], [0, 6, 5, 6], [0, 0, 5, 5]], 'phrygian': [[0, 1, 0, 6]], 'harmonic_minor': [[0, 5, 0, 4]]} · chord_bars 1 · chord size 3
 - **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
-- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **chat** `..x...x...x...x.`; **ohat** `..x...x...x...x.`; **ride** `x.x.x.x.x.x.x.x.`
+- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **chat** `oxoxoxoxoxoxoxox`; **ohat** `..x...x...x...x.`; **ride** `x.x.x.x.x.x.x.x.`
 - **Drum kit** techno · preset `909`
 - **Bass** `.RRR.RRR.RRR.RRR` / `RRRRRRRRRRRRRRRR` / `.R.R.R.R.R.R.R.R` · mode `pattern` · lowest note 28
 - **Chord rhythm** `x---------------` / `x-------x-------`
@@ -4898,7 +4898,7 @@ Western swing / Texas swing: swung country dance band - twin fiddles, pedal stee
 - **Tempo** 110-160 BPM · **scales** major, mixolydian · swing 0.66 (unit 8) · humanise 0.008
 - **Progressions** {'major': [[0, 5, 1, 4], [0, 3, 0, 4], [0, 0, 1, 4], [2, 5, 1, 4]], 'mixolydian': [[0, 6, 3, 0]]} · chord_bars 1 · chord size 4
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
-- **Drums** **kick** `X.......X.......`; **snare** `....X.......X...`; **ride** `x..xx..xx..xx..x`
+- **Drums** **kick** `X.......X.......`; **snare** `....X.......X...`; **ride** `x...x.x.x...x.x.`
 - **Drum kit** brushes · preset `soft`
 - **Bass** `R...F...A...O...` / `R...A...F...O...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `....x.......x...` / `..x...x...x...x.`
