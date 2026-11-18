@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.51.4
+- **Sounds no longer change behind your back.** With "Keep my sounds" (Parts → Sounds between songs, the default), each new song keeps the sounds you just heard on every part - so changing one part's sound, or pressing Preview again, no longer swaps the others. The Sound menus show what's playing. 🎲 / Re-roll sounds / ↺ Genre sounds, setting a part back to "Style default", or changing genre (which keeps only the sounds you picked yourself) let the genre choose again. "Genre picks" gives every song its own sounds, as before.
+- **Daisy Bell moved** into 🩺 Report a problem - click the little robot at the bottom of that window.
+
 ## 1.51.3
 - **Build-ups no longer default to a snare roll.** 64 genres had no build-up of their own and fell back to a snare ramp - lo-fi, ambient, trap, deep and garage house, hauntology, footwork and more. Each genre now gets a build-up that fits its beat: a filter sweep for four-on-the-floor, a drop-out for half-time / dembow / garage / syncopated beats, a stutter or half-time switch for breakbeats, a swell where there are no drums. Snare and kick ramps stay only where they belong (trance, big room, drum & bass, dubstep, hardstyle, rave, UK hardcore, big beat ...), and even there not on every build.
 - **Juke, footwork, gqom, dub techno, minimal and similar never ramp**: their builds are drop-outs - the groove falls away to percussion or nothing and slams straight back.

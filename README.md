@@ -57,7 +57,7 @@ The app opens in your browser. Everything runs locally on your machine.
 
 ## Daisy Bell
 
-Press **🤖 Daisy Bell** (pick *Creepy machine* or *Deep, calm computer* voice next to it) for "Daisy Bell (A Bicycle Built for Two)" (1892, public domain) sung by a creepy early-computer voice over a music-box waltz - it winds down at the end like a machine losing power. From the command line: `python studiolab.py daisy` (add `--deep` for the deep voice).
+Open **🩺 Report a problem** and click the little robot at the bottom for "Daisy Bell (A Bicycle Built for Two)" (1892, public domain) sung by a creepy early-computer voice over a music-box waltz - it winds down at the end like a machine losing power. From the command line: `python studiolab.py daisy` (add `--deep` for the deep voice).
 
 ## Storage
 
@@ -79,7 +79,7 @@ rebuilt from its settings.
 
 Everything that makes sound lives in one window: click **🎚 Sounds & instruments** (top right). It opens on an overview of what you have, with a tab for each: **🎻 Real instruments**, **🎻 Orchestra plugin**, **🎹 VST instruments**, **🎚 Genre VSTs**, **🎛 My samples** and **🔌 Plugins & DAWs**.
 
-Sounds you pick for a part in **Parts** stay picked when you change genre, blend or press Surprise me; parts you leave on default follow the genre. Prefer every genre to choose all its own sounds? Set **When you change genre → Genre picks** at the top of Parts.
+**Sounds stay put.** Each new song keeps the sounds you just heard, so changing one part's sound doesn't swap the others; a new genre starts fresh but keeps the sounds you picked yourself. Prefer every song to choose all its own sounds? Set **Sounds between songs → Genre picks** at the top of Parts.
 
 ### Real instruments
 

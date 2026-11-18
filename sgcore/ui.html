@@ -313,8 +313,6 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
         <button class="btn s" id="varBtn" title="Four previews with different seeds">⧉ 4 Variations</button>
         <button class="btn g" id="fullBtn">⬇ Full song</button>
         <button class="btn s" id="surpriseBtn" title="Random style, fusion and mood">✦ Surprise me</button>
-        <button class="btn s" id="daisyBtn" title="Daisy Bell (1892) sung by a computer voice - it winds down at the end">🤖 Daisy Bell</button>
-        <select id="daisyVoice" title="Which computer voice sings Daisy Bell" style="width:auto"><option value="machine">Creepy machine voice</option><option value="deep">Deep, calm computer voice</option></select>
       </div>
       <div class="outs" id="outs"></div>
       <div class="prog" id="prog"><i></i></div>
@@ -404,7 +402,12 @@ function setLead(id){ if(id===state.style) return; state.blend=[state.style,...s
 // Sounds you picked stay picked when you change genre, blend or press Surprise me - unless "Genre picks" is chosen.
 // Only the five main parts carry over (a genre's extra parts and score players belong to that genre).
 function instMode(){ try{ return localStorage.getItem('sl_inst_mode')||'keep' }catch(e){ return 'keep' } }
+// state.locked: the sounds the last song played on parts you didn't pick - in 'Keep my sounds' mode the next song uses
+// them too, so changing one sound (or pressing Preview again) doesn't swap the others. Cleared on a genre change.
+function lockFrom(r){ if(instMode()!=='keep'||!r||!r.main_ids||r.style!==state.style||state.blend.length) return;
+  const L={}; ROLES.forEach(([k])=>{ if(r.main_ids[k]&&!state.instruments[k]) L[k]=r.main_ids[k]; }); state.locked=L; }
 function genreSounds(){
+  state.locked={};
   if(instMode()==='auto'){ state.instruments={}; return; }
   const keep={}; ROLES.forEach(([r])=>{ const v=state.instruments[r]; if(v&&v!=='off'&&(META.roles[r]||[]).some(i=>i.id===v)) keep[r]=v; });
   state.instruments=keep;
@@ -437,16 +440,16 @@ function renderSelected(){
   const rows=jParts?jParts.map(p=>[p.id,p.name,p.layer,p.inst]):ROLES.map(([r,l])=>[r,l,r,defs[r]]);
   if(jParts){ const h=document.createElement('div'); h.className='f wide inst'; h.innerHTML='<div class="hint">🎬 Cinematic Journey: every player has its own sound. Leave on <b>Score default</b> for the real orchestra / your orchestra plugin.</div>'; $('#soundBody').appendChild(h); }
   { const h=document.createElement('div'); h.className='f wide inst';
-    h.innerHTML=`<label>When you change genre <span class="hint">what happens to the sounds you picked below</span></label><select id="instMode">
-      <option value="keep" ${instMode()==='keep'?'selected':''}>Keep my picks (only parts left on default follow the genre)</option>
-      <option value="auto" ${instMode()==='auto'?'selected':''}>Genre picks (every genre chooses all its own sounds)</option></select>`;
+    h.innerHTML=`<label>Sounds between songs</label><select id="instMode">
+      <option value="keep" ${instMode()==='keep'?'selected':''}>Keep my sounds (each new song keeps what you just heard; a new genre starts fresh, keeping only your own picks)</option>
+      <option value="auto" ${instMode()==='auto'?'selected':''}>Genre picks (every song chooses all its own sounds)</option></select>`;
     $('#soundBody').appendChild(h);
-    h.querySelector('select').onchange=e=>{ try{ localStorage.setItem('sl_inst_mode', e.target.value) }catch(_){} }; }
+    h.querySelector('select').onchange=e=>{ try{ localStorage.setItem('sl_inst_mode', e.target.value) }catch(_){} state.locked={}; renderSelected(); }; }
   if(!jParts&&!state.blend.length){ const h=document.createElement('div'); h.className='f wide inst rrsounds';
     h.innerHTML=`<div class="rr" style="margin:0"><button class="mini acc" data-snd-roll="all" title="Pick a different sound for every part from this genre's suggestions">🎲 Re-roll sounds</button><button class="mini" data-snd-roll="reset" title="Back to the genre's own sounds">↺ Genre sounds</button><button class="mini" data-vol-reset="1" title="Every part back to the genre's own balance">↺ Volumes</button><span class="hint" style="margin-left:6px">Each part's list starts with the sounds that suit this genre. 🎲 next to a part tries another one.</span></div>`;
     $('#soundBody').appendChild(h);
-    h.querySelector('[data-snd-roll=all]').onclick=()=>{ rerollSounds(state.style, state.instruments); renderSelected(); $('#status').textContent='New sounds picked from the genre\'s suggestions - press Preview to hear them.'; };
-    h.querySelector('[data-snd-roll=reset]').onclick=()=>{ state.instruments={}; renderSelected(); };
+    h.querySelector('[data-snd-roll=all]').onclick=()=>{ state.locked={}; rerollSounds(state.style, state.instruments); renderSelected(); $('#status').textContent='New sounds picked from the genre\'s suggestions - press Preview to hear them.'; };
+    h.querySelector('[data-snd-roll=reset]').onclick=()=>{ state.instruments={}; state.locked={}; renderSelected(); };
     h.querySelector('[data-vol-reset]').onclick=()=>{ state.levels={}; bindLevels(); }; }
   rows.forEach(([r,label,role,defInst])=>{
     const w=document.createElement('div');w.className='f inst';
@@ -454,7 +457,7 @@ function renderSelected(){
     const byId={}; (META.roles[role]||[]).forEach(i=>byId[i.id]=i);
     const groups={}; if(pool.length) groups['Suggested for this genre']=pool.map(id=>byId[id]||{id,name:soundName(id)});
     (META.roles[role]||[]).forEach(i=>{ if(pool.includes(i.id)) return; (groups[i.group||'Built-in']=groups[i.group||'Built-in']||[]).push(i)});
-    const opts=Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${state.instruments[r]===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('');
+    const opts=Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${(state.instruments[r]||(state.locked||{})[r])===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('');
     const dn=defInst?((META.roles[role]||[]).find(i=>i.id===defInst)||{name:defInst}).name:'none';
     const dl=state.blend.length?'Auto (from the fused styles)':jParts?`Score default (${dn})`:`Style default (${dn})`;
     const fxs=(META.effects||[]);
@@ -462,10 +465,10 @@ function renderSelected(){
     const dice=pool.length>1?`<button class="ico" data-dice="${r}" title="Try another sound that suits this genre">🎲</button>`:'';
     w.innerHTML=`<label>${label} ${dice} ${mute} ${jParts?'':volHtml(r)} ${jParts?'':octHtml(r,(state.octaves||{})[r])}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
       (fxs.length&&!jParts?`<select class="fxsel" title="Run this part through one of your effect plugins"><option value="">no effect plugin</option>${fxs.map(f=>`<option ${state.part_fx[r]===f?'selected':''}>${esc(f)}</option>`).join('')}</select>`:'');
-    w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else delete state.instruments[r]; };
+    w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else { delete state.instruments[r]; if(state.locked) delete state.locked[r]; } };
     if(w.querySelector('[data-dice]')) w.querySelector('[data-dice]').onclick=e=>{ e.preventDefault(); const cur=state.instruments[r]||pool[0];
       const opts=pool.filter(x=>x!==cur); const pick=opts[Math.floor(Math.random()*opts.length)];
-      if(pick===pool[0]) delete state.instruments[r]; else state.instruments[r]=pick; renderSelected(); };
+      if(state.locked) delete state.locked[r]; state.instruments[r]=pick; renderSelected(); };
     if(w.querySelector('.fxsel')) w.querySelector('.fxsel').onchange=e=>{ if(e.target.value) state.part_fx[r]=e.target.value; else delete state.part_fx[r]; };
     $('#soundBody').appendChild(w);
   });
@@ -583,7 +586,7 @@ function options(){
   const o={style:state.style, seed:+$('#seed').value||1, blend:state.blend, blend_parts:state.blend_parts, mood:state.mood,
     length:state.length, structure:state.structure, energy:$('#energy').value/100, complexity:$('#complexity').value/100,
     simplicity:$('#simplicity').value/100, repetition:$('#repetition').value/100, melody_range:$('#mrange').value/100,
-    humanize:$('#humanize').value/100, variety:$('#variety').value/100, instruments:state.instruments, muted:state.muted, brightness:$('#brightness').value/100,
+    humanize:$('#humanize').value/100, variety:$('#variety').value/100, instruments:Object.assign({}, (instMode()==='keep'&&!state.blend.length)?(state.locked||{}):{}, state.instruments), muted:state.muted, brightness:$('#brightness').value/100,
     reverb:$('#reverb').value/100, delay:$('#delay').value/100, width:$('#width').value/100, bass_boost:+$('#bass').value,
     drive:$('#drive').value/100, lofi:state.lofi};
   if(!$('#bpmAuto').checked) o.bpm=+$('#bpm').value;
@@ -633,7 +636,7 @@ function options(){
 function applyOptions(o){
   state.style=o.style; state.blend=o.blend||[]; state.blend_parts=o.blend_parts||{}; state.mood=o.mood||null;
   state.part_fx=Object.assign({},o.part_fx||{});
-  state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
+  state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.locked={}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
   $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#rotation').value=o.rotation||'auto';
   $('#songName').value=o.title||''; $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
   $('#brightness').value=(o.brightness||0)*100; $('#reverb').value=(o.reverb??1)*100; $('#delay').value=(o.delay??1)*100; $('#width').value=(o.width??1)*100;
@@ -722,7 +725,7 @@ async function run(preview, count, opts, section, onResult, varyPart, extra){
   };
   poll();
 }
-function setBusy(b){['#prevBtn','#varBtn','#fullBtn','#surpriseBtn','#daisyBtn'].forEach(s=>$(s).disabled=b);$('#prog').style.display=b?'block':'none';if(!b)$('#prog>i').style.width='0'}
+function setBusy(b){['#prevBtn','#varBtn','#fullBtn','#surpriseBtn'].forEach(s=>$(s).disabled=b);$('#prog').style.display=b?'block':'none';if(!b)$('#prog>i').style.width='0'}
 
 function addResult(r, target){
   $('#emptyS')&&($('#emptyS').style.display='none');
@@ -794,7 +797,7 @@ function addResult(r, target){
   el.querySelector('[data-a=edit]').onclick=()=>openEditor(r);
   el.querySelector('[data-a=sounds]').onclick=()=>{ const o=JSON.parse(JSON.stringify(r.options)); o.seed=r.seed;
     o.instruments=rerollSounds(r.style, Object.assign({}, o.instruments||{})); $('#status').textContent='Same song, new sounds…'; run(true,1,o); };
-  if(r.tracks&&r.style===state.style){ state.lastTracks=r.tracks; if(!target) renderSelected(); }
+  if(r.tracks&&r.style===state.style){ state.lastTracks=r.tracks; if(!target){ lockFrom(r); renderSelected(); } }
   el.querySelector('[data-a=save]').onclick=()=>savePreset(r.options);
   if(el.querySelector('[data-a=keep]')) el.querySelector('[data-a=keep]').onclick=async e=>{ const b=e.currentTarget;
     const res=await api('/api/library/keep',{name:r.project||r.lib_title, keep:!r.kept});
@@ -1090,6 +1093,20 @@ async function soundsModal(data){
   $('#modal').classList.add('on');
 }
 // ------------------------------------------------------------- sampled sound library
+// easter egg: ask the computer what's wrong and it sings instead
+function daisyEgg(){
+  const box=$('#daisyEgg'); if(!box||box.dataset.open) return; box.dataset.open='1';
+  box.innerHTML=`<div class="sel" style="margin-top:8px"><b>🤖 I'm afraid I can't diagnose that. But I can sing you a song.</b>
+    <div class="row" style="gap:6px;margin-top:6px"><select id="daisyVoice" style="width:auto"><option value="machine">Creepy machine voice</option><option value="deep">Deep, calm computer voice</option></select>
+    <button class="mini acc" id="daisyGo">Sing “Daisy Bell”</button><span class="hint" id="daisyMsg"></span></div><div id="daisyOut"></div></div>`;
+  $('#daisyGo').onclick=async()=>{ $('#daisyGo').disabled=true; $('#daisyMsg').textContent='Warming up the voice…';
+    const {job}=await api('/api/special/daisy',{voice:$('#daisyVoice').value});
+    pollJob(job, j=>{ $('#daisyGo').disabled=false; const r=j.results[0];
+      if(j.status!=='done'||!r){ $('#daisyMsg').textContent='Error: '+(j.error||'could not render'); return; }
+      $('#daisyMsg').textContent='“Daisy Bell” (1892, public domain) · '+r.duration+' · saved in your output folder';
+      $('#daisyOut').innerHTML=`<audio controls autoplay src="${r.urls.mp3||r.urls.wav}" style="width:100%;margin-top:6px"></audio>`; },
+      l=>{ const last=(l||'').split('\n').filter(Boolean).pop(); if(last) $('#daisyMsg').textContent=last; }); };
+}
 function diagModal(){
   $('#modalBox').className='box wide';
   $('#modalBox').innerHTML=`<h3>🩺 Report a problem</h3>
@@ -1114,7 +1131,9 @@ function diagModal(){
       <label><input type="radio" name="winMode" value="browser"> Browser tab</label>
       <button class="btn" id="mkShortcut">Create desktop shortcut</button></div>
     <p class="hint">Takes effect the next time Studio Lab starts. The shortcut starts it with no console window.</p>
-    <div style="text-align:right;margin-top:14px"><button class="btn" onclick="closeModal()">Close</button></div>`;
+    <div style="display:flex;align-items:center;margin-top:14px"><span id="daisyBot" title="" style="cursor:pointer;opacity:.25;font-size:13px;user-select:none">🤖</span>
+      <span style="margin-left:auto"><button class="btn" onclick="closeModal()">Close</button></span></div><div id="daisyEgg"></div>`;
+  $('#daisyBot').onclick=daisyEgg;
   const get=async()=> api('/api/diagnostics',{note:$('#diagNote').value});
   $('#diagSave').onclick=async()=>{ const r=await get(); const a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([r.text],{type:'text/plain'})); a.download=r.name; document.body.appendChild(a); a.click(); a.remove();
@@ -1499,21 +1518,6 @@ async function init(){
   $('#folderBtn').onclick=()=>api('/api/open',{});
   $('#presetBtn').onclick=presetsModal;
   $('#hubBtn').onclick=()=>openHub();
-  $('#daisyBtn').onclick=async()=>{ if(busy) return; busy=true; setBusy(true); $('#daisyBtn').disabled=true; $('#status').textContent='The computer is warming up its voice…';
-    const {job}=await api('/api/special/daisy',{voice:$('#daisyVoice').value});
-    pollJob(job, j=>{ busy=false; setBusy(false); $('#daisyBtn').disabled=false; const r=j.results[0];
-      if(j.status!=='done'||!r){ $('#status').textContent='Error: '+(j.error||'could not render'); return; }
-      $('#status').textContent='Daisy Bell is ready - files are in your output folder.';
-      $('#emptyS')&&($('#emptyS').style.display='none');
-      const el=document.createElement('div'); el.className='res new';
-      el.innerHTML=`<div class="tt">🤖 “Daisy Bell (A Bicycle Built for Two)” · ${esc(r.voice_label||'computer voice')}</div>
-        <div class="mt">Harry Dacre, 1892 (public domain) · ${esc(r.key)} · 3/4 · ${r.bpm} BPM · ${esc(r.duration)}</div>
-        <audio controls src="${r.urls.mp3||r.urls.wav}" style="width:100%;margin-top:8px"></audio>
-        <div class="hint" style="margin-top:6px">${esc(r.lyrics)}</div>
-        <div class="files">${Object.entries(r.urls).map(([k,u])=>`<a href="${u}" download>${k.toUpperCase()}</a>`).join('')}<a href="#" class="dOpen">📁 Open folder</a></div>`;
-      el.querySelector('.dOpen').onclick=e=>{ e.preventDefault(); api('/api/open',{path:r.folder}); };
-      $('#session').insertBefore(el,$('#session').querySelector('.res')); el.querySelector('audio').play().catch(()=>{}); },
-      l=>{ const last=(l||'').split('\n').filter(Boolean).pop(); if(last) $('#status').textContent=last; }); };
   $('#diagBtn').onclick=()=>diagModal();
   (function watchPlugins(){ let seen=false;
     const t=async()=>{ let st; try{ st=await api('/api/vststatus',{}); }catch(e){ return; }

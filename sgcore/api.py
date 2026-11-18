@@ -38,7 +38,7 @@ def describe(song):
                 duration=f"{int(dur // 60)}:{int(dur % 60):02d}", seconds=round(dur, 1), seed=song['seed'],
                 form=' > '.join(f"{s['name']}({s['bars']})" for s in song['sections']),
                 chords=k.roman(song['prog_main']), chords_alt=k.roman(song['prog_alt']),
-                instruments=_instruments(song), inst_ids=_inst_ids(song), tracks=_tracks(song),
+                instruments=_instruments(song), inst_ids=_inst_ids(song), main_ids=_main_ids(song), tracks=_tracks(song),
                 meter=song.get('meter', '4/4'),
                 bpm_quarter=round(song['bpm'] * 1.5) if song.get('meter') == '3/4' else song['bpm'],
                 arrangement=_arrangement(song),
@@ -135,6 +135,21 @@ def _tracks(song):
             what = DRUM_PART[t['name']]
         out.append(dict(id=t['name'], layer=t['layer'], inst=t['inst'], sound=_nice(t['inst']), part=what, notes=n,
                         drum=t['layer'] in ('kick', 'snare', 'top') or t['layer'] == 'fx'))
+    return out
+
+
+def _main_ids(song):
+    """{part: the instrument id its main track played} - what 'Keep my picks' holds for the next song. A sound swapped
+    for a recorded or plugin version reports what was asked for (so it can be asked for again)."""
+    out = {}
+    for t in song['st']['tracks']:
+        if t['layer'] in ('bass', 'chords', 'pad', 'arp', 'lead') and t['name'] == t['layer'] and not t.get('off'):
+            inst = t['inst']
+            if inst.startswith('real:'):
+                inst = t.get('real_from') or inst
+            elif inst.startswith('vst:') and t.get('fallback') and not t.get('user_pick'):
+                inst = t['fallback']
+            out[t['layer']] = inst
     return out
 
 
