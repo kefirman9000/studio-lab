@@ -6387,6 +6387,56 @@ style('monster_theme', 'Classic',
       label='Spooky surf - monster TV theme')
 
 
+# v1.52.0: the monster TV theme with the organ and brass up front (user request): the same twang-guitar + bass
+# chromatic riff and driving surf beat, but a reedy 60s combo organ (Farfisa / Vox Continental: bright upper drawbars,
+# fast vibrato) holds every chord and takes an organ break with creeping runs, and a full brass section plays the stabs
+# and the melody - closer to a haunted-house organ-and-horns band than a guitar combo.
+COMBO_ORGAN = [(1, 0.8), (2, 0.9), (3, 0.55), (4, 0.7), (6, 0.35), (8, 0.45)]
+FORMS['monster_organ'] = [('intro', 4, {'kick', 'snare', 'top', 'bass', 'pad'}, {}),
+                          ('A', 16, {'kick', 'snare', 'top', 'bass', 'pad', 'chords'}, {'crash': True}),
+                          ('bridge', 8, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'lead'}, {'alt': True, 'crash': True}),
+                          ('organ', 12, {'kick', 'snare', 'top', 'bass', 'pad', 'arp'}, {}),
+                          ('bridge', 8, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'lead'}, {'alt': True, 'crash': True}),
+                          ('A', 16, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'arp'}, {'crash': True}),
+                          ('A', 8, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'lead'}, {}),
+                          ('outro', 4, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'lead'}, {})]
+style('monster_organ', 'Classic',
+      'Spooky surf - organ & brass: the 60s monster-sitcom theme with a reedy combo organ and a full horn section up '
+      'front - the organ holds every chord with a fast vibrato and takes a creeping organ break, the brass section '
+      'punches the stabs and sings the melody, over the same twangy baritone guitar + bass chromatic riff and a '
+      'driving 150 BPM surf beat - campy haunted-house organ-and-horns',
+      no_fx_sounds=True, bpm=(144, 156), scales=['minor', 'harmonic_minor'], swing=0.5, human=0.007, form='monster_organ',
+      chord_size=3, kit='acoustic',
+      sc_depth=0.0, reverb=2.4, spring=True, fill=True, no_rotation=True, own_progs=True, no_layers=True, riff_locked=True,
+      progs={'minor': [[0, 0, 0, 0], [0, 0, 5, 4], [2, 6, 5, 2]], 'harmonic_minor': [[0, 0, 0, 0], [0, 3, 5, 4], [5, 3, 4, 4]]},
+      section_progs=dict(verse=[0, 0, 0, 0], main=[0, 0, 5, 4], alt=[2, 6, 5, 2]),
+      drums={'kick': ['X.......X.......', 'X.....X.X.......'], 'snare': [BACKBEAT],
+             'chat': ['x.x.x.x.x.x.x.x.'], 'ride': ['x.x.x.x.x.x.x.x.']},
+      snare_tracks=['snare'], build_family=['pickup', 'stops'], transition_moves=['crash', 'none'],
+      bass=['R.R.u.R.d.R.R...', 'R.u.R.d.R.R.u.R.', 'R.R.R.u.R.d.R...'], bass_lo=36, bass_gate=0.7,
+      chord_rh=['x.....x...x.....', 'x.......x.x.....', '..x...x...x...x.'], chord_center=64,
+      arp=dict(rate=2, mode='updown', oct=4, prob=0.92),
+      lead_rh=['x-x-x---x-x-x---', 'x---x-x-x-------', 'x-x-x-x-x---x---'], lead_oct=5, repetition=0.85,
+      gm_hint='Combo organ (Farfisa / Vox Continental) holding the chords with vibrato and soloing in the organ break; '
+              'brass section stabs and trumpet / trombone melody; twangy baritone guitar doubling the bass on a low '
+              'chromatic riff (spring reverb); electric bass; driving surf drums with ride',
+      tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.3, db=-15),
+              T('chat', 'top', 'chat', db=-27), T('ride', 'top', 'ride', db=-28),
+              T('bass', 'bass', 'ebass', db=-8),
+              T('riff', 'bass', 'twang', double_of='bass', octave=12, keep_inst=True, rev=0.45, db=-11, p=dict(trem=15, bright=5500)),
+              T('pad', 'pad', 'organ', rev=0.35, db=-15, pan=-0.15, p=dict(bars=COMBO_ORGAN, leslie=7.0)),
+              T('chords', 'chords', 'sf:trumpetsection', rev=0.3, db=-17, pan=0.2, hp=160),
+              T('arp', 'arp', 'organ', rev=0.35, dly=0.08, db=-17, pan=0.1, p=dict(bars=COMBO_ORGAN, leslie=7.0)),
+              T('lead', 'lead', 'brass', rev=0.35, dly=0.1, db=-14)],
+      master=dict(lufs=-11.0, air=-0.5, low=0.4, width=1.2, vintage_lp=8000),
+      pools=dict(bass=['ebass', 'sf:pickbass', 'sf:fingerbass'],
+                 pad=['organ'],
+                 chords=['sf:trumpetsection', 'brass', 'synthbrass'],
+                 arp=['organ'],
+                 lead=['brass', 'sf:trumpetsection', 'organ']),
+      label='Spooky surf - organ & brass')
+
+
 # v1.43.3: late-90s pop house / dance-pop (from the user's references: a 123 BPM club-mix radio edit in A minor and a
 # 133 BPM dance-pop single): the full groove from bar one (or after a short pad intro), chords joining after 8 bars,
 # verse / chorus for a radio length with no EDM build-ups, one breakdown that drops the bass (kick and chords stay),

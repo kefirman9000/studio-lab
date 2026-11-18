@@ -1,4 +1,4 @@
-# Studio Lab genres (259)
+# Studio Lab genres (260)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
@@ -199,9 +199,9 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hauntology II (sunlit tape) | `hauntology_sunlit` | 82-96 | Hauntology II - sunlit tape: warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
 | Hauntology III (dark film haze) | `hauntology_dark` | 64-80 | Hauntology III - dark film haze: slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
 
-## Classic (90)
+## Classic (91)
 
-### Rock & Metal (20)
+### Rock & Metal (21)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -223,6 +223,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Shoegaze | `shoegaze` | 100-130 | Shoegaze: a wall of sound - loud, washed-out, heavily distorted and reverbed guitars, a steady straight-8ths beat with a splashy ride, a melodic bass, swirling pads and a soft, buried lead - dreamy and enormous |
 | Spooky 60s surf / TV theme | `spooky_surf` | 144-160 | Spooky 60s surf / TV-theme rock: a fast, driving beat around 150 with a twangy, heavily reverbed electric guitar melody, a walking / chromatic bass line, stabbing brass and a cheesy combo organ - campy, creepy and fun |
 | Spooky surf - monster TV theme | `monster_theme` | 146-158 | Spooky surf - 60s monster-sitcom theme: a driving 150 BPM surf beat under a low, creeping chromatic riff (root, a half step up, back, a half step down) played by the bass and a twangy baritone guitar together, punchy brass stabs, a bright brass-melody bridge in the relative major, a honking sax-section stretch, and a big chromatic stab ending - campy, creepy and catchy |
+| Spooky surf - organ & brass | `monster_organ` | 144-156 | Spooky surf - organ & brass: the 60s monster-sitcom theme with a reedy combo organ and a full horn section up front - the organ holds every chord with a fast vibrato and takes a creeping organ break, the brass section punches the stabs and sings the melody, over the same twangy baritone guitar + bass chromatic riff and a driving 150 BPM surf beat - campy haunted-house organ-and-horns |
 | Surf rock (60s) | `surf_rock` | 146-160 | Surf rock (early-60s instrumental surf): a fast, straight beat driven by the floor tom, a twangy guitar melody tremolo-picked in bursts on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and now and then a combo organ or sax - sunny, wet and full speed ahead |
 | Symphonic Metal | `symphonic_metal` | 120-170 | Symphonic metal: double-kick drums and power chords under choir, string ostinatos and a soaring lead |
 

@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (259 genres)
+# Studio Lab - technical genre rules (260 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -4579,6 +4579,36 @@ Spooky surf - 60s monster-sitcom theme: a driving 150 BPM surf beat under a low,
 - **Mix** {'lufs': -11.0, 'air': -0.5, 'low': 0.5, 'width': 1.2, 'vintage_lp': 7500} · reverb 2.2 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_fx_sounds': True, 'spring': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'riff_locked': True, 'section_progs': {'verse': [0, 0, 0, 0], 'main': [0, 0, 5, 4], 'alt': [2, 6, 5, 2]}, 'repetition': 0.85}
 - **Sound brief** Twangy baritone / six-string guitar doubling the bass on a low chromatic riff (spring reverb); electric bass; brass section stabs; trumpet melody for the bridge; sax section; driving surf drums with ride
+
+### Spooky surf - organ & brass (`monster_organ`)
+
+Spooky surf - organ & brass: the 60s monster-sitcom theme with a reedy combo organ and a full horn section up front - the organ holds every chord with a fast vibrato and takes a creeping organ break, the brass section punches the stabs and sings the melody, over the same twangy baritone guitar + bass chromatic riff and a driving 150 BPM surf beat - campy haunted-house organ-and-horns
+
+- **Tempo** 144-156 BPM · **scales** minor, harmonic_minor · swing 0.5 (unit 16) · humanise 0.007
+- **Progressions** {'minor': [[0, 0, 0, 0], [0, 0, 5, 4], [2, 6, 5, 2]], 'harmonic_minor': [[0, 0, 0, 0], [0, 3, 5, 4], [5, 3, 4, 4]]} · chord_bars 1 · chord size 3
+- **Song form** `monster_organ`: intro 4 [bass, kick, pad, snare, top] -> A 16 [bass, chords, kick, pad, snare, top] (crash) -> bridge 8 [bass, chords, kick, lead, pad, snare, top] (alt, crash) -> organ 12 [arp, bass, kick, pad, snare, top] -> bridge 8 [bass, chords, kick, lead, pad, snare, top] (alt, crash) -> A 16 [arp, bass, chords, kick, pad, snare, top] (crash) -> A 8 [bass, chords, kick, lead, pad, snare, top] -> outro 4 [bass, chords, kick, lead, pad, snare, top] · form_scale 1
+- **Drums** **kick** `X.......X.......` / `X.....X.X.......`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`; **ride** `x.x.x.x.x.x.x.x.`
+- **Drum kit** vintage · preset `acoustic`
+- **Bass** `R.R.u.R.d.R.R...` / `R.u.R.d.R.R.u.R.` / `R.R.R.u.R.d.R...` · mode `pattern` · lowest note 36
+- **Chord rhythm** `x.....x...x.....` / `x.......x.x.....` / `..x...x...x...x.`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 4, 'prob': 0.92}
+- **Lead rhythm** `x-x-x---x-x-x---` / `x---x-x-x-------` / `x-x-x-x-x---x---`
+- **Build-ups** default `(category default)` · choices ['pickup', 'stops'] · transitions ['crash', 'none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `minimal_motivic` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -14 dB
+  - snare (snare): `snare` -15 dB · rev=0.3
+  - chat (top): `chat` -27 dB
+  - ride (top): `ride` -28 dB
+  - bass (bass): `ebass` -8 dB · alternatives ['sf:pickbass', 'sf:fingerbass']
+  - riff (bass): `twang` -11 dB · rev=0.45
+  - pad (pad): `organ` -15 dB · pan=-0.15 · rev=0.35
+  - chords (chords): `sf:trumpetsection` -17 dB · pan=0.2 · rev=0.3 · alternatives ['brass', 'synthbrass']
+  - arp (arp): `organ` -17 dB · pan=0.1 · rev=0.35 · dly=0.08
+  - lead (lead): `brass` -14 dB · rev=0.35 · dly=0.1 · alternatives ['sf:trumpetsection', 'organ']
+- **Mix** {'lufs': -11.0, 'air': -0.5, 'low': 0.4, 'width': 1.2, 'vintage_lp': 8000} · reverb 2.4 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_fx_sounds': True, 'spring': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'riff_locked': True, 'section_progs': {'verse': [0, 0, 0, 0], 'main': [0, 0, 5, 4], 'alt': [2, 6, 5, 2]}, 'repetition': 0.85}
+- **Sound brief** Combo organ (Farfisa / Vox Continental) holding the chords with vibrato and soloing in the organ break; brass section stabs and trumpet / trombone melody; twangy baritone guitar doubling the bass on a low chromatic riff (spring reverb); electric bass; driving surf drums with ride
 
 ### Boogie blues-rock (slide) (`boogie_blues_rock`)
 

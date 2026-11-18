@@ -453,6 +453,15 @@ def test_surf_and_monster_theme():
         assert {1, -1} <= steps, sd                                   # the half-step crawl is always there
         assert any(e.track == 'riff' for e in s['events'])          # doubled by the twang guitar
         assert not any(t.get('switch_of') for t in s['st']['tracks'])
+    for sd in (1, 2, 3):                                            # organ & brass version: same riff, organ + horns up front
+        s = compose(Options(style='monster_organ', seed=sd, variety=0.9))
+        ins = {t['name']: t['inst'] for t in s['st']['tracks']}
+        assert ins['pad'] == 'organ' and ins['arp'] == 'organ' and ins['riff'] == 'twang', ins
+        assert ins['chords'] in ('brass', 'sf:trumpetsection', 'synthbrass') and ins['bass'] in ('ebass', 'sf:pickbass', 'sf:fingerbass')
+        b = [e.midi for e in s['events'] if e.track == 'bass']
+        assert {1, -1} <= {y - x for x, y in zip(b, b[1:])}
+        n = {k: sum(e.track == k for e in s['events']) for k in ('pad', 'chords', 'arp', 'lead', 'riff')}
+        assert all(n.values()) and n['arp'] >= 120, n                # a busy organ break
     assert sfm.fallback_for('pickbass') == 'ebass' and sfm.fallback_for('fingerbass') == 'ebass'
     print('ok  surf rock feel, monster TV theme riff, pick / finger bass fall back to a bass (not a synth pluck)')
 
