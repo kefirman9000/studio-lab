@@ -21,7 +21,7 @@ from .instruments import INSTRUMENTS
 # each sung syllable: (phonemes, midi note, beats). Phonemes: vowels i I e E ae a O o U u V @ R(er), diphthongs aI eI oU;
 # consonants b d g p t k m n l r j w v f s z S(sh) T(th) D(dh) h tS dZ
 MELODY = [
-    ('d aI', 79, 3), ('z i', 76, 3), ('d aI', 72, 3), ('z i', 67, 3),
+    ('d eI', 79, 3), ('z i', 76, 3), ('d eI', 72, 3), ('z i', 67, 3),
     ('g I v', 69, 1), ('m i', 71, 1), ('j O r', 72, 1), ('ae n', 69, 2), ('s R', 72, 1), ('d u', 67, 6),
     ('aI m', 74, 3), ('h ae f', 79, 3), ('k r eI', 76, 3), ('z i', 72, 3),
     ('O l', 69, 1), ('f O r', 71, 1), ('D @', 72, 1), ('l V v', 74, 2), ('@ v', 76, 1), ('j u', 74, 6),
@@ -79,7 +79,8 @@ def _segments(phonemes, dur):
     seg = [(p, clen(p)) for p in onset]
     if nucleus in DIPH:
         a, b = DIPH[nucleus]
-        seg += [(a, vlen * 0.62), (b, vlen * 0.38)]
+        off = min(0.14, 0.3 * vlen)                       # hold the main vowel; glide to the second only at the very end
+        seg += [(a, vlen - off), (b, off)]
     else:
         seg.append((nucleus, vlen))
     seg += [(p, clen(p)) for p in coda]

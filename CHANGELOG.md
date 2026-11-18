@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.51.2
+- **Daisy Bell says "Daisy" again, not "Die-easy".** The first syllable was spelled with the "eye" vowel instead of "ay", and every two-part vowel (ay, eye, oh) glided for over a third of the note - so long notes sang a separate "ee" before the next consonant. The main vowel is now held and only glides to its end sound in the last moment, as a singer does. Both voices.
+
 ## 1.51.1
 - **Daisy Bell, fixed and with a second voice.** The computer voice was mostly hiss and clicks: its vowels came out 35-50 dB quieter than the consonants (the vocal-tract resonances were chained so they cancelled each other). It now sings clearly - vowels carry the voice at an even level, consonants sit under them and land just before the beat.
 - **Pick the voice** next to the 🤖 Daisy Bell button: *Creepy machine* (high, buzzy, bit-crushed) or *Deep, calm computer* - an octave lower, slower, smooth and warm, with a softer music box; it starts winding down early in the second chorus and sinks much further. Command line: `python studiolab.py daisy --deep`.
