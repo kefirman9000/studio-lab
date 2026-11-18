@@ -3,10 +3,12 @@
 Each device returns (notes, phrase_bars) with notes as (beat_in_phrase, length_beats, midi, velocity 0..1),
 like compose.gen_melody, so every part of the arranger can use it unchanged.
 """
+import math
 import random
 
 # which devices suit each genre (one is picked per song, so the same style still varies)
 GENRE_DEVICES = {
+    'bhajan': ['raga'], 'kirtan': ['raga'], 'aarti': ['raga'], 'santoor_raga': ['raga'], 'stoner_raga': ['raga'], 'raga_fusion': ['raga'],
     'epic_orchestral': ['hook'], 'epic_battle': ['hook', 'riff'], 'epic_choir': ['hook'], 'heroic_anthem': ['hook'], 'symphonic_finale': ['hook'],
     'italo_disco': ['hook', 'arp'], 'new_beat': ['ostinato', 'chops'], 'gabber': ['riff', 'hook'], 'rave_hardcore': ['chops', 'hook'],
     'future_funk': ['chops', 'call'], 'bebop': ['hook'], 'modal_jazz': ['hook', 'call'], 'soul_jazz': ['riff', 'call'], 'fusion': ['hook', 'riff'],
@@ -39,7 +41,7 @@ GENRE_DEVICES = {
     'uplifting_trance': ['hook', 'arp'], 'melodic_house': ['hook', 'call'], 'jam_band': ['hook', 'riff'],
     'teen_pop': ['hook', 'call', 'chops'], 'soft_rock': ['hook'], 'luxury_rap': ['hook', 'bell'],
 }
-DEVICES = ['hook', 'arp', 'riff', 'ostinato', 'bell', 'call', 'chops']
+DEVICES = ['hook', 'arp', 'riff', 'ostinato', 'bell', 'call', 'chops', 'raga']
 
 
 def _tones(key, chord, lo, hi):
@@ -190,7 +192,49 @@ def chops(key, prog, cb, st, rnd, cx):
     return notes, bars
 
 
-GENERATORS = {'arp': arp, 'riff': riff, 'ostinato': ostinato, 'bell': bell, 'call': call, 'chops': chops}
+def raga(key, prog, cb, st, rnd, cx):
+    """Raga phrasing (bhajan, kirtan, devotional sitar / santoor / bansuri): melodies are not straight scales but a
+    climb and a descent - aroha and avaroha. Each phrase winds upward (now and then touching the note above and
+    turning back, a vakra move) to a peak it holds, then falls back down - again with small turns - and comes to rest
+    on Sa or Pa with a long note. The long notes get meend (glides) from the style's slides."""
+    bars = 2 * len(prog) * cb
+    o = st['lead_oct']
+    run = 0.25 if cx > 0.7 else 0.5                           # running notes: 8ths (16ths when busy)
+    notes, t, end = [], 0.0, bars * 4.0
+    while t < end - 2:
+        lo = rnd.choice([-3, 0, 0, 0, 2])                      # start from low Pa, Sa or Ga
+        peak = rnd.choice([4, 5, 7, 7, 7, 9])                  # Pa, Dha, upper Sa (most often), upper Re / Ga
+        land = rnd.choice([x for x in (0, 0, 0, 4, -3) if x < peak])   # always come back down
+        up, d = [lo], lo
+        while d < peak:
+            nxt = min(peak, d + rnd.choice([1, 1, 1, 2]))
+            if rnd.random() < 0.22 and nxt < peak:            # vakra: touch the note above, turn back, go on
+                up += [nxt, nxt + 1]
+            up.append(nxt)
+            d = nxt
+        down, d = [], peak
+        while d > land:
+            nxt = max(land, d - rnd.choice([1, 1, 1, 2]))
+            if rnd.random() < 0.18 and nxt > land:
+                down += [nxt, nxt - 1]
+            down.append(nxt)
+            d = nxt
+        phrase = [(x, run) for x in up[:-1]] + [(up[-1], rnd.choice([1.5, 2.0, 2.0]))]          # hold the peak
+        phrase += [(x, run) for x in down[:-1]] + [(down[-1] if down else land, rnd.choice([2.0, 3.0]))]  # rest on Sa / Pa
+        for rep in range(2 if st.get('call_response') else 1):   # kirtan: the leader sings it, the group sings it back
+            for i, (deg, ln) in enumerate(phrase):
+                if t + ln > end:
+                    ln = end - t
+                if ln < 0.2:
+                    break
+                strong = abs(t - round(t)) < 1e-6
+                notes.append((t, ln * 0.94, key.deg(deg, o), (0.95 if strong else 0.8) * rnd.uniform(0.92, 1.0) * (0.9 if rep else 1.0)))
+                t += ln
+            t = math.ceil(t + rnd.choice([0.5, 1.0, 1.0]))     # a breath, then the next phrase on a beat
+    return notes, bars
+
+
+GENERATORS = {'raga': raga, 'arp': arp, 'riff': riff, 'ostinato': ostinato, 'bell': bell, 'call': call, 'chops': chops}
 
 
 def pick_device(style, seed, wanted=None):

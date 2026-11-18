@@ -50,7 +50,7 @@ def build_sequence(default, forced, rnd, n=4, amount='auto', family=None):
         seq, pool = [first], [b for b in fam if b != first]
         while len(seq) < n:
             if not pool:
-                pool = [b for b in fam if b != seq[-1]] or fam
+                pool = [b for b in fam if b != seq[-1]] or list(fam)
             pick = rnd.choice(pool)
             pool.remove(pick)
             seq.append(pick)
@@ -393,6 +393,14 @@ def add_transitions(sections, evs, fx, tracks, st, opts):
         drum_names = {n for n, t in tracks.items() if t['inst'] in DRUMS and t['layer'] in ('snare', 'top')}
         evs[:] = [e for e in evs if not (e.track in drum_names and start <= e.beat < end)]
         sub = 4 if grid_of(st) == 16 else 3                 # 16ths, or triplet 8ths in 3/4, 6/8, 12/8
+        if st.get('hand_drums'):                            # tabla / dholak: the fill is played on the same hand drums
+            kn = st.get('kick_track', 'kick')
+            n = beats * sub
+            for k in range(n):
+                if k % 2 == 0 or rnd.random() < 0.55:
+                    bass = k % sub == 0 and kn in tracks and rnd.random() < 0.7
+                    evs.append(Ev(kn if bass else snare, start + k / sub, 0.25, None, 0.6 + 0.35 * k / n))
+            continue
         if cat == 'Classic' and opts.structure != 'loop':
             for name, pitch in (('tom_hi', 190), ('tom_mid', 140), ('tom_lo', 100)):
                 if name not in tracks:

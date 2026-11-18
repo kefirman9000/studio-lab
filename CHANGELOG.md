@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.52.0
+- **Easy installers - no Python needed.** Each release now has a Windows installer (`StudioLab-Setup-<version>.exe`) and Mac disk images (Apple Silicon and Intel). They carry their own private Python with everything Studio Lab uses - audio libraries, VST plugin support and an MP3 encoder - so nothing else has to be installed. Windows installs per user (no admin password), with Start-menu and desktop shortcuts and a normal uninstaller; on a Mac you drag Studio Lab into Applications. ⟳ Updates keep working, and your songs, presets and sounds are kept across updates and reinstalls. Each installer is built and tested automatically (installed, a song made, uninstalled) before it's published.
+- **MP3 export without ffmpeg.** If ffmpeg isn't installed, Studio Lab now encodes MP3s itself (lameenc, included in the installers), with title / artist / genre tags.
+- **Hindu devotional music - four new genres** (World → Hindu devotional), built around the raga's rising and falling movement:
+  - *Bhajan*: a heartfelt devotional song - harmonium following the melody, tanpura drone, dholak in an 8-beat keherwa and manjira cymbals; a free opening, then refrain (sthayi) and verses (antara).
+  - *Kirtan*: call-and-response chanting - each line is sung and then answered by the group, with harmonium, kartal / manjira and dholak; it starts slow and **speeds up chant by chant** (about 70 → 140 BPM) until it's ecstatic.
+  - *Aarti*: the temple prayer - bells ringing on every beat, manjira, dholak and harmonium under a joyful melody, ending on the bells alone.
+  - *Devotional raga (santoor)*: the santoor's bell-like strikes and shimmering strings rising and falling through a morning raga over the tanpura; a free alap, then the tabla enters and it builds to a glittering jhala.
+- **Raga melodies**: a new lead style for these genres and Raga (sitar, tabla, tanpura): each phrase winds upward (aroha) - sometimes touching the note above and turning back - to a peak it holds, then falls back (avaroha) to rest on Sa or Pa, with meend glides into the long notes. New raga scale **Bhairav** (the classic morning raga).
+- **New instruments**: harmonium (two beating reed banks, bellows breathing), santoor (hammered unison strings with a bell-like strike and a long shimmer), manjira hand cymbals, and dholak (bass "dha" and treble "ta"). Hand-drum genres now fill on their own drums instead of a rock tom roll, and have no EDM risers, impacts or crash cymbals.
+- **New genre: Stoner rock - raga / psych** - slow, heavy fuzz-guitar riffs and fuzz bass under a tanpura drone, tabla rolling on top of the drum kit, and a sitar singing raga phrases; it opens on the drone and sitar alone, breaks down to tabla and sitar, then ends in a heavy psychedelic jam.
+- **New genre: Spooky surf - organ & brass** - the monster TV theme with a reedy combo organ (Farfisa / Vox style) holding every chord and taking a creeping organ break, a full horn section on stabs and melody, over the same twangy guitar + bass chromatic riff.
+- Fixed: a genre with a single build-up style could crash song generation.
+- Fixed: when a genre picked one of its alternative sounds for a part (say, a sampled distorted guitar instead of its built-in one), that part lost the genre's mix level and fell back to a generic one - often too quiet (riffs) or too loud. The genre's balance now stays.
+
 ## 1.51.6
 - **Swing no longer moves held chords and pads.** Swing pushes every other 16th late; a pad or sustained chord that started on one of those spots came in late too and smeared against the beat. Notes held 3/4 of a beat or longer now always land straight on the grid. Short stabs, plucks, bass and drums still swing, as the genre wants.
 

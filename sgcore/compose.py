@@ -286,7 +286,7 @@ EXTRA_CHORD_RH = {
 # pass never mixes the generic extra drum patterns into them - a reggae song with a kick on 1 and 3 isn't reggae
 OWN_GROOVE = {'reggae', 'dub', 'ska', 'reggaeton', 'dancehall', 'moombahton', 'soca', 'groovy_soca', 'salsa', 'cumbia',
               'bossa_nova', 'samba', 'bachata', 'merengue', 'baile_funk', 'funk_150', 'brazilian_phonk', 'afrobeat', 'afrobeats',
-              'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house',
+              'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'bhajan', 'kirtan', 'aarti', 'santoor_raga', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house',
               'baltimore_club', 'jersey_club', 'uk_drill', 'ukgarage', 'speed_garage', 'freestyle', 'electro', 'nola_brass',
               'tango', 'celtic_jig', 'swing_tomtom', 'western_swing', 'country', 'outlaw_country', 'surf_rock'}
 
@@ -366,8 +366,8 @@ def apply_variety(st, opts, rnd):
             recent = set((getattr(opts, 'avoid', None) or {}).get(role, []))
             w = [(1.4 if i == 0 else 1.0) * (0.25 if x in recent else 1.0) for i, x in enumerate(pool)]
             choice = rr.choices(pool, w)[0]
-            if choice != t['inst']:
-                t.update(inst=choice, p={}, db=None, pooled=True)
+            if choice != t['inst']:                   # (the genre's level for this part stays: every part is levelled to it)
+                t.update(inst=choice, p={}, pooled=True)
         elif free and not pool and role in pal and rr.random() < 0.12 + 0.5 * v:
             choice = rr.choice(pal[role])
             if choice != t['inst']:
@@ -1651,6 +1651,11 @@ def compose(opts):
                 total_bars=bar0, prog_main=prog_main, prog_alt=prog_alt, prog_verse=prog_verse, chord_color=chord_color,
                 modulate=modulate, st=st, opts=opts, user_opts=user_opts, vocal=vocal,
                 energy=energy)
+    if st.get('accel') and bar0 > 0:                     # kirtan: starts slow and speeds up chant by chant (a laya build)
+        f0, f1 = st['accel']
+        tm = [(sec['bar'] * 4.0, bpm * (f0 + (f1 - f0) * (sec['bar'] / bar0) ** 1.4)) for sec in sections]
+        tm.append((bar0 * 4.0, bpm * f1))
+        song['tempo_map'] = tm
     return song
 
 

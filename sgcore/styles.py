@@ -3921,7 +3921,7 @@ style('cinematic_journey_low', 'Orchestral', 'Cinematic Journey - Dark & Low: th
 # replaced by the genre's own sound for that part.
 BELLS = {'bell', 'celesta', 'sf:glock', 'sf:musicbox', 'sf:tubular', 'glock', 'musicbox', 'tubular', 'sf:celesta'}
 MALLETS = {'marimba', 'kalimba', 'vibes', 'steeldrum', 'sf:marimba', 'sf:vibes', 'sf:kalimba', 'sf:steeldrum', 'sf:xylophone'}
-BELL_OK = {'witch_house', 'anime_opening', 'latin_trap', 'adventure', 'ambient', 'braindance', 'brostep', 'chamber_pop', 'chillstep', 'cinematic', 'cloud_rap',
+BELL_OK = {'aarti', 'witch_house', 'anime_opening', 'latin_trap', 'adventure', 'ambient', 'braindance', 'brostep', 'chamber_pop', 'chillstep', 'cinematic', 'cloud_rap',
            'deep_dubstep', 'deep_dubstep_minimal', 'downtempo', 'dubstep', 'epic_choir', 'epic_orchestral', 'fantasy_rpg', 'film_piano',
            'hauntology', 'hauntology_dark', 'hauntology_sunlit', 'holiday', 'hybrid_trailer', 'impressionism', 'lofi',
            'neoclassical', 'orchestral', 'orchestral_hiphop', 'plugg', 'rage', 'riddim', 'symphonic_finale',
@@ -4253,7 +4253,7 @@ style('soca', 'Classic',
 style('raga_fusion', 'Classic',
       'Raga (Hindustani-inspired): a tanpura drone the whole way, the sitar alone in a slow free alap with sliding meend, '
       'then a pulse, then the tabla enters for the gat in a 16-beat teental and the music speeds into a jhala climax',
-      bpm=(84, 112), scales=['phrygian_dominant', 'mixolydian', 'harmonic_minor', 'dorian'], human=0.008, form='raga',
+      bpm=(84, 112), hand_drums=True, scales=['phrygian_dominant', 'mixolydian', 'harmonic_minor', 'dorian'], human=0.008, form='raga',
       chord_size=3, sc_depth=0.0, reverb=2.4, pad_drone=True,
       progs={'phrygian_dominant': [[0, 0, 0, 0], [0, 1, 0, 0]], 'mixolydian': [[0, 0, 0, 0], [0, 0, 6, 0]],
              'harmonic_minor': [[0, 0, 0, 0], [0, 0, 4, 0]], 'dorian': [[0, 0, 0, 0], [0, 0, 3, 0]]},
@@ -4277,6 +4277,143 @@ style('raga_fusion', 'Classic',
                  bass=['tanpura', 'drone', 'cello', 'sinebass']),
       label='Raga (sitar, tabla, tanpura)',
       no_rotation=True)
+
+# v1.52: Hindu devotional music (from the user's notes): music as worship - bhakti. Melodies move in raga phrases (aroha /
+# avaroha: a winding climb to a held peak and a fall back to Sa, with meend glides), a tanpura drone underneath, a
+# hypnotic tala cycle, repetition and call-and-response. Instruments support the voice: harmonium, dholak, manjira
+# (small cymbals), tabla, bansuri, and the santoor / sitar in the devotional ragas.
+KEHERWA = dict(dholak=['X.x.........x...', 'X.x.......x.X...', 'X.x..x......x.x.'],            # Dha Ge Na Ti | Na Ka Dhi Na
+               dholak_ta=['....x.x.x.x...x.', '..x.x.x.x.x.x.x.', '....x.xxx.x...x.'],
+               manjira=['x...x...x...x...', 'x...x...x...x.x.'])
+FORMS['bhajan'] = [('alap', 4, {'pad', 'lead'}, {'filter_in': True}),
+                   ('sthayi', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead'}, {}),
+                   ('sthayi', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead'}, {}),
+                   ('antara', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead'}, {'alt': True}),
+                   ('sthayi', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead'}, {}),
+                   ('antara', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead', 'arp'}, {'alt': True}),
+                   ('sthayi', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead', 'arp'}, {}),
+                   ('outro', 4, {'top', 'pad', 'chords', 'lead'}, {'cad': True})]
+style('bhajan', 'Classic',
+      'Bhajan (Hindu devotional song): a simple, heartfelt melody that winds up and down in raga phrases - aroha and '
+      'avaroha - with meend glides, the harmonium following the singer, a tanpura drone, the dholak in an 8-beat '
+      'keherwa and bright manjira cymbals keeping time; a free opening, then the refrain (sthayi) and verses (antara) '
+      'that climb higher - warm, repetitive, easy to sing along to',
+      bpm=(78, 98), scales=['major', 'mixolydian', 'bhairav', 'phrygian'], human=0.009, form='bhajan', chord_size=3, hand_drums=True, no_fx_sounds=True, transition_moves=['none'], build_family=['pickup'],
+      sc_depth=0.0, reverb=2.0, pad_drone=True, no_rotation=True, own_progs=True, no_layers=True,
+      progs={'major': [[0, 0, 3, 4], [0, 3, 0, 4], [0, 0, 0, 4]], 'mixolydian': [[0, 6, 0, 0], [0, 3, 6, 0]],
+             'bhairav': [[0, 0, 3, 0], [0, 5, 4, 0]], 'phrygian': [[0, 1, 0, 0], [0, 6, 1, 0]]},
+      chord_bars=2, kit='soft', drums=KEHERWA, kick_track='dholak', snare_tracks=['dholak_ta'],
+      chord_rh=['x-------x-------', 'x---x---x---x---'], chord_center=60,
+      arp=dict(rate=4, mode='random', oct=5, prob=0.5),
+      lead_rh=['x-x-x-x-x-x-x---'], lead_oct=5, repetition=0.8, slides=0.4,
+      gm_hint='Voice or bansuri on the melody; harmonium following it; tanpura drone; dholak (keherwa); manjira',
+      tracks=[T('dholak', 'kick', 'dholak', rev=0.2, db=-18), T('dholak_ta', 'snare', 'dholak_ta', rev=0.2, db=-21),
+              T('manjira', 'top', 'manjira', rev=0.3, pan=0.25, db=-27),
+              T('pad', 'pad', 'tanpura', rev=0.4, db=-21),
+              T('chords', 'chords', 'harmonium', rev=0.3, pan=-0.15, db=-24),
+              T('arp', 'arp', 'santoor', rev=0.4, pan=0.25, db=-26),
+              T('lead', 'lead', 'flute', rev=0.4, dly=0.08, db=-16, p=dict(vib=25)),
+              T('harm', 'lead', 'harmonium', double_of='lead', keep_inst=True, rev=0.3, pan=-0.1, db=-22)],
+      master=dict(lufs=-13.0, air=0.8, low=0.6),
+      pools=dict(lead=['flute', 'violin', 'sitar', 'santoor'], chords=['harmonium'],
+                 pad=['tanpura'], arp=['santoor', 'sitar', 'harp']),
+      label='Bhajan (harmonium, dholak, manjira)')
+
+FORMS['kirtan'] = [('invocation', 4, {'pad', 'lead'}, {'filter_in': True}),
+                   ('chant', 8, {'top', 'pad', 'chords', 'lead'}, {'level': 0.8}),
+                   ('chant', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead'}, {}),
+                   ('chant', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead'}, {}),
+                   ('chant', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead', 'arp'}, {'alt': True}),
+                   ('chant', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead', 'arp'}, {}),
+                   ('ecstatic', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead', 'arp'}, {'drop': True}),
+                   ('ecstatic', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead', 'arp'}, {'drop': True}),
+                   ('close', 4, {'pad', 'chords', 'lead'}, {'cad': True})]
+style('kirtan', 'Classic',
+      'Kirtan (call-and-response chanting): a leader sings a short line of divine names and the group answers it, '
+      'over and over - harmonium pumping chords, a tanpura drone, kartal / manjira cymbals and a dholak (or khol) - '
+      'starting slow and calm and speeding up chant by chant until it is ecstatic, then settling on a last slow line',
+      bpm=(90, 100), scales=['major', 'mixolydian', 'bhairav'], human=0.01, form='kirtan', chord_size=3, hand_drums=True, no_fx_sounds=True, transition_moves=['none'], build_family=['pickup'],
+      sc_depth=0.0, reverb=2.2, pad_drone=True, no_rotation=True, own_progs=True, no_layers=True,
+      accel=(0.72, 1.45), call_response=True,
+      progs={'major': [[0, 0, 4, 4], [0, 3, 4, 0], [0, 0, 3, 4]], 'mixolydian': [[0, 0, 6, 0], [0, 6, 3, 0]],
+             'bhairav': [[0, 0, 4, 0], [0, 3, 4, 0]]},
+      chord_bars=1, kit='soft', kick_track='dholak', snare_tracks=['dholak_ta'],
+      drums=dict(dholak=['X.....x.X.......', 'X.....x.X...x...'], dholak_ta=['..x.x...x.x.x.x.', '..x.x.x.x.x.x.x.'],
+                 manjira=['x.x.x.x.x.x.x.x.', 'X.x.X.x.X.x.X.x.']),
+      chord_rh=['x...x...x...x...', 'x.x.x.x.x.x.x.x.'], chord_center=60,
+      arp=dict(rate=4, mode='updown', oct=5, prob=0.6),
+      lead_rh=['x-x-x-x-x-x-x---'], lead_oct=5, repetition=0.9, slides=0.35,
+      gm_hint='Leader and group voices (call and response); harmonium; tanpura; dholak / khol; kartal / manjira',
+      tracks=[T('dholak', 'kick', 'dholak', rev=0.2, db=-17), T('dholak_ta', 'snare', 'dholak_ta', rev=0.2, db=-18),
+              T('manjira', 'top', 'manjira', rev=0.3, pan=0.2, db=-25),
+              T('pad', 'pad', 'tanpura', rev=0.4, db=-22),
+              T('chords', 'chords', 'harmonium', rev=0.3, pan=-0.15, db=-21),
+              T('arp', 'arp', 'santoor', rev=0.4, pan=0.3, db=-27),
+              T('lead', 'lead', 'harmonium', rev=0.35, db=-17),
+              T('group', 'lead', 'choir', double_of='lead', keep_inst=True, rev=0.5, pan=0.15, db=-23)],
+      master=dict(lufs=-12.0, air=0.8, low=0.6),
+      pools=dict(lead=['harmonium', 'flute', 'violin'], chords=['harmonium'],
+                 pad=['tanpura'], arp=['santoor', 'harp', 'sitar']),
+      label='Kirtan (call & response, speeding up)')
+
+FORMS['aarti'] = [('bells', 2, {'arp', 'pad'}, {}),
+                  ('verse', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead', 'arp'}, {}),
+                  ('verse', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead', 'arp'}, {}),
+                  ('verse', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead', 'arp'}, {'alt': True}),
+                  ('verse', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead', 'arp'}, {}),
+                  ('jai', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead', 'arp'}, {'drop': True}),
+                  ('bells', 4, {'top', 'arp', 'pad', 'chords'}, {'cad': True})]
+style('aarti', 'Classic',
+      'Aarti (temple prayer with lamps): the evening worship song - temple bells ringing on every beat, bright manjira, '
+      'a steady dholak, harmonium and a drone under a simple, joyful raga melody that everyone sings, verse after verse, '
+      'ending in a ringing "jai" and the bells alone',
+      bpm=(96, 116), scales=['major', 'mixolydian'], human=0.009, form='aarti', chord_size=3, hand_drums=True, no_fx_sounds=True, transition_moves=['none'], build_family=['pickup'],
+      sc_depth=0.0, reverb=2.4, pad_drone=True, no_rotation=True, own_progs=True, no_layers=True,
+      progs={'major': [[0, 0, 4, 0], [0, 3, 4, 0]], 'mixolydian': [[0, 6, 0, 0], [0, 3, 6, 0]]},
+      chord_bars=2, kit='soft', drums=KEHERWA, kick_track='dholak', snare_tracks=['dholak_ta'],
+      chord_rh=['x-------x-------'], chord_center=60,
+      arp=dict(rate=4, mode='random', oct=6, prob=0.95),
+      lead_rh=['x-x-x-x-x-x-x---'], lead_oct=5, repetition=0.9, slides=0.3,
+      gm_hint='Temple bells; voices or bansuri; harmonium; tanpura; dholak; manjira (conch to open, if you have one)',
+      tracks=[T('dholak', 'kick', 'dholak', rev=0.25, db=-18), T('dholak_ta', 'snare', 'dholak_ta', rev=0.25, db=-21),
+              T('manjira', 'top', 'manjira', rev=0.35, pan=0.25, db=-24),
+              T('pad', 'pad', 'tanpura', rev=0.45, db=-22),
+              T('chords', 'chords', 'harmonium', rev=0.35, pan=-0.15, db=-23),
+              T('arp', 'arp', 'tubular', rev=0.6, pan=-0.25, db=-28),
+              T('lead', 'lead', 'flute', rev=0.45, dly=0.08, db=-16, p=dict(vib=25)),
+              T('harm', 'lead', 'harmonium', double_of='lead', keep_inst=True, rev=0.3, pan=0.1, db=-23)],
+      master=dict(lufs=-12.5, air=1.0, low=0.5),
+      pools=dict(lead=['flute', 'violin', 'santoor'], chords=['harmonium'],
+                 pad=['tanpura'], arp=['tubular', 'bell', 'celesta']),
+      label='Aarti (temple bells & prayer)')
+
+FORMS['santoor_raga'] = [('alap', 8, {'pad', 'lead'}, {'filter_in': True}),
+                         ('jor', 8, {'pad', 'lead', 'arp'}, {}),
+                         ('gat', 16, {'kick', 'snare', 'pad', 'lead', 'arp'}, {}),
+                         ('gat', 16, {'kick', 'snare', 'pad', 'lead', 'arp'}, {'alt': True}),
+                         ('jhala', 8, {'kick', 'snare', 'pad', 'lead', 'arp'}, {'drop': True, 'cad': True})]
+style('santoor_raga', 'Classic',
+      'Devotional raga on santoor: a morning or evening raga for prayer and meditation - the santoor\'s bell-like '
+      'mallet strikes and shimmering strings rising and falling through the raga (aroha / avaroha) in sparkling '
+      'cascades, over a tanpura drone; a free, slow alap, then a pulse, then the tabla enters and it gathers speed to a '
+      'glittering jhala',
+      bpm=(70, 96), scales=['bhairav', 'lydian', 'dorian', 'major'], human=0.008, form='santoor_raga', chord_size=3, hand_drums=True, no_fx_sounds=True, transition_moves=['none'], build_family=['pickup'],
+      sc_depth=0.0, reverb=2.6, pad_drone=True, no_rotation=True, own_progs=True, no_layers=True,
+      progs={'bhairav': [[0, 0, 0, 0], [0, 0, 3, 0]], 'lydian': [[0, 0, 0, 0], [0, 0, 1, 0]],
+             'dorian': [[0, 0, 0, 0], [0, 0, 3, 0]], 'major': [[0, 0, 0, 0], [0, 0, 4, 0]]},
+      chord_bars=4, kit='soft', kick_track='bayan', snare_tracks=['tabla'],
+      drums={'tabla': ['X.x.x.X.X.x.x.X.', 'X.xxx.X.X.x.x.Xx'], 'bayan': ['X.....X.X.....X.', 'X.....X.......X.']},
+      bass=['R-------........'], bass_lo=36, chord_rh=['x---------------'], chord_center=60,
+      arp=dict(rate=1, mode='updown', oct=5, prob=0.85),
+      lead_rh=['x-x-x-x-x-x-x---'], lead_oct=5, repetition=0.7, slides=0.25,
+      gm_hint='Santoor (hammered dulcimer) - or sitar; tanpura drone; tabla; bansuri if you have one',
+      tracks=[T('bayan', 'kick', 'bayan', rev=0.25, db=-20), T('tabla', 'snare', 'tabla', rev=0.25, db=-21),
+              T('pad', 'pad', 'tanpura', rev=0.45, db=-20),
+              T('arp', 'arp', 'santoor', rev=0.45, pan=0.25, db=-25),
+              T('lead', 'lead', 'santoor', rev=0.45, pan=-0.1, db=-16)],
+      master=dict(lufs=-14.0, air=1.2, low=0.5),
+      pools=dict(lead=['santoor', 'sitar', 'flute'], arp=['santoor', 'sitar', 'harp'], pad=['tanpura']),
+      label='Devotional raga (santoor)')
 
 style('japanese_zen', 'Classic',
       'Japanese zen / traditional-inspired: koto plucks and pressed bends, a breathy shakuhachi-style flute, a soft '
@@ -7774,6 +7911,48 @@ style('doom_metal', 'Classic', 'Doom / stoner metal: crushingly slow and heavy -
       pools=dict(bass=['ebass', 'sf:pickbass', 'sawbass'], chords=['guitar', 'sf:distguitar', 'sf:odguitar'], arp=['guitar', 'sf:odguitar', 'organ'],
                  lead=['guitar', 'sf:distguitar', 'organ']),
       label='Doom / stoner metal')
+
+# v1.52: stoner rock meets India (user request: like a 60s/70s psych "theme" with Indian instruments): fuzz-guitar
+# riffs and a lumbering beat under a tanpura drone, tabla rolling on top of the kit, and a sitar playing raga phrases
+# (rising to a held peak, sliding back down) - with a tabla-and-sitar breakdown and a heavy psychedelic jam.
+FORMS['stoner_raga'] = [('alap', 8, {'pad', 'lead'}, {'filter_in': True}),
+                        ('riff', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad'}, {'crash': True}),
+                        ('verse', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead'}, {}),
+                        ('tabla', 8, {'top', 'bass', 'pad', 'lead'}, {'alt': True, 'level': 0.8}),
+                        ('riff', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead'}, {'crash': True}),
+                        ('jam', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead', 'arp'}, {'drop': True, 'crash': True}),
+                        ('outro', 8, {'pad', 'lead', 'bass'}, {'cad': True})]
+style('stoner_raga', 'Classic',
+      'Stoner rock - raga / psych: slow, heavy fuzz-guitar riffs and a fuzzed bass locked together over a lumbering '
+      'beat, a tanpura drone humming underneath, tabla rolling on top of the drum kit and a sitar singing raga phrases '
+      'that climb, hold and slide back down - opening on the drone and sitar alone, a tabla-and-sitar breakdown, then '
+      'a heavy psychedelic jam',
+      bpm=(66, 88), scales=['phrygian_dominant', 'phrygian', 'bhairav', 'dorian'], human=0.007, kit='acoustic', form='stoner_raga',
+      voicing='power', chord_size=3, chord_bars=2, reverb=2.2, no_rotation=True, own_progs=True, no_layers=True,
+      progs={'phrygian_dominant': [[0, 1, 0, 0], [0, 0, 1, 6]], 'phrygian': [[0, 1, 0, 6], [0, 0, 1, 1]],
+             'bhairav': [[0, 1, 0, 0], [0, 0, 1, 0]], 'dorian': [[0, 0, 3, 0], [0, 6, 3, 0]]},
+      drums={'kick': ['X.......X.......', 'X.....X.X.......'], 'snare': ['........X.......', BACKBEAT],
+             'ride': ['x...x...x...x...', 'x.x.x.x.x.x.x.x.'],
+             'tabla': ['X.x.x.X.X.x.x.X.', 'X.xxx.X.X.x.x.Xx'], 'bayan': ['X.....X.X.....X.', 'X.....X.......X.']},
+      snare_tracks=['snare'], fill=True,
+      bass=['R-------R-------', 'R-----R-O-------'], bass_lo=28,
+      chord_rh=['x-------x-------', 'x-----x-x-------', 'x---------------'], chord_center=50,
+      arp=dict(rate=2, mode='updown', oct=4, prob=0.8),
+      lead_rh=['x-x-x-x-x-x-x---'], lead_oct=5, repetition=0.75, slides=0.45,
+      riffs=['X-------p.p.b---', 'X-----X-m---b---', 'X---p.p.q---f---', 'X.X.p---X---b.p.'],
+      gm_hint='Fuzz guitars (down-tuned); fuzz bass; sitar lead; tanpura drone; tabla over a rock kit with a big ride',
+      tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.35, db=-14),
+              T('ride', 'top', 'ride', db=-28),
+              T('tabla', 'top', 'tabla', rev=0.3, pan=0.3, db=-21), T('bayan', 'top', 'bayan', rev=0.3, pan=-0.2, db=-23),
+              T('bass', 'bass', 'ebass', db=-14, drive=0.8),
+              T('chords', 'chords', 'guitar', db=-12, p=dict(dist=0, bright=3500, damp=0.99), amp=36),
+              T('pad', 'pad', 'tanpura', rev=0.4, db=-22),
+              T('arp', 'arp', 'guitar', pan=0.35, rev=0.3, dly=0.2, db=-26, p=dict(dist=0), amp=30),
+              T('lead', 'lead', 'sitar', rev=0.45, dly=0.12, db=-15)],
+      master=dict(lufs=-10.0, air=0.8, low=1.4),
+      pools=dict(bass=['ebass', 'sf:pickbass'], chords=['guitar', 'sf:distguitar', 'sf:odguitar'],
+                 pad=['tanpura'], arp=['guitar', 'organ'], lead=['sitar']),
+      label='Stoner rock - raga / psych (sitar, tabla)')
 
 style('ragtime', 'Classic', 'Ragtime / stride piano: solo piano in a march-like 2-feel - the left hand jumping between a low '
       'bass note on the beat and a chord on the off-beat, the right hand playing a bright, heavily syncopated melody',

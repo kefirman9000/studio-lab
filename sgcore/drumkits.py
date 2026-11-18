@@ -405,6 +405,6 @@ GENRE_KIT.update({'french_house': '909', 'trip_hop': 'levee', 'big_beat': 'skull
                   'dub_techno': 'soft', 'electro_swing': 'punchy', 'darkwave_ebm': 'linn', 'baltimore_club': '808',
                   'hi_nrg': 'linn', 'freestyle': '808', 'witch_house': '808', 'latin_trap': '808', 'brazilian_bass': '909',
                   'afrobeat': 'seventies', 'dub': 'seventies', 'nola_brass': 'studio', 'shoegaze': 'rusty', 'post_rock': 'studio',
-                  'pop_punk': 'rock', 'doom_metal': 'rock', 'anime_opening': 'unruly', 'musical_theatre': 'studio'})
+                  'pop_punk': 'rock', 'doom_metal': 'rock', 'stoner_raga': 'rock', 'anime_opening': 'unruly', 'musical_theatre': 'studio'})
 CHOP.update({'big_beat': 0.2, 'trip_hop': 0.0})
 GENRE_KIT.update({'juke_raw': '808', 'juke_house': '808'})

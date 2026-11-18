@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (260 genres)
+# Studio Lab - technical genre rules (265 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -4751,6 +4751,37 @@ Doom / stoner metal: crushingly slow and heavy - huge, fuzzed-out down-tuned rif
 - **Mix** {'lufs': -9.5, 'air': 0.8, 'low': 1.6} · reverb 2.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 50, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
 
+### Stoner rock - raga / psych (sitar, tabla) (`stoner_raga`)
+
+Stoner rock - raga / psych: slow, heavy fuzz-guitar riffs and a fuzzed bass locked together over a lumbering beat, a tanpura drone humming underneath, tabla rolling on top of the drum kit and a sitar singing raga phrases that climb, hold and slide back down - opening on the drone and sitar alone, a tabla-and-sitar breakdown, then a heavy psychedelic jam
+
+- **Tempo** 66-88 BPM · **scales** phrygian_dominant, phrygian, bhairav, dorian · swing 0.5 (unit 16) · humanise 0.007
+- **Progressions** {'phrygian_dominant': [[0, 1, 0, 0], [0, 0, 1, 6]], 'phrygian': [[0, 1, 0, 6], [0, 0, 1, 1]], 'bhairav': [[0, 1, 0, 0], [0, 0, 1, 0]], 'dorian': [[0, 0, 3, 0], [0, 6, 3, 0]]} · chord_bars 2 · chord size 3
+- **Song form** `stoner_raga`: alap 8 [lead, pad] (filter_in) -> riff 16 [bass, chords, kick, pad, snare, top] (crash) -> verse 16 [bass, chords, kick, lead, pad, snare, top] -> tabla 8 [bass, lead, pad, top] (alt, level=0.8) -> riff 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> jam 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop, crash) -> outro 8 [bass, lead, pad] (cad) · form_scale 1
+- **Drums** **kick** `X.......X.......` / `X.....X.X.......`; **snare** `........X.......` / `....X.......X...`; **ride** `x...x...x...x...` / `x.x.x.x.x.x.x.x.`; **tabla** `X.x.x.X.X.x.x.X.` / `X.xxx.X.X.x.x.Xx`; **bayan** `X.....X.X.....X.` / `X.....X.......X.`
+- **Drum kit** rock · preset `acoustic`
+- **Bass** `R-------R-------` / `R-----R-O-------` · mode `pattern` · lowest note 28
+- **Chord rhythm** `x-------x-------` / `x-----x-x-------` / `x---------------`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 4, 'prob': 0.8}
+- **Lead rhythm** `x-x-x-x-x-x-x---`
+- **Riffs** `X-------p.p.b---` / `X-----X-m---b---` / `X---p.p.q---f---` / `X.X.p---X---b.p.`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `half_time` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -13 dB
+  - snare (snare): `snare` -14 dB · rev=0.35
+  - ride (top): `ride` -28 dB
+  - tabla (top): `tabla` -21 dB · pan=0.3 · rev=0.3
+  - bayan (top): `bayan` -23 dB · pan=-0.2 · rev=0.3
+  - bass (bass): `ebass` -14 dB · alternatives ['sf:pickbass']
+  - chords (chords): `guitar` -12 dB · alternatives ['sf:distguitar', 'sf:odguitar']
+  - pad (pad): `tanpura` -22 dB · rev=0.4
+  - arp (arp): `guitar` -26 dB · pan=0.35 · rev=0.3 · dly=0.2 · alternatives ['organ']
+  - lead (lead): `sitar` -15 dB · rev=0.45 · dly=0.12
+- **Mix** {'lufs': -10.0, 'air': 0.8, 'low': 1.4} · reverb 2.2 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 50, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'repetition': 0.75, 'slides': 0.45}
+- **Sound brief** Fuzz guitars (down-tuned); fuzz bass; sitar lead; tanpura drone; tabla over a rock kit with a big ride
+
 ## Pop & Indie
 
 ### Pop (`pop`)
@@ -6689,7 +6720,7 @@ Raga (Hindustani-inspired): a tanpura drone the whole way, the sitar alone in a 
   - arp (arp): `sitar` -27 dB · pan=-0.25 · rev=0.4 · alternatives ['harp', 'koto', 'mandolin']
   - lead (lead): `sitar` -17 dB · rev=0.4 · alternatives ['flute', 'violin', 'oboe']
 - **Mix** {'lufs': -13.0, 'air': 1.2, 'low': 0.8} · reverb 2.4 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tabla'], 'bass_gate': 0.9, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bayan', 'suggest': '', 'pad_drone': True, 'repetition': 0.6, 'melody_lang': 'diatonic', 'slides': 0.35, 'no_rotation': True}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tabla'], 'bass_gate': 0.9, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bayan', 'suggest': '', 'hand_drums': True, 'pad_drone': True, 'repetition': 0.6, 'melody_lang': 'diatonic', 'slides': 0.35, 'no_rotation': True}
 - **Sound brief** Tanpura drone; sitar (meend, jawari buzz); tabla (dayan + bayan); a low drone bass
 
 ### Japanese zen (koto, shakuhachi) (`japanese_zen`)
@@ -6744,6 +6775,117 @@ Bhangra (Punjabi): the dhol drum driving its swung, galloping chaal rhythm, a br
   - lead (lead): `mandolin` -18 dB · rev=0.2 · dly=0.15 · alternatives ['sitar', 'pluck', 'flute']
 - **Mix** {'lufs': -10.0, 'air': 1.5, 'low': 1.2} · reverb 2.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['dhol_hi'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 6, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'dhol', 'suggest': ''}
+
+## Hindu devotional
+
+### Bhajan (harmonium, dholak, manjira) (`bhajan`)
+
+Bhajan (Hindu devotional song): a simple, heartfelt melody that winds up and down in raga phrases - aroha and avaroha - with meend glides, the harmonium following the singer, a tanpura drone, the dholak in an 8-beat keherwa and bright manjira cymbals keeping time; a free opening, then the refrain (sthayi) and verses (antara) that climb higher - warm, repetitive, easy to sing along to
+
+- **Tempo** 78-98 BPM · **scales** major, mixolydian, bhairav, phrygian · swing 0.5 (unit 16) · humanise 0.009
+- **Progressions** {'major': [[0, 0, 3, 4], [0, 3, 0, 4], [0, 0, 0, 4]], 'mixolydian': [[0, 6, 0, 0], [0, 3, 6, 0]], 'bhairav': [[0, 0, 3, 0], [0, 5, 4, 0]], 'phrygian': [[0, 1, 0, 0], [0, 6, 1, 0]]} · chord_bars 2 · chord size 3
+- **Song form** `bhajan`: alap 4 [lead, pad] (filter_in) -> sthayi 8 [chords, kick, lead, pad, snare, top] -> sthayi 8 [chords, kick, lead, pad, snare, top] -> antara 8 [chords, kick, lead, pad, snare, top] (alt) -> sthayi 8 [chords, kick, lead, pad, snare, top] -> antara 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> sthayi 8 [arp, chords, kick, lead, pad, snare, top] -> outro 4 [chords, lead, pad, top] (cad) · form_scale 1
+- **Drums** **dholak** `X.x.........x...` / `X.x.......x.X...` / `X.x..x......x.x.`; **dholak_ta** `....x.x.x.x...x.` / `..x.x.x.x.x.x.x.` / `....x.xxx.x...x.`; **manjira** `x...x...x...x...` / `x...x...x...x.x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.......R.......` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x-------x-------` / `x---x---x---x---`
+- **Arp** {'rate': 4, 'mode': 'random', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `x-x-x-x-x-x-x---`
+- **Build-ups** default `(category default)` · choices ['pickup'] · transitions ['none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - dholak (kick role - the genre's low drum): `dholak` -18 dB · rev=0.2
+  - dholak_ta (snare): `dholak_ta` -21 dB · rev=0.2
+  - manjira (top): `manjira` -27 dB · pan=0.25 · rev=0.3
+  - pad (pad): `tanpura` -21 dB · rev=0.4
+  - chords (chords): `harmonium` -24 dB · pan=-0.15 · rev=0.3
+  - arp (arp): `santoor` -26 dB · pan=0.25 · rev=0.4 · alternatives ['sitar', 'harp']
+  - lead (lead): `flute` -16 dB · rev=0.4 · dly=0.08 · alternatives ['violin', 'sitar', 'santoor']
+  - harm (lead): `harmonium` -22 dB · pan=-0.1 · rev=0.3
+- **Mix** {'lufs': -13.0, 'air': 0.8, 'low': 0.6} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['dholak_ta'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'dholak', 'suggest': '', 'hand_drums': True, 'no_fx_sounds': True, 'pad_drone': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'repetition': 0.8, 'slides': 0.4}
+- **Sound brief** Voice or bansuri on the melody; harmonium following it; tanpura drone; dholak (keherwa); manjira
+
+### Kirtan (call & response, speeding up) (`kirtan`)
+
+Kirtan (call-and-response chanting): a leader sings a short line of divine names and the group answers it, over and over - harmonium pumping chords, a tanpura drone, kartal / manjira cymbals and a dholak (or khol) - starting slow and calm and speeding up chant by chant until it is ecstatic, then settling on a last slow line
+
+- **Tempo** 90-100 BPM · **scales** major, mixolydian, bhairav · swing 0.5 (unit 16) · humanise 0.01
+- **Progressions** {'major': [[0, 0, 4, 4], [0, 3, 4, 0], [0, 0, 3, 4]], 'mixolydian': [[0, 0, 6, 0], [0, 6, 3, 0]], 'bhairav': [[0, 0, 4, 0], [0, 3, 4, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `kirtan`: invocation 4 [lead, pad] (filter_in) -> chant 8 [chords, lead, pad, top] (level=0.8) -> chant 8 [chords, kick, lead, pad, snare, top] -> chant 8 [chords, kick, lead, pad, snare, top] -> chant 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> chant 8 [arp, chords, kick, lead, pad, snare, top] -> ecstatic 8 [arp, chords, kick, lead, pad, snare, top] (drop) -> ecstatic 8 [arp, chords, kick, lead, pad, snare, top] (drop) -> close 4 [chords, lead, pad] (cad) · form_scale 1
+- **Drums** **dholak** `X.....x.X.......` / `X.....x.X...x...`; **dholak_ta** `..x.x...x.x.x.x.` / `..x.x.x.x.x.x.x.`; **manjira** `x.x.x.x.x.x.x.x.` / `X.x.X.x.X.x.X.x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.......R.......` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x...x...x...x...` / `x.x.x.x.x.x.x.x.`
+- **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `x-x-x-x-x-x-x---`
+- **Build-ups** default `(category default)` · choices ['pickup'] · transitions ['none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `minimal_motivic` · bass `rolling_groove` · drop `groove_drop` · variation `low` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - dholak (kick role - the genre's low drum): `dholak` -17 dB · rev=0.2
+  - dholak_ta (snare): `dholak_ta` -18 dB · rev=0.2
+  - manjira (top): `manjira` -25 dB · pan=0.2 · rev=0.3
+  - pad (pad): `tanpura` -22 dB · rev=0.4
+  - chords (chords): `harmonium` -21 dB · pan=-0.15 · rev=0.3
+  - arp (arp): `santoor` -27 dB · pan=0.3 · rev=0.4 · alternatives ['harp', 'sitar']
+  - lead (lead): `harmonium` -17 dB · rev=0.35 · alternatives ['flute', 'violin']
+  - group (lead): `choir` -23 dB · pan=0.15 · rev=0.5
+- **Mix** {'lufs': -12.0, 'air': 0.8, 'low': 0.6} · reverb 2.2 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['dholak_ta'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'dholak', 'suggest': '', 'hand_drums': True, 'no_fx_sounds': True, 'pad_drone': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'accel': (0.72, 1.45), 'call_response': True, 'repetition': 0.9, 'slides': 0.35}
+- **Sound brief** Leader and group voices (call and response); harmonium; tanpura; dholak / khol; kartal / manjira
+
+### Aarti (temple bells & prayer) (`aarti`)
+
+Aarti (temple prayer with lamps): the evening worship song - temple bells ringing on every beat, bright manjira, a steady dholak, harmonium and a drone under a simple, joyful raga melody that everyone sings, verse after verse, ending in a ringing "jai" and the bells alone
+
+- **Tempo** 96-116 BPM · **scales** major, mixolydian · swing 0.5 (unit 16) · humanise 0.009
+- **Progressions** {'major': [[0, 0, 4, 0], [0, 3, 4, 0]], 'mixolydian': [[0, 6, 0, 0], [0, 3, 6, 0]]} · chord_bars 2 · chord size 3
+- **Song form** `aarti`: bells 2 [arp, pad] -> verse 8 [arp, chords, kick, lead, pad, snare, top] -> verse 8 [arp, chords, kick, lead, pad, snare, top] -> verse 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> verse 8 [arp, chords, kick, lead, pad, snare, top] -> jai 8 [arp, chords, kick, lead, pad, snare, top] (drop) -> bells 4 [arp, chords, pad, top] (cad) · form_scale 1
+- **Drums** **dholak** `X.x.........x...` / `X.x.......x.X...` / `X.x..x......x.x.`; **dholak_ta** `....x.x.x.x...x.` / `..x.x.x.x.x.x.x.` / `....x.xxx.x...x.`; **manjira** `x...x...x...x...` / `x...x...x...x.x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.......R.......` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x-------x-------`
+- **Arp** {'rate': 4, 'mode': 'random', 'oct': 6, 'prob': 0.95}
+- **Lead rhythm** `x-x-x-x-x-x-x---`
+- **Build-ups** default `(category default)` · choices ['pickup'] · transitions ['none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `minimal_motivic` · bass `rolling_groove` · drop `groove_drop` · variation `low` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - dholak (kick role - the genre's low drum): `dholak` -18 dB · rev=0.25
+  - dholak_ta (snare): `dholak_ta` -21 dB · rev=0.25
+  - manjira (top): `manjira` -24 dB · pan=0.25 · rev=0.35
+  - pad (pad): `tanpura` -22 dB · rev=0.45
+  - chords (chords): `harmonium` -23 dB · pan=-0.15 · rev=0.35
+  - arp (arp): `tubular` -28 dB · pan=-0.25 · rev=0.6 · alternatives ['bell', 'celesta']
+  - lead (lead): `flute` -16 dB · rev=0.45 · dly=0.08 · alternatives ['violin', 'santoor']
+  - harm (lead): `harmonium` -23 dB · pan=0.1 · rev=0.3
+- **Mix** {'lufs': -12.5, 'air': 1.0, 'low': 0.5} · reverb 2.4 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['dholak_ta'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'dholak', 'suggest': '', 'hand_drums': True, 'no_fx_sounds': True, 'pad_drone': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'repetition': 0.9, 'slides': 0.3}
+- **Sound brief** Temple bells; voices or bansuri; harmonium; tanpura; dholak; manjira (conch to open, if you have one)
+
+### Devotional raga (santoor) (`santoor_raga`)
+
+Devotional raga on santoor: a morning or evening raga for prayer and meditation - the santoor's bell-like mallet strikes and shimmering strings rising and falling through the raga (aroha / avaroha) in sparkling cascades, over a tanpura drone; a free, slow alap, then a pulse, then the tabla enters and it gathers speed to a glittering jhala
+
+- **Tempo** 70-96 BPM · **scales** bhairav, lydian, dorian, major · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'bhairav': [[0, 0, 0, 0], [0, 0, 3, 0]], 'lydian': [[0, 0, 0, 0], [0, 0, 1, 0]], 'dorian': [[0, 0, 0, 0], [0, 0, 3, 0]], 'major': [[0, 0, 0, 0], [0, 0, 4, 0]]} · chord_bars 4 · chord size 3
+- **Song form** `santoor_raga`: alap 8 [lead, pad] (filter_in) -> jor 8 [arp, lead, pad] -> gat 16 [arp, kick, lead, pad, snare] -> gat 16 [arp, kick, lead, pad, snare] (alt) -> jhala 8 [arp, kick, lead, pad, snare] (drop, cad) · form_scale 1
+- **Drums** **tabla** `X.x.x.X.X.x.x.X.` / `X.xxx.X.X.x.x.Xx`; **bayan** `X.....X.X.....X.` / `X.....X.......X.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R-------........` · mode `pattern` · lowest note 36
+- **Chord rhythm** `x---------------`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.85}
+- **Lead rhythm** `x-x-x-x-x-x-x---`
+- **Build-ups** default `(category default)` · choices ['pickup'] · transitions ['none']
+- **Traits** arrangement `verse_chorus_pop` · density `sparse` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `wet_and_spacious` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - bayan (kick role - the genre's low drum): `bayan` -20 dB · rev=0.25
+  - tabla (snare): `tabla` -21 dB · rev=0.25
+  - pad (pad): `tanpura` -20 dB · rev=0.45
+  - arp (arp): `santoor` -25 dB · pan=0.25 · rev=0.45 · alternatives ['sitar', 'harp']
+  - lead (lead): `santoor` -16 dB · pan=-0.1 · rev=0.45 · alternatives ['sitar', 'flute']
+- **Mix** {'lufs': -14.0, 'air': 1.2, 'low': 0.5} · reverb 2.6 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tabla'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bayan', 'suggest': '', 'hand_drums': True, 'no_fx_sounds': True, 'pad_drone': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'repetition': 0.7, 'slides': 0.25}
+- **Sound brief** Santoor (hammered dulcimer) - or sitar; tanpura drone; tabla; bansuri if you have one
 
 # Orchestral
 

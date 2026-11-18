@@ -466,6 +466,42 @@ def test_surf_and_monster_theme():
     print('ok  surf rock feel, monster TV theme riff, pick / finger bass fall back to a bass (not a synth pluck)')
 
 
+def test_hindu_devotional():
+    """v1.52: bhajan, kirtan, aarti, santoor raga - raga phrasing (a climb to a held peak, a fall home), hand drums and
+    hand-drum fills (no rock toms), no EDM effects, the kirtan speeding up, its call answered by the group."""
+    from sgcore.compose import Options, compose
+    from sgcore.instruments import INSTRUMENTS, DRUMS
+    for nm in ('harmonium', 'santoor'):
+        assert nm in INSTRUMENTS
+    for nm in ('manjira', 'dholak', 'dholak_ta'):
+        assert nm in DRUMS
+    for g, want in (('bhajan', {'harmonium', 'tanpura'}), ('kirtan', {'harmonium', 'tanpura', 'choir'}),
+                    ('aarti', {'harmonium', 'tubular'}), ('santoor_raga', {'santoor', 'tanpura'})):
+        for sd in (1, 2):
+            s = compose(Options(style=g, seed=sd, energy=0.9))
+            ins = {t['inst'] for t in s['st']['tracks']}
+            assert want <= ins, (g, ins)
+            assert s['st']['lead_device'] == 'raga'
+            assert not any(e.track.startswith('tom') for e in s['events']), g
+            assert not any(f[0] in ('impact', 'riser', 'swell', 'crash') for f in s['fx']), (g, s['fx'])
+            lead = sorted((e for e in s['events'] if e.track == 'lead'), key=lambda e: e.beat)
+            longest = max(lead, key=lambda e: e.dur)
+            assert longest.dur >= 1.3                                         # held peaks / resting notes
+            assert any(e.slide for e in lead)                                  # meend
+    tm = compose(Options(style='kirtan', seed=3))['tempo_map']
+    assert tm[-1][1] > tm[0][1] * 1.8                                          # starts slow, ends ecstatic
+    k = compose(Options(style='kirtan', seed=3))
+    lead = sorted((e.beat, e.midi) for e in k['events'] if e.track == 'lead')
+    mids = [m for _, m in lead]
+    assert any(mids[i:i + 6] == mids[j:j + 6] for i in range(0, 30) for j in range(i + 6, i + 30))   # the group answers
+    for sd in (1, 2, 3):                                                      # stoner rock with Indian instruments
+        s = compose(Options(style='stoner_raga', seed=sd, variety=0.9))
+        ins = {t['layer']: t['inst'] for t in s['st']['tracks'] if t['layer'] in ('lead', 'pad', 'chords')}
+        assert ins == {'lead': 'sitar', 'pad': 'tanpura', 'chords': ins['chords']} and 'guitar' in ins['chords'], ins
+        assert {'tabla', 'bayan', 'kick', 'snare'} <= {e.track for e in s['events']}
+    print('ok  Hindu devotional: raga phrasing + meend, hand drums & fills, no EDM fx, kirtan accelerando, call & response')
+
+
 def test_v144_drums_layers_new_genres():
     """v1.44: editor drum swaps / kick off, no hit+swell layer flams, liquid DnB + boogie genres, UI parts panel."""
     from sgcore.compose import Options, compose, attack_class
@@ -713,6 +749,7 @@ def main():
     test_traits_and_review()
     test_rotation_keeps_genre_sound()
     test_surf_and_monster_theme()
+    test_hindu_devotional()
     test_v144_drums_layers_new_genres()
     test_bass_warp_trap()
     test_christmas_orchestral()

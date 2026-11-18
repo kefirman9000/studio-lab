@@ -39,6 +39,22 @@ built-in sounds only (no downloaded instruments or plugins):
 
 ## Getting started
 
+### The easy way (nothing else to install)
+
+Go to the [latest release](https://github.com/kefirman9000/studio-lab/releases/latest) and download the installer for your computer. It carries its own copy of everything Studio Lab needs (Python, the audio libraries, plugin support, MP3 export) - you don't need to install Python or anything else.
+
+| | |
+|---|---|
+| **Windows** | Download `StudioLab-Setup-<version>.exe` and double-click it. If Windows shows *"Windows protected your PC"*, click **More info → Run anyway** (the installer isn't signed with a paid certificate). No admin password needed. Studio Lab appears in the Start menu (and on the desktop, if you tick the box). |
+| **Mac (M1 / M2 / M3 / M4)** | Download `StudioLab-<version>-Mac-AppleSilicon.dmg`, open it and drag **Studio Lab** onto **Applications**. |
+| **Mac (older Intel Macs)** | Same, with `StudioLab-<version>-Mac-Intel.dmg`. |
+
+*First time on a Mac:* macOS will say it can't check the app for malicious software (it isn't signed with a paid Apple developer ID). Click **Done**, then open **System Settings → Privacy & Security**, scroll down and click **Open Anyway** next to Studio Lab. You only need to do this once.
+
+Updates work the same as always: click **⟳ Updates** inside the app. Your songs, presets and sounds are kept when you update or reinstall (on Windows they live in the install folder, on a Mac in *~/Library/Application Support/Studio Lab*). To remove Studio Lab, use *Add or remove programs* on Windows, or drag it to the Trash on a Mac.
+
+### With your own Python
+
 You need **Python 3.9 or newer** ([python.org](https://www.python.org/downloads/); on Windows tick *Add python.exe to PATH* while installing). The start files check this and tell you if your Python is missing or too old. Then download this repository (green **Code** button → **Download ZIP**) and unzip it, or clone it.
 
 | | |
@@ -49,11 +65,11 @@ You need **Python 3.9 or newer** ([python.org](https://www.python.org/downloads/
 
 The app opens in your browser. Everything runs locally on your machine.
 
-*Optional:* install [ffmpeg](https://ffmpeg.org/download.html) for MP3 export. Without it, songs are saved as WAV (everything else works the same).
+*Optional:* install [ffmpeg](https://ffmpeg.org/download.html) (or `pip install lameenc`) for MP3 export. Without either, songs are saved as WAV (everything else works the same). The installers include MP3 export already.
 
 ## Genres
 
-260 genres in three tabs - Electronic, Classic and Orchestral, each sorted into sub-groups (House & Disco, Drum & Bass & Breaks, Jazz, Swing & Big Band, Solo Piano ...) - from house, techno, trance, dubstep, drum & bass, funky breaks, hard dance and hopecore to hip hop, UK road rap, R&B, rock, 90s alt rock, metal, punk, jazz, big band, smooth jazz, country, bluegrass, reggae, salsa, soca, Afrobeats and raga, and from Baroque, Classical and Romantic forms (theme & variations, sonata, minuet & trio) to solo piano miniatures, film scores and the **Cinematic Journey** orchestral generator. Each genre has its own instruments, drum patterns, grooves, song forms and mix. Many are modelled bar by bar on reference records: where the kick, sub, hats and keys come in and drop out, how long each section runs, and how the builds work (often by taking things away, not by speeding up snare rolls). **Build-ups** (ramps into choruses and drops) can be on, subtle (natural band-style fills, no EDM risers) or off, with 23 build-up styles to pick from; **Transition FX** (risers, reverse cymbals, impacts, tape stops) can be varied, fewer, drum fills only or off. **Character** gives every genre twelve high-level traits: arrangement, density, human feel, melodic behaviour, bass personality, drop style, variation, context, texture, rhythmic feel, harmony and energy curve. Change any of them (or tick 🎲 Surprise me) to get a different kind of song in the same genre, e.g. a sparse slow-build house track or a switch-up-heavy one. The full list, with what each one does, is in [docs/GENRES.md](docs/GENRES.md). Every genre's complete technical rules, traits included, are in [docs/GENRE_SPEC.md](docs/GENRE_SPEC.md) for review.
+265 genres in three tabs - Electronic, Classic and Orchestral, each sorted into sub-groups (House & Disco, Drum & Bass & Breaks, Jazz, Swing & Big Band, Solo Piano ...) - from house, techno, trance, dubstep, drum & bass, funky breaks, hard dance and hopecore to hip hop, UK road rap, R&B, rock, 90s alt rock, metal, punk, jazz, big band, smooth jazz, country, bluegrass, reggae, salsa, soca, Afrobeats, raga and Hindu devotional music (bhajan, kirtan, aarti, santoor raga), and from Baroque, Classical and Romantic forms (theme & variations, sonata, minuet & trio) to solo piano miniatures, film scores and the **Cinematic Journey** orchestral generator. Each genre has its own instruments, drum patterns, grooves, song forms and mix. Many are modelled bar by bar on reference records: where the kick, sub, hats and keys come in and drop out, how long each section runs, and how the builds work (often by taking things away, not by speeding up snare rolls). **Build-ups** (ramps into choruses and drops) can be on, subtle (natural band-style fills, no EDM risers) or off, with 23 build-up styles to pick from; **Transition FX** (risers, reverse cymbals, impacts, tape stops) can be varied, fewer, drum fills only or off. **Character** gives every genre twelve high-level traits: arrangement, density, human feel, melodic behaviour, bass personality, drop style, variation, context, texture, rhythmic feel, harmony and energy curve. Change any of them (or tick 🎲 Surprise me) to get a different kind of song in the same genre, e.g. a sparse slow-build house track or a switch-up-heavy one. The full list, with what each one does, is in [docs/GENRES.md](docs/GENRES.md). Every genre's complete technical rules, traits included, are in [docs/GENRE_SPEC.md](docs/GENRE_SPEC.md) for review.
 
 ## Daisy Bell
 

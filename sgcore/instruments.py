@@ -2022,3 +2022,96 @@ INSTRUMENT_INFO.update({'whine': 'G-funk whine lead (Minimoog glide)', 'talkbox'
 ROLE_CHOICES['lead'] += ['whine', 'talkbox']
 ROLE_CHOICES['chords'] += ['talkbox']
 GM_PROGRAM.update({'whine': 80, 'talkbox': 81})
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+#  v1.52: Hindu devotional instruments - harmonium, santoor, manjira, dholak
+# ---------------------------------------------------------------------------------------------------------------------
+def i_harmonium(m, dur, p, glide=None, mod=None):
+    """Hand-pumped harmonium (bhajan / kirtan): free metal reeds - a bright, nasal, slightly buzzy tone with strong odd
+    and even harmonics, two reed banks a few cents apart that beat gently, the bellows' breathing swell and a little
+    air noise. It speaks a moment after the key goes down and holds as long as the bellows push."""
+    f = float(mtof(m))
+    n = int((dur + 0.12) * SR)
+    t = np.arange(n) / SR
+    y = np.zeros(n)
+    for det, g in ((0.0, 1.0), (p.get('beat', 4.0), 0.7)):          # two reed banks
+        fr = f * 2 ** (det / 1200)
+        ph = 2 * np.pi * fr * t + _rng().random() * 6.28
+        for k in range(1, 18):
+            if fr * k > 12000:
+                break
+            y += g * np.sin(k * ph) * (0.78 ** k) * (1.25 if k in (2, 3, 4) else 1.0)
+    y = np.tanh(y * 0.7)                                              # the reed's buzzy clip
+    y += 0.05 * bp(noise(n), 1500, 6000)                              # air through the reeds
+    bellows = 1.0 + p.get('bellows', 0.06) * np.sin(2 * np.pi * 0.55 * t + _rng().random() * 6.28)
+    env = adsr(int(dur * SR), 0.035, 0.1, 0.92, 0.09)
+    env = np.pad(env, (0, max(0, n - len(env))))[:n]
+    y = eq(hp(y * env * bellows, 110), 'peak', 1800, 1.0, 2.0) * 0.16
+    return np.vstack([y, np.roll(y, 70)])
+
+
+def i_santoor(m, dur, p, glide=None, mod=None):
+    """Santoor: a hammered dulcimer - light walnut mallets strike groups of three or four steel strings tuned in unison.
+    A clear, bell-like strike, then a shimmering string ring (the unison strings drift a few cents apart) that keeps
+    sounding after the next note, so fast runs blur into a sparkling cascade."""
+    f = float(mtof(m))
+    ring = p.get('ring', 2.6)
+    n = int((max(dur, 0.2) + ring) * SR)
+    t = np.arange(n) / SR
+    y = np.zeros(n)
+    B = 0.00012                                                       # steel-string stiffness
+    for j, det in enumerate((-3.5, 0.0, 3.0, 6.0)):
+        fr = f * 2 ** (det / 1200)
+        for k in range(1, 12):
+            fk = fr * k * np.sqrt(1 + B * k * k)
+            if fk > 15000:
+                break
+            amp = (1.0 / k ** 0.8) * (1.3 if k in (2, 3) else 1.0)
+            y += amp * np.sin(2 * np.pi * fk * t + j * 1.7) * np.exp(-t * (1.1 + 0.55 * k))
+    y *= 0.25
+    y += 0.5 * bp(noise(n), 2500, 9000) * np.exp(-t * 120)          # the mallet tick
+    y += 0.35 * np.sin(2 * np.pi * f * 4.2 * t) * np.exp(-t * 18)  # bell-like inharmonic ping on the strike
+    y = eq(hp(y, 150), 'peak', 3200, 1.2, 3.0) * 0.12
+    return np.vstack([y, np.roll(y, 110)]) * fade_out(np.ones(n), 0.15)
+
+
+def d_manjira(p):
+    """Manjira / kartal: a pair of small, thick bronze hand cymbals struck together - a bright, sweet 'ching' that rings."""
+    n = int(0.9 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 2650)
+    x = sum(a * np.sin(2 * np.pi * f0 * r * t + r) * np.exp(-t * d)
+            for r, a, d in ((1.0, 1.0, 4.5), (1.47, 0.7, 5.5), (2.09, 0.55, 6.5), (2.76, 0.4, 8), (3.51, 0.25, 9)))
+    x += 0.35 * hp(noise(n), 5000) * np.exp(-t * 35)
+    return fade_out(x * 0.5, 0.1)
+
+
+def d_dholak(p):
+    """Dholak 'dha': the two-headed folk barrel drum's bass side - a round boom the palm presses up in pitch."""
+    n = int(0.6 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 105)
+    f = f0 * (1 + 0.35 * (1 - np.exp(-t * 9)))
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 7) + 0.25 * bp(noise(n), 200, 1500) * np.exp(-t * 80)
+    return fade_out(y, 0.06)
+
+
+def d_dholak_ta(p):
+    """Dholak 'ta / na': the treble head slapped with the fingers - a tight, pitched crack."""
+    n = int(0.35 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 420)
+    x = sum(a * np.sin(2 * np.pi * f0 * r * t) * np.exp(-t * d) for r, a, d in ((1, 1.0, 16), (1.6, 0.5, 22), (2.3, 0.3, 30)))
+    x += 0.6 * bp(noise(n), 1200, 6000) * np.exp(-t * 150)
+    return fade_out(x * 0.8, 0.04)
+
+
+INSTRUMENTS.update({'harmonium': i_harmonium, 'santoor': i_santoor})
+DRUMS.update({'manjira': d_manjira, 'dholak': d_dholak, 'dholak_ta': d_dholak_ta})
+INSTRUMENT_INFO.update({'harmonium': 'Harmonium (bhajan / kirtan)', 'santoor': 'Santoor (hammered dulcimer)'})
+ROLE_CHOICES['chords'] += ['harmonium', 'santoor']
+ROLE_CHOICES['pad'] += ['harmonium']
+ROLE_CHOICES['arp'] += ['santoor']
+ROLE_CHOICES['lead'] += ['harmonium', 'santoor']
+GM_PROGRAM.update({'harmonium': 20, 'santoor': 15})
