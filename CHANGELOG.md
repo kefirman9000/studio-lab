@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.46.2
+- More reference-MIDI patterns: i–bIII sway, bVI–bIII–i–bVII, offbeat tambourine, octave-bounce 8th bass and a 128 BPM floor for eurodance; i–bIII–ii–i dorian sway and a sparse dotted bass for melodic / deep house; i–i–bIII–iv loop and dotted rolling bass for progressive / uplifting trance.
+
 ## 1.46.1
 - Patterns learned from reference MIDIs: 2-step kick/bass and i–bVI–bIII–v for UK garage; 8th-note "train" and shuffle-boogie bass lines plus I–IV–ii–V for jam band / 80s jam rock; V–ii–ii–I anthem loop for 90s alt rock; ii–I–V noir-ballad loop for soft rock; vi–I sway for downtempo.
 
