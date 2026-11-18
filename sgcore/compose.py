@@ -408,7 +408,8 @@ def apply_variety(st, opts, rnd):
         st['kitparams'] = dict(st['kitparams'], kick=k)
     if isinstance(st['form'], str) and st['form'] in FORM_VARIANTS and opts.structure == 'auto' and rnd.random() < 0.55 * v:
         st['form'] = rnd.choice(FORM_VARIANTS[st['form']])
-    st['delay_beats'] = rnd.choice([0.75, 0.75, 0.5, 1.5]) if rnd.random() < 0.4 * v else st['delay_beats']
+    if not (st.get('arp') or {}).get('beat_lock'):       # beat-locked arps keep their echoes on the beat
+        st['delay_beats'] = rnd.choice([0.75, 0.75, 0.5, 1.5]) if rnd.random() < 0.4 * v else st['delay_beats']
     return st
 
 
@@ -1481,7 +1482,15 @@ def compose(opts):
                         evs.append(Ev('arp', beat0 + step * u / 4, max(0.2, l * u / 4 * 0.85), m, vel))
                         if arp['mode'] == 'montuno':
                             evs.append(Ev('arp', beat0 + step * u / 4, max(0.2, l * u / 4 * 0.85), m - 12, vel * 0.85))
+                per_beat = max(1, int(round(4 / rate))) if arp.get('beat_lock') else 0
                 for k in range(0 if arp.get('rh') else int(G / rate)):
+                    if per_beat:                                 # locked to the beat: every beat starts the figure again
+                        j, bt = k % per_beat, k // per_beat      # from the bottom (up on one beat, down the next), the
+                        run = seq[:per_beat] if len(seq) >= per_beat else (seq * per_beat)[:per_beat]
+                        m = run[j] if bt % 2 == 0 else run[per_beat - 1 - j]
+                        vel = (1.0 if j == 0 else 0.86 if j * 2 == per_beat else 0.72 if j % 2 == 0 else 0.6)
+                        evs.append(Ev('arp', beat0 + k * rate * u / 4, rate * u / 4 * 0.8, m, vel * rnd_c.uniform(0.96, 1.0)))
+                        continue                                 # downbeat accented, the off-beat half a step down
                     if arp.get('prob') and rnd_c.random() > arp['prob']:
                         continue
                     m = rnd_c.choice(seq) if arp['mode'] == 'random' else seq[k % len(seq)]
@@ -2522,7 +2531,7 @@ def dj_effects(evs, fx, tracks, sections, amount, rnd, slow=None):
     pulled up a fifth, a phrase played a whole tone flat); and a fake DJ slowdown - the record dragged by hand - in the
     bar before some of the drops."""
     hats = {n for n, t in tracks.items() if t.get('layer') == 'top' and t.get('inst') in HAT_INSTS}
-    leads = {n for n, t in tracks.items() if t.get('layer') in ('lead', 'arp')}
+    leads = {n for n, t in tracks.items() if t.get('layer') in ('lead', 'arp') and not t.get('no_dj')}
     for sec in sections:
         for b in range(sec['bars']):
             b0 = (sec['bar'] + b) * 4

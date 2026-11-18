@@ -766,6 +766,10 @@ def test_switchup_808():
     a = sorted(e.beat for e in m['events'] if e.track == 'arp')
     step = float(np.median([d for d in np.diff(a) if d > 0])) * 60 / m['bpm']
     assert step < 0.07 and any(e.track == 'arp_hi' for e in m['events'])     # 32nd-note mallet arps, doubled up high
+    arp = [e for e in m['events'] if e.track == 'arp']
+    on = [e for e in arp if abs(e.beat - round(e.beat)) < 1e-6]
+    assert on and all(e.vel > 0.9 for e in on) and all(e.vel < 0.9 for e in arp if abs(e.beat - round(e.beat)) > 1e-6)
+    assert m['st']['delay_beats'] in (0.5, 1.0)                       # locked to the beat: accents and echoes on it
     h = compose(Options(style='switchup_808_hard', seed=3))
     from sgcore.styles import STYLES as _S
     k = _S['switchup_808_hard']['kit_override']['kick']

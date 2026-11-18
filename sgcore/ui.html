@@ -293,10 +293,6 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f"><label>Bends <span class="hint">meend & gamak - the sliding, shaking notes of Indian music on sitar, veena, bansuri, violin...</span></label><select id="bends"><option value="">Genre default</option><option value="more">More</option><option value="subtle">Subtle</option><option value="off">Off</option></select></div>
       <div class="f"><label>Vocals <span class="hint">a singer on the song's melody (the vocal line is always in MIDI exports)</span></label><select id="vocals"><option value="">Off</option><option value="guide">Guide melody (synth, no words)</option><option value="ooh">Sung - "ooh"</option><option value="aah">Sung - "aah"</option><option value="lyrics">Sung - my lyrics</option></select></div>
       <div class="f" id="voiceF" style="display:none"><label>Voice</label><select id="voice"><option value="female">Female</option><option value="male">Male</option><option value="choir">Choir (a small group)</option><option value="robot">Robot</option></select></div>
-      <div class="f"><label>Voice sample <span class="hint">a short clip of yours (a word, a shout, a line) chopped into the song - screwed in phonk / DJ genres, stuttered in club music. Add one in 🎛 My samples</span></label><select id="voxSample"><option value="">Off</option></select></div>
-      <div class="f voxF" style="display:none"><label>Sample use</label><select id="voxUse"><option value="auto">Auto (the genre decides)</option><option value="screwed">Chopped &amp; screwed (slowed, pitched down, words caught twice)</option><option value="stutter">Stutter chops (b-b-bounce it, rolls into drops)</option><option value="adlib">Ad-lib one-shots (on drops and turnarounds)</option><option value="phrase">Whole phrase (intro, breaks, outro)</option><option value="melody">Melody (its first syllable plays the lead notes)</option></select></div>
-      <div class="f voxF" style="display:none"><label>Sample pitch</label><select id="voxPitch"><option value="auto">Auto</option><option value="down">Down (screwed)</option><option value="natural">Natural</option><option value="up">Up (chipmunk)</option></select></div>
-      <div class="f voxF" style="display:none"><label>How often</label><select id="voxAmount"><option value="few">A few times</option><option value="normal" selected>Normal</option><option value="lots">Lots</option></select></div>
       <div class="f wide" id="lyricsF" style="display:none"><label>Lyrics <span class="hint">simple words work best - each syllable gets one note, and the words repeat if the song is longer</span></label><textarea id="lyrics" rows="2" placeholder="e.g. Dance with me tonight, under the city light" style="width:100%;resize:vertical"></textarea></div>
     </div></details>
 
@@ -316,6 +312,14 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
         <button class="mini" id="traitReset" type="button" style="margin-left:8px">↺ Genre traits</button></div>
     </div></details>
 
+    <details class="card" open id="voxCard"><summary>🎤 Voice sample <span class="hint">chop, stutter or screw a short clip of a voice into the song</span></summary><div class="body">
+      <div class="f wide"><div class="hint">Load a few seconds of a voice - a word, a shout, a line, a quote (MP3, WAV ...). Switch-up 808, phonk and chopped &amp; screwed genres screw it (slowed, pitched down, words caught twice); club genres stutter it (b-b-bounce it); others drop it in as an ad-lib or a phrase.</div>
+        <div class="row" style="margin-top:6px;gap:6px"><input type="text" id="voxQuickName" placeholder="name, e.g. bounce it" style="max-width:200px"><select id="voxQuickType" style="width:auto"><option value="phrase">A word or short line</option><option value="shout">A shout / ad-lib</option><option value="speech">Speech / a quote</option><option value="note">A sung note</option></select><button class="mini acc" id="voxQuickUp">🎤 Load a voice sample…</button><input type="file" id="voxQuickFile" accept="audio/*" hidden><span class="hint" id="voxQuickMsg"></span></div></div>
+      <div class="f"><label>Voice sample</label><select id="voxSample"><option value="">Off</option></select></div>
+      <div class="f voxF" style="display:none"><label>Sample use</label><select id="voxUse"><option value="auto">Auto (the genre decides)</option><option value="screwed">Chopped &amp; screwed (slowed, pitched down, words caught twice)</option><option value="stutter">Stutter chops (b-b-bounce it, rolls into drops)</option><option value="adlib">Ad-lib one-shots (on drops and turnarounds)</option><option value="phrase">Whole phrase (intro, breaks, outro)</option><option value="melody">Melody (its first syllable plays the lead notes)</option></select></div>
+      <div class="f voxF" style="display:none"><label>Sample pitch</label><select id="voxPitch"><option value="auto">Auto</option><option value="down">Down (screwed)</option><option value="natural">Natural</option><option value="up">Up (chipmunk)</option></select></div>
+      <div class="f voxF" style="display:none"><label>How often</label><select id="voxAmount"><option value="few">A few times</option><option value="normal" selected>Normal</option><option value="lots">Lots</option></select></div>
+    </div></details>
     <details class="card" open><summary>Parts <span class="hint">every part: sound, mute and volume in one place</span></summary><div class="body" id="soundBody">
       <div class="f wide" id="drumsHead"><div class="hint" style="margin-top:6px"><b>Drums</b> <span id="drumVol"></span></div></div>
       <div class="f"><label>Drum style <span class="hint">what the drums play</span></label><select id="drumPattern"></select>
@@ -1791,6 +1795,12 @@ async function init(){
   $('#optBtn').onclick=optionsModal;
   vizDraw(true);
   $('#vocals').onchange=syncVocals;
+  $('#voxQuickUp').onclick=()=>{ if(!$('#voxQuickName').value.trim()) $('#voxQuickName').value='voice '+(((META&&META.vox_samples)||[]).length+1); $('#voxQuickFile').value=''; $('#voxQuickFile').click(); };
+  $('#voxQuickFile').onchange=async()=>{ const f=$('#voxQuickFile').files[0]; if(!f) return; $('#voxQuickMsg').textContent='Loading…';
+    try{ const pcm=await decodeFile(f,44100); const r=await upload(`/api/upload/sound?kind=vocal&name=${encodeURIComponent($('#voxQuickName').value.trim())}&root=60&vtype=${$('#voxQuickType').value}`,new Blob([pcm.buffer]));
+      if(r.error){ $('#voxQuickMsg').textContent=r.error; return }
+      META=await api('/api/meta'); fillVox(r.saved); syncVox(); $('#voxQuickMsg').textContent='Loaded "'+r.saved+'" - it\'s picked as the Voice sample. Press Preview.'; $('#voxQuickName').value='';
+    }catch(e){ $('#voxQuickMsg').textContent='Could not read that file: '+e.message } };
   fillVox(); $('#voxSample').onchange=()=>{ if($('#voxSample').value==='__add'){ $('#voxSample').value=''; soundsModal(); } syncVox(); };
   $('#seed').value=Math.floor(Math.random()*99999)+1;
   initSegs(); renderTabs(); renderMoods(); renderLayers(); renderOuts(); refresh();

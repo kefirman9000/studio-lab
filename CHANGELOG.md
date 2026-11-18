@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.56.3
+- **Voice samples are easier to find**: a new **🎤 Voice sample** card above Parts, with its own "Load a voice sample…" button - load a clip and it's picked straight away, with the use / pitch / how-often choices right there. (It was tucked under Feel, and loading one meant going through 🎛 My samples.)
+- **Switch-up 808 - mallets: the arpeggios now lock to the beat.** Every beat starts the run again from the bottom (up one beat, down the next) with the first note of each beat accented and the off-beat half a step down, instead of one long run drifting across the beats with random gaps. Their echoes are timed to the beat, their reverb is shorter, they duck a little with the kick, and the DJ pitch edits leave them alone.
+
+
 ## 1.56.2
 - **New genre: Switch-up 808 - hard (punchy kicks)**: the switch-up 808 beat made aggressive - hard, distorted kicks with a sharp click and a fast pitch drop (more of them, double kicks), the 808 ducking hard out of their way, cracking crushed snares and claps, a dirtier 808, cowbell stabs, and a louder mix.
 - **New genre: Switch-up 808 - mallets (fast arpeggios)**, from your "Mallets" reference: marimba and vibes rippling through the chords in 32nd notes (about 45 ms apart) and two-octave cascades over the switching 808, opening and closing on the mallets alone.
