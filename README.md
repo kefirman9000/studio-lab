@@ -57,7 +57,7 @@ The app opens in your browser. Everything runs locally on your machine.
 
 ## Daisy Bell
 
-Press **🤖 Daisy Bell** for "Daisy Bell (A Bicycle Built for Two)" (1892, public domain) sung by a creepy early-computer voice over a music-box waltz - it winds down at the end like a machine losing power. From the command line: `python studiolab.py daisy`.
+Press **🤖 Daisy Bell** (pick *Creepy machine* or *Deep, calm computer* voice next to it) for "Daisy Bell (A Bicycle Built for Two)" (1892, public domain) sung by a creepy early-computer voice over a music-box waltz - it winds down at the end like a machine losing power. From the command line: `python studiolab.py daisy` (add `--deep` for the deep voice).
 
 ## Song editor
 

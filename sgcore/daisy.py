@@ -104,7 +104,7 @@ def _resonate(x, freqs, bws, n, gains=(1.0, 0.55, 0.3)):
     return out
 
 
-def sing(notes, rng=None):
+def sing(notes, rng=None, formant_scale=1.0, tilt=0.6):
     """notes: [(start_s, dur_s, midi_float, phonemes)] -> mono voice. Pitch is held dead steady on each note (a fast
     25 ms glide between notes, no vibrato) - the uncanny, perfectly-in-tune machine."""
     rng = rng or np.random.default_rng(1892)
@@ -138,7 +138,7 @@ def sing(notes, rng=None):
             if p in VOWELS or p in APPROX:
                 fm = VOWELS.get(p) or APPROX[p]
                 for k in range(3):
-                    targ[k][a // BLOCK:b // BLOCK + 1] = fm[k]
+                    targ[k][a // BLOCK:b // BLOCK + 1] = fm[k] * formant_scale
                 lvl = (1.0 if p in VOWELS else (0.45 if p in ('m', 'n') else 0.7)) * VGAIN.get(p, 1.0)
                 vamp[a:b] = lvl
             else:
@@ -155,7 +155,7 @@ def sing(notes, rng=None):
     # buzzy glottal source: a band-limited-ish sawtooth (the classic speech-synth buzz) with a little tilt
     ph_ = np.cumsum(f0 / SR)
     src = (2 * (ph_ % 1.0) - 1.0) * (f0 > 0)
-    src = signal.lfilter([1.0], [1, -0.6], src) * 0.4
+    src = signal.lfilter([1.0], [1, -tilt], src) * 0.4      # more tilt = a softer, rounder, less buzzy voice
     voice = _resonate(src * vamp, targ, (90, 120, 170), n)
     voiced = voice[vamp > 0.9]
     vref = float(np.sqrt(np.mean(voiced ** 2))) if voiced.size else 0.1
@@ -199,7 +199,7 @@ def robotize(y, crush_hz=16000, bits=10):
 
 
 # ----------------------------------------------------------------------------- tempo map: the second chorus winds down
-def _timeline(bpm, wind_down=True):
+def _timeline(bpm, wind_down=True, deep=False):
     """[(start_s, dur_s, beat_index, chorus)] for every beat of: 4 intro bars, chorus 1, 2 bars, chorus 2."""
     spb = 60.0 / bpm
     beats = []
@@ -210,20 +210,33 @@ def _timeline(bpm, wind_down=True):
         second = b >= 12 + 99 + 6
         if second and wind_down:
             k = (b - (12 + 99 + 6)) / 99.0                # 0 .. 1 through chorus 2
-            if k > 0.45:                                   # from 'It won't be a stylish marriage' on, it fails
-                x = (k - 0.45) / 0.55
-                f = 1.0 + 2.2 * x ** 1.6                   # up to ~3x slower
-                drop = -9.0 * x ** 1.8                     # sinking up to 9 semitones
+            start, slow, sink = (0.2, 3.2, 14.0) if deep else (0.45, 2.2, 9.0)
+            if k > start:                                  # the machine starts to fail (the deep voice: sooner, further)
+                x = (k - start) / (1 - start)
+                f = 1.0 + slow * x ** 1.6                  # up to 3-4x slower
+                drop = -sink * x ** 1.8                    # sinking 9-14 semitones
         beats.append((t, spb * f, drop))
         t += spb * f
     return beats
 
 
-def render(out_dir, bpm=104, log=print, wind_down=True):
-    """Render the song -> dict(files=..., duration=...)."""
+VOICES = {
+    'machine': dict(label='Creepy machine (high, buzzy, crushed)', bpm=104, transpose=0, formant=1.0, tilt=0.6, crush=(16000, 10),
+                    shadow=(-12, 0.3, (11025, 8))),
+    'deep': dict(label='Deep, calm computer (slow, winding down)', bpm=86, transpose=-12, formant=0.86, tilt=0.86, crush=(44100, 16),
+                 shadow=(-12, 0.12, (44100, 16))),
+}
+
+
+def render(out_dir, bpm=None, log=print, wind_down=True, voice='machine'):
+    """Render the song -> dict(files=..., duration=...). voice: 'machine' (the creepy, buzzy, bit-crushed early speech synth)
+    or 'deep' (a low, calm, smooth computer voice - slower, and it starts to wind down early in the second chorus)."""
     from . import api
+    vname = voice if voice in VOICES else 'machine'
+    V = VOICES[vname]
+    bpm = bpm or V['bpm']
     rng = np.random.default_rng(1892)
-    tl = _timeline(bpm, wind_down)
+    tl = _timeline(bpm, wind_down, deep=(vname == 'deep'))
 
     def at(beat):                                         # beat (float) -> (seconds, pitch drop)
         i = min(int(beat), len(tl) - 1)
@@ -237,11 +250,15 @@ def render(out_dir, bpm=104, log=print, wind_down=True):
         for ph, midi, beats in MELODY:
             s0, drop = at(b)
             s1, _ = at(b + beats)
-            notes.append((s0, max(0.08, s1 - s0 - 0.02), midi + drop, ph))
+            notes.append((s0, max(0.08, s1 - s0 - 0.02), midi + V['transpose'] + drop, ph))
             b += beats
-    voice = robotize(sing(notes, rng))
+    sung = sing(notes, rng, V['formant'], V['tilt'])
+    voice_ = robotize(sung, *V['crush']) if V['crush'][0] < SR else sung
     # a hollow octave-down shadow of the voice (same timing) for the uncanny doubled sound
-    shadow = robotize(sing([(s, d, m - 12, p) for s, d, m, p in notes], rng), crush_hz=11025, bits=8)
+    sh_t, sh_g, sh_c = V['shadow']
+    shadow = sing([(s, d, m + sh_t, p) for s, d, m, p in notes], rng, V['formant'] * 0.9, V['tilt'])
+    shadow = (robotize(shadow, *sh_c) if sh_c[0] < SR else shadow) * (sh_g / 0.3)
+    voice = voice_
     log('Building the music box …')
     n = len(voice) + int(3 * SR)
     acc = np.zeros((2, n))
@@ -265,12 +282,12 @@ def render(out_dir, bpm=104, log=print, wind_down=True):
             if s0 * SR >= n - SR:
                 continue
             dur3 = at(beat + 3)[0] - s0
-            put('chipbass', root - 12 + drop, s0, dur3 * 0.45, 0.30)
+            put('chipbass' if vname == 'machine' else 'sinebass', root - 12 + drop, s0, dur3 * 0.45, 0.30)
             for k in (1, 2):                              # oom - pah - pah
                 sk, dk = at(beat + k)
                 for iv in QUAL[q]:
                     put('celesta', root + 12 + iv + dk, sk, (at(beat + k + 1)[0] - sk) * 0.6, 0.07, pan=-0.3 + 0.2 * iv / 10)
-            put('organ', root + drop, s0, dur3 * 0.95, 0.025, pan=0.2)
+            put('organ', root + drop, s0, dur3 * 0.95, 0.025 if vname == 'machine' else 0.045, pan=0.2)
     v = np.vstack([voice, voice])
     sh = np.vstack([shadow, shadow])
     vox = np.zeros_like(acc)
@@ -291,7 +308,7 @@ def render(out_dir, bpm=104, log=print, wind_down=True):
     mix = mix / (np.max(np.abs(mix)) + 1e-9) * 0.89
     os.makedirs(out_dir, exist_ok=True)
     stamp = time.strftime('%Y%m%d-%H%M%S')
-    wav = os.path.join(out_dir, f'Daisy_Bell_computer_voice_{stamp}.wav')
+    wav = os.path.join(out_dir, f'Daisy_Bell_{vname}_voice_{stamp}.wav')
     write_wav(wav, mix)
     files = dict(wav=wav)
     if api.have_ffmpeg():
@@ -305,5 +322,6 @@ def render(out_dir, bpm=104, log=print, wind_down=True):
             files['mp3'] = mp3
     secs = mix.shape[1] / SR
     log(f'Done: {secs:.0f} s')
-    return dict(files=files, duration=f'{int(secs // 60)}:{int(secs % 60):02d}', seconds=secs, bpm=bpm, key='C major',
+    return dict(files=files, duration=f'{int(secs // 60)}:{int(secs % 60):02d}', seconds=secs, bpm=bpm, voice=vname,
+                voice_label=V['label'], key='C major' if not V['transpose'] else 'C major (octave down)',
                 meter='3/4', lyrics=LYRICS)

@@ -723,7 +723,8 @@ class Handler(BaseHTTPRequestHandler):
             from . import daisy
 
             def job(log):
-                r = daisy.render(out_dir(), log=log, wind_down=bool(body.get('wind_down', True)))
+                r = daisy.render(out_dir(), log=log, wind_down=bool(body.get('wind_down', True)),
+                                 voice=str(body.get('voice', 'machine')))
                 rel = lambda v: '/files/' + os.path.relpath(v, out_dir()).replace(os.sep, '/')
                 r['urls'] = {k: rel(v) for k, v in r['files'].items()}
                 r['folder'] = os.path.dirname(r['files']['wav'])

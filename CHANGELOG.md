@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.51.1
+- **Daisy Bell, fixed and with a second voice.** The computer voice was mostly hiss and clicks: its vowels came out 35-50 dB quieter than the consonants (the vocal-tract resonances were chained so they cancelled each other). It now sings clearly - vowels carry the voice at an even level, consonants sit under them and land just before the beat.
+- **Pick the voice** next to the 🤖 Daisy Bell button: *Creepy machine* (high, buzzy, bit-crushed) or *Deep, calm computer* - an octave lower, slower, smooth and warm, with a softer music box; it starts winding down early in the second chorus and sinks much further. Command line: `python studiolab.py daisy --deep`.
+
 ## 1.51.0
 - **Orchestra plugin detection (BBC Symphony Orchestra, LABS, Kontakt).** Sounds & instruments → 🎻 Orchestra plugin → ✨ Detect my instruments: the plugin opens once, you click through the instruments (and articulations) you want in its own browser, and each one is recognised from the plugin's state and saved with the right name ("BBC celli pizzicato (Celli · Pizzicato)"), so matching parts in every genre use it. No naming, no reopening. Sounds it can't name are kept for you to name; saved sounds can be renamed, tested and removed in the same window.
 - **One "Sounds & instruments" window** replaces the five header buttons (Real instruments, Genre VSTs, VST, My sounds, My plugins): an overview of what you have plus a tab for each.
