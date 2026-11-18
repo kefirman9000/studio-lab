@@ -148,17 +148,71 @@ def menu():
     return [dict(id=e[0], group=e[1], label=e[2]) for e in KIT_MENU]
 
 
+# ----------------------------------------------------------------------------- drum style (patterns) vs drum sounds
+# Two separate choices:
+#   drum sounds   (opts.kit)          what the drums sound like: a machine, a real kit, a sampled break's grit
+#   drum style    (opts.drum_pattern) what they play: the genre's own beat, a classic break, or another genre's beat
+# Changing one never changes the other. A kit that is a break (amen, think ...) is only a *sound* when picked as the
+# drum sound; its pattern is only used when it is the drum style (or the genre's own beat is that break).
+def pattern_menu():
+    """Drum styles you can pick (the UI adds 'Genre beat' and the other genres itself)."""
+    out = [dict(id='programmed', group='Basics', label="Genre's programmed beat (no break)")]
+    for e in KIT_MENU:
+        if e[5]:
+            out.append(dict(id='break:' + e[0], group='Classic breaks' if e[1].startswith('Breaks') else 'Drum & bass breaks',
+                            label=e[2]))
+    return out
+
+
+def sound_menu():
+    """Drum sounds: every kit; break kits are offered for their sampled, re-pitched character."""
+    return [dict(id=e[0], group=('Sampled-break kits (sound only)' if e[5] and e[1].startswith('Breaks') else e[1]),
+                 label=e[2]) for e in KIT_MENU]
+
+
 def effective(opts, style, st):
-    """The kit id a song uses: yours if you picked one, else the genre's, else None (= the style's own synth preset)."""
+    """The kit id a song uses for its *sound*: yours if you picked one, else the genre's, else None (= the style's own
+    synth preset)."""
     k = getattr(opts, 'kit', None)
     if k:
         return k
     return GENRE_KIT.get(style)
 
 
-def configure(st, kit_id, style, opts):
-    """Set the synth preset, real-kit mic and break for a kit. Returns the synth preset name for KITS."""
+def pattern_of(opts, style):
+    """The break (kit id) whose pattern the drums play, or None for programmed patterns.
+
+    drum_pattern None / 'genre': the genre's own beat - its break if the genre is built on one (jungle: Amen), else its
+    programmed patterns. Old settings that picked a break as the kit (before drum style existed) still get that break."""
+    raw = getattr(opts, 'drum_pattern', None)
+    dp = raw or 'genre'
+    if dp.startswith('break:'):
+        k = dp[6:]
+        return k if (MENU.get(k) or (None,) * 6)[5] else None
+    if dp == 'genre':
+        legacy = getattr(opts, 'kit', None)
+        if raw is None and legacy and (MENU.get(legacy) or (None,) * 6)[5]:
+            return legacy                                # settings saved before drum style existed
+        g = GENRE_KIT.get(style)
+        return g if (MENU.get(g) or (None,) * 6)[5] else None
+    return None                                          # 'programmed' or another genre's beat
+
+
+def configure(st, kit_id, style, opts, pattern_id=None):
+    """Set the synth preset, real-kit mic and break sound for a kit, and the break pattern for a drum style.
+    Returns the synth preset name for KITS."""
     entry = MENU.get(kit_id)
+    pat = MENU.get(pattern_id) if pattern_id else None
+    if pat and pat[5]:                                   # the drum style: a break's pattern, chopped where the genre chops
+        b = BREAKS[pat[5]]
+        st['break'] = pat[5]
+        own = GENRE_KIT.get(style) == pattern_id or style in CHOP
+        st['break_chop'] = CHOP.get(style, 0.0) if own else 0.0
+        st['swing'] = max(st.get('swing', 0.5), b['swing'])
+        st['break_seq'] = b['drums']
+        pextra = pat[6] if len(pat) > 6 else {}
+        if pextra.get('layer'):
+            st['break_layer'] = pextra['layer']           # DnB: two-step kick + snare layered over the break
     if not entry:
         return kit_id                                   # a plain synth preset name ('acoustic', 'default' ...)
     preset, mic, brk = entry[3], entry[4], entry[5]
@@ -168,20 +222,16 @@ def configure(st, kit_id, style, opts):
         st['gated_snare'] = True                       # the 80s gated-reverb snare
     if extra.get('snare'):
         st['real_snare'] = extra['snare']
-    if extra.get('layer'):
-        st['break_layer'] = extra['layer']
     if mic:
         st['want_real_kit'] = mic
-    if brk:
+    if brk:                                            # the drum sound of a break: its mic, pitch and old sampler
         b = BREAKS[brk]
-        st['break'] = brk
         st['want_real_kit'] = b['mic']
         st['break_pitch'] = b['pitch']
         st['break_orig_bpm'] = b.get('orig_bpm')         # sped-up record: the pitch rises with the tempo (no time-stretch)
         st['break_sampler'] = (b.get('bits'), b.get('srate'))   # the 12-bit sampler it was chopped on
-        st['break_chop'] = CHOP.get(style, 0.0) if not getattr(opts, 'kit', None) or style in CHOP else 0.0
-        st['swing'] = max(st.get('swing', 0.5), b['swing'])
-        st['break_seq'] = b['drums']
+        if extra.get('layer') == 'neuro' and st.get('break_seq'):
+            st['break_layer'] = st.get('break_layer') or 'neuro'
     return preset
 
 

@@ -24,6 +24,11 @@ header{display:flex;align-items:center;gap:14px;padding:0 18px;border-bottom:1px
 header .sp{flex:1}
 .hbtn{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:6px 11px;cursor:pointer;font-size:13px}
 .hbtn:hover{border-color:#3a4157}
+.hubtabs{display:flex;flex-wrap:wrap;gap:4px;margin:-4px 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.hubtabs button{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12.5px;color:inherit}
+.hubtabs button.on{border-color:#6b8cff;background:#1d2740}
+.hubgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.hubgrid .sel{margin:0;cursor:pointer}
 .badge{background:var(--acc);color:#fff;border-radius:99px;padding:2px 8px;font-size:11px;margin-left:6px}
 main{display:grid;grid-template-columns:300px minmax(420px,1fr) 420px;min-height:0}
 .col{overflow:auto;min-height:0;padding:16px}
@@ -179,11 +184,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
   <div class="logo"><div class="mark"></div>Studio Lab</div>
   <div class="ver" id="ver"></div>
   <div class="sp"></div>
-  <button class="hbtn" id="libBtn" title="Real recorded instruments for orchestral & acoustic styles">🎻 Real instruments</button>
-  <button class="hbtn" id="rigBtn" title="Auto-download free instruments and play each genre through the plugins that define its sound">🎚 Genre VSTs</button>
-  <button class="hbtn" id="vstBtn" title="Play parts with your own VST3 / AU instruments (experimental)">🎹 VST</button>
-  <button class="hbtn" id="soundsBtn" title="Use your own drum samples and sounds">🎛 My sounds</button>
-  <button class="hbtn" id="plugBtn" title="Tell Studio Lab which plugins you have">🔌 My plugins</button>
+  <button class="hbtn" id="hubBtn" title="Everything that makes sound: real instruments, your VST plugins and orchestra, genre plugins, your own samples">🎚 Sounds &amp; instruments</button>
   <button class="hbtn" id="presetBtn" title="Save or load your favourite settings">★ Presets</button>
   <button class="hbtn" id="folderBtn" title="Open the output folder">📁 Output</button>
   <button class="hbtn" id="diagBtn" title="Save a report of errors and settings to send for help">🩺 Report a problem</button>
@@ -258,7 +259,9 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 
     <details class="card" open><summary>Parts <span class="hint">every part: sound, mute and volume in one place</span></summary><div class="body" id="soundBody">
       <div class="f wide" id="drumsHead"><div class="hint" style="margin-top:6px"><b>Drums</b> <span id="drumVol"></span></div></div>
-      <div class="f"><label>Drum kit <span class="auto"><input type="checkbox" id="userDrums">my samples</span></label><select id="kit"></select>
+      <div class="f"><label>Drum style <span class="hint">what the drums play</span></label><select id="drumPattern"></select>
+        <div class="hint">Changing the drum sounds never changes this.</div></div>
+      <div class="f"><label>Drum sounds <span class="auto"><input type="checkbox" id="userDrums">my samples</span></label><select id="kit"></select>
         <div class="mutes"><span class="hint">mute</span><label class="auto"><input type="checkbox" data-mute="kick">kick</label><label class="auto"><input type="checkbox" data-mute="snare">snare / clap</label><label class="auto"><input type="checkbox" data-mute="top">hats &amp; perc</label><label class="auto"><input type="checkbox" data-mute="fx">FX</label></div></div>
       <div class="f wide"><div class="hint" style="margin-top:6px"><b>Tone &amp; playing style</b></div></div>
       <div class="f wide" id="fusionBox" style="display:none"><label>Fusion — which style drives each part</label><div class="body" id="fusionParts" style="padding:0;grid-template-columns:1fr 1fr 1fr"></div></div>
@@ -365,7 +368,7 @@ function renderStyles(){
     .forEach(([id,t,d])=>{ if(!META.categories.Orchestral.some(s=>s.id===id)) return;
       const f=document.createElement('div'); f.className='feat'+(state.style===id&&!state.blend.length?' on':'');
       f.innerHTML=`<div class="t">${t}</div><div class="d">${d}</div>`;
-      f.onclick=()=>{ state.style=id; state.blend=[]; state.instruments={}; state.blend_parts={}; refresh(); };
+      f.onclick=()=>{ state.style=id; state.blend=[]; genreSounds(); state.blend_parts={}; refresh(); };
       list.appendChild(f); });
   }
   state.closed=state.closed||{}; let lastGrp=null;
@@ -381,7 +384,7 @@ function renderStyles(){
     const d=document.createElement('div');d.className='st'+(lead?' on':'')+(mixed&&!lead?' in':'');d.title=s.desc;
     d.innerHTML=`<span class="ck" title="${mixed?'Remove from the mix':'Add to the mix (blend)'}">${mixed?'✓':''}</span><span class="nm">${s.name}${lead&&state.blend.length?'<span class="lead">★ lead</span>':''}</span><span class="bpm">${s.bpm[0]}–${s.bpm[1]}</span>`;
     d.querySelector('.ck').onclick=e=>{e.stopPropagation();toggleMix(s.id)};
-    d.onclick=()=>{ if(state.blend.length&&mixed){ setLead(s.id); } else { state.style=s.id; state.blend=[]; state.instruments={}; state.blend_parts={}; refresh(); } };
+    d.onclick=()=>{ if(state.blend.length&&mixed){ setLead(s.id); } else { state.style=s.id; state.blend=[]; genreSounds(); state.blend_parts={}; refresh(); } };
     list.appendChild(d);
   }));
 }
@@ -389,9 +392,17 @@ function toggleMix(id){
   if(id===state.style){ if(!state.blend.length) return; state.style=state.blend.shift(); }
   else if(state.blend.includes(id)) state.blend=state.blend.filter(b=>b!==id);
   else { if(state.blend.length>=3){ $('#status').textContent='You can blend up to 4 styles.'; return } state.blend.push(id); }
-  state.instruments={}; refresh();
+  genreSounds(); refresh();
 }
-function setLead(id){ if(id===state.style) return; state.blend=[state.style,...state.blend.filter(b=>b!==id)]; state.style=id; state.instruments={}; refresh(); }
+function setLead(id){ if(id===state.style) return; state.blend=[state.style,...state.blend.filter(b=>b!==id)]; state.style=id; genreSounds(); refresh(); }
+// Sounds you picked stay picked when you change genre, blend or press Surprise me - unless "Genre picks" is chosen.
+// Only the five main parts carry over (a genre's extra parts and score players belong to that genre).
+function instMode(){ try{ return localStorage.getItem('sl_inst_mode')||'keep' }catch(e){ return 'keep' } }
+function genreSounds(){
+  if(instMode()==='auto'){ state.instruments={}; return; }
+  const keep={}; ROLES.forEach(([r])=>{ const v=state.instruments[r]; if(v&&v!=='off'&&(META.roles[r]||[]).some(i=>i.id===v)) keep[r]=v; });
+  state.instruments=keep;
+}
 function renderSelected(){
   const all=Object.values(META.categories).flat(); const s=all.find(x=>x.id===state.style);
   $('#selName').textContent=state.blend.length?'Blend of '+(state.blend.length+1)+' styles':s.name;
@@ -419,6 +430,12 @@ function renderSelected(){
   const jParts=(isJourney(state.style)&&!state.blend.length)?(META.journey_parts||[]).filter(p=>state.style==='cinematic_journey_low'?!['vn_hi','flute','oboe'].includes(p.id):!['vc_mel','bsn'].includes(p.id)):null;
   const rows=jParts?jParts.map(p=>[p.id,p.name,p.layer,p.inst]):ROLES.map(([r,l])=>[r,l,r,defs[r]]);
   if(jParts){ const h=document.createElement('div'); h.className='f wide inst'; h.innerHTML='<div class="hint">🎬 Cinematic Journey: every player has its own sound. Leave on <b>Score default</b> for the real orchestra / your orchestra plugin.</div>'; $('#soundBody').appendChild(h); }
+  { const h=document.createElement('div'); h.className='f wide inst';
+    h.innerHTML=`<label>When you change genre <span class="hint">what happens to the sounds you picked below</span></label><select id="instMode">
+      <option value="keep" ${instMode()==='keep'?'selected':''}>Keep my picks (only parts left on default follow the genre)</option>
+      <option value="auto" ${instMode()==='auto'?'selected':''}>Genre picks (every genre chooses all its own sounds)</option></select>`;
+    $('#soundBody').appendChild(h);
+    h.querySelector('select').onchange=e=>{ try{ localStorage.setItem('sl_inst_mode', e.target.value) }catch(_){} }; }
   if(!jParts&&!state.blend.length){ const h=document.createElement('div'); h.className='f wide inst rrsounds';
     h.innerHTML=`<div class="rr" style="margin:0"><button class="mini acc" data-snd-roll="all" title="Pick a different sound for every part from this genre's suggestions">🎲 Re-roll sounds</button><button class="mini" data-snd-roll="reset" title="Back to the genre's own sounds">↺ Genre sounds</button><button class="mini" data-vol-reset="1" title="Every part back to the genre's own balance">↺ Volumes</button><span class="hint" style="margin-left:6px">Each part's list starts with the sounds that suit this genre. 🎲 next to a part tries another one.</span></div>`;
     $('#soundBody').appendChild(h);
@@ -571,6 +588,7 @@ function options(){
   if(!$('#scAuto').checked) o.sidechain=$('#sidechain').value/100;
   if(!$('#loudAuto').checked) o.loudness=+$('#loud').value;
   if($('#kit').value) o.kit=$('#kit').value;
+  o.drum_pattern=$('#drumPattern').value||'genre';
   if($('#userDrums').checked) o.user_drums=true;
   if(Object.keys(state.part_fx).length) o.part_fx=Object.assign({},state.part_fx);
   if(Object.keys(LOCKS).length) o.part_seeds=Object.fromEntries(Object.entries(LOCKS).map(([p,l])=>[p,l.seed]));
@@ -613,7 +631,7 @@ function applyOptions(o){
   $('#bpmAuto').checked=!o.bpm; if(o.bpm)$('#bpm').value=o.bpm; $('#key').value=o.key||''; $('#scale').value=o.scale||''; $('#prog').value=o.progression||'';
   $('#swingAuto').checked=o.swing==null; if(o.swing!=null)$('#swing').value=o.swing*100;
   $('#scAuto').checked=o.sidechain==null; if(o.sidechain!=null)$('#sidechain').value=o.sidechain*100;
-  $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#userDrums').checked=!!o.user_drums;
+  $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#drumPattern').value=o.drum_pattern||(o.kit&&(META.drum_patterns||[]).some(p=>p.id==='break:'+o.kit)?'break:'+o.kit:'genre'); $('#userDrums').checked=!!o.user_drums;
   $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#builds').value=o.builds||'auto'; renderTraits(); setTraits(o.traits); state.octaves=Object.assign({}, o.octaves||{}); bindOctaves(); $('#transFx').value=o.transition_fx||'auto'; $('#vinyl').value=o.vinyl===true?'on':''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#vocalGuide').checked=!!o.vocal_guide;
   $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';
   state.levels={}; LEVELS.forEach(([k,n,layers])=>{ const v=(o.part_levels||{})[layers[0]]||0; if(v) state.levels[k]=v; }); bindLevels();
@@ -1009,8 +1027,8 @@ async function onReference(file){
 async function soundsModal(data){
   const S=data||await api('/api/sounds',{});
   $('#modalBox').className='box wide';
-  $('#modalBox').innerHTML=`<h3>My sounds</h3>
-    <p class="hint">Load your own audio (WAV, MP3, AIFF…). Drum samples replace the built-in kit when <b>Drum kit → my samples</b> is ticked.
+  $('#modalBox').innerHTML=`<h3>🎛 My samples</h3>
+    <p class="hint">Load your own audio (WAV, MP3, AIFF…). Drum samples replace the built-in kit sounds when <b>Drum sounds → my samples</b> is ticked (the drum style keeps playing the same patterns).
      Instrument samples are one note (e.g. a pluck or a sung "ah") that gets played across the keyboard — pick them in <b>Sound</b> like any instrument.</p>
     <h3 style="margin-top:12px">Drum samples</h3>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">${S.slots.map(sl=>`<div class="sel" style="margin:0;padding:8px"><div><b>${sl}</b> ${S.drums.includes(sl)?'<span class="tag ok">loaded</span>':''}</div>
@@ -1094,7 +1112,7 @@ async function libModal(){
     <div style="text-align:right;margin-top:14px"><button class="btn p" onclick="closeModal()">Done</button></div>`;
   if($('#libGo')) $('#libGo').onclick=async()=>{ $('#libGo').disabled=true; $('#libGo').textContent='Downloading…';
     const {job}=await api('/api/soundlib/install',{});
-    pollJob(job, j=>{ if(j.status==='done'){ $('#libLog').textContent+='\nDone! New songs will use real instruments.'; $('#libBtn').textContent='🎻 Real instruments ✓'; }
+    pollJob(job, j=>{ if(j.status==='done'){ $('#libLog').textContent+='\nDone! New songs will use real instruments.'; }
       else $('#libLog').textContent+='\nDownload failed: '+(j.error||''); }, l=>$('#libLog').textContent=l); };
   $$('#modalBox [data-rin]').forEach(b=>b.onclick=async()=>{ const id=b.dataset.rin; b.disabled=true;
     const {job,error}=await api('/api/samplelibs/install',{id}); if(error){alert(error);return}
@@ -1117,7 +1135,7 @@ async function vstModal(){
       <div class="row"><input type="text" data-nm="${i}" placeholder="name this sound" style="width:150px"><button class="mini acc" data-cr="${i}" ${V.available?'':'disabled'}>Create sound…</button></div></div>`).join('');
   const snd=V.sounds.map(s=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(s.name)}</span> <span class="m">${esc(s.plugin)}</span>${s.ok?'':' <span class="tag no">plugin missing</span>'}</div>
       <div class="row"><button class="mini" data-tst="${esc(s.id)}">▶ Test</button><button class="mini" data-ed="${esc(s.id)}" data-path="${esc(s.path)}" data-name="${esc(s.name)}">✎ Edit</button><button class="mini" data-dl="${esc(s.id)}">✕</button></div></div>`).join('');
-  $('#modalBox').innerHTML=`<h3>VST instruments <span class="tag paid">EXPERIMENTAL</span></h3>
+  $('#modalBox').innerHTML=`<h3>🎹 VST instruments <span class="tag paid">EXPERIMENTAL</span></h3>
     <p class="hint">Play any part with your own <b>VST3</b> or <b>Audio Unit</b> (Mac) instruments — e.g. Vital, Surge XT, Spitfire LABS. Create a sound (the plugin's own window opens; pick a preset, then close it),
      then choose it under <b>Sound</b> as “VST: …”. Each plugin runs in its own process, so if one misbehaves that part simply falls back to the built-in sound. VST2-only plugins (.dll) aren't supported by the plugin engine.</p>
     ${V.available?'<p><span class="tag ok">VST support installed</span></p>':`<div class="sel"><b>One-time setup:</b> VST support needs the free <i>pedalboard</i> library (by Spotify).<div class="row" style="margin-top:8px"><button class="btn p" id="vInst">Install VST support</button><span class="hint">needs internet · about 30 MB</span></div><pre id="vLog" class="hint" style="max-height:140px;overflow:auto"></pre></div>`}
@@ -1126,7 +1144,8 @@ async function vstModal(){
       <label><input type="checkbox" id="vOrchUse" ${(state.orch_plugin?'checked':'')}> use my orchestra plugin instead</label>
       <button class="mini" id="vOrch" ${V.available?'':'disabled'}>Set up my orchestra…</button></div>
       <div class="hint" style="margin-top:6px">Why does BBC Symphony Orchestra / LABS show up as one plugin? Those plugins keep their instruments
-      (violins, celli, horns …) in their own browser and don't tell other programs about them, so they can't be listed here.</div>
+      (violins, celli, horns …) in their own browser and don't tell other programs about them. <b>Set up my orchestra… → ✨ Detect my instruments</b>
+      opens it once and picks up every instrument you load there.</div>
       ${(V.real&&V.real.length)?`<div style="margin-top:8px"><b>Real orchestra instruments</b> <span class="hint">- pick any of these in a part's Sound dropdown</span>
         <div class="row" style="flex-wrap:wrap;gap:4px;margin-top:4px">${V.real.map(r=>`<span class="tag inst">${esc(r.name.replace(' (real)',''))}</span>`).join('')}</div></div>`
         :`<div class="hint" style="margin-top:6px">Download Strings and Brass &amp; woodwinds in 🎻 Real instruments to get 19 individual orchestra instruments here and in the Sound dropdowns.</div>`}</div>
@@ -1165,7 +1184,7 @@ const ORCH_SECTIONS=[['strings legato','long string pads and melodies'],['string
 function orchModal(V){
   const plugs=V.plugins.filter(p=>!p.is_effect);
   const guess=plugs.findIndex(p=>/bbc|labs|spitfire|orchestr|kontakt/i.test(p.name));
-  const have=n=>V.sounds.find(s=>s.name.toLowerCase()===n.toLowerCase());
+  const have=n=>V.sounds.find(s=>s.name.toLowerCase()===n.toLowerCase())||V.sounds.find(s=>s.name.toLowerCase().startsWith(n.toLowerCase()+' ('));
   const prefixOf=p=>/bbc/i.test(p.name)?'BBC':/labs/i.test(p.name)?'LABS':p.name.split(/[\s_-]/)[0];
   const draw=()=>{
     const i=+($('#oPlug')?$('#oPlug').value:Math.max(0,guess)); const p=plugs[i]; const pre=$('#oPre')?$('#oPre').value:(p?prefixOf(p):'');
@@ -1187,9 +1206,29 @@ function orchModal(V){
       and the mod wheel (CC1) shapes each phrase's dynamics. Skip any sections your plugin doesn't have.</p>
     ${plugs.length?`<div class="row"><label>Plugin <select id="oPlug">${plugs.map((p,i)=>`<option value="${i}" ${i===Math.max(0,guess)?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
       <label style="margin-left:10px">Name prefix <input type="text" id="oPre" style="width:90px"></label></div>`:'<div class="hint">No instrument plugins found - install your orchestra plugin first, then rescan.</div>'}
-    <div id="oMsg" class="hint" style="margin:8px 0"></div><div id="oRows"></div><div id="oPlay"></div>
+    ${plugs.length?`<div class="sel" style="margin:10px 0"><b>✨ Detect automatically</b> <span class="tag ok">easiest</span>
+      <div class="hint" style="margin:4px 0 8px">Your plugin can't list its instruments to other programs, so Studio Lab watches instead: it opens the plugin <b>once</b>;
+        in the plugin's own browser click each instrument you want (Violins 1, Celli, Horns, Timpani …) and, if you like, each articulation (Legato, Spiccato, Pizzicato …).
+        Every one you load is recognised and saved with the right name. Close the plugin window when you're done.</div>
+      <button class="btn p" id="oScan" ${V.available?'':'disabled'}>✨ Detect my instruments</button><pre id="oLog" class="hint" style="max-height:160px;overflow:auto;margin-top:6px"></pre><div id="oFound"></div></div>
+    <div id="oSaved"></div>
+    <details style="margin-top:8px"><summary class="hint" style="cursor:pointer">Or set up one section at a time</summary>`:''}
+    <div id="oMsg" class="hint" style="margin:8px 0"></div><div id="oRows"></div>${plugs.length?'</details>':''}<div id="oPlay"></div>
     <div style="text-align:right;margin-top:14px"><button class="btn" id="oBack">← VST sounds</button> <button class="btn p" onclick="closeModal()">Done</button></div>`;
-  if(plugs.length){ $('#oPre').value=prefixOf(plugs[Math.max(0,guess)]); $('#oPlug').onchange=()=>{ $('#oPre').value=prefixOf(plugs[+$('#oPlug').value]); draw(); }; $('#oPre').oninput=draw; draw(); }
+  const saved=()=>{ const pre=($('#oPre').value||'').toLowerCase(); const mine=V.sounds.filter(s=>pre&&s.name.toLowerCase().startsWith(pre+' '));
+    $('#oSaved').innerHTML=mine.length?`<h3 style="margin-top:6px">Your ${esc($('#oPre').value)} sounds (${mine.length})</h3><div class="hint">Parts pick these by name - rename one if it went to the wrong part.</div>`+mine.map(x=>`<div class="pl" style="grid-template-columns:1fr auto"><div><input type="text" value="${esc(x.name)}" data-ren="${esc(x.id)}" style="width:100%"></div>
+      <div class="row"><button class="mini" data-otst="${esc(x.id)}">▶</button><button class="mini" data-odel="${esc(x.id)}">✕</button></div></div>`).join(''):'';
+    $$('#oSaved [data-ren]').forEach(i=>i.onchange=async()=>{ await api('/api/vst/rename',{id:i.dataset.ren,name:i.value.trim()}); V=await api('/api/vst',{}); META=await api('/api/meta'); draw(); saved(); });
+    $$('#oSaved [data-odel]').forEach(b=>b.onclick=async()=>{ await api('/api/vst/delete',{id:b.dataset.odel}); V=await api('/api/vst',{}); META=await api('/api/meta'); draw(); saved(); });
+    $$('#oSaved [data-otst]').forEach(b=>b.onclick=async()=>{ $('#oPlay').innerHTML='<div class="hint">Rendering a test phrase…</div>'; const {job}=await api('/api/vst/preview',{id:b.dataset.otst});
+      pollJob(job, j=>{ const r=j.results[0]; $('#oPlay').innerHTML=(j.status==='done'&&r&&r.url)?`<audio controls autoplay src="${r.url}" style="width:100%"></audio>`:`<div class="hint">Plugin failed: ${esc(j.error||'')}</div>`; }); }); };
+  if(plugs.length&&$('#oScan')) $('#oScan').onclick=async()=>{ const p=plugs[+$('#oPlug').value]; $('#oScan').disabled=true; $('#oScan').textContent='Plugin is open - load your instruments, then close it';
+    const {job}=await api('/api/vst/scan',{path:p.path,prefix:$('#oPre').value.trim()});
+    pollJob(job, async j=>{ const r=j.results[0]||{}; $('#oScan').disabled=false; $('#oScan').textContent='✨ Detect more instruments';
+      V=await api('/api/vst',{}); META=await api('/api/meta'); draw(); saved(); renderSelected();
+      $('#oFound').innerHTML=r.ok?`<div class="hint" style="margin-top:6px"><b>${(r.sounds||[]).length} sound(s) saved.</b> ${r.named?'Strings, brass, woodwinds and percussion in every genre now play through them (tick “use my orchestra plugin” for the Cinematic Journey).':'Name them below so the right parts use them.'}</div>`
+        :`<div class="hint">Could not detect: ${esc(r.error||j.error||'unknown error')}</div>`; }, l=>{ $('#oLog').textContent=l; $('#oLog').scrollTop=1e9; }); };
+  if(plugs.length){ $('#oPre').value=prefixOf(plugs[Math.max(0,guess)]); saved(); $('#oPlug').onchange=()=>{ $('#oPre').value=prefixOf(plugs[+$('#oPlug').value]); draw(); saved(); }; $('#oPre').oninput=()=>{ draw(); saved(); }; draw(); }
   $('#oBack').onclick=()=>vstModal();
   $('#modal').classList.add('on');
 }
@@ -1204,7 +1243,7 @@ async function rigModal(){
       <div>${k.installed?'':`<a class="mini" href="${esc(k.url)}" target="_blank" rel="noopener">Get it ↗</a>`}</div></div>`).join('');
   const plan=P.parts.map(r=>`<tr><td>${esc(r.layer)}</td><td class="m">${esc(r.inst)}</td><td>${r.uses?'<b>'+esc(r.uses)+'</b>':'<span class="m">built-in</span>'}${r.ideal&&!r.uses?` <span class="m">· best: ${esc(r.ideal)}</span>`:''}${r.hint?`<div class="m">${esc(r.hint)}</div>`:''}</td></tr>`).join('');
   $('#modalBox').className='box wide';
-  $('#modalBox').innerHTML=`<h3>Genre VSTs</h3>
+  $('#modalBox').innerHTML=`<h3>🎚 Genre VSTs</h3>
     <p class="hint">Studio Lab downloads free, open-source instruments and plays each genre through the plugin that defines its sound:
       a TB-303 for acid, Surge XT supersaws for trance, DX7 electric piano for city pop and lo-fi, Juno-style TAL-NoiseMaker for synthwave.
       Each plugin runs in its own process; if one fails, that part simply uses the built-in sound.</p>
@@ -1225,8 +1264,8 @@ async function rigModal(){
       <label class="row" style="gap:6px;margin-top:6px"><input type="checkbox" id="vtReq" ${S.vt&&S.vt.require?'checked':''} ${S.vt&&S.vt.configured?'':'disabled'}> only install with a VirusTotal result of 0 detections</label></div>
     <h3 style="margin-top:12px">Free instruments <button class="mini" id="rigAll" style="margin-left:8px">Download all</button></h3>${packs}
     <h3 style="margin-top:12px">Also used when you have them</h3>${known}
-    <p class="hint">Sample players like BBC Symphony Orchestra pick their instrument inside the plugin: in 🎹 VST, create a sound from it and give it a name like
-      “BBC strings”, “BBC horns” or “LABS piano” - matching parts in any style will use it.</p>
+    <p class="hint">Sample players like BBC Symphony Orchestra pick their instrument inside the plugin: use the <b>🎻 Orchestra plugin</b> tab → ✨ Detect my instruments,
+      or create a sound named like “LABS piano” in 🎹 VST instruments - matching parts in any style will use it.</p>
     <div style="text-align:right;margin-top:14px"><button class="btn p" onclick="closeModal()">Done</button></div>`;
   const go=async body=>{ busy(); $('#rigLog').textContent='Starting…'; const {job}=await api('/api/vstpacks/install',body);
     pollJob(job, j=>{ const r=j.results[0]||{}; $('#rigLog').textContent+=(j.status==='done'?(r.ok?'\nDone!':'\nFinished with problems - see above.'):'\nFailed: '+(j.error||''));
@@ -1257,7 +1296,7 @@ async function plugModal(data){
   const byInst=(a,b)=>(b.installed-a.installed);
   const inst=PLUG.catalog.filter(p=>!isFx(p)).sort(byInst), effs=PLUG.catalog.filter(isFx).sort(byInst);
   $('#modalBox').className='box wide';
-  $('#modalBox').innerHTML=`<h3>My plugins</h3>
+  $('#modalBox').innerHTML=`<h3>🔌 Plugins &amp; DAWs</h3>
     <div class="row" style="flex-wrap:wrap;gap:14px;margin-bottom:10px">
       <div><div class="hint">My DAWs</div><div class="chips" id="pdaws">${['lmms','waveform'].map(d=>`<span class="chip ${PLUG.daws.includes(d)?'on':''}" data-d="${d}">${d==='lmms'?'LMMS':'Waveform Free'}</span>`).join('')}</div></div>
       <div><div class="hint">My computer</div><select id="pos" style="width:auto">${['windows','mac','linux'].map(o=>`<option value="${o}" ${PLUG.os===o?'selected':''}>${o[0].toUpperCase()+o.slice(1)}${o===PLUG.host_os?' (this PC)':''}</option>`).join('')}</select></div>
@@ -1276,6 +1315,45 @@ async function plugModal(data){
   $('#pos').onchange=async()=>plugModal(await save());
   $('#pscan').onclick=async()=>{ $('#pscan').disabled=true; $('#pscan').textContent='Scanning…'; const r=await api('/api/plugins/scan',{});
     await plugModal(r); $('#pscanres').innerHTML=`Scanned ${r.scan.dirs.length} folder(s): found <b>${r.scan.found}</b> known plugins, ${r.scan.other} others listed below.`; };
+  $('#modal').classList.add('on');
+}
+// ------------------------------------------------------------- Sounds & instruments hub: every sound source in one window
+// Each tab is one of the windows above; the tab bar sits on top of whichever is open, so links between them stay in the hub.
+const HUB=[['overview','Overview'],['real','🎻 Real instruments'],['orch','🎻 Orchestra plugin'],['vst','🎹 VST instruments'],
+  ['rigs','🎚 Genre VSTs'],['samples','🎛 My samples'],['plugins','🔌 Plugins & DAWs']];
+function hubOpenTab(id){ try{ localStorage.setItem('sl_hub', id) }catch(e){}
+  return ({overview:hubOverview, real:()=>libModal(), vst:()=>vstModal(), rigs:()=>rigModal(), samples:()=>soundsModal(), plugins:()=>plugModal(),
+    orch:async()=>{ const V=await api('/api/vst',{}); if(!V.available){ vstModal(); return } orchModal(V); }})[id](); }
+function openHub(id){ let t=id; if(!t){ try{ t=localStorage.getItem('sl_hub') }catch(e){} } return hubOpenTab(HUB.some(h=>h[0]===t)?t:'overview'); }
+function hubTabs(active){ const box=$('#modalBox'); if(!box||box.querySelector('.hubtabs')) return;
+  box.className='box wide'; const bar=document.createElement('div'); bar.className='hubtabs';
+  bar.innerHTML=HUB.map(([id,n])=>`<button type="button" data-hub="${id}" class="${id===active?'on':''}">${n}</button>`).join('');
+  box.insertBefore(bar, box.firstChild); bar.querySelectorAll('[data-hub]').forEach(b=>b.onclick=()=>hubOpenTab(b.dataset.hub)); }
+// every sound window gets the tab bar (wrapping keeps their own internal re-renders inside the hub)
+[['libModal','real'],['vstModal','vst'],['rigModal','rigs'],['soundsModal','samples'],['plugModal','plugins'],['orchModal','orch']].forEach(([fn,tab])=>{
+  const orig=window[fn]; window[fn]=function(...a){ const r=orig.apply(this,a);
+    const done=()=>{ hubTabs(tab); try{ localStorage.setItem('sl_hub', tab) }catch(e){} };
+    if(r&&r.then) return r.then(v=>{ done(); return v; }); done(); return r; }; });
+async function hubOverview(){
+  const [L,V,S]=await Promise.all([api('/api/soundlib',{}), api('/api/vst',{}), api('/api/sounds',{})]);
+  const real=(L.real||[]), realOn=real.filter(r=>r.installed).length;
+  const orch=(V.plugins||[]).filter(p=>!p.is_effect&&/bbc|labs|spitfire|orchestr|kontakt/i.test(p.name));
+  const orchSnd=(V.sounds||[]).filter(s=>/^(bbc|labs)\b/i.test(s.name)).length;
+  const card=(tab,title,status,ok,what)=>`<div class="sel" data-go="${tab}"><b>${title}</b> <span class="tag ${ok?'ok':''}">${esc(status)}</span><div class="hint" style="margin-top:4px">${what}</div></div>`;
+  $('#modalBox').className='box wide';
+  $('#modalBox').innerHTML=`<h3>Sounds &amp; instruments</h3>
+    <p class="hint">Everything Studio Lab can play with, in one place. Each genre picks the right sounds by itself from whatever you have here; anything missing is played by the built-in synths. Sounds you pick in <b>Parts</b> always win.</p>
+    <div class="hubgrid">
+      ${card('real','🎻 Real instruments',realOn?`${realOn}/${real.length} libraries`:'not downloaded',realOn>0,'Free recorded orchestra, pianos, guitars, basses, percussion and drum kits. No setup - download once.')}
+      ${card('orch','🎻 Orchestra plugin',orch.length?(orchSnd?`${orchSnd} sounds detected`:'found - not set up'):'none found',orchSnd>0,orch.length?`${esc(orch.map(p=>p.name).join(', '))}: <b>✨ Detect my instruments</b> picks up every section you load.`:'BBC Symphony Orchestra Discover, Spitfire LABS or Kontakt, once installed.')}
+      ${card('vst','🎹 VST instruments',V.available?`${(V.plugins||[]).length} plugins · ${(V.sounds||[]).length} sounds`:'VST support not installed',!!V.available,'Your own VST3 / AU synths: save a sound, pick it in any part.')}
+      ${card('rigs','🎚 Genre VSTs','free downloads',false,'Free open-source synths (Surge XT, Dexed, a TB-303 …) that each genre plays through automatically.')}
+      ${card('samples','🎛 My samples',`${(S.drums||[]).length} drum · ${(S.inst||[]).length} instrument`,(S.drums||[]).length+(S.inst||[]).length>0,'Your own drum hits (tick <b>my samples</b> next to Drum sounds) and one-note instrument samples.')}
+      ${card('plugins','🔌 Plugins & DAWs','for exports',false,'Which plugins and DAWs you have, so exported projects only use what you can open.')}
+    </div>
+    <div style="text-align:right;margin-top:14px"><button class="btn p" onclick="closeModal()">Done</button></div>`;
+  hubTabs('overview');
+  $$('#modalBox [data-go]').forEach(c=>c.onclick=()=>hubOpenTab(c.dataset.go));
   $('#modal').classList.add('on');
 }
 function closeModal(){$('#modal').classList.remove('on');$('#modalBox').className='box'}
@@ -1306,10 +1384,18 @@ async function init(){
   $('#key').innerHTML='<option value="">Auto</option>'+META.keys.map(k=>`<option>${k}</option><option value="${k}m">${k}m</option>`).join('');
   $('#scale').innerHTML='<option value="">Auto</option>'+META.scales.map(s=>`<option value="${s}">${s.replace('_',' ')}</option>`).join('');
   { const groups={}; META.kits.forEach(k=>{ (groups[k.group]=groups[k.group]||[]).push(k) });
-    $('#kit').innerHTML='<option value="">Genre kit</option>'+Object.entries(groups).map(([g,ks])=>`<optgroup label="${esc(g)}">`+
+    const pg={}; (META.drum_patterns||[]).forEach(p=>{ (pg[p.group]=pg[p.group]||[]).push(p) });
+    window.fillDrumPatterns=()=>{ const cur=$('#drumPattern').value; const all=Object.values(META.categories).flat().filter(s=>s.id!==state.style);
+      $('#drumPattern').innerHTML='<option value="genre">Genre beat</option>'+Object.entries(pg).map(([g,ps])=>`<optgroup label="${esc(g)}">`+
+        ps.map(p=>`<option value="${esc(p.id)}">${esc(p.label)}</option>`).join('')+'</optgroup>').join('')+
+        Object.keys(META.categories).map(c=>`<optgroup label="${esc(c)} genres' beats">`+META.categories[c].filter(s=>s.id!==state.style)
+          .map(s=>`<option value="style:${esc(s.id)}">${esc(s.name)} beat</option>`).join('')+'</optgroup>').join('');
+      $('#drumPattern').value=[...$('#drumPattern').options].some(o=>o.value===cur)?cur:'genre'; };
+    fillDrumPatterns();
+    $('#kit').innerHTML='<option value="">Genre sounds</option>'+Object.entries(groups).map(([g,ks])=>`<optgroup label="${esc(g)}">`+
       ks.map(k=>`<option value="${esc(k.id)}">${esc(k.label)}</option>`).join('')+'</optgroup>').join('');
     window.showGenreKit=()=>{ const k=(META.genre_kits||{})[state.style]; const o=$('#kit').options[0];
-      const lab=k&&META.kits.find(x=>x.id===k); o.textContent='Genre kit'+(lab?' - '+lab.label:''); };
+      const lab=k&&META.kits.find(x=>x.id===k); o.textContent='Genre sounds'+(lab?' - '+lab.label:''); if(window.fillDrumPatterns) fillDrumPatterns(); };
     showGenreKit(); }
   const NICE={diatonic:'Diatonic (scale)',pentatonic:'Pentatonic',blues:'Blues (blue notes, slides)',bebop:'Bebop (chromatic approaches)',
     close:'Close',open:'Open / spread',drop2:'Drop-2 (soul, house)',rootless:'Rootless (jazz piano)',power:'Power chords',
@@ -1342,14 +1428,14 @@ async function init(){
   $('#surpriseBtn').onclick=()=>{
     const all=Object.values(META.categories).flat().map(s=>s.id), pick=a=>a[Math.floor(Math.random()*a.length)];
     const wpick=(a,w)=>{const ws=a.map(x=>Math.max(0.2,1+(w&&w[x]||0)));let t=Math.random()*ws.reduce((p,c)=>p+c,0);for(let i=0;i<a.length;i++){t-=ws[i];if(t<=0)return a[i]}return a[a.length-1]};
-    state.style=wpick(all,TASTE&&TASTE.styles); state.blend=Math.random()<.55?[pick(all.filter(x=>x!==state.style))]:[]; $('#variety').value=40+Math.random()*50; state.blend_parts={}; state.instruments={};
+    state.style=wpick(all,TASTE&&TASTE.styles); state.blend=Math.random()<.55?[pick(all.filter(x=>x!==state.style))]:[]; $('#variety').value=40+Math.random()*50; state.blend_parts={}; genreSounds();
     state.mood=Math.random()<.7?wpick(META.moods,TASTE&&TASTE.moods):null;
     const te=TASTE&&TASTE.energy!=null?TASTE.energy*100:60, tc=TASTE&&TASTE.complexity!=null?TASTE.complexity*100:50;
     $('#energy').value=Math.max(5,Math.min(95,te+(Math.random()-.5)*40)); $('#complexity').value=Math.max(5,Math.min(95,tc+(Math.random()-.5)*40));
     $('#seed').value=Math.floor(Math.random()*999999)+1;
     const cat=Object.entries(META.categories).find(([c,l])=>l.some(s=>s.id===state.style)); state.cat=cat[0];
     const il=(TASTE&&TASTE.inst_likes)||{};                          // instruments you liked, per part
-    Object.entries(il).forEach(([role,w])=>{ const ok=Object.keys(w).filter(i=>(META.roles[role]||[]).some(x=>x.id===i)); if(ok.length&&Math.random()<.35) state.instruments[role]=wpick(ok,w); });
+    Object.entries(il).forEach(([role,w])=>{ const ok=Object.keys(w).filter(i=>(META.roles[role]||[]).some(x=>x.id===i)); if(ok.length&&Math.random()<.35&&!state.instruments[role]) state.instruments[role]=wpick(ok,w); });
     renderTabs(); renderMoods(); refresh(); $$('input[type=range]').forEach(e=>e.oninput&&e.oninput());
     const o=options(); const pl=((TASTE&&TASTE.part_likes)||{})[state.style]||{};   // a part you loved in this style
     Object.entries(pl).forEach(([p,seeds])=>{ const sd=seeds.filter(x=>x!=null); if(sd.length&&Math.random()<.5){ o.part_seeds=Object.assign({},o.part_seeds||{}); o.part_seeds[p]=pick(sd); } });
@@ -1357,10 +1443,7 @@ async function init(){
   };
   $('#folderBtn').onclick=()=>api('/api/open',{});
   $('#presetBtn').onclick=presetsModal;
-  $('#plugBtn').onclick=()=>plugModal();
-  $('#soundsBtn').onclick=()=>soundsModal();
-  $('#vstBtn').onclick=()=>vstModal();
-  $('#rigBtn').onclick=()=>rigModal();
+  $('#hubBtn').onclick=()=>openHub();
   $('#diagBtn').onclick=()=>diagModal();
   (function watchPlugins(){ let seen=false;
     const t=async()=>{ let st; try{ st=await api('/api/vststatus',{}); }catch(e){ return; }
@@ -1369,8 +1452,6 @@ async function init(){
       else if(Date.now()-T0<20000) setTimeout(t,2500); };
     const T0=Date.now(); setTimeout(t,1200); })();
 
-  $('#libBtn').onclick=()=>libModal();
-  api('/api/soundlib',{}).then(r=>{ if(r.installed) $('#libBtn').textContent='🎻 Real instruments ✓'; });
   $('#refBtn').onclick=()=>$('#refFile').click();
   $('#refFile').onchange=()=>{const f=$('#refFile').files[0]; if(f) onReference(f)};
   api('/api/taste',{}).then(t=>TASTE=t);

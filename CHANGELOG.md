@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.51.0
+- **Orchestra plugin detection (BBC Symphony Orchestra, LABS, Kontakt).** Sounds & instruments → 🎻 Orchestra plugin → ✨ Detect my instruments: the plugin opens once, you click through the instruments (and articulations) you want in its own browser, and each one is recognised from the plugin's state and saved with the right name ("BBC celli pizzicato (Celli · Pizzicato)"), so matching parts in every genre use it. No naming, no reopening. Sounds it can't name are kept for you to name; saved sounds can be renamed, tested and removed in the same window.
+- **One "Sounds & instruments" window** replaces the five header buttons (Real instruments, Genre VSTs, VST, My sounds, My plugins): an overview of what you have plus a tab for each.
+- **Your sound picks stay picked.** Changing genre, blending or Surprise me no longer clears the sounds you chose for bass / chords / pad / arp / lead; parts left on default follow the new genre. Choose "Genre picks" in Parts to get the old behaviour. A part you picked also stops being swapped out in some sections by the genre's instrument rotation.
+- **Drum style and drum sounds are separate.** *Drum style* = what the drums play (the genre's beat, a classic break, the genre's programmed beat without its break, or any other genre's beat); *Drum sounds* = the kit (machines, real kits, sampled-break kits, your samples). Changing the sounds never changes the patterns: jungle on a 909 still plays its Amen, boom bap on brushes still plays its Funky Drummer. Old settings that picked a break as the kit still play that break.
+
 ## 1.50.0
 - Hopecore redone from accordion-led references: 118–140 BPM (no more drum & bass), mostly major, lush 7th / add9 chords on electric piano, intricate two-octave "cascade" arpeggios in triplets (accordion doubled an octave up on celesta), a warm sub, and soft low drums (gentle kick, quiet snare, barely-there hats) that sit out of the long intro and the breakdown; no big drops, quieter master.
 - The old fast, chopped-break version is kept as "Hopecore breaks (fast)".

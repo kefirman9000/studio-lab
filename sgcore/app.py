@@ -366,7 +366,8 @@ def meta():
         roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Built-in (suits this part)') for i in lst] + real_insts(r) + vst_insts(r) + user_insts()
                + other_insts(r, lst) for r, lst in ROLE_CHOICES.items()},
         effects=vst_effects(), voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
-        kits=__import__('sgcore.drumkits', fromlist=['menu']).menu() + [dict(id=k, group='Other synth kits', label=k.title())
+        drum_patterns=__import__('sgcore.drumkits', fromlist=['pattern_menu']).pattern_menu(),
+        kits=__import__('sgcore.drumkits', fromlist=['sound_menu']).sound_menu() + [dict(id=k, group='Other synth kits', label=k.title())
                                                                          for k in KITS if k not in ('default',) and k not in
                                                                          __import__('sgcore.drumkits', fromlist=['MENU']).MENU],
         window=load_settings().get('window', 'app'), genre_kits=__import__('sgcore.drumkits', fromlist=['GENRE_KIT']).GENRE_KIT, journey_presets=__import__('sgcore.journey', fromlist=['PRESETS']).PRESETS, journey_parts=[dict(id=n, name=l, layer=next(t['layer'] for t in STYLES['cinematic_journey']['tracks'] if t['name'] == n), inst=next(t['inst'] for t in STYLES['cinematic_journey']['tracks'] if t['name'] == n)) for n, l in __import__('sgcore.journey', fromlist=['PLAYERS']).PLAYERS], parts=[dict(id=p, name=PART_LABELS[p]) for p in FUSION_PARTS],
@@ -717,6 +718,13 @@ class Handler(BaseHTTPRequestHandler):
             path, name = str(body.get('path', '')), str(body.get('name', 'My sound'))[:60]
             existing = body.get('existing')
             return self._json({'job': bg_job(lambda log: vsthost.create_sound(path, name, existing))})
+        if p == '/api/vst/scan':                         # orchestra detection: one plugin window, every instrument
+            from . import vsthost
+            path, prefix = str(body.get('path', '')), str(body.get('prefix', 'BBC'))[:12]
+            return self._json({'job': bg_job(lambda log: vsthost.scan_orchestra(path, prefix, log))})
+        if p == '/api/vst/rename':
+            from . import vsthost
+            return self._json(vsthost.rename_sound(str(body.get('id', '')), str(body.get('name', ''))))
         if p == '/api/vst/delete':
             from . import vsthost
             vsthost.delete_sound(str(body.get('id', '')))

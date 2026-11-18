@@ -351,6 +351,92 @@ def create_sound(path, name, existing=None, timeout=3600):
     return {'ok': True, 'id': sid}
 
 
+def _save_sound(name, path, state, sid=None, extra=None):
+    sid = sid or (_safe(name).replace(' ', '_') + '_' + uuid.uuid4().hex[:6])
+    os.makedirs(SOUNDS, exist_ok=True)
+    with open(os.path.join(SOUNDS, _safe(sid) + '.json'), 'w') as f:
+        json.dump(dict(name=name, path=path, plugin_label=os.path.splitext(os.path.basename(path))[0], state=state,
+                       created=int(time.time()), **(extra or {})), f)
+    return sid
+
+
+def rename_sound(sid, name):
+    snd = get_sound(sid)
+    if not snd:
+        return {'ok': False, 'error': 'sound not found'}
+    snd['name'] = str(name)[:60]
+    with open(os.path.join(SOUNDS, _safe(sid) + '.json'), 'w') as f:
+        json.dump(snd, f)
+    return {'ok': True}
+
+
+def scan_orchestra(path, prefix='BBC', log=print, timeout=3 * 3600):
+    """Detect an orchestra plugin's instruments: open its window once, click through the instruments you want, close
+    it. Each one is saved as a sound named after what the plugin loaded ("BBC celli spiccato (Celli · Spiccato)"), so
+    the matching parts of every genre use it. A capture with the same instrument + articulation as an earlier scan
+    replaces it instead of piling up duplicates."""
+    if not any(os.path.realpath(path) == os.path.realpath(p['path']) for p in find_plugins()):
+        return {'ok': False, 'error': 'unknown plugin'}
+    from . import orchscan
+    d = tempfile.mkdtemp(prefix='sl_vst_')
+    jp = os.path.join(d, 'job.json')
+    with open(jp, 'w') as f:
+        json.dump(dict(mode='scan', path=path), f)
+    env = dict(os.environ)
+    env['PYTHONPATH'] = ROOT + os.pathsep + env.get('PYTHONPATH', '')
+    proc = subprocess.Popen([sys.executable, '-m', 'sgcore.vst_worker', jp], cwd=ROOT, env=env,
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **NOWIN)
+    shown, t0 = [], time.time()
+    log(f'{os.path.splitext(os.path.basename(path))[0]} is opening. In its own browser, load each instrument you want '
+        '(and its articulation). Each one is picked up automatically - close the plugin window when you are done.')
+    while proc.poll() is None:
+        if time.time() - t0 > timeout:
+            proc.kill()
+            break
+        try:
+            with open(jp + '.live') as f:
+                live = json.load(f)
+        except Exception:
+            live = []
+        for n in live[len(shown):]:
+            log('  ✓ found ' + n)
+        shown = live if len(live) >= len(shown) else shown
+        time.sleep(0.5)
+    try:
+        with open(jp + '.result') as f:
+            res = json.load(f)
+    except Exception:
+        res = {'ok': False, 'error': 'the plugin crashed while it was open'}
+    shutil.rmtree(d, ignore_errors=True)
+    if not res.get('ok'):
+        return res
+    existing = {(s.get('scan_key') or ''): s['id'] for s in list_sounds_full() if s.get('scan_key')}
+    saved = []
+    for i, c in enumerate(res.get('captures') or []):
+        if c.get('instrument'):
+            name = orchscan.sound_name(prefix, c)
+            key = f"{os.path.basename(path)}|{c['instrument']}|{c.get('articulation') or ''}"
+        else:
+            name, key = f'{prefix} sound {i + 1} (rename me)', None
+        sid = _save_sound(name, path, c.get('state'), sid=existing.get(key) if key else None,
+                          extra=dict(scan_key=key, instrument=c.get('instrument'), articulation=c.get('articulation')))
+        saved.append(dict(id=sid, name=name, named=bool(c.get('instrument'))))
+    if not saved:
+        log('Nothing was captured - load an instrument in the plugin and leave it loaded for a second or two.')
+    elif not res.get('named'):
+        log('The plugin did not say which instruments these are, so they were saved as "sound 1, 2 ..." - '
+            'give each a name (e.g. "BBC celli spiccato") and matching parts will use it.')
+    return {'ok': True, 'sounds': saved, 'named': bool(res.get('named'))}
+
+
+def list_sounds_full():
+    out = []
+    for s in list_sounds():
+        d = get_sound(s['id']) or {}
+        out.append(dict(s, scan_key=d.get('scan_key')))
+    return out
+
+
 def render(sid, events, duration, sr=44100, timeout=900, ccs=None):
     """events: [(start_s, dur_s, midi_note, velocity_0_127)], ccs: [(time_s, controller, value)] -> (2, n) float32
     or raises RuntimeError."""

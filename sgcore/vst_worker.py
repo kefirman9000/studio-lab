@@ -121,6 +121,66 @@ def _state(plugin):
     return st
 
 
+def _scan(plugin, path, job):
+    """Orchestra detection: the plugin window stays open while you click through instruments in the plugin's own
+    browser. Every second its state is read; whenever a new instrument (or articulation) has been loaded and stays
+    loaded for a moment, it is captured under the name found inside the state. Live progress goes to <job>.live."""
+    import threading
+    from sgcore import orchscan
+    found, order, unknown = {}, [], []
+    last = {'sig': None, 'seen': 0, 'raw': None}
+    lock = threading.Lock()
+    stop = threading.Event()
+
+    def snap():
+        try:
+            raw = bytes(plugin.raw_state)
+        except Exception:
+            return
+        info = orchscan.identify(raw)
+        sig = (info['instrument'], info.get('articulation')) if info else ('?', hash(raw))
+        if sig == last['sig']:
+            last['seen'] += 1
+        else:
+            last.update(sig=sig, seen=0)
+        if last['seen'] < 1:                          # wait until it has stayed loaded for two reads
+            return
+        st = _state(plugin)
+        with lock:
+            if info:
+                key = sig
+                if key not in found:
+                    order.append(key)
+                found[key] = dict(info, state=st)     # the newest state wins (your volume / mic tweaks included)
+            elif (not unknown or unknown[-1]['raw'] != hash(raw)) and len(unknown) < 40:
+                unknown.append(dict(raw=hash(raw), state=st))
+            try:
+                with open(path + '.live', 'w') as f:
+                    json.dump([orchscan.sound_name('', found[k]) for k in order] + [f'unnamed sound {i + 1}' for i in range(len(unknown))], f)
+            except Exception:
+                pass
+
+    def poll():
+        while not stop.wait(float(job.get('every', 1.0))):
+            snap()
+
+    th = threading.Thread(target=poll, daemon=True)
+    th.start()
+    try:
+        plugin.show_editor(stop)                      # pedalboard: returns when the window closes (or stop is set)
+    except TypeError:
+        plugin.show_editor()
+    stop.set()
+    th.join(timeout=5)
+    last['seen'] = 9
+    snap()                                            # what's loaded at the moment you closed the window
+    caps = [dict(instrument=found[k]['instrument'], articulation=found[k].get('articulation'), words=found[k]['words'],
+                 state=found[k]['state']) for k in order]
+    if not caps and unknown:                          # the state names nothing we know: keep the captures for naming
+        caps = [dict(instrument=None, articulation=None, words=None, state=u['state']) for u in unknown]
+    return {'ok': True, 'captures': caps, 'named': bool(order)}
+
+
 def main(path):
     with open(path) as f:
         job = json.load(f)
@@ -159,6 +219,8 @@ def main(path):
         elif mode == 'editor':
             plugin.show_editor()                      # blocks until the plugin window is closed
             out = {'ok': True, 'state': _state(plugin)}
+        elif mode == 'scan':
+            out = _scan(plugin, path, job)
         elif mode == 'render':
             import numpy as np
             sr = int(job.get('sr', 44100))

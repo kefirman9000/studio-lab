@@ -36,7 +36,8 @@ class Options:
     swing: float = None           # 0.5 (straight) .. 0.75
     humanize: float = 1.0         # 0..2 timing/velocity looseness multiplier
     instruments: dict = field(default_factory=dict)   # role -> instrument name
-    kit: str = None               # drum kit preset
+    kit: str = None               # drum sounds: kit / machine / sampled-break kit (never changes the patterns)
+    drum_pattern: str = None      # drum style: None/'genre' = genre's beat | 'programmed' | 'break:<kit id>' | 'style:<genre id>'
     muted: list = field(default_factory=list)          # layers to remove
     sidechain: float = None       # 0..1 pumping depth
     sc_release: float = None      # beats
@@ -387,6 +388,37 @@ def apply_variety(st, opts, rnd):
     return st
 
 
+DRUM_STATE_KEYS = ('snare_tracks', 'kick_track', 'trap_hats', 'ghosts', 'fill')
+
+
+def borrow_drums(st, opts):
+    """Drum style 'style:<genre>': play that genre's drum patterns (and the drum parts they need) while every sound
+    choice - the kit, percussion samples, tempo and swing - stays this song's. Only the patterns move."""
+    dp = getattr(opts, 'drum_pattern', None) or ''
+    if not dp.startswith('style:'):
+        return
+    src = STYLES.get(dp[6:])
+    if not src or not src.get('drums') or (src.get('meter') or '4/4') != (st.get('meter') or '4/4'):
+        return                                           # a 3/4 beat can't drive a 4/4 song (or the reverse)
+    keep = [t for t in st['tracks'] if t['layer'] not in ('kick', 'snare', 'top') or t.get('user_pick')
+            and t['name'] in src['drums']]
+    have = {t['name'] for t in keep}
+    for t in src['tracks']:
+        if t['layer'] in ('kick', 'snare', 'top') and t['name'] in src['drums'] and t['name'] not in have:
+            keep.append(dict(t, p=dict(t.get('p') or {})))
+            have.add(t['name'])
+    st['tracks'] = keep
+    st['drums'] = {k: list(v) for k, v in src['drums'].items() if k in have}
+    for k in DRUM_STATE_KEYS:
+        if k in src:
+            st[k] = src[k]
+    st['snare_tracks'] = [x for x in st.get('snare_tracks') or [] if x in have] or \
+        [t['name'] for t in keep if t['layer'] == 'snare'][:1]
+    if st.get('kick_track', 'kick') not in have:
+        st['kick_track'] = next((t['name'] for t in keep if t['layer'] == 'kick'), 'kick')
+    st['borrowed_drums'] = dp[6:]
+
+
 def apply_sampled(st, opts):
     """Swap synthesised stand-ins for real recorded instruments (if the sound library is installed)."""
     from . import soundfont as sfm
@@ -551,8 +583,12 @@ def resolve_style(opts, rnd=None, mood=None):
     st['tracks'] = tracks
     from . import drumkits
     groove_of = (st.get('fusion') or {}).get('groove') or st.get('name') or opts.style
+    borrow_drums(st, opts)                               # drum style: another genre's beat on this genre's sounds
     kit_id = drumkits.effective(opts, groove_of, st)
-    preset = drumkits.configure(st, kit_id, groove_of, opts) if kit_id else st['kit']
+    pattern_id = drumkits.pattern_of(opts, groove_of)
+    preset = drumkits.configure(st, kit_id, groove_of, opts, pattern_id) if (kit_id or pattern_id) else st['kit']
+    if not kit_id:
+        preset = st['kit']
     kit = dict(KITS.get(preset, {}))
     if not kit_id:
         for k, v in st.get('kit_override', {}).items():
@@ -2215,6 +2251,8 @@ def switch_sections(evs, tracks, sections):
     alts = {}
     for n, t in tracks.items():
         if t.get('switch_of') in ('lead', 'chords', 'pad', 'arp'):
+            if (tracks.get(t['switch_of']) or {}).get('user_pick'):
+                continue                                  # you picked this part's sound: it plays every section
             for g in t.get('groups', ()):
                 alts.setdefault(t['switch_of'], {})[g] = n
     if not alts:

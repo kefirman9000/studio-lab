@@ -101,7 +101,7 @@ KNOWN = [
     dict(id='tal', name='TAL-NoiseMaker', url='https://tal-software.com/products/tal-noisemaker',
          plays='80s / Juno-style analog basses, pads, leads, brass stabs (synthwave, synthpop, electro, house)'),
     dict(id='bbcso', name='BBC Symphony Orchestra Discover', url='https://www.spitfireaudio.com/bbc-symphony-orchestra-discover',
-         plays='real orchestra - save a sound per section (e.g. "BBC strings", "BBC horns") and orchestral styles use it'),
+         plays='real orchestra - Sounds & instruments → Orchestra plugin → Detect my instruments: open it once, load each section, done'),
     dict(id='labs', name='Spitfire LABS', url='https://labs.spitfireaudio.com',
          plays='sampled pianos, strings, choir - save a sound (e.g. "LABS soft piano") and matching parts use it'),
     dict(id='chowtape', name='CHOW Tape Model', url='https://chowdsp.com/products.html',

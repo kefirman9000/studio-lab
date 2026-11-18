@@ -578,6 +578,29 @@ def test_lead_runs_and_ebass():
     print('ok  lead run-ups into long notes (liquid DnB), sustained electric bass')
 
 
+def test_drum_style_vs_sounds_and_orchestra_detection():
+    """Drum sounds never change drum patterns; drum style can be a break or another genre's beat; user-picked sounds
+    play every section; orchestra plugin states are recognised."""
+    import struct
+    from sgcore import orchscan
+    from sgcore.styles import STYLES
+    for style in ('jungle', 'house', 'boombap', 'salsa'):
+        base = compose(Options(style=style, seed=5))['st']['drums']
+        for kit in ('909', 'studio', 'amen', 'linn', 'brushes'):
+            assert compose(Options(style=style, seed=5, kit=kit, drum_pattern='genre'))['st']['drums'] == base, (style, kit)
+    assert compose(Options(style='house', seed=5, kit='amen'))['st'].get('break') == 'amen'        # old saved settings
+    assert compose(Options(style='house', seed=5, drum_pattern='break:think'))['st'].get('break') == 'think'
+    assert compose(Options(style='jungle', seed=5, drum_pattern='programmed'))['st'].get('break') is None
+    st = compose(Options(style='house', seed=5, drum_pattern='style:reggaeton', kit='909'))['st']
+    assert st.get('borrowed_drums') == 'reggaeton' and st['drums']['snare'] == STYLES['reggaeton']['drums']['snare']
+    assert compose(Options(style='house', seed=5, drum_pattern='style:waltz'))['st'].get('borrowed_drums') is None  # 3/4
+    vc2 = lambda x: b'VC2!' + struct.pack('<I', len(x) + 1) + x.encode() + b'\0'
+    info = orchscan.identify(vc2('<s instrumentName="Celli" articulationText="Pizzicato"/>'))
+    assert info['instrument'] == 'Celli' and 'pizzicato' in orchscan.sound_name('BBC', info)
+    assert orchscan.identify(b'nothing to see') is None
+    print('ok  drum style / drum sounds / orchestra detection')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -603,6 +626,7 @@ def main():
     test_christmas_orchestral()
     test_octaves_and_ranges()
     test_lead_runs_and_ebass()
+    test_drum_style_vs_sounds_and_orchestra_detection()
     print('all good')
 
 
