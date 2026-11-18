@@ -6431,7 +6431,7 @@ style('liquid_euphoric', 'Electronic',
       bass=['R.R.R.R.R.R.R.R.', 'R..R..R.R..R..R.', 'R-R-R-.RR-R-R-.R', 'R---R-R-R---R-R-'], bass_lo=28, bass_gate=0.85,
       chord_rh=['x-------x-------', 'x..x..x...x..x..', 'x---x---x---x---', '..x...x...x...x.'], chord_center=62,
       arp=dict(rate=1, mode='random', oct=6, prob=0.55),
-      lead_rh=['x---x-x-x-------', 'x-x-x---x-x-x---', 'x-------x---x-x-', '..x-x-x-x---x---'], repetition=0.8,
+      lead_runs=0.55, lead_rh=['x---x-x-x-------', 'x-x-x---x-x-x---', 'x-------x---x-x-', '..x-x-x-x---x---'], repetition=0.8,
       gm_hint='Bright piano (chords every bar, offbeat stabs); string section / string pad; 16th-note square or pluck '
               'bleeps; singing saw lead; warm mid-bass pumping in 8ths + mono sine sub in the drops; crisp two-step '
               'breaks with ghost snares, 16th shaker, ride',
@@ -6477,7 +6477,7 @@ style('liquid_dancefloor', 'Electronic',
       bass=['R.R.R.R.R.R.R.R.', 'R..R..R.R..R..R.', 'R-.RR-.RR-.RR-.R', 'R-R-..R-R-R-..R-'], bass_lo=28, bass_gate=0.8,
       chord_rh=['x..x..x...x..x..', '..x...x...x...x.', 'x---....x---....'], chord_center=62,
       arp=dict(rate=1, mode='random', oct=6, prob=0.5),
-      lead_rh=['x.x.....x.x.....', 'x...x.x.x.......', '..x.x...x.x.x...'], repetition=0.85,
+      lead_runs=0.55, lead_rh=['x.x.....x.x.....', 'x...x.x.x.......', '..x.x...x.x.x...'], repetition=0.85,
       gm_hint='Filtered reese mid-bass (8ths, 3-3-2) trading with a clean sine sub every 4 bars; brass / synth-brass '
               'stabs; chopped piano; 16th square bleeps; funky synth or guitar lead; crisp rolling two-step breaks',
       tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.2, db=-15),

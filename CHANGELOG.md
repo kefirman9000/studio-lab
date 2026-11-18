@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.48.0
+- Liquid DnB lead run-ups (from a liquid-anthem lead MIDI): before a long held lead note that follows a gap, a fast 16th-note arpeggio sweeps up through the key in thirds into it. New style key `lead_runs` (probability); on for liquid_euphoric and liquid_dancefloor.
+
 ## 1.47.1
 - Electric bass no longer sounds like a plucked string: the built-in `ebass` (used by ~30 genres, and the stand-in for finger/pick bass when the sampled sound library isn't installed) is now a sustained P/J-style body with a short finger transient, holding for the full note length. Level-matched to the old sound.
 

@@ -558,6 +558,26 @@ def test_octaves_and_ranges():
     print('ok  instrument sweet-spot registers, per-part octave choices (panel + editor), magical Christmas genre')
 
 
+def test_lead_runs_and_ebass():
+    """v1.47: liquid DnB leads sweep up into long notes with 16th-note arpeggio runs; the electric bass sustains."""
+    import numpy as np
+    from sgcore.compose import Options, compose
+    from sgcore.instruments import INSTRUMENTS
+    s = compose(Options(style='liquid_euphoric', seed=2))
+    lead = sorted((e for e in s['events'] if e.track == 'lead' and e.midi is not None), key=lambda e: e.beat)
+    runs = 0
+    for i in range(len(lead) - 3):
+        a, b, c, d = lead[i:i + 4]
+        if all(abs(y.beat - x.beat - 0.25) < 1e-6 and y.midi > x.midi for x, y in ((a, b), (b, c), (c, d))):
+            runs += 1
+    assert runs >= 3, runs
+    y = INSTRUMENTS['ebass'](36, 1.5, {})
+    q = len(y) // 4
+    r = [float(np.sqrt(np.mean(y[k * q:(k + 1) * q] ** 2))) for k in range(4)]
+    assert r[3] > 0.7 * r[0], r                                  # holds, not a decaying pluck
+    print('ok  lead run-ups into long notes (liquid DnB), sustained electric bass')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -582,6 +602,7 @@ def main():
     test_bass_warp_trap()
     test_christmas_orchestral()
     test_octaves_and_ranges()
+    test_lead_runs_and_ebass()
     print('all good')
 
 

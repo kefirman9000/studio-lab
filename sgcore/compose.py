@@ -1539,6 +1539,8 @@ def compose(opts):
         add_g_runs(evs, tracks, sections, key)
     if st.get('eno_loops'):
         eno_loops(evs, st['eno_loops'], bar0 * 4)
+    if st.get('lead_runs'):                              # liquid DnB: 16th-note arpeggio run-ups into long lead notes
+        add_lead_runs(evs, key, st['lead_runs'], random.Random(opts.seed * 61 + 7))
     if any(t.get('chops') for t in tracks.values()):
         chop_samples(evs, tracks, random.Random(opts.seed * 53 + 1))
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
@@ -1945,6 +1947,27 @@ def add_g_runs(evs, tracks, sections, key):
         run = [t0 - 5, t0 - 3, t0 - 2, t0 - 1]
         for i, m in enumerate(run):
             evs.append(Ev(trk, end - 2 + i * 0.5, 0.45, m, 0.85))
+
+
+def add_lead_runs(evs, key, prob, rnd, track='lead'):
+    """Liquid-DnB lead hook: a fast 16th-note arpeggio sweeps up (in the key, climbing in thirds) into a long held lead
+    note that follows a gap - the run fills the space before the note instead of the lead just appearing."""
+    lead = sorted((e for e in evs if e.track == track and e.midi is not None), key=lambda e: e.beat)
+    starts = [e.beat for e in lead]
+    pcs = {(key.root + i) % 12 for i in key.scale}
+    for i, e in enumerate(lead):
+        if e.dur < 0.9 or e.beat < 2 or rnd.random() >= prob:
+            continue
+        prev_on = starts[i - 1] if i else -99
+        if e.beat - prev_on < 1.5:
+            continue
+        below = [m for m in range(e.midi - 1, e.midi - 24, -1) if m % 12 in pcs]
+        run = below[1::2][:7][::-1]                      # every other scale note: thirds, low to high
+        n = len(run)
+        for j, m in enumerate(run):
+            b = e.beat - (n - j) * 0.25
+            if b > prev_on + 0.25:
+                evs.append(Ev(track, b, 0.22, m, round(min(1.0, e.vel * (0.6 + 0.35 * j / max(1, n - 1))), 3)))
 
 
 def eno_loops(evs, loops, total_beats):
