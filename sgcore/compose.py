@@ -138,7 +138,7 @@ GENRE_COLORS = {'jazz_rap': ['9', '7', '9', '6'], 'cloud_rap': ['add9', 'sus2', 
                 'soul_ballad': ['triad', '7', '6'], 'waltz': ['triad'], 'celtic_jig': ['triad', 'sus2'], 'ska': ['triad', '7'],
                 'cumbia': ['triad'], 'dancehall': ['triad', '7'], 'hauntology': ['add9', '7', 'triad', 'sus2'],
                 'braindance': ['add9', 'sus2', '7', 'add9no3'], 'liquid_dnb': ['7', '9', 'add9'], 'neurofunk': ['triad', 'add9no3'],
-                'melodic_dubstep': ['triad', 'add9', 'sus2'], 'brostep': ['triad'], 'memphis_phonk': ['triad'], 'switchup_808': ['add9', 'add9', 'triad'], 'switchup_808_dj': ['add9', 'add9', 'triad'], 'switchup_808_hard': ['triad', 'add9'], 'switchup_mallets': ['add9', 'triad'], 'phonk': ['triad'], 'house_phonk': ['triad'], 'brazilian_phonk': ['triad'], 'jam_band': ['triad', '7', 'sus4'],
+                'melodic_dubstep': ['triad', 'add9', 'sus2'], 'brostep': ['triad'], 'memphis_phonk': ['triad'], 'switchup_808': ['add9', 'add9', 'triad'], 'switchup_808_dj': ['add9', 'add9', 'triad'], 'switchup_808_hard': ['triad', 'add9'], 'idm_jungle_theme': ['add9', '7', 'triad'], 'drill_space': ['9', '7', 'add9'], 'switchup_mallets': ['add9', 'triad'], 'phonk': ['triad'], 'house_phonk': ['triad'], 'brazilian_phonk': ['triad'], 'jam_band': ['triad', '7', 'sus4'],
                 'soft_rock': ['triad', 'add9', '7', 'sus2'], 'teen_pop': ['triad', 'add9', '7'], 'luxury_rap': ['7', 'add9', '9', 'triad'],
                 'uplifting_trance': ['triad', 'add9', 'sus2'], 'melodic_house': ['add9', '7', 'triad', 'sus2'], 'punk': ['triad'], 'indie_rock': ['triad', 'add9', 'sus2']}
 
@@ -1482,6 +1482,11 @@ def compose(opts):
                         evs.append(Ev('arp', beat0 + step * u / 4, max(0.2, l * u / 4 * 0.85), m, vel))
                         if arp['mode'] == 'montuno':
                             evs.append(Ev('arp', beat0 + step * u / 4, max(0.2, l * u / 4 * 0.85), m - 12, vel * 0.85))
+                if arp['mode'] == 'mallet':                      # mallet figures (rolls, trills, hops, runs, rests)
+                    big = bool(opts_s.get('drop') or sname in BIG_SECTIONS)
+                    evs += mallet_bar(key, tones, beat0, b, sname, si, big, rate, arp.get('rest', 0.18),
+                                      st.setdefault('_mallet', {}), rnd_c)
+                    continue
                 per_beat = max(1, int(round(4 / rate))) if arp.get('beat_lock') else 0
                 for k in range(0 if arp.get('rh') else int(G / rate)):
                     if per_beat:                                 # locked to the beat: every beat starts the figure again
@@ -1677,6 +1682,22 @@ def compose(opts):
         if t.get('layer') == 'bass' and str(t.get('inst', '')).endswith('808') and e.midi is not None and e.midi > 33:
             e.vel *= 10 ** (-min(9.0, 0.45 * (e.midi - 33)) / 20)   # notes leaping up or raised to E2+ are turned down
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
+    if st.get('granular'):                               # IDM / drill & bass: the break resequenced hit by hit, every bar
+        granular_breaks(evs, tracks, sections, float(st['granular']), random.Random(opts.seed * 97 + 5))
+    if st.get('calm_lead'):                              # ... and the melody sits and breathes over it: long notes only
+        calm = float(st['calm_lead'])
+        for name in [n for n, t in tracks.items() if t.get('layer') == 'lead' and n != 'vocal' and not t.get('double_of')]:
+            ln = sorted((e for e in evs if e.track == name and e.midi is not None), key=lambda e: e.beat)
+            keep, last = [], None
+            for e in ln:
+                if last is None or e.beat - last.beat >= calm or e.beat // 4 != last.beat // 4 and e.beat % 4 == 0:
+                    keep.append(e)
+                    last = e
+            kid = {id(e) for e in keep}
+            evs[:] = [e for e in evs if not (e.track == name and e.midi is not None and id(e) not in kid)]
+            for a, nx in zip(keep, keep[1:] + [None]):
+                gap = (nx.beat - a.beat) if nx is not None else 4.0
+                a.dur = max(a.dur, min(4.0, gap) * 0.95)
     if st.get('dj_fx'):                                  # DJ edits: pitched hat moves, down / up-tuned lead notes, slowdowns
         dj_effects(evs, fx, tracks, sections, float(st['dj_fx']), random.Random(opts.seed * 73 + 11), st.get('dj_slow'))
     if st.get('chopped'):                                # chopped & screwed: the DJ catches a beat twice
@@ -1730,7 +1751,7 @@ COLOR_HARMONY = {
     'hybrid_trailer', 'orchestral_hiphop', 'teen_pop', 'soft_rock', 'luxury_rap', 'uplifting_trance', 'gospel', 'rnb', 'motown', 'swing', 'country', 'tango', 'salsa', 'kpop', 'ska',
     'indie_rock', 'bluegrass', 'christmas_joyful', 'christmas_mischief', 'christmas_magic'}
 # how often the bass steps into the next chord on the last beat (styles with a moving, song-like bass)
-BASS_PASS = {'pop': 0.35, 'folk': 0.5, 'holiday': 0.5, 'western': 0.45, 'chamber_pop': 0.45, 'baroque': 0.6, 'chamber': 0.55,
+BASS_PASS = {'idm_jungle_theme': 0.5, 'drill_space': 0.6, 'pop': 0.35, 'folk': 0.5, 'holiday': 0.5, 'western': 0.45, 'chamber_pop': 0.45, 'baroque': 0.6, 'chamber': 0.55,
              'neoclassical': 0.3, 'orchestral': 0.4, 'film_piano': 0.3, 'fantasy_rpg': 0.4, 'adventure': 0.3, 'reggae': 0.3,
              'rock': 0.25, 'disco': 0.2, 'city_pop': 0.3, 'soul_ballad': 0.5, 'celtic_jig': 0.4, 'waltz': 0.45, 'bossa_nova': 0.35,
              'synthpop': 0.2, 'eurodance': 0.15, 'downtempo': 0.25, 'lofi': 0.25, 'boombap': 0.2, 'symphonic_metal': 0.2,
@@ -2729,7 +2750,7 @@ def hand_up_bass(evs, tracks, st, opts):
     hi = [e for e in evs if e.track == 'bass' and e.midi is not None and e.midi >= at]
     if not hi:
         return
-    pool = cfg.get('pool') or ['reese', 'growl', 'fmbass']
+    pool = cfg.get('pool') or ['midbass', 'reese']
     inst = (opts.instruments or {}).get('bass_hi') or random.Random(opts.seed * 83 + 3).choice(pool)
     t = dict(name='bass_hi', layer='bass', inst=inst, pan=0.0, rev=0.1, dly=0.0, sc=0.5, db=float(cfg.get('db', -17)),
              hp=70, drive=None, p=dict(cfg.get('p') or {'cut': 1600}))
@@ -2737,7 +2758,7 @@ def hand_up_bass(evs, tracks, st, opts):
     tracks['bass_hi'] = t
     gone = {(round(e.beat, 4)) for e in hi}
     for e in hi:
-        e.track, e.glide, e.mod = 'bass_hi', None, (2 if inst == 'growl' else None)
+        e.track, e.glide, e.mod = 'bass_hi', None, None
         while e.midi > int(cfg.get('top', 52)):          # a mid-bass, not a lead: never above E3
             e.midi -= 12
         e.vel = min(1.0, e.vel)
@@ -2760,6 +2781,130 @@ def hand_up_bass(evs, tracks, st, opts):
                     e.midi += 12 if e.midi + 12 <= 52 else -12
                 sig = None
             prev = sig
+
+
+MALLET_CELLS = ('roll', 'roll', 'trill', 'trill', 'hop', 'run', 'octave', 'rest')
+
+
+def mallet_bar(key, tones, beat0, b, sname, si, big, rate, rest, memo, rnd):
+    """One bar of mallet playing, modelled on the user's 'Mallets' reference - not a straight arpeggio: each beat is a
+    cell, all on the beat - a roll (one note struck again and again, the mallet tremolo), a trill with its neighbour,
+    a hop between two chord tones, a short run up to a note then a roll on it, an octave bounce, or a rest. A bar's
+    four cells are a motif that repeats for two bars with small changes, and a new one comes every four bars; the
+    note it sits on moves between chord tones like a melody. Quiet sections leave more rests."""
+    from .theory import Ev
+    per = max(2, int(round(4 / rate)))                    # strokes per beat (8 = 32nd notes)
+    step = rate / 4
+    sc = sorted({(key.root + x) % 12 for x in key.scale})
+    tones = sorted(tones)
+
+    def nb(m, d):                                         # the scale neighbour above (d=1) or below (d=-1)
+        k = m + d
+        while k % 12 not in sc:
+            k += d
+        return k
+    mkey = (si, b // 4)
+    if mkey not in memo:                                  # a new motif every four bars
+        cells = []
+        for j in range(4):
+            c = rnd.choice(MALLET_CELLS)
+            if c != 'rest' and rnd.random() < (rest if big else rest * 2.2):
+                c = 'rest'
+            cells.append(c)
+        if cells.count('rest') > 2 or cells[0] == 'rest' and rnd.random() < 0.6:
+            cells[0] = 'roll'
+        memo[mkey] = dict(cells=cells, tone=rnd.randrange(len(tones)))
+    mot = memo[mkey]
+    cells = list(mot['cells'])
+    if b % 2 == 1:                                        # the answering bar: one cell changes
+        j = rnd.randrange(4)
+        cells[j] = rnd.choice(MALLET_CELLS)
+    ti = mot['tone']
+    out = []
+    for j, c in enumerate(cells):
+        if j and rnd.random() < 0.45:                     # the held note walks to a neighbouring chord tone
+            ti = max(0, min(len(tones) - 1, ti + rnd.choice([-1, 1])))
+        m = tones[ti]
+        t0 = beat0 + j
+        seq = []
+        if c == 'roll':
+            seq = [m] * per
+        elif c == 'trill':
+            o = nb(m, rnd.choice([1, -1]))
+            seq = [m if k % 2 == 0 else o for k in range(per)]
+        elif c == 'hop':
+            o = tones[(ti + 1) % len(tones)] if ti + 1 < len(tones) else m + 7
+            half = per // 2
+            seq = [m] * half + [o] * (per - half) if rnd.random() < 0.5 else [m if k % 2 == 0 else o for k in range(per)]
+        elif c == 'run':
+            r = [m]
+            while len(r) < per // 2:
+                r.insert(0, nb(r[0], -1))
+            seq = r + [m] * (per - len(r))
+        elif c == 'octave':
+            seq = [m if k % 2 == 0 else m + 12 for k in range(per)]
+        else:                                             # rest: the beat stays empty (sometimes one stroke)
+            if rnd.random() < 0.3:
+                out.append(Ev('arp', t0, step * 0.8, m, 0.75))
+            continue
+        for k, n in enumerate(seq):
+            v = 1.0 if k == 0 else (0.8 if k * 2 == per else 0.62 + 0.08 * (k % 2))
+            out.append(Ev('arp', t0 + k * step, step * 0.8, n, v * rnd.uniform(0.95, 1.0)))
+    return out
+
+
+def granular_breaks(evs, tracks, sections, amount, rnd):
+    """Drill & bass / IDM drum programming (from the user's notes on the genre): the break is treated as single hits
+    and resequenced, so no two bars are the same - flams (a hit doubled a hair later), micro-stutters (a hit split into
+    a 32nd / 48th burst), reversed and re-pitched single hits, kicks and snares swapping places, and quiet ghost hits
+    filling the gaps between the main accents. The melody on top is left alone to sit and breathe."""
+    from .theory import Ev
+    kicks = {n for n, t in tracks.items() if t.get('layer') == 'kick'}
+    snares = {n for n, t in tracks.items() if t.get('layer') == 'snare'}
+    hats = {n for n, t in tracks.items() if t.get('layer') == 'top'}
+    if not (kicks and snares):
+        return
+    sn = sorted(snares)[0]
+    kk = sorted(kicks)[0]
+    for sec in sections:
+        if not ({'kick', 'snare'} & set(sec['layers'])):
+            continue
+        dens = amount * (1.0 if sec['opts'].get('drop') else 0.7)
+        for b in range(sec['bars']):
+            b0 = (sec['bar'] + b) * 4
+            bar_d = [e for e in evs if (e.track in kicks or e.track in snares) and b0 <= e.beat < b0 + 4]
+            if not bar_d:
+                continue
+            taken = {round((e.beat - b0) * 8) for e in bar_d}
+            ops = rnd.sample(['flam', 'stutter', 'reverse', 'pitch', 'swap', 'ghosts', 'ghosts', 'stutter'],
+                             k=max(1, min(5, int(round(1 + 4 * dens * rnd.random())))))
+            for op in ops:
+                e = rnd.choice(bar_d)
+                if op == 'flam':                          # the same hit again ~1/64 note later, softer
+                    evs.append(e.copy(beat=e.beat + 0.0625, vel=e.vel * 0.7))
+                elif op == 'stutter' and e.beat + 0.25 < b0 + 4:
+                    k = rnd.choice([3, 4, 6])
+                    sp = rnd.choice([0.125, 1 / 12, 0.0625])
+                    for i in range(1, k):
+                        evs.append(e.copy(beat=e.beat + i * sp, vel=e.vel * (0.85 - 0.08 * i), mod='cut'))
+                elif op == 'reverse' and e.track in snares:
+                    e.mod = 'rev'
+                elif op == 'pitch':
+                    e.mod = f'pt:{rnd.choice([-7, -5, -3, 3, 5, 7, 12])}'
+                elif op == 'swap':                        # kick <-> snare interchange
+                    e.track = sn if e.track in kicks else kk
+                    e.mod = None
+                elif op == 'ghosts':                      # quiet hits filling the gaps between the accents
+                    for _ in range(rnd.randint(2, 5)):
+                        q = rnd.randrange(32)
+                        if q // 4 in taken or q in taken:
+                            continue
+                        evs.append(Ev(sn, b0 + q / 8, 0.1, None, rnd.uniform(0.18, 0.35), None, 'cut'))
+            if hats and rnd.random() < 0.35 * dens:       # a hat ratchet somewhere in the bar
+                h = sorted(hats)[0]
+                t0 = b0 + rnd.randrange(8) / 2
+                for i in range(rnd.choice([4, 6, 8])):
+                    evs.append(Ev(h, t0 + i / 16, 0.05, None, 0.3 + 0.05 * i, None, None))
 
 
 def screw_chops(evs, sections, amount, rnd):

@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 306 GENRES  (version 1.56.2)
+STUDIO LAB - ALL 308 GENRES  (version 1.56.5)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
 * = new in 1.56
 
 ========================================================================
-ELECTRONIC  (152)
+ELECTRONIC  (154)
 ========================================================================
 
 House & Disco  (28)
@@ -73,7 +73,7 @@ Dubstep, Garage & Bass  (20)
     Speed garage  [speed_garage]
     Midtempo bass  [midtempo_bass]
 
-Drum & Bass, Breaks & Hard  (17)
+Drum & Bass, Breaks & Hard  (19)
     Drum & Bass  [dnb]
     Liquid DnB  [liquid_dnb]
     Liquid DnB - euphoric (piano & bleeps)  [liquid_euphoric]
@@ -84,6 +84,8 @@ Drum & Bass, Breaks & Hard  (17)
     jungle  [jungle]
     Breakcore  [breakcore]
     Braindance / IDM  [braindance]
+    IDM jungle - moody theme (synth intro, chopped breaks)  [idm_jungle_theme]  *
+    Drill & bass - spacey (intricate breaks, jazz colours)  [drill_space]  *
     Breakbeat Hardcore / Rave  [rave_hardcore]
     Hardstyle  [hardstyle]
     Hardcore / Gabber  [gabber]

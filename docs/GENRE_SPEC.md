@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (306 genres)
+# Studio Lab - technical genre rules (308 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -2024,6 +2024,67 @@ Braindance / IDM: hyperactive chopped breakbeats with ratchets and ghost notes, 
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare', 'snap'], 'bass_gate': 0.7, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
 - **Sound brief** Acid bass (303); Detuned analog pads (Juno / CS-80 style); Music-box / celesta; Chopped breakbeats
 
+### IDM jungle - moody theme (synth intro, chopped breaks) (`idm_jungle_theme`)
+
+IDM jungle - moody theme: a long, atmospheric synth intro - warm, detuned pads and a melancholy synth theme with nothing else - then frantic, chopped jungle breaks crash in under it (snare rushes, ratchets, reversed hits, stutters), and a while later a nimble, melodic bass guitar weaving around the theme; dark minor chords, a breakdown back to the synths, and a key change up for the last stretch
+
+- **Tempo** 156-166 BPM · **scales** minor, dorian, phrygian · swing 0.53 (unit 16) · humanise 0.004
+- **Progressions** {'minor': [[0, 5, 2, 6], [0, 3, 5, 6], [0, 0, 5, 4], [0, 6, 5, 6]], 'dorian': [[0, 3, 0, 6], [0, 6, 3, 4]], 'phrygian': [[0, 1, 0, 6], [0, 1, 5, 6]]} · chord_bars 1 · chord size 4
+- **Song form** `idm_theme`: intro 12 [chords, fx, lead, pad] (filter_in) -> theme 16 [chords, kick, lead, pad, snare, top] -> drop 24 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> break 8 [chords, fx, lead, pad] (level=0.6) -> drop 24 [arp, bass, chords, kick, lead, snare, top] (drop, alt) -> theme 8 [bass, chords, lead, pad, top] (level=0.75) -> chorus 24 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, fx, lead, pad] (fade) · form_scale 1
+- **Drums** **kick** `X.X.......X.....` / `X.........XX....` / `X.X.......X..X..` / `X..X......X.....`; **snare** `....X..x.x..X...` / `....X.......X..x` / `....X..x....X.x.` / `..x.X..x.x.xX..x`; **chat** `x.x.x.x.x.x.x.x.` / `xxx.x.xxx.x.xxxx`; **ride** `x.x.x.x.x.x.x.x.` / `................`
+- **Drum kit** jungle_raw · preset `acoustic` · break chops 0.7
+- **Bass** `R..R.R..R.R.R...` / `R-.R..R-..R.RR..` / `R..R..R...R.R.R.` / `R---..R.R.....R.` · mode `pattern` · lowest note 28
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 1, 'mode': 'random', 'oct': 5, 'prob': 0.45}
+- **Lead rhythm** `x-------x-------` / `x---------------` / `x-----------x---` / `x-------x---x---` / `........x-------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `minimal_motivic` · bass `rolling_groove` · drop `long_build` · variation `low` · culture `uk_soundsystem` · texture `wet_and_spacious` · rhythm `swung_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -14 dB
+  - snare (snare): `snare` -15 dB · rev=0.15
+  - chat (top): `chat` -27 dB · pan=0.15
+  - ride (top): `ride` -31 dB · pan=-0.25
+  - bass (bass): `sf:fingerbass` -14 dB · alternatives ['ebass', 'moogbass', 'sinebass']
+  - chords (chords): `polysynth` -22 dB · rev=0.5 · dly=0.15 · alternatives ['warmpad', 'solina', 'epiano']
+  - pad (pad): `solina` -25 dB · rev=0.6 · alternatives ['warmpad', 'glasspad', 'choir']
+  - arp (arp): `epiano` -27 dB · pan=0.3 · rev=0.5 · dly=0.35
+  - lead (lead): `softlead` -18 dB · rev=0.55 · dly=0.3 · alternatives ['polysynth', 'leadsaw', 'flute']
+  - texture (fx): `texture` -36 dB · rev=0.6
+- **Mix** {'lufs': -11.0, 'air': 0.4, 'low': 1.6, 'width': 0.7} · reverb 3.0 · sc_depth 0.15
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'key_change': True, 'own_progs': True, 'edit_any': 0.2, 'granular': 0.55, 'calm_lead': 1.0, 'repetition': 0.9}
+- **Sound brief** Detuned analog pads (Juno / Prophet); a melancholy mono synth theme; fretless / fingered bass guitar played busily and melodically; a chopped Amen-type break with heavy edits (rushes, ratchets, reverses); dark reverb
+
+### Drill & bass - spacey (intricate breaks, jazz colours) (`drill_space`)
+
+Drill & bass - spacey: hyper-detailed breakbeats at 172-190 that never sit still (32nd-note ratchets, ghost notes, snare rushes, reversed hits, half-bar edits) under bright, spacious jazz-fusion harmony - floating Rhodes and vibes, a soft, singing lead drifting through long delays and reverb, a wide, airy mix - and a busy, melodic bass guitar; it opens on the synths alone and drops the drums out for a floating breakdown
+
+- **Tempo** 172-190 BPM · **scales** major, lydian, mixolydian, dorian · swing 0.52 (unit 16) · humanise 0.003
+- **Progressions** {'major': [[0, 3, 1, 4], [0, 5, 3, 4], [3, 4, 2, 5]], 'lydian': [[0, 1, 0, 1], [0, 1, 4, 3]], 'mixolydian': [[0, 6, 3, 0], [0, 3, 6, 4]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 4]]} · chord_bars 1 · chord size 4
+- **Song form** `drill_space`: intro 8 [chords, fx, lead, pad] (filter_in) -> A 8 [chords, kick, lead, pad, snare, top] -> B 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> break 8 [bass, chords, fx, lead, pad] (level=0.6) -> B 16 [arp, bass, chords, kick, lead, snare, top] (drop, alt) -> C 16 [arp, bass, chords, kick, pad, snare, top] (alt) -> break 4 [fx, lead, pad] (level=0.5) -> B 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, fx, lead, pad] (fade) · form_scale 1
+- **Drums** **kick** `X.X.......X.....` / `X..X......X..X..` / `X.X...X...X.....` / `XX........X..X..`; **snare** `....X..x.x.xX..x` / `..x.X.x...xxX.xx` / `....X..x.xx.X.x.` / `.x..X..xx..xX.xX`; **chat** `xxxxxxxxxxxxxxxx` / `x.xxx.xxx.xxxxx.` / `xxx.xxx.x.xxxx.x`; **snap** `...x.....x..x...` / `.x.....x...x..x.`; **ohat** `..x.......x.....` / `......x.......x.`
+- **Drum kit** amen · preset `acoustic` · break chops 0.95
+- **Bass** `R.RR.R..R.R.RR..` / `R..R.RR.R..R.R.R` / `R-.R..R-R.R..R..` / `R.R.R..R.R.RR.R.` · mode `pattern` · lowest note 28
+- **Chord rhythm** `x---------------` / `x-------x-------` / `x-----x---------`
+- **Arp** {'rate': 1, 'mode': 'random', 'oct': 6, 'prob': 0.5}
+- **Lead rhythm** `x---------------` / `x-------x-------` / `....x-----------` / `x-----------x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `minimal_motivic` · bass `rolling_groove` · drop `long_build` · variation `low` · culture `uk_soundsystem` · texture `wet_and_spacious` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -15 dB
+  - snare (snare): `snare` -15 dB · rev=0.2
+  - snap (snare): `snap` -25 dB
+  - chat (top): `chat` -27 dB · pan=0.3
+  - ohat (top): `ohat` -30 dB · pan=-0.3
+  - bass (bass): `sf:fingerbass` -14 dB · alternatives ['ebass', 'fmbass', 'moogbass']
+  - chords (chords): `epiano` -21 dB · pan=-0.2 · rev=0.55 · dly=0.2 · alternatives ['polysynth', 'warmpad', 'wurli']
+  - pad (pad): `glasspad` -27 dB · rev=0.7 · alternatives ['warmpad', 'solina', 'choir']
+  - arp (arp): `pluck_saw` -26 dB · pan=0.35 · rev=0.6 · dly=0.45
+  - lead (lead): `softlead` -18 dB · rev=0.65 · dly=0.45 · alternatives ['flute', 'polysynth']
+  - texture (fx): `texture` -37 dB · rev=0.6
+- **Mix** {'lufs': -11.0, 'air': 1.6, 'low': 1.0, 'width': 1.7} · reverb 3.4 · sc_depth 0.1
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare', 'snap'], 'bass_gate': 0.8, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'own_progs': True, 'edit_any': 0.55, 'granular': 0.9, 'calm_lead': 1.5, 'repetition': 0.9}
+- **Sound brief** Chopped breaks edited to the 32nd note (ratchets, ghost notes, reverses); Rhodes and vibes; a soft, airy synth or flute lead in long delays; a fast, melodic fingered bass guitar; wide reverb, bright and spacey
+
 ### Liquid DnB (`liquid_dnb`)
 
 Liquid drum & bass: rolling, swung two-step breaks at 174, warm melodic bass over a sine sub, Rhodes and jazzy 7th chords, lush pads, soulful leads
@@ -2749,7 +2810,7 @@ Chopped & screwed (Houston slab): a slowed-down, syrupy hip-hop beat at 60-72 BP
   - lead (lead): `epiano` -21 dB · rev=0.45 · dly=0.25 · alternatives ['organ', 'piano', 'softlead']
   - vinyl (fx): `vinyl` -36 dB
 - **Mix** {'lufs': -10.0, 'air': -5.0, 'low': 4.0, 'lofi': True, 'wobble': 1.0, 'width': 0.5, 'vintage_lp': 4200} · reverb 2.0 · sc_depth 0.2
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 44, 'decay': 11}, 'snare': {'decay': 9, 'tone': 160, 'bits': 11}, 'chat': {'bits': 9, 'srate': 16000}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'chopped': 0.45, 'dj_fx': 0.9, 'dj_slow': 0.9, 'switchups': {'moves': ('roll', 'gap', 'stop', 'dive', 'chop', 'leap', 'plain', 'plain'), 'weights': {'plain': 1.5}}, 'hi_bass': {'at': 38, 'pool': ['reese', 'moogbass', 'sinebass'], 'p': {'cut': 700}}, 'keep_fx': ['tapestop'], 'glide808': 0.3, 'oct808': 0.06, 'repetition': 0.9}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 44, 'decay': 11}, 'snare': {'decay': 9, 'tone': 160, 'bits': 11}, 'chat': {'bits': 9, 'srate': 16000}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'chopped': 0.45, 'dj_fx': 0.9, 'dj_slow': 0.9, 'switchups': {'moves': ('roll', 'gap', 'stop', 'dive', 'chop', 'leap', 'plain', 'plain'), 'weights': {'plain': 1.5}}, 'hi_bass': {'at': 38, 'pool': ['midbass', 'reese', 'moogbass'], 'p': {'cut': 700}}, 'keep_fx': ['tapestop'], 'glide808': 0.3, 'oct808': 0.06, 'repetition': 0.9}
 - **Sound brief** Slowed, pitched-down mix; deep 808 / bass; lazy kick and dragging snare; organ / strings / Rhodes loop; chops (a beat repeated); vinyl and tape
 
 ### Hard trap (brass & strings) (`hard_trap`)
@@ -2870,7 +2931,7 @@ Bass-warp trap: a dark half-time beat at 130-146 BPM built around a monstrous, u
   - lead (lead): `phonkbell` -22 dB · rev=0.45 · dly=0.3 · alternatives ['bell', 'pluck', 'celesta', 'softlead']
   - texture (fx): `texture` -36 dB
 - **Mix** {'lufs': -8.5, 'air': -0.5, 'low': 4.0, 'drive': 0.05, 'max_gr': 5.0} · reverb 2.6 · sc_depth 0.45
-- **Other rules** {'sc_release': 0.12, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 48, 'punch': 110, 'decay': 14, 'drive': 2.2, 'len': 0.25}, 'chat': {'bits': 10, 'srate': 24000}, 'snare': {'bits': 12}, 'clap': {'bits': 12}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'hi_bass': {'at': 38, 'pool': ['reese', 'growl', 'fmbass']}, 'warp_808': 0.7, 'oct808': 0.07, 'fifth808': 0.05, 'glide808': 0.3, 'repetition': 0.85}
+- **Other rules** {'sc_release': 0.12, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 48, 'punch': 110, 'decay': 14, 'drive': 2.2, 'len': 0.25}, 'chat': {'bits': 10, 'srate': 24000}, 'snare': {'bits': 12}, 'clap': {'bits': 12}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'hi_bass': {'at': 38, 'pool': ['midbass', 'midbass', 'reese']}, 'warp_808': 0.7, 'oct808': 0.07, 'fifth808': 0.05, 'glide808': 0.3, 'repetition': 0.85}
 - **Sound brief** Huge distorted 808 (long tail, very low: B0-E1) with slides, pitch dives / rises and wobble (pitch LFO); sparse trap kit with hat rolls; dark bell / music box or pluck melody; quiet choir / pad; lots of space
 
 ### Bass-warp trap - fast (160) (`bass_warp_fast`)
@@ -2903,7 +2964,7 @@ Bass-warp trap, fast: the same monstrous warping 808 at full speed (155-170 BPM,
   - lead (lead): `phonkbell` -21 dB · rev=0.55 · dly=0.35 · alternatives ['bell', 'cowbell', 'leadsaw', 'pluck', 'chip']
   - texture (fx): `texture` -36 dB
 - **Mix** {'lufs': -8.5, 'air': -0.3, 'low': 4.0, 'drive': 0.18, 'max_gr': 5.0} · reverb 2.2 · sc_depth 0.5
-- **Other rules** {'sc_release': 0.1, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 50, 'punch': 120, 'decay': 16, 'drive': 2.6, 'len': 0.22}, 'chat': {'bits': 9, 'srate': 22050}, 'snare': {'bits': 11, 'drive': 2.0}, 'clap': {'bits': 11}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['reese', 'growl', 'fmbass']}, 'warp_808': 0.5, 'warp_min': 3, 'oct808': 0.08, 'fifth808': 0.05, 'glide808': 0.3, 'repetition': 0.85}
+- **Other rules** {'sc_release': 0.1, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 50, 'punch': 120, 'decay': 16, 'drive': 2.6, 'len': 0.22}, 'chat': {'bits': 9, 'srate': 22050}, 'snare': {'bits': 11, 'drive': 2.0}, 'clap': {'bits': 11}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['midbass', 'midbass', 'reese']}, 'warp_808': 0.5, 'warp_min': 3, 'oct808': 0.08, 'fifth808': 0.05, 'glide808': 0.3, 'repetition': 0.85}
 - **Sound brief** Hard bass: a clean mono 808 sub (root notes, octave jumps, glides) + a parallel, heavily driven copy for the mid growl, both sidechained hard to the kick; dotted 3-3-2 kicks; gritty sampled Memphis snare / clap (bit-crushed); velocity-shaped 16th trap hats with pitched-up 32nd rolls into the snare; a cowbell now and then; sinister bell or horror stab riff; stutters, tape stops and abrupt switch-ups; crushed tops, solid bottom
 
 ### Switch-up 808 (no two bars alike) (`switchup_808`)
@@ -2935,7 +2996,7 @@ Switch-up 808: a pitch-dark, almost mono trap beat at 155-168 BPM where the 808 
   - lead (lead): `phonkbell` -24 dB · rev=0.6 · dly=0.4 · alternatives ['bell', 'pluck', 'celesta', 'softlead']
   - texture (fx): `texture` -37 dB
 - **Mix** {'lufs': -11.0, 'air': -3.0, 'low': 5.0, 'drive': 0.1, 'max_gr': 5.0, 'width': 0.85} · reverb 3.0 · sc_depth 0.45
-- **Other rules** {'sc_release': 0.1, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 44, 'punch': 90, 'decay': 14, 'drive': 1.8, 'len': 0.16}, 'chat': {'bits': 9, 'srate': 20000}, 'snare': {'bits': 10, 'drive': 1.8}, 'clap': {'bits': 10}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['growl', 'reese', 'fmbass'], 'p': {'cut': 1300}}, 'warp_808': 0.3, 'oct808': 0.06, 'fifth808': 0.04, 'glide808': 0.35, 'switchups': {'weights': {'grind': 1.4, 'leap': 1.3, 'plain': 0.6}}, 'dj_fx': 0.35, 'repetition': 0.8}
+- **Other rules** {'sc_release': 0.1, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 44, 'punch': 90, 'decay': 14, 'drive': 1.8, 'len': 0.16}, 'chat': {'bits': 9, 'srate': 20000}, 'snare': {'bits': 10, 'drive': 1.8}, 'clap': {'bits': 10}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['midbass', 'midbass', 'reese'], 'p': {'cut': 1300}}, 'warp_808': 0.3, 'oct808': 0.06, 'fifth808': 0.04, 'glide808': 0.35, 'switchups': {'weights': {'grind': 1.4, 'leap': 1.3, 'plain': 0.6}}, 'dj_fx': 0.35, 'repetition': 0.8}
 - **Sound brief** Very low mono 808 (B0-E1) with slides, octave leaps, rolls, dives, wobble and folded / distorted bars, switching up every bar; sparse, crushed trap kit with hat rolls and dead stops; dark semitone-rub pad, faint bell / pluck melody drenched in reverb; almost nothing above 8 kHz
 
 ### Switch-up 808 - DJ edits (slowdowns, pitch warps) (`switchup_808_dj`)
@@ -2967,12 +3028,12 @@ Switch-up 808 - DJ edits: the switch-up 808 beat (an 808 that never plays the sa
   - lead (lead): `phonkbell` -21 dB · rev=0.5 · dly=0.35 · alternatives ['bell', 'pluck', 'celesta', 'softlead']
   - texture (fx): `texture` -37 dB
 - **Mix** {'lufs': -11.0, 'air': -3.0, 'low': 5.0, 'drive': 0.1, 'max_gr': 5.0, 'width': 0.85} · reverb 3.0 · sc_depth 0.45
-- **Other rules** {'sc_release': 0.1, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 44, 'punch': 90, 'decay': 14, 'drive': 1.8, 'len': 0.16}, 'chat': {'bits': 9, 'srate': 20000}, 'snare': {'bits': 10, 'drive': 1.8}, 'clap': {'bits': 10}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['growl', 'reese', 'fmbass'], 'p': {'cut': 1300}}, 'warp_808': 0.3, 'oct808': 0.06, 'fifth808': 0.04, 'glide808': 0.35, 'switchups': {'weights': {'grind': 1.4, 'leap': 1.3, 'plain': 0.6}}, 'dj_fx': 1.0, 'chopped': 0.08, 'repetition': 0.8}
+- **Other rules** {'sc_release': 0.1, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 44, 'punch': 90, 'decay': 14, 'drive': 1.8, 'len': 0.16}, 'chat': {'bits': 9, 'srate': 20000}, 'snare': {'bits': 10, 'drive': 1.8}, 'clap': {'bits': 10}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['midbass', 'midbass', 'reese'], 'p': {'cut': 1300}}, 'warp_808': 0.3, 'oct808': 0.06, 'fifth808': 0.04, 'glide808': 0.35, 'switchups': {'weights': {'grind': 1.4, 'leap': 1.3, 'plain': 0.6}}, 'dj_fx': 1.0, 'chopped': 0.08, 'repetition': 0.8}
 - **Sound brief** Very low mono 808 (B0-E1) with slides, octave leaps, rolls, dives, wobble and folded / distorted bars, switching up every bar; sparse, crushed trap kit with hat rolls and dead stops; dark semitone-rub pad, faint bell / pluck melody drenched in reverb; almost nothing above 8 kHz
 
 ### Switch-up 808 - mallets (fast arpeggios) (`switchup_mallets`)
 
-Switch-up 808 - mallets: the switch-up 808 beat under a storm of fast mallet arpeggios - marimba, vibes and bells rippling through the chords in 32nd notes and two-octave cascades, echoing in delay - over the switching, leaping 808, a dark phrygian rub and the DJ edits (slowdowns into the drops, pitched hats); the mallets alone with no sub to open and close
+Switch-up 808 - mallets: the switch-up 808 beat under fast, restless mallet playing - marimba and vibes in 32nd-note rolls on one note, trills, hops between chord tones, quick runs and octave bounces, each beat its own figure in motifs that change every few bars, with rests between - over the switching, leaping 808, a dark phrygian rub and the DJ edits (slowdowns into the drops, pitched hats); the mallets alone with no sub to open and close
 
 - **Tempo** 155-168 BPM · **scales** phrygian, minor, harmonic_minor · swing 0.5 (unit 16) · humanise 0.0
 - **Progressions** {'phrygian': [[0, 0, 1, 1], [0, 1, 0, 1], [0, 0, 2, 1], [0, 2, 4, 1]], 'minor': [[0, 0, 5, 5], [0, 0, 1, 1], [0, 0, 2, 4]], 'harmonic_minor': [[0, 0, 1, 1], [0, 0, 4, 4]]} · chord_bars 1 · chord size 3
@@ -2981,7 +3042,7 @@ Switch-up 808 - mallets: the switch-up 808 beat under a storm of fast mallet arp
 - **Drum kit** 808 · preset `808`
 - **Bass** `R.......R.......` · mode `808` · lowest note 23
 - **Chord rhythm** `x---------------` / `x-------x-------`
-- **Arp** {'rate': 0.5, 'mode': 'cascade', 'oct': 5, 'prob': 0.92}
+- **Arp** {'rate': 0.5, 'mode': 'mallet', 'oct': 5, 'beat_lock': True, 'rest': 0.18}
 - **Lead rhythm** `x-------........` / `x---....x---....` / `........x-------` / `x.......x.x.....`
 - **Build-ups** default `pause` · choices ['pause', 'stutter', 'none'] · transitions ['gap', 'tapestop', 'gap', 'none'] · drops land plainly
 - **Traits** arrangement `verse_chorus_pop` · density `dense` · feel `robotic` · melody `long_lyrical` · bass `808_slide` · drop `groove_drop` · variation `sectional` · culture `street` · texture `wet_and_spacious` · rhythm `on_the_grid` · harmony `static_vamp` · energy `peaks_and_valleys`
@@ -2995,12 +3056,12 @@ Switch-up 808 - mallets: the switch-up 808 beat under a storm of fast mallet arp
   - bass_grit (bass): `808` -24 dB · sc=0.9
   - chords (chords): `warmpad` -29 dB · rev=0.6 · alternatives ['glasspad', 'choir', 'strings']
   - pad (pad): `choir` -30 dB · rev=0.7 · alternatives ['warmpad', 'glasspad']
-  - arp (arp): `marimba` -20 dB · pan=0.25 · rev=0.45 · dly=0.3 · alternatives ['vibes', 'kalimba', 'bell', 'celesta']
-  - arp_hi (arp): `vibes` -28 dB · pan=-0.3 · rev=0.6 · dly=0.45
+  - arp (arp): `marimba` -20 dB · pan=0.2 · rev=0.3 · dly=0.12 · sc=0.35 · alternatives ['vibes', 'kalimba', 'bell', 'celesta']
+  - arp_hi (arp): `vibes` -28 dB · pan=-0.25 · rev=0.4 · dly=0.1 · sc=0.35
   - lead (lead): `phonkbell` -24 dB · rev=0.5 · dly=0.35 · alternatives ['bell', 'pluck', 'celesta', 'softlead']
   - texture (fx): `texture` -37 dB
 - **Mix** {'lufs': -10.5, 'air': -1.0, 'low': 4.5, 'drive': 0.1, 'max_gr': 5.0, 'width': 1.1} · reverb 3.0 · sc_depth 0.45
-- **Other rules** {'sc_release': 0.1, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 44, 'punch': 90, 'decay': 14, 'drive': 1.8, 'len': 0.16}, 'chat': {'bits': 9, 'srate': 20000}, 'snare': {'bits': 10, 'drive': 1.8}, 'clap': {'bits': 10}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['growl', 'reese', 'fmbass'], 'p': {'cut': 1300}}, 'warp_808': 0.3, 'oct808': 0.06, 'fifth808': 0.04, 'glide808': 0.35, 'switchups': {'weights': {'grind': 1.4, 'leap': 1.3, 'plain': 0.6}}, 'dj_fx': 0.6, 'chopped': 0.05, 'repetition': 0.8}
+- **Other rules** {'sc_release': 0.1, 'delay_beats': 0.5, 'kit_override': {'kick': {'pitch': 44, 'punch': 90, 'decay': 14, 'drive': 1.8, 'len': 0.16}, 'chat': {'bits': 9, 'srate': 20000}, 'snare': {'bits': 10, 'drive': 1.8}, 'clap': {'bits': 10}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['midbass', 'midbass', 'reese'], 'p': {'cut': 1300}}, 'warp_808': 0.3, 'oct808': 0.06, 'fifth808': 0.04, 'glide808': 0.35, 'switchups': {'weights': {'grind': 1.4, 'leap': 1.3, 'plain': 0.6}}, 'dj_fx': 0.6, 'chopped': 0.05, 'repetition': 0.8}
 - **Sound brief** Very low mono 808 (B0-E1) with slides, octave leaps, rolls, dives, wobble and folded / distorted bars, switching up every bar; sparse, crushed trap kit with hat rolls and dead stops; dark semitone-rub pad, faint bell / pluck melody drenched in reverb; almost nothing above 8 kHz
 
 ### Switch-up 808 - hard (punchy kicks) (`switchup_808_hard`)
@@ -3033,7 +3094,7 @@ Switch-up 808 - hard: the switch-up 808 beat made aggressive - hard, punchy, dis
   - lead (lead): `phonkbell` -21 dB · rev=0.5 · dly=0.35 · alternatives ['cowbell', 'leadsaw', 'bell', 'pluck']
   - texture (fx): `texture` -37 dB
 - **Mix** {'lufs': -9.5, 'air': -1.5, 'low': 4.0, 'drive': 0.15, 'max_gr': 4.0, 'width': 0.8} · reverb 3.0 · sc_depth 0.85
-- **Other rules** {'sc_release': 0.13, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 50, 'punch': 230, 'sweep': 55, 'decay': 11, 'drive': 4.2, 'click': 0.9, 'len': 0.2}, 'chat': {'bits': 9, 'srate': 20000}, 'snare': {'bits': 9, 'drive': 3.0, 'snap': 1.6}, 'clap': {'bits': 9, 'drive': 2.0}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['growl', 'reese', 'fmbass'], 'p': {'cut': 1300}}, 'warp_808': 0.3, 'oct808': 0.06, 'fifth808': 0.04, 'glide808': 0.35, 'switchups': {'weights': {'grind': 1.6, 'roll': 1.3, 'chop': 1.3, 'plain': 0.5}}, 'dj_fx': 0.7, 'chopped': 0.06, 'repetition': 0.8}
+- **Other rules** {'sc_release': 0.13, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 50, 'punch': 230, 'sweep': 55, 'decay': 11, 'drive': 4.2, 'click': 0.9, 'len': 0.2}, 'chat': {'bits': 9, 'srate': 20000}, 'snare': {'bits': 9, 'drive': 3.0, 'snap': 1.6}, 'clap': {'bits': 9, 'drive': 2.0}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['midbass', 'midbass', 'reese'], 'p': {'cut': 1300}}, 'warp_808': 0.3, 'oct808': 0.06, 'fifth808': 0.04, 'glide808': 0.35, 'switchups': {'weights': {'grind': 1.6, 'roll': 1.3, 'chop': 1.3, 'plain': 0.5}}, 'dj_fx': 0.7, 'chopped': 0.06, 'repetition': 0.8}
 - **Sound brief** Very low mono 808 (B0-E1) with slides, octave leaps, rolls, dives, wobble and folded / distorted bars, switching up every bar; sparse, crushed trap kit with hat rolls and dead stops; dark semitone-rub pad, faint bell / pluck melody drenched in reverb; almost nothing above 8 kHz
 
 ### Baltimore club (`baltimore_club`)

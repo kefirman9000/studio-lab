@@ -338,6 +338,8 @@ def break_edits(st, rnd, energy, section_bar, nbars):
     stuttered ghost-note roll."""
     c = float(st.get('break_chop') or 0.0)
     end_of_phrase = section_bar % 4 == 3 or section_bar == nbars - 1
+    if not end_of_phrase and rnd.random() < float(st.get('edit_any') or 0) * (0.5 + 0.5 * energy):
+        end_of_phrase = True                             # drill & bass: edits in the middle of phrases too
     if c <= 0 or not end_of_phrase or rnd.random() > 0.1 + c * 0.8 * (0.4 + 0.6 * energy):
         return None
     kind = rnd.choice(['rush', 'rush', 'reverse', 'stutter', 'pitchdown'] + (['rush32'] if c > 0.4 else []))
@@ -370,7 +372,8 @@ GENRE_KIT.update({k: 'rusty' for k in ('rock', 'indie_rock', 'punk', 'jam_band')
 GENRE_KIT.update({'dnb': 'dnb_rollers', 'liquid_dnb': 'liquid', 'neurofunk': 'neuro', 'jungle': 'jungle_raw',
                   'jazz_rap': 'skull_snaps', 'phonk': 'phonk808', 'memphis_phonk': 'phonk808', 'brazilian_phonk': 'phonk808',
                   'acid_house': '606', 'pop': 'unruly', 'modern_country': 'unruly', 'soft_rock': 'dead70s'})
-CHOP.update({'jungle': 0.55, 'dnb': 0.15, 'neurofunk': 0.1, 'liquid_dnb': 0.08})
+CHOP.update({'jungle': 0.55, 'dnb': 0.15, 'neurofunk': 0.1, 'liquid_dnb': 0.08, 'idm_jungle_theme': 0.7, 'drill_space': 0.95})
+GENRE_KIT.update({'idm_jungle_theme': 'jungle_raw', 'drill_space': 'amen'})
 GENRE_KIT.update({'hopecore_breaks': 'amen', 'hopecore': 'soft', 'alt_rock_90s': 'rock', 'bedroom_pop': '707',
                   'electro_funk': 'dmx', 'ps1_game': 'think', 'nineties_club_house': '909', 'pop_house_90s': '909', 'sunny_melodic_house': '909'})
 CHOP.update({'hopecore_breaks': 0.45, 'ps1_game': 0.12})

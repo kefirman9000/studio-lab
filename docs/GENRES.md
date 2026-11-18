@@ -1,8 +1,8 @@
-# Studio Lab genres (306)
+# Studio Lab genres (308)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (152)
+## Electronic (154)
 
 ### House & Disco (28)
 
@@ -80,7 +80,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | UK bassline (140) | `bassline_140` | 136-142 | UK bassline (Northern / speed-garage style): a bouncy four-on-the-floor around 138-142 with shuffled garage hats, a warbling, organ-like wobble bass that bounces in octaves and talks between the kicks, bright stabs and a chopped vocal-style hook - cheeky, fast and built for the rave |
 | UK funky | `uk_funky` | 126-132 | UK funky: London house at 130 with a soca and Afro swing - a house kick under syncopated snares, tribal toms and congas, a bouncy sub bass, warm keys and vocal hooks |
 
-### Drum & Bass, Breaks & Hard (17)
+### Drum & Bass, Breaks & Hard (19)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -88,11 +88,13 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Braindance / IDM | `braindance` | 120-168 | Braindance / IDM: hyperactive chopped breakbeats with ratchets and ghost notes, squelchy acid bass, music-box melodies over warm detuned pads, odd modes |
 | Breakbeat Hardcore / Rave | `rave_hardcore` | 135-155 | Breakbeat hardcore / early UK rave (1990-93): Amen-style breaks over a four-on-the-floor kick, piano stabs, hoover and Mentasm leads, pitched-up vocal chops - funky, chaotic, euphoric |
 | Breakcore | `breakcore` | 170-190 | Breakcore: frantic chopped breaks at 180+, reese bass, melancholic pads and chiptune |
+| Drill & bass - spacey (intricate breaks, jazz colours) | `drill_space` | 172-190 | Drill & bass - spacey: hyper-detailed breakbeats at 172-190 that never sit still (32nd-note ratchets, ghost notes, snare rushes, reversed hits, half-bar edits) under bright, spacious jazz-fusion harmony - floating Rhodes and vibes, a soft, singing lead drifting through long delays and reverb, a wide, airy mix - and a busy, melodic bass guitar; it opens on the synths alone and drops the drums out for a floating breakdown |
 | Drum & Bass | `dnb` | 170-176 | Drum & bass: two-step breaks at 174, growling reese bass, wide pads |
 | Electro | `electro` | 125-132 | Electro: robotic 808 funk, FM bass grit, zappy leads |
 | Funky breaks / glitch electro | `funky_breaks` | 122-132 | Funky breaks / glitch electro (late-90s big beat & nu-skool breaks): a chopped, swung funk break around 125-130 BPM with stuttered edits, snare rushes and reversed hits, a fat rubbery bass that bends and slides, a warped, gliding synth lead, crunchy palm-muted guitar riffs doubled by the bass, Rhodes stabs - loud, bass-heavy and mono-tight |
 | Hardcore / Gabber | `gabber` | 170-195 | Hardcore / gabber (90s Rotterdam): 170-200 BPM four-on-the-floor of heavily distorted, pitched "gabber" kicks, screeching leads, hoovers and raw, confrontational energy |
 | Hardstyle | `hardstyle` | 148-152 | Hardstyle: distorted pitched kicks, screeching leads, euphoric supersaw melodies |
+| IDM jungle - moody theme (synth intro, chopped breaks) | `idm_jungle_theme` | 156-166 | IDM jungle - moody theme: a long, atmospheric synth intro - warm, detuned pads and a melancholy synth theme with nothing else - then frantic, chopped jungle breaks crash in under it (snare rushes, ratchets, reversed hits, stutters), and a while later a nimble, melodic bass guitar weaving around the theme; dark minor chords, a breakdown back to the synths, and a key change up for the last stretch |
 | Jump-up DnB | `jump_up` | 172-176 | Jump-up drum & bass: bouncy party two-step at 174 - a rubbery, talking mid-bass wobble riff that answers itself bar to bar over a sine sub, punchy breaks, short stabs and big drops; brighter and sillier than neurofunk |
 | Jungle | `jungle` | 160-172 | Jungle / breakbeat: chopped amen-style breaks, deep subs, rave stabs and dub pads |
 | Liquid DnB | `liquid_dnb` | 170-176 | Liquid drum & bass: rolling, swung two-step breaks at 174, warm melodic bass over a sine sub, Rhodes and jazzy 7th chords, lush pads, soulful leads |
@@ -126,7 +128,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Switch-up 808 (no two bars alike) | `switchup_808` | 155-168 | Switch-up 808: a pitch-dark, almost mono trap beat at 155-168 BPM where the 808 never plays the same bar twice - grinding root and flat-2nd 8ths, leaping one or two octaves up and sliding back down, 16th rolls, dives and wobbles, bars of folded, buzzing 808 with the sub gone, chopped stabs, sudden gaps and dead stops where the drums cut out - over semitone-rub phrygian chords, a faint eerie melody and a lot of empty space |
 | Switch-up 808 - DJ edits (slowdowns, pitch warps) | `switchup_808_dj` | 155-168 | Switch-up 808 - DJ edits: the switch-up 808 beat (an 808 that never plays the same bar twice, phrygian rubs, dead stops) cut up like a DJ is playing with it - fake slowdowns before the drops (the record dragged by hand, sinking in pitch, then the drop slamming in), hats climbing, diving and swooping in pitch, rolls that dive into the next bar, a lead that gets down-tuned, up-tuned and played a tone flat, chops and tape stops |
 | Switch-up 808 - hard (punchy kicks) | `switchup_808_hard` | 162-172 | Switch-up 808 - hard: the switch-up 808 beat made aggressive - hard, punchy, distorted kicks that hit like a fist (a sharp click, a fast pitch drop, slammed through saturation) with the 808 ducking out of their way, cracking crushed snares and claps, a dirtier growling 808 that still switches up bar to bar, cowbell stabs, DJ slowdowns and stutters into the drops, and a loud, pressured mix |
-| Switch-up 808 - mallets (fast arpeggios) | `switchup_mallets` | 155-168 | Switch-up 808 - mallets: the switch-up 808 beat under a storm of fast mallet arpeggios - marimba, vibes and bells rippling through the chords in 32nd notes and two-octave cascades, echoing in delay - over the switching, leaping 808, a dark phrygian rub and the DJ edits (slowdowns into the drops, pitched hats); the mallets alone with no sub to open and close |
+| Switch-up 808 - mallets (fast arpeggios) | `switchup_mallets` | 155-168 | Switch-up 808 - mallets: the switch-up 808 beat under fast, restless mallet playing - marimba and vibes in 32nd-note rolls on one note, trills, hops between chord tones, quick runs and octave bounces, each beat its own figure in motifs that change every few bars, with rests between - over the switching, leaping 808, a dark phrygian rub and the DJ edits (slowdowns into the drops, pitched hats); the mallets alone with no sub to open and close |
 | Trap | `trap` | 136-150 | Modern trap: half-time snares, rolling hi-hats, gliding 808s, dark bells |
 | UK Drill | `uk_drill` | 140-145 | UK/NY drill: sliding 808s, triplet hats, offbeat snares, dark piano & strings |
 | UK road rap | `uk_road_rap` | 146-156 | UK road rap: a dark, half-time London rap beat around 150 BPM - a huge mono 808 sub sliding between the root, its leading tone and the fifth, steady ticking 8th hats with the odd roll, a hard snare on the half-time backbeat, sparse kicks, and a moody harmonic-minor piano line over low strings and choir - roomy for the bars |

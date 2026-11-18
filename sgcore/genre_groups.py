@@ -13,7 +13,7 @@ GROUPS = {
                              'progressive_trance', 'psytrance', 'trance_pop_90s', 'hard_trance', 'uk_bass_130', 'hard_techno', 'dub_techno']),
         ('Dubstep, Garage & Bass', ['dubstep', 'brostep', 'riddim', 'melodic_dubstep', 'chillstep', 'deep_dubstep', 'deep_dubstep_minimal',
                                     'deep_dubstep_rollers', 'deep_dubstep_rolling', 'chipmunk_2step', 'glitch_future_bass', 'future_bass', 'ukgarage', 'future_garage', 'early_dubstep', 'bassline_140', 'grime', 'uk_funky', 'speed_garage', 'midtempo_bass']),
-        ('Drum & Bass, Breaks & Hard', ['dnb', 'liquid_dnb', 'liquid_euphoric', 'liquid_dancefloor', 'neurofunk', 'neurofunk_lite', 'jump_up', 'jungle', 'breakcore', 'braindance', 'rave_hardcore',
+        ('Drum & Bass, Breaks & Hard', ['dnb', 'liquid_dnb', 'liquid_euphoric', 'liquid_dancefloor', 'neurofunk', 'neurofunk_lite', 'jump_up', 'jungle', 'breakcore', 'braindance', 'idm_jungle_theme', 'drill_space', 'rave_hardcore',
                                         'hardstyle', 'gabber', 'electro', 'funky_breaks', 'big_beat', 'uk_hardcore']),
         ('Hip-Hop, Trap & Phonk', ['trap', 'uk_drill', 'uk_road_rap', 'rage', 'plugg', 'cloud_rap', 'luxury_rap', 'orchestral_hiphop',
                                    'jersey_club', 'phonk', 'memphis_phonk', 'house_phonk', 'brazilian_phonk', 'hard_trap', 'bass_warp_trap', 'bass_warp_fast', 'switchup_808', 'switchup_808_dj', 'switchup_808_hard', 'switchup_mallets', 'screwed_slab', 'switch_trap', 'wonky_beats', 'baltimore_club', 'witch_house', 'latin_trap']),

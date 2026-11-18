@@ -51,7 +51,7 @@ def i_reese(m, dur, p, glide=None, mod=None):
 def i_808(m, dur, p, glide=None, mod=None):
     """Trap 808: a sine with a long tail and drive, sliding from the previous note. `mod` warps one note (bass-warp
     genres): 'dive' (falls up to an octave as it ends), 'rise' (shoots up an octave), 'wob:<Hz>' (a 2-3 semitone pitch
-    wobble), 'growl' (extra drive + square grit), 'fold' (wave-folded buzz)."""
+    wobble), 'growl' (warm saturation with a slow low-pass 'wah'), 'fold' (wave-folded buzz)."""
     f = float(mtof(m))
     gate = int(dur * SR)
     n = gate + int(0.04 * SR)
@@ -71,8 +71,8 @@ def i_808(m, dur, p, glide=None, mod=None):
         depth = min(1.0, t[-1] / 0.25) * 2.5                       # semitones, easing in after the attack
         freq = freq * 2 ** (depth * np.sin(2 * np.pi * rate * t) * np.minimum(t / 0.15, 1) / 12)
     y = np.sin(2 * np.pi * np.cumsum(freq) / SR)
-    if w == 'growl':
-        y = y + 0.35 * np.tanh(4 * y)                              # (a smooth knee: sign * sqrt aliased into fizz)
+    if w == 'growl':                                               # a warm, saturated 808 with a slow 'wah' in the mids
+        y = y + 0.25 * np.sin(2 * np.pi * np.cumsum(freq * 2) / SR) + 0.12 * np.sin(2 * np.pi * np.cumsum(freq * 3) / SR)
     elif w == 'fold':                                              # wave-folded: a buzzing, distorted 808 (switch-up 808)
         y = np.sin(2.6 * y + 0.8 * np.sin(2 * np.pi * np.cumsum(freq * 2) / SR) * np.minimum(t / 0.3, 1))
         y = y * 0.75 + 0.25 * np.sin(2 * np.pi * np.cumsum(freq) / SR)
@@ -88,7 +88,43 @@ def i_808(m, dur, p, glide=None, mod=None):
     drive = 3.0 + (drive - 3.0) * min(1.0, (55.0 / max(f, 1.0)) ** 0.7) if drive > 3.0 else drive
     up = signal.resample_poly(y * amp * rel, 4, 1)
     z = signal.resample_poly(soft(up, drive), 1, 4)[:n]
+    if w == 'growl':                                               # the growl: a low-pass that opens and closes
+        z = _sweep_lp(z, 380, 1400, 2.2 / max(0.2, p.get('spb', 0.37) * 2))
+        return z * 1.15
     return lp(lp(z, 3800), 3800)
+
+
+def _sweep_lp(x, lo, hi, rate):
+    """A smooth low-pass whose cutoff swings between lo and hi (Hz) at `rate` (Hz) - a vowel-like 'wah'."""
+    n = len(x)
+    out = np.empty(n)
+    zi = np.zeros(2)
+    B = 256
+    for s0 in range(0, n, B):
+        tt = s0 / SR
+        fc = lo + (hi - lo) * (0.5 - 0.5 * np.cos(2 * np.pi * rate * tt))
+        b, a = signal.butter(2, min(0.45, fc / (SR / 2)), 'low')
+        out[s0:s0 + B], zi = signal.lfilter(b, a, x[s0:s0 + B], zi=zi)
+    return out
+
+
+def i_midbass(m, dur, p, glide=None, mod=None):
+    """Mid-bass: what an 808 turns into when it's played up high in the switch-up / bass-warp genres - a round,
+    saturated tone (sine with its 2nd and 3rd harmonics, softly overdriven at 4x the sample rate, two voices a few
+    cents apart), low-passed so it's thick and warm instead of thin and squeaky, with a short, punchy attack."""
+    f = float(mtof(m))
+    gate = int(dur * SR)
+    n = gate + int(0.06 * SR)
+    t = np.arange(n) / SR
+    y = np.zeros(n)
+    for c in (-6.0, 6.0):
+        ph = 2 * np.pi * f * 2 ** (c / 1200) * t
+        y += np.sin(ph) + 0.45 * np.sin(2 * ph) + 0.2 * np.sin(3 * ph)
+    amp = np.minimum(t / 0.004, 1) * (0.75 + 0.25 * np.exp(-t * 6))
+    amp[gate:] *= np.linspace(1, 0, n - gate)
+    up = signal.resample_poly(y * 0.5 * amp, 4, 1)
+    z = signal.resample_poly(soft(up, p.get('drive', 2.2)), 1, 4)[:n]
+    return lp(lp(z, p.get('cut', 1300)), p.get('cut', 1300)) * 0.9
 
 
 def i_sinebass(m, dur, p, glide=None, mod=None):
@@ -1462,6 +1498,10 @@ def i_growl(m, dur, p, glide=None, mod=None):
 INSTRUMENTS['growl'] = i_growl
 INSTRUMENT_INFO['growl'] = 'Growl bass (FM + formant)'
 ROLE_CHOICES['bass'] += ['growl']
+INSTRUMENTS['midbass'] = i_midbass
+INSTRUMENT_INFO['midbass'] = 'Mid-bass (saturated, warm - a high 808)'
+ROLE_CHOICES['bass'] += ['midbass']
+GM_PROGRAM['midbass'] = 38
 GM_PROGRAM['growl'] = 39
 
 

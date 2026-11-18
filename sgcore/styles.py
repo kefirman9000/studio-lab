@@ -2330,6 +2330,98 @@ style('braindance', 'Electronic', 'Braindance / IDM: hyperactive chopped breakbe
                  lead=['bell', 'acid', 'celesta', 'leadsaw', 'chip', 'polysynth']),
       label='Braindance / IDM')
 
+# v1.56.5: two IDM / drill & bass genres from the user's references. (1) the long, moody theme: ~160, F minor-ish, a
+# half-minute of atmospheric synths alone, then chopped breaks come in with no bass, the bass guitar ~40 s later
+# (sub ~65% of the energy then), mono-ish, a key change up near the end. (2) the bright, spacey one: ~180-190, major /
+# lydian jazz colours, very wide (side/mid 0.6), intricate 16th / 32nd break edits, a breakdown with the drums gone.
+FORMS['idm_theme'] = [('intro', 12, {'pad', 'chords', 'lead', 'fx'}, {'filter_in': True}),
+                      ('theme', 16, {'kick', 'snare', 'top', 'pad', 'chords', 'lead'}, {}),
+                      ('drop', 24, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'lead', 'arp'}, {'drop': True}),
+                      ('break', 8, {'pad', 'chords', 'lead', 'fx'}, {'level': 0.6}),
+                      ('drop', 24, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'drop': True, 'alt': True}),
+                      ('theme', 8, {'top', 'bass', 'pad', 'chords', 'lead'}, {'level': 0.75}),
+                      ('chorus', 24, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'lead', 'arp'}, {'drop': True}),
+                      ('outro', 8, {'pad', 'chords', 'lead', 'fx'}, {'fade': True})]
+style('idm_jungle_theme', 'Electronic',
+      'IDM jungle - moody theme: a long, atmospheric synth intro - warm, detuned pads and a melancholy synth theme '
+      'with nothing else - then frantic, chopped jungle breaks crash in under it (snare rushes, ratchets, reversed '
+      'hits, stutters), and a while later a nimble, melodic bass guitar weaving around the theme; dark minor chords, '
+      'a breakdown back to the synths, and a key change up for the last stretch',
+      bpm=(156, 166), scales=['minor', 'dorian', 'phrygian'], swing=0.53, human=0.004, kit='acoustic', form='idm_theme',
+      chord_size=4, sc_depth=0.15, reverb=3.0, delay_beats=0.75, ghosts=True, fill=True, key_change=True, own_progs=True, edit_any=0.2, granular=0.55, calm_lead=1.0,
+      progs={'minor': [[0, 5, 2, 6], [0, 3, 5, 6], [0, 0, 5, 4], [0, 6, 5, 6]], 'dorian': [[0, 3, 0, 6], [0, 6, 3, 4]],
+             'phrygian': [[0, 1, 0, 6], [0, 1, 5, 6]]},
+      drums={'kick': ['X.X.......X.....', 'X.........XX....', 'X.X.......X..X..', 'X..X......X.....'],
+             'snare': ['....X..x.x..X...', '....X.......X..x', '....X..x....X.x.', '..x.X..x.x.xX..x'],
+             'chat': ['x.x.x.x.x.x.x.x.', 'xxx.x.xxx.x.xxxx'], 'ride': ['x.x.x.x.x.x.x.x.', '................']},
+      snare_tracks=['snare'], bass=['R..R.R..R.R.R...', 'R-.R..R-..R.RR..', 'R..R..R...R.R.R.', 'R---..R.R.....R.'], bass_lo=28,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=60, arp=dict(rate=1, mode='random', oct=5, prob=0.45),
+      lead_rh=['x-------x-------', 'x---------------', 'x-----------x---', 'x-------x---x---', '........x-------'], lead_oct=5,
+      repetition=0.9,
+      gm_hint='Detuned analog pads (Juno / Prophet); a melancholy mono synth theme; fretless / fingered bass guitar played '
+              'busily and melodically; a chopped Amen-type break with heavy edits (rushes, ratchets, reverses); dark reverb',
+      tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.15, db=-15),
+              T('chat', 'top', 'chat', pan=0.15, db=-27), T('ride', 'top', 'ride', pan=-0.25, db=-31),
+              T('bass', 'bass', 'sf:fingerbass', db=-14, p=dict(cut=1800)),
+              T('chords', 'chords', 'polysynth', rev=0.5, dly=0.15, db=-22, p=dict(a=0.35, r=1.2, cut=1300)),
+              T('pad', 'pad', 'solina', rev=0.6, db=-25),
+              T('arp', 'arp', 'epiano', rev=0.5, dly=0.35, pan=0.3, db=-27),
+              T('lead', 'lead', 'softlead', rev=0.55, dly=0.3, db=-18),
+              T('texture', 'fx', 'texture', rev=0.6, db=-36)],
+      master=dict(lufs=-11.0, air=0.4, low=1.6, width=0.7),
+      pools=dict(bass=['sf:fingerbass', 'ebass', 'moogbass', 'sinebass'],
+                 chords=['polysynth', 'warmpad', 'solina', 'epiano'],
+                 pad=['solina', 'warmpad', 'glasspad', 'choir'],
+                 arp=['epiano', 'vibes', 'celesta', 'bell'],
+                 lead=['softlead', 'polysynth', 'leadsaw', 'flute']),
+      label='IDM jungle - moody theme (synth intro, chopped breaks)')
+
+FORMS['drill_space'] = [('intro', 8, {'pad', 'chords', 'lead', 'fx'}, {'filter_in': True}),
+                        ('A', 8, {'kick', 'snare', 'top', 'pad', 'chords', 'lead'}, {}),
+                        ('B', 16, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'lead', 'arp'}, {'drop': True}),
+                        ('break', 8, {'bass', 'pad', 'chords', 'lead', 'fx'}, {'level': 0.6}),
+                        ('B', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'drop': True, 'alt': True}),
+                        ('C', 16, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'arp'}, {'alt': True}),
+                        ('break', 4, {'pad', 'lead', 'fx'}, {'level': 0.5}),
+                        ('B', 16, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'lead', 'arp'}, {'drop': True}),
+                        ('outro', 8, {'pad', 'chords', 'lead', 'fx'}, {'fade': True})]
+style('drill_space', 'Electronic',
+      'Drill & bass - spacey: hyper-detailed breakbeats at 172-190 that never sit still (32nd-note ratchets, ghost '
+      'notes, snare rushes, reversed hits, half-bar edits) under bright, spacious jazz-fusion harmony - floating Rhodes '
+      'and vibes, a soft, singing lead drifting through long delays and reverb, a wide, airy mix - and a busy, melodic '
+      'bass guitar; it opens on the synths alone and drops the drums out for a floating breakdown',
+      bpm=(172, 190), scales=['major', 'lydian', 'mixolydian', 'dorian'], swing=0.52, human=0.003, kit='acoustic',
+      form='drill_space', chord_size=4, sc_depth=0.1, reverb=3.4, delay_beats=0.75, ghosts=True, fill=True, own_progs=True, edit_any=0.55, granular=0.9, calm_lead=1.5,
+      progs={'major': [[0, 3, 1, 4], [0, 5, 3, 4], [3, 4, 2, 5]], 'lydian': [[0, 1, 0, 1], [0, 1, 4, 3]],
+             'mixolydian': [[0, 6, 3, 0], [0, 3, 6, 4]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 4]]},
+      drums={'kick': ['X.X.......X.....', 'X..X......X..X..', 'X.X...X...X.....', 'XX........X..X..'],
+             'snare': ['....X..x.x.xX..x', '..x.X.x...xxX.xx', '....X..x.xx.X.x.', '.x..X..xx..xX.xX'],
+             'chat': ['xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxxxx.', 'xxx.xxx.x.xxxx.x'],
+             'snap': ['...x.....x..x...', '.x.....x...x..x.'], 'ohat': ['..x.......x.....', '......x.......x.']},
+      snare_tracks=['snare', 'snap'], bass=['R.RR.R..R.R.RR..', 'R..R.RR.R..R.R.R', 'R-.R..R-R.R..R..', 'R.R.R..R.R.RR.R.'],
+      bass_lo=28, bass_gate=0.8,
+      chord_rh=['x---------------', 'x-------x-------', 'x-----x---------'], chord_center=62,
+      arp=dict(rate=1, mode='random', oct=6, prob=0.5),
+      lead_rh=['x---------------', 'x-------x-------', '....x-----------', 'x-----------x---'], lead_oct=5, repetition=0.9,
+
+      gm_hint='Chopped breaks edited to the 32nd note (ratchets, ghost notes, reverses); Rhodes and vibes; a soft, airy '
+              'synth or flute lead in long delays; a fast, melodic fingered bass guitar; wide reverb, bright and spacey',
+      tracks=[T('kick', 'kick', 'kick', db=-15), T('snare', 'snare', 'snare', rev=0.2, db=-15), T('snap', 'snare', 'snap', db=-25),
+              T('chat', 'top', 'chat', pan=0.3, db=-27), T('ohat', 'top', 'ohat', pan=-0.3, db=-30),
+              T('bass', 'bass', 'sf:fingerbass', db=-14, p=dict(cut=2200)),
+              T('chords', 'chords', 'epiano', rev=0.55, dly=0.2, pan=-0.2, db=-21),
+              T('pad', 'pad', 'glasspad', rev=0.7, db=-27),
+              T('arp', 'arp', 'vibes', rev=0.6, dly=0.45, pan=0.35, db=-26),
+              T('lead', 'lead', 'softlead', rev=0.65, dly=0.45, db=-18),
+              T('texture', 'fx', 'texture', rev=0.6, db=-37)],
+      master=dict(lufs=-11.0, air=1.6, low=1.0, width=1.7),
+      pools=dict(bass=['sf:fingerbass', 'ebass', 'fmbass', 'moogbass'],
+                 chords=['epiano', 'polysynth', 'warmpad', 'wurli'],
+                 pad=['glasspad', 'warmpad', 'solina', 'choir'],
+                 arp=['vibes', 'celesta', 'marimba', 'bell'],
+                 lead=['softlead', 'flute', 'polysynth', 'vibes']),
+      label='Drill & bass - spacey (intricate breaks, jazz colours)')
+
 style('hauntology', 'Electronic', 'Hauntology: warped-tape analog synths, slow dusty hip-hop breaks, nostalgic melodies and '
       'string-machine haze, all drifting like an old cassette',
       bpm=(78, 96), scales=['major', 'dorian', 'mixolydian', 'minor'], swing=0.56, human=0.012, kit='soft', form='lofi', chord_size=4,
@@ -6059,7 +6151,7 @@ style('screwed_slab', 'Electronic',
       'and rising in pitch, the 808 switching up from bar to bar, dead stops and tape stops',
       bpm=(60, 72), scales=['minor', 'dorian', 'phrygian'], swing=0.55, human=0.01, kit='808', form='screwed_slab', chord_size=4,
       sc_depth=0.2, reverb=2.0, chopped=0.45, dj_fx=0.9, dj_slow=0.9, switchups=dict(moves=('roll', 'gap', 'stop', 'dive', 'chop', 'leap', 'plain', 'plain'), weights={'plain': 1.5}),
-      hi_bass=dict(at=38, pool=['reese', 'moogbass', 'sinebass'], p={'cut': 700}), transition_moves=['gap', 'tapestop', 'none'], keep_fx=['tapestop'], plain_drops=True,
+      hi_bass=dict(at=38, pool=['midbass', 'reese', 'moogbass'], p={'cut': 700}), transition_moves=['gap', 'tapestop', 'none'], keep_fx=['tapestop'], plain_drops=True,
       progs={'minor': [[0, 0, 5, 5], [0, 6, 5, 6], [0, 3, 6, 5]], 'dorian': [[0, 3, 0, 3]], 'phrygian': [[0, 0, 1, 1], [0, 1, 0, 1]]},
       kit_override=dict(kick=dict(pitch=44, decay=11), snare=dict(decay=9, tone=160, bits=11), chat=dict(bits=9, srate=16000)),
       drums={'kick': ['Xx.....xXx.....x', 'X......xX.......', 'X.x....xX.......'], 'snare': [BACKBEAT, '....X.......X..x'],
@@ -7936,7 +8028,7 @@ style('bass_warp_trap', 'Electronic',
              'snare': [HALF, '........X.....x.', '........X..x....'], 'clap': [HALF],
              'ohat': ['......x.......x.']},
       snare_tracks=['snare', 'clap'], build_family=['pause', 'none'], transition_moves=['gap', 'gap', 'none'],
-      hi_bass=dict(at=38, pool=['reese', 'growl', 'fmbass']), plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.7, oct808=0.07, fifth808=0.05, glide808=0.3,
+      hi_bass=dict(at=38, pool=['midbass', 'midbass', 'reese']), plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.7, oct808=0.07, fifth808=0.05, glide808=0.3,
       chord_rh=['x---------------', 'x-------x-------'], chord_center=60, arp=dict(rate=2, mode='random', oct=5, prob=0.35),
       lead_rh=['x-------........', 'x---....x---....', '........x-------', 'x.x.....x.......'], repetition=0.85,
       gm_hint='Huge distorted 808 (long tail, very low: B0-E1) with slides, pitch dives / rises and wobble (pitch LFO); '
@@ -7995,7 +8087,7 @@ style('bass_warp_fast', 'Electronic',
              'ohat': ['..x...x...x...x.', '................'], 'cowbell808': ['..........x.....', '......x.......x.', '................']},
       snare_tracks=['snare', 'clap'], build_family=['stutter', 'tapestop', 'drumless', 'halftime'],
       transition_moves=['gap', 'tapestop', 'gap', 'none'], keep_fx=['tapestop'],
-      hi_bass=dict(at=38, pool=['reese', 'growl', 'fmbass']), plain_drops=True, bass_mode='808', bass_lo=21, warp_808=0.5, warp_min=3, oct808=0.08, fifth808=0.05, glide808=0.3,
+      hi_bass=dict(at=38, pool=['midbass', 'midbass', 'reese']), plain_drops=True, bass_mode='808', bass_lo=21, warp_808=0.5, warp_min=3, oct808=0.08, fifth808=0.05, glide808=0.3,
       chord_rh=['x---------------', 'x-------x-------'], chord_center=60, arp=dict(rate=2, mode='random', oct=5, prob=0.4),
       lead_rh=['x..x..x.x..x..x.', 'x.x.x...x.x.x...', 'x---x---x-x-x---', 'x..x..x.........'], repetition=0.85,
       gm_hint='Hard bass: a clean mono 808 sub (root notes, octave jumps, glides) + a parallel, heavily driven copy for the '
@@ -8060,7 +8152,7 @@ style('switchup_808', 'Electronic',
              'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.xxxx', 'x.x.x.x.x.xxx.x.', 'x.x.x.x.x.x.x...'],
              'ohat': ['......x.......x.', '................']},
       snare_tracks=['snare', 'clap'], build_family=['pause', 'stutter', 'none'], transition_moves=['gap', 'gap', 'tapestop', 'none'],
-      keep_fx=['tapestop'], hi_bass=dict(at=38, pool=['growl', 'reese', 'fmbass'], p={'cut': 1300}), plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.3, oct808=0.06, fifth808=0.04, glide808=0.35,
+      keep_fx=['tapestop'], hi_bass=dict(at=38, pool=['midbass', 'midbass', 'reese'], p={'cut': 1300}), plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.3, oct808=0.06, fifth808=0.04, glide808=0.35,
       switchups=dict(weights={'grind': 1.4, 'leap': 1.3, 'plain': 0.6}), dj_fx=0.35,
       chord_rh=['x---------------', 'x-------x-------'], chord_center=58, arp=dict(rate=2, mode='random', oct=5, prob=0.3),
       lead_rh=['x-------........', 'x---....x---....', '........x-------', 'x.......x.x.....'], repetition=0.8,
@@ -8118,7 +8210,7 @@ style('switchup_808_dj', 'Electronic',
              'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.xxxx', 'x.x.x.x.x.xxx.x.', 'x.x.x.x.x.x.x...'],
              'ohat': ['......x.......x.', '................']},
       snare_tracks=['snare', 'clap'], build_family=['pause', 'stutter', 'none'], transition_moves=['gap', 'tapestop', 'gap', 'none'],
-      keep_fx=['tapestop'], hi_bass=dict(at=38, pool=['growl', 'reese', 'fmbass'], p={'cut': 1300}), plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.3, oct808=0.06, fifth808=0.04, glide808=0.35,
+      keep_fx=['tapestop'], hi_bass=dict(at=38, pool=['midbass', 'midbass', 'reese'], p={'cut': 1300}), plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.3, oct808=0.06, fifth808=0.04, glide808=0.35,
       switchups=dict(weights={'grind': 1.4, 'leap': 1.3, 'plain': 0.6}), dj_fx=1.0, chopped=0.08,
       chord_rh=['x---------------', 'x-------x-------'], chord_center=58, arp=dict(rate=2, mode='random', oct=5, prob=0.3),
       lead_rh=['x-------........', 'x---....x---....', '........x-------', 'x.......x.x.....'], repetition=0.8,
@@ -8157,8 +8249,9 @@ FORMS['switchup_mallets'] = [('intro', 8, {'arp', 'pad', 'fx'}, {'filter_in': Tr
                             {'drop': True, 'moves': ('grind', 'grind', 'roll', 'wob', 'chop', 'leap')}),
                            ('outro', 8, {'arp', 'pad', 'fx'}, {'fade': True})]
 style('switchup_mallets', 'Electronic',
-      'Switch-up 808 - mallets: the switch-up 808 beat under a storm of fast mallet arpeggios - marimba, vibes and bells '
-      'rippling through the chords in 32nd notes and two-octave cascades, echoing in delay - over the switching, '
+      'Switch-up 808 - mallets: the switch-up 808 beat under fast, restless mallet playing - marimba and vibes in '
+      '32nd-note rolls on one note, trills, hops between chord tones, quick runs and octave bounces, each beat its own '
+      'figure in motifs that change every few bars, with rests between - over the switching, '
       'leaping 808, a dark phrygian rub and the DJ edits (slowdowns into the drops, pitched hats); the mallets alone '
       'with no sub to open and close',
       bpm=(155, 168), scales=['phrygian', 'minor', 'harmonic_minor'], swing=0.5, human=0.0, form='switchup_mallets', kit='808',
@@ -8174,9 +8267,9 @@ style('switchup_mallets', 'Electronic',
              'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.xxxx', 'x.x.x.x.x.xxx.x.', 'x.x.x.x.x.x.x...'],
              'ohat': ['......x.......x.', '................']},
       snare_tracks=['snare', 'clap'], build_family=['pause', 'stutter', 'none'], transition_moves=['gap', 'tapestop', 'gap', 'none'],
-      keep_fx=['tapestop'], hi_bass=dict(at=38, pool=['growl', 'reese', 'fmbass'], p={'cut': 1300}), plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.3, oct808=0.06, fifth808=0.04, glide808=0.35,
+      keep_fx=['tapestop'], hi_bass=dict(at=38, pool=['midbass', 'midbass', 'reese'], p={'cut': 1300}), plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.3, oct808=0.06, fifth808=0.04, glide808=0.35,
       switchups=dict(weights={'grind': 1.4, 'leap': 1.3, 'plain': 0.6}), dj_fx=0.6, chopped=0.05,
-      chord_rh=['x---------------', 'x-------x-------'], chord_center=58, arp=dict(rate=0.5, mode='cascade', oct=5, beat_lock=True), delay_beats=0.5,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=58, arp=dict(rate=0.5, mode='mallet', oct=5, beat_lock=True, rest=0.18), delay_beats=0.5,
       lead_rh=['x-------........', 'x---....x---....', '........x-------', 'x.......x.x.....'], repetition=0.8,
       gm_hint='Very low mono 808 (B0-E1) with slides, octave leaps, rolls, dives, wobble and folded / distorted bars, '
               'switching up every bar; sparse, crushed trap kit with hat rolls and dead stops; dark semitone-rub pad, '
@@ -8221,7 +8314,7 @@ style('switchup_808_hard', 'Electronic',
              'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.xxxx', 'x.x.x.x.x.xxx.x.', 'x.x.x.x.x.x.x...'],
              'ohat': ['......x.......x.', '................']},
       snare_tracks=['snare', 'clap'], build_family=['pause', 'stutter', 'none'], transition_moves=['gap', 'tapestop', 'gap', 'none'],
-      keep_fx=['tapestop'], hi_bass=dict(at=38, pool=['growl', 'reese', 'fmbass'], p={'cut': 1300}), plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.3, oct808=0.06, fifth808=0.04, glide808=0.35,
+      keep_fx=['tapestop'], hi_bass=dict(at=38, pool=['midbass', 'midbass', 'reese'], p={'cut': 1300}), plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.3, oct808=0.06, fifth808=0.04, glide808=0.35,
       switchups=dict(weights={'grind': 1.6, 'roll': 1.3, 'chop': 1.3, 'plain': 0.5}), dj_fx=0.7, chopped=0.06,
       chord_rh=['x---------------', 'x-------x-------'], chord_center=58, arp=dict(rate=2, mode='random', oct=5, prob=0.3),
       lead_rh=['x-------........', 'x---....x---....', '........x-------', 'x.......x.x.....'], repetition=0.8,

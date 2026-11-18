@@ -729,7 +729,7 @@ def test_bass_warp_trap():
         b8 = [e for e in x['events'] if e.track == 'bass']                 # go to a mid-bass (reese / growl / FM)
         hb = [e for e in x['events'] if e.track == 'bass_hi']
         assert b8 and hb and max(e.midi for e in b8) < 38 and 38 <= min(e.midi for e in hb) and max(e.midi for e in hb) <= 52
-        assert next(t for t in x['st']['tracks'] if t['name'] == 'bass_hi')['inst'] in ('reese', 'growl', 'fmbass')
+        assert next(t for t in x['st']['tracks'] if t['name'] == 'bass_hi')['inst'] in ('midbass', 'reese')
         assert not any(e.track == 'bass_grit' and e.midi >= 38 for e in x['events'])
     print('ok  bass-warp trap (+ fast): warped 808s, slides, 808-up / growl switch-ups, parallel grit, pitched hat rolls')
 
@@ -766,10 +766,17 @@ def test_switchup_808():
     a = sorted(e.beat for e in m['events'] if e.track == 'arp')
     step = float(np.median([d for d in np.diff(a) if d > 0])) * 60 / m['bpm']
     assert step < 0.07 and any(e.track == 'arp_hi' for e in m['events'])     # 32nd-note mallet arps, doubled up high
-    arp = [e for e in m['events'] if e.track == 'arp']
-    on = [e for e in arp if abs(e.beat - round(e.beat)) < 1e-6]
-    assert on and all(e.vel > 0.9 for e in on) and all(e.vel < 0.9 for e in arp if abs(e.beat - round(e.beat)) > 1e-6)
-    assert m['st']['delay_beats'] in (0.5, 1.0)                       # locked to the beat: accents and echoes on it
+    by = {}
+    for e in m['events']:
+        if e.track == 'arp':
+            by.setdefault(int(e.beat), []).append(e)
+    rolls = sum(len(set(x.midi for x in v)) == 1 and len(v) >= 6 for v in by.values())
+    trills = sum(len(set(x.midi for x in v)) == 2 for v in by.values())
+    beats = range(min(by), max(by))
+    rests = sum(1 for k in beats if len(by.get(k, [])) <= 1)
+    assert rolls > 10 and trills > 5 and rests > 5, (rolls, trills, rests)   # mallet figures, not one long arpeggio
+    assert all(min(x.beat for x in v) == k for k, v in by.items())          # every figure starts on its beat
+    assert m['st']['delay_beats'] in (0.5, 1.0)
     h = compose(Options(style='switchup_808_hard', seed=3))
     from sgcore.styles import STYLES as _S
     k = _S['switchup_808_hard']['kit_override']['kick']
@@ -906,6 +913,30 @@ def test_dj_effects():
         return sp[f > 5000].sum() / sp.sum()
     assert fizz(58) < 1e-3, fizz(58)
     print('ok  DJ edits: pitched hats, tuned leads, slowdowns before drops; no fizz on driven high 808 notes')
+
+
+def test_idm_drill():
+    """v1.56.5: IDM jungle theme + drill & bass (from the user's references and notes): an intro on the synths alone,
+    breaks resequenced so no two drum bars repeat (flams, stutters, reversed / re-pitched hits, ghost fills), long calm
+    melody notes over them, a melodic bass guitar, a key change in the theme genre."""
+    from sgcore.compose import Options, compose
+    for g in ('idm_jungle_theme', 'drill_space'):
+        s = compose(Options(style=g, seed=1))
+        first = s['sections'][0]
+        assert not {'kick', 'snare', 'bass'} & set(first['layers'])          # the moody synth intro
+        sig = {}
+        for e in s['events']:
+            if e.track in ('kick', 'snare', 'chat'):
+                sig.setdefault(int(e.beat // 4), []).append((e.track, round(e.beat % 4, 3), str(e.mod)))
+        assert len({tuple(sorted(v)) for v in sig.values()}) >= 0.95 * len(sig)   # the break never loops
+        mods = [str(e.mod) for e in s['events'] if e.track in ('kick', 'snare') and e.mod]
+        assert any(m == 'rev' for m in mods) and any(m.startswith('pt:') for m in mods) and mods.count('cut') > 50
+        lead = [e.dur for e in s['events'] if e.track == 'lead']
+        assert lead and sorted(lead)[len(lead) // 2] >= 1.0                  # calm, long melody notes over the chaos
+        assert next(t for t in s['st']['tracks'] if t['name'] == 'bass')['inst'] in ('sf:fingerbass', 'ebass', 'fmbass', 'moogbass', 'sinebass')
+    t = compose(Options(style='idm_jungle_theme', seed=1))
+    assert any(x.get('key_change') for x in t['sections'])
+    print('ok  IDM jungle theme / drill & bass: synth intro, resequenced breaks, calm melody, key change')
 
 
 def test_christmas_orchestral():
@@ -1101,6 +1132,7 @@ def main():
     test_arabic_maqam()
     test_voice_sample_chops()
     test_dj_effects()
+    test_idm_drill()
     test_v144_drums_layers_new_genres()
     test_bass_warp_trap()
     test_christmas_orchestral()

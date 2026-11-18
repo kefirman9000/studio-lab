@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.56.5
+- **New genre: IDM jungle - moody theme**, from your "Theme from Ernest Borgnine" reference: half a minute of warm, detuned pads and a melancholy synth theme alone, then frantic chopped jungle breaks crash in with no bass, then a nimble, melodic bass guitar; dark minor chords, a breakdown back to the synths, and a key change up for the last stretch (~160 BPM).
+- **New genre: Drill & bass - spacey**, from "Hasty Boom Alert": hyper-detailed breaks at 172-190 under bright, spacious jazz-fusion chords (Rhodes, vibes), a soft lead drifting in long delays, a very wide, airy mix and a busy bass guitar; it opens on the synths and drops the drums for a floating breakdown.
+- Both follow your notes on the style: **the break is resequenced hit by hit, so no two drum bars are the same** - flams, micro-stutters (32nd / 48th bursts), reversed and re-pitched single hits, kicks and snares swapping places, ghost hits filling every gap, hat ratchets, and edits in the middle of phrases too - while the **melody stays calm**: simple, long notes that sit and breathe over the chaos.
+- **The growl bass is gone from the switch-up / bass-warp genres.** The high bass notes are now played by a new **Mid-bass** sound: a round, saturated, warm tone (the way a distorted 808 sounds up high), low-passed so it's thick, not thin, squeaky or snarling. The 808's own "growl" move (the long growl section in Bass-warp fast) is rebuilt too: a warm, saturated 808 with a slow low-pass "wah" instead of harsh square grit.
+- **Switch-up 808 - mallets plays like the reference now, not one long arpeggio.** Each beat is its own figure, the way your "Mallets" track does it: a roll (one note struck over and over in 32nds), a trill with the note next door, a hop between two chord tones, a quick run up into a note, an octave bounce - or a rest. Four beats make a motif that repeats for two bars with a small change, a new motif comes every four bars, the note it sits on walks between chord tones like a tune, and the quieter sections leave more gaps.
+
+
 ## 1.56.4
 - **Drop a voice clip straight on the 🎤 Voice sample box** to load it (it lights up as you drag over it). It's named after the file and picked straight away. Dropping anywhere else still opens a project or uses the song as a reference.
 
