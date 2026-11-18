@@ -520,7 +520,8 @@ function renderSelected(){
     const dice=pool.length>1?`<button class="ico" data-dice="${r}" title="Try another sound that suits this genre">🎲</button>`:'';
     w.innerHTML=`<label>${label} ${dice} ${mute} ${jParts?'':volHtml(r)} ${jParts?'':octHtml(r,(state.octaves||{})[r])}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
       (fxs.length&&!jParts?`<select class="fxsel" title="Run this part through one of your effect plugins"><option value="">no effect plugin</option>${fxs.map(f=>`<option ${state.part_fx[r]===f?'selected':''}>${esc(f)}</option>`).join('')}</select>`:'');
-    w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else { delete state.instruments[r]; if(state.locked) delete state.locked[r]; } };
+    // the part's sound menu (not the octave menu that sits before it in the row)
+    w.querySelector(':scope > select:not(.fxsel):not(.octsel)').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else { delete state.instruments[r]; if(state.locked) delete state.locked[r]; } };
     if(w.querySelector('[data-dice]')) w.querySelector('[data-dice]').onclick=e=>{ e.preventDefault(); const cur=state.instruments[r]||pool[0];
       const opts=pool.filter(x=>x!==cur); const pick=opts[Math.floor(Math.random()*opts.length)];
       if(state.locked) delete state.locked[r]; state.instruments[r]=pick; renderSelected(); };
@@ -537,7 +538,7 @@ function renderSelected(){
     const opts=Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${state.instruments[x.id]===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('');
     const dn=((META.roles[x.layer]||[]).find(i=>i.id===x.inst)||{name:x.inst}).name;
     w.innerHTML=`<label>${esc(x.name)}</label><select><option value="">Style default (${esc(dn)})</option><option value="off" ${state.instruments[x.id]==='off'?'selected':''}>🔇 Off (silent)</option>${opts}</select>`;
-    w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments[x.id]=e.target.value; else delete state.instruments[x.id]; };
+    w.querySelector(':scope > select').onchange=e=>{ if(e.target.value) state.instruments[x.id]=e.target.value; else delete state.instruments[x.id]; };
     $('#soundBody').appendChild(w);
   });
   // every other sound the last song of this genre used (section switches, layers, build-up drums ...)

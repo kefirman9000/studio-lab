@@ -34,7 +34,17 @@ def main():
     print('ok  technical summary, synth parameter list')
     test_journey()
     test_mp3_without_ffmpeg()
+    test_ui_sound_menus()
     print('all good')
+
+
+def test_ui_sound_menus():
+    """A part's sound menu must be the one that saves your pick (1.51.5 moved the octave menu in front of it, and the
+    pick silently went to the octave menu - songs kept reverting to the genre's sounds)."""
+    ui = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'sgcore', 'ui.html')).read()
+    assert "querySelector(':scope > select:not(.fxsel):not(.octsel)').onchange=e=>{ if(e.target.value) state.instruments[r]" in ui
+    assert "w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments" not in ui
+    print('ok  part sound menus save your pick')
 
 
 def test_mp3_without_ffmpeg():

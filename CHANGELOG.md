@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.54.1
+- **Fixed: sounds you pick in Parts weren't being kept** - each new song went back to the genre's own sounds. Since the layout tidy-up in 1.51.5 the octave menu sat in front of the sound menu, and your pick was saved to the wrong menu (so it was never sent with the song). Picks now stick through Preview, Full song, 4 Variations, More like this and mood changes.
+
 ## 1.54.0
 - **✨ Start here.** A friendly first screen (it opens the first time, and from the ✨ button any time): pick a kind of music - lo-fi, house, trap, rock, film score, bhajan, spooky surf, outlaw country ... or Surprise me - optionally a mood, and press **Make my song**. All the controls are still one click away.
 - **Find genres fast.** The genre search now also matches instruments, scales and sounds (try *sitar*, *surf*, *organ*, *808*), ☆ stars favourites, and your ★ Favourites and 🕘 Recently used genres sit at the top of the list in every tab.
