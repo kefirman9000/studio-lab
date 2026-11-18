@@ -387,6 +387,7 @@ def meta():
         categories=by_cat, group_order={c: order(c) for c in CATEGORIES}, moods=list(MOODS), scales=list(SCALES), keys=NOTE_NAMES,
         roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Built-in (suits this part)') for i in lst] + real_insts(r) + vst_insts(r) + user_insts()
                + other_insts(r, lst) for r, lst in ROLE_CHOICES.items()},
+        vox_samples=__import__('sgcore.usersounds', fromlist=['listing']).listing()['vocal'],
         effects=vst_effects(), voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
         drum_patterns=__import__('sgcore.drumkits', fromlist=['pattern_menu']).pattern_menu(),
         perc_sets=__import__('sgcore.drummer', fromlist=['perc_menu']).perc_menu(), beat_feels={k: __import__('sgcore.drummer', fromlist=['beat_feel']).beat_feel(k) for k in STYLES}, drummer_menu=__import__('sgcore.drummer', fromlist=['DRUMMER_MENU']).DRUMMER_MENU,
@@ -690,7 +691,8 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json(res)
                 if p == '/api/upload/sound':
                     from . import usersounds
-                    name = usersounds.save(q.get('kind', 'drums'), q.get('name', 'kick'), pcm, int(q.get('root', 60)))
+                    name = usersounds.save(q.get('kind', 'drums'), q.get('name', 'kick'), pcm, int(q.get('root', 60)),
+                                           q.get('vtype', 'phrase'))
                     return self._json(dict(usersounds.listing(), saved=name, slots=usersounds.DRUM_SLOTS))
             except ValueError as e:
                 return self._json({'error': str(e)}, 400)

@@ -119,6 +119,13 @@ class Renderer:
 
     def _note(self, tcfg, ev, p):
         dur = round(self._dsec(ev.beat, ev.dur), 3)
+        if tcfg['inst'] == 'voxsample':                  # your voice sample, chopped / stuttered / screwed
+            from .usersounds import vocal_slice
+            key = ('vx', ev.midi, dur, ev.mod)
+            if key not in self.cache:
+                y = vocal_slice(tcfg['p'].get('sample', ''), ev.mod, (ev.midi or 60) - 60, dur).astype(np.float32)
+                self.cache[key] = np.vstack([y, y])
+            return self.cache[key]
         if tcfg['inst'].startswith('real:'):
             sig = self._real(tcfg, ev, dur)
             if sig is not None:
@@ -513,6 +520,7 @@ class Renderer:
         lpsweeps = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'lpsweep']
         hpsweeps = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'hpsweep']
         tapestops = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'tapestop']
+        djslows = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'djslow']
         # ---- energy contour + fades
         env = np.ones(L)
         for sec in song['sections']:
@@ -594,6 +602,9 @@ class Renderer:
             for s0, s1 in tapestops:
                 if tcfg['layer'] != 'fx':
                     tape_stop(buf, s0, s1)
+            for s0, s1 in djslows:
+                if tcfg['layer'] != 'fx':
+                    dj_slow(buf, s0, s1)
             for s0, s1 in gaps:
                 if tcfg['layer'] != 'fx':
                     buf[:, s0:s1] = 0
@@ -907,6 +918,8 @@ def bend_curve(spec, n, note_sec):
             depth = float(orn[1])
             ramp = np.clip((t - T * 0.2) / max(0.1, T * 0.3), 0, 1)
             out += depth * np.sin(2 * np.pi * 1.7 * t) * ramp
+        elif kind == 'shift':                        # a fixed microtone: maqam quarter tones (e.g. -0.5 = half-flat)
+            out += float(orn[1])
         elif kind == 'fall':                         # the end of the note pulled down / up into the next one
             semis = float(orn[1])
             t0 = T * 0.75
@@ -948,7 +961,8 @@ def clean_hit(x):
 
 
 def drum_mod(sig, mod):
-    """'rev' a reversed hit (it swells into the next beat), 'cut' gated short, 'pt:N' re-pitched by N semitones."""
+    """'rev' a reversed hit (it swells into the next beat), 'cut' gated short, 'pt:N' re-pitched by N semitones,
+    'sw:A:B' swept from A to B semitones during the hit (DJ-style pitch dives / rises on hats)."""
     if mod == 'rev':
         k = min(len(sig), int(0.35 * SR)) if sig.ndim == 1 else min(sig.shape[-1], int(0.35 * SR))
         out = sig[..., :k][..., ::-1].copy()
@@ -959,6 +973,18 @@ def drum_mod(sig, mod):
         out = sig[..., :k].copy()
         out[..., -int(0.01 * SR):] *= np.linspace(1, 0, int(0.01 * SR), dtype=np.float32)
         return out
+    if isinstance(mod, str) and mod.startswith('sw:'):          # a pitch sweep inside the hit: 'sw:0:-9' dives 9 semitones
+        try:
+            a, b = (float(v) for v in mod[3:].split(':'))
+        except ValueError:
+            return sig
+        n = sig.shape[-1]
+        semis = np.linspace(a, b, n)
+        pos = np.concatenate([[0.0], np.cumsum(2 ** (semis[:-1] / 12.0))])
+        pos = pos[pos < n - 1]
+        i0 = pos.astype(np.int64)
+        fr = (pos - i0).astype(np.float32)
+        return (sig[..., i0] * (1 - fr) + sig[..., i0 + 1] * fr).astype(np.float32)
     if isinstance(mod, str) and mod.startswith('pt:'):
         try:
             semis = float(mod[3:])
@@ -1003,6 +1029,22 @@ def tape_stop(buf, s0, s1):
     fr = (pos - i0).astype(np.float32)
     seg = buf[:, i0] * (1 - fr) + buf[:, i0 + 1] * fr
     seg *= np.linspace(1, 0.2, n, dtype=np.float32) ** 0.5
+    buf[:, s0:s0 + n] = seg
+
+
+def dj_slow(buf, s0, s1, floor=0.32):
+    """A fake DJ slowdown before the drop: a hand dragging on the platter - the music keeps playing but slows and
+    sinks in pitch (to about a third of the speed), then the drop slams back in at full speed."""
+    n = min(s1, buf.shape[1]) - s0
+    if n <= 4:
+        return
+    u = np.linspace(0, 1, n)
+    speed = 1 - (1 - floor) * u ** 0.8
+    pos = np.clip(s0 + np.cumsum(speed), 0, buf.shape[1] - 2)
+    i0 = pos.astype(np.int64)
+    fr = (pos - i0).astype(np.float32)
+    seg = buf[:, i0] * (1 - fr) + buf[:, i0 + 1] * fr
+    seg *= np.float32(1.0) - np.float32(0.35) * (u ** 1.5).astype(np.float32)
     buf[:, s0:s0 + n] = seg
 
 

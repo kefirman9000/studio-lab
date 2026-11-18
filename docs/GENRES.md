@@ -1,10 +1,10 @@
-# Studio Lab genres (291)
+# Studio Lab genres (304)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (142)
+## Electronic (150)
 
-### House & Disco (26)
+### House & Disco (28)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -30,10 +30,12 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Melodic deep house (sunny, piano & strings) | `sunny_melodic_house` | 121-124 | Sunny melodic deep house: warm 122-124 four-on-the-floor with shakers, congas and offbeat hats, a melodic rolling bass, bright piano chords and plucks, lush strings and a singing lead, long filtered breakdowns that open into big emotional returns |
 | Nu-disco / disco lounge | `nu_disco` | 110-122 | Nu-disco / disco lounge: a warm four-on-the-floor around 112-120 with open hats and claps, a bouncy octave / syncopated disco bassline, filtered funky guitar and Rhodes chords, lush strings and a sweet synth or sax hook - groovy, sunny and a little hazy |
 | Organic Melodic House | `organic_house` | 120-124 | Organic melodic deep house: warm four-on-the-floor with shakers and congas, piano, flute and soft strings, nature-like atmosphere - spacious, hypnotic and simple, no big drops |
+| Outsider house (murky, lo-fi) | `outsider_house` | 120-128 | Outsider house: murky, warped, lo-fi house at 120-128 - a kick that stumbles instead of marching, hissy 8th-note hats, a muffled bass loop and smeared, detuned chords, all heard through worn tape and a low-passed haze - hypnotic, foggy and a bit broken |
 | Progressive House | `progressive_house` | 122-130 | Progressive house: emotive plucks, wide supersaws, long builds and big drops |
 | Tech House | `tech_house` | 124-128 | Tech house: rolling, rubbery filtered bassline, 909 groove with congas, rims and shakers, percussive organ and synth stabs - minimal melody, all groove |
 | Tokyo deep house | `tokyo_deep_house` | 120-125 | Tokyo deep house / city house: a clean four-on-the-floor around 122 with brushed shakers and offbeat hats, a melodic, walking deep-house bass, jazzy Rhodes and piano chords with 9ths and 11ths, airy strings and a breathy melody - elegant, nocturnal and urban |
 | Tropical house | `tropical_house` | 100-115 | Tropical house: a relaxed four-on-the-floor around 105, soft snaps and shakers, warm piano chords, marimba and steel-pan plucks, a pan-flute or sax hook - sunny, laid-back and summery |
+| UK bounce house (bassline, vocal chops) | `uk_bounce_house` | 122-126 | UK bounce house: a four-on-the-floor groove at 122-126 with busy, shuffling percussion and crisp claps, a rubbery, bouncing bassline doing most of the work, chopped vocal hooks answering it and short organ / piano stabs - radio-friendly, warm and made for dancing |
 
 ### Techno & Trance (13)
 
@@ -53,19 +55,22 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | UK bass / 130 | `uk_bass_130` | 128-136 | UK bass / 130 (techno-dubstep crossover): a rolling, broken techno kick pattern with swung metallic hats and rimshots around 130, a heavy mono sub pinned to the root, dark stabs and sparse dubby chords, long DJ-friendly sections - hypnotic, physical and minimal |
 | Uplifting Trance | `uplifting_trance` | 134-140 | Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw leads and plucky arps, a long piano / pad breakdown that explodes into the drop |
 
-### Dubstep, Garage & Bass (17)
+### Dubstep, Garage & Bass (20)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Brostep | `brostep` | 140-150 | Brostep: festival dubstep - snarling growls, wobbles and FM stabs trading bars in the drop over a clean sub, aggressive half-time drums, pitch dives, risers and hard stops |
 | Chillstep | `chillstep` | 138-144 | Chillstep (the ambient side of dubstep): slow half-time dubstep at 140 with lush reverb pads, piano and gentle plucks drowned in delay, a soft rolling wobble and a warm sub - melancholic and floating |
+| Chipmunk 2-step (pitched vocal chops) | `chipmunk_2step` | 140-146 | Chipmunk 2-step: hyper, playful UK bass at 140-146 - a skippy 2-step kick, snares on 2 and 4, shuffled hats - with pitched-up, chipmunk vocal chops as the hook, bright rave stabs and trancey chords, a bouncing sub, and a very wide, glossy mix |
 | Deep Dubstep (soundsystem) | `deep_dubstep` | 138-142 | Deep dubstep (soundsystem): half-time 140, kick on 1 and snare on 3, a mono sub pinned to one note for minutes (the root, now and then the flat 2nd), a growling mid-bass that wobbles in strict 8ths and 16ths or swells slowly, skippy rims and shakers thrown into dub echoes, one dark motif, a long drums-only intro - and no snare-roll build-ups: the drop just lands, or everything stops for a beat first |
 | Deep Dubstep - sparse & eerie | `deep_dubstep_minimal` | 138-142 | Deep / minimal dubstep: half-time 140 with the kick on 1 and the snare on 3, sparse shuffled 2-step percussion thrown into dub delays, a heavy clean sub carrying the track, one eerie motif, dub chord stabs and lots of dark negative space - soundsystem pressure, not festival brostep |
 | Deep dubstep - rollers (sub-weight) | `deep_dubstep_rollers` | 138-142 | Deep dubstep - rollers: 140 half-time and steppers, a huge rolling sub that moves under everything, sparse skippy percussion thrown into dub echoes, a dark motif or a squelchy acid line, mono and heavy - built for a soundsystem |
+| Deep dubstep - rolling percussion (140) | `deep_dubstep_rolling` | 138-142 | Rolling deep dubstep: modern soundsystem half-time at 140 - kick on 1, snare on 3 - with rolling, shuffling 16th percussion (shakers, rims, tight hats) that never stops moving, a heavy clean sub with a dark, filtered mid-bass growling on top of it, minor-key stabs and a lonely motif in a wide, dark space |
 | Dubstep (classic UK) | `dubstep` | 138-142 | Dark / UK dubstep: half-time at 140, deep clean sub with a slow wobbling mid-bass, sparse syncopated drums, lots of space, dark atmospheres |
 | Early dubstep (stepper era) | `early_dubstep` | 138-142 | Early dubstep (2005-07 "stepper" era): half-time 140 with a kick on 1, snare on 3 and busy, swung 2-step hats and shakers, a rolling sub with a mid-range bass that steps between a few notes, eerie synth stabs and sirens - darker than garage, cleaner than brostep, long DJ sections and a 16-bar breakdown |
 | Future Bass | `future_bass` | 140-160 | Future bass: lush pitch-chopped supersaw chords, vocal chops, half-time trap drums |
 | Future garage | `future_garage` | 128-136 | Future garage / atmospheric 2-step: a swung, skippy garage beat around 130 with sparse ghostly kicks, rimshots and crackle, a warm round sub on the root, washed-out pads and pitched, breathy vocal-chop textures, soft Rhodes and piano under heavy reverb - late-night, melancholic and hazy |
+| Glitch future bass (chopped vocals, 154) | `glitch_future_bass` | 150-160 | Glitch future bass: emotional, bright future bass at 150-160 in half-time - huge detuned supersaw chords pumping and swelling with the sidechain, a chopped, glitched vocal hook stuttering through the drop, sparkling plucks, rolls and stutter edits, and a soft, pretty breakdown |
 | Grime (140) | `grime` | 138-144 | Grime (140): cold, sparse, aggressive UK beats - a square-wave "eskimo" bass and icy synth riff, staccato string stabs, a hard snare with skippy 2-step kicks, gunshot-like hits and long gaps - made for MCs, built in 8-bar blocks |
 | Melodic Dubstep | `melodic_dubstep` | 140-150 | Melodic dubstep: emotional chords and a big supersaw theme over half-time drums - the drop carries the melody, with piano, strings and vocal chops and a heavy but musical bass |
 | Midtempo bass | `midtempo_bass` | 98-110 | Midtempo bass: 100-110 BPM, dark and heavy - a punchy kick and huge snare on 2 and 4, growling, gritty bass riffs, cyberpunk synth stabs and a cold lead - menacing and slow-motion |
@@ -97,7 +102,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Neurofunk (lighter) | `neurofunk_lite` | 172-176 | Neurofunk, lighter and more melodic: the tight 174 two-step and a dark reese, but with clearer chords, a pad underneath and a lead you can hum - less extreme sound design than full neurofunk |
 | UK hardcore / happy hardcore | `uk_hardcore` | 168-178 | UK hardcore / happy hardcore: 170+ BPM four-on-the-floor, bouncing off-beat octave bass, rolling piano chords, euphoric supersaw leads and big builds into massive major-key drops |
 
-### Hip-Hop, Trap & Phonk (21)
+### Hip-Hop, Trap & Phonk (24)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -106,6 +111,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Bass-warp trap - fast (160) | `bass_warp_fast` | 155-165 | Bass-warp trap, fast: the same monstrous warping 808 at full speed (155-170 BPM, not half-time) - dotted 3-3-2 kicks with the 808 bouncing on them in short, sliding, diving and wobbling notes, a hard snare and clap backbeat with pickups, rolling 8th and 16th hats, a sinister bell or synth riff; switch-ups every few bars (drums out, the 808 leaping up with the sub gone, kick and 808 alone), a long stretch of distorted, growling 808 before the clean sub slams back, and an eerie no-sub break |
 | Beat-switch trap | `switch_trap` | 140-156 | Beat-switch trap (late 2010s): one track, several beats - dark psychedelic synths and a huge distorted 808, with the beat cutting out, a bar of dead silence, and a completely new loop and drum pattern taking over two or three times; hard, theatrical and unpredictable |
 | Brazilian Phonk | `brazilian_phonk` | 130-150 | Brazilian phonk: baile-funk bounce under phonk grit - syncopated tamborzao drums, a distorted pitched cowbell riff, heavy distorted sub, chopped vocal shouts; gritty and danceable |
+| Chopped & screwed (Houston slab) | `screwed_slab` | 60-72 | Chopped & screwed (Houston slab): a slowed-down, syrupy hip-hop beat at 60-72 BPM - deep 808 and bass, a lazy kick and dragging snare, a slow organ / string / Rhodes loop, everything dark and pitched-down, and the DJ's "chops": a beat or a phrase caught twice and repeated, like the record being pulled back |
 | Cloud Rap | `cloud_rap` | 60-76 | Cloud rap: dreamy, washed-out and ethereal - huge reverb pads and choir-like haze, a soft melody drowned in echo, slow half-time drums and a deep, gentle 808 |
 | Drift Phonk | `phonk` | 145-165 | Drift phonk: a heavily distorted pitched 808 cowbell riff on loop, clipped growling 808s, rolling hats, dark minor / phrygian mood, chopped vocals and tape grit - made at 3 a.m., played too loud in a car |
 | Hard trap (brass & strings) | `hard_trap` | 136-156 | Hard trap (brass & strings, early 2010s - late 2010s): a menacing horn / string / choir loop in a minor key, huge distorted 808s pinned to the root, machine-gun hi-hat rolls, claps on the half-time backbeat, and the beat cutting out for 4 bars at a time so the 808 can slam back in |
@@ -117,6 +123,8 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Orchestral Hip Hop | `orchestral_hiphop` | 132-145 | Orchestral hip hop / drill: dramatic string stabs, choir, pizzicato, sliding 808s, rolling hats |
 | Plugg / Pluggnb | `plugg` | 140-160 | Plugg / pluggnb: dreamy major-key synth chords and soft bells, simple sliding 808s, sparse bouncy trap drums - floaty and sweet |
 | Rage | `rage` | 150-165 | Rage: huge detuned supersaw synth leads and arps, distorted booming 808s, hard trap drums at 150+ - loud, bright and euphoric |
+| Shadow 808 (no two bars alike) | `shadow_808` | 155-168 | Shadow 808: a pitch-dark, almost mono trap beat at 155-168 BPM where the 808 never plays the same bar twice - grinding root and flat-2nd 8ths, leaping one or two octaves up and sliding back down, 16th rolls, dives and wobbles, bars of folded, buzzing 808 with the sub gone, chopped stabs, sudden gaps and dead stops where the drums cut out - over semitone-rub phrygian chords, a faint eerie melody and a lot of empty space |
+| Shadow 808 - DJ edits (slowdowns, pitch warps) | `shadow_808_dj` | 155-168 | Shadow 808 - DJ edits: the shadow 808 beat (an 808 that never plays the same bar twice, phrygian rubs, dead stops) cut up like a DJ is playing with it - fake slowdowns before the drops (the record dragged by hand, sinking in pitch, then the drop slamming in), hats climbing, diving and swooping in pitch, rolls that dive into the next bar, a lead that gets down-tuned, up-tuned and played a tone flat, chops and tape stops |
 | Trap | `trap` | 136-150 | Modern trap: half-time snares, rolling hi-hats, gliding 808s, dark bells |
 | UK Drill | `uk_drill` | 140-145 | UK/NY drill: sliding 808s, triplet hats, offbeat snares, dark piano & strings |
 | UK road rap | `uk_road_rap` | 146-156 | UK road rap: a dark, half-time London rap beat around 150 BPM - a huge mono 808 sub sliding between the root, its leading tone and the fifth, steady ticking 8th hats with the odd roll, a hard snare on the half-time backbeat, sparse kicks, and a moody harmonic-minor piano line over low strings and choir - roomy for the bars |
@@ -201,7 +209,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hauntology II (sunlit tape) | `hauntology_sunlit` | 82-96 | Hauntology II - sunlit tape: warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
 | Hauntology III (dark film haze) | `hauntology_dark` | 64-80 | Hauntology III - dark film haze: slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
 
-## Classic (120)
+## Classic (124)
 
 ### Rock & Metal (25)
 
@@ -365,6 +373,15 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Ghazal (sitar, harmonium, tabla) | `ghazal` | 62-80 | Ghazal: slow, romantic and poetic - each couplet sung tenderly over a gentle tabla, a harmonium following the voice, a sitar opening and the santoor glittering between the lines, then the refrain returning - longing, intimate, late-night |
 | Qawwali (Sufi, harmonium & claps) | `qawwali` | 88-100 | Qawwali (Sufi devotional): the lead singer's line answered by the chorus of the party, over a pumping harmonium, tabla and dholak and the group's hand claps - a slow, free opening, then the same lines repeated and repeated, faster and faster, towards ecstasy |
 
+### Arabic (4)
+
+| Genre | id | BPM | Current description |
+|---|---|---|---|
+| Arabic pop (strings, darbuka) | `arab_pop` | 92-108 | Arabic pop: a modern Egyptian / Lebanese pop song - the maqsum on darbuka over a pop kick and claps, a string section playing the hooks in unison, oud and qanun fills between the lines, a warm synth bass and a sung, ornamented melody in Nahawand, Hijaz or Kurd |
+| Raqs sharqi - belly dance (darbuka) | `raqs_sharqi` | 112-132 | Raqs sharqi (belly dance): a fast, driving darbuka in baladi, maqsum or saidi with the riq shimmering on every 8th, the ensemble in unison - violin or accordion on the melody, qanun runs, a deep bass on the doums - a darbuka solo in the middle for the dancer, and a fast, stamping finale |
+| Sufi dhikr (ney, bendir, speeding up) | `sufi_dhikr` | 76-92 | Sufi dhikr (remembrance): opens on the ney alone, breathy and searching, over a drone; then the big bendir frame drums take up a slow, swaying pulse and the circle chants a short line over and over, call and response, getting faster and more intense until it is a whirling trance (the hadra) - then the ney alone again |
+| Takht - Arabic maqam ensemble (oud, qanun) | `takht_maqam` | 84-104 | Takht (Arabic classical ensemble): opens with a taqsim - the oud improvising alone over a soft drone, unfolding the maqam (Bayati, Rast, Saba with their quarter tones, or Hijaz / Nahawand) - then the darbuka and riq start the maqsum and the ensemble plays the melody together, oud, qanun and violin each ornamenting it their own way, with a qanun taqsim in the middle and a ringing qafla (cadence) to end |
+
 ### Psych & World Rock (4)
 
 | Genre | id | BPM | Current description |
@@ -388,7 +405,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Kirtan - drums & sitar (speeding up) | `drum_kirtan` | 90-100 | Kirtan - drums & sitar: the dholak, bongos and kartal start it off alone, then the sitar calls each line and the group answers, over a harmonium and drone - speeding up chant by chant, with drum breaks between, until it is a wild, ecstatic drum-driven chant |
 | Sitar & tabla jugalbandi | `jugalbandi` | 84-104 | Sitar & tabla jugalbandi (devotional duet): the sitar opens alone over the drone with a slow alap; the tabla joins for the composition (gat); then they trade - the tabla answers each sitar phrase with a solo of its own - before playing together, faster and faster, into a blazing jhala |
 
-## Orchestral (29)
+## Orchestral (30)
 
 ### Film & Trailer (7)
 
@@ -418,11 +435,12 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 |---|---|---|---|
 | Solo Piano Miniature | `piano_miniature` | 74-84 | Solo piano miniature: a short, tender piece for one softly played, felt-muffled upright, close-miked in wide stereo - an unbroken rocking 8th-note left hand swaying between two chords, a plain, singing right-hand tune on top, a middle part that lifts to new chords and a gentle swell before it simply stops; no other instruments |
 
-### Ambient & Experimental (1)
+### Ambient & Experimental (2)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Experimental field ambient | `field_ambient` | 96-108 | Experimental field-recording ambient (Japanese style): no steady beat - knocks of wood, bells, plucked koto, breathy flute, low drones and the sound of the room and outdoors, each appearing for a few bars and leaving again; very wide, quiet and patient |
+| Fourth-world ambient (FM marimba, pan flute) | `fourth_world` | 64-84 | Fourth-world ambient: weightless, beatless digital music in the spirit of 80s Japanese environmental music - clean FM marimbas and kalimbas playing short, looping figures, glassy bells, a breathy synth flute or shakuhachi drifting in with a few notes and leaving again, soft digital pads, no bass, no drums and a lot of air and silence |
 
 ### Fantasy & Games (1)
 

@@ -1,12 +1,12 @@
-STUDIO LAB - ALL 291 GENRES  (version 1.54.0)
+STUDIO LAB - ALL 304 GENRES  (version 1.56.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 1.54
+* = new in 1.56
 
 ========================================================================
-ELECTRONIC  (142)
+ELECTRONIC  (150)
 ========================================================================
 
-House & Disco  (26)
+House & Disco  (28)
     house  [house]
     Deep House  [deep_house]
     Tech House  [tech_house]
@@ -26,6 +26,8 @@ House & Disco  (26)
     Nu-disco / disco lounge  [nu_disco]
     Tokyo deep house  [tokyo_deep_house]
     90s Italo piano house  [piano_house_90s]
+    UK bounce house (bassline, vocal chops)  [uk_bounce_house]  *
+    Outsider house (murky, lo-fi)  [outsider_house]  *
     Garage-house pop  [garage_house]
     Mallet melodic house  [mallet_house]
     French house / filter house  [french_house]
@@ -49,7 +51,7 @@ Techno & Trance  (13)
     Hard techno (150)  [hard_techno]
     Dub techno  [dub_techno]
 
-Dubstep, Garage & Bass  (17)
+Dubstep, Garage & Bass  (20)
     Dubstep (classic UK)  [dubstep]
     Brostep  [brostep]
     Riddim  [riddim]
@@ -58,6 +60,9 @@ Dubstep, Garage & Bass  (17)
     Deep Dubstep (soundsystem)  [deep_dubstep]
     Deep Dubstep - sparse & eerie  [deep_dubstep_minimal]
     Deep dubstep - rollers (sub-weight)  [deep_dubstep_rollers]
+    Deep dubstep - rolling percussion (140)  [deep_dubstep_rolling]  *
+    Chipmunk 2-step (pitched vocal chops)  [chipmunk_2step]  *
+    Glitch future bass (chopped vocals, 154)  [glitch_future_bass]  *
     Future Bass  [future_bass]
     UK Garage  [ukgarage]
     Future garage  [future_garage]
@@ -87,7 +92,7 @@ Drum & Bass, Breaks & Hard  (17)
     Big beat  [big_beat]
     UK hardcore / happy hardcore  [uk_hardcore]
 
-Hip-Hop, Trap & Phonk  (21)
+Hip-Hop, Trap & Phonk  (24)
     Trap  [trap]
     UK Drill  [uk_drill]
     UK road rap  [uk_road_rap]
@@ -104,6 +109,9 @@ Hip-Hop, Trap & Phonk  (21)
     Hard trap (brass & strings)  [hard_trap]
     Bass-warp trap (808 switch-ups)  [bass_warp_trap]
     Bass-warp trap - fast (160)  [bass_warp_fast]
+    Shadow 808 (no two bars alike)  [shadow_808]  *
+    Shadow 808 - DJ edits (slowdowns, pitch warps)  [shadow_808_dj]  *
+    Chopped & screwed (Houston slab)  [screwed_slab]  *
     Beat-switch trap  [switch_trap]
     Wonky / beat-scene bass  [wonky_beats]
     Baltimore club  [baltimore_club]
@@ -140,7 +148,7 @@ Chill, Lo-fi & Ambient  (10)
     Ambient beat (dark, sub-heavy)  [ambient_beat]
     Vaporwave  [vaporwave]
     90s new-age chill (chant)  [new_age_chant]
-  * Chant downtempo - shakuhachi & monks  [chant_downtempo]
+    Chant downtempo - shakuhachi & monks  [chant_downtempo]
     Mid-fi synth-funk / chillwave  [midfi_synthfunk]
     Trip-hop  [trip_hop]
     Berlin school (sequencer)  [berlin_school]
@@ -171,7 +179,7 @@ Hauntology  (7)
     Hauntology - cold dystopian synths  [hauntology_cold]
 
 ========================================================================
-CLASSIC  (120)
+CLASSIC  (124)
 ========================================================================
 
 Rock & Metal  (25)
@@ -211,7 +219,7 @@ Pop & Indie  (10)
     Psychedelic synth-pop  [psych_pop]
     Musical theatre / Broadway  [musical_theatre]
     Anime opening (J-rock)  [anime_opening]
-  * 80s adult pop - gated drums & shakuhachi  [shakuhachi_pop]
+    80s adult pop - gated drums & shakuhachi  [shakuhachi_pop]
 
 Funk & Disco  (6)
     funk  [funk]
@@ -252,7 +260,7 @@ Jazz  (11)
     Ragtime / stride piano  [ragtime]
     Ethio-jazz (vibes & horns)  [ethio_jazz]
     Exotica / tiki lounge  [exotica]
-  * Smooth jazz - horns & shakuhachi  [smooth_jazz_horns]
+    Smooth jazz - horns & shakuhachi  [smooth_jazz_horns]
 
 Swing & Big Band  (5)
     Big Band Swing  [swing]
@@ -303,6 +311,12 @@ South Asian  (3)
     Bollywood / filmi (60s-70s)  [bollywood]
     Ghazal (sitar, harmonium, tabla)  [ghazal]
 
+Arabic  (4)
+    Takht - Arabic maqam ensemble (oud, qanun)  [takht_maqam]  *
+    Raqs sharqi - belly dance (darbuka)  [raqs_sharqi]  *
+    Arabic pop (strings, darbuka)  [arab_pop]  *
+    Sufi dhikr (ney, bendir, speeding up)  [sufi_dhikr]  *
+
 Psych & World Rock  (4)
     Anatolian psych rock (saz & fuzz)  [anatolian_psych]
     Thai funk / molam (phin & khaen)  [thai_funk]
@@ -321,7 +335,7 @@ Hindu devotional  (9)
     Carnatic kriti (veena & mridangam)  [carnatic_kriti]
 
 ========================================================================
-ORCHESTRAL  (29)
+ORCHESTRAL  (30)
 ========================================================================
 
 Film & Trailer  (7)
@@ -343,8 +357,9 @@ Epic  (5)
 Solo Piano  (1)
     Solo Piano Miniature  [piano_miniature]
 
-Ambient & Experimental  (1)
+Ambient & Experimental  (2)
     Experimental field ambient  [field_ambient]
+    Fourth-world ambient (FM marimba, pan flute)  [fourth_world]  *
 
 Fantasy & Games  (1)
     Fantasy RPG  [fantasy_rpg]
@@ -366,4 +381,3 @@ Classical Eras  (11)
     Neoclassical  [neoclassical]
     Chamber / String Quartet  [chamber]
     Orchestral  [orchestral]
-

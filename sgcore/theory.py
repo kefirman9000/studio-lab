@@ -11,7 +11,17 @@ SCALES = {
     'bhairav': [0, 1, 4, 5, 7, 8, 11],             # raga Bhairav (morning devotion): komal Re and Dha, shuddha Ga and Ni
     'pelog': [0, 1, 3, 6, 7, 8, 10],               # Javanese pelog (nearest 12-tone fit): gamelan
     'ukrainian_dorian': [0, 2, 3, 6, 7, 9, 10],    # klezmer 'mi sheberakh': minor with a raised 4th
+    # Arabic maqamat (12-tone base; MAQAM_QUARTER below lowers the half-flat notes by a quarter tone on the melody)
+    'hijaz': [0, 1, 4, 5, 7, 8, 10],               # maqam Hijaz: the augmented 2nd - the 'Arabian' sound
+    'bayati': [0, 2, 3, 5, 7, 8, 10],              # maqam Bayati: 2nd a quarter tone flat - the everyday, soulful maqam
+    'rast': [0, 2, 4, 5, 7, 9, 11],                # maqam Rast: 3rd and 7th a quarter tone flat - the 'mother' maqam
+    'saba': [0, 2, 3, 4, 7, 8, 10],                # maqam Saba: 2nd a quarter flat, a flat 4th - sad, longing
+    'nahawand': [0, 2, 3, 5, 7, 8, 11],            # maqam Nahawand (= harmonic minor)
+    'kurd': [0, 1, 3, 5, 7, 8, 10],                # maqam Kurd (= phrygian)
 }
+
+# quarter tones: scale degree index -> semitones of extra bend (on lead / arp / vocal lines; chords stay 12-tone)
+MAQAM_QUARTER = {'bayati': {1: -0.5}, 'rast': {2: -0.5, 6: -0.5}, 'saba': {1: -0.5}}
 
 
 NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']

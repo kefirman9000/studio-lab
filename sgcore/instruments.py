@@ -51,7 +51,7 @@ def i_reese(m, dur, p, glide=None, mod=None):
 def i_808(m, dur, p, glide=None, mod=None):
     """Trap 808: a sine with a long tail and drive, sliding from the previous note. `mod` warps one note (bass-warp
     genres): 'dive' (falls up to an octave as it ends), 'rise' (shoots up an octave), 'wob:<Hz>' (a 2-3 semitone pitch
-    wobble), 'growl' (extra drive + square grit)."""
+    wobble), 'growl' (extra drive + square grit), 'fold' (wave-folded buzz)."""
     f = float(mtof(m))
     gate = int(dur * SR)
     n = gate + int(0.04 * SR)
@@ -72,11 +72,23 @@ def i_808(m, dur, p, glide=None, mod=None):
         freq = freq * 2 ** (depth * np.sin(2 * np.pi * rate * t) * np.minimum(t / 0.15, 1) / 12)
     y = np.sin(2 * np.pi * np.cumsum(freq) / SR)
     if w == 'growl':
-        y = y + 0.35 * np.sign(y) * np.abs(y) ** 0.5
+        y = y + 0.35 * np.tanh(4 * y)                              # (a smooth knee: sign * sqrt aliased into fizz)
+    elif w == 'fold':                                              # wave-folded: a buzzing, distorted 808 (shadow 808)
+        y = np.sin(2.6 * y + 0.8 * np.sin(2 * np.pi * np.cumsum(freq * 2) / SR) * np.minimum(t / 0.3, 1))
+        y = y * 0.75 + 0.25 * np.sin(2 * np.pi * np.cumsum(freq) / SR)
     amp = np.exp(-t * p.get('decay', 0.9)) * np.minimum(t / 0.002, 1)
     rel = np.ones(n)
     rel[gate:] = np.linspace(1, 0, n - gate)
-    return soft(y * amp * rel, p.get('drive', 2.4) * (1.8 if w == 'growl' else 1.0))
+    drive = p.get('drive', 2.4) * (1.8 if w in ('growl', 'fold') else 1.0)
+    if drive <= 3.0 and not w:
+        return soft(y * amp * rel, drive)
+    # heavy drive: the higher the note, the less it's driven (a hard-driven 808 an octave or two up turned into a
+    # fizzy, torn-speaker buzz), distorted at 4x the sample rate so no harmonics fold back as inharmonic hash, and
+    # the top end above the 808's growl rolled off
+    drive = 3.0 + (drive - 3.0) * min(1.0, (55.0 / max(f, 1.0)) ** 0.7) if drive > 3.0 else drive
+    up = signal.resample_poly(y * amp * rel, 4, 1)
+    z = signal.resample_poly(soft(up, drive), 1, 4)[:n]
+    return lp(lp(z, 3800), 3800)
 
 
 def i_sinebass(m, dur, p, glide=None, mod=None):
@@ -1880,16 +1892,17 @@ def i_sitar(m, dur, p, glide=None, mod=None):
 
 def i_tanpura(m, dur, p, glide=None, mod=None):
     """Tanpura drone: the four strings plucked in their slow cycle (Pa, Sa, Sa, low Sa), each buzzing and ringing into
-    the next - played as one long note per chord."""
+    the next - one long note per chord, or (mod 'str:<0-3>') a single string, plucked by the arranger on the beat."""
     f = float(mtof(m))
-    n = int((dur + 1.5) * SR)
+    one = isinstance(mod, str) and mod.startswith('str:')   # the arranger plucks one string per beat, on the grid
+    n = int(max(dur + 1.5, 3.05 if one else 0) * SR)
     out = np.zeros(n)
     cyc = (1.5, 2.0, 2.0, 1.0)
     gains = (0.9, 1.0, 1.0, 0.45)                     # the low Sa string stays soft: a drone, not a bass line
-    step = float(p.get('step', 0.9))                  # one string per beat of the song (set by the arranger)
-    k = 0
-    while k * step < dur:
-        s = int(k * step * SR)
+    step = float(p.get('step', 0.9))
+    k = int(mod[4:]) if one else 0
+    while (k * step < dur) if not one else k == int(mod[4:]):
+        s = 0 if one else int(k * step * SR)
         fr = f * cyc[k % 4] / 2
         L = min(n - s, int(3.0 * SR))
         t = np.arange(L) / SR
@@ -2372,6 +2385,85 @@ def i_shakuhachi(m, dur, p, glide=None, mod=None):
     y = eq(hp(y, max(120, f * 0.6)), 'peak', 1400, 1.0, 2.5) * 0.5
     return np.vstack([y, np.roll(y, 90)])
 
+
+def i_qanun(m, dur, p, glide=None, mod=None):
+    """Qanun: the Arabic plucked zither - three nylon strings per note, plucked with metal finger picks: a bright,
+    harp-like twang with a quick, singing decay; held notes are played as a fast tremolo (rapid re-plucking)."""
+    f = float(mtof(m))
+    n = int((min(dur, 2.5) + 0.8) * SR)
+
+    def one(n_):
+        t_ = np.arange(n_) / SR
+        y_ = sum(_pluck(f * 2 ** (c / 1200), n_, 0.8, 2.2, 0.00008, 14, 0.5) for c in (-3.0, 0.0, 2.5)) / 3
+        return y_ + 0.25 * bp(noise(n_), 3000, 9000) * np.exp(-t_ * 140)   # the pick
+    y = np.zeros(n)
+    trem = dur >= float(p.get('trem_min', 0.9)) and p.get('tremolo', True)
+    gap = 0.075 if trem else dur + 1
+    k = 0
+    while k * gap < max(dur, 0.01) and k < 64:
+        s = int(k * gap * SR)
+        y[s:] += one(n - s) * (1.0 if k == 0 else 0.55)
+        k += 1
+    y = eq(hp(y, 110), 'peak', 2400, 1.0, 2.0) * 0.16
+    return np.vstack([y, np.roll(y, 70)]) * fade_out(np.ones(n), 0.1)
+
+
+def i_ney(m, dur, p, glide=None, mod=None):
+    """Ney: the end-blown reed flute of Arabic, Turkish and Persian music - mostly breath: a soft, hollow, husky tone
+    with a lot of air in it, a gentle swell into each note and a slow, deep vibrato on long notes."""
+    f = float(mtof(m))
+    n = int((dur + 0.3) * SR)
+    t = np.arange(n) / SR
+    cents = -45 * np.exp(-t * 7)
+    if glide is not None:
+        cents = cents + (float(glide) - m) * 100 * np.exp(-t * 9)
+    vib = np.clip((t - 0.4) / 0.6, 0, 1) * p.get('vib', 22) * np.sin(2 * np.pi * 4.6 * t)
+    fr = f * 2 ** ((cents + vib) / 1200)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    tone = np.sin(ph) + 0.12 * np.sin(2 * ph) + 0.05 * np.sin(3 * ph)
+    air = bp(noise(n), f * 0.8, min(f * 6, 15000)) * (0.7 + 0.5 * np.exp(-t * 9))
+    env = adsr(dur * SR, 0.09, 0.2, 0.9, 0.22)
+    env = np.pad(env, (0, max(0, n - len(env))))[:n]
+    y = (tone * 0.8 + air) * env * (1 + 0.1 * np.sin(2 * np.pi * 0.7 * t))
+    y = eq(hp(y, max(100, f * 0.55)), 'peak', 900, 0.9, 2.0) * 0.45
+    return np.vstack([y, np.roll(y, 120)])
+
+
+def d_riq(p):
+    """Riq: the Arabic tambourine - a tight fish-skin head and five pairs of heavy brass jingles: a crisp, silvery
+    shimmer with a dry 'tak' on the skin."""
+    n = int(0.45 * SR)
+    t = np.arange(n) / SR
+    j = hp(_metallic(n, 4.3) + 0.5 * noise(n), 5000) * np.exp(-t * 11) * (1 + 0.5 * np.sin(2 * np.pi * 33 * t))
+    skin = np.sin(2 * np.pi * p.get('pitch', 420) * t) * np.exp(-t * 45) * 0.5
+    return fade_out((j + skin) * 0.8, 0.04)
+
+
+def d_bendir(p):
+    """Bendir / daf: the big frame drum of Sufi music - a deep, soft 'dum' from the middle of the skin, with the snare
+    strings stretched under it buzzing."""
+    n = int(0.7 * SR)
+    t = np.arange(n) / SR
+    f = p.get('pitch', 70) * (1 + 0.25 * np.exp(-t * 20))
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 5.5)
+    y += 0.35 * bp(noise(n), 300, 3000) * np.exp(-t * 9) * (1 + 0.6 * np.sin(2 * np.pi * 47 * t))   # the buzz
+    return fade_out(y, 0.06)
+
+
+def d_bendir_tek(p):
+    """Bendir edge stroke: fingers near the rim - a higher, slapped 'tek' with the buzz."""
+    n = int(0.3 * SR)
+    t = np.arange(n) / SR
+    y = 0.6 * np.sin(2 * np.pi * 330 * t) * np.exp(-t * 28) + 0.7 * bp(noise(n), 800, 5000) * np.exp(-t * 25)
+    return fade_out(y * 0.8, 0.03)
+
+
+INSTRUMENTS.update({'qanun': i_qanun, 'ney': i_ney})
+DRUMS.update({'riq': d_riq, 'bendir': d_bendir, 'bendir_tek': d_bendir_tek})
+INSTRUMENT_INFO.update({'qanun': 'Qanun (Arabic zither)', 'ney': 'Ney (breathy reed flute)'})
+ROLE_CHOICES['lead'] += ['qanun', 'ney']
+ROLE_CHOICES['arp'] += ['qanun', 'ney']
+GM_PROGRAM.update({'qanun': 46, 'ney': 77})
 
 INSTRUMENTS['shakuhachi'] = i_shakuhachi
 INSTRUMENT_INFO['shakuhachi'] = 'Shakuhachi (breathy bamboo flute / 80s sampler)'

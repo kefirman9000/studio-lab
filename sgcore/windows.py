@@ -55,6 +55,8 @@ def _window(song, b0, b1, fade=True, keep_fx=True):
         if kind in ('riser', 'hpsweep', 'gap', 'lpsweep') and b < beat1 and b + d > beat0:
             nb = max(b, beat0)
             fx.append((kind, nb - beat0, min(b + d, beat1) - nb))
+        if kind in ('tapestop', 'djslow') and beat0 <= b and b + d <= beat1:      # whole slowdowns only
+            fx.append((kind, b - beat0, d))
     if fade:
         fx.append(('fade', beat1 - beat0 - 4, 4))
     secs = []

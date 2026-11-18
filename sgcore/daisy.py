@@ -229,6 +229,38 @@ def level_notes(y, notes, target=None):
     return y * gain
 
 
+def _a_weight(x):
+    """A-weighting: roughly how loud each frequency sounds to the ear at a normal listening level."""
+    f1, f2, f3, f4 = 20.598997, 107.65265, 737.86223, 12194.217
+    p = [-2 * np.pi * f4] * 2 + [-2 * np.pi * f3, -2 * np.pi * f2] + [-2 * np.pi * f1] * 2
+    b, a = signal.zpk2tf([0, 0, 0, 0], p, (2 * np.pi * f4) ** 2 * 10 ** (1.9997 / 20))
+    bz, az = signal.bilinear(b, a, SR)
+    return signal.lfilter(bz, az, x)
+
+
+def ride(y, notes, win=0.035, floor_db=-24.0, max_boost=3.0, max_cut=0.33):
+    """A vocal rider, like an engineer riding the fader through every word: loudness measured in short (35 ms)
+    windows, A-weighted (as loud as the ear hears it), and the gain moved smoothly so every vowel - and every part of a vowel,
+    and the joins between syllables - sits at the same level. Quiet bits (consonants, breaths, the gaps between
+    notes) are below the gate and left alone, so nothing gets pumped up into hiss. Returns the gain curve."""
+    n = len(y)
+    heard = _a_weight(y)
+    w = max(16, int(win * SR))
+    lvl = np.sqrt(np.convolve(heard ** 2, np.ones(w) / w, 'same')) + 1e-9
+    sung = np.zeros(n, bool)
+    for start, dur, midi, ph in notes:
+        sung[int(start * SR):min(n, int((start + dur) * SR))] = True
+    ref = float(np.median(lvl[sung & (lvl > np.percentile(lvl[sung], 30))])) if sung.any() else float(np.median(lvl))
+    gate = ref * 10 ** (floor_db / 20)
+    g = np.clip(ref / lvl, max_cut, max_boost)
+    g[lvl < gate] = 1.0                                     # leave the quiet parts alone
+    g[~sung] = 1.0
+    ka = np.exp(-1 / (0.012 * SR))                          # ~12 ms smoothing both ways: fast enough for the vowel,
+    g = signal.lfilter([1 - ka], [1, -ka], g, zi=[g[0] * ka])[0]
+    g = signal.lfilter([1 - ka], [1, -ka], g[::-1], zi=[g[-1] * ka])[0][::-1]   # slow enough not to distort it
+    return g
+
+
 def robotize(y, crush_hz=16000, bits=10):
     """The machine: sample-and-hold to a low sample rate, bit reduction, an octave-down double and a short metallic comb."""
     hold = max(1, int(SR / crush_hz))
@@ -338,8 +370,10 @@ def render(out_dir, bpm=None, log=print, wind_down=True, voice='machine'):
                 for iv in QUAL[q]:
                     put('celesta', root + 12 + V.get('key', 0) + iv + dk, sk, (at(beat + k + 1)[0] - sk) * 0.6, 0.07, pan=-0.3 + 0.2 * iv / 10)
             put('organ', root + V.get('key', 0) + drop, s0, dur3 * 0.95, 0.025 if vname == 'machine' else 0.045, pan=0.2)
-    v = np.vstack([voice, voice])
-    sh = np.vstack([shadow, shadow])
+    m_ = min(len(voice), len(shadow))
+    g_ = ride(voice[:m_] + 0.3 * shadow[:m_], notes)          # one smooth vocal rider over voice + shadow together
+    v = np.vstack([voice[:m_], voice[:m_]]) * g_
+    sh = np.vstack([shadow[:m_], shadow[:m_]]) * g_
     vox = np.zeros_like(acc)
     vox[:, :v.shape[1]] = v + 0.3 * sh * np.array([[0.7], [1.3]])
     rms = lambda a: float(np.sqrt(np.mean(a[a != 0] ** 2))) if np.any(a) else 1.0
@@ -478,7 +512,9 @@ def sing_part(notes_s, style='ooh', voice='female', lyrics='', seed=1):
     def one(detune=0.0, delay=0.0, fs=1.0):
         y = sing([(s + delay, d, m + detune, p) for s, d, m, p in notes], rng, V['fs'] * fs, V['tilt'],
                  vibrato=V['vib'], breath=V['breath'], glide=0.06)
-        return level_notes(robotize(y), [(s + delay, d, m, p) for s, d, m, p in notes]) if V.get('robot') else y
+        nn = [(s + delay, d, m, p) for s, d, m, p in notes]
+        y = level_notes(robotize(y), nn) if V.get('robot') else y
+        return y * ride(y, nn)
     if voice == 'choir':                                   # a small group: a few voices, slightly apart in pitch and time
         parts = [one(0.0, 0.0), one(0.09, 0.018, 0.97), one(-0.08, 0.03, 1.04), one(-12.0, 0.01, 0.9)]
         n = max(len(p) for p in parts)

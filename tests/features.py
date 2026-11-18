@@ -728,6 +728,161 @@ def test_bass_warp_trap():
     print('ok  bass-warp trap (+ fast): warped 808s, slides, 808-up / growl switch-ups, parallel grit, pitched hat rolls')
 
 
+def test_shadow_808():
+    """v1.56: shadow 808 - the 808 switches up nearly every bar (grinds, leaps, rolls, gaps, stops, folds ...), never
+    repeats the bar before for long, keeps leaps as leaps in the raised no-sub sections, and the fold mod buzzes."""
+    import numpy as np
+    from sgcore.compose import Options, compose
+    from sgcore.instruments import INSTRUMENTS
+    from sgcore.styles import STYLES
+    assert 155 <= STYLES['shadow_808']['bpm'][0] and STYLES['shadow_808']['bass_lo'] <= 24
+    for seed in (3, 11):
+        s = compose(Options(style='shadow_808', seed=seed))
+        b = [e for e in s['events'] if e.track == 'bass']
+        sig = {}
+        for e in b:
+            sig.setdefault(int(e.beat // 4), []).append((round(e.beat % 4, 2), e.midi, e.mod))
+        bars = sorted(sig)
+        same = sum(sig[a] == sig[c] for a, c in zip(bars, bars[1:]))
+        assert same <= 2, same                                        # no two bars alike (nearly)
+        assert len({tuple(v) for v in sig.values()}) > 0.6 * len(bars)
+        assert any(e.mod == 'fold' for e in b) and any(e.mod == 'dive' for e in b)
+        assert max(e.midi for e in b) - min(e.midi for e in b) >= 20  # octave leaps
+        semis = sorted({e.midi - e.glide for e in b if e.glide is not None})
+        assert 1 in semis or -1 in semis                              # root / flat-2nd grind
+    y = INSTRUMENTS['808'](28, 1.0, {}, None, 'fold')
+    c = INSTRUMENTS['808'](28, 1.0, {}, None, None)
+    def hi(z):
+        sp = np.abs(np.fft.rfft(z))
+        return sp[200:].sum() / sp.sum()
+    assert hi(y) > 2 * hi(c)                                          # folded = buzzing harmonics
+    print('ok  shadow 808: bar-by-bar 808 switch-ups (grind, leap, roll, gap, stop, fold), no repeated bars')
+
+
+def test_tanpura_on_the_beat():
+    """v1.56: the tanpura plucks one string per grid beat (Pa, Sa, Sa, low Sa) as its own note, so in the genres that
+    speed up (jugalbandi 75 -> 109 BPM) it follows the tempo map instead of drifting on a fixed clock."""
+    from sgcore.compose import Options, compose
+    for g, seed in (('jugalbandi', 920581), ('kirtan', 3), ('santoor_raga', 5)):
+        s = compose(Options(style=g, seed=seed))
+        names = {e.track for e in s['events'] if e.mod and str(e.mod).startswith('str:')}
+        tp = [e for e in s['events'] if e.track in names]
+        assert tp, g
+        for e in tp:
+            assert abs(e.beat - round(e.beat)) < 1e-6 and str(e.mod).startswith('str:'), (g, e.beat, e.mod)
+            assert int(str(e.mod)[4:]) == (int(round(e.beat)) // (1 if e.dur < 1.5 else 2)) % 4
+    print('ok  tanpura: one string per beat on the grid, following the tempo map')
+
+
+def test_arabic_maqam():
+    """v1.56: Arabic genres - maqam quarter tones on the melody only (Bayati / Rast / Saba), the darbuka / riq / bendir
+    rhythms, a taqsim (melody alone over the drone) to open, the Sufi dhikr speeding up, and the new sounds."""
+    import numpy as np
+    from sgcore.compose import Options, compose
+    from sgcore.theory import Key, MAQAM_QUARTER
+    from sgcore.render import bend_curve
+    from sgcore.instruments import INSTRUMENTS, DRUMS
+    assert {'qanun', 'ney'} <= set(INSTRUMENTS) and {'riq', 'bendir', 'bendir_tek'} <= set(DRUMS)
+    assert abs(bend_curve([('shift', -0.5)], 100, 1.0).mean() + 0.5) < 1e-9
+    seen = set()
+    for g in ('takht_maqam', 'raqs_sharqi', 'arab_pop', 'sufi_dhikr'):
+        for seed in range(1, 7):
+            s = compose(Options(style=g, seed=seed))
+            tr = {t['name']: t for t in s['st']['tracks']}
+            k = s['key']
+            q = MAQAM_QUARTER.get(k.scale_name)
+            shifted = [e for e in s['events'] if e.bend and any(b[0] == 'shift' for b in e.bend)]
+            assert all(tr[e.track]['layer'] in ('lead', 'arp') or e.track == 'vocal' for e in shifted)
+            if q:
+                seen.add(k.scale_name)
+                assert shifted, (g, seed, k.scale_name)
+                pcs = {(k.root + k.scale[d]) % 12 for d in q}
+                assert all(e.midi % 12 in pcs for e in shifted)
+            else:
+                assert not shifted
+            if g in ('takht_maqam', 'sufi_dhikr'):
+                first = s['sections'][0]
+                assert not {'kick', 'snare'} & set(first['layers'])          # the taqsim / ney opening: no drums
+    assert seen & {'bayati', 'rast', 'saba'}
+    d = compose(Options(style='sufi_dhikr', seed=2))
+    assert d['tempo_map'][-1][1] > 1.6 * d['tempo_map'][0][1]                # the dhikr whirls faster and faster
+    assert any(e.track == 'bendir' for e in d['events'])
+    assert any(e.track == 'riq' for e in compose(Options(style='raqs_sharqi', seed=2))['events'])
+    assert Key(0, 'hijaz').scale == [0, 1, 4, 5, 7, 8, 10]
+    y = INSTRUMENTS['qanun'](67, 1.5, {}, None, None)
+    assert np.isfinite(y).all() and np.abs(y).max() > 0.01
+    print('ok  Arabic maqam: quarter tones on the melody, taqsim openings, darbuka / riq / bendir, dhikr accelerando')
+
+
+def test_voice_sample_chops():
+    """v1.56: a voice sample of yours chopped into the song - screwed in phonk / DJ genres (pitched down, caught
+    twice), stuttered in club genres, a one-shot or a phrase elsewhere, or played as the melody; the slices render."""
+    import tempfile
+    import numpy as np
+    from sgcore import usersounds
+    from sgcore.compose import Options, compose, vox_use_for
+    from sgcore.dsp import SR
+    old = usersounds.ROOT
+    usersounds.ROOT = tempfile.mkdtemp()
+    try:
+        t = np.arange(int(1.6 * SR)) / SR
+        word = np.sin(2 * np.pi * 220 * t) * (np.sin(2 * np.pi * 2.5 * t) > 0)      # three 'syllables'
+        name = usersounds.save('vocal', 'bounce it', word.astype(np.float32), 60, 'phrase')
+        assert usersounds.listing()['vocal'] == [name] and usersounds.vocal_type(name) == 'phrase'
+        L, vt, root, ons = usersounds.vocal_info(name)
+        assert 1.2 < L < 1.7 and len(ons) >= 3, (L, ons)
+        assert vox_use_for('shadow_808', 'Electronic', 'phrase') == 'screwed'
+        assert vox_use_for('jersey_club', 'Electronic', 'phrase') == 'stutter'
+        assert vox_use_for('jazz', 'Classic', 'phrase') == 'adlib' and vox_use_for('jazz', 'Classic', 'note') == 'melody'
+        for g, use in (('shadow_808_dj', 'auto'), ('uk_bounce_house', 'auto'), ('jazz', 'auto'), ('trap', 'melody'),
+                       ('lofi', 'phrase')):
+            s = compose(Options(style=g, seed=5, vox_sample=name, vox_use=use))
+            v = [e for e in s['events'] if e.track == 'voxsample']
+            assert v and any(x['name'] == 'voxsample' for x in s['st']['tracks']), (g, use)
+            if g == 'shadow_808_dj':
+                assert all(e.midi < 60 for e in v)                          # screwed: pitched down
+            if g == 'uk_bounce_house':
+                assert len(v) > 40 and min(e.dur for e in v) < 0.3           # stutter chops
+        y = usersounds.vocal_slice(name, 'vx:0.000:0.400:0', -4, 2.0)
+        assert abs(len(y) / SR - 0.4 * 2 ** (4 / 12)) < 0.02                 # screwed = slower and lower
+        assert len(usersounds.vocal_slice(name, 'vx:0.000:0.400:1', 7, 2.0)) < 0.4 * SR
+        s = compose(Options(style='shadow_808', seed=5, vox_sample='not there'))
+        assert not any(e.track == 'voxsample' for e in s['events'])
+    finally:
+        usersounds.ROOT = old
+    print('ok  voice samples: screwed / stutter / ad-lib / phrase / melody chops, tape-style pitch')
+
+
+def test_dj_effects():
+    """v1.56: DJ edits - pitched hat moves (climb, dive, swoop, octave, rolls), down / up-tuned lead notes, fake DJ
+    slowdowns before drops; and 808s driven hard no longer fizz on high notes."""
+    import numpy as np
+    from collections import Counter
+    from sgcore.compose import Options, compose
+    from sgcore.render import drum_mod, dj_slow
+    from sgcore.instruments import INSTRUMENTS
+    from sgcore.dsp import SR
+    s = compose(Options(style='shadow_808_dj', seed=4))
+    mods = Counter(str(e.mod).split(':')[0] for e in s['events'] if e.track in ('chat', 'ohat') and e.mod)
+    assert mods['pt'] > 10 and mods['sw'] > 0, mods
+    assert any(e.bend and any(b[0] in ('fall', 'shift', 'meend') for b in e.bend) for e in s['events'] if e.track == 'lead')
+    assert any(f[0] == 'djslow' for f in s['fx'])
+    x = np.sin(2 * np.pi * 440 * np.arange(SR) / SR).astype(np.float32)
+    assert drum_mod(x, 'sw:0:-12').shape[-1] == x.shape[-1] - 1 or drum_mod(x, 'sw:0:-12').shape[-1] > 0.6 * SR
+    buf = np.vstack([x, x]).copy()
+    dj_slow(buf, 0, SR)
+    z = buf[0, int(0.8 * SR):int(0.95 * SR)]
+    zc = np.sum(np.diff(np.signbit(z))) / 0.15 / 2
+    assert zc < 0.6 * 440, zc                                               # pitch sinks towards the end
+    def fizz(m):
+        y = INSTRUMENTS['808'](m, 0.6, dict(drive=8.0, decay=0.3), None, 'growl')
+        sp = np.abs(np.fft.rfft(y[:int(0.5 * SR)])) ** 2
+        f = np.fft.rfftfreq(int(0.5 * SR), 1 / SR)
+        return sp[f > 5000].sum() / sp.sum()
+    assert fizz(58) < 1e-3, fizz(58)
+    print('ok  DJ edits: pitched hats, tuned leads, slowdowns before drops; no fizz on driven high 808 notes')
+
+
 def test_christmas_orchestral():
     """v1.45: Christmas film-score orchestra - joyful 3/4 carol with a last-chorus key change, mischief 4/4 chase."""
     from sgcore.compose import Options, compose
@@ -916,6 +1071,11 @@ def main():
     test_reference_genre_match()
     test_meend_gamak()
     test_shakuhachi_genres()
+    test_shadow_808()
+    test_tanpura_on_the_beat()
+    test_arabic_maqam()
+    test_voice_sample_chops()
+    test_dj_effects()
     test_v144_drums_layers_new_genres()
     test_bass_warp_trap()
     test_christmas_orchestral()

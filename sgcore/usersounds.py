@@ -1,4 +1,5 @@
-"""Your own sounds: drum samples that replace the built-in kit, and single-note samples played as instruments."""
+"""Your own sounds: drum samples that replace the built-in kit, single-note samples played as instruments, and short
+voice samples (a word, a shout, a line) that genres chop, stutter and screw into the song."""
 import os
 import re
 
@@ -15,7 +16,8 @@ SLOT_FOR = {'kick': 'kick', 'chipkick': 'kick', 'taiko': 'kick', 'snare': 'snare
 _cache = {}
 
 
-KINDS = ('drums', 'inst')
+KINDS = ('drums', 'inst', 'vocal')
+VOCAL_TYPES = ('phrase', 'shout', 'note', 'speech')   # a short line / word, a one-shot ad-lib, a sung note, a spoken quote
 
 
 def _kind(kind):
@@ -28,14 +30,14 @@ def _safe(name):
     return re.sub(r'[^A-Za-z0-9 _-]', '', name).strip()[:40] or 'sound'
 
 
-def save(kind, name, pcm, root_note=60):
-    """kind: 'drums' or 'inst'. pcm: mono float32 at 44.1 kHz."""
+def save(kind, name, pcm, root_note=60, vtype='phrase'):
+    """kind: 'drums', 'inst' or 'vocal'. pcm: mono float32 at 44.1 kHz. Voice samples keep at most 10 seconds."""
     d = os.path.join(ROOT, _kind(kind))
     os.makedirs(d, exist_ok=True)
     name = _safe(name)
     if kind == 'drums' and name not in DRUM_SLOTS:
         raise ValueError('unknown drum slot')
-    x = np.asarray(pcm, dtype=np.float32)[: SR * 20]
+    x = np.asarray(pcm, dtype=np.float32)[: SR * (10 if kind == 'vocal' else 20)]
     if len(x) < 100:
         raise ValueError('sound is too short')
     # trim leading silence, normalise
@@ -43,7 +45,12 @@ def save(kind, name, pcm, root_note=60):
     x = x[nz[0]:] if len(nz) else x
     x = x / (np.max(np.abs(x)) or 1.0) * 0.9
     write_wav_float(os.path.join(d, name + '.wav'), np.vstack([x, x]))
-    if kind == 'inst':
+    if kind == 'vocal':                                  # trim trailing silence too, so chops land on the voice
+        nz = np.nonzero(np.abs(x) > 0.01)[0]
+        x = x[:nz[-1] + int(0.03 * SR)] if len(nz) else x
+        with open(os.path.join(d, name + '.type'), 'w') as f:
+            f.write(vtype if vtype in VOCAL_TYPES else 'phrase')
+    if kind in ('inst', 'vocal'):
         with open(os.path.join(d, name + '.root'), 'w') as f:
             f.write(str(int(root_note)))
     _cache.clear()
@@ -53,7 +60,7 @@ def save(kind, name, pcm, root_note=60):
 def delete(kind, name):
     if kind not in KINDS:
         return
-    for ext in ('.wav', '.root'):
+    for ext in ('.wav', '.root', '.type'):
         p = os.path.join(ROOT, kind, _safe(name) + ext)
         if os.path.exists(p):
             os.remove(p)
@@ -61,7 +68,7 @@ def delete(kind, name):
 
 
 def listing():
-    out = {'drums': [], 'inst': []}
+    out = {'drums': [], 'inst': [], 'vocal': []}
     for kind in out:
         d = os.path.join(ROOT, kind)
         if os.path.isdir(d):
@@ -117,3 +124,57 @@ def sampler(name):
         y = np.interp(np.arange(n) * ratio, np.arange(len(x)), x)
         return y * env[:n]
     return play
+
+
+def vocal_type(name):
+    p = os.path.join(ROOT, 'vocal', _safe(name) + '.type')
+    try:
+        t = open(p).read().strip()
+    except OSError:
+        return 'phrase'
+    return t if t in VOCAL_TYPES else 'phrase'
+
+
+def vocal_info(name):
+    """(length in seconds, sample type, root note, onsets in seconds) of a voice sample - or None if it's gone."""
+    s = load('vocal', name)
+    if s is None:
+        return None
+    x, root = s
+    hop = 256
+    e = np.sqrt(np.convolve(x * x, np.ones(hop) / hop, 'same')[::hop]) + 1e-6
+    o = np.maximum(np.diff(np.log(e)), 0)
+    on = [0.0] + [float((i + 1) * hop / SR) for i in np.nonzero(o > 0.9)[0] if (i + 1) * hop / SR > 0.08]
+    keep = []
+    for t in on:                                         # syllable starts at least 0.1 s apart
+        if not keep or t - keep[-1] > 0.1:
+            keep.append(t)
+    return len(x) / SR, vocal_type(name), root, keep[:16]
+
+
+def vocal_slice(name, mod, semis, dur):
+    """One chop of a voice sample. mod = 'vx:<start s>:<length s>:<r>' (r=1 reversed); semis re-pitches it the
+    tape way (down = slower and lower - screwed; up = faster and higher - chipmunk); dur caps it (seconds)."""
+    s = load('vocal', name)
+    if s is None:
+        return np.zeros(10)
+    x = s[0]
+    try:
+        _, a, ln, r = str(mod).split(':')
+        a, ln, r = float(a), float(ln), r == '1'
+    except ValueError:
+        a, ln, r = 0.0, len(x) / SR, False
+    seg = x[int(a * SR):int((a + ln) * SR)]
+    if len(seg) < 64:
+        return np.zeros(10)
+    if r:
+        seg = seg[::-1]
+    ratio = 2 ** (float(semis) / 12)
+    n = int(min(len(seg) / ratio, max(0.03, dur) * SR))
+    if n < 32:
+        return np.zeros(10)
+    y = np.interp(np.arange(n) * ratio, np.arange(len(seg)), seg)
+    f = min(n // 4, int(0.006 * SR))
+    y[:f] *= np.linspace(0, 1, f)
+    y[-f * 2:] *= np.linspace(1, 0, f * 2)
+    return y

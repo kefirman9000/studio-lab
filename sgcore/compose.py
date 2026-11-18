@@ -79,6 +79,10 @@ class Options:
     vocals: str = None            # sung vocals on the vocal melody: 'ooh', 'aah' or 'lyrics' (None = no singing)
     voice: str = 'female'         # the singer: 'female', 'male', 'choir' or 'robot'
     lyrics: str = ''              # words for vocals='lyrics' (simple English spelling; repeats if the song is longer)
+    vox_sample: str = None        # one of your voice samples (My samples) to chop into the song (None = none)
+    vox_use: str = 'auto'         # auto (genre decides) | screwed | stutter | adlib | phrase | melody
+    vox_pitch: str = 'auto'       # auto | down (screwed) | natural | up (chipmunk)
+    vox_amount: str = 'normal'    # few | normal | lots
     bass_rhythm: str = None       # None = style | kick (bass plays with the kick drum)
     lead_style: str = None        # None = genre | hook | arp | riff | ostinato | bell | call | chops
     build_style: str = None       # None = genre (varies per song) | roll | triplet | kick_roll | filter | stutter | pause | lift | swell | hats | claps | toms | halftime | drumless | pickup | ride | march | tomgroove | pulse | stops | tapestop | cymbal | wash | none
@@ -134,7 +138,7 @@ GENRE_COLORS = {'jazz_rap': ['9', '7', '9', '6'], 'cloud_rap': ['add9', 'sus2', 
                 'soul_ballad': ['triad', '7', '6'], 'waltz': ['triad'], 'celtic_jig': ['triad', 'sus2'], 'ska': ['triad', '7'],
                 'cumbia': ['triad'], 'dancehall': ['triad', '7'], 'hauntology': ['add9', '7', 'triad', 'sus2'],
                 'braindance': ['add9', 'sus2', '7', 'add9no3'], 'liquid_dnb': ['7', '9', 'add9'], 'neurofunk': ['triad', 'add9no3'],
-                'melodic_dubstep': ['triad', 'add9', 'sus2'], 'brostep': ['triad'], 'memphis_phonk': ['triad'], 'phonk': ['triad'], 'house_phonk': ['triad'], 'brazilian_phonk': ['triad'], 'jam_band': ['triad', '7', 'sus4'],
+                'melodic_dubstep': ['triad', 'add9', 'sus2'], 'brostep': ['triad'], 'memphis_phonk': ['triad'], 'shadow_808': ['add9', 'add9', 'triad'], 'shadow_808_dj': ['add9', 'add9', 'triad'], 'phonk': ['triad'], 'house_phonk': ['triad'], 'brazilian_phonk': ['triad'], 'jam_band': ['triad', '7', 'sus4'],
                 'soft_rock': ['triad', 'add9', '7', 'sus2'], 'teen_pop': ['triad', 'add9', '7'], 'luxury_rap': ['7', 'add9', '9', 'triad'],
                 'uplifting_trance': ['triad', 'add9', 'sus2'], 'melodic_house': ['add9', '7', 'triad', 'sus2'], 'punk': ['triad'], 'indie_rock': ['triad', 'add9', 'sus2']}
 
@@ -291,7 +295,7 @@ EXTRA_CHORD_RH = {
 # pass never mixes the generic extra drum patterns into them - a reggae song with a kick on 1 and 3 isn't reggae
 OWN_GROOVE = {'reggae', 'dub', 'ska', 'reggaeton', 'dancehall', 'moombahton', 'soca', 'groovy_soca', 'salsa', 'cumbia',
               'bossa_nova', 'samba', 'bachata', 'merengue', 'baile_funk', 'funk_150', 'brazilian_phonk', 'afrobeat', 'afrobeats',
-              'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'bhajan', 'kirtan', 'aarti', 'santoor_raga', 'sitar_bhajan', 'tabla_bhajan', 'drum_kirtan', 'jugalbandi', 'qawwali', 'carnatic_kriti', 'ghazal', 'bollywood', 'klezmer', 'gamelan', 'rai', 'son_cubano', 'flamenco_rumba', 'chicha', 'krautrock', 'rockabilly', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house',
+              'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'bhajan', 'kirtan', 'aarti', 'santoor_raga', 'sitar_bhajan', 'tabla_bhajan', 'drum_kirtan', 'jugalbandi', 'qawwali', 'carnatic_kriti', 'ghazal', 'bollywood', 'klezmer', 'gamelan', 'rai', 'takht_maqam', 'raqs_sharqi', 'arab_pop', 'sufi_dhikr', 'son_cubano', 'flamenco_rumba', 'chicha', 'krautrock', 'rockabilly', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house',
               'baltimore_club', 'jersey_club', 'uk_drill', 'ukgarage', 'speed_garage', 'freestyle', 'electro', 'nola_brass',
               'tango', 'celtic_jig', 'swing_tomtom', 'western_swing', 'country', 'outlaw_country', 'surf_rock'}
 
@@ -1606,7 +1610,7 @@ def compose(opts):
         fx[:] = [f for f in fx if (f[0] not in FX_SOUNDS or f[0] == 'crash') and f[0] not in ('lpsweep', 'hpsweep')]
     hold_slow_chords(evs, tracks, st, bpm)
     legato_bass(evs, tracks)
-    sync_drones(tracks, bpm)
+    sync_drones(evs, tracks, bpm)
     shape_dynamics(evs, tracks, sections, st)
     in_evs = {id(e) for e in evs}
     st['tuned_notes'] = fix_clashes(evs + [v for v in vocal if id(v) not in in_evs], {**tracks, 'vocal': tracks.get('vocal') or
@@ -1616,6 +1620,7 @@ def compose(opts):
     orn = ornament_amount(st, opts)
     if orn > 0:                                          # Indian music: meend, gamak and andolan on bendable instruments
         add_ornaments(evs, tracks, key, orn, random.Random(opts.seed * 43 + 7))
+    maqam_quarters(evs, tracks, key)                     # Arabic maqamat: half-flat notes a quarter tone down
     if st.get('lead_glide'):                             # G-funk / talk-box: the lead slides from note to note
         prev = None
         for e in sorted((e for e in evs if e.track == 'lead' and e.midi is not None), key=lambda e: e.beat):
@@ -1632,6 +1637,8 @@ def compose(opts):
         add_lead_runs(evs, key, st['lead_runs'], random.Random(opts.seed * 61 + 7))
     if any(t.get('chops') for t in tracks.values()):
         chop_samples(evs, tracks, random.Random(opts.seed * 53 + 1))
+    if st.get('switchups'):                              # shadow 808: no two bars of the 808 alike
+        bar_switchups(evs, tracks, sections, st, random.Random(opts.seed * 67 + 5))
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     if not st.get('composer'):
@@ -1642,18 +1649,25 @@ def compose(opts):
         if bm and str(tracks.get('bass', {}).get('inst', '')).endswith('808'):
             b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
             for e in evs:
-                if b0 <= e.beat < b1 and e.track == 'bass':
+                if b0 <= e.beat < b1 and e.track == 'bass' and not (st.get('switchups') and e.mod):
                     e.mod = bm
         up = int(sec['opts'].get('bass_up') or 0)              # target MIDI note (e.g. 40 = E2)
         if up:
             b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
-            for e in evs:
-                if b0 <= e.beat < b1 and tracks.get(e.track, {}).get('layer') == 'bass' and e.midi is not None:
-                    k = 12 * max(0, -((e.midi - up) // 12))          # up whole octaves until it reaches the target register
-                    e.midi += k
-                    if e.glide is not None:
-                        e.glide += k
+            ins = [e for e in evs if b0 <= e.beat < b1 and tracks.get(e.track, {}).get('layer') == 'bass' and e.midi is not None]
+            k0 = 12 * max(0, -((min(e.midi for e in ins) - up) // 12)) if ins and st.get('switchups') else None
+            for e in ins:                                    # (switch-up genres move the whole section, so leaps stay leaps)
+                k = k0 if k0 is not None else 12 * max(0, -((e.midi - up) // 12))   # up whole octaves until it reaches the target register
+                e.midi += k
+                if e.glide is not None:
+                    e.glide += k
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
+    if st.get('dj_fx'):                                  # DJ edits: pitched hat moves, down / up-tuned lead notes, slowdowns
+        dj_effects(evs, fx, tracks, sections, float(st['dj_fx']), random.Random(opts.seed * 73 + 11))
+    if st.get('chopped'):                                # chopped & screwed: the DJ catches a beat twice
+        screw_chops(evs, sections, float(st['chopped']), random.Random(opts.seed * 71 + 9))
+    if getattr(opts, 'vox_sample', None):                # your voice sample, chopped into the song
+        voice_sample_part(evs, tracks, st, sections, opts, bpm, random.Random(opts.seed * 79 + 13))
     for name, t in tracks.items():                       # any part of this song, picked by its own name in the editor
         pick = (opts.instruments or {}).get(name)
         is_drum = t['layer'] in ('kick', 'snare', 'top')
@@ -2016,7 +2030,7 @@ def add_slides(evs, tracks, st, key, rnd):
             e.slide = 1.0                                   # a quick half-step bend now and then
 
 
-BENDABLE = {'sitar', 'veena', 'saz', 'oud', 'flute', 'violin', 'phin', 'sf:sitar', 'sf:violin', 'sf:flute', 'sf:shehnai',
+BENDABLE = {'sitar', 'veena', 'saz', 'oud', 'ney', 'flute', 'violin', 'phin', 'sf:sitar', 'sf:violin', 'sf:flute', 'sf:shehnai',
             'sf:fiddle', 'shehnai', 'real:violin', 'real:flute'}
 
 
@@ -2075,14 +2089,42 @@ def add_ornaments(evs, tracks, key, amt, rnd):
                 e.slide = 0.0                            # the meend replaces the quick slide
 
 
-def sync_drones(tracks, bpm):
-    """The tanpura plucks its four strings in time with the song (one per beat, every other beat when it's fast) -
-    on its own clock it drifted against the tabla like a bass player doing their own thing."""
-    beat = 60.0 / max(40, bpm)
-    step = beat * (2 if beat < 0.55 else 1)
-    for t in tracks.values():
-        if t.get('inst') == 'tanpura':
-            t['p'] = dict(t.get('p') or {}, step=round(step, 4))
+def maqam_quarters(evs, tracks, key):
+    """Maqam Bayati, Rast and Saba have notes between the piano keys (a quarter tone flat). The melody parts - lead, arp
+    and the sung voice - bend those notes down a quarter tone; chords and drones stay on the 12-tone notes."""
+    from .theory import MAQAM_QUARTER
+    q = MAQAM_QUARTER.get(key.scale_name)
+    if not q:
+        return
+    pcs = {(key.root + key.scale[d]) % 12: v for d, v in q.items()}
+    for e in evs:
+        t = tracks.get(e.track, {})
+        if e.midi is None or (t.get('layer') not in ('lead', 'arp') and e.track != 'vocal'):
+            continue
+        v = pcs.get(e.midi % 12)
+        if v:
+            e.bend = [('shift', v)] + [b for b in (e.bend or []) if b[0] != 'shift']
+
+
+def sync_drones(evs, tracks, bpm):
+    """The tanpura plucks its four strings in time with the song (one per beat, every other beat when it's fast).
+    Each pluck is its own note on the beat grid, so it follows the tempo map too: the genres that speed up (jugalbandi,
+    kirtan, qawwali ...) used to leave the tanpura on a fixed clock, drifting against the tabla like a bass player
+    doing their own thing."""
+    every = 2 if 60.0 / max(40, bpm) < 0.55 else 1          # beats per pluck
+    names = {n for n, t in tracks.items() if t.get('inst') == 'tanpura'}
+    if not names:
+        return
+    out = []
+    for e in evs:
+        if e.track not in names or e.midi is None:
+            out.append(e)
+            continue
+        k = int(-(-e.beat // every))                          # first grid beat inside the note
+        while k * every < e.beat + e.dur - 1e-6:
+            out.append(e.copy(beat=float(k * every), dur=float(every), mod=f'str:{k % 4}', glide=None))
+            k += 1
+    evs[:] = out
 
 
 SUSTAINED_BASS = {'reese', 'growl', 'wobble', 'hoover', 'sinebass', 'moogbass', 'drone', 'tanpura'}
@@ -2296,7 +2338,7 @@ INST_RANGE = {
     'harmonica': (55, 81), 'accordion': (50, 79), 'vox': (52, 79), 'choir': (48, 76),
     'celesta': (64, 100), 'bell': (64, 96), 'vibes': (55, 86), 'marimba': (48, 84), 'kalimba': (60, 86), 'harp': (40, 91),
     'leadsaw': (52, 84), 'softlead': (55, 84), 'supersaw_lead': (55, 86), 'pluck': (52, 86), 'pluck_saw': (52, 86),
-    'chip': (55, 91), 'hoover': (48, 79), 'stab': (48, 84),
+    'chip': (55, 91), 'hoover': (48, 79), 'stab': (48, 84), 'qanun': (55, 88), 'ney': (55, 84), 'oud': (43, 74),
 }
 
 
@@ -2463,6 +2505,315 @@ def switch_basses(evs, tracks, sections, st):
         for e in evs:
             if e.track == 'bass' and b0 <= e.beat < b1:
                 e.track = order[int((e.beat - b0) // (4 * per)) % len(order)]
+
+
+HAT_INSTS = {'chat', 'ohat', 'chiphat', 'shaker', 'tamb', 'ride'}
+
+
+def dj_effects(evs, fx, tracks, sections, amount, rnd):
+    """DJ-style edits (from the user's reference): bars where the hats climb or dive in pitch, swoop down inside each
+    hit or drop an octave; lead notes that are down-tuned or up-tuned (the end of a note diving an octave, a note
+    pulled up a fifth, a phrase played a whole tone flat); and a fake DJ slowdown - the record dragged by hand - in the
+    bar before some of the drops."""
+    hats = {n for n, t in tracks.items() if t.get('layer') == 'top' and t.get('inst') in HAT_INSTS}
+    leads = {n for n, t in tracks.items() if t.get('layer') in ('lead', 'arp')}
+    for sec in sections:
+        for b in range(sec['bars']):
+            b0 = (sec['bar'] + b) * 4
+            if hats and rnd.random() < 0.45 * amount:
+                bar_h = sorted((e for e in evs if e.track in hats and b0 <= e.beat < b0 + 4), key=lambda e: e.beat)
+                mv = rnd.choice(['climb', 'dive', 'swoop', 'octave', 'roll'])
+                if mv == 'roll':                            # a pitched 16th / 32nd roll into the next bar, diving or climbing
+                    name = next(iter(sorted(hats)))
+                    evs[:] = [e for e in evs if not (e.track in hats and e.beat >= b0 + 3)]
+                    step = rnd.choice([0.25, 0.125])
+                    k_n = int(1 / step)
+                    d = rnd.choice([-1, 1])
+                    for k in range(k_n):
+                        evs.append(Ev(name, b0 + 3 + k * step, step * 0.8, None, 0.55 + 0.4 * k / k_n, None, f'pt:{d * k * (12 // k_n + 1)}'))
+                else:
+                    for i, e in enumerate(bar_h):
+                        x = (e.beat - b0) / 4
+                        if mv == 'climb':
+                            e.mod = f'pt:{round(10 * x)}'
+                        elif mv == 'dive':
+                            e.mod = f'pt:{-round(12 * x)}'
+                        elif mv == 'swoop':
+                            e.mod = f'sw:0:{rnd.choice([-5, -7, -12])}'
+                        else:
+                            e.mod = 'pt:-12'
+            if leads and rnd.random() < 0.3 * amount:
+                bar_l = [e for e in evs if e.track in leads and b0 <= e.beat < b0 + 4 and e.midi is not None]
+                if bar_l:
+                    mv = rnd.choice(['downtune', 'uptune', 'flat', 'scoop'])
+                    for e in bar_l:
+                        if mv == 'flat':                    # the whole bar a whole tone flat - a pitched-down phrase
+                            e.bend = [('shift', -2.0)] + list(e.bend or [])
+                    if mv != 'flat':
+                        e = max(bar_l, key=lambda e: e.dur)
+                        if mv == 'downtune':
+                            e.bend = list(e.bend or []) + [('fall', -12.0)]
+                        elif mv == 'uptune':
+                            e.bend = list(e.bend or []) + [('fall', 7.0)]
+                        else:
+                            e.bend = [('meend', -12.0, 0.5)] + list(e.bend or [])
+        if (sec['opts'].get('drop') or sec['name'] in ('drop', 'grind')) and sec['bar'] > 0 and rnd.random() < 0.6 * amount:
+            beg = sec['bar'] * 4 - rnd.choice([4, 2])
+            fx[:] = [f for f in fx if not (f[0] == 'tapestop' and beg - 2 <= f[1] < sec['bar'] * 4)]
+            fx.append(('djslow', beg, sec['bar'] * 4 - beg))
+
+
+VOX_SCREW = {'shadow_808', 'shadow_808_dj', 'screwed_slab', 'memphis_phonk', 'phonk', 'house_phonk', 'brazilian_phonk',
+             'bass_warp_trap', 'bass_warp_fast', 'switch_trap', 'witch_house', 'cloud_rap', 'hard_trap', 'trap', 'plugg', 'rage',
+             'uk_drill', 'wonky_beats', 'trip_hop', 'vaporwave', 'outsider_house'}
+VOX_STUTTER = {'jersey_club', 'juke', 'juke_raw', 'juke_house', 'footwork', 'footwork_soulful', 'footwork_dark', 'baltimore_club',
+               'bass_house', 'uk_bounce_house', 'chipmunk_2step', 'glitch_future_bass', 'future_bass', 'baile_funk', 'hyperpop',
+               'speed_garage', 'uk_funky', 'gqom', 'breakcore', 'jungle', 'big_beat', 'ukgarage', 'bassline_140', 'grime',
+               'funk_150', 'tech_house', 'house', 'garage_house', 'brostep', 'riddim', 'dubstep', 'jump_up', 'hardstyle'}
+VOX_USES = ('screwed', 'stutter', 'adlib', 'phrase', 'melody')
+
+
+def vox_use_for(style, category, vtype, use='auto'):
+    """How a voice sample is used: your choice, else the genre's (screwed for phonk / DJ-smokey / Houston, stutter
+    chops for club music), else what kind of sample it is (a sung note plays the melody, a quote opens the breaks)."""
+    if use in VOX_USES:
+        return use
+    if vtype == 'note':
+        return 'melody'
+    if style in VOX_SCREW:
+        return 'screwed'
+    if style in VOX_STUTTER:
+        return 'stutter' if vtype != 'speech' else 'phrase'
+    if vtype == 'speech':
+        return 'phrase'
+    return 'stutter' if category == 'Electronic' and vtype == 'phrase' else 'adlib'
+
+
+def voice_sample_part(evs, tracks, st, sections, opts, bpm, rnd):
+    """Chop a short voice sample into the song. Uses: screwed (slowed and pitched down, the DJ catching words twice and
+    letting the line drag out), stutter (rhythmic chops of its syllables - b-b-bounce it - and rolls into the drops),
+    adlib (the whole sample as a one-shot on drops and turnarounds), phrase (the whole line, untouched, in the intro,
+    the breaks and the outro) and melody (its first syllable played as an instrument on the lead's notes)."""
+    from .usersounds import vocal_info
+    name = opts.vox_sample
+    info = vocal_info(name)
+    if not info:
+        return
+    L, vtype, root, ons = info
+    use = vox_use_for(st.get('name'), st.get('category'), vtype, getattr(opts, 'vox_use', 'auto'))
+    pitch = getattr(opts, 'vox_pitch', 'auto') or 'auto'
+    if pitch == 'auto':
+        pitch = 'down' if use == 'screwed' else 'up' if st.get('name') == 'chipmunk_2step' else 'natural'
+    base = {'down': -4, 'natural': 0, 'up': 6}.get(pitch, 0)
+    dens = {'few': 0.5, 'normal': 1.0, 'lots': 1.8}.get(getattr(opts, 'vox_amount', 'normal'), 1.0)
+    spb = 60.0 / bpm
+    sl = [(a, (ons[i + 1] if i + 1 < len(ons) else L) - a) for i, a in enumerate(ons)] or [(0.0, L)]
+    out = []
+
+    def hit(beat, k=None, semis=None, rev=False, whole=False, cap=None):
+        a, ln = (0.0, L) if whole else sl[(k or 0) % len(sl)]
+        sm = base if semis is None else semis
+        slow = 2 ** (-sm / 12)                           # tape-style: lower = longer
+        beats = ln * slow / spb
+        if cap is not None:
+            beats = min(beats, cap)
+        out.append(Ev('voxsample', beat, max(0.06, beats), 60 + int(round(sm)), 0.95, None,
+                      f'vx:{a:.3f}:{ln:.3f}:{1 if rev else 0}'))
+
+    mains = [x for x in sections if x['opts'].get('drop') or x['name'] in ('drop', 'chorus', 'hook', 'grind', 'leap', 'dance',
+                                                                             'main', 'B', 'climax')]
+    if not mains:                                        # songs without drops: the sections with the full beat
+        mains = [x for x in sections[1:] if 'kick' in x['layers']] or sections[1:] or sections
+    quiet = [x for x in sections if x not in mains]
+    if use == 'phrase':
+        for x in sections:
+            if x is sections[0] or x['name'] in ('break', 'breakdown', 'bridge', 'outro', 'intro', 'taqsim', 'interlude') \
+                    or (dens > 1.2 and x in mains):
+                hit(x['bar'] * 4 + (4 if x['bars'] > 4 else 0), whole=True)
+    elif use == 'adlib':
+        for x in sections:
+            if x in mains or rnd.random() < 0.3 * dens:
+                hit(x['bar'] * 4, whole=True)
+            every = max(4, int(8 / dens))
+            for b in range(every - 1, x['bars'], every):
+                if x in mains and rnd.random() < 0.8:
+                    hit((x['bar'] + b) * 4 + 3, whole=True, rev=rnd.random() < 0.2,
+                        semis=base + (rnd.choice([0, 0, -5, 7]) if rnd.random() < 0.3 else 0))
+    elif use == 'screwed':
+        first = sections[0]
+        hit(first['bar'] * 4 + min(4, first['bars'] * 2), k=0, cap=1.0)       # the DJ catches the first word ...
+        hit(first['bar'] * 4 + min(4, first['bars'] * 2) + 1, whole=True)     # ... and lets the whole line drag out
+        for x in sections:
+            every = max(4, int(8 / dens))
+            for b in range(every - 1 if x in mains else every + 3, x['bars'], every):
+                b0 = (x['bar'] + b) * 4
+                mv = rnd.choice(['catch', 'drag', 'deep', 'echo'])
+                if mv == 'catch':                        # "I-I-I'm ..."
+                    hit(b0, k=0, cap=0.5)
+                    hit(b0 + 0.5, k=0, cap=0.5)
+                    hit(b0 + 1, whole=True, cap=3.0)
+                elif mv == 'drag':
+                    hit(b0 + 2, whole=True, semis=base - 2, cap=6.0)
+                elif mv == 'deep':
+                    hit(b0, k=len(sl) - 1, semis=base - 5, cap=4.0)
+                else:                                    # the last word caught three times, sinking
+                    for i in range(3):
+                        hit(b0 + 2 + i * 0.5, k=len(sl) - 1, semis=base - i, cap=0.5)
+        for x in mains:
+            if x['bar'] > 0:
+                hit(x['bar'] * 4 - 2, k=0, semis=base - 3, cap=2.0)          # a deep word into each drop
+    elif use == 'stutter':
+        pats = [[(0, 0, 3), (3, 0, 3), (6, 1, 2), (8, 0, 2), (10, 0, 2), (12, 2, 4)],
+                [(0, 0, 2), (2, 0, 2), (4, 1, 4), (8, 0, 1), (9, 0, 1), (10, 0, 2), (12, 1, 2), (14, 2, 2)],
+                [(0, 0, 4), (6, 0, 2), (8, 1, 2), (11, 0, 1), (12, 0, 1), (13, 0, 1), (14, 2, 2)]]
+        for x in mains:
+            pat = rnd.choice(pats)
+            on_every = 1 if dens > 1.2 else 2 if dens > 0.7 else 4
+            for b in range(0, x['bars'], on_every):
+                b0 = (x['bar'] + b) * 4
+                p = pat if b % 4 != 3 else rnd.choice(pats)
+                for step, k, ln in p:
+                    hit(b0 + step / 4, k=k, cap=ln / 4)
+            if x['bar'] > 0:                             # a roll into the drop, rising
+                for i in range(8):
+                    hit(x['bar'] * 4 - 2 + i * 0.25, k=0, semis=base + i, cap=0.22)
+        for x in quiet[:1]:
+            hit(x['bar'] * 4 + 4, whole=True)
+    elif use == 'melody':
+        lead = sorted((e for e in evs if tracks.get(e.track, {}).get('layer') == 'lead' and e.midi is not None
+                       and e.track != 'vocal'), key=lambda e: e.beat)
+        ok = {id(x) for x in mains} if mains else {id(x) for x in sections}
+        spans = [(x['bar'] * 4, (x['bar'] + x['bars']) * 4) for x in sections if id(x) in ok]
+        for e in lead:
+            if any(a <= e.beat < z for a, z in spans):
+                m = e.midi
+                while m - root > 12:
+                    m -= 12
+                while m - root < -12:
+                    m += 12
+                hit(e.beat, k=0, semis=m - root, cap=e.dur)
+    if not out:
+        return
+    t = dict(name='voxsample', layer='lead', inst='voxsample', pan=0.0, rev=0.3 if use != 'screwed' else 0.45,
+             dly=0.15 if use in ('screwed', 'adlib') else 0.05, sc=0.2, db=-15, hp=90, drive=None, p=dict(sample=name))
+    st['tracks'].append(t)
+    tracks['voxsample'] = t
+    evs += out
+
+
+def screw_chops(evs, sections, amount, rnd):
+    """Chopped & screwed: in some bars the DJ pulls the record back and plays a beat (or two) again - everything in
+    that beat is repeated straight after itself, replacing what would have come next. Never in the first bar of a
+    section, so every section still starts clean."""
+    for sec in sections:
+        for b in range(1, sec['bars']):
+            if rnd.random() >= amount:
+                continue
+            ln = rnd.choice([1, 1, 2])
+            k = rnd.choice([0, 2] if ln == 2 else [0, 1, 2])
+            b0 = (sec['bar'] + b) * 4 + k
+            src = [e for e in evs if b0 <= e.beat < b0 + ln]
+            if not src:
+                continue
+            evs[:] = [e for e in evs if not (b0 + ln <= e.beat < b0 + 2 * ln)]
+            for e in src:
+                evs.append(e.copy(beat=e.beat + ln, dur=min(e.dur, b0 + 2 * ln - e.beat - ln)))
+
+
+SWITCH_MOVES = ('grind', 'leap', 'roll', 'gap', 'stop', 'dive', 'wob', 'fold', 'chop', 'rise', 'plain')
+
+
+def bar_switchups(evs, tracks, sections, st, rnd):
+    """Shadow-808 switch-ups (from the user's reference): every bar of the 808 does something different from the bar
+    before - grinding root / flat-2nd 8ths, leaping one or two octaves up, a 16th roll, a sudden gap or a full stop
+    (drums out), a dive, a wobble, a folded / distorted bar, chopped stabs, a rise - and the last bar of each 4-bar
+    phrase leaves space. Runs before the layers copy the bass, so the grit layer follows every move."""
+    cfg = st['switchups'] if isinstance(st['switchups'], dict) else {}
+    moves = list(cfg.get('moves') or SWITCH_MOVES)
+    weights = cfg.get('weights') or {}
+    bass_names = {n for n, t in tracks.items() if t.get('layer') == 'bass' and not t.get('double_of')}
+    drums = {n for n, t in tracks.items() if t.get('layer') in ('kick', 'snare', 'top')}
+    prev = prev_sig = None
+    for sec in sections:
+        if 'bass' not in sec['layers'] or sec['opts'].get('fade'):
+            continue
+        for b in range(sec['bars']):
+            b0 = (sec['bar'] + b) * 4
+            bar_b = [e for e in evs if e.track in bass_names and b0 <= e.beat < b0 + 4 and e.midi is not None]
+            if not bar_b:
+                continue
+            last = b % 4 == 3
+            mvs = sec['opts'].get('moves') or moves
+            pool = [m for m in (('gap', 'stop', 'dive', 'roll') if last else mvs) if m != prev] or ['plain']
+            w = [float(weights.get(m, 1.0)) for m in pool]
+            mv = rnd.choices(pool, w)[0]
+            prev = mv
+            bar_b.sort(key=lambda e: e.beat)
+            root = min(e.midi for e in bar_b)
+            name = bar_b[0].track
+            if mv == 'grind':                               # root and flat 2nd, 8th notes, grinding against each other
+                for e in bar_b:
+                    evs.remove(e)
+                start = 1 if rnd.random() < 0.3 else 0
+                for k in range(start, 8):
+                    m = root + (1 if k % 2 else 0)
+                    evs.append(Ev(name, b0 + k * 0.5, 0.48, m, 0.92 if k % 2 else 1.0, root if k % 2 else None))
+            elif mv == 'leap':                              # notes leap an octave or two up and slide back down
+                for i, e in enumerate(bar_b):
+                    if i % 2 == 1 or rnd.random() < 0.35:
+                        old = e.midi
+                        e.midi = min(e.midi + rnd.choice([12, 24, 24]), 50)
+                        e.glide = old
+            elif mv == 'roll':                              # the last beat (or two) turns into a 16th roll
+                n = rnd.choice([4, 8])
+                t0 = b0 + 4 - n * 0.25
+                for e in bar_b:
+                    if e.beat >= t0:
+                        evs.remove(e)
+                    elif e.beat + e.dur > t0:
+                        e.dur = t0 - e.beat
+                m = bar_b[-1].midi
+                for k in range(n):
+                    evs.append(Ev(name, t0 + k * 0.25, 0.22, m + (12 if k == n - 1 and rnd.random() < 0.5 else 0), 0.85 + 0.15 * (k % 2)))
+            elif mv in ('gap', 'stop'):                     # space: the 808 (and drums) cut out for the end of the bar
+                cut = b0 + (rnd.choice([2, 3]) if mv == 'gap' else 1)
+                for e in bar_b:
+                    if e.beat >= cut:
+                        evs.remove(e)
+                    elif e.beat + e.dur > cut:
+                        e.dur = cut - e.beat
+                if mv == 'stop':
+                    bar_b[0].mod = 'dive'
+                dz = cut if mv == 'stop' else b0 + 3.5
+                evs[:] = [e for e in evs if not (e.track in drums and dz <= e.beat < b0 + 4)]
+            elif mv == 'dive':
+                bar_b[-1].mod = 'dive'
+                bar_b[-1].dur = max(bar_b[-1].dur, b0 + 4 - bar_b[-1].beat - 0.05)
+            elif mv == 'rise':
+                bar_b[-1].mod = 'rise'
+            elif mv == 'wob':
+                r = rnd.choice([3, 4, 6, 8])
+                for e in bar_b:
+                    e.mod = f'wob:{r}'
+            elif mv == 'fold':                              # folded, distorted 808 - more mid, less clean sub
+                for e in bar_b:
+                    e.mod = 'fold'
+            elif mv == 'chop':                              # gated 8th / 16th stabs of the same notes
+                g = rnd.choice([0.5, 0.25])
+                for e in bar_b:
+                    evs.remove(e)
+                    k = 0
+                    while k * g < e.dur - 0.05:
+                        if not (k % 3 == 2 and g == 0.25):
+                            evs.append(e.copy(beat=e.beat + k * g, dur=g * 0.6, glide=None, mod=None))
+                        k += 1
+            now = sorted((round(e.beat - b0, 2), e.midi, e.mod) for e in evs if e.track in bass_names and b0 <= e.beat < b0 + 4)
+            if now and now == prev_sig:                     # still the same as the bar before: one note leaps an octave
+                es = [e for e in evs if e.track in bass_names and b0 <= e.beat < b0 + 4]
+                e = rnd.choice(es)
+                e.glide, e.midi = e.midi, e.midi + 12
+                now = None
+            prev_sig = now
 
 
 CLASH_LAYERS = ('lead', 'arp')

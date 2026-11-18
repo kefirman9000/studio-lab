@@ -58,6 +58,10 @@ def main(argv=None):
     ap.add_argument('--vocal-guide', action='store_true', help='also play the vocal guide melody (always in MIDI exports)')
     ap.add_argument('--bends', choices=['off', 'subtle', 'more'], help='meend / gamak on sitar, veena, bansuri ... (default: genre)')
     ap.add_argument('--vocals', choices=['ooh', 'aah', 'lyrics'], help='a singer on the melody')
+    ap.add_argument('--vox-sample', help='one of your voice samples (My samples) to chop into the song')
+    ap.add_argument('--vox-use', choices=['auto', 'screwed', 'stutter', 'adlib', 'phrase', 'melody'], default='auto')
+    ap.add_argument('--vox-pitch', choices=['auto', 'down', 'natural', 'up'], default='auto')
+    ap.add_argument('--vox-amount', choices=['few', 'normal', 'lots'], default='normal')
     ap.add_argument('--voice', choices=['female', 'male', 'choir', 'robot'], help='the singer (default female)')
     ap.add_argument('--lyrics', help='words for --vocals lyrics')
     ap.add_argument('--fx', action='append', default=[], help='effect plugin on a part, e.g. --fx lead=ValhallaSupermassive')
@@ -111,6 +115,8 @@ def main(argv=None):
                 o['vocal_guide'] = True
             if a.bends:
                 o['bends'] = a.bends
+            if a.vox_sample:
+                o.update(vox_sample=a.vox_sample, vox_use=a.vox_use, vox_pitch=a.vox_pitch, vox_amount=a.vox_amount)
             if a.vocals:
                 o['vocals'] = a.vocals
                 o['voice'] = a.voice or 'female'
