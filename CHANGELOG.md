@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.51.5
+- **Chords through plugins play as chords again.** When a chord, pad or stab part was played by a plugin synth (TAL-NoiseMaker, Surge XT, Dexed, or a sound you saved), the synth kept whatever voice mode its loaded preset had - often mono or legato with portamento. A chord then came out as a single note that slid in late, one note per chord, so supersaw / pluck chords sounded like a slow, delayed arpeggio, and songs across many genres sounded alike. Any part with notes that sound together now switches its plugin to polyphonic, full voices, no glide, before it plays (leads and basses keep their glide).
+- **Tighter middle column.** Feel / Mix knobs sit in a compact strip; menus pair up two per row with their long hints moved into hover tooltips; Parts shows one row per part (sound, volume, octave, mute, 🎲); the action bar is solid and the export buttons sit in one scrolling row; cards use 3 columns on wide screens and 1 on narrow ones. Big cards (Cinematic Journey, orchestra) keep their full layout and stay collapsible.
+
 ## 1.51.4
 - **Sounds no longer change behind your back.** With "Keep my sounds" (Parts → Sounds between songs, the default), each new song keeps the sounds you just heard on every part - so changing one part's sound, or pressing Preview again, no longer swaps the others. The Sound menus show what's playing. 🎲 / Re-roll sounds / ↺ Genre sounds, setting a part back to "Style default", or changing genre (which keeps only the sounds you picked yourself) let the genre choose again. "Genre picks" gives every song its own sounds, as before.
 - **Daisy Bell moved** into 🩺 Report a problem - click the little robot at the bottom of that window.

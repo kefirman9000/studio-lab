@@ -80,6 +80,58 @@ def apply_recipe(plugin, recipe):
     return applied, missing
 
 
+def has_chords(events):
+    """True if two or more notes ever sound at once (chords, pads, overlapping arps)."""
+    ends = []
+    for t0, dur, _n_, _v in sorted(events, key=lambda e: e[0]):
+        ends = [e for e in ends if e > t0 + 1e-4]
+        if ends:
+            return True
+        ends.append(t0 + max(0.01, dur))
+    return False
+
+
+def make_poly(plugin):
+    """Put a synth in polyphonic mode with no glide, so a chord plays as a chord. Many presets (and some plugins'
+    first program) are mono / legato with portamento: given a chord they keep only one note and slide into the next,
+    which makes chords sound late, one note after another, and every song alike."""
+    changed = []
+    for attr, p in (getattr(plugin, 'parameters', {}) or {}).items():
+        nm = _n(getattr(p, 'name', '') or attr)
+        if 'unison' in nm:                            # unison voices thicken one note - not polyphony
+            continue
+        choices = [v for v in (getattr(p, 'valid_values', None) or []) if isinstance(v, str)]
+        try:
+            if any(k in nm for k in ('playmode', 'polymode', 'voicemode', 'keymode', 'monopoly', 'voicing')) and choices:
+                hit = next((c for c in choices if 'poly' in _n(c)), None)
+                if hit is not None and getattr(plugin, attr, None) != hit:
+                    setattr(plugin, attr, hit)
+                    changed.append(attr)
+            elif nm in ('mono', 'monomode', 'legato', 'monolegato', 'legatomode') and not choices:
+                p.raw_value = 0.0
+                changed.append(attr)
+            elif nm.endswith(('voices', 'polyphony', 'voicecount', 'maxvoices')):
+                nums = [c for c in choices if re.fullmatch(r'\d+', c.strip())]
+                if nums:
+                    setattr(plugin, attr, max(nums, key=lambda c: int(c)))
+                elif choices:
+                    continue
+                else:
+                    p.raw_value = 1.0
+                changed.append(attr)
+            elif any(k in nm for k in ('portamento', 'glide')) and 'mode' in nm and choices:
+                hit = next((c for c in choices if _n(c) in ('off', 'none', 'disabled')), None)
+                if hit is not None:
+                    setattr(plugin, attr, hit)
+                    changed.append(attr)
+            elif any(k in nm for k in ('portamento', 'glide')) and not choices:
+                p.raw_value = 0.0
+                changed.append(attr)
+        except Exception:
+            pass
+    return changed
+
+
 def _load(job):
     from pedalboard import load_plugin
     kw = {}
@@ -224,6 +276,10 @@ def main(path):
         elif mode == 'render':
             import numpy as np
             sr = int(job.get('sr', 44100))
+            if job.get('poly', True) and has_chords(job['events']):
+                out_poly = make_poly(plugin)
+            else:
+                out_poly = []
             msgs = []
             for (t0, dur, note, vel) in job['events']:
                 n = max(0, min(127, int(note)))
@@ -245,7 +301,8 @@ def main(path):
             if not np.isfinite(audio).all():
                 raise RuntimeError('plugin produced invalid audio')
             np.save(job['out'], audio)
-            out = {'ok': True, 'shape': list(audio.shape), 'peak': float(np.max(np.abs(audio)) if audio.size else 0)}
+            out = {'ok': True, 'shape': list(audio.shape), 'peak': float(np.max(np.abs(audio)) if audio.size else 0),
+                   'poly': out_poly}
             if job.get('_applied'):
                 out['applied'], out['missing'] = job['_applied']
     except Exception as e:  # report, never crash the app

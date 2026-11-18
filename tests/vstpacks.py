@@ -250,7 +250,33 @@ def test_safety(tmp):
     print('ok  safety: checksum, Defender (a failed scan is not a threat), VirusTotal 0-detection rule, packs')
 
 
+def test_chords_poly():
+    """A synth left in mono / legato with glide (many presets, some plugins' first program) turned a chord into
+    one late, sliding note. Parts with chords switch the plugin to polyphonic, no glide."""
+    from sgcore import vst_worker as w
+
+    class P:
+        def __init__(self, name, raw=0.5, vals=None):
+            self.name, self.raw_value, self.valid_values = name, raw, vals
+
+    class Plug:
+        def __init__(self):
+            self.parameters = {'voices': P('Voices', 0.0, ['1', '2', '4', '6']), 'portamento_mode': P('Portamento Mode', 0, ['Off', 'Auto', 'On']),
+                               'portamento_amount': P('Portamento Amount', 0.6), 'a_play_mode': P('A Play Mode', 0, ['Poly', 'Mono', 'Mono (ST)']),
+                               'osc_1_unison_voices': P('A Osc 1 Unison Voices', 0.4), 'filter_cutoff': P('Filter Cutoff', 0.3)}
+            self.voices, self.portamento_mode, self.a_play_mode = '1', 'Auto', 'Mono'
+    pl = Plug()
+    assert w.has_chords([(0.0, 1.0, 62, 90), (0.0, 1.0, 66, 90), (0.0, 1.0, 69, 90)])
+    assert not w.has_chords([(0.0, 0.5, 62, 90), (0.5, 0.5, 66, 90), (1.0, 0.4, 69, 90)])
+    w.make_poly(pl)
+    assert pl.voices == '6' and pl.portamento_mode == 'Off' and pl.a_play_mode == 'Poly'
+    assert pl.parameters['portamento_amount'].raw_value == 0.0
+    assert pl.parameters['osc_1_unison_voices'].raw_value == 0.4 and pl.parameters['filter_cutoff'].raw_value == 0.3
+    print('ok  chords through a plugin play as chords (poly, no glide)')
+
+
 def main():
+    test_chords_poly()
     tmp = tempfile.mkdtemp()
     try:
         test_pick_asset()

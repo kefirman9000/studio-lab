@@ -75,14 +75,23 @@ h3{margin:0 0 10px;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;
 .card>summary::-webkit-details-marker{display:none}
 .card>summary::after{content:"▾";margin-left:auto;color:var(--muted);transition:.2s}
 .card:not([open])>summary::after{transform:rotate(-90deg)}
-.card .body{padding:2px 14px 14px;display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+.card .body{padding:2px 14px 12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px 14px}
+.card .body>.f{grid-column:span 2;order:1}
+.card .body{grid-auto-flow:row dense}
+/* 1. knobs: a compact strip - one narrow cell each, value beside the name, knob centred under it */
+.card .body>.f:has(>.knob){grid-column:span 1;align-items:center;gap:3px;order:0}
+#soundBody>.f,#soundBody>.f:has(>.knob),#soundBody>.f.wide{order:0}
+#soundBody{grid-auto-flow:row}
+.card .body>.f:has(>.knob)>label{width:100%}
+.card .body>.f.wide:has(>.knob){grid-column:span 1;order:0}
+
 .f{display:flex;flex-direction:column;gap:5px;min-width:0}
-.f.wide{grid-column:1/-1}
+.f.wide,.card .body>.f.wide{grid-column:1/-1;order:2}
 .f label{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
 .f label b{color:var(--text);font-weight:500;font-family:var(--mono);font-size:11.5px}
 select,input[type=number],input[type=text]{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 8px;outline:none;width:100%}
 input[type=range]{width:100%;accent-color:var(--acc)}
-.knob{width:46px;height:46px;cursor:ns-resize;touch-action:none;outline:none;flex:none;user-select:none}
+.knob{width:42px;height:42px;cursor:ns-resize;touch-action:none;outline:none;flex:none;user-select:none}
 .knob svg{width:100%;height:100%;display:block}
 .knob .kbg{fill:var(--panel2);stroke:var(--line);stroke-width:1.5}
 .knob .karc{fill:none;stroke:var(--line);stroke-width:3.5;stroke-linecap:round}
@@ -98,18 +107,31 @@ input.knobbed{position:fixed;left:0;top:0;opacity:0;pointer-events:none;width:1p
 .seg button.on{background:var(--chipon);color:#fff}
 .row{display:flex;gap:6px;align-items:center}
 .ibtn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 9px;cursor:pointer}
+/* each part on one row: the label's pieces become grid cells next to the sound menu */
+.card .body>.f.inst:not(.wide){grid-column:1/-1;display:grid;grid-template-columns:minmax(64px,auto) minmax(150px,1fr) auto auto auto auto;align-items:center;gap:4px 10px}
+.f.inst:not(.wide)>label{display:contents}
+.f.inst:not(.wide)>select:not(.fxsel){order:2;min-width:0}
+.f.inst:not(.wide) .vol{order:3}
+.f.inst:not(.wide) .vol input[type=range]{width:78px}
+.f.inst:not(.wide) .octsel{order:4;width:auto}
+.f.inst:not(.wide) .auto:has([data-mute]){order:5}
+.f.inst:not(.wide) [data-dice]{order:6}
+.f.inst:not(.wide)>.fxsel{order:7;grid-column:2/3}
+.f.inst:not(.wide)>label>.hint{order:2;grid-column:2/-1;margin-top:-2px}
 .mutes{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin-top:6px}
+.f>label.auto{justify-content:flex-start}
 .auto{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;cursor:pointer}
 .layers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;grid-column:1/-1}
 .layers .chip{text-align:center}
-.bar{position:sticky;bottom:0;background:linear-gradient(0deg,var(--bg) 70%,transparent);padding:14px 0 4px;margin-top:6px}
+.bar{position:sticky;bottom:0;z-index:5;background:var(--bg);border-top:1px solid var(--line);padding:10px 0 4px;margin-top:6px;box-shadow:0 -10px 14px -10px rgba(0,0,0,.6);bottom:-16px;padding-bottom:20px}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .btn{border:0;border-radius:11px;padding:11px 16px;font-weight:650;cursor:pointer;display:flex;align-items:center;gap:7px}
 .btn.p{background:linear-gradient(135deg,var(--acc),#5a3fe0);color:#fff;box-shadow:0 6px 22px #7c5cff44}
 .btn.s{background:var(--panel2);border:1px solid var(--line)}
 .btn.g{background:linear-gradient(135deg,#1fb998,var(--acc2));color:#04241d}
 .btn:disabled{opacity:.5;cursor:default}
-.outs{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.outs{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin-top:8px;padding-bottom:3px;scrollbar-width:thin}
+.outs>*{flex:none}
 .prog{height:4px;background:var(--panel2);border-radius:9px;overflow:hidden;margin:10px 0 4px;display:none}
 .prog>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .3s}
 .status{font-size:12px;color:var(--muted);font-family:var(--mono);min-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -262,8 +284,8 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f wide" id="drumsHead"><div class="hint" style="margin-top:6px"><b>Drums</b> <span id="drumVol"></span></div></div>
       <div class="f"><label>Drum style <span class="hint">what the drums play</span></label><select id="drumPattern"></select>
         <div class="hint">Changing the drum sounds never changes this.</div></div>
-      <div class="f"><label>Drummer <span class="hint">how the beat is played</span></label>
-        <div class="row" style="gap:4px"><select id="drFills" title="Fills"></select><select id="drGhosts" title="Ghost notes"></select><select id="drHats" title="Hi-hats"></select></div></div>
+      <div class="f wide"><label>Drummer <span class="hint">how the beat is played</span></label>
+        <div class="row" style="gap:6px;display:grid;grid-template-columns:repeat(3,1fr)"><select id="drFills" title="Fills"></select><select id="drGhosts" title="Ghost notes"></select><select id="drHats" title="Hi-hats"></select></div></div>
       <div class="f"><label>Percussion <span class="hint">on top of the kit</span></label><select id="percSet"></select></div>
       <div class="f"><label>Drum sounds <span class="auto"><input type="checkbox" id="userDrums">my samples</span></label><select id="kit"></select>
         <div class="mutes"><span class="hint">mute</span><label class="auto"><input type="checkbox" data-mute="kick">kick</label><label class="auto"><input type="checkbox" data-mute="snare">snare / clap</label><label class="auto"><input type="checkbox" data-mute="top">hats &amp; perc</label><label class="auto"><input type="checkbox" data-mute="fx">FX</label></div></div>
@@ -500,7 +522,7 @@ function renderSelected(){
   if($('#drumVol')) $('#drumVol').innerHTML=volHtml('drums');
   bindMutes();
   bindLevels();
-  bindOctaves();
+  bindOctaves(); tidyHints($('#soundBody'));
 }
 function soundName(id){ for(const r of Object.keys(META.roles||{})){ const i=(META.roles[r]||[]).find(x=>x.id===id); if(i) return i.name; }
   return String(id).replace(/^sf:/,'').replace(/_/g,' ')+(String(id).startsWith('sf:')?' (recorded)':''); }
@@ -661,6 +683,13 @@ function applyOptions(o){
 // turn / focus change can push the whole editor up and leave an empty screen
 window.addEventListener('scroll', ()=>{ if(window.scrollY||window.scrollX) window.scrollTo(0,0); }, {passive:true});
 document.addEventListener('scroll', e=>{ const t=e.target; if(t===document||t===document.documentElement||t===document.body){ document.documentElement.scrollTop=0; document.body.scrollTop=0; } }, true);
+// tidy labels: a field's explanatory hint moves into a hover tooltip on the label, so labels stay one short line
+function tidyHints(root){
+  (root||document).querySelectorAll('.card .body>.f:not(.inst)>label').forEach(l=>{ const f=l.parentNode;
+    if(f.classList.contains('wide')&&!f.querySelector(':scope>.knob')) return;
+    l.querySelectorAll(':scope>.hint').forEach(h=>{ const t=h.textContent.trim(); if(!t) return;
+      l.title=(l.title?l.title+' - ':'')+t; h.remove(); }); });
+}
 function initKnobs(){
   const VD=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value'), DD=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'disabled');
   $$('input[type=range]').forEach(inp=>{
@@ -1476,7 +1505,7 @@ async function init(){
     triad:'Triads','7':'7ths',add9:'add9','9':'9ths','6':'6ths',sus2:'sus2',sus4:'sus4'};
   const fill=(id,list,def)=>$(id).innerHTML=`<option value="">${def}</option>`+list.map(x=>`<option value="${x}">${NICE[x]||x}</option>`).join('');
   fill('#melStyle',META.melody_styles,'Genre default'); fill('#voicing',META.voicings,'Genre default'); fill('#chordColor',META.chord_colors,'Varies per song');
-  initKnobs();
+  initKnobs(); tidyHints();
   $('#seed').value=Math.floor(Math.random()*99999)+1;
   initSegs(); renderTabs(); renderMoods(); renderLayers(); renderOuts(); refresh();
   bindRange('simplicity',v=>v<5?'off':v<40?v+'% · lighter':v<75?v+'% · simple':v+'% · bare');
