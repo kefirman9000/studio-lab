@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.55.0
+- **Themes** - ⚙ Options → Appearance: pick a main colour, an accent colour (and a second accent) and light or dark, or start from a preset: Studio, Black & neon green, Midnight blue, Ember, Rose, Daylight, Paper & teal. Every part of the app follows the theme, and it's remembered.
+- **A levels visualizer in the top bar**, in your accent colours - bars or a wave (or off) in ⚙ Options. It only runs while a song plays and costs about 0.1% of one CPU core.
+- **⚙ Options** in the top bar now holds Appearance, ⟳ Updates (the "new" badge shows on Options) and 🩺 Report a problem.
+- **Preview, 4 Variations, Full song and Surprise me are at the top**, with the exports, song length and status - they stay in view while you scroll the controls.
+- **Skip the start screen**: a Skip ✕ button (or Esc), and it only comes back if you tick "Show this when Studio Lab opens".
+- **Drop any song on the window to use it as a reference.** One of your Studio Lab projects still opens in the editor; anything else (MP3, WAV, MIDI ...) is analysed as a reference and its closest genres, tempo and key show right away.
+- **⏭ Skip intro** on full songs: play from where the intro ends.
+- **Fixed: the tanpura drone "doing its own thing" in the Hindu genres** - it plucked its strings on its own clock (every 0.9 s, whatever the tempo), so its low string drifted against the tabla like a stray bass line. It now plucks in time with the song, and its lowest string is softer.
+- **Daisy Bell**: every syllable now sings at the same loudness (levelled by what the ear hears, after the robot effect - syllables used to differ by up to 9 dB), and the creepy machine voice sings a fourth lower with a rounder, less harsh buzz.
+- **Fixed: buttons that showed up white with unreadable text** (Report a problem and a few others).
+- **Fixed: Preview doing nothing after the layout change** (two elements shared one name); a test now guards against duplicate names.
+
 ## 1.54.1
 - **Fixed: sounds you pick in Parts weren't being kept** - each new song went back to the genre's own sounds. Since the layout tidy-up in 1.51.5 the octave menu sat in front of the sound menu, and your pick was saved to the wrong menu (so it was never sent with the song). Picks now stick through Preview, Full song, 4 Variations, More like this and mood changes.
 

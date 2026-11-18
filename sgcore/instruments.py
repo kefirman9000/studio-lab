@@ -1885,7 +1885,8 @@ def i_tanpura(m, dur, p, glide=None, mod=None):
     n = int((dur + 1.5) * SR)
     out = np.zeros(n)
     cyc = (1.5, 2.0, 2.0, 1.0)
-    step = 0.9
+    gains = (0.9, 1.0, 1.0, 0.45)                     # the low Sa string stays soft: a drone, not a bass line
+    step = float(p.get('step', 0.9))                  # one string per beat of the song (set by the arranger)
     k = 0
     while k * step < dur:
         s = int(k * step * SR)
@@ -1894,7 +1895,7 @@ def i_tanpura(m, dur, p, glide=None, mod=None):
         t = np.arange(L) / SR
         ph = 2 * np.pi * fr * t
         x = sum(np.sin(j * ph) * (0.85 ** j) for j in range(1, 20)) * np.exp(-t * 0.9)
-        out[s:s + L] += _jawari(x, 1.5)[:L] * 0.5
+        out[s:s + L] += _jawari(x, 1.5)[:L] * 0.5 * gains[k % 4]
         k += 1
     y = lp(hp(out, 80), 6000) * 0.09
     return np.vstack([y, np.roll(y, 240)])

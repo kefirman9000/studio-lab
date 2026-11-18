@@ -171,13 +171,16 @@ def sing(notes, rng=None, formant_scale=1.0, tilt=0.6, vibrato=0.0, breath=0.0, 
     # every sung syllable at the same loudness: a narrow resonance makes a note louder or softer depending on whether one
     # of its harmonics happens to land on it, so each note's vowel is levelled to one target (smoothly, ~12 ms)
     gain = np.ones(n)
+    # level by what the ear hears (300 Hz - 5 kHz, where vowels differ most), not by raw energy - otherwise 'ee' / 'oo'
+    # syllables came out softer or louder than 'ah' ones in the middle of a word
+    heard = signal.sosfilt(signal.butter(2, [300 / (SR / 2), 5000 / (SR / 2)], 'band', output='sos'), voice)
     for start, dur, midi, ph in notes:
         i0, i1 = int(start * SR), min(n, int((start + dur) * SR))
         sel = vamp[i0:i1] > 0.5
         if sel.sum() < 64:
             continue
-        r = float(np.sqrt(np.mean(voice[i0:i1][sel] ** 2)))
-        gain[i0:i1] = np.clip(0.25 / (r + 1e-9), 0.05, 20.0)
+        r = float(np.sqrt(np.mean(heard[i0:i1][sel] ** 2)))
+        gain[i0:i1] = np.clip(0.12 / (r + 1e-9), 0.05, 20.0)
     kg = np.exp(-1 / (0.012 * SR))
     gain = signal.lfilter([1 - kg], [1, -kg], gain, zi=[gain[0] * kg])[0]
     voice = voice * gain
@@ -201,6 +204,29 @@ def sing(notes, rng=None, formant_scale=1.0, tilt=0.6, vibrato=0.0, breath=0.0, 
         noise[a:b] += w * env * lvl
     y = voice + noise * 0.09                              # consonants ~10 dB under the vowels, as in real singing
     return y / (np.max(np.abs(y)) + 1e-9)
+
+
+def level_notes(y, notes, target=None):
+    """Even out how loud each sung note sounds after any effects (the robot's comb filter and crushing colour every
+    pitch differently): measured on the held part of the note in the band the ear hears best, gain moved smoothly."""
+    n = len(y)
+    heard = signal.sosfilt(signal.butter(2, [300 / (SR / 2), 5000 / (SR / 2)], 'band', output='sos'), y)
+    lv = []
+    for start, dur, midi, ph in notes:
+        a, b = int((start + 0.04) * SR), min(n, int((start + max(0.06, dur - 0.05)) * SR))
+        lv.append(float(np.sqrt(np.mean(heard[a:b] ** 2))) if b - a > 256 else None)
+    ok = [v for v in lv if v]
+    if not ok:
+        return y
+    tgt = target or float(np.median(ok))
+    gain = np.ones(n)
+    for (start, dur, midi, ph), v in zip(notes, lv):
+        if v:
+            a, b = int(start * SR), min(n, int((start + dur) * SR))
+            gain[a:b] = np.clip(tgt / v, 0.25, 4.0)
+    kg = np.exp(-1 / (0.015 * SR))
+    gain = signal.lfilter([1 - kg], [1, -kg], gain, zi=[gain[0] * kg])[0]
+    return y * gain
 
 
 def robotize(y, crush_hz=16000, bits=10):
@@ -242,9 +268,11 @@ def _timeline(bpm, wind_down=True, deep=False):
 
 
 VOICES = {
-    'machine': dict(label='Creepy machine (high, buzzy, crushed)', bpm=104, transpose=0, formant=1.0, tilt=0.6, crush=(16000, 10),
-                    shadow=(-12, 0.3, (11025, 8))),
-    'deep': dict(label='Deep, calm computer (slow, winding down)', bpm=86, transpose=-12, formant=0.86, tilt=0.86, crush=(44100, 16),
+    # (key: the whole song moves - voice and music box. The machine voice used to sing G4-G5 with a harsh buzz and
+    # heavy bit-crushing, which hurt to listen to; now it's a fourth lower, rounder and less crushed, still uncanny.)
+    'machine': dict(label='Creepy machine (buzzy, crushed)', bpm=104, transpose=0, key=-5, formant=1.0, tilt=0.74, crush=(22050, 11),
+                    shadow=(-12, 0.3, (16000, 10))),
+    'deep': dict(label='Deep, calm computer (slow, winding down)', bpm=86, transpose=-12, key=0, formant=0.86, tilt=0.86, crush=(44100, 16),
                  shadow=(-12, 0.12, (44100, 16))),
 }
 
@@ -271,10 +299,11 @@ def render(out_dir, bpm=None, log=print, wind_down=True, voice='machine'):
         for ph, midi, beats in MELODY:
             s0, drop = at(b)
             s1, _ = at(b + beats)
-            notes.append((s0, max(0.08, s1 - s0 - 0.02), midi + V['transpose'] + drop, ph))
+            notes.append((s0, max(0.08, s1 - s0 - 0.02), midi + V['transpose'] + V.get('key', 0) + drop, ph))
             b += beats
     sung = sing(notes, rng, V['formant'], V['tilt'])
     voice_ = robotize(sung, *V['crush']) if V['crush'][0] < SR else sung
+    voice_ = level_notes(voice_, notes)
     # a hollow octave-down shadow of the voice (same timing) for the uncanny doubled sound
     sh_t, sh_g, sh_c = V['shadow']
     shadow = sing([(s, d, m + sh_t, p) for s, d, m, p in notes], rng, V['formant'] * 0.9, V['tilt'])
@@ -303,12 +332,12 @@ def render(out_dir, bpm=None, log=print, wind_down=True, voice='machine'):
             if s0 * SR >= n - SR:
                 continue
             dur3 = at(beat + 3)[0] - s0
-            put('chipbass' if vname == 'machine' else 'sinebass', root - 12 + drop, s0, dur3 * 0.45, 0.30)
+            put('chipbass' if vname == 'machine' else 'sinebass', root - 12 + V.get('key', 0) + drop, s0, dur3 * 0.45, 0.30)
             for k in (1, 2):                              # oom - pah - pah
                 sk, dk = at(beat + k)
                 for iv in QUAL[q]:
-                    put('celesta', root + 12 + iv + dk, sk, (at(beat + k + 1)[0] - sk) * 0.6, 0.07, pan=-0.3 + 0.2 * iv / 10)
-            put('organ', root + drop, s0, dur3 * 0.95, 0.025 if vname == 'machine' else 0.045, pan=0.2)
+                    put('celesta', root + 12 + V.get('key', 0) + iv + dk, sk, (at(beat + k + 1)[0] - sk) * 0.6, 0.07, pan=-0.3 + 0.2 * iv / 10)
+            put('organ', root + V.get('key', 0) + drop, s0, dur3 * 0.95, 0.025 if vname == 'machine' else 0.045, pan=0.2)
     v = np.vstack([voice, voice])
     sh = np.vstack([shadow, shadow])
     vox = np.zeros_like(acc)
@@ -449,7 +478,7 @@ def sing_part(notes_s, style='ooh', voice='female', lyrics='', seed=1):
     def one(detune=0.0, delay=0.0, fs=1.0):
         y = sing([(s + delay, d, m + detune, p) for s, d, m, p in notes], rng, V['fs'] * fs, V['tilt'],
                  vibrato=V['vib'], breath=V['breath'], glide=0.06)
-        return robotize(y) if V.get('robot') else y
+        return level_notes(robotize(y), [(s + delay, d, m, p) for s, d, m, p in notes]) if V.get('robot') else y
     if voice == 'choir':                                   # a small group: a few voices, slightly apart in pitch and time
         parts = [one(0.0, 0.0), one(0.09, 0.018, 0.97), one(-0.08, 0.03, 1.04), one(-12.0, 0.01, 0.9)]
         n = max(len(p) for p in parts)

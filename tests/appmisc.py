@@ -44,7 +44,12 @@ def test_ui_sound_menus():
     ui = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'sgcore', 'ui.html')).read()
     assert "querySelector(':scope > select:not(.fxsel):not(.octsel)').onchange=e=>{ if(e.target.value) state.instruments[r]" in ui
     assert "w.querySelector('select').onchange=e=>{ if(e.target.value) state.instruments" not in ui
-    print('ok  part sound menus save your pick')
+    import re
+    from collections import Counter
+    ids = Counter(re.findall(r'\sid="([^"$]+)"', ui[:ui.index('<script>')]))
+    dup = [k for k, v in ids.items() if v > 1]
+    assert not dup, f'duplicate element ids in ui.html: {dup}'              # (#prog was both a box and the progress bar)
+    print('ok  part sound menus save your pick; no duplicate element ids')
 
 
 def test_mp3_without_ffmpeg():

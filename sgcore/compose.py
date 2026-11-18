@@ -74,6 +74,7 @@ class Options:
     part_fx: dict = field(default_factory=dict)       # layer -> effect plugin name (e.g. {'lead': 'ValhallaSupermassive'})
     ending: str = 'auto'          # auto | hit (final chord + crash) | fade
     vocal_guide: bool = False     # also play the vocal guide melody (it is always in the MIDI export)
+    skip_intro: bool = False      # start the song on its first main section (no intro)
     bends: str = None             # meend / gamak on sitar, veena, bansuri ...: 'off', 'subtle', 'more' (None = genre default)
     vocals: str = None            # sung vocals on the vocal melody: 'ooh', 'aah' or 'lyrics' (None = no singing)
     voice: str = 'female'         # the singer: 'female', 'male', 'choir' or 'robot'
@@ -1122,6 +1123,9 @@ def compose(opts):
         arp['rate'] = min(4, arp['rate'] * 2)
     arp_base = arp
     base_form = []
+    if getattr(opts, 'skip_intro', False) and len(form) > 2:   # start straight on the groove: no intro section(s)
+        while len(form) > 2 and form[0][0] in INTRO_NAMES:
+            form = form[1:]
     for (sname, nbars, layers, opts_s) in form:
         if not opts_s.get('build') and opts.structure != 'loop':
             nbars = max(4, int(round(nbars * scale_len / 4)) * 4)
@@ -1602,6 +1606,7 @@ def compose(opts):
         fx[:] = [f for f in fx if (f[0] not in FX_SOUNDS or f[0] == 'crash') and f[0] not in ('lpsweep', 'hpsweep')]
     hold_slow_chords(evs, tracks, st, bpm)
     legato_bass(evs, tracks)
+    sync_drones(tracks, bpm)
     shape_dynamics(evs, tracks, sections, st)
     in_evs = {id(e) for e in evs}
     st['tuned_notes'] = fix_clashes(evs + [v for v in vocal if id(v) not in in_evs], {**tracks, 'vocal': tracks.get('vocal') or
@@ -2070,6 +2075,16 @@ def add_ornaments(evs, tracks, key, amt, rnd):
                 e.slide = 0.0                            # the meend replaces the quick slide
 
 
+def sync_drones(tracks, bpm):
+    """The tanpura plucks its four strings in time with the song (one per beat, every other beat when it's fast) -
+    on its own clock it drifted against the tabla like a bass player doing their own thing."""
+    beat = 60.0 / max(40, bpm)
+    step = beat * (2 if beat < 0.55 else 1)
+    for t in tracks.values():
+        if t.get('inst') == 'tanpura':
+            t['p'] = dict(t.get('p') or {}, step=round(step, 4))
+
+
 SUSTAINED_BASS = {'reese', 'growl', 'wobble', 'hoover', 'sinebass', 'moogbass', 'drone', 'tanpura'}
 
 
@@ -2095,6 +2110,9 @@ def legato_bass(evs, tracks):
             prev = e
         if drop:
             evs[:] = [e for e in evs if id(e) not in drop]
+
+
+INTRO_NAMES = {'intro', 'alap', 'alapana', 'buka', 'invocation', 'doina', 'bells', 'drums'}   # (only leading ones are skipped)
 
 
 def rotate_solos(evs, tracks, sections, st):
