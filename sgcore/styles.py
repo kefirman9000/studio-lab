@@ -2598,6 +2598,13 @@ style('melodic_dubstep', 'Electronic', 'Melodic dubstep: emotional chords and a 
 
 # from the references: a 32-bar intro with no kick, 8 bars of pads alone, a ~60-bar drop, a 16-bar pads break and 12
 # bars of hats lifting back in, a ~64-bar second drop (the bars below are doubled at DnB tempo)
+FORMS['hopecore'] = [('intro', 8, {'arp', 'chords', 'pad'}, {'filter_in': True}),
+                     ('A', 8, {'arp', 'chords', 'pad', 'lead', 'bass'}, {}),
+                     ('B', 16, {'arp', 'chords', 'pad', 'lead', 'bass', 'kick', 'snare', 'top'}, {'level': 0.9}),
+                     ('break', 8, {'arp', 'chords', 'pad'}, {}),
+                     ('A', 8, {'arp', 'chords', 'lead', 'bass', 'kick', 'top'}, {'level': 0.85}),
+                     ('B', 16, {'arp', 'chords', 'pad', 'lead', 'bass', 'kick', 'snare', 'top'}, {}),
+                     ('outro', 8, {'arp', 'chords', 'pad'}, {'fade': True})]
 FORMS['liquid'] = [('intro', 16, {'top', 'pad', 'chords', 'fx'}, {'filter_in': True}),
                    ('build', 8, {'pad', 'chords', 'lead'}, {'build': True}),
                    ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad'}, {'drop': True}),
@@ -4378,7 +4385,40 @@ style('nineties_club_house', 'Electronic',
       label='90s club house (New York)')
 
 style('hopecore', 'Electronic',
-      'Hopecore (euphoric): bright, uplifting internet-core - fast chopped breakbeats and jersey-club kicks under big '
+      'Hopecore: warm, tender and hopeful - intricate accordion, piano and bell arpeggios rippling in triplets over '
+      'lush major 7th / add9 chords, a round sub bass, and soft, low drums (a gentle kick, a quiet snare, hats you barely '
+      'hear) that often sit out entirely; long drumless openings, no big drops',
+      bpm=(118, 140), scales=['major', 'major', 'lydian'], swing=0.5, human=0.008, form='hopecore', chord_size=4,
+      progs={'major': [[3, 4, 2, 5], [0, 4, 5, 3], [3, 0, 4, 5], [0, 2, 3, 4], [5, 3, 0, 4]],
+             'lydian': [[0, 1, 0, 1], [0, 1, 5, 4]]},
+      colour_boost=0.35, sc_depth=0.12, sc_release=0.5, reverb=2.6, kit='soft', no_fx_sounds=True,
+      drums={'kick': ['X.....x.......x.', 'X.......X.......', 'X.....x...x.....'], 'snare': ['....o.......o...', '....o.......o..o'],
+             'chat': ['..o...o...o...o.', 'o.o.o.o.o.o.o.o.'], 'shaker': ['.o.o.o.o.o.o.o.o']},
+      snare_tracks=['snare'], ghosts=True,
+      bass=['R-----..R-------', 'R-------R---F---', 'R-----R---R-----'], bass_mode='pattern', bass_lo=36, bass_gate=0.95,
+      chord_rh=['x-------x-------', 'x-----x---x-----', 'x---------------'], chord_center=62, voicing='drop2',
+      arp=dict(rate=4 / 3, mode='cascade', oct=5),
+      lead_rh=['x-x-x-x-x---x---', 'x---x-x-x-x-x---', 'x-xxx-x-x-------', 'x-------x-x-x---'], repetition=0.75,
+      gm_hint='Soft kit (felt kick, quiet snare, very low hats); warm sub; Rhodes / piano 7th chords; accordion, piano, '
+              'celesta and bell arpeggios in triplets; gentle accordion or piano lead',
+      tracks=[T('kick', 'kick', 'kick', db=-13, lp=6000), T('snare', 'snare', 'snare', rev=0.3, db=-20, lp=7000),
+              T('chat', 'top', 'chat', pan=0.2, db=-33, lp=9000), T('shaker', 'top', 'shaker', pan=-0.25, db=-33),
+              T('bass', 'bass', 'sinebass', sc=0.2, db=-16),
+              T('chords', 'chords', 'epiano', rev=0.4, db=-19),
+              T('pad', 'pad', 'warmpad', rev=0.55, db=-27),
+              T('arp', 'arp', 'accordion', pan=-0.2, rev=0.35, dly=0.25, db=-21),
+              T('arp2', 'arp', 'celesta', pan=0.3, rev=0.45, dly=0.3, db=-27, double_of='arp', octave=1, keep_inst=True),
+              T('lead', 'lead', 'piano', rev=0.4, dly=0.25, db=-19)],
+      master=dict(lufs=-12.0, air=1.4, low=1.0, width=1.15, max_gr=2.5),
+      pools=dict(bass=['sinebass', 'sf:fingerbass', 'ebass'],
+                 chords=['epiano', 'piano', 'wurli', 'sf:nylon'],
+                 pad=['warmpad', 'glasspad', 'solina', 'choir'],
+                 arp=['accordion', 'piano', 'celesta', 'bell', 'marimba', 'harp', 'kalimba'],
+                 lead=['piano', 'accordion', 'bell', 'flute']),
+      label='Hopecore')
+
+style('hopecore_breaks', 'Electronic',
+      'Hopecore breaks (fast): the loud breakbeat side - bright, uplifting internet-core - fast chopped breakbeats and jersey-club kicks under big '
       'major chords on piano and supersaws, sparkling chiptune and bell arps, a soaring lead, stutter edits into '
       'emotional drops - nostalgic, hopeful and loud',
       bpm=(150, 172), scales=['major', 'lydian'], swing=0.5, form='edm_b', chord_size=4,
@@ -4408,7 +4448,7 @@ style('hopecore', 'Electronic',
                  pad=['glasspad', 'warmpad', 'choir', 'solina'],
                  arp=['chip', 'bell', 'pluck_saw', 'celesta', 'marimba'],
                  lead=['supersaw_lead', 'chip', 'leadsaw', 'bell']),
-      label='Hopecore (euphoric breaks)')
+      label='Hopecore breaks (fast)')
 
 style('hopecore_dreamy', 'Electronic',
       'Hopecore (dreamy): the slower, softer side - warm 120-135 BPM bounce with a sub-heavy kick and soft claps, '

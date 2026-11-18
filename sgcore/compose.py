@@ -1394,6 +1394,9 @@ def compose(opts):
                         drone += 12
                     seq = [tones[1], tones[2] if len(tones) > 2 else tones[0] + 12, drone, tones[0], tones[2] if len(tones) > 2 else tones[1],
                            drone, tones[1], drone]
+                elif arp['mode'] == 'cascade':                   # hopecore: a two-octave ripple up the chord and back down
+                    two = tones + [t + 12 for t in tones] + [tones[0] + 24]
+                    seq = two + two[-2:0:-1]
                 elif arp['mode'] == 'alberti':                   # Classical-era accompaniment: low - high - middle - high
                     lo_, mid_, hi_ = tones[0] - 12, tones[1] - 12 if len(tones) > 2 else tones[0] - 5, tones[-1] - 12
                     seq = [lo_, hi_, mid_, hi_]

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.50.0
+- Hopecore redone from accordion-led references: 118–140 BPM (no more drum & bass), mostly major, lush 7th / add9 chords on electric piano, intricate two-octave "cascade" arpeggios in triplets (accordion doubled an octave up on celesta), a warm sub, and soft low drums (gentle kick, quiet snare, barely-there hats) that sit out of the long intro and the breakdown; no big drops, quieter master.
+- The old fast, chopped-break version is kept as "Hopecore breaks (fast)".
+- New arp mode `cascade` (two-octave ripple up and down the chord).
+
 ## 1.49.0
 - Walking bass "skips" (from big-band / swing MIDIs): about one beat in five gets a soft triplet ghost pickup into it, like a real upright player. New style key `walk_skips` (default 0.2; walk-mode genres).
 - Synthwave / dark synthwave (night-drive ref): half-time kick, 8th-note bass that rests on the downbeat, v–iv–III–i descent.
