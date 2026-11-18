@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.52.1
+- **Four more Hindu devotional genres, led by drums and sitar** - each opens either on the sitar alone over the tanpura drone or on the drums alone:
+  - *Bhajan - sitar & tabla*: the sitar unfolds the raga alone, the tabla plays the cycle by itself for a moment, then the song begins with the sitar on the melody.
+  - *Bhajan groove - tabla, dholak & bongos*: the drums start alone and lock into a rolling keherwa, then the drone and sitar come in; a drum break in the middle and a drums-only ending. Percussion up front.
+  - *Kirtan - drums & sitar*: dholak, bongos and kartal open it, the sitar calls each line and the group answers, with drum breaks - speeding up until it's wild and ecstatic.
+  - *Sitar & tabla jugalbandi*: a slow sitar alap, the tabla joins, then they trade solos phrase for phrase before playing together, faster and faster, into a blazing jhala.
+- **New drums: bongos** (high and low finger slaps).
+- No more violin in the devotional genres: their melody is played by sitar, bansuri, santoor or harmonium.
+
 ## 1.52.0
 - **Easy installers - no Python needed.** Each release now has a Windows installer (`StudioLab-Setup-<version>.exe`) and Mac disk images (Apple Silicon and Intel). They carry their own private Python with everything Studio Lab uses - audio libraries, VST plugin support and an MP3 encoder - so nothing else has to be installed. Windows installs per user (no admin password), with Start-menu and desktop shortcuts and a normal uninstaller; on a Mac you drag Studio Lab into Applications. ⟳ Updates keep working, and your songs, presets and sounds are kept across updates and reinstalls. Each installer is built and tested automatically (installed, a song made, uninstalled) before it's published.
 - **MP3 export without ffmpeg.** If ffmpeg isn't installed, Studio Lab now encodes MP3s itself (lameenc, included in the installers), with title / artist / genre tags.

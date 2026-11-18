@@ -104,7 +104,7 @@ DRUM_PART = {'chat': 'Closed hi-hat', 'ohat': 'Open hi-hat', 'rim': 'Rimshot', '
              'tabla': 'Tabla', 'cowbell808': 'Cowbell', 'tom_hi': 'High tom (fills)', 'tom_mid': 'Mid tom (fills)',
              'tom_lo': 'Low tom (fills)', 'bride': 'Build-up ride', 'lkick': 'Layered kick', 'lsnare': 'Layered snare',
              'vinyl': 'Vinyl crackle', 'texture': 'Background texture', 'timp': 'Timpani', 'bodhran': 'Bodhran',
-             'taiko': 'Taiko drums', 'bdrum': 'Orchestral bass drum', 'bayan': 'Tabla (bass drum)', 'manjira': 'Manjira (hand cymbals)', 'dholak': 'Dholak (bass)', 'dholak_ta': 'Dholak (treble)', 'chipkick': 'Chip kick',
+             'taiko': 'Taiko drums', 'bdrum': 'Orchestral bass drum', 'bayan': 'Tabla (bass drum)', 'manjira': 'Manjira (hand cymbals)', 'dholak': 'Dholak (bass)', 'dholak_ta': 'Dholak (treble)', 'bongo': 'Bongo (high)', 'bongo_lo': 'Bongo (low)', 'chipkick': 'Chip kick',
              'tom': 'Tom-toms', 'kick': 'Kick', 'snare': 'Snare', 'anvil': 'Anvil', 'chiphat': 'Chip hi-hat',
              'chipsnare': 'Chip snare', 'sleigh': 'Sleigh bells', 'timbale': 'Timbales'}
 

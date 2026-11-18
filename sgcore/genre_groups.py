@@ -38,7 +38,7 @@ GROUPS = {
                                    'folk', 'celtic_jig', 'blues', 'folk_jam']),
         ('Latin & Caribbean', ['bossa_nova', 'salsa', 'cumbia', 'tango', 'reggae', 'ska', 'soca', 'groovy_soca', 'dub', 'corridos_tumbados', 'bachata', 'merengue', 'samba']),
         ('World', ['raga_fusion', 'japanese_zen', 'bhangra']),
-        ('Hindu devotional', ['bhajan', 'kirtan', 'aarti', 'santoor_raga']),
+        ('Hindu devotional', ['bhajan', 'sitar_bhajan', 'tabla_bhajan', 'kirtan', 'drum_kirtan', 'aarti', 'santoor_raga', 'jugalbandi']),
     ],
     'Orchestral': [
         ('Film & Trailer', ['cinematic_journey', 'cinematic_journey_low', 'cinematic', 'film_piano', 'adventure', 'tension',

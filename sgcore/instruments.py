@@ -2115,3 +2115,24 @@ ROLE_CHOICES['pad'] += ['harmonium']
 ROLE_CHOICES['arp'] += ['santoor']
 ROLE_CHOICES['lead'] += ['harmonium', 'santoor']
 GM_PROGRAM.update({'harmonium': 20, 'santoor': 15})
+
+
+def d_bongo(p):
+    """Bongo (macho, the small drum): a bright, high finger slap with a short ring - here also standing in for the
+    small hand drums of devotional percussion jams."""
+    n = int(0.3 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 470)
+    f = f0 * (1 + 0.08 * np.exp(-t * 60))
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    x = (np.sin(ph) + 0.35 * np.sin(1.59 * ph) + 0.2 * np.sin(2.14 * ph)) * np.exp(-t * 18)
+    x += 0.5 * bp(noise(n), 1500, 7000) * np.exp(-t * 170)
+    return fade_out(x * 0.8, 0.03)
+
+
+def d_bongo_lo(p):
+    """Bongo (hembra, the bigger drum): a rounder, lower slap."""
+    return d_bongo(dict(p, pitch=p.get('pitch', 330)))
+
+
+DRUMS.update({'bongo': d_bongo, 'bongo_lo': d_bongo_lo})

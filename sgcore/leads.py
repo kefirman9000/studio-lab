@@ -8,7 +8,7 @@ import random
 
 # which devices suit each genre (one is picked per song, so the same style still varies)
 GENRE_DEVICES = {
-    'bhajan': ['raga'], 'kirtan': ['raga'], 'aarti': ['raga'], 'santoor_raga': ['raga'], 'stoner_raga': ['raga'], 'raga_fusion': ['raga'],
+    'bhajan': ['raga'], 'kirtan': ['raga'], 'aarti': ['raga'], 'santoor_raga': ['raga'], 'sitar_bhajan': ['raga'], 'tabla_bhajan': ['raga'], 'drum_kirtan': ['raga'], 'jugalbandi': ['raga'], 'stoner_raga': ['raga'], 'raga_fusion': ['raga'],
     'epic_orchestral': ['hook'], 'epic_battle': ['hook', 'riff'], 'epic_choir': ['hook'], 'heroic_anthem': ['hook'], 'symphonic_finale': ['hook'],
     'italo_disco': ['hook', 'arp'], 'new_beat': ['ostinato', 'chops'], 'gabber': ['riff', 'hook'], 'rave_hardcore': ['chops', 'hook'],
     'future_funk': ['chops', 'call'], 'bebop': ['hook'], 'modal_jazz': ['hook', 'call'], 'soul_jazz': ['riff', 'call'], 'fusion': ['hook', 'riff'],

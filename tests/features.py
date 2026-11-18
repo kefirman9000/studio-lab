@@ -368,7 +368,8 @@ def test_sound_choices():
             pool = (POOLS.get(k) or {}).get(r) or [inst]
             assert pool[0] == inst, (k, r)
             if len(pool) < 3 and inst not in ('808', 'logdrum', 'piano', 'chipbass', 'chip', 'tanpura', 'koto', 'sinebass', 'upright',
-                                              'cello', 'contrabass', 'organ', 'ebass', 'mandolin', 'guitar', 'choir'):
+                                              'cello', 'contrabass', 'organ', 'ebass', 'mandolin', 'guitar', 'choir',
+                                              'sitar', 'harmonium', 'santoor'):
                 thin.append((k, r, pool))
     assert len(thin) <= 6, thin
     print('ok  every genre part has idiomatic alternative sounds (re-roll / suggestions)')
@@ -499,6 +500,19 @@ def test_hindu_devotional():
         ins = {t['layer']: t['inst'] for t in s['st']['tracks'] if t['layer'] in ('lead', 'pad', 'chords')}
         assert ins == {'lead': 'sitar', 'pad': 'tanpura', 'chords': ins['chords']} and 'guitar' in ins['chords'], ins
         assert {'tabla', 'bayan', 'kick', 'snare'} <= {e.track for e in s['events']}
+    drum_layers = {'kick', 'snare', 'top'}
+    for g, opener in (('sitar_bhajan', 'sitar'), ('jugalbandi', 'sitar'), ('tabla_bhajan', 'drums'), ('drum_kirtan', 'drums')):
+        for sd in (1, 2):                                                     # drum- or sitar-led openings, no violin
+            s = compose(Options(style=g, seed=sd, variety=0.9))
+            first = s['sections'][0]
+            tr = {t['name']: t for t in s['st']['tracks']}
+            used = {tr[e.track]['layer'] for e in s['events'] if e.beat < first['bars'] * 4}
+            if opener == 'sitar':
+                assert used == {'lead', 'pad'} and tr['lead']['inst'] == 'sitar', (g, used)
+            else:
+                assert used <= drum_layers and len({e.track for e in s['events'] if e.beat < first['bars'] * 4}) >= 4, (g, used)
+            assert tr['lead']['inst'] == 'sitar' and not any(t['inst'] in ('violin', 'violins') for t in s['st']['tracks'])
+            assert not any(e.track.startswith('tom') for e in s['events'])
     print('ok  Hindu devotional: raga phrasing + meend, hand drums & fills, no EDM fx, kirtan accelerando, call & response')
 
 

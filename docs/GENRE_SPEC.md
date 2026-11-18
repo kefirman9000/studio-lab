@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (265 genres)
+# Studio Lab - technical genre rules (269 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -6800,7 +6800,7 @@ Bhajan (Hindu devotional song): a simple, heartfelt melody that winds up and dow
   - pad (pad): `tanpura` -21 dB · rev=0.4
   - chords (chords): `harmonium` -24 dB · pan=-0.15 · rev=0.3
   - arp (arp): `santoor` -26 dB · pan=0.25 · rev=0.4 · alternatives ['sitar', 'harp']
-  - lead (lead): `flute` -16 dB · rev=0.4 · dly=0.08 · alternatives ['violin', 'sitar', 'santoor']
+  - lead (lead): `flute` -16 dB · rev=0.4 · dly=0.08 · alternatives ['sitar', 'santoor']
   - harm (lead): `harmonium` -22 dB · pan=-0.1 · rev=0.3
 - **Mix** {'lufs': -13.0, 'air': 0.8, 'low': 0.6} · reverb 2.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['dholak_ta'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'dholak', 'suggest': '', 'hand_drums': True, 'no_fx_sounds': True, 'pad_drone': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'repetition': 0.8, 'slides': 0.4}
@@ -6828,7 +6828,7 @@ Kirtan (call-and-response chanting): a leader sings a short line of divine names
   - pad (pad): `tanpura` -22 dB · rev=0.4
   - chords (chords): `harmonium` -21 dB · pan=-0.15 · rev=0.3
   - arp (arp): `santoor` -27 dB · pan=0.3 · rev=0.4 · alternatives ['harp', 'sitar']
-  - lead (lead): `harmonium` -17 dB · rev=0.35 · alternatives ['flute', 'violin']
+  - lead (lead): `harmonium` -17 dB · rev=0.35 · alternatives ['sitar', 'flute']
   - group (lead): `choir` -23 dB · pan=0.15 · rev=0.5
 - **Mix** {'lufs': -12.0, 'air': 0.8, 'low': 0.6} · reverb 2.2 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['dholak_ta'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'dholak', 'suggest': '', 'hand_drums': True, 'no_fx_sounds': True, 'pad_drone': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'accel': (0.72, 1.45), 'call_response': True, 'repetition': 0.9, 'slides': 0.35}
@@ -6856,7 +6856,7 @@ Aarti (temple prayer with lamps): the evening worship song - temple bells ringin
   - pad (pad): `tanpura` -22 dB · rev=0.45
   - chords (chords): `harmonium` -23 dB · pan=-0.15 · rev=0.35
   - arp (arp): `tubular` -28 dB · pan=-0.25 · rev=0.6 · alternatives ['bell', 'celesta']
-  - lead (lead): `flute` -16 dB · rev=0.45 · dly=0.08 · alternatives ['violin', 'santoor']
+  - lead (lead): `flute` -16 dB · rev=0.45 · dly=0.08 · alternatives ['sitar', 'santoor']
   - harm (lead): `harmonium` -23 dB · pan=0.1 · rev=0.3
 - **Mix** {'lufs': -12.5, 'air': 1.0, 'low': 0.5} · reverb 2.4 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['dholak_ta'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'dholak', 'suggest': '', 'hand_drums': True, 'no_fx_sounds': True, 'pad_drone': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'repetition': 0.9, 'slides': 0.3}
@@ -6886,6 +6886,120 @@ Devotional raga on santoor: a morning or evening raga for prayer and meditation 
 - **Mix** {'lufs': -14.0, 'air': 1.2, 'low': 0.5} · reverb 2.6 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tabla'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bayan', 'suggest': '', 'hand_drums': True, 'no_fx_sounds': True, 'pad_drone': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'repetition': 0.7, 'slides': 0.25}
 - **Sound brief** Santoor (hammered dulcimer) - or sitar; tanpura drone; tabla; bansuri if you have one
+
+### Bhajan - sitar & tabla (`sitar_bhajan`)
+
+Bhajan - sitar & tabla: opens on the sitar alone over the tanpura drone, slowly unfolding the raga; then the tabla plays the cycle by itself for a moment before the devotional song begins - the sitar carrying the melody in rising and falling raga phrases, harmonium chords and manjira underneath
+
+- **Tempo** 80-100 BPM · **scales** bhairav, mixolydian, major, phrygian · swing 0.5 (unit 16) · humanise 0.009
+- **Progressions** {'major': [[0, 0, 3, 4], [0, 3, 0, 4]], 'mixolydian': [[0, 6, 0, 0], [0, 3, 6, 0]], 'bhairav': [[0, 0, 3, 0], [0, 5, 4, 0]], 'phrygian': [[0, 1, 0, 0], [0, 6, 1, 0]]} · chord_bars 2 · chord size 3
+- **Song form** `sitar_bhajan`: alap 8 [lead, pad] (filter_in) -> theka 4 [kick, pad, snare, top] -> sthayi 8 [chords, kick, lead, pad, snare, top] -> sthayi 8 [chords, kick, lead, pad, snare, top] -> antara 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> sthayi 8 [chords, kick, lead, pad, snare, top] -> antara 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> sthayi 8 [arp, chords, kick, lead, pad, snare, top] -> outro 4 [lead, pad] (cad) · form_scale 1
+- **Drums** **bayan** `X.....X.X.....X.` / `X.....X.......X.`; **tabla** `X.x.x.X.X.x.x.X.` / `X.xxx.X.X.x.x.Xx` / `X.x.x.x.X.x.xxX.`; **manjira** `x...x...x...x...`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.......R.......` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x-------x-------` / `x---x---x---x---`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.7}
+- **Lead rhythm** `x-x-x-x-x-x-x---`
+- **Build-ups** default `(category default)` · choices ['pickup'] · transitions ['none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - bayan (kick role - the genre's low drum): `bayan` -18 dB · rev=0.25
+  - tabla (snare): `tabla` -18 dB · rev=0.25
+  - manjira (top): `manjira` -28 dB · pan=0.25 · rev=0.3
+  - pad (pad): `tanpura` -21 dB · rev=0.4
+  - chords (chords): `harmonium` -25 dB · pan=-0.15 · rev=0.3
+  - arp (arp): `santoor` -27 dB · pan=0.25 · rev=0.4 · alternatives ['sitar']
+  - lead (lead): `sitar` -15 dB · rev=0.4 · dly=0.08
+- **Mix** {'lufs': -13.0, 'air': 0.9, 'low': 0.6} · reverb 2.2 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tabla'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bayan', 'suggest': '', 'hand_drums': True, 'no_fx_sounds': True, 'pad_drone': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'repetition': 0.8, 'slides': 0.45}
+- **Sound brief** Sitar (lead, alap intro); tabla; tanpura drone; harmonium; manjira
+
+### Bhajan groove - tabla, dholak & bongos (`tabla_bhajan`)
+
+Bhajan groove - tabla, dholak & bongos: the drums start alone - tabla, dholak, bongos and manjira locking into a rolling 8-beat keherwa - then the drone and the sitar come in on top; a drum break in the middle and a drums-only ending. Percussion up front, the sitar singing the devotional melody
+
+- **Tempo** 92-112 BPM · **scales** mixolydian, major, bhairav · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'major': [[0, 0, 4, 0], [0, 3, 4, 0]], 'mixolydian': [[0, 6, 0, 0], [0, 0, 6, 0]], 'bhairav': [[0, 0, 4, 0], [0, 1, 0, 0]]} · chord_bars 2 · chord size 3
+- **Song form** `tabla_bhajan`: drums 8 [kick, snare, top] -> drums 4 [kick, pad, snare, top] -> sthayi 8 [kick, lead, pad, snare, top] -> sthayi 8 [chords, kick, lead, pad, snare, top] -> antara 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> drums 8 [kick, pad, snare, top] -> sthayi 8 [chords, kick, lead, pad, snare, top] -> antara 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> sthayi 8 [arp, chords, kick, lead, pad, snare, top] -> drums 4 [kick, snare, top] (cad) · form_scale 1
+- **Drums** **bayan** `X.....X.X.....X.` / `X..X..X.X.....X.`; **tabla** `X.xxx.X.X.xxx.Xx` / `X.x.xxX.X.x.xxX.`; **dholak** `X.x.........x...` / `X.x.......x.X...`; **bongo** `..x.x..x..x.x..x` / `..x.xx.x..x.x.xx`; **bongo_lo** `x.....x.x.....x.` / `x.....x...x...x.`; **manjira** `x.x.x.x.x.x.x.x.` / `x...x...x...x.x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.......R.......` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.75}
+- **Lead rhythm** `x-x-x-x-x-x-x---`
+- **Build-ups** default `(category default)` · choices ['pickup'] · transitions ['none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `minimal_motivic` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - bayan (kick role - the genre's low drum): `bayan` -17 dB · rev=0.2
+  - tabla (snare): `tabla` -17 dB · rev=0.2
+  - dholak (top): `dholak` -19 dB · pan=-0.2 · rev=0.2
+  - bongo (top): `bongo` -21 dB · pan=0.35 · rev=0.2
+  - bongo_lo (top): `bongo_lo` -22 dB · pan=0.25 · rev=0.2
+  - manjira (top): `manjira` -26 dB · pan=-0.3 · rev=0.3
+  - pad (pad): `tanpura` -22 dB · rev=0.4
+  - chords (chords): `harmonium` -26 dB · pan=-0.15 · rev=0.3
+  - arp (arp): `sitar` -26 dB · pan=0.3 · rev=0.4 · alternatives ['santoor']
+  - lead (lead): `sitar` -16 dB · rev=0.35 · dly=0.08
+- **Mix** {'lufs': -12.0, 'air': 0.9, 'low': 0.8} · reverb 1.9 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tabla'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bayan', 'suggest': '', 'hand_drums': True, 'no_fx_sounds': True, 'pad_drone': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'repetition': 0.85, 'slides': 0.4}
+- **Sound brief** Tabla, dholak, bongos, manjira (drums first); sitar lead; tanpura; harmonium
+
+### Kirtan - drums & sitar (speeding up) (`drum_kirtan`)
+
+Kirtan - drums & sitar: the dholak, bongos and kartal start it off alone, then the sitar calls each line and the group answers, over a harmonium and drone - speeding up chant by chant, with drum breaks between, until it is a wild, ecstatic drum-driven chant
+
+- **Tempo** 90-100 BPM · **scales** mixolydian, major, bhairav · swing 0.5 (unit 16) · humanise 0.009
+- **Progressions** {'major': [[0, 0, 4, 4], [0, 3, 4, 0]], 'mixolydian': [[0, 0, 6, 0], [0, 6, 3, 0]], 'bhairav': [[0, 0, 4, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `drum_kirtan`: drums 4 [kick, snare, top] -> call 4 [kick, lead, pad, snare, top] -> chant 8 [chords, kick, lead, pad, snare, top] -> chant 8 [chords, kick, lead, pad, snare, top] -> drums 4 [kick, pad, snare, top] -> chant 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> chant 8 [arp, chords, kick, lead, pad, snare, top] -> ecstatic 8 [arp, chords, kick, lead, pad, snare, top] (drop) -> ecstatic 8 [arp, chords, kick, lead, pad, snare, top] (drop) -> drums 4 [kick, snare, top] (cad) · form_scale 1
+- **Drums** **dholak** `X.....x.X.......` / `X.....x.X...x...`; **dholak_ta** `..x.x...x.x.x.x.` / `..x.x.x.x.x.x.x.`; **bongo** `..x..x.x..x..x.x` / `..x.xx.x..x.xx.x`; **bongo_lo** `x.......x.......` / `x.....x.x.......`; **manjira** `x.x.x.x.x.x.x.x.` / `X.x.X.x.X.x.X.x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.......R.......` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x...x...x...x...` / `x.x.x.x.x.x.x.x.`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.7}
+- **Lead rhythm** `x-x-x-x-x-x-x---`
+- **Build-ups** default `(category default)` · choices ['pickup'] · transitions ['none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `minimal_motivic` · bass `rolling_groove` · drop `groove_drop` · variation `low` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - dholak (kick role - the genre's low drum): `dholak` -16 dB · rev=0.2
+  - dholak_ta (snare): `dholak_ta` -19 dB · rev=0.2
+  - bongo (top): `bongo` -21 dB · pan=0.35 · rev=0.2
+  - bongo_lo (top): `bongo_lo` -22 dB · pan=0.25 · rev=0.2
+  - manjira (top): `manjira` -25 dB · pan=-0.25 · rev=0.3
+  - pad (pad): `tanpura` -22 dB · rev=0.4
+  - chords (chords): `harmonium` -23 dB · pan=-0.15 · rev=0.3
+  - arp (arp): `santoor` -27 dB · pan=0.3 · rev=0.4 · alternatives ['sitar']
+  - lead (lead): `sitar` -16 dB · rev=0.35
+  - group (lead): `choir` -24 dB · pan=0.15 · rev=0.5
+- **Mix** {'lufs': -12.0, 'air': 0.8, 'low': 0.7} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['dholak_ta'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'dholak', 'suggest': '', 'hand_drums': True, 'no_fx_sounds': True, 'pad_drone': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'accel': (0.75, 1.45), 'call_response': True, 'repetition': 0.9, 'slides': 0.4}
+- **Sound brief** Dholak, bongos, kartal / manjira (drums first); sitar calls; group voices answer; harmonium; tanpura
+
+### Sitar & tabla jugalbandi (`jugalbandi`)
+
+Sitar & tabla jugalbandi (devotional duet): the sitar opens alone over the drone with a slow alap; the tabla joins for the composition (gat); then they trade - the tabla answers each sitar phrase with a solo of its own - before playing together, faster and faster, into a blazing jhala
+
+- **Tempo** 84-104 BPM · **scales** bhairav, phrygian_dominant, mixolydian, lydian · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'bhairav': [[0, 0, 0, 0]], 'phrygian_dominant': [[0, 0, 0, 0], [0, 1, 0, 0]], 'mixolydian': [[0, 0, 0, 0], [0, 0, 6, 0]], 'lydian': [[0, 0, 0, 0]]} · chord_bars 4 · chord size 3
+- **Song form** `jugalbandi`: alap 8 [lead, pad] (filter_in) -> gat 8 [kick, lead, pad, snare] -> tabla 4 [kick, pad, snare, top] -> sitar 4 [bass, lead, pad] (alt) -> tabla 4 [kick, pad, snare, top] -> sitar 4 [bass, lead, pad] (alt) -> gat 8 [kick, lead, pad, snare, top] -> jhala 8 [arp, kick, lead, pad, snare, top] (drop, cad) · form_scale 1
+- **Drums** **bayan** `X.....X.X.....X.` / `X.....X.......X.`; **tabla** `X.x.x.X.X.x.x.X.` / `X.xxx.X.X.x.x.Xx` / `X.x.x.x.X.x.xxX.`; **tabla_solo** `X.xxXxx.Xxx.XxXx` / `XxxxX.xxXx.xXxxx` / `X.xX.xX.XxxxX.Xx`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R-------........` · mode `pattern` · lowest note 36
+- **Chord rhythm** `x---------------`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.8}
+- **Lead rhythm** `x-x-x-x-x-x-x---`
+- **Build-ups** default `(category default)` · choices ['pickup'] · transitions ['none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - bayan (kick role - the genre's low drum): `bayan` -17 dB · rev=0.25
+  - tabla (snare): `tabla` -17 dB · rev=0.25
+  - tabla_solo (top): `tabla` -18 dB · pan=0.15 · rev=0.25
+  - bass (bass): `tanpura` -23 dB
+  - pad (pad): `tanpura` -21 dB · rev=0.4
+  - arp (arp): `sitar` -26 dB · pan=-0.25 · rev=0.4 · alternatives ['santoor']
+  - lead (lead): `sitar` -15 dB · rev=0.4
+- **Mix** {'lufs': -13.0, 'air': 1.1, 'low': 0.7} · reverb 2.3 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tabla'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bayan', 'suggest': '', 'hand_drums': True, 'no_fx_sounds': True, 'pad_drone': True, 'no_rotation': True, 'own_progs': True, 'no_layers': True, 'accel': (0.9, 1.3), 'repetition': 0.6, 'slides': 0.45}
+- **Sound brief** Sitar; tabla (dayan + bayan) with solos; tanpura drone
 
 # Orchestral
 

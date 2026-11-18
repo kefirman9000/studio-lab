@@ -286,7 +286,7 @@ EXTRA_CHORD_RH = {
 # pass never mixes the generic extra drum patterns into them - a reggae song with a kick on 1 and 3 isn't reggae
 OWN_GROOVE = {'reggae', 'dub', 'ska', 'reggaeton', 'dancehall', 'moombahton', 'soca', 'groovy_soca', 'salsa', 'cumbia',
               'bossa_nova', 'samba', 'bachata', 'merengue', 'baile_funk', 'funk_150', 'brazilian_phonk', 'afrobeat', 'afrobeats',
-              'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'bhajan', 'kirtan', 'aarti', 'santoor_raga', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house',
+              'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'bhajan', 'kirtan', 'aarti', 'santoor_raga', 'sitar_bhajan', 'tabla_bhajan', 'drum_kirtan', 'jugalbandi', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house',
               'baltimore_club', 'jersey_club', 'uk_drill', 'ukgarage', 'speed_garage', 'freestyle', 'electro', 'nola_brass',
               'tango', 'celtic_jig', 'swing_tomtom', 'western_swing', 'country', 'outlaw_country', 'surf_rock'}
 

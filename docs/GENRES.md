@@ -1,4 +1,4 @@
-# Studio Lab genres (265)
+# Studio Lab genres (269)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
@@ -199,7 +199,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hauntology II (sunlit tape) | `hauntology_sunlit` | 82-96 | Hauntology II - sunlit tape: warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
 | Hauntology III (dark film haze) | `hauntology_dark` | 64-80 | Hauntology III - dark film haze: slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
 
-## Classic (96)
+## Classic (100)
 
 ### Rock & Metal (22)
 
@@ -343,14 +343,18 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Japanese zen (koto, shakuhachi) | `japanese_zen` | 66-84 | Japanese zen / traditional-inspired: koto plucks and pressed bends, a breathy shakuhachi-style flute, a soft taiko and wood blocks, lots of space - calm, modal and spacious |
 | Raga (sitar, tabla, tanpura) | `raga_fusion` | 84-112 | Raga (Hindustani-inspired): a tanpura drone the whole way, the sitar alone in a slow free alap with sliding meend, then a pulse, then the tabla enters for the gat in a 16-beat teental and the music speeds into a jhala climax |
 
-### Hindu devotional (4)
+### Hindu devotional (8)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Aarti (temple bells & prayer) | `aarti` | 96-116 | Aarti (temple prayer with lamps): the evening worship song - temple bells ringing on every beat, bright manjira, a steady dholak, harmonium and a drone under a simple, joyful raga melody that everyone sings, verse after verse, ending in a ringing "jai" and the bells alone |
 | Bhajan (harmonium, dholak, manjira) | `bhajan` | 78-98 | Bhajan (Hindu devotional song): a simple, heartfelt melody that winds up and down in raga phrases - aroha and avaroha - with meend glides, the harmonium following the singer, a tanpura drone, the dholak in an 8-beat keherwa and bright manjira cymbals keeping time; a free opening, then the refrain (sthayi) and verses (antara) that climb higher - warm, repetitive, easy to sing along to |
+| Bhajan - sitar & tabla | `sitar_bhajan` | 80-100 | Bhajan - sitar & tabla: opens on the sitar alone over the tanpura drone, slowly unfolding the raga; then the tabla plays the cycle by itself for a moment before the devotional song begins - the sitar carrying the melody in rising and falling raga phrases, harmonium chords and manjira underneath |
+| Bhajan groove - tabla, dholak & bongos | `tabla_bhajan` | 92-112 | Bhajan groove - tabla, dholak & bongos: the drums start alone - tabla, dholak, bongos and manjira locking into a rolling 8-beat keherwa - then the drone and the sitar come in on top; a drum break in the middle and a drums-only ending. Percussion up front, the sitar singing the devotional melody |
 | Devotional raga (santoor) | `santoor_raga` | 70-96 | Devotional raga on santoor: a morning or evening raga for prayer and meditation - the santoor's bell-like mallet strikes and shimmering strings rising and falling through the raga (aroha / avaroha) in sparkling cascades, over a tanpura drone; a free, slow alap, then a pulse, then the tabla enters and it gathers speed to a glittering jhala |
 | Kirtan (call & response, speeding up) | `kirtan` | 90-100 | Kirtan (call-and-response chanting): a leader sings a short line of divine names and the group answers it, over and over - harmonium pumping chords, a tanpura drone, kartal / manjira cymbals and a dholak (or khol) - starting slow and calm and speeding up chant by chant until it is ecstatic, then settling on a last slow line |
+| Kirtan - drums & sitar (speeding up) | `drum_kirtan` | 90-100 | Kirtan - drums & sitar: the dholak, bongos and kartal start it off alone, then the sitar calls each line and the group answers, over a harmonium and drone - speeding up chant by chant, with drum breaks between, until it is a wild, ecstatic drum-driven chant |
+| Sitar & tabla jugalbandi | `jugalbandi` | 84-104 | Sitar & tabla jugalbandi (devotional duet): the sitar opens alone over the drone with a slow alap; the tabla joins for the composition (gat); then they trade - the tabla answers each sitar phrase with a solo of its own - before playing together, faster and faster, into a blazing jhala |
 
 ## Orchestral (29)
 
