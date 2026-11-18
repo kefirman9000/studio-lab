@@ -15,7 +15,7 @@
   - *Classic:* Afrobeat (70s), dub, corridos tumbados (3/4, tuba and requinto), bachata, merengue, samba, gypsy jazz (la pompe, no drums), New Orleans brass band, shoegaze, post-rock, pop-punk / emo, doom / stoner metal, ragtime / stride piano, bhangra, musical theatre and anime opening.
 - **Signature grooves are protected.** The variety pass used to mix generic extra drum patterns into every genre - which could put a kick on 1 and 3 under reggae's one-drop or dilute dembow, clave and footwork. 46 rhythm-defined genres now always keep their own drum patterns.
 - Without the sound library, nylon guitar now falls back to the acoustic guitar instead of an electric one.
-- **🤖 Daisy Bell:** a button (and `python studiolab.py daisy`) that renders "Daisy Bell (A Bicycle Built for Two)" (1892, public domain) sung by a creepy early-computer voice - a new formant singing synthesizer that pronounces the lyrics on a dead-steady, vibrato-free pitch, bit-crushed and doubled - over an old-computer music-box waltz. The second chorus winds down like a machine losing power: slower and slower, sinking in pitch.
+- **🤖 Daisy Bell:** a button (and `python studiolab.py daisy`) that renders "Daisy Bell (A Bicycle Built for Two)" (1892, public domain) sung by a creepy early-computer voice - a new formant singing synthesizer that pronounces the lyrics on a dead-steady, vibrato-free pitch, bit-crushed and doubled - over an old-computer music-box waltz (the vowels carry the voice, consonants sit about 10 dB under them, and each consonant lands just before the beat so the sung note is on time). The second chorus winds down like a machine losing power: slower and slower, sinking in pitch.
 - README and genre docs updated for all of the above.
 
 ## 1.50.0

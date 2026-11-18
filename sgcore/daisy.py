@@ -60,6 +60,9 @@ CONS = {'s': (0.11, 0.0, 0.5, (4500, 9500), False), 'z': (0.09, 0.5, 0.35, (4000
         'g': (0.06, 0.25, 0.4, (1400, 3200), True), 'k': (0.08, 0.0, 0.5, (1400, 3500), True),
         'tS': (0.12, 0.0, 0.55, (1800, 5500), True), 'dZ': (0.11, 0.35, 0.45, (1800, 5500), True)}
 BLOCK = 64
+# per-vowel level so every vowel sings at the same loudness (measured against 'a'; a parallel formant bank makes
+# open and front vowels louder than closed ones)
+VGAIN = {'i': 1.89, 'I': 0.47, 'e': 0.55, 'E': 1.29, 'ae': 1.35, 'O': 0.92, 'o': 0.58, 'U': 0.49, 'u': 0.99, 'V': 1.41, '@': 1.17, 'R': 0.57}
 
 
 def _segments(phonemes, dur):
@@ -83,22 +86,22 @@ def _segments(phonemes, dur):
     return seg
 
 
-def _resonate(x, freqs, bws, n):
-    """Run x through a cascade of three formant resonators whose centre frequencies move block by block."""
-    y = x.copy()
+def _resonate(x, freqs, bws, n, gains=(1.0, 0.55, 0.3)):
+    """A parallel bank of three formant resonators (centres move block by block) - each sees the full source, so every
+    vowel comes out at a steady level (a series chain cancels itself out between distant formants)."""
+    out = np.zeros_like(x)
     for k in range(3):
-        out = np.zeros_like(y)
+        y = np.zeros_like(x)
         zi = np.zeros(2)
+        r = np.exp(-np.pi * bws[k] / SR)
         for s in range(0, n, BLOCK):
             e = min(n, s + BLOCK)
-            f = freqs[k][s // BLOCK]
-            r = np.exp(-np.pi * bws[k] / SR)
-            th = 2 * np.pi * f / SR
+            th = 2 * np.pi * freqs[k][s // BLOCK] / SR
             a = [1.0, -2 * r * np.cos(th), r * r]
             g = abs(1 - 2 * r * np.cos(th) * np.exp(-1j * th) + r * r * np.exp(-2j * th))   # unity gain at the peak
-            out[s:e], zi = signal.lfilter([g], a, y[s:e], zi=zi)
-        y = out
-    return y
+            y[s:e], zi = signal.lfilter([g], a, x[s:e], zi=zi)
+        out += gains[k] * y
+    return out
 
 
 def sing(notes, rng=None):
@@ -122,14 +125,21 @@ def sing(notes, rng=None):
         if prev:                                          # quick portamento from the last note
             f0[i0:i0 + g] = np.linspace(prev, hz, g)
         prev = hz
-        t = start
-        for p, d in _segments(ph, dur):
+        segs = _segments(ph, dur)
+        lead = 0.0
+        for p, d in segs:                                 # onset consonants go just before the beat, like a singer's
+            if p in VOWELS or p in DIPH:
+                break
+            lead += d
+        lead = min(lead, 0.12)
+        t = max(0.0, start - lead)
+        for p, d in segs:
             a, b = int(t * SR), int((t + d) * SR)
             if p in VOWELS or p in APPROX:
                 fm = VOWELS.get(p) or APPROX[p]
                 for k in range(3):
                     targ[k][a // BLOCK:b // BLOCK + 1] = fm[k]
-                lvl = 1.0 if p in VOWELS else (0.45 if p in ('m', 'n') else 0.7)
+                lvl = (1.0 if p in VOWELS else (0.45 if p in ('m', 'n') else 0.7)) * VGAIN.get(p, 1.0)
                 vamp[a:b] = lvl
             else:
                 cd, voi, nl, band, burst = CONS[p]
@@ -146,7 +156,10 @@ def sing(notes, rng=None):
     ph_ = np.cumsum(f0 / SR)
     src = (2 * (ph_ % 1.0) - 1.0) * (f0 > 0)
     src = signal.lfilter([1.0], [1, -0.6], src) * 0.4
-    voice = _resonate(src * vamp, targ, (80, 110, 160), n)
+    voice = _resonate(src * vamp, targ, (90, 120, 170), n)
+    voiced = voice[vamp > 0.9]
+    vref = float(np.sqrt(np.mean(voiced ** 2))) if voiced.size else 0.1
+    voice = voice / (vref + 1e-9) * 0.25                  # vowels at a fixed level; consonants are set against it
     # consonant noise
     noise = np.zeros(n)
     for a, b, lo, hi, lvl, burst in nband:
@@ -163,12 +176,13 @@ def sing(notes, rng=None):
             r = max(1, int(0.01 * SR))
             env[:r] *= np.linspace(0, 1, r)
             env[-r:] *= np.linspace(1, 0, r)
+        w = w / (np.sqrt(np.mean(w ** 2)) + 1e-9)
         noise[a:b] += w * env * lvl
-    y = voice + noise * 0.6
+    y = voice + noise * 0.09                              # consonants ~10 dB under the vowels, as in real singing
     return y / (np.max(np.abs(y)) + 1e-9)
 
 
-def robotize(y, crush_hz=11025, bits=8):
+def robotize(y, crush_hz=16000, bits=10):
     """The machine: sample-and-hold to a low sample rate, bit reduction, an octave-down double and a short metallic comb."""
     hold = max(1, int(SR / crush_hz))
     y = np.repeat(y[::hold], hold)[:len(y)]
@@ -227,7 +241,7 @@ def render(out_dir, bpm=104, log=print, wind_down=True):
             b += beats
     voice = robotize(sing(notes, rng))
     # a hollow octave-down shadow of the voice (same timing) for the uncanny doubled sound
-    shadow = robotize(sing([(s, d, m - 12, p) for s, d, m, p in notes], rng), crush_hz=8000, bits=6)
+    shadow = robotize(sing([(s, d, m - 12, p) for s, d, m, p in notes], rng), crush_hz=11025, bits=8)
     log('Building the music box …')
     n = len(voice) + int(3 * SR)
     acc = np.zeros((2, n))
