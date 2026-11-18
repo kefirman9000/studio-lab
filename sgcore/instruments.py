@@ -1544,9 +1544,19 @@ GM_PROGRAM['sopsax'] = 64
 
 
 def i_ebass(m, dur, p, glide=None, mod=None):
-    """Electric bass stand-in (until the real one is installed): a round plucked string with a little finger thump."""
-    y = i_pluck(m, dur, dict(bright=p.get('bright', 1400), damp=p.get('damp', 0.996), r=0.12))
-    return eq(y, 'peak', 90, 1.0, 3)
+    """Electric (finger) bass: a short pick/finger transient on top of a sustained round body that holds for the
+    whole note, like a real P/J bass - it no longer dies away like a plucked string on long notes."""
+    f = float(mtof(m))
+    env = adsr(dur * SR, 0.004, p.get('d', 0.35), p.get('s', 0.62), 0.07)
+    n = len(env)
+    t = np.arange(n) / SR
+    body = 0.85 * sine(f, n) + 0.28 * sine(2 * f, n) + 0.22 * saw(f, n)
+    body = filt_env(body, 380, p.get('bright', 1400), np.exp(-t * 7))
+    att = i_pluck(m, min(dur, 0.25), dict(bright=p.get('bright', 1400) * 1.4, damp=0.99, r=0.05))
+    k = min(len(att), n)
+    y = body * env
+    y[:k] += 0.3 * att[:k] * np.exp(-t[:k] * 18)
+    return eq(lp(hp(soft(y, 1.2), 32), 3200), 'peak', 90, 1.0, 3) * 0.32
 
 
 INSTRUMENTS['ebass'] = i_ebass

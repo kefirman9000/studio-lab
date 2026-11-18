@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.47.1
+- Electric bass no longer sounds like a plucked string: the built-in `ebass` (used by ~30 genres, and the stand-in for finger/pick bass when the sampled sound library isn't installed) is now a sustained P/J-style body with a short finger transient, holding for the full note length. Level-matched to the old sound.
+
 ## 1.47.0
 - Reference-MIDI pass (≈30 files): new grooves and progressions for future bass (bouncy kick), hard trance (one-chord vamp, offbeat bass), trap (i–bVI sway), 2000s R&B (sparse syncopated kicks and matching bass, IV–vi–I, i–ii dorian vamp), synthpop (skippy kick, ii–V–I–vi), jam band (stop-time boogie bass, dotted vamp bass, two-chord vamps), folk jam / soft rock (push-kick bass), bluegrass (two-beat bass), disco (up to 130 BPM, i–iv vamp, driving and pushed bass), disco-funk (vi–IV–I, post-disco kick), nu-disco (bVI–i sway, boogie bass), funk (one-chord vamp, double-kick pickups) and smooth funk (busy 16th bass).
 
