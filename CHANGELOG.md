@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.46.1
+- Patterns learned from reference MIDIs: 2-step kick/bass and i–bVI–bIII–v for UK garage; 8th-note "train" and shuffle-boogie bass lines plus I–IV–ii–V for jam band / 80s jam rock; V–ii–ii–I anthem loop for 90s alt rock; ii–I–V noir-ballad loop for soft rock; vi–I sway for downtempo.
+
 ## 1.46.0
 - **Parts no longer squeal too high.** Every melodic part (lead, arp, chords, pad) now stays in its instrument's comfortable range. If the middle of a part sits above or below its instrument's range, the whole part moves by octaves and keeps its shape. Ranges are set for 60+ instruments: sax, trumpet, brass, trombone, horn, flute, clarinet, oboe, violin, cello, guitars, pianos, mallets, synth leads and more. Example: your swing song's brass lead moved from around A5 down to A4.
 - **Octave control for every part.**
