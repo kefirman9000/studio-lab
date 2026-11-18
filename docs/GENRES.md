@@ -1,8 +1,8 @@
-# Studio Lab genres (304)
+# Studio Lab genres (306)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (150)
+## Electronic (152)
 
 ### House & Disco (28)
 
@@ -102,7 +102,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Neurofunk (lighter) | `neurofunk_lite` | 172-176 | Neurofunk, lighter and more melodic: the tight 174 two-step and a dark reese, but with clearer chords, a pad underneath and a lead you can hum - less extreme sound design than full neurofunk |
 | UK hardcore / happy hardcore | `uk_hardcore` | 168-178 | UK hardcore / happy hardcore: 170+ BPM four-on-the-floor, bouncing off-beat octave bass, rolling piano chords, euphoric supersaw leads and big builds into massive major-key drops |
 
-### Hip-Hop, Trap & Phonk (24)
+### Hip-Hop, Trap & Phonk (26)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -123,8 +123,10 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Orchestral Hip Hop | `orchestral_hiphop` | 132-145 | Orchestral hip hop / drill: dramatic string stabs, choir, pizzicato, sliding 808s, rolling hats |
 | Plugg / Pluggnb | `plugg` | 140-160 | Plugg / pluggnb: dreamy major-key synth chords and soft bells, simple sliding 808s, sparse bouncy trap drums - floaty and sweet |
 | Rage | `rage` | 150-165 | Rage: huge detuned supersaw synth leads and arps, distorted booming 808s, hard trap drums at 150+ - loud, bright and euphoric |
-| Shadow 808 (no two bars alike) | `shadow_808` | 155-168 | Shadow 808: a pitch-dark, almost mono trap beat at 155-168 BPM where the 808 never plays the same bar twice - grinding root and flat-2nd 8ths, leaping one or two octaves up and sliding back down, 16th rolls, dives and wobbles, bars of folded, buzzing 808 with the sub gone, chopped stabs, sudden gaps and dead stops where the drums cut out - over semitone-rub phrygian chords, a faint eerie melody and a lot of empty space |
-| Shadow 808 - DJ edits (slowdowns, pitch warps) | `shadow_808_dj` | 155-168 | Shadow 808 - DJ edits: the shadow 808 beat (an 808 that never plays the same bar twice, phrygian rubs, dead stops) cut up like a DJ is playing with it - fake slowdowns before the drops (the record dragged by hand, sinking in pitch, then the drop slamming in), hats climbing, diving and swooping in pitch, rolls that dive into the next bar, a lead that gets down-tuned, up-tuned and played a tone flat, chops and tape stops |
+| Switch-up 808 (no two bars alike) | `switchup_808` | 155-168 | Switch-up 808: a pitch-dark, almost mono trap beat at 155-168 BPM where the 808 never plays the same bar twice - grinding root and flat-2nd 8ths, leaping one or two octaves up and sliding back down, 16th rolls, dives and wobbles, bars of folded, buzzing 808 with the sub gone, chopped stabs, sudden gaps and dead stops where the drums cut out - over semitone-rub phrygian chords, a faint eerie melody and a lot of empty space |
+| Switch-up 808 - DJ edits (slowdowns, pitch warps) | `switchup_808_dj` | 155-168 | Switch-up 808 - DJ edits: the switch-up 808 beat (an 808 that never plays the same bar twice, phrygian rubs, dead stops) cut up like a DJ is playing with it - fake slowdowns before the drops (the record dragged by hand, sinking in pitch, then the drop slamming in), hats climbing, diving and swooping in pitch, rolls that dive into the next bar, a lead that gets down-tuned, up-tuned and played a tone flat, chops and tape stops |
+| Switch-up 808 - hard (punchy kicks) | `switchup_808_hard` | 162-172 | Switch-up 808 - hard: the switch-up 808 beat made aggressive - hard, punchy, distorted kicks that hit like a fist (a sharp click, a fast pitch drop, slammed through saturation) with the 808 ducking out of their way, cracking crushed snares and claps, a dirtier growling 808 that still switches up bar to bar, cowbell stabs, DJ slowdowns and stutters into the drops, and a loud, pressured mix |
+| Switch-up 808 - mallets (fast arpeggios) | `switchup_mallets` | 155-168 | Switch-up 808 - mallets: the switch-up 808 beat under a storm of fast mallet arpeggios - marimba, vibes and bells rippling through the chords in 32nd notes and two-octave cascades, echoing in delay - over the switching, leaping 808, a dark phrygian rub and the DJ edits (slowdowns into the drops, pitched hats); the mallets alone with no sub to open and close |
 | Trap | `trap` | 136-150 | Modern trap: half-time snares, rolling hi-hats, gliding 808s, dark bells |
 | UK Drill | `uk_drill` | 140-145 | UK/NY drill: sliding 808s, triplet hats, offbeat snares, dark piano & strings |
 | UK road rap | `uk_road_rap` | 146-156 | UK road rap: a dark, half-time London rap beat around 150 BPM - a huge mono 808 sub sliding between the root, its leading tone and the fifth, steady ticking 8th hats with the odd roll, a hard snare on the half-time backbeat, sparse kicks, and a moody harmonic-minor piano line over low strings and choir - roomy for the bars |

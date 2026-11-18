@@ -73,7 +73,7 @@ def i_808(m, dur, p, glide=None, mod=None):
     y = np.sin(2 * np.pi * np.cumsum(freq) / SR)
     if w == 'growl':
         y = y + 0.35 * np.tanh(4 * y)                              # (a smooth knee: sign * sqrt aliased into fizz)
-    elif w == 'fold':                                              # wave-folded: a buzzing, distorted 808 (shadow 808)
+    elif w == 'fold':                                              # wave-folded: a buzzing, distorted 808 (switch-up 808)
         y = np.sin(2.6 * y + 0.8 * np.sin(2 * np.pi * np.cumsum(freq * 2) / SR) * np.minimum(t / 0.3, 1))
         y = y * 0.75 + 0.25 * np.sin(2 * np.pi * np.cumsum(freq) / SR)
     amp = np.exp(-t * p.get('decay', 0.9)) * np.minimum(t / 0.002, 1)

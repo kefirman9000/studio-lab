@@ -734,16 +734,16 @@ def test_bass_warp_trap():
     print('ok  bass-warp trap (+ fast): warped 808s, slides, 808-up / growl switch-ups, parallel grit, pitched hat rolls')
 
 
-def test_shadow_808():
-    """v1.56: shadow 808 - the 808 switches up nearly every bar (grinds, leaps, rolls, gaps, stops, folds ...), never
+def test_switchup_808():
+    """v1.56: switch-up 808 - the 808 switches up nearly every bar (grinds, leaps, rolls, gaps, stops, folds ...), never
     repeats the bar before for long, keeps leaps as leaps in the raised no-sub sections, and the fold mod buzzes."""
     import numpy as np
     from sgcore.compose import Options, compose
     from sgcore.instruments import INSTRUMENTS
     from sgcore.styles import STYLES
-    assert 155 <= STYLES['shadow_808']['bpm'][0] and STYLES['shadow_808']['bass_lo'] <= 24
+    assert 155 <= STYLES['switchup_808']['bpm'][0] and STYLES['switchup_808']['bass_lo'] <= 24
     for seed in (3, 11):
-        s = compose(Options(style='shadow_808', seed=seed))
+        s = compose(Options(style='switchup_808', seed=seed))
         b = [e for e in s['events'] if e.track in ('bass', 'bass_hi')]
         sig = {}
         for e in b:
@@ -762,7 +762,17 @@ def test_shadow_808():
         sp = np.abs(np.fft.rfft(z))
         return sp[200:].sum() / sp.sum()
     assert hi(y) > 2 * hi(c)                                          # folded = buzzing harmonics
-    print('ok  shadow 808: bar-by-bar 808 switch-ups (grind, leap, roll, gap, stop, fold), no repeated bars')
+    m = compose(Options(style='switchup_mallets', seed=3))
+    a = sorted(e.beat for e in m['events'] if e.track == 'arp')
+    step = float(np.median([d for d in np.diff(a) if d > 0])) * 60 / m['bpm']
+    assert step < 0.07 and any(e.track == 'arp_hi' for e in m['events'])     # 32nd-note mallet arps, doubled up high
+    h = compose(Options(style='switchup_808_hard', seed=3))
+    from sgcore.styles import STYLES as _S
+    k = _S['switchup_808_hard']['kit_override']['kick']
+    assert k['drive'] >= 4 and k['punch'] >= 200 and _S['switchup_808_hard']['sc_depth'] >= 0.8   # punchy, ducking kicks
+    assert sum(e.track == 'kick' for e in h['events']) > sum(e.track == 'kick' for e in s['events'])
+    assert compose(Options(style='shadow_808', seed=3))['style'] == 'switchup_808'              # old name still opens
+    print('ok  switch-up 808: bar-by-bar 808 switch-ups (grind, leap, roll, gap, stop, fold), no repeated bars')
 
 
 def test_tanpura_on_the_beat():
@@ -837,22 +847,22 @@ def test_voice_sample_chops():
         assert usersounds.listing()['vocal'] == [name] and usersounds.vocal_type(name) == 'phrase'
         L, vt, root, ons = usersounds.vocal_info(name)
         assert 1.2 < L < 1.7 and len(ons) >= 3, (L, ons)
-        assert vox_use_for('shadow_808', 'Electronic', 'phrase') == 'screwed'
+        assert vox_use_for('switchup_808', 'Electronic', 'phrase') == 'screwed'
         assert vox_use_for('jersey_club', 'Electronic', 'phrase') == 'stutter'
         assert vox_use_for('jazz', 'Classic', 'phrase') == 'adlib' and vox_use_for('jazz', 'Classic', 'note') == 'melody'
-        for g, use in (('shadow_808_dj', 'auto'), ('uk_bounce_house', 'auto'), ('jazz', 'auto'), ('trap', 'melody'),
+        for g, use in (('switchup_808_dj', 'auto'), ('uk_bounce_house', 'auto'), ('jazz', 'auto'), ('trap', 'melody'),
                        ('lofi', 'phrase')):
             s = compose(Options(style=g, seed=5, vox_sample=name, vox_use=use))
             v = [e for e in s['events'] if e.track == 'voxsample']
             assert v and any(x['name'] == 'voxsample' for x in s['st']['tracks']), (g, use)
-            if g == 'shadow_808_dj':
+            if g == 'switchup_808_dj':
                 assert all(e.midi < 60 for e in v)                          # screwed: pitched down
             if g == 'uk_bounce_house':
                 assert len(v) > 40 and min(e.dur for e in v) < 0.3           # stutter chops
         y = usersounds.vocal_slice(name, 'vx:0.000:0.400:0', -4, 2.0)
         assert abs(len(y) / SR - 0.4 * 2 ** (4 / 12)) < 0.02                 # screwed = slower and lower
         assert len(usersounds.vocal_slice(name, 'vx:0.000:0.400:1', 7, 2.0)) < 0.4 * SR
-        s = compose(Options(style='shadow_808', seed=5, vox_sample='not there'))
+        s = compose(Options(style='switchup_808', seed=5, vox_sample='not there'))
         assert not any(e.track == 'voxsample' for e in s['events'])
     finally:
         usersounds.ROOT = old
@@ -868,7 +878,7 @@ def test_dj_effects():
     from sgcore.render import drum_mod, dj_slow
     from sgcore.instruments import INSTRUMENTS
     from sgcore.dsp import SR
-    s = compose(Options(style='shadow_808_dj', seed=4))
+    s = compose(Options(style='switchup_808_dj', seed=4))
     mods = Counter(str(e.mod).split(':')[0] for e in s['events'] if e.track in ('chat', 'ohat') and e.mod)
     assert mods['pt'] > 10 and mods['sw'] > 0, mods
     assert any(e.bend and any(b[0] in ('fall', 'shift', 'meend') for b in e.bend) for e in s['events'] if e.track == 'lead')
@@ -1082,7 +1092,7 @@ def main():
     test_reference_genre_match()
     test_meend_gamak()
     test_shakuhachi_genres()
-    test_shadow_808()
+    test_switchup_808()
     test_tanpura_on_the_beat()
     test_arabic_maqam()
     test_voice_sample_chops()

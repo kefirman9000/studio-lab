@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (304 genres)
+# Studio Lab - technical genre rules (306 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -2906,13 +2906,13 @@ Bass-warp trap, fast: the same monstrous warping 808 at full speed (155-170 BPM,
 - **Other rules** {'sc_release': 0.1, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 50, 'punch': 120, 'decay': 16, 'drive': 2.6, 'len': 0.22}, 'chat': {'bits': 9, 'srate': 22050}, 'snare': {'bits': 11, 'drive': 2.0}, 'clap': {'bits': 11}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['reese', 'growl', 'fmbass']}, 'warp_808': 0.5, 'warp_min': 3, 'oct808': 0.08, 'fifth808': 0.05, 'glide808': 0.3, 'repetition': 0.85}
 - **Sound brief** Hard bass: a clean mono 808 sub (root notes, octave jumps, glides) + a parallel, heavily driven copy for the mid growl, both sidechained hard to the kick; dotted 3-3-2 kicks; gritty sampled Memphis snare / clap (bit-crushed); velocity-shaped 16th trap hats with pitched-up 32nd rolls into the snare; a cowbell now and then; sinister bell or horror stab riff; stutters, tape stops and abrupt switch-ups; crushed tops, solid bottom
 
-### Shadow 808 (no two bars alike) (`shadow_808`)
+### Switch-up 808 (no two bars alike) (`switchup_808`)
 
-Shadow 808: a pitch-dark, almost mono trap beat at 155-168 BPM where the 808 never plays the same bar twice - grinding root and flat-2nd 8ths, leaping one or two octaves up and sliding back down, 16th rolls, dives and wobbles, bars of folded, buzzing 808 with the sub gone, chopped stabs, sudden gaps and dead stops where the drums cut out - over semitone-rub phrygian chords, a faint eerie melody and a lot of empty space
+Switch-up 808: a pitch-dark, almost mono trap beat at 155-168 BPM where the 808 never plays the same bar twice - grinding root and flat-2nd 8ths, leaping one or two octaves up and sliding back down, 16th rolls, dives and wobbles, bars of folded, buzzing 808 with the sub gone, chopped stabs, sudden gaps and dead stops where the drums cut out - over semitone-rub phrygian chords, a faint eerie melody and a lot of empty space
 
 - **Tempo** 155-168 BPM · **scales** phrygian, minor, harmonic_minor · swing 0.5 (unit 16) · humanise 0.0
 - **Progressions** {'phrygian': [[0, 0, 1, 1], [0, 1, 0, 1], [0, 0, 2, 1], [0, 2, 4, 1]], 'minor': [[0, 0, 5, 5], [0, 0, 1, 1], [0, 0, 2, 4]], 'harmonic_minor': [[0, 0, 1, 1], [0, 0, 4, 4]]} · chord_bars 1 · chord size 3
-- **Song form** `shadow_808`: intro 8 [chords, fx, lead] (filter_in) -> drop 12 [bass, chords, kick, lead, snare, top] (drop) -> switch 8 [bass, kick, lead, snare, top] (bass_up=40, bass_mod=fold, level=0.7, moves=('roll', 'gap', 'chop', 'dive', 'plain')) -> leap 20 [arp, bass, chords, kick, lead, snare, top] (alt, moves=('leap', 'leap', 'roll', 'chop', 'dive', 'plain', 'grind')) -> drop 12 [bass, chords, kick, lead, snare, top] (var=1) -> grit 12 [bass, kick, lead, pad, snare, top] (alt, bass_mod=fold, level=0.8) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> grind 24 [arp, bass, chords, kick, lead, snare, top] (drop, moves=('grind', 'grind', 'grind', 'roll', 'wob', 'chop', 'leap')) -> break 8 [bass, chords, fx, lead, pad] (bass_up=40, bass_mod=fold, level=0.45) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> outro 8 [bass, chords, fx, lead] (fade, bass_up=40) · form_scale 1
+- **Song form** `switchup_808`: intro 8 [chords, fx, lead] (filter_in) -> drop 12 [bass, chords, kick, lead, snare, top] (drop) -> switch 8 [bass, kick, lead, snare, top] (bass_up=40, bass_mod=fold, level=0.7, moves=('roll', 'gap', 'chop', 'dive', 'plain')) -> leap 20 [arp, bass, chords, kick, lead, snare, top] (alt, moves=('leap', 'leap', 'roll', 'chop', 'dive', 'plain', 'grind')) -> drop 12 [bass, chords, kick, lead, snare, top] (var=1) -> grit 12 [bass, kick, lead, pad, snare, top] (alt, bass_mod=fold, level=0.8) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> grind 24 [arp, bass, chords, kick, lead, snare, top] (drop, moves=('grind', 'grind', 'grind', 'roll', 'wob', 'chop', 'leap')) -> break 8 [bass, chords, fx, lead, pad] (bass_up=40, bass_mod=fold, level=0.45) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> outro 8 [bass, chords, fx, lead] (fade, bass_up=40) · form_scale 1
 - **Drums** **kick** `X...X.X...X.X.X.` / `X.....X...X...X.` / `X...X.X...X.....` / `X..X..X...X.X...` / `X.....X.X.X.....`; **snare** `....X.......X...` / `....X.......X.x.` / `....X..x....X...` / `........X.......`; **clap** `....X.......X...` / `........X.......`; **chat** `x.x.x.x.x.x.x.x.` / `x.x.x.x.x.x.xxxx` / `x.x.x.x.x.xxx.x.` / `x.x.x.x.x.x.x...`; **ohat** `......x.......x.` / `................`
 - **Drum kit** 808 · preset `808`
 - **Bass** `R.......R.......` · mode `808` · lowest note 23
@@ -2938,13 +2938,13 @@ Shadow 808: a pitch-dark, almost mono trap beat at 155-168 BPM where the 808 nev
 - **Other rules** {'sc_release': 0.1, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 44, 'punch': 90, 'decay': 14, 'drive': 1.8, 'len': 0.16}, 'chat': {'bits': 9, 'srate': 20000}, 'snare': {'bits': 10, 'drive': 1.8}, 'clap': {'bits': 10}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['growl', 'reese', 'fmbass'], 'p': {'cut': 1300}}, 'warp_808': 0.3, 'oct808': 0.06, 'fifth808': 0.04, 'glide808': 0.35, 'switchups': {'weights': {'grind': 1.4, 'leap': 1.3, 'plain': 0.6}}, 'dj_fx': 0.35, 'repetition': 0.8}
 - **Sound brief** Very low mono 808 (B0-E1) with slides, octave leaps, rolls, dives, wobble and folded / distorted bars, switching up every bar; sparse, crushed trap kit with hat rolls and dead stops; dark semitone-rub pad, faint bell / pluck melody drenched in reverb; almost nothing above 8 kHz
 
-### Shadow 808 - DJ edits (slowdowns, pitch warps) (`shadow_808_dj`)
+### Switch-up 808 - DJ edits (slowdowns, pitch warps) (`switchup_808_dj`)
 
-Shadow 808 - DJ edits: the shadow 808 beat (an 808 that never plays the same bar twice, phrygian rubs, dead stops) cut up like a DJ is playing with it - fake slowdowns before the drops (the record dragged by hand, sinking in pitch, then the drop slamming in), hats climbing, diving and swooping in pitch, rolls that dive into the next bar, a lead that gets down-tuned, up-tuned and played a tone flat, chops and tape stops
+Switch-up 808 - DJ edits: the switch-up 808 beat (an 808 that never plays the same bar twice, phrygian rubs, dead stops) cut up like a DJ is playing with it - fake slowdowns before the drops (the record dragged by hand, sinking in pitch, then the drop slamming in), hats climbing, diving and swooping in pitch, rolls that dive into the next bar, a lead that gets down-tuned, up-tuned and played a tone flat, chops and tape stops
 
 - **Tempo** 155-168 BPM · **scales** phrygian, minor, harmonic_minor · swing 0.5 (unit 16) · humanise 0.0
 - **Progressions** {'phrygian': [[0, 0, 1, 1], [0, 1, 0, 1], [0, 0, 2, 1], [0, 2, 4, 1]], 'minor': [[0, 0, 5, 5], [0, 0, 1, 1], [0, 0, 2, 4]], 'harmonic_minor': [[0, 0, 1, 1], [0, 0, 4, 4]]} · chord_bars 1 · chord size 3
-- **Song form** `shadow_808_dj`: intro 8 [chords, fx, lead, top] (filter_in) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> switch 8 [bass, kick, lead, snare, top] (bass_up=40, bass_mod=fold, level=0.7, moves=('roll', 'gap', 'chop', 'dive', 'plain')) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (drop, moves=('leap', 'leap', 'roll', 'chop', 'dive', 'plain', 'grind')) -> break 8 [chords, fx, lead, pad, top] (level=0.5) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> grit 8 [bass, kick, lead, pad, snare, top] (alt, bass_mod=fold, level=0.8) -> grind 16 [arp, bass, chords, kick, lead, snare, top] (drop, moves=('grind', 'grind', 'roll', 'wob', 'chop', 'leap')) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (drop, alt) -> outro 8 [bass, chords, fx, lead] (fade, bass_up=40) · form_scale 1
+- **Song form** `switchup_808_dj`: intro 8 [chords, fx, lead, top] (filter_in) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> switch 8 [bass, kick, lead, snare, top] (bass_up=40, bass_mod=fold, level=0.7, moves=('roll', 'gap', 'chop', 'dive', 'plain')) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (drop, moves=('leap', 'leap', 'roll', 'chop', 'dive', 'plain', 'grind')) -> break 8 [chords, fx, lead, pad, top] (level=0.5) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> grit 8 [bass, kick, lead, pad, snare, top] (alt, bass_mod=fold, level=0.8) -> grind 16 [arp, bass, chords, kick, lead, snare, top] (drop, moves=('grind', 'grind', 'roll', 'wob', 'chop', 'leap')) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (drop, alt) -> outro 8 [bass, chords, fx, lead] (fade, bass_up=40) · form_scale 1
 - **Drums** **kick** `X...X.X...X.X.X.` / `X.....X...X...X.` / `X...X.X...X.....` / `X..X..X...X.X...` / `X.....X.X.X.....`; **snare** `....X.......X...` / `....X.......X.x.` / `....X..x....X...` / `........X.......`; **clap** `....X.......X...` / `........X.......`; **chat** `x.x.x.x.x.x.x.x.` / `x.x.x.x.x.x.xxxx` / `x.x.x.x.x.xxx.x.` / `x.x.x.x.x.x.x...`; **ohat** `......x.......x.` / `................`
 - **Drum kit** 808 · preset `808`
 - **Bass** `R.......R.......` · mode `808` · lowest note 23
@@ -2968,6 +2968,72 @@ Shadow 808 - DJ edits: the shadow 808 beat (an 808 that never plays the same bar
   - texture (fx): `texture` -37 dB
 - **Mix** {'lufs': -11.0, 'air': -3.0, 'low': 5.0, 'drive': 0.1, 'max_gr': 5.0, 'width': 0.85} · reverb 3.0 · sc_depth 0.45
 - **Other rules** {'sc_release': 0.1, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 44, 'punch': 90, 'decay': 14, 'drive': 1.8, 'len': 0.16}, 'chat': {'bits': 9, 'srate': 20000}, 'snare': {'bits': 10, 'drive': 1.8}, 'clap': {'bits': 10}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['growl', 'reese', 'fmbass'], 'p': {'cut': 1300}}, 'warp_808': 0.3, 'oct808': 0.06, 'fifth808': 0.04, 'glide808': 0.35, 'switchups': {'weights': {'grind': 1.4, 'leap': 1.3, 'plain': 0.6}}, 'dj_fx': 1.0, 'chopped': 0.08, 'repetition': 0.8}
+- **Sound brief** Very low mono 808 (B0-E1) with slides, octave leaps, rolls, dives, wobble and folded / distorted bars, switching up every bar; sparse, crushed trap kit with hat rolls and dead stops; dark semitone-rub pad, faint bell / pluck melody drenched in reverb; almost nothing above 8 kHz
+
+### Switch-up 808 - mallets (fast arpeggios) (`switchup_mallets`)
+
+Switch-up 808 - mallets: the switch-up 808 beat under a storm of fast mallet arpeggios - marimba, vibes and bells rippling through the chords in 32nd notes and two-octave cascades, echoing in delay - over the switching, leaping 808, a dark phrygian rub and the DJ edits (slowdowns into the drops, pitched hats); the mallets alone with no sub to open and close
+
+- **Tempo** 155-168 BPM · **scales** phrygian, minor, harmonic_minor · swing 0.5 (unit 16) · humanise 0.0
+- **Progressions** {'phrygian': [[0, 0, 1, 1], [0, 1, 0, 1], [0, 0, 2, 1], [0, 2, 4, 1]], 'minor': [[0, 0, 5, 5], [0, 0, 1, 1], [0, 0, 2, 4]], 'harmonic_minor': [[0, 0, 1, 1], [0, 0, 4, 4]]} · chord_bars 1 · chord size 3
+- **Song form** `switchup_mallets`: intro 8 [arp, fx, pad] (filter_in) -> drop 16 [arp, bass, chords, kick, snare, top] (drop) -> switch 8 [arp, bass, kick, snare, top] (bass_up=40, bass_mod=fold, level=0.7, moves=('roll', 'gap', 'chop', 'dive', 'plain')) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (drop, moves=('leap', 'leap', 'roll', 'chop', 'dive', 'plain', 'grind')) -> break 8 [arp, chords, fx, pad] (level=0.5) -> drop 16 [arp, bass, chords, kick, snare, top] (drop, alt) -> grind 16 [arp, bass, chords, kick, lead, snare, top] (drop, moves=('grind', 'grind', 'roll', 'wob', 'chop', 'leap')) -> outro 8 [arp, fx, pad] (fade) · form_scale 1
+- **Drums** **kick** `X...X.X...X.X.X.` / `X.....X...X...X.` / `X...X.X...X.....` / `X..X..X...X.X...` / `X.....X.X.X.....`; **snare** `....X.......X...` / `....X.......X.x.` / `....X..x....X...` / `........X.......`; **clap** `....X.......X...` / `........X.......`; **chat** `x.x.x.x.x.x.x.x.` / `x.x.x.x.x.x.xxxx` / `x.x.x.x.x.xxx.x.` / `x.x.x.x.x.x.x...`; **ohat** `......x.......x.` / `................`
+- **Drum kit** 808 · preset `808`
+- **Bass** `R.......R.......` · mode `808` · lowest note 23
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 0.5, 'mode': 'cascade', 'oct': 5, 'prob': 0.92}
+- **Lead rhythm** `x-------........` / `x---....x---....` / `........x-------` / `x.......x.x.....`
+- **Build-ups** default `pause` · choices ['pause', 'stutter', 'none'] · transitions ['gap', 'tapestop', 'gap', 'none'] · drops land plainly
+- **Traits** arrangement `verse_chorus_pop` · density `dense` · feel `robotic` · melody `long_lyrical` · bass `808_slide` · drop `groove_drop` · variation `sectional` · culture `street` · texture `wet_and_spacious` · rhythm `on_the_grid` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -14 dB
+  - snare (snare): `snare` -17 dB · rev=0.25
+  - clap (snare): `clap` -21 dB · rev=0.3
+  - chat (top): `chat` -26 dB · pan=0.1
+  - ohat (top): `ohat` -31 dB · pan=-0.1
+  - bass (bass): `808` -6 dB · sc=0.45
+  - bass_grit (bass): `808` -24 dB · sc=0.9
+  - chords (chords): `warmpad` -29 dB · rev=0.6 · alternatives ['glasspad', 'choir', 'strings']
+  - pad (pad): `choir` -30 dB · rev=0.7 · alternatives ['warmpad', 'glasspad']
+  - arp (arp): `marimba` -20 dB · pan=0.25 · rev=0.45 · dly=0.3 · alternatives ['vibes', 'kalimba', 'bell', 'celesta']
+  - arp_hi (arp): `vibes` -28 dB · pan=-0.3 · rev=0.6 · dly=0.45
+  - lead (lead): `phonkbell` -24 dB · rev=0.5 · dly=0.35 · alternatives ['bell', 'pluck', 'celesta', 'softlead']
+  - texture (fx): `texture` -37 dB
+- **Mix** {'lufs': -10.5, 'air': -1.0, 'low': 4.5, 'drive': 0.1, 'max_gr': 5.0, 'width': 1.1} · reverb 3.0 · sc_depth 0.45
+- **Other rules** {'sc_release': 0.1, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 44, 'punch': 90, 'decay': 14, 'drive': 1.8, 'len': 0.16}, 'chat': {'bits': 9, 'srate': 20000}, 'snare': {'bits': 10, 'drive': 1.8}, 'clap': {'bits': 10}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['growl', 'reese', 'fmbass'], 'p': {'cut': 1300}}, 'warp_808': 0.3, 'oct808': 0.06, 'fifth808': 0.04, 'glide808': 0.35, 'switchups': {'weights': {'grind': 1.4, 'leap': 1.3, 'plain': 0.6}}, 'dj_fx': 0.6, 'chopped': 0.05, 'repetition': 0.8}
+- **Sound brief** Very low mono 808 (B0-E1) with slides, octave leaps, rolls, dives, wobble and folded / distorted bars, switching up every bar; sparse, crushed trap kit with hat rolls and dead stops; dark semitone-rub pad, faint bell / pluck melody drenched in reverb; almost nothing above 8 kHz
+
+### Switch-up 808 - hard (punchy kicks) (`switchup_808_hard`)
+
+Switch-up 808 - hard: the switch-up 808 beat made aggressive - hard, punchy, distorted kicks that hit like a fist (a sharp click, a fast pitch drop, slammed through saturation) with the 808 ducking out of their way, cracking crushed snares and claps, a dirtier growling 808 that still switches up bar to bar, cowbell stabs, DJ slowdowns and stutters into the drops, and a loud, pressured mix
+
+- **Tempo** 162-172 BPM · **scales** phrygian, minor, harmonic_minor · swing 0.5 (unit 16) · humanise 0.0
+- **Progressions** {'phrygian': [[0, 0, 1, 1], [0, 1, 0, 1], [0, 0, 2, 1], [0, 2, 4, 1]], 'minor': [[0, 0, 5, 5], [0, 0, 1, 1], [0, 0, 2, 4]], 'harmonic_minor': [[0, 0, 1, 1], [0, 0, 4, 4]]} · chord_bars 1 · chord size 3
+- **Song form** `switchup_808_dj`: intro 8 [chords, fx, lead, top] (filter_in) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> switch 8 [bass, kick, lead, snare, top] (bass_up=40, bass_mod=fold, level=0.7, moves=('roll', 'gap', 'chop', 'dive', 'plain')) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (drop, moves=('leap', 'leap', 'roll', 'chop', 'dive', 'plain', 'grind')) -> break 8 [chords, fx, lead, pad, top] (level=0.5) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> grit 8 [bass, kick, lead, pad, snare, top] (alt, bass_mod=fold, level=0.8) -> grind 16 [arp, bass, chords, kick, lead, snare, top] (drop, moves=('grind', 'grind', 'roll', 'wob', 'chop', 'leap')) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (drop, alt) -> outro 8 [bass, chords, fx, lead] (fade, bass_up=40) · form_scale 1
+- **Drums** **kick** `X..X..X.X..X..X.` / `X.X...X.X.X...X.` / `X...X.X...X.X.X.` / `X..X..X...X.X.XX` / `X.X.X.X...X.X...`; **cowbell808** `..........x.....` / `......x.......x.` / `................` / `..x.......x...x.`; **snare** `....X.......X...` / `....X.......X.x.` / `....X..x....X..x`; **clap** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.` / `x.x.x.x.x.x.xxxx` / `x.x.x.x.x.xxx.x.` / `x.x.x.x.x.x.x...`; **ohat** `......x.......x.` / `................`
+- **Drum kit** 808 · preset `808`
+- **Bass** `R.......R.......` · mode `808` · lowest note 23
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.3}
+- **Lead rhythm** `x-------........` / `x---....x---....` / `........x-------` / `x.......x.x.....`
+- **Build-ups** default `stutter` · choices ['pause', 'stutter', 'none'] · transitions ['gap', 'tapestop', 'gap', 'none'] · drops land plainly
+- **Traits** arrangement `verse_chorus_pop` · density `dense` · feel `robotic` · melody `long_lyrical` · bass `808_slide` · drop `groove_drop` · variation `sectional` · culture `street` · texture `wet_and_spacious` · rhythm `on_the_grid` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -9 dB
+  - snare (snare): `snare` -15 dB · rev=0.15
+  - clap (snare): `clap` -18 dB · rev=0.2
+  - cowbell808 (top): `cowbell808` -26 dB · pan=0.2
+  - chat (top): `chat` -26 dB · pan=0.1
+  - ohat (top): `ohat` -31 dB · pan=-0.1
+  - bass (bass): `808` -7 dB · sc=0.75
+  - bass_grit (bass): `808` -22 dB · sc=1.0
+  - chords (chords): `warmpad` -29 dB · rev=0.6 · alternatives ['glasspad', 'choir', 'strings']
+  - pad (pad): `choir` -30 dB · rev=0.7 · alternatives ['warmpad', 'glasspad']
+  - arp (arp): `bell` -31 dB · pan=0.2 · rev=0.7 · dly=0.45 · alternatives ['celesta', 'pluck', 'chip']
+  - lead (lead): `phonkbell` -21 dB · rev=0.5 · dly=0.35 · alternatives ['cowbell', 'leadsaw', 'bell', 'pluck']
+  - texture (fx): `texture` -37 dB
+- **Mix** {'lufs': -9.5, 'air': -1.5, 'low': 4.0, 'drive': 0.15, 'max_gr': 4.0, 'width': 0.8} · reverb 3.0 · sc_depth 0.85
+- **Other rules** {'sc_release': 0.13, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 50, 'punch': 230, 'sweep': 55, 'decay': 11, 'drive': 4.2, 'click': 0.9, 'len': 0.2}, 'chat': {'bits': 9, 'srate': 20000}, 'snare': {'bits': 9, 'drive': 3.0, 'snap': 1.6}, 'clap': {'bits': 9, 'drive': 2.0}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'hi_bass': {'at': 38, 'pool': ['growl', 'reese', 'fmbass'], 'p': {'cut': 1300}}, 'warp_808': 0.3, 'oct808': 0.06, 'fifth808': 0.04, 'glide808': 0.35, 'switchups': {'weights': {'grind': 1.6, 'roll': 1.3, 'chop': 1.3, 'plain': 0.5}}, 'dj_fx': 0.7, 'chopped': 0.06, 'repetition': 0.8}
 - **Sound brief** Very low mono 808 (B0-E1) with slides, octave leaps, rolls, dives, wobble and folded / distorted bars, switching up every bar; sparse, crushed trap kit with hat rolls and dead stops; dark semitone-rub pad, faint bell / pluck melody drenched in reverb; almost nothing above 8 kHz
 
 ### Baltimore club (`baltimore_club`)

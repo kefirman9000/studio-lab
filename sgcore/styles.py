@@ -3989,7 +3989,7 @@ for _name, _st in STYLES.items():
 
 
 # renamed genres: old ids still work (saved presets, links, command line)
-STYLE_ALIASES = {'tempa_dubstep': 'deep_dubstep'}
+STYLE_ALIASES = {'tempa_dubstep': 'deep_dubstep', 'shadow_808': 'switchup_808', 'shadow_808_dj': 'switchup_808_dj'}   # renamed genres (old songs still open)
 
 
 
@@ -8023,12 +8023,12 @@ style('bass_warp_fast', 'Electronic',
       label='Bass-warp trap - fast (160)')
 
 
-# v1.56.0: shadow 808, from the user's reference (162 BPM, B phrygian, analysed bar by bar): 80% of the energy is sub,
+# v1.56.0: switch-up 808, from the user's reference (162 BPM, B phrygian, analysed bar by bar): 80% of the energy is sub,
 # the mix is almost mono and very dark (next to nothing above 8 kHz), and the 808 does something different nearly every
 # bar - grinding root / flat-2nd 8ths, leaping an octave or two up and sliding back, 16th rolls, folded / distorted bars
 # with the sub gone, dives, wobbles, sudden gaps and full stops, the last bar of each 4-bar phrase leaving space. The
 # harmony is a semitone rub (root against flat 2nd, minor 3rd against the 9th) over phrygian roots (i - bII - iii - v).
-FORMS['shadow_808'] = [('intro', 8, {'chords', 'lead', 'fx'}, {'filter_in': True}),
+FORMS['switchup_808'] = [('intro', 8, {'chords', 'lead', 'fx'}, {'filter_in': True}),
                        ('drop', 12, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True}),
                        ('switch', 8, {'kick', 'snare', 'top', 'bass', 'lead'},
                         {'bass_up': 40, 'bass_mod': 'fold', 'level': 0.7, 'moves': ('roll', 'gap', 'chop', 'dive', 'plain')}),
@@ -8042,12 +8042,12 @@ FORMS['shadow_808'] = [('intro', 8, {'chords', 'lead', 'fx'}, {'filter_in': True
                        ('break', 8, {'bass', 'chords', 'lead', 'pad', 'fx'}, {'bass_up': 40, 'bass_mod': 'fold', 'level': 0.45}),
                        ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'alt': True}),
                        ('outro', 8, {'bass', 'chords', 'lead', 'fx'}, {'fade': True, 'bass_up': 40})]
-style('shadow_808', 'Electronic',
-      'Shadow 808: a pitch-dark, almost mono trap beat at 155-168 BPM where the 808 never plays the same bar twice - '
+style('switchup_808', 'Electronic',
+      'Switch-up 808: a pitch-dark, almost mono trap beat at 155-168 BPM where the 808 never plays the same bar twice - '
       'grinding root and flat-2nd 8ths, leaping one or two octaves up and sliding back down, 16th rolls, dives and '
       'wobbles, bars of folded, buzzing 808 with the sub gone, chopped stabs, sudden gaps and dead stops where the '
       'drums cut out - over semitone-rub phrygian chords, a faint eerie melody and a lot of empty space',
-      bpm=(155, 168), scales=['phrygian', 'minor', 'harmonic_minor'], swing=0.5, human=0.0, form='shadow_808', kit='808',
+      bpm=(155, 168), scales=['phrygian', 'minor', 'harmonic_minor'], swing=0.5, human=0.0, form='switchup_808', kit='808',
       trap_hats=False, pitch_rolls=True, chord_size=3, sc_depth=0.45, sc_release=0.1, reverb=3.0, own_progs=True,
       no_rotation=True, no_layers=True,
       progs={'phrygian': [[0, 0, 1, 1], [0, 1, 0, 1], [0, 0, 2, 1], [0, 2, 4, 1]],
@@ -8084,10 +8084,10 @@ style('shadow_808', 'Electronic',
                  pad=['choir', 'warmpad', 'glasspad'],
                  arp=['bell', 'celesta', 'pluck', 'chip'],
                  lead=['phonkbell', 'bell', 'pluck', 'celesta', 'softlead']),
-      label='Shadow 808 (no two bars alike)')
+      label='Switch-up 808 (no two bars alike)')
 
 # v1.56.0: the same beat cut up like a DJ is playing with it (user request: pitched hats / lead, fake slowdowns)
-FORMS['shadow_808_dj'] = [('intro', 8, {'chords', 'lead', 'top', 'fx'}, {'filter_in': True}),
+FORMS['switchup_808_dj'] = [('intro', 8, {'chords', 'lead', 'top', 'fx'}, {'filter_in': True}),
                           ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True}),
                           ('switch', 8, {'kick', 'snare', 'top', 'bass', 'lead'},
                            {'bass_up': 40, 'bass_mod': 'fold', 'level': 0.7, 'moves': ('roll', 'gap', 'chop', 'dive', 'plain')}),
@@ -8100,12 +8100,12 @@ FORMS['shadow_808_dj'] = [('intro', 8, {'chords', 'lead', 'top', 'fx'}, {'filter
                            {'drop': True, 'moves': ('grind', 'grind', 'roll', 'wob', 'chop', 'leap')}),
                           ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'drop': True, 'alt': True}),
                           ('outro', 8, {'bass', 'chords', 'lead', 'fx'}, {'fade': True, 'bass_up': 40})]
-style('shadow_808_dj', 'Electronic',
-      'Shadow 808 - DJ edits: the shadow 808 beat (an 808 that never plays the same bar twice, phrygian rubs, '
+style('switchup_808_dj', 'Electronic',
+      'Switch-up 808 - DJ edits: the switch-up 808 beat (an 808 that never plays the same bar twice, phrygian rubs, '
       'dead stops) cut up like a DJ is playing with it - fake slowdowns before the drops (the record dragged by hand, '
       'sinking in pitch, then the drop slamming in), hats climbing, diving and swooping in pitch, rolls that dive into '
       'the next bar, a lead that gets down-tuned, up-tuned and played a tone flat, chops and tape stops',
-      bpm=(155, 168), scales=['phrygian', 'minor', 'harmonic_minor'], swing=0.5, human=0.0, form='shadow_808_dj', kit='808',
+      bpm=(155, 168), scales=['phrygian', 'minor', 'harmonic_minor'], swing=0.5, human=0.0, form='switchup_808_dj', kit='808',
       trap_hats=False, pitch_rolls=True, chord_size=3, sc_depth=0.45, sc_release=0.1, reverb=3.0, own_progs=True,
       no_rotation=True, no_layers=True,
       progs={'phrygian': [[0, 0, 1, 1], [0, 1, 0, 1], [0, 0, 2, 1], [0, 2, 4, 1]],
@@ -8142,7 +8142,111 @@ style('shadow_808_dj', 'Electronic',
                  pad=['choir', 'warmpad', 'glasspad'],
                  arp=['bell', 'celesta', 'pluck', 'chip'],
                  lead=['phonkbell', 'bell', 'pluck', 'celesta', 'softlead']),
-      label='Shadow 808 - DJ edits (slowdowns, pitch warps)')
+      label='Switch-up 808 - DJ edits (slowdowns, pitch warps)')
+
+# v1.56.2: from the user's 'Mallets' reference (~160, half-time, 32nd-note mallet arpeggios over a heavy sub)
+FORMS['switchup_mallets'] = [('intro', 8, {'arp', 'pad', 'fx'}, {'filter_in': True}),
+                           ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {'drop': True}),
+                           ('switch', 8, {'kick', 'snare', 'top', 'bass', 'arp'},
+                            {'bass_up': 40, 'bass_mod': 'fold', 'level': 0.7, 'moves': ('roll', 'gap', 'chop', 'dive', 'plain')}),
+                           ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'lead'},
+                            {'drop': True, 'moves': ('leap', 'leap', 'roll', 'chop', 'dive', 'plain', 'grind')}),
+                           ('break', 8, {'arp', 'chords', 'pad', 'fx'}, {'level': 0.5}),
+                           ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {'drop': True, 'alt': True}),
+                           ('grind', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'lead'},
+                            {'drop': True, 'moves': ('grind', 'grind', 'roll', 'wob', 'chop', 'leap')}),
+                           ('outro', 8, {'arp', 'pad', 'fx'}, {'fade': True})]
+style('switchup_mallets', 'Electronic',
+      'Switch-up 808 - mallets: the switch-up 808 beat under a storm of fast mallet arpeggios - marimba, vibes and bells '
+      'rippling through the chords in 32nd notes and two-octave cascades, echoing in delay - over the switching, '
+      'leaping 808, a dark phrygian rub and the DJ edits (slowdowns into the drops, pitched hats); the mallets alone '
+      'with no sub to open and close',
+      bpm=(155, 168), scales=['phrygian', 'minor', 'harmonic_minor'], swing=0.5, human=0.0, form='switchup_mallets', kit='808',
+      trap_hats=False, pitch_rolls=True, chord_size=3, sc_depth=0.45, sc_release=0.1, reverb=3.0, own_progs=True,
+      no_rotation=True, no_layers=True,
+      progs={'phrygian': [[0, 0, 1, 1], [0, 1, 0, 1], [0, 0, 2, 1], [0, 2, 4, 1]],
+             'minor': [[0, 0, 5, 5], [0, 0, 1, 1], [0, 0, 2, 4]],
+             'harmonic_minor': [[0, 0, 1, 1], [0, 0, 4, 4]]},
+      kit_override=dict(kick=dict(pitch=44, punch=90, decay=14, drive=1.8, len=0.16), chat=dict(bits=9, srate=20000),
+                       snare=dict(bits=10, drive=1.8), clap=dict(bits=10)),
+      drums={'kick': ['X...X.X...X.X.X.', 'X.....X...X...X.', 'X...X.X...X.....', 'X..X..X...X.X...', 'X.....X.X.X.....'],
+             'snare': [BACKBEAT, '....X.......X.x.', '....X..x....X...', HALF], 'clap': [BACKBEAT, HALF],
+             'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.xxxx', 'x.x.x.x.x.xxx.x.', 'x.x.x.x.x.x.x...'],
+             'ohat': ['......x.......x.', '................']},
+      snare_tracks=['snare', 'clap'], build_family=['pause', 'stutter', 'none'], transition_moves=['gap', 'tapestop', 'gap', 'none'],
+      keep_fx=['tapestop'], hi_bass=dict(at=38, pool=['growl', 'reese', 'fmbass'], p={'cut': 1300}), plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.3, oct808=0.06, fifth808=0.04, glide808=0.35,
+      switchups=dict(weights={'grind': 1.4, 'leap': 1.3, 'plain': 0.6}), dj_fx=0.6, chopped=0.05,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=58, arp=dict(rate=0.5, mode='cascade', oct=5, prob=0.92),
+      lead_rh=['x-------........', 'x---....x---....', '........x-------', 'x.......x.x.....'], repetition=0.8,
+      gm_hint='Very low mono 808 (B0-E1) with slides, octave leaps, rolls, dives, wobble and folded / distorted bars, '
+              'switching up every bar; sparse, crushed trap kit with hat rolls and dead stops; dark semitone-rub pad, '
+              'faint bell / pluck melody drenched in reverb; almost nothing above 8 kHz',
+      tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.25, db=-17),
+              T('clap', 'snare', 'clap', rev=0.3, db=-21),
+              T('chat', 'top', 'chat', pan=0.1, db=-26), T('ohat', 'top', 'ohat', pan=-0.1, db=-31),
+              T('bass', 'bass', '808', db=-6, sc=0.45, p=dict(drive=1.8, decay=0.35, slide=0.06)),
+              T('bass_grit', 'bass', '808', double_of='bass', octave=0, keep_inst=True, hp=220, presence=3, sc=0.9, db=-24,
+                p=dict(drive=7.5, decay=0.35, slide=0.06)),
+              T('chords', 'chords', 'warmpad', rev=0.6, db=-29, p=dict(cut=900)),
+              T('pad', 'pad', 'choir', rev=0.7, db=-30),
+              T('arp', 'arp', 'marimba', rev=0.45, dly=0.3, pan=0.25, db=-20),
+              T('arp_hi', 'arp', 'vibes', double_of='arp', keep_inst=True, octave=12, rev=0.6, dly=0.45, pan=-0.3, db=-28),
+              T('lead', 'lead', 'phonkbell', rev=0.5, dly=0.35, db=-24),
+              T('texture', 'fx', 'texture', db=-37)],
+      master=dict(lufs=-10.5, air=-1.0, low=4.5, drive=0.1, max_gr=5.0, width=1.1),
+      pools=dict(bass=['808'],
+                 chords=['warmpad', 'glasspad', 'choir', 'strings'],
+                 pad=['choir', 'warmpad', 'glasspad'],
+                 arp=['marimba', 'vibes', 'kalimba', 'bell', 'celesta'],
+                 lead=['phonkbell', 'bell', 'pluck', 'celesta', 'softlead']),
+      label='Switch-up 808 - mallets (fast arpeggios)')
+
+# v1.56.2: the switch-up 808 beat made aggressive (user request): punchy, distorted kicks, harder sidechain, louder
+style('switchup_808_hard', 'Electronic',
+      'Switch-up 808 - hard: the switch-up 808 beat made aggressive - hard, punchy, distorted kicks that hit like a fist '
+      '(a sharp click, a fast pitch drop, slammed through saturation) with the 808 ducking out of their way, cracking '
+      'crushed snares and claps, a dirtier growling 808 that still switches up bar to bar, cowbell stabs, DJ slowdowns '
+      'and stutters into the drops, and a loud, pressured mix',
+      bpm=(162, 172), scales=['phrygian', 'minor', 'harmonic_minor'], swing=0.5, human=0.0, form='switchup_808_dj', kit='808',
+      trap_hats=False, pitch_rolls=True, chord_size=3, sc_depth=0.85, sc_release=0.13, reverb=3.0, own_progs=True,
+      no_rotation=True, no_layers=True,
+      progs={'phrygian': [[0, 0, 1, 1], [0, 1, 0, 1], [0, 0, 2, 1], [0, 2, 4, 1]],
+             'minor': [[0, 0, 5, 5], [0, 0, 1, 1], [0, 0, 2, 4]],
+             'harmonic_minor': [[0, 0, 1, 1], [0, 0, 4, 4]]},
+      kit_override=dict(kick=dict(pitch=50, punch=230, sweep=55, decay=11, drive=4.2, click=0.9, len=0.2), chat=dict(bits=9, srate=20000),
+                       snare=dict(bits=9, drive=3.0, snap=1.6), clap=dict(bits=9, drive=2.0)),
+      drums={'kick': ['X..X..X.X..X..X.', 'X.X...X.X.X...X.', 'X...X.X...X.X.X.', 'X..X..X...X.X.XX', 'X.X.X.X...X.X...'],
+             'cowbell808': ['..........x.....', '......x.......x.', '................', '..x.......x...x.'],
+             'snare': [BACKBEAT, '....X.......X.x.', '....X..x....X..x'], 'clap': [BACKBEAT],
+             'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.xxxx', 'x.x.x.x.x.xxx.x.', 'x.x.x.x.x.x.x...'],
+             'ohat': ['......x.......x.', '................']},
+      snare_tracks=['snare', 'clap'], build_family=['pause', 'stutter', 'none'], transition_moves=['gap', 'tapestop', 'gap', 'none'],
+      keep_fx=['tapestop'], hi_bass=dict(at=38, pool=['growl', 'reese', 'fmbass'], p={'cut': 1300}), plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.3, oct808=0.06, fifth808=0.04, glide808=0.35,
+      switchups=dict(weights={'grind': 1.6, 'roll': 1.3, 'chop': 1.3, 'plain': 0.5}), dj_fx=0.7, chopped=0.06,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=58, arp=dict(rate=2, mode='random', oct=5, prob=0.3),
+      lead_rh=['x-------........', 'x---....x---....', '........x-------', 'x.......x.x.....'], repetition=0.8,
+      gm_hint='Very low mono 808 (B0-E1) with slides, octave leaps, rolls, dives, wobble and folded / distorted bars, '
+              'switching up every bar; sparse, crushed trap kit with hat rolls and dead stops; dark semitone-rub pad, '
+              'faint bell / pluck melody drenched in reverb; almost nothing above 8 kHz',
+      tracks=[T('kick', 'kick', 'kick', db=-9), T('snare', 'snare', 'snare', rev=0.15, db=-15),
+              T('clap', 'snare', 'clap', rev=0.2, db=-18),
+              T('cowbell808', 'top', 'cowbell808', pan=0.2, db=-26),
+              T('chat', 'top', 'chat', pan=0.1, db=-26), T('ohat', 'top', 'ohat', pan=-0.1, db=-31),
+              T('bass', 'bass', '808', db=-7, sc=0.75, p=dict(drive=2.2, decay=0.45, slide=0.06)),
+              T('bass_grit', 'bass', '808', double_of='bass', octave=0, keep_inst=True, hp=200, presence=4, sc=1.0, db=-22,
+                p=dict(drive=9.0, decay=0.45, slide=0.06)),
+              T('chords', 'chords', 'warmpad', rev=0.6, db=-29, p=dict(cut=900)),
+              T('pad', 'pad', 'choir', rev=0.7, db=-30),
+              T('arp', 'arp', 'bell', rev=0.7, dly=0.45, pan=0.2, db=-31),
+              T('lead', 'lead', 'phonkbell', rev=0.5, dly=0.35, db=-21),
+              T('texture', 'fx', 'texture', db=-37)],
+      master=dict(lufs=-9.5, air=-1.5, low=4.0, drive=0.15, max_gr=4.0, width=0.8),
+      pools=dict(bass=['808'],
+                 chords=['warmpad', 'glasspad', 'choir', 'strings'],
+                 pad=['choir', 'warmpad', 'glasspad'],
+                 arp=['bell', 'celesta', 'pluck', 'chip'],
+                 lead=['phonkbell', 'cowbell', 'leadsaw', 'bell', 'pluck']),
+      label='Switch-up 808 - hard (punchy kicks)')
 
 
 # v1.45: Christmas film-score orchestra, from four of the user's family-Christmas-movie score cues. Joyful: a lilting

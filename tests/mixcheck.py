@@ -22,7 +22,7 @@ from sgcore.styles import STYLES  # noqa: E402
 
 MELODIC = ('bass', 'chords', 'pad', 'arp', 'lead')
 # genres whose unusual balance is the point
-LOUD_BASS = {'bass_warp_trap', 'bass_warp_fast', 'shadow_808', 'shadow_808_dj'}             # the 808 is the lead instrument
+LOUD_BASS = {'bass_warp_trap', 'bass_warp_fast', 'switchup_808', 'switchup_808_dj', 'switchup_808_hard', 'switchup_mallets'}             # the 808 is the lead instrument
 LEAD_IN_THE_WASH = {'dub_techno', 'shoegaze'}                # the melody sits inside the chords / guitars
 
 

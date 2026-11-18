@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 304 GENRES  (version 1.56.1)
+STUDIO LAB - ALL 306 GENRES  (version 1.56.2)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
 * = new in 1.56
 
 ========================================================================
-ELECTRONIC  (150)
+ELECTRONIC  (152)
 ========================================================================
 
 House & Disco  (28)
@@ -26,8 +26,8 @@ House & Disco  (28)
     Nu-disco / disco lounge  [nu_disco]
     Tokyo deep house  [tokyo_deep_house]
     90s Italo piano house  [piano_house_90s]
-    UK bounce house (bassline, vocal chops)  [uk_bounce_house]  *
-    Outsider house (murky, lo-fi)  [outsider_house]  *
+    UK bounce house (bassline, vocal chops)  [uk_bounce_house]
+    Outsider house (murky, lo-fi)  [outsider_house]
     Garage-house pop  [garage_house]
     Mallet melodic house  [mallet_house]
     French house / filter house  [french_house]
@@ -60,9 +60,9 @@ Dubstep, Garage & Bass  (20)
     Deep Dubstep (soundsystem)  [deep_dubstep]
     Deep Dubstep - sparse & eerie  [deep_dubstep_minimal]
     Deep dubstep - rollers (sub-weight)  [deep_dubstep_rollers]
-    Deep dubstep - rolling percussion (140)  [deep_dubstep_rolling]  *
-    Chipmunk 2-step (pitched vocal chops)  [chipmunk_2step]  *
-    Glitch future bass (chopped vocals, 154)  [glitch_future_bass]  *
+    Deep dubstep - rolling percussion (140)  [deep_dubstep_rolling]
+    Chipmunk 2-step (pitched vocal chops)  [chipmunk_2step]
+    Glitch future bass (chopped vocals, 154)  [glitch_future_bass]
     Future Bass  [future_bass]
     UK Garage  [ukgarage]
     Future garage  [future_garage]
@@ -92,7 +92,7 @@ Drum & Bass, Breaks & Hard  (17)
     Big beat  [big_beat]
     UK hardcore / happy hardcore  [uk_hardcore]
 
-Hip-Hop, Trap & Phonk  (24)
+Hip-Hop, Trap & Phonk  (26)
     Trap  [trap]
     UK Drill  [uk_drill]
     UK road rap  [uk_road_rap]
@@ -109,9 +109,11 @@ Hip-Hop, Trap & Phonk  (24)
     Hard trap (brass & strings)  [hard_trap]
     Bass-warp trap (808 switch-ups)  [bass_warp_trap]
     Bass-warp trap - fast (160)  [bass_warp_fast]
-    Shadow 808 (no two bars alike)  [shadow_808]  *
-    Shadow 808 - DJ edits (slowdowns, pitch warps)  [shadow_808_dj]  *
-    Chopped & screwed (Houston slab)  [screwed_slab]  *
+    Switch-up 808 (no two bars alike)  [switchup_808]
+    Switch-up 808 - DJ edits (slowdowns, pitch warps)  [switchup_808_dj]
+    Switch-up 808 - hard (punchy kicks)  [switchup_808_hard]  *
+    Switch-up 808 - mallets (fast arpeggios)  [switchup_mallets]  *
+    Chopped & screwed (Houston slab)  [screwed_slab]
     Beat-switch trap  [switch_trap]
     Wonky / beat-scene bass  [wonky_beats]
     Baltimore club  [baltimore_club]
@@ -312,10 +314,10 @@ South Asian  (3)
     Ghazal (sitar, harmonium, tabla)  [ghazal]
 
 Arabic  (4)
-    Takht - Arabic maqam ensemble (oud, qanun)  [takht_maqam]  *
-    Raqs sharqi - belly dance (darbuka)  [raqs_sharqi]  *
-    Arabic pop (strings, darbuka)  [arab_pop]  *
-    Sufi dhikr (ney, bendir, speeding up)  [sufi_dhikr]  *
+    Takht - Arabic maqam ensemble (oud, qanun)  [takht_maqam]
+    Raqs sharqi - belly dance (darbuka)  [raqs_sharqi]
+    Arabic pop (strings, darbuka)  [arab_pop]
+    Sufi dhikr (ney, bendir, speeding up)  [sufi_dhikr]
 
 Psych & World Rock  (4)
     Anatolian psych rock (saz & fuzz)  [anatolian_psych]
@@ -359,7 +361,7 @@ Solo Piano  (1)
 
 Ambient & Experimental  (2)
     Experimental field ambient  [field_ambient]
-    Fourth-world ambient (FM marimba, pan flute)  [fourth_world]  *
+    Fourth-world ambient (FM marimba, pan flute)  [fourth_world]
 
 Fantasy & Games  (1)
     Fantasy RPG  [fantasy_rpg]
