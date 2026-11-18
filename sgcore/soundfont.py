@@ -361,16 +361,21 @@ SAMPLED = {
     'steelguitar': (0, 25, 'Steel-string guitar', 1.0), 'fiddle': (0, 110, 'Fiddle', 0.3), 'trumpetsection': (0, 61, 'Brass section', 0.4),
     'upright': (0, 32, 'Acoustic bass', 0.5), 'mutedgtr': (0, 28, 'Muted guitar', 0.3), 'vibes': (0, 11, 'Vibraphone', 1.5),
     'harmonica': (0, 22, 'Harmonica', 0.3),
+    # v1.54: South / East Asian instruments the General MIDI bank has as real recordings
+    'sitar': (0, 104, 'Sitar', 2.0), 'harmonium': (0, 20, 'Reed organ / harmonium', 0.4),
+    'santoor': (0, 15, 'Hammered dulcimer / santoor', 2.5), 'koto': (0, 107, 'Koto', 1.2),
+    'shehnai': (0, 111, 'Shehnai', 0.4), 'shamisen': (0, 106, 'Shamisen', 0.6), 'shakuhachi': (0, 77, 'Shakuhachi', 0.5),
 }
 # Extra realistic instruments that only exist as samples (shown in the instrument lists when the library is installed)
-SAMPLED_ONLY = ['nylon', 'cleanguitar', 'muted', 'odguitar', 'distguitar', 'acbass', 'fingerbass', 'pickbass', 'slapbass',
+SAMPLED_ONLY = ['shehnai', 'shamisen', 'nylon', 'cleanguitar', 'muted', 'odguitar', 'distguitar', 'acbass', 'fingerbass', 'pickbass', 'slapbass',
                 'viola', 'contrabass', 'slowstrings', 'trumpet', 'mutedtrumpet', 'trombone', 'tuba',
                 'bassoon', 'piccolo', 'tenorsax']
 # built-in synth stand-ins for when the library is missing (or a sample can't be played)
 FALLBACK = {'nylon': 'acguitar', 'cleanguitar': 'guitar', 'muted': 'mutedgtr', 'odguitar': 'guitar', 'distguitar': 'guitar',
             'acbass': 'upright', 'fingerbass': 'ebass', 'pickbass': 'ebass', 'slapbass': 'fmbass', 'viola': 'violin',
             'contrabass': 'cello', 'slowstrings': 'strings', 'bandoneon': 'accordion', 'steelguitar': 'guitar', 'fiddle': 'violin', 'trumpetsection': 'brass',
-            'mutedtrumpet': 'trumpet', 'trombone': 'horn', 'tuba': 'horn', 'bassoon': 'clarinet', 'piccolo': 'flute', 'tenorsax': 'sax', 'sopranosax': 'sax', 'taikodrum': 'timpani'}
+            'mutedtrumpet': 'trumpet', 'trombone': 'horn', 'tuba': 'horn', 'bassoon': 'clarinet', 'piccolo': 'flute', 'tenorsax': 'sax', 'sopranosax': 'sax', 'taikodrum': 'timpani',
+            'shehnai': 'oboe', 'shamisen': 'koto'}
 # electronic genres only swap instruments that are obviously acoustic
 ELECTRONIC_SWAP = {'piano', 'epiano', 'guitar', 'violin', 'harp', 'flute', 'sax', 'marimba', 'kalimba', 'steeldrum',
                    'celesta', 'pizz', 'clav', 'cello', 'harpsichord', 'oboe', 'clarinet', 'spiccato', 'tremolo',
@@ -388,11 +393,12 @@ def fallback_for(name):
 ACOUSTIC = {'piano', 'epiano', 'clav', 'celesta', 'marimba', 'organ', 'guitar', 'violin', 'pizz', 'harp', 'timpani',
             'strings', 'choir', 'horn', 'brass', 'sax', 'flute', 'kalimba', 'steeldrum', 'bell',
             'cello', 'tremolo', 'spiccato', 'harpsichord', 'clarinet', 'oboe', 'accordion', 'banjo',
-            'upright', 'mutedgtr', 'vibes', 'harmonica', 'trumpet'}
+            'upright', 'mutedgtr', 'vibes', 'harmonica', 'trumpet', 'sitar', 'harmonium', 'santoor', 'koto', 'shakuhachi'}
 
 # GM drum notes, and which GS kit suits which Studio Lab kit
 GM_DRUM = {'kick': 36, 'snare': 38, 'clap': 39, 'snap': 39, 'rim': 37, 'chat': 42, 'ohat': 46, 'ride': 51, 'crash': 49,
-           'tom': 45, 'tamb': 54, 'cowbell808': 56, 'shaker': 70, 'woodblock': 76, 'conga': 63, 'timp': 41, 'taiko': 35}
+           'tom': 45, 'tamb': 54, 'cowbell808': 56, 'shaker': 70, 'woodblock': 76, 'conga': 63, 'timp': 41, 'taiko': 35,
+           'bongo': 60, 'bongo_lo': 61}
 KIT_PROGRAM = {'acoustic': 0, 'soft': 32, 'jazz': 32, 'brush': 40, 'room': 8, 'rock': 16, 'orchestra': 48}
 
 

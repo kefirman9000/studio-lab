@@ -38,8 +38,13 @@ def i_reese(m, dur, p, glide=None, mod=None):
     cut = p.get('cut', 900)
     L = filt_env(L, cut * 0.5, cut * 1.6, wob)
     R = filt_env(R, cut * 0.5, cut * 1.6, 1 - wob)
-    sub = sine(f, n) * 1.2
-    out = np.vstack([soft(L * 0.5, 2.0) + sub, soft(R * 0.5, 2.0) + sub]) * env
+    # the moving, detuned saws stay above the fundamental: down there their phasing used to cancel and reinforce the
+    # sub, so the low end swelled and dropped out by ~8 dB on held notes (the bass seemed to 'break'). The sub below
+    # is one steady sine.
+    hpf = max(70.0, f * 1.9)
+    L, R = (hp(hp(soft(v * 0.5, 2.0), hpf, 2), hpf, 2) for v in (L, R))     # 4th order: the saws' fundamental ~24 dB down
+    sub = sine(f, n) * 1.3
+    out = np.vstack([L + sub, R + sub]) * env
     return out
 
 
@@ -2340,3 +2345,35 @@ ROLE_CHOICES['arp'] += ['saz', 'oud', 'phin', 'tres', 'gamelan']
 ROLE_CHOICES['chords'] += ['tres', 'khaen']
 ROLE_CHOICES['pad'] += ['khaen']
 GM_PROGRAM.update({'saz': 107, 'oud': 24, 'veena': 104, 'khaen': 109, 'phin': 105, 'tres': 25, 'gamelan': 13})
+
+
+def i_shakuhachi(m, dur, p, glide=None, mod=None):
+    """Shakuhachi - the end-blown bamboo flute, and the famous 80s sampler version of it: a loud, breathy 'chiff' as the
+    note speaks (an overblown puff that jumps up and falls in), the pitch scooping up into the note from a little
+    below (meri-kari), a hollow tone with lots of air, and a slow, wide vibrato that blooms on held notes."""
+    f = float(mtof(m))
+    n = int((dur + 0.25) * SR)
+    t = np.arange(n) / SR
+    scoop = p.get('scoop', 1.0)
+    cents = -110 * scoop * np.exp(-t * 9)                             # meri: starts flat, rises into the note
+    if glide is not None:
+        cents = cents + (float(glide) - m) * 100 * np.exp(-t * 10)
+    vib = np.clip((t - 0.28) / 0.45, 0, 1) * p.get('vib', 28) * np.sin(2 * np.pi * 5.0 * t + 0.4 * np.sin(2 * np.pi * 0.6 * t))
+    fr = f * 2 ** ((cents + vib) / 1200)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    tone = np.sin(ph) + 0.22 * np.sin(2 * ph) + 0.1 * np.sin(3 * ph) + 0.03 * np.sin(5 * ph)
+    over = 0.55 * np.sin(2 * ph + 0.7) * np.exp(-t * 22)              # the overblown puff an octave up as it speaks
+    air = bp(noise(n), f * 0.9, min(f * 4.5, 16000)) * (0.32 + 0.9 * np.exp(-t * 14))   # breath, strongest at the chiff
+    env = adsr(dur * SR, 0.035, 0.25, 0.82, 0.18)
+    env = np.pad(env, (0, max(0, n - len(env))))[:n]
+    breath = 1 + 0.08 * np.sin(2 * np.pi * 0.9 * t)
+    y = (tone * breath + over + air) * env
+    y = eq(hp(y, max(120, f * 0.6)), 'peak', 1400, 1.0, 2.5) * 0.5
+    return np.vstack([y, np.roll(y, 90)])
+
+
+INSTRUMENTS['shakuhachi'] = i_shakuhachi
+INSTRUMENT_INFO['shakuhachi'] = 'Shakuhachi (breathy bamboo flute / 80s sampler)'
+ROLE_CHOICES['lead'] += ['shakuhachi']
+ROLE_CHOICES['arp'] += ['shakuhachi']
+GM_PROGRAM['shakuhachi'] = 77

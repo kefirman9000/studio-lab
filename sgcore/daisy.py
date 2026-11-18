@@ -105,7 +105,7 @@ def _resonate(x, freqs, bws, n, gains=(1.0, 0.55, 0.3)):
     return out
 
 
-def sing(notes, rng=None, formant_scale=1.0, tilt=0.6):
+def sing(notes, rng=None, formant_scale=1.0, tilt=0.6, vibrato=0.0, breath=0.0, glide=0.025):
     """notes: [(start_s, dur_s, midi_float, phonemes)] -> mono voice. Pitch is held dead steady on each note (a fast
     25 ms glide between notes, no vibrato) - the uncanny, perfectly-in-tune machine."""
     rng = rng or np.random.default_rng(1892)
@@ -120,7 +120,7 @@ def sing(notes, rng=None, formant_scale=1.0, tilt=0.6):
     for start, dur, midi, ph in notes:
         i0, i1 = int(start * SR), int((start + dur) * SR)
         hz = 440.0 * 2 ** ((midi - 69) / 12)
-        g = min(int(0.025 * SR), i1 - i0)
+        g = min(int(glide * SR), i1 - i0)
         f0[i0:i1] = hz
         if prev:                                          # quick portamento from the last note
             f0[i0:i0 + g] = np.linspace(prev, hz, g)
@@ -152,10 +152,21 @@ def sing(notes, rng=None, formant_scale=1.0, tilt=0.6):
     for k in range(3):
         targ[k] = signal.lfilter([1 - k_s], [1, -k_s], targ[k], zi=[targ[k][0] * k_s])[0]
     vamp = signal.lfilter([1 - 0.995], [1, -0.995], vamp)
+    if vibrato > 0:                                       # a human singer: vibrato that blooms on held notes
+        ramp = np.zeros(n)
+        for start, dur, midi, ph in notes:
+            i0, i1 = int(start * SR), min(n, int((start + dur) * SR))
+            if i1 - i0 > int(0.25 * SR):
+                k = np.arange(i1 - i0) / SR
+                ramp[i0:i1] = np.clip((k - 0.18) / 0.35, 0, 1)
+        t_ = np.arange(n) / SR
+        f0 = f0 * 2 ** (vibrato * ramp * np.sin(2 * np.pi * 5.4 * t_ + 0.3 * np.sin(2 * np.pi * 0.7 * t_)) / 1200)
     # buzzy glottal source: a band-limited-ish sawtooth (the classic speech-synth buzz) with a little tilt
     ph_ = np.cumsum(f0 / SR)
     src = (2 * (ph_ % 1.0) - 1.0) * (f0 > 0)
     src = signal.lfilter([1.0], [1, -tilt], src) * 0.4      # more tilt = a softer, rounder, less buzzy voice
+    if breath > 0:                                        # breathy air through the same vowel shapes
+        src = src + breath * rng.standard_normal(n) * (f0 > 0) * 0.5
     voice = _resonate(src * vamp, targ, (120, 150, 200), n)
     # every sung syllable at the same loudness: a narrow resonance makes a note louder or softer depending on whether one
     # of its harmonics happens to land on it, so each note's vowel is levelled to one target (smoothly, ~12 ms)
@@ -332,3 +343,120 @@ def render(out_dir, bpm=None, log=print, wind_down=True, voice='machine'):
     return dict(files=files, duration=f'{int(secs // 60)}:{int(secs % 60):02d}', seconds=secs, bpm=bpm, voice=vname,
                 voice_label=V['label'], key='C major' if not V['transpose'] else 'C major (octave down)',
                 meter='3/4', lyrics=LYRICS)
+
+
+# ----------------------------------------------------------------------------- lyrics -> sung syllables (for song vocals)
+_DIGRAPH = [('tch', 'tS'), ('sh', 'S'), ('ch', 'tS'), ('th', 'T'), ('ph', 'f'), ('wh', 'w'), ('ck', 'k'), ('ng', 'n'),
+            ('qu', 'k w'), ('kn', 'n'), ('wr', 'r'), ('gh', '')]
+_CONS1 = {'b': 'b', 'c': 'k', 'd': 'd', 'f': 'f', 'g': 'g', 'h': 'h', 'j': 'dZ', 'k': 'k', 'l': 'l', 'm': 'm', 'n': 'n',
+          'p': 'p', 'q': 'k', 'r': 'r', 's': 's', 't': 't', 'v': 'v', 'w': 'w', 'x': 'k s', 'y': 'j', 'z': 'z'}
+_VOWEL_GROUPS = [('igh', 'aI'), ('ee', 'i'), ('ea', 'i'), ('ie', 'aI'), ('oo', 'u'), ('ou', 'aU'), ('ow', 'oU'), ('oa', 'oU'),
+                 ('ai', 'eI'), ('ay', 'eI'), ('ey', 'eI'), ('ue', 'u'), ('ew', 'u'), ('oi', 'oI'), ('oy', 'oI'), ('au', 'O'),
+                 ('aw', 'O'), ('ar', 'a r'), ('or', 'O r'), ('er', 'R'), ('ir', 'R'), ('ur', 'R')]
+_SHORT = {'a': 'ae', 'e': 'E', 'i': 'I', 'o': 'O', 'u': 'V', 'y': 'i'}
+_LONG = {'a': 'eI', 'e': 'i', 'i': 'aI', 'o': 'oU', 'u': 'u', 'y': 'aI'}
+DIPH.setdefault('aU', ('a', 'U'))
+DIPH.setdefault('oI', ('O', 'I'))
+
+
+_WORDS = {w: v.split('|') for w, v in {
+    'the': 'D @', 'a': '@', 'to': 't u', 'do': 'd u', 'you': 'j u', 'your': 'j O r', 'i': 'aI', 'im': 'aI m', 'is': 'I z',
+    'was': 'w V z', 'of': 'V v', 'one': 'w V n', 'love': 'l V v', 'give': 'g I v', 'have': 'h ae v', 'come': 'k V m',
+    'some': 's V m', 'done': 'd V n', 'oh': 'oU', 'o': 'oU', 'ooh': 'u', 'ah': 'a', 'la': 'l a', 'na': 'n a', 'yeah': 'j E',
+    'hey': 'h eI', 'baby': 'b eI|b i', 'heart': 'h a r t', 'are': 'a r', 'were': 'w R', 'there': 'D E r', 'where': 'w E r',
+    'here': 'h i r', 'what': 'w V t', 'night': 'n aI t', 'light': 'l aI t', 'world': 'w R l d', 'we': 'w i', 'he': 'h i',
+    'she': 'S i', 'me': 'm i', 'be': 'b i', 'so': 's oU', 'no': 'n oU', 'go': 'g oU', 'all': 'O l', 'om': 'oU m',
+    'hare': 'h a|r eI', 'krishna': 'k r I S|n a', 'rama': 'r a|m a', 'shanti': 'S a n|t i', 'jai': 'dZ aI',
+    'allah': 'a|l a', 'hallelujah': 'h ae|l E|l u|j a', 'amen': 'a|m E n'}.items()}
+
+
+def syllables(text):
+    """Very simple English spelling -> sung syllables (each a phoneme string the singer understands). Good enough for
+    short, simple lyrics; 'la', 'ooh', 'hey' and plain words come out clearly."""
+    import re
+    out = []
+    for word in re.findall(r"[a-zA-Z']+", text.lower()):
+        w = word.replace("'", '')
+        if w in _WORDS:
+            out += _WORDS[w]
+            continue
+        if len(w) <= 3 and w.endswith('y') and w[:-1].isalpha() and not any(c in 'aeiou' for c in w[:-1]):
+            out.append(' '.join(_CONS1.get(c, '') for c in w[:-1]).strip() + ' aI')     # my, by, fly, cry
+            continue
+        silent_e = len(w) > 2 and w.endswith('e') and w[-2] not in 'aeiouy' and any(c in 'aeiou' for c in w[:-2])
+        if silent_e:
+            w = w[:-1]
+        toks, i = [], 0                                    # tokens: ('C', phonemes) / ('V', phonemes)
+        while i < len(w):
+            hit = next(((g, ph) for g, ph in _VOWEL_GROUPS if w.startswith(g, i)), None)
+            if hit:
+                toks.append(('V', hit[1])); i += len(hit[0]); continue
+            hit = next(((g, ph) for g, ph in _DIGRAPH if w.startswith(g, i)), None)
+            if hit:
+                if hit[1]:
+                    toks.append(('C', hit[1]))
+                i += len(hit[0]); continue
+            c = w[i]
+            if i == len(w) - 1 and c in 'aeo' and i > 0 and w[i - 1] not in 'aeiou' and not silent_e:
+                toks.append(('V', {'a': 'a', 'e': 'i', 'o': 'oU'}[c])); i += 1; continue      # final open vowel: ma, me, go
+            if c == 's' and 0 < i < len(w) - 1 and w[i - 1] in 'aeiouy' and w[i + 1] in 'aeiouy':
+                toks.append(('C', 'z')); i += 1; continue                                  # daisy, rose
+            if c in 'aeiou' or (c == 'y' and i > 0):
+                long_ = silent_e and i == max(k for k, ch in enumerate(w) if ch in 'aeiouy')
+                toks.append(('V', (_LONG if long_ else _SHORT)[c]))
+            elif c in _CONS1:
+                if not toks or toks[-1] != ('C', _CONS1[c]):  # doubled letters sound once
+                    toks.append(('C', _CONS1[c]))
+            i += 1
+        if not any(k == 'V' for k, _ in toks):
+            toks.append(('V', '@'))
+        # split into syllables: each vowel takes the consonant right before it; the rest stay with the vowel before
+        vidx = [k for k, (kind, _) in enumerate(toks) if kind == 'V']
+        starts = [0] + [v - 1 if v > 0 and toks[v - 1][0] == 'C' and v - 1 > vidx[j] else v for j, v in enumerate(vidx[1:])]
+        bounds = starts + [len(toks)]
+        for a, b in zip(bounds, bounds[1:]):
+            ph = ' '.join(p for _, p in toks[a:b]).split()
+            if ph:
+                out.append(' '.join(ph))
+    return out
+
+
+SUNG_VOICES = {   # transpose, formant scale, tilt, vibrato (cents), breath, robot
+    'female': dict(tr=0, fs=1.12, tilt=0.88, vib=32, breath=0.18),
+    'male': dict(tr=-12, fs=0.92, tilt=0.86, vib=28, breath=0.15),
+    'choir': dict(tr=0, fs=1.05, tilt=0.9, vib=22, breath=0.25),
+    'robot': dict(tr=0, fs=1.0, tilt=0.6, vib=0, breath=0.0, robot=True),
+}
+
+
+def sing_part(notes_s, style='ooh', voice='female', lyrics='', seed=1):
+    """A song's vocal line -> stereo float32 audio. notes_s: [(start_s, dur_s, midi)]. style: 'ooh' / 'aah' / 'lyrics'."""
+    V = SUNG_VOICES.get(voice) or SUNG_VOICES['female']
+    rng = np.random.default_rng(seed)
+    if style == 'lyrics' and lyrics.strip():
+        syl = syllables(lyrics) or ['l a']
+    else:
+        syl = {'ooh': ['u', 'u', 'u', 'w u'], 'aah': ['a', 'a', 'a', 'h a']}.get(style, ['u'])
+    notes = []
+    for k, (s0, d, m) in enumerate(notes_s):
+        ph = syl[k % len(syl)]
+        while m + V['tr'] > 79:
+            m -= 12
+        notes.append((s0, max(0.08, d), float(m + V['tr']), ph))
+    if not notes:
+        return None
+
+    def one(detune=0.0, delay=0.0, fs=1.0):
+        y = sing([(s + delay, d, m + detune, p) for s, d, m, p in notes], rng, V['fs'] * fs, V['tilt'],
+                 vibrato=V['vib'], breath=V['breath'], glide=0.06)
+        return robotize(y) if V.get('robot') else y
+    if voice == 'choir':                                   # a small group: a few voices, slightly apart in pitch and time
+        parts = [one(0.0, 0.0), one(0.09, 0.018, 0.97), one(-0.08, 0.03, 1.04), one(-12.0, 0.01, 0.9)]
+        n = max(len(p) for p in parts)
+        L = sum(np.pad(p, (0, n - len(p))) * g for p, g in zip(parts, (1.0, 0.8, 0.8, 0.45)))
+        R = sum(np.pad(p, (0, n - len(p))) * g for p, g in zip(parts, (1.0, 0.8, 0.8, 0.45)[::-1]))
+        y = np.vstack([L, R])
+    else:
+        m = one()
+        y = np.vstack([m, np.roll(m, 40)])
+    return (y / (np.max(np.abs(y)) + 1e-9)).astype(np.float32)

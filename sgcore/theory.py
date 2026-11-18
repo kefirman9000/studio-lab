@@ -205,12 +205,20 @@ def lead_voicing(notes, prev, center, inversions=True):
 
 
 class Ev:
-    __slots__ = ('track', 'beat', 'dur', 'midi', 'vel', 'glide', 'mod', 'strum', 'slide')
+    __slots__ = ('track', 'beat', 'dur', 'midi', 'vel', 'glide', 'mod', 'strum', 'slide', 'bend')
 
-    def __init__(self, track, beat, dur, midi, vel, glide=None, mod=None, strum=0.0, slide=0.0):
+    def __init__(self, track, beat, dur, midi, vel, glide=None, mod=None, strum=0.0, slide=0.0, bend=None):
         self.track, self.beat, self.dur, self.midi, self.vel, self.glide, self.mod = track, beat, dur, midi, vel, glide, mod
         self.strum = strum                       # beats after the chord's own position (strummed chords move as one)
         self.slide = slide                       # semitones the note slides up from (fiddle / steel / guitar / harmonica)
+        self.bend = bend                         # Indian ornaments: [('meend', semis, frac), ('gamak', depth, rate), ('andolan', depth)]
+
+    def copy(self, **kw):
+        """The same note with some fields changed - every ornament (strum, slide, bend) kept."""
+        e = Ev(self.track, self.beat, self.dur, self.midi, self.vel, self.glide, self.mod, self.strum, self.slide, self.bend)
+        for k, v in kw.items():
+            setattr(e, k, v)
+        return e
 
 
 def chord_tones_deg(chord, lo, hi):

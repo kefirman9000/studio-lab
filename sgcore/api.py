@@ -70,6 +70,8 @@ def _nice(name):
         from . import soundfont as sfm
         hit = sfm.SAMPLED.get(name[3:])
         return (hit[2] if hit else name[3:]) + ' (recorded)'
+    if name == 'sung':
+        return 'Singer'
     return INSTRUMENT_INFO.get(name, name).split(' (')[0]
 
 

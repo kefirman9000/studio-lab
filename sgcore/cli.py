@@ -56,6 +56,10 @@ def main(argv=None):
     ap.add_argument('--counter', choices=['on', 'off'], help='counter-melody answering the lead (default: genre decides)')
     ap.add_argument('--layering', choices=['off', 'more'], help='parts doubled by a second instrument (default: genre decides)')
     ap.add_argument('--vocal-guide', action='store_true', help='also play the vocal guide melody (always in MIDI exports)')
+    ap.add_argument('--bends', choices=['off', 'subtle', 'more'], help='meend / gamak on sitar, veena, bansuri ... (default: genre)')
+    ap.add_argument('--vocals', choices=['ooh', 'aah', 'lyrics'], help='a singer on the melody')
+    ap.add_argument('--voice', choices=['female', 'male', 'choir', 'robot'], help='the singer (default female)')
+    ap.add_argument('--lyrics', help='words for --vocals lyrics')
     ap.add_argument('--fx', action='append', default=[], help='effect plugin on a part, e.g. --fx lead=ValhallaSupermassive')
     ap.add_argument('--level', action='append', default=[], help='part level in dB, e.g. --level lead=-3 --level bass=+2')
     ap.add_argument('--mute', default='', help='comma-separated layers to drop: kick,snare,top,bass,chords,pad,arp,lead,fx')
@@ -105,6 +109,13 @@ def main(argv=None):
                     o[k] = v
             if a.vocal_guide:
                 o['vocal_guide'] = True
+            if a.bends:
+                o['bends'] = a.bends
+            if a.vocals:
+                o['vocals'] = a.vocals
+                o['voice'] = a.voice or 'female'
+                if a.lyrics:
+                    o['lyrics'] = a.lyrics
             if a.vinyl:
                 o['vinyl'] = a.vinyl == 'on'
             if a.fx:
@@ -136,6 +147,15 @@ def reference_options(path):
         x = x.astype('float64')
         x = (x.mean(axis=1) if x.ndim > 1 else x) / (np.max(np.abs(x)) + 1e-9)
         a = analyze(x, sr)
+        try:
+            from scipy import signal
+            from . import genrematch
+            from .styles import STYLES, LABELS
+            x2 = signal.resample_poly(x, 22050, sr) if sr != 22050 else x
+            genrematch.analyze_reference(x2, 22050, a)
+            print('sounds closest to: ' + ', '.join(f"{g['id']} ({g['match']}%)" for g in genrematch.suggest(a, STYLES, LABELS)))
+        except Exception as e:
+            print('(no genre suggestions:', e, ')')
     else:
         from .refparse import analyze_file
         with open(path, 'rb') as f:

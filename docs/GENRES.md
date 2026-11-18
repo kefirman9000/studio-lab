@@ -1,8 +1,8 @@
-# Studio Lab genres (288)
+# Studio Lab genres (291)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (141)
+## Electronic (142)
 
 ### House & Disco (26)
 
@@ -152,7 +152,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Moombahton | `moombahton` | 106-112 | Moombahton: dembow groove at 110 with big-room synths and heavy drops |
 | Reggaeton | `reggaeton` | 88-100 | Reggaeton: dembow rhythm, deep 808s, plucky synths, latin percussion |
 
-### Chill, Lo-fi & Ambient (9)
+### Chill, Lo-fi & Ambient (10)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -160,6 +160,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Ambient | `ambient` | 66-80 | Ambient: slow evolving pads, glassy bells and a soft lead on tape loops of different lengths that drift against each other, huge reverbs, no drums |
 | Ambient beat (dark, sub-heavy) | `ambient_beat` | 140-150 | Ambient beat (dark, sub-heavy, airy): slow half-time drums tucked under washed-out pads, a long sustained 808 sub doing most of the work, soft ticking hats, reversed swells and distant bells - wide, dark and weightless |
 | Berlin school (sequencer) | `berlin_school` | 100-128 | Berlin school (70s): long, hypnotic analog sequencer patterns - a pulsing 16th-note sequence that slowly shifts, string-machine and choir pads, a drifting lead, no drums - spacey and cosmic |
+| Chant downtempo - shakuhachi & monks | `chant_downtempo` | 92-100 | Chant downtempo (early 90s): it opens on a lone, breathy shakuhachi calling over a dark pad - then a monk choir chants slow minor chords, and a heavy, lazy hip-hop break around 96 drops in under it with a deep pedal sub; the shakuhachi answers the chant between the drums - mystical, sensual, cavernous |
 | Downtempo | `downtempo` | 85-100 | Downtempo / chillout: laid-back beats, Rhodes & piano, warm pads, glassy bells |
 | Lo-fi Hip Hop | `lofi` | 72-88 | Lo-fi hip hop: swung boom-bap, jazzy 7th/9th Rhodes chords, warm bass, vinyl + tape wobble |
 | Mid-fi synth-funk / chillwave | `midfi_synthfunk` | 80-100 | Mid-fi synth-funk / chillwave: a slow, crunchy drum-machine groove around 80-100 with a fat gated snare, a rubbery analog bass, detuned, warbly poly-synth chords and arps soaked in tape wobble and chorus, a warm square lead - nostalgic, hazy and funky, like a worn 80s VHS |
@@ -200,7 +201,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hauntology II (sunlit tape) | `hauntology_sunlit` | 82-96 | Hauntology II - sunlit tape: warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
 | Hauntology III (dark film haze) | `hauntology_dark` | 64-80 | Hauntology III - dark film haze: slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
 
-## Classic (118)
+## Classic (120)
 
 ### Rock & Metal (25)
 
@@ -232,10 +233,11 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Surf rock (60s) | `surf_rock` | 146-160 | Surf rock (early-60s instrumental surf): a fast, straight beat driven by the floor tom, a twangy guitar melody tremolo-picked in bursts on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and now and then a combo organ or sax - sunny, wet and full speed ahead |
 | Symphonic Metal | `symphonic_metal` | 120-170 | Symphonic metal: double-kick drums and power chords under choir, string ostinatos and a soaring lead |
 
-### Pop & Indie (9)
+### Pop & Indie (10)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
+| 80s adult pop - gated drums & shakuhachi | `shakuhachi_pop` | 92-118 | 80s adult pop - gated drums & shakuhachi: a big drum machine with that huge gated-reverb snare and tom fills, a punchy synth bass, bright poly-synth stabs, a DX-style electric piano and lush pads, and the breathy sampled shakuhachi flute playing the hook - airy, dramatic, very mid-80s |
 | 80s sophisti-pop / jazz-funk pop | `sophisti_pop` | 98-110 | Mid-80s sophisti-pop / jazz-funk pop: a tight, bright drum-machine-and-live groove around 103, a busy slap / thumbed bass, lush synth pads and chorused electric piano, jazzy major-7 and 9th chords, crisp synth brass and a smooth sung-style lead - polished, upbeat and wistful |
 | Anime opening (J-rock) | `anime_opening` | 150-185 | Anime opening (J-rock / J-pop): fast and dramatic - driving rock drums, busy running bass, distorted power-chord guitars, a sweeping string section and piano runs, sudden stops and a soaring chorus melody, with the last chorus a key change up |
 | Bedroom / indie pop | `bedroom_pop` | 108-122 | Bedroom / indie pop: a bouncy drum machine with a syncopated kick, warm synth bass, chorused clean guitar and soft poly synths, bubbly plucks and sparkly bells, sweet major chords with 7ths - dreamy, cute and loud |
@@ -283,7 +285,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Soul-sample hip-hop | `soul_sample_rap` | 70-90 | Soul-sample hip-hop (mid-2000s): a slow, heavy, swung beat around 70-90 under a looped, sped-up soul sample - warm piano / Rhodes and strings chopped into a 2- or 4-bar loop with a pitched-up vocal-like line, a thick kick, a cracking snare, a deep simple bass - one loop all the way through, verses and hooks set apart by a part or two |
 | West-coast slap rap | `bay_rap` | 104-116 | West-coast slap rap (Bay Area / Sacramento): a bouncy, mid-tempo slap around 104-116 with snappy claps and snaps, a knocking kick, a rubbery, sliding 808 that bounces between two notes, plucky synths and a whistle-like lead - hard, playful and party-ready |
 
-### Jazz (10)
+### Jazz (11)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -296,6 +298,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Jazz Fusion | `fusion` | 96-140 | Jazz fusion / jazz-rock: straight 16th-note grooves, electric bass, Rhodes and synth leads, overdriven guitar, extended chords and virtuosic unison lines over a rock / funk rhythm section |
 | Ragtime / stride piano | `ragtime` | 80-112 | Ragtime / stride piano: solo piano in a march-like 2-feel - the left hand jumping between a low bass note on the beat and a chord on the off-beat, the right hand playing a bright, heavily syncopated melody |
 | Smooth Jazz (soprano sax) | `smooth_jazz` | 64-92 | Smooth jazz, soprano-sax ballad style: a soprano sax soaring up high in long held notes with wide vibrato, scooping into every phrase, over lush 80s DX electric piano and pads, a warm fretless bass and soft, reverb-washed drums - romantic, slow and polished, with a key change for the last chorus |
+| Smooth jazz - horns & shakuhachi | `smooth_jazz_horns` | 88-104 | Smooth jazz - horns & shakuhachi: a laid-back funky groove with a tight, punchy horn section playing the melody in unison and stabbing the changes, a Rhodes comping jazzy 9th chords, a thumbed electric bass, light percussion, and a breathy sampled shakuhachi answering every phrase - glossy late-80s / 90s quiet-storm jazz |
 | Soul Jazz / Hard Bop | `soul_jazz` | 100-140 | Hard bop / soul jazz: organ trio grooves - Hammond B3 comping and bass, bluesy guitar and tenor sax, gospel-tinged harmony, hard swing or straight-8th backbeat |
 
 ### Swing & Big Band (5)
@@ -349,7 +352,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 |---|---|---|---|
 | Bhangra | `bhangra` | 92-108 | Bhangra (Punjabi): the dhol drum driving its swung, galloping chaal rhythm, a bright tumbi riff on one high string, chimta jingles, a harmonium drone and chords, a synth bass and a big, celebratory hook |
 | Gamelan (Javanese) | `gamelan` | 62-86 | Gamelan (Java / Bali): an ensemble of bronze metallophones and gongs - the saron playing the core melody in steady beats, the bonang weaving faster patterns around it, the kendang drum leading, and the great gong closing every cycle; the pelog scale and the shimmering beat between paired instruments |
-| Japanese zen (koto, shakuhachi) | `japanese_zen` | 66-84 | Japanese zen / traditional-inspired: koto plucks and pressed bends, a breathy shakuhachi-style flute, a soft taiko and wood blocks, lots of space - calm, modal and spacious |
+| Japanese zen (koto, shakuhachi) | `japanese_zen` | 66-84 | Japanese zen / traditional-inspired: koto plucks and pressed bends, a breathy shakuhachi, a soft taiko and wood blocks, lots of space - calm, modal and spacious |
 | Klezmer (clarinet & accordion) | `klezmer` | 124-150 | Klezmer: a slow, free, crying doina on the clarinet over a held chord - then the band kicks in for a fast freylekhs dance: oom-pah bass and accordion off-beats, the fiddle and clarinet trading the freygish melody, faster and wilder to the end |
 | Raga (sitar, tabla, tanpura) | `raga_fusion` | 84-112 | Raga (Hindustani-inspired): a tanpura drone the whole way, the sitar alone in a slow free alap with sliding meend, then a pulse, then the tabla enters for the gat in a 16-beat teental and the music speeds into a jhala climax |
 | Rai (darbuka & oud) | `rai` | 96-116 | Rai (Algeria / North Africa): the darbuka in a rolling maqsum rhythm with tambourine and claps, a punchy synth bass, accordion or synth off-beats, the oud filling between lines and a wailing lead in the Hijaz mode - danceable, emotional, Mediterranean |

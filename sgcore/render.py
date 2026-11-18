@@ -305,6 +305,16 @@ class Renderer:
         if tcfg['inst'] == 'vinyl':
             buf[:] = fx_vinyl(self.length)
             return buf
+        if tcfg['inst'] == 'sung':                            # sung vocals: the whole line at once (the singer phrases it)
+            from .daisy import sing_part
+            p = tcfg.get('p') or {}
+            notes = sorted(((self.t_of(e.beat, human=False), max(0.1, self._dsec(e.beat, e.dur) * 0.97), e.midi)
+                            for e in evs if e.midi is not None), key=lambda x: x[0])
+            y = sing_part(notes, p.get('style', 'ooh'), p.get('voice', 'female'), p.get('lyrics', ''), seed=self.song['seed'])
+            if y is not None:
+                n = min(self.length, y.shape[1])
+                buf[:, :n] = y[:, :n] * 0.5
+            return buf
         if tcfg['inst'] == 'texture':
             buf[0] = fx_texture(self.length)
             buf[1] = fx_texture(self.length)
@@ -319,9 +329,8 @@ class Renderer:
         is_drum = tcfg['inst'] in DRUMS
         p = None if is_drum else self._params(tcfg)
         if tcfg.get('touch'):                                 # a lighter (or heavier) touch: softer velocity layers
-            from .theory import Ev
             t_ = float(tcfg['touch'])
-            evs = [Ev(e.track, e.beat, e.dur, e.midi, max(0.05, min(1.0, e.vel * t_)), e.glide, e.mod, e.strum, e.slide) for e in evs]
+            evs = [e.copy(vel=max(0.05, min(1.0, e.vel * t_))) for e in evs]
         kick = self.st.get('kick_track', 'kick')
         real_drums = is_drum and (self.st.get('real_kit') or self.st.get('real_perc')) and not tcfg.get('synth')
         brk = self.st.get('break_seq') or {}
@@ -345,6 +354,8 @@ class Renderer:
                 sig = sig * np.exp(-np.arange(k) / (0.07 * SR)).astype(np.float32)
             if getattr(ev, 'slide', 0) and not is_drum:          # slide / bend up into the note
                 sig = pitch_slide(sig, float(ev.slide), min(0.22, max(0.07, self._dsec(ev.beat, ev.dur) * 0.3)))
+            if getattr(ev, 'bend', None) and not is_drum and sig is not None:   # meend / gamak / andolan
+                sig = pitch_curve(sig, ev.bend, self._dsec(ev.beat, ev.dur))
             if tcfg.get('vibfx') and not is_drum and ev.dur >= 0.75:   # expressive delayed vibrato on held notes (sax, voice)
                 sig = pitch_vibrato(sig, float(tcfg['vibfx']), self._dsec(ev.beat, ev.dur))
             if tcfg.get('swell') and not is_drum and ev.dur >= 2:     # bowed / blown swell: the note grows out of nothing
@@ -866,6 +877,48 @@ def pitch_slide(x, semis, sec):
     r = np.ones(n, dtype=np.float64)
     u = np.linspace(0.0, 1.0, m)
     r[:m] = 2.0 ** (-semis * (1.0 - u) ** 2 / 12.0)          # fast at first, settling gently into the note
+    pos = np.concatenate([[0.0], np.cumsum(r[:-1])])
+    pos = pos[pos < n - 1]
+    i0 = pos.astype(np.int64)
+    fr = (pos - i0).astype(np.float32)
+    if x.ndim == 1:
+        return x[i0] * (1 - fr) + x[i0 + 1] * fr
+    return x[:, i0] * (1 - fr) + x[:, i0 + 1] * fr
+
+
+def bend_curve(spec, n, note_sec):
+    """Semitone offset over n samples for a list of ornaments (see Ev.bend)."""
+    t = np.arange(n) / SR
+    out = np.zeros(n)
+    T = max(0.05, note_sec)
+    for orn in spec or []:
+        kind = orn[0]
+        if kind == 'meend':                          # a slow, smooth pull from another note into this one
+            semis, frac = float(orn[1]), float(orn[2]) if len(orn) > 2 else 0.45
+            L = max(0.06, min(0.9, T * frac))
+            u = np.clip(t / L, 0, 1)
+            out += semis * (1 - u * u * (3 - 2 * u))           # smoothstep: eases out of the start, settles into the note
+        elif kind == 'gamak':                        # shaking up to the note above and back, growing as it's held
+            depth, rate = float(orn[1]), float(orn[2]) if len(orn) > 2 else 5.5
+            t0 = T * 0.22
+            ramp = np.clip((t - t0) / max(0.08, T * 0.25), 0, 1) * (t < T + 0.05)
+            out += depth * 0.5 * (1 - np.cos(2 * np.pi * rate * np.maximum(0, t - t0))) * ramp
+        elif kind == 'andolan':                      # a slow sway around the note
+            depth = float(orn[1])
+            ramp = np.clip((t - T * 0.2) / max(0.1, T * 0.3), 0, 1)
+            out += depth * np.sin(2 * np.pi * 1.7 * t) * ramp
+        elif kind == 'fall':                         # the end of the note pulled down / up into the next one
+            semis = float(orn[1])
+            t0 = T * 0.75
+            out += semis * np.clip((t - t0) / max(0.05, T * 0.25), 0, 1) ** 2
+    return out
+
+
+def pitch_curve(x, spec, note_sec):
+    """Bend a rendered note along an ornament curve (works on synths and recordings alike)."""
+    x = np.asarray(x, dtype=np.float32)
+    n = x.shape[-1]
+    r = 2.0 ** (bend_curve(spec, n, note_sec) / 12.0)
     pos = np.concatenate([[0.0], np.cumsum(r[:-1])])
     pos = pos[pos < n - 1]
     i0 = pos.astype(np.int64)

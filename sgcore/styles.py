@@ -5077,7 +5077,7 @@ style('son_cubano', 'Classic',
       label='Son cubano (tres & bongos)')
 
 style('japanese_zen', 'Classic',
-      'Japanese zen / traditional-inspired: koto plucks and pressed bends, a breathy shakuhachi-style flute, a soft '
+      'Japanese zen / traditional-inspired: koto plucks and pressed bends, a breathy shakuhachi, a soft '
       'taiko and wood blocks, lots of space - calm, modal and spacious',
       bpm=(66, 84), scales=['phrygian', 'minor'], human=0.01, form='arch', chord_size=3, sc_depth=0.0, reverb=3.4,
       progs={'phrygian': [[0, 1, 0, 0], [0, 0, 5, 1], [0, 6, 1, 0]], 'minor': [[0, 5, 0, 3], [0, 0, 5, 0]]}, chord_bars=2,
@@ -5092,11 +5092,11 @@ style('japanese_zen', 'Classic',
               T('chords', 'chords', 'koto', rev=0.4, pan=-0.2, db=-21),
               T('pad', 'pad', 'glasspad', rev=0.6, db=-31, p=dict(a=1.2)),
               T('arp', 'arp', 'koto', pan=0.25, rev=0.5, db=-25),
-              T('lead', 'lead', 'flute', rev=0.5, db=-18, p=dict(vib=30))],
+              T('lead', 'lead', 'shakuhachi', rev=0.5, db=-17)],
       master=dict(lufs=-14.0, air=1.2, low=0.6),
       pools=dict(chords=['koto', 'harp', 'pizz', 'kalimba'],
                  arp=['koto', 'harp', 'kalimba', 'marimba'],
-                 lead=['flute', 'koto', 'tinwhistle', 'oboe'],
+                 lead=['shakuhachi', 'flute', 'koto'],
                  pad=['glasspad', 'warmpad', 'strings'],
                  bass=['koto', 'harp', 'pizz', 'cello']),
       label='Japanese zen (koto, shakuhachi)',
@@ -5930,15 +5930,49 @@ style('new_age_chant', 'Electronic',
       tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.35, db=-16),
               T('chat', 'top', 'chat', db=-28), T('bass', 'bass', 'sinebass', db=-15),
               T('chords', 'chords', 'choir', rev=0.6, db=-21, p=dict(vowel='o')), T('pad', 'pad', 'warmpad', rev=0.6, db=-26),
-              T('arp', 'arp', 'harp', rev=0.5, dly=0.3, db=-29), T('lead', 'lead', 'flute', rev=0.5, dly=0.3, db=-19),
+              T('arp', 'arp', 'harp', rev=0.5, dly=0.3, db=-29), T('lead', 'lead', 'shakuhachi', rev=0.5, dly=0.3, db=-18),
               T('texture', 'fx', 'texture', rev=0.6, db=-36)],
       master=dict(lufs=-11.0, air=0.8, low=1.2, width=1.2),
       pools=dict(chords=['choir', 'strings', 'warmpad', 'organ'],
                  pad=['warmpad', 'choir', 'glasspad', 'strings'],
                  arp=['harp', 'celesta', 'pizz', 'piano'],
-                 lead=['flute', 'tinwhistle', 'oboe', 'clarinet'],
+                 lead=['shakuhachi', 'flute', 'tinwhistle'],
                  bass=['sinebass', '808', 'moogbass', 'reese']),
       label='90s new-age chill (chant)')
+
+
+# v1.54: the shakuhachi-opened chant downtempo (user request: the early-90s chant hit style) - the song opens on the
+# breathy shakuhachi alone over a pad, the monk choir enters, then the slow heavy break drops in under it
+FORMS['chant_downtempo'] = [('intro', 4, {'pad', 'lead', 'fx'}, {'filter_in': True}),
+                            ('chant', 8, {'pad', 'chords', 'fx'}, {}),
+                            ('groove', 16, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'fx'}, {'crash': True}),
+                            ('theme', 16, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'lead', 'fx'}, {}),
+                            ('break', 8, {'pad', 'chords', 'lead', 'fx'}, {'alt': True}),
+                            ('theme', 16, {'kick', 'snare', 'top', 'bass', 'pad', 'chords', 'lead', 'arp', 'fx'}, {'crash': True}),
+                            ('outro', 8, {'pad', 'lead', 'fx'}, {'fade': True})]
+style('chant_downtempo', 'Electronic',
+      'Chant downtempo (early 90s): it opens on a lone, breathy shakuhachi calling over a dark pad - then a monk choir '
+      'chants slow minor chords, and a heavy, lazy hip-hop break around 96 drops in under it with a deep pedal sub; the '
+      'shakuhachi answers the chant between the drums - mystical, sensual, cavernous',
+      bpm=(92, 100), scales=['minor', 'phrygian', 'dorian'], swing=0.53, human=0.005, form='chant_downtempo', chord_size=3,
+      kit='soft', progs={'minor': [[0, 0, 6, 0], [0, 0, 5, 6], [0, 5, 6, 0]], 'phrygian': [[0, 1, 0, 0]], 'dorian': [[0, 3, 0, 0]]},
+      own_progs=True, sc_depth=0.1, reverb=3.8, no_rotation=True, slides=0.3,
+      drums={'kick': ['X.........X.....', 'X.....X...X..x..'], 'snare': [BACKBEAT], 'chat': ['x.x.x.x.x.x.x.x.'],
+             'ohat': ['..............x.']},
+      snare_tracks=['snare'], build_family=['none', 'pickup'], transition_moves=['none', 'crash', 'none'],
+      bass=['R---------------', 'R-------R-------'], bass_lo=31, pedal_sub=True,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=56, arp=dict(rate=1, mode='up', oct=5, prob=0.4),
+      lead_rh=['x-------x---x---', 'x---x---x-------', '........x-------', 'x-x-x-------....'], lead_oct=5, repetition=0.85,
+      gm_hint='Sampled shakuhachi (the opening call and the answers); male monk choir chant; slow heavy funk break; deep pad; pedal sub',
+      tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.4, db=-15),
+              T('chat', 'top', 'chat', db=-28), T('ohat', 'top', 'ohat', db=-31), T('bass', 'bass', 'sinebass', db=-15),
+              T('chords', 'chords', 'choir', rev=0.65, db=-20, p=dict(vowel='o')), T('pad', 'pad', 'warmpad', rev=0.6, db=-25),
+              T('arp', 'arp', 'harp', rev=0.5, dly=0.3, db=-29), T('lead', 'lead', 'shakuhachi', rev=0.55, dly=0.32, db=-16),
+              T('texture', 'fx', 'texture', rev=0.6, db=-36)],
+      master=dict(lufs=-11.0, air=0.8, low=1.3, width=1.25),
+      pools=dict(chords=['choir', 'sf:choir'], pad=['warmpad', 'glasspad', 'strings'], arp=['harp', 'celesta', 'piano'],
+                 lead=['shakuhachi'], bass=['sinebass', '808', 'moogbass']),
+      label='Chant downtempo - shakuhachi & monks')
 
 # mid-90s smooth rap: long verses, short hooks, a dip before the last verse
 FORMS['smooth_90s_rap'] = [('intro', 4, {'chords', 'pad', 'top'}, {}),
@@ -5986,6 +6020,60 @@ FORMS['sophisti_pop'] = [('intro', 8, {'kick', 'top', 'pad', 'bass'}, {}),
                          ('bridge', 8, {'kick', 'top', 'bass', 'pad', 'chords'}, {'alt': True}),
                          ('chorus', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead', 'arp'}, {'crash': True}),
                          ('outro', 8, {'kick', 'snare', 'top', 'bass', 'chords'}, {'fade': True})]
+# v1.54: the mid-80s sampled shakuhachi (the breathy, chiffy flute preset of the big 80s samplers) - adult pop with
+# gated drums, and horn-driven smooth jazz with the shakuhachi answering the melody (user request)
+style('shakuhachi_pop', 'Classic',
+      '80s adult pop - gated drums & shakuhachi: a big drum machine with that huge gated-reverb snare and tom fills, a '
+      'punchy synth bass, bright poly-synth stabs, a DX-style electric piano and lush pads, and the breathy sampled '
+      'shakuhachi flute playing the hook - airy, dramatic, very mid-80s',
+      bpm=(92, 118), scales=['major', 'minor', 'dorian'], swing=0.5, human=0.004, form='song', chord_size=4, kit='linn',
+      gated_snare=True, sc_depth=0.0, reverb=2.4, no_rotation=True,
+      progs={'major': [[0, 4, 5, 3], [5, 3, 0, 4], [0, 3, 5, 4]], 'minor': [[0, 5, 6, 4], [0, 3, 6, 5]], 'dorian': [[0, 3, 0, 6]]},
+      drums={'kick': ['X.......X.X.....', 'X.....X.X.......'], 'snare': [BACKBEAT], 'chat': ['x.x.x.x.x.x.x.x.'],
+             'tom': ['................', '............x.xx']},
+      snare_tracks=['snare'], fill=True, build_family=['pickup', 'toms'],
+      bass=['R.R.R.R.R.R.R.R.', 'R...R.R.R...R.R.', 'R.R...R.R.R...R.'], bass_lo=33, bass_gate=0.6,
+      chord_rh=['x-..x-....x-....', 'x---x---x---x---'], chord_center=62, arp=dict(rate=2, mode='updown', oct=5, prob=0.6),
+      lead_rh=['x---x-x-x-------', 'x-x-x---x-x-....', '..x-x-x-x-------'], lead_oct=5, slides=0.2,
+      gm_hint='Sampled shakuhachi (lead); drum machine with gated-reverb snare & toms; synth bass; poly-synth; DX electric piano; pads',
+      tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.35, db=-14),
+              T('chat', 'top', 'chat', pan=0.2, db=-28), T('tom', 'top', 'tom', rev=0.35, db=-20),
+              T('bass', 'bass', 'moogbass', db=-14),
+              T('chords', 'chords', 'polysynth', rev=0.3, pan=-0.2, db=-22, chorus=0.3),
+              T('pad', 'pad', 'warmpad', rev=0.5, db=-26),
+              T('arp', 'arp', 'epiano', rev=0.3, pan=0.25, db=-25, chorus=0.4),
+              T('lead', 'lead', 'shakuhachi', rev=0.45, dly=0.22, db=-15)],
+      master=dict(lufs=-11.0, air=1.4, low=1.0, width=1.1),
+      pools=dict(bass=['moogbass', 'fmbass', 'sawbass'], chords=['polysynth', 'synthbrass', 'm1piano'],
+                 pad=['warmpad', 'solina', 'strings'], arp=['epiano', 'm1piano', 'polysynth'], lead=['shakuhachi']),
+      label='80s adult pop - gated drums & shakuhachi')
+
+style('smooth_jazz_horns', 'Classic',
+      'Smooth jazz - horns & shakuhachi: a laid-back funky groove with a tight, punchy horn section playing the melody in '
+      'unison and stabbing the changes, a Rhodes comping jazzy 9th chords, a thumbed electric bass, light percussion, '
+      'and a breathy sampled shakuhachi answering every phrase - glossy late-80s / 90s quiet-storm jazz',
+      bpm=(88, 104), scales=['dorian', 'major', 'minor'], swing=0.54, human=0.005, form='song', chord_size=4, kit='linn',
+      sc_depth=0.0, reverb=2.2, no_rotation=True,
+      progs={'dorian': [[0, 3, 0, 3], [0, 6, 3, 4]], 'major': [[1, 4, 0, 5], [3, 4, 2, 5], [0, 5, 1, 4]], 'minor': [[0, 3, 6, 5]]},
+      drums={'kick': ['X.....x...X.....', 'X..x......X..x..'], 'snare': [BACKBEAT, '....X..x....X...'], 'chat': ['x.xxx.xxx.xxx.xx'],
+             'conga': ['..o...o...o.x.o.']},
+      snare_tracks=['snare'], build_family=['pickup', 'stops'], transition_moves=['none', 'crash'],
+      bass=['R..R.R.O..R.R.O.', 'R.R..O.xR..R.Ox.', 'R...R.xO..R..O..'], bass_lo=31, bass_gate=0.55,
+      chord_rh=['x-..x-....x-....', '..x-..x-..x-..x-'], chord_center=62, arp=dict(rate=2, mode='random', oct=5, prob=0.35),
+      lead_rh=['x-x-x---x-x-x---', 'x.x.x-x-x---....', '..x-x-x-x---x---'], lead_oct=5, slides=0.25,
+      gm_hint='Horn section (trumpet, sax, trombone in unison); sampled shakuhachi fills; Rhodes; electric bass; drums + congas',
+      tracks=[T('kick', 'kick', 'kick', db=-15), T('snare', 'snare', 'snare', rev=0.25, db=-17),
+              T('chat', 'top', 'chat', pan=0.2, db=-29), T('conga', 'top', 'conga', pan=-0.3, db=-26),
+              T('bass', 'bass', 'fmbass', db=-14, p=dict(index=2.0, drive=1.3)),
+              T('chords', 'chords', 'epiano', rev=0.3, pan=-0.15, db=-22, chorus=0.4),
+              T('horns', 'chords', 'brass', rev=0.25, pan=0.15, db=-24, double_of='chords', keep_inst=True, max_dur=0.3),
+              T('arp', 'arp', 'shakuhachi', rev=0.45, dly=0.2, pan=0.3, db=-20),
+              T('lead', 'lead', 'brass', rev=0.3, db=-15)],
+      master=dict(lufs=-12.0, air=1.4, low=1.0),
+      pools=dict(bass=['fmbass', 'sf:fingerbass', 'sf:slapbass'], chords=['epiano', 'm1piano', 'piano'],
+                 arp=['shakuhachi', 'flute', 'vibes'], lead=['brass', 'sf:trumpetsection', 'trumpet', 'sax']),
+      label='Smooth jazz - horns & shakuhachi')
+
 style('sophisti_pop', 'Classic',
       'Mid-80s sophisti-pop / jazz-funk pop: a tight, bright drum-machine-and-live groove around 103, a busy slap / '
       'thumbed bass, lush synth pads and chorused electric piano, jazzy major-7 and 9th chords, crisp synth brass '

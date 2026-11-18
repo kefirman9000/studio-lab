@@ -369,7 +369,7 @@ def test_sound_choices():
             assert pool[0] == inst, (k, r)
             if len(pool) < 3 and inst not in ('808', 'logdrum', 'piano', 'chipbass', 'chip', 'tanpura', 'koto', 'sinebass', 'upright',
                                               'cello', 'contrabass', 'organ', 'ebass', 'mandolin', 'guitar', 'choir',
-                                              'sitar', 'harmonium', 'santoor', 'veena', 'gamelan', 'saz', 'phin', 'khaen', 'tres', 'oud'):
+                                              'sitar', 'harmonium', 'santoor', 'veena', 'gamelan', 'saz', 'phin', 'khaen', 'tres', 'oud', 'shakuhachi'):
                 thin.append((k, r, pool))
     assert len(thin) <= 6, thin
     print('ok  every genre part has idiomatic alternative sounds (re-roll / suggestions)')
@@ -488,7 +488,7 @@ def test_hindu_devotional():
             lead = sorted((e for e in s['events'] if e.track == 'lead'), key=lambda e: e.beat)
             longest = max(lead, key=lambda e: e.dur)
             assert longest.dur >= 1.3                                         # held peaks / resting notes
-            assert any(e.slide for e in lead)                                  # meend
+            assert any(e.slide or e.bend for e in lead)                        # meend
     tm = compose(Options(style='kirtan', seed=3))['tempo_map']
     assert tm[-1][1] > tm[0][1] * 1.8                                          # starts slow, ends ecstatic
     k = compose(Options(style='kirtan', seed=3))
@@ -547,6 +547,120 @@ def test_world_and_rock_genres_153():
     sl = [t['inst'] for s_ in (1, 2, 3) for t in compose(Options(style='ghazal', seed=s_))['st']['tracks'] if t['name'] == 'lead']
     assert set(sl) == {'sitar'}
     print('ok  19 world / rock genres: defining sounds, own drums, qawwali speeds up, klezmer doina -> dance, gamelan pelog')
+
+
+def test_sung_vocals():
+    """v1.54: sung vocals on the song's melody - in tune, every voice, lyrics turned into syllables; genres without a
+    guide melody sing the lead line."""
+    import numpy as np
+    from sgcore.compose import Options, compose
+    from sgcore.render import Renderer
+    from sgcore.daisy import syllables, sing_part
+    assert syllables('Oh my love') == ['oU', 'm aI', 'l V v'] and syllables('la la') == ['l a', 'l a']
+    notes = [(i * 0.6, 0.5, m) for i, m in enumerate([60, 64, 67, 72])]
+    for v in ('female', 'male', 'choir', 'robot'):
+        y = sing_part(notes, 'aah', v, seed=1)
+        assert y.shape[0] == 2 and np.isfinite(y).all() and np.abs(y).max() > 0.5, v
+    y = sing_part(notes, 'aah', 'female', seed=1)[0]
+    for s0, d, m in notes:                                       # every note on pitch
+        seg = y[int((s0 + 0.15) * 44100):int((s0 + 0.4) * 44100)]
+        seg = seg - seg.mean()
+        ac = np.correlate(seg, seg, 'full')[len(seg) - 1:]
+        lag = 44 + int(np.argmax(ac[44:630]))
+        assert abs(69 + 12 * np.log2(44100 / lag / 440) - m) < 0.5, m
+    for style in ('pop', 'bhajan'):                              # bhajan: no guide sections - the singer takes the melody
+        song = compose(Options(style=style, seed=4, vocals='lyrics', voice='choir', lyrics='hare krishna hare rama'))
+        tr = {t['name']: t for t in song['st']['tracks']}
+        assert tr['vocal']['inst'] == 'sung' and tr['vocal']['p']['voice'] == 'choir'
+        voc = [e for e in song['events'] if e.track == 'vocal']
+        assert len(voc) > 20 and all(48 <= e.midi <= 84 for e in voc)
+        r = Renderer(song, log=lambda *a: None)
+        buf = r.render_track(tr['vocal'], voc[:12])
+        assert np.abs(buf).max() > 0.05
+    assert not any(t['name'] == 'vocal' for t in compose(Options(style='pop', seed=4))['st']['tracks'])
+    print('ok  sung vocals: in tune, 4 voices, lyrics -> syllables, melody fallback for genres without a guide')
+
+
+def test_reference_genre_match():
+    """v1.54: a reference song gets genre suggestions - a rendered house song and a rendered surf song each find their
+    own genre family near the top (drum feel, tempo, key and sound)."""
+    import tempfile
+    import shutil
+    import numpy as np
+    from scipy.io import wavfile
+    from scipy import signal
+    from sgcore.api import generate
+    from sgcore.analysis import analyze
+    from sgcore.styles import STYLES, LABELS
+    from sgcore import genrematch as gm
+    fam = {'house': {'house', 'deep_house', 'tech_house', 'progressive_house', 'nineties_club_house', 'garage_house', 'piano_house_90s',
+                     'disco', 'nu_disco', 'french_house', 'minimal', 'bass_house', 'pop_house_90s', 'melodic_house', 'organic_house',
+                     'sunny_melodic_house', 'tokyo_deep_house', 'mallet_house', 'italo_disco', 'afro_house', 'acid_house', 'techno',
+                     'eurodance', 'bigroom', 'melodic_techno'},
+           'trap': {'trap', 'uk_drill', 'phonk', 'memphis_phonk', 'plugg', 'rage', 'cloud_rap', 'luxury_rap', 'latin_trap', 'bass_warp_trap',
+                    'switch_trap', 'hard_trap', 'orchestral_hiphop', 'drill', 'brazilian_phonk', 'house_phonk', 'witch_house'}}
+    d = tempfile.mkdtemp()
+    try:
+        for style in ('house', 'trap'):
+            info = generate(dict(style=style, seed=77), d, preview=True, outputs=['wav'], log=lambda *a: None)
+            sr, x = wavfile.read(info['files']['wav'])
+            x = signal.resample_poly(x.astype(np.float32).mean(axis=1), 1, 2)
+            a = analyze(x, 22050)
+            gm.analyze_reference(x, 22050, a)
+            top = [g['id'] for g in gm.suggest(a, STYLES, LABELS, top=6)]
+            assert set(top) & fam[style], (style, top)
+    finally:
+        shutil.rmtree(d, ignore_errors=True)
+    fp = gm.fingerprints()
+    missing = [s for s, st in STYLES.items() if not st.get('composer') and s not in fp]
+    assert not missing, f'no fingerprint for {missing[:8]} - run python tools/genre_fingerprints.py'
+    print('ok  reference -> genre suggestions (house and trap find their families); every genre has a fingerprint')
+
+
+def test_shakuhachi_genres():
+    """v1.54: the 80s sampled shakuhachi - it scoops up into the note; it leads 80s adult pop and answers the horns in
+    smooth jazz."""
+    import numpy as np
+    from sgcore.compose import Options, compose
+    from sgcore.instruments import INSTRUMENTS
+    y = INSTRUMENTS['shakuhachi'](72, 1.2, {})[0]
+
+    def f0(seg):
+        seg = seg - seg.mean()
+        ac = np.correlate(seg, seg, 'full')[len(seg) - 1:]
+        return 44100 / (29 + int(np.argmax(ac[29:220])))
+    start, held = (69 + 12 * np.log2(f0(y[int(t * 44100):int(t * 44100) + 2048]) / 440) for t in (0.01, 0.5))
+    assert start < 71.6 and abs(held - 72) < 0.4, (start, held)                 # meri: starts flat, settles in tune
+    for sd in (1, 2, 3):
+        p = compose(Options(style='shakuhachi_pop', seed=sd))
+        assert {t['name']: t['inst'] for t in p['st']['tracks']}['lead'] == 'shakuhachi' and p['st'].get('gated_snare')
+        j = compose(Options(style='smooth_jazz_horns', seed=sd))
+        assert sum(e.track == 'horns' for e in j['events']) > 20 and any(e.track == 'arp' for e in j['events'])
+    print('ok  shakuhachi: meri scoop; 80s gated pop lead; smooth jazz horns + shakuhachi answers')
+
+
+def test_meend_gamak():
+    """v1.54: Indian ornaments - meend pulls from the previous note, gamak shakes up to the note above; only bendable
+    instruments; the Bends setting scales them; previews keep them."""
+    from sgcore.compose import Options, compose
+    from sgcore.render import bend_curve
+    from sgcore.windows import preview_window
+    def count(o):
+        s = compose(Options(**o))
+        lead = [e for e in s['events'] if e.track == 'lead' and e.midi is not None]
+        return s, sum(1 for e in lead if e.bend), len(lead)
+    s, n, tot = count(dict(style='sitar_bhajan', seed=3))
+    assert n > tot * 0.15, (n, tot)
+    kinds = {o[0] for e in s['events'] if e.track == 'lead' and e.bend for o in e.bend}
+    assert {'meend', 'gamak'} <= kinds, kinds
+    assert count(dict(style='sitar_bhajan', seed=3, bends='more'))[1] > n > count(dict(style='sitar_bhajan', seed=3, bends='subtle'))[1]
+    assert count(dict(style='sitar_bhajan', seed=3, bends='off'))[1] == 0
+    assert count(dict(style='house', seed=3))[1] == 0                               # not every genre
+    assert not any(e.bend for e in s['events'] if e.track == 'chords')               # harmonium can't bend
+    assert any(e.bend for e in preview_window(s)['events'])                          # previews keep the ornaments
+    c = bend_curve([('meend', -3.0, 0.5), ('gamak', 2.0, 5.5)], 44100, 1.0)
+    assert c[0] < -2.9 and abs(c[int(0.5 * 44100)]) < 2.1 and c[int(0.4 * 44100):].max() > 1.5
+    print('ok  meend / gamak / andolan: on sitar & co, scaled by Bends, kept in previews')
 
 
 def test_v144_drums_layers_new_genres():
@@ -798,6 +912,10 @@ def main():
     test_surf_and_monster_theme()
     test_hindu_devotional()
     test_world_and_rock_genres_153()
+    test_sung_vocals()
+    test_reference_genre_match()
+    test_meend_gamak()
+    test_shakuhachi_genres()
     test_v144_drums_layers_new_genres()
     test_bass_warp_trap()
     test_christmas_orchestral()

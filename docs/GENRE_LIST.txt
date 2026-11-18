@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 288 GENRES  (version 1.53.0)
+STUDIO LAB - ALL 291 GENRES  (version 1.54.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 1.53
+* = new in 1.54
 
 ========================================================================
-ELECTRONIC  (141)
+ELECTRONIC  (142)
 ========================================================================
 
 House & Disco  (26)
@@ -133,13 +133,14 @@ Afro, Latin & Caribbean  (8)
     Funk 150 / mandelao  [funk_150]
     Gqom  [gqom]
 
-Chill, Lo-fi & Ambient  (9)
+Chill, Lo-fi & Ambient  (10)
     Lo-fi Hip Hop  [lofi]
     Downtempo  [downtempo]
     ambient  [ambient]
     Ambient beat (dark, sub-heavy)  [ambient_beat]
     Vaporwave  [vaporwave]
     90s new-age chill (chant)  [new_age_chant]
+  * Chant downtempo - shakuhachi & monks  [chant_downtempo]
     Mid-fi synth-funk / chillwave  [midfi_synthfunk]
     Trip-hop  [trip_hop]
     Berlin school (sequencer)  [berlin_school]
@@ -158,7 +159,7 @@ Retro & Video Game  (6)
     Chiptune  [chiptune]
     90s video game (PS1-era)  [ps1_game]
     Darkwave / EBM  [darkwave_ebm]
-  * Krautrock / motorik  [krautrock]
+    Krautrock / motorik  [krautrock]
 
 Hauntology  (7)
     Hauntology  [hauntology]
@@ -170,7 +171,7 @@ Hauntology  (7)
     Hauntology - cold dystopian synths  [hauntology_cold]
 
 ========================================================================
-CLASSIC  (118)
+CLASSIC  (120)
 ========================================================================
 
 Rock & Metal  (25)
@@ -196,11 +197,11 @@ Rock & Metal  (25)
     Pop-punk / emo  [pop_punk]
     Doom / stoner metal  [doom_metal]
     Stoner rock - raga / psych (sitar, tabla)  [stoner_raga]
-  * Garage rock (60s, fuzz & organ)  [garage_rock]
-  * Rockabilly (slap bass & twang)  [rockabilly]
-  * Post-punk  [post_punk]
+    Garage rock (60s, fuzz & organ)  [garage_rock]
+    Rockabilly (slap bass & twang)  [rockabilly]
+    Post-punk  [post_punk]
 
-Pop & Indie  (9)
+Pop & Indie  (10)
     pop  [pop]
     Bedroom / indie pop  [bedroom_pop]
     Chamber Pop  [chamber_pop]
@@ -210,6 +211,7 @@ Pop & Indie  (9)
     Psychedelic synth-pop  [psych_pop]
     Musical theatre / Broadway  [musical_theatre]
     Anime opening (J-rock)  [anime_opening]
+  * 80s adult pop - gated drums & shakuhachi  [shakuhachi_pop]
 
 Funk & Disco  (6)
     funk  [funk]
@@ -239,7 +241,7 @@ Hip-Hop  (7)
     West-coast slap rap  [bay_rap]
     Futuristic hip-hop bounce (early 2000s)  [futuristic_bounce]
 
-Jazz  (10)
+Jazz  (11)
     jazz  [jazz]
     Bebop  [bebop]
     Cool / Modal Jazz  [modal_jazz]
@@ -248,8 +250,9 @@ Jazz  (10)
     Smooth Jazz (soprano sax)  [smooth_jazz]
     Gypsy jazz (manouche)  [gypsy_jazz]
     Ragtime / stride piano  [ragtime]
-  * Ethio-jazz (vibes & horns)  [ethio_jazz]
-  * Exotica / tiki lounge  [exotica]
+    Ethio-jazz (vibes & horns)  [ethio_jazz]
+    Exotica / tiki lounge  [exotica]
+  * Smooth jazz - horns & shakuhachi  [smooth_jazz_horns]
 
 Swing & Big Band  (5)
     Big Band Swing  [swing]
@@ -284,27 +287,27 @@ Latin & Caribbean  (15)
     Bachata  [bachata]
     Merengue  [merengue]
     Samba  [samba]
-  * Son cubano (tres & bongos)  [son_cubano]
-  * Flamenco rumba (guitar & palmas)  [flamenco_rumba]
+    Son cubano (tres & bongos)  [son_cubano]
+    Flamenco rumba (guitar & palmas)  [flamenco_rumba]
 
 World  (6)
     Raga (sitar, tabla, tanpura)  [raga_fusion]
     Japanese zen (koto, shakuhachi)  [japanese_zen]
     Bhangra  [bhangra]
-  * Klezmer (clarinet & accordion)  [klezmer]
-  * Gamelan (Javanese)  [gamelan]
-  * Rai (darbuka & oud)  [rai]
+    Klezmer (clarinet & accordion)  [klezmer]
+    Gamelan (Javanese)  [gamelan]
+    Rai (darbuka & oud)  [rai]
 
 South Asian  (3)
-  * Qawwali (Sufi, harmonium & claps)  [qawwali]
-  * Bollywood / filmi (60s-70s)  [bollywood]
-  * Ghazal (sitar, harmonium, tabla)  [ghazal]
+    Qawwali (Sufi, harmonium & claps)  [qawwali]
+    Bollywood / filmi (60s-70s)  [bollywood]
+    Ghazal (sitar, harmonium, tabla)  [ghazal]
 
 Psych & World Rock  (4)
-  * Anatolian psych rock (saz & fuzz)  [anatolian_psych]
-  * Thai funk / molam (phin & khaen)  [thai_funk]
-  * Chicha (psychedelic cumbia)  [chicha]
-  * Desert blues (Tuareg guitars)  [desert_blues]
+    Anatolian psych rock (saz & fuzz)  [anatolian_psych]
+    Thai funk / molam (phin & khaen)  [thai_funk]
+    Chicha (psychedelic cumbia)  [chicha]
+    Desert blues (Tuareg guitars)  [desert_blues]
 
 Hindu devotional  (9)
     Bhajan (harmonium, dholak, manjira)  [bhajan]
@@ -315,7 +318,7 @@ Hindu devotional  (9)
     Aarti (temple bells & prayer)  [aarti]
     Devotional raga (santoor)  [santoor_raga]
     Sitar & tabla jugalbandi  [jugalbandi]
-  * Carnatic kriti (veena & mridangam)  [carnatic_kriti]
+    Carnatic kriti (veena & mridangam)  [carnatic_kriti]
 
 ========================================================================
 ORCHESTRAL  (29)

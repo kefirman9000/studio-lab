@@ -1,6 +1,5 @@
 """Excerpts of a composed song: previews, section auditions and seamless loops."""
 import math
-from .theory import Ev
 
 
 def tempo_seconds(tempo_map, beat):
@@ -45,7 +44,7 @@ def loop_window(song, bars=8):
 
 def _window(song, b0, b1, fade=True, keep_fx=True):
     beat0, beat1 = b0 * 4, b1 * 4
-    evs = [Ev(e.track, e.beat - beat0, min(e.dur, beat1 - e.beat), e.midi, e.vel, e.glide, e.mod)
+    evs = [e.copy(beat=e.beat - beat0, dur=min(e.dur, beat1 - e.beat))
            for e in song['events'] if beat0 <= e.beat < beat1]
     fx = []
     for kind, b, d in song['fx']:
@@ -93,7 +92,7 @@ def preview_window(song, target_sec=26.0):
     evs = []
     for e in song['events']:
         if beat0 <= e.beat < beat1:
-            evs.append(Ev(e.track, e.beat - beat0, min(e.dur, beat1 - e.beat), e.midi, e.vel, e.glide, e.mod))
+            evs.append(e.copy(beat=e.beat - beat0, dur=min(e.dur, beat1 - e.beat)))
     fx = []
     for kind, b, d in song['fx']:
         if kind in ('crash', 'impact') and beat0 <= b < beat1:

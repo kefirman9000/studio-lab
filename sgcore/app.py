@@ -368,11 +368,20 @@ def bg_job(fn):
     return jid
 
 
+def _search_tags(st):
+    """Words the genre search also matches: its instruments (built-in names and the plain-English hint) and scales."""
+    from .instruments import INSTRUMENT_INFO
+    words = {t['inst'] for t in st.get('tracks', [])} | {INSTRUMENT_INFO.get(t['inst'], '') for t in st.get('tracks', [])}
+    words |= set(st.get('scales', [])) | {st.get('gm_hint') or ''}
+    return ' '.join(sorted(w.replace('_', ' ').lower() for w in words if w))
+
+
 def meta():
     from .genre_groups import group_of, rank, order
     by_cat = {c: [] for c in CATEGORIES}
     for k, v in sorted(STYLES.items(), key=lambda kv: rank(kv[0])):
-        by_cat[v['category']].append(dict(id=k, name=label(k), desc=v['desc'], bpm=v['bpm'], group=group_of(k)))
+        by_cat[v['category']].append(dict(id=k, name=label(k), desc=v['desc'], bpm=v['bpm'], group=group_of(k),
+                                       tags=_search_tags(v)))
     return dict(
         version=updater.local_version(), repo=updater.repo(), ffmpeg=have_ffmpeg(), output_dir=out_dir(),
         categories=by_cat, group_order={c: order(c) for c in CATEGORIES}, moods=list(MOODS), scales=list(SCALES), keys=NOTE_NAMES,
@@ -667,7 +676,18 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError('bad audio data')
                 if p == '/api/upload/reference':
                     from .analysis import analyze
-                    return self._json(analyze(pcm, int(q.get('sr', 44100))))
+                    sr_ = int(q.get('sr', 44100))
+                    res = analyze(pcm, sr_)
+                    try:                                  # the genres this sounds closest to (tempo, key, drum feel, sound)
+                        from . import genrematch
+                        from .styles import STYLES, LABELS
+                        x_ = np.asarray(pcm, dtype=np.float64)
+                        genrematch.analyze_reference(x_, sr_, res)
+                        res['genres'] = genrematch.suggest(res, STYLES, LABELS, top=6)
+                        res.pop('feels', None)
+                    except Exception as e:                # suggestions are a bonus - the analysis still applies
+                        res['genres_error'] = str(e)
+                    return self._json(res)
                 if p == '/api/upload/sound':
                     from . import usersounds
                     name = usersounds.save(q.get('kind', 'drums'), q.get('name', 'kick'), pcm, int(q.get('root', 60)))

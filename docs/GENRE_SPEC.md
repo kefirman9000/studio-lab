@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (288 genres)
+# Studio Lab - technical genre rules (291 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -3525,11 +3525,41 @@ Early-90s new-age chill: a slow, heavy hip-hop funk break around 96 under monk-l
   - chords (chords): `choir` -21 dB · rev=0.6 · alternatives ['strings', 'warmpad', 'organ']
   - pad (pad): `warmpad` -26 dB · rev=0.6 · alternatives ['choir', 'glasspad', 'strings']
   - arp (arp): `harp` -29 dB · rev=0.5 · dly=0.3 · alternatives ['celesta', 'pizz', 'piano']
-  - lead (lead): `flute` -19 dB · rev=0.5 · dly=0.3 · alternatives ['tinwhistle', 'oboe', 'clarinet']
+  - lead (lead): `shakuhachi` -18 dB · rev=0.5 · dly=0.3 · alternatives ['flute', 'tinwhistle']
   - texture (fx): `texture` -36 dB · rev=0.6
 - **Mix** {'lufs': -11.0, 'air': 0.8, 'low': 1.2, 'width': 1.2} · reverb 3.6 · sc_depth 0.15
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 56, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'own_progs': True, 'pedal_sub': True, 'repetition': 0.8}
 - **Sound brief** Funk breakbeat (slow); male choir chant chords; shakuhachi / pan flute melody; deep pads; one pedal bass note
+
+### Chant downtempo - shakuhachi & monks (`chant_downtempo`)
+
+Chant downtempo (early 90s): it opens on a lone, breathy shakuhachi calling over a dark pad - then a monk choir chants slow minor chords, and a heavy, lazy hip-hop break around 96 drops in under it with a deep pedal sub; the shakuhachi answers the chant between the drums - mystical, sensual, cavernous
+
+- **Tempo** 92-100 BPM · **scales** minor, phrygian, dorian · swing 0.53 (unit 16) · humanise 0.005
+- **Progressions** {'minor': [[0, 0, 6, 0], [0, 0, 5, 6], [0, 5, 6, 0]], 'phrygian': [[0, 1, 0, 0]], 'dorian': [[0, 3, 0, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `chant_downtempo`: intro 4 [fx, lead, pad] (filter_in) -> chant 8 [chords, fx, pad] -> groove 16 [bass, chords, fx, kick, pad, snare, top] (crash) -> theme 16 [bass, chords, fx, kick, lead, pad, snare, top] -> break 8 [chords, fx, lead, pad] (alt) -> theme 16 [arp, bass, chords, fx, kick, lead, pad, snare, top] (crash) -> outro 8 [fx, lead, pad] (fade) · form_scale 1
+- **Drums** **kick** `X.........X.....` / `X.....X...X..x..`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`; **ohat** `..............x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R---------------` / `R-------R-------` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 1, 'mode': 'up', 'oct': 5, 'prob': 0.4}
+- **Lead rhythm** `x-------x---x---` / `x---x---x-------` / `........x-------` / `x-x-x-------....`
+- **Build-ups** default `(category default)` · choices ['none', 'pickup'] · transitions ['none', 'crash', 'none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `minimal_motivic` · bass `sub_only` · drop `long_build` · variation `sectional` · culture `bedroom_lofi` · texture `massive_reverb` · rhythm `swung_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -13 dB
+  - snare (snare): `snare` -15 dB · rev=0.4
+  - chat (top): `chat` -28 dB
+  - ohat (top): `ohat` -31 dB
+  - bass (bass): `sinebass` -15 dB · alternatives ['808', 'moogbass']
+  - chords (chords): `choir` -20 dB · rev=0.65 · alternatives ['sf:choir']
+  - pad (pad): `warmpad` -25 dB · rev=0.6 · alternatives ['glasspad', 'strings']
+  - arp (arp): `harp` -29 dB · rev=0.5 · dly=0.3 · alternatives ['celesta', 'piano']
+  - lead (lead): `shakuhachi` -16 dB · rev=0.55 · dly=0.32
+  - texture (fx): `texture` -36 dB · rev=0.6
+- **Mix** {'lufs': -11.0, 'air': 0.8, 'low': 1.3, 'width': 1.25} · reverb 3.8 · sc_depth 0.1
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 56, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'own_progs': True, 'no_rotation': True, 'slides': 0.3, 'pedal_sub': True, 'repetition': 0.85}
+- **Sound brief** Sampled shakuhachi (the opening call and the answers); male monk choir chant; slow heavy funk break; deep pad; pedal sub
 
 ### Mid-fi synth-funk / chillwave (`midfi_synthfunk`)
 
@@ -5043,6 +5073,35 @@ Bedroom / indie pop: a bouncy drum machine with a syncopated kick, warm synth ba
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
 - **Sound brief** Drum machine (707 / Linn-ish) with a bouncy kick; warm synth bass; chorused clean electric guitar; soft poly synth; bubbly plucks / bells (KKB); glassy synth lead
 
+### 80s adult pop - gated drums & shakuhachi (`shakuhachi_pop`)
+
+80s adult pop - gated drums & shakuhachi: a big drum machine with that huge gated-reverb snare and tom fills, a punchy synth bass, bright poly-synth stabs, a DX-style electric piano and lush pads, and the breathy sampled shakuhachi flute playing the hook - airy, dramatic, very mid-80s
+
+- **Tempo** 92-118 BPM · **scales** major, minor, dorian · swing 0.5 (unit 16) · humanise 0.004
+- **Progressions** {'major': [[0, 4, 5, 3], [5, 3, 0, 4], [0, 3, 5, 4]], 'minor': [[0, 5, 6, 4], [0, 3, 6, 5]], 'dorian': [[0, 3, 0, 6]]} · chord_bars 1 · chord size 4
+- **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
+- **Drums** **kick** `X.......X.X.....` / `X.....X.X.......`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`; **tom** `................` / `............x.xx`
+- **Drum kit** (synth preset) · preset `linn`
+- **Bass** `R.R.R.R.R.R.R.R.` / `R...R.R.R...R.R.` / `R.R...R.R.R...R.` · mode `pattern` · lowest note 33
+- **Chord rhythm** `x-..x-....x-....` / `x---x---x---x---`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `x---x-x-x-------` / `x-x-x---x-x-....` / `..x-x-x-x-------`
+- **Build-ups** default `(category default)` · choices ['pickup', 'toms']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -13 dB
+  - snare (snare): `snare` -14 dB · rev=0.35
+  - chat (top): `chat` -28 dB · pan=0.2
+  - tom (top): `tom` -20 dB · rev=0.35
+  - bass (bass): `moogbass` -14 dB · alternatives ['fmbass', 'sawbass']
+  - chords (chords): `polysynth` -22 dB · pan=-0.2 · rev=0.3 · alternatives ['synthbrass', 'm1piano']
+  - pad (pad): `warmpad` -26 dB · rev=0.5 · alternatives ['solina', 'strings']
+  - arp (arp): `epiano` -25 dB · pan=0.25 · rev=0.3 · alternatives ['m1piano', 'polysynth']
+  - lead (lead): `shakuhachi` -15 dB · rev=0.45 · dly=0.22
+- **Mix** {'lufs': -11.0, 'air': 1.4, 'low': 1.0, 'width': 1.1} · reverb 2.4 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.6, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'gated_snare': True, 'no_rotation': True, 'slides': 0.2}
+- **Sound brief** Sampled shakuhachi (lead); drum machine with gated-reverb snare & toms; synth bass; poly-synth; DX electric piano; pads
+
 ### 80s sophisti-pop / jazz-funk pop (`sophisti_pop`)
 
 Mid-80s sophisti-pop / jazz-funk pop: a tight, bright drum-machine-and-live groove around 103, a busy slap / thumbed bass, lush synth pads and chorused electric piano, jazzy major-7 and 9th chords, crisp synth brass and a smooth sung-style lead - polished, upbeat and wistful
@@ -6027,6 +6086,35 @@ Exotica / tiki lounge (50s): a lush, dreamy island fantasy - vibraphone melodies
 - **Mix** {'lufs': -14.0, 'air': 1.2, 'low': 0.7} · reverb 2.4 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['bongo'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'conga', 'suggest': '', 'no_rotation': True}
 - **Sound brief** Vibraphone; piano; strings; flute (bird calls); congas, bongos, shaker; brushed ride; upright bass
+
+### Smooth jazz - horns & shakuhachi (`smooth_jazz_horns`)
+
+Smooth jazz - horns & shakuhachi: a laid-back funky groove with a tight, punchy horn section playing the melody in unison and stabbing the changes, a Rhodes comping jazzy 9th chords, a thumbed electric bass, light percussion, and a breathy sampled shakuhachi answering every phrase - glossy late-80s / 90s quiet-storm jazz
+
+- **Tempo** 88-104 BPM · **scales** dorian, major, minor · swing 0.54 (unit 16) · humanise 0.005
+- **Progressions** {'dorian': [[0, 3, 0, 3], [0, 6, 3, 4]], 'major': [[1, 4, 0, 5], [3, 4, 2, 5], [0, 5, 1, 4]], 'minor': [[0, 3, 6, 5]]} · chord_bars 1 · chord size 4
+- **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
+- **Drums** **kick** `X.....x...X.....` / `X..x......X..x..`; **snare** `....X.......X...` / `....X..x....X...`; **chat** `x.xxx.xxx.xxx.xx`; **conga** `..o...o...o.x.o.`
+- **Drum kit** (synth preset) · preset `linn`
+- **Bass** `R..R.R.O..R.R.O.` / `R.R..O.xR..R.Ox.` / `R...R.xO..R..O..` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x-..x-....x-....` / `..x-..x-..x-..x-`
+- **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.35}
+- **Lead rhythm** `x-x-x---x-x-x---` / `x.x.x-x-x---....` / `..x-x-x-x---x---`
+- **Build-ups** default `(category default)` · choices ['pickup', 'stops'] · transitions ['none', 'crash']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `call_and_response` · bass `rolling_groove` · drop `groove_drop` · variation `theme_and_variations` · culture `jazz_club` · texture `dry_and_upfront` · rhythm `swung_16ths` · harmony `jazz_extensions` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -15 dB
+  - snare (snare): `snare` -17 dB · rev=0.25
+  - chat (top): `chat` -29 dB · pan=0.2
+  - conga (top): `conga` -26 dB · pan=-0.3
+  - bass (bass): `fmbass` -14 dB · alternatives ['sf:fingerbass', 'sf:slapbass']
+  - chords (chords): `epiano` -22 dB · pan=-0.15 · rev=0.3 · alternatives ['m1piano', 'piano']
+  - horns (chords): `brass` -24 dB · pan=0.15 · rev=0.25
+  - arp (arp): `shakuhachi` -20 dB · pan=0.3 · rev=0.45 · dly=0.2 · alternatives ['flute', 'vibes']
+  - lead (lead): `brass` -15 dB · rev=0.3 · alternatives ['sf:trumpetsection', 'trumpet', 'sax']
+- **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 1.0} · reverb 2.2 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.55, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True, 'slides': 0.25}
+- **Sound brief** Horn section (trumpet, sax, trombone in unison); sampled shakuhachi fills; Rhodes; electric bass; drums + congas
 
 ### Gypsy jazz (manouche) (`gypsy_jazz`)
 
@@ -7032,7 +7120,7 @@ Rai (Algeria / North Africa): the darbuka in a rolling maqsum rhythm with tambou
 
 ### Japanese zen (koto, shakuhachi) (`japanese_zen`)
 
-Japanese zen / traditional-inspired: koto plucks and pressed bends, a breathy shakuhachi-style flute, a soft taiko and wood blocks, lots of space - calm, modal and spacious
+Japanese zen / traditional-inspired: koto plucks and pressed bends, a breathy shakuhachi, a soft taiko and wood blocks, lots of space - calm, modal and spacious
 
 - **Tempo** 66-84 BPM · **scales** phrygian, minor · swing 0.5 (unit 16) · humanise 0.01
 - **Progressions** {'phrygian': [[0, 1, 0, 0], [0, 0, 5, 1], [0, 6, 1, 0]], 'minor': [[0, 5, 0, 3], [0, 0, 5, 0]]} · chord_bars 2 · chord size 3
@@ -7052,7 +7140,7 @@ Japanese zen / traditional-inspired: koto plucks and pressed bends, a breathy sh
   - chords (chords): `koto` -21 dB · pan=-0.2 · rev=0.4 · alternatives ['harp', 'pizz', 'kalimba']
   - pad (pad): `glasspad` -31 dB · rev=0.6 · alternatives ['warmpad', 'strings']
   - arp (arp): `koto` -25 dB · pan=0.25 · rev=0.5 · alternatives ['harp', 'kalimba', 'marimba']
-  - lead (lead): `flute` -18 dB · rev=0.5 · alternatives ['koto', 'tinwhistle', 'oboe']
+  - lead (lead): `shakuhachi` -17 dB · rev=0.5 · alternatives ['flute', 'koto']
 - **Mix** {'lufs': -14.0, 'air': 1.2, 'low': 0.6} · reverb 3.4 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['woodblock'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'taiko', 'suggest': '', 'repetition': 0.7, 'no_rotation': True}
 - **Sound brief** Koto; shakuhachi; taiko; wood block; a quiet string pad

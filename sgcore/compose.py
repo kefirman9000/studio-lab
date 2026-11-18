@@ -74,6 +74,10 @@ class Options:
     part_fx: dict = field(default_factory=dict)       # layer -> effect plugin name (e.g. {'lead': 'ValhallaSupermassive'})
     ending: str = 'auto'          # auto | hit (final chord + crash) | fade
     vocal_guide: bool = False     # also play the vocal guide melody (it is always in the MIDI export)
+    bends: str = None             # meend / gamak on sitar, veena, bansuri ...: 'off', 'subtle', 'more' (None = genre default)
+    vocals: str = None            # sung vocals on the vocal melody: 'ooh', 'aah' or 'lyrics' (None = no singing)
+    voice: str = 'female'         # the singer: 'female', 'male', 'choir' or 'robot'
+    lyrics: str = ''              # words for vocals='lyrics' (simple English spelling; repeats if the song is longer)
     bass_rhythm: str = None       # None = style | kick (bass plays with the kick drum)
     lead_style: str = None        # None = genre | hook | arp | riff | ostinato | bell | call | chops
     build_style: str = None       # None = genre (varies per song) | roll | triplet | kick_roll | filter | stutter | pause | lift | swell | hats | claps | toms | halftime | drumless | pickup | ride | march | tomgroove | pulse | stops | tapestop | cymbal | wash | none
@@ -103,7 +107,7 @@ class Options:
 
 MELODY_STYLES = ['diatonic', 'pentatonic', 'blues', 'bebop']
 # how each genre's lead player phrases, and how its keyboard player voices chords (styles not listed: diatonic / style's own)
-GENRE_MELODY = {'ethio_jazz': 'pentatonic', 'thai_funk': 'pentatonic', 'desert_blues': 'pentatonic', 'chicha': 'diatonic', 'garage_rock': 'blues', 'rockabilly': 'blues', 'exotica': 'diatonic', 'riddim': 'diatonic', 'chillstep': 'diatonic', 'jazz_rap': 'blues', 'cloud_rap': 'pentatonic', 'slow_jam': 'pentatonic', 'smooth_jazz': 'pentatonic', 'smooth_funk': 'blues', 'quiet_storm': 'pentatonic', 'modern_country': 'pentatonic', 'country_waltz': 'pentatonic', 'outlaw_country': 'pentatonic', 'western_swing': 'pentatonic', 'g_funk': 'pentatonic', 'neo_soul': 'pentatonic', 'new_jack_swing': 'pentatonic', 'alt_rnb': 'pentatonic', 'rage': 'diatonic', 'plugg': 'pentatonic', 'hauntology_sunlit': 'diatonic', 'hauntology_dark': 'diatonic', 'epic_orchestral': 'diatonic', 'epic_battle': 'diatonic', 'epic_choir': 'diatonic', 'heroic_anthem': 'diatonic', 'symphonic_finale': 'diatonic', 'bebop': 'bebop', 'soul_jazz': 'blues', 'modal_jazz': 'diatonic', 'fusion': 'pentatonic', 'future_funk': 'pentatonic', 'italo_disco': 'diatonic', 'classical_period': 'diatonic', 'romantic': 'diatonic', 'impressionism': 'pentatonic', 'minimalism': 'diatonic', 'brazilian_phonk': 'blues', 'deep_dubstep': 'diatonic', 'deep_dubstep_minimal': 'diatonic', 'progressive_trance': 'diatonic', 'organic_house': 'diatonic', 'disco_funk': 'pentatonic', 'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
+GENRE_MELODY = {'smooth_jazz_horns': 'pentatonic', 'shakuhachi_pop': 'pentatonic', 'ethio_jazz': 'pentatonic', 'thai_funk': 'pentatonic', 'desert_blues': 'pentatonic', 'chicha': 'diatonic', 'garage_rock': 'blues', 'rockabilly': 'blues', 'exotica': 'diatonic', 'riddim': 'diatonic', 'chillstep': 'diatonic', 'jazz_rap': 'blues', 'cloud_rap': 'pentatonic', 'slow_jam': 'pentatonic', 'smooth_jazz': 'pentatonic', 'smooth_funk': 'blues', 'quiet_storm': 'pentatonic', 'modern_country': 'pentatonic', 'country_waltz': 'pentatonic', 'outlaw_country': 'pentatonic', 'western_swing': 'pentatonic', 'g_funk': 'pentatonic', 'neo_soul': 'pentatonic', 'new_jack_swing': 'pentatonic', 'alt_rnb': 'pentatonic', 'rage': 'diatonic', 'plugg': 'pentatonic', 'hauntology_sunlit': 'diatonic', 'hauntology_dark': 'diatonic', 'epic_orchestral': 'diatonic', 'epic_battle': 'diatonic', 'epic_choir': 'diatonic', 'heroic_anthem': 'diatonic', 'symphonic_finale': 'diatonic', 'bebop': 'bebop', 'soul_jazz': 'blues', 'modal_jazz': 'diatonic', 'fusion': 'pentatonic', 'future_funk': 'pentatonic', 'italo_disco': 'diatonic', 'classical_period': 'diatonic', 'romantic': 'diatonic', 'impressionism': 'pentatonic', 'minimalism': 'diatonic', 'brazilian_phonk': 'blues', 'deep_dubstep': 'diatonic', 'deep_dubstep_minimal': 'diatonic', 'progressive_trance': 'diatonic', 'organic_house': 'diatonic', 'disco_funk': 'pentatonic', 'blues': 'blues', 'rock': 'blues', 'funk': 'blues', 'boombap': 'blues', 'phonk': 'blues', 'metal': 'pentatonic',
                 'folk': 'pentatonic', 'afrobeats': 'pentatonic', 'amapiano': 'pentatonic', 'reggae': 'pentatonic',
                 'lofi': 'pentatonic', 'pop': 'pentatonic', 'disco': 'pentatonic', 'jazz': 'bebop', 'bossa_nova': 'bebop',
                 'western': 'pentatonic', 'chamber_pop': 'pentatonic', 'fantasy_rpg': 'pentatonic',
@@ -1044,7 +1048,8 @@ def compose(opts):
         st['voicing'] = opts.voicing
     st['melody_lang'] = opts.melody_style if getattr(opts, 'melody_style', None) in MELODY_STYLES else GENRE_MELODY.get(sname, 'diatonic')
     from .leads import pick_device
-    st['lead_device'] = pick_device(sname, opts.seed, getattr(opts, 'lead_style', None))
+    _ms = (opts.part_seeds or {}).get('melody')       # a kept melody keeps its lead device too
+    st['lead_device'] = pick_device(sname, opts.seed if _ms is None else _ms, getattr(opts, 'lead_style', None))
     if st.get('meter'):
         st['lead_device'] = 'hook'                     # the device figures are 16th-note based
     bsel = getattr(opts, 'build_style', None)
@@ -1546,7 +1551,20 @@ def compose(opts):
                         e.glide += shift
             last['key_change'] = shift
     vocal = [e for e in evs if e.track == 'vocal']
-    if getattr(opts, 'vocal_guide', False) and vocal:
+    sung = getattr(opts, 'vocals', None) in ('ooh', 'aah', 'lyrics')
+    if sung and not vocal:                               # genres without verse / chorus names: the singer takes the melody
+        lead = sorted((e for e in evs if e.track == 'lead' and e.midi is not None), key=lambda e: e.beat)
+        if lead:
+            mid = sorted(e.midi for e in lead)[len(lead) // 2]
+            shift = 12 * round((66 - mid) / 12)          # into a comfortable singing range around F4
+            vocal = [Ev('vocal', e.beat, e.dur, e.midi + shift, e.vel) for e in lead]
+            evs += vocal
+    if sung and vocal:
+        t = dict(name='vocal', layer='lead', inst='sung', pan=0.0, rev=0.35, dly=0.12, sc=0.0, db=-15, hp=120, drive=None,
+                 p=dict(style=opts.vocals, voice=getattr(opts, 'voice', 'female') or 'female', lyrics=getattr(opts, 'lyrics', '') or ''))
+        st['tracks'].append(t)
+        tracks['vocal'] = t
+    elif getattr(opts, 'vocal_guide', False) and vocal:
         t = dict(name='vocal', layer='lead', inst='vox', pan=0.0, rev=0.3, dly=0.15, sc=0.0, db=-20, hp=None, drive=None, p={})
         st['tracks'].append(t)
         tracks['vocal'] = t
@@ -1583,12 +1601,16 @@ def compose(opts):
     elif natural_band(st):                               # live bands: a crash on the downbeat, never studio swells / sweeps
         fx[:] = [f for f in fx if (f[0] not in FX_SOUNDS or f[0] == 'crash') and f[0] not in ('lpsweep', 'hpsweep')]
     hold_slow_chords(evs, tracks, st, bpm)
+    legato_bass(evs, tracks)
     shape_dynamics(evs, tracks, sections, st)
     in_evs = {id(e) for e in evs}
     st['tuned_notes'] = fix_clashes(evs + [v for v in vocal if id(v) not in in_evs], {**tracks, 'vocal': tracks.get('vocal') or
                                     dict(layer='lead')}, key, st, sections)
     if st.get('slides'):                                 # country: notes slide up into place (steel / fiddle / Telecaster)
         add_slides(evs, tracks, st, key, random.Random(opts.seed * 41 + 3))
+    orn = ornament_amount(st, opts)
+    if orn > 0:                                          # Indian music: meend, gamak and andolan on bendable instruments
+        add_ornaments(evs, tracks, key, orn, random.Random(opts.seed * 43 + 7))
     if st.get('lead_glide'):                             # G-funk / talk-box: the lead slides from note to note
         prev = None
         for e in sorted((e for e in evs if e.track == 'lead' and e.midi is not None), key=lambda e: e.beat):
@@ -1989,6 +2011,92 @@ def add_slides(evs, tracks, st, key, rnd):
             e.slide = 1.0                                   # a quick half-step bend now and then
 
 
+BENDABLE = {'sitar', 'veena', 'saz', 'oud', 'flute', 'violin', 'phin', 'sf:sitar', 'sf:violin', 'sf:flute', 'sf:shehnai',
+            'sf:fiddle', 'shehnai', 'real:violin', 'real:flute'}
+
+
+def ornament_amount(st, opts):
+    """How much meend / gamak: the genre's own amount (raga-phrased genres have it), scaled by the Bends setting."""
+    base = st.get('ornament')
+    if base is None:
+        base = 0.75 if st.get('lead_device') == 'raga' else 0.0
+    b = getattr(opts, 'bends', None)
+    if b == 'off':
+        return 0.0
+    if b == 'subtle':
+        return base * 0.5
+    if b == 'more':
+        return min(1.0, max(base, 0.5) * 1.6)
+    return base
+
+
+def add_ornaments(evs, tracks, key, amt, rnd):
+    """Indian ornaments on instruments that can bend (sitar, veena, saz, oud, bansuri, violin, shehnai):
+    meend - a slow pull from the previous note into this one (up to 5 semitones, up or down);
+    gamak - shaking up to the next note above and back, on held notes (mostly the phrase's peak);
+    andolan - a slow sway on very long notes; a 'fall' that pulls the end of a note towards a lower next note.
+    Keyboards and hammered instruments (harmonium, santoor) can't bend, so they're left alone."""
+    scale = sorted({(key.root + x) % 12 for x in key.scale})
+
+    def above(m):                                        # semitones up to the next scale note
+        for k in (1, 2, 3):
+            if (m + k) % 12 in scale:
+                return k
+        return 2
+    for name, t in tracks.items():
+        if t.get('layer') not in ('lead', 'arp') or t.get('inst') not in BENDABLE:
+            continue
+        notes = sorted((e for e in evs if e.track == name and e.midi is not None), key=lambda e: e.beat)
+        for i, e in enumerate(notes):
+            if e.dur < 0.45:
+                continue
+            prev = notes[i - 1] if i and e.beat - (notes[i - 1].beat + notes[i - 1].dur) < 0.6 else None
+            nxt = notes[i + 1] if i + 1 < len(notes) and notes[i + 1].beat - (e.beat + e.dur) < 0.6 else None
+            bend = []
+            diff = (prev.midi - e.midi) if prev is not None else 0
+            if prev is not None and 1 <= abs(diff) <= 5 and rnd.random() < (0.85 if e.dur >= 0.9 else 0.3) * amt:
+                bend.append(('meend', float(diff), rnd.uniform(0.35, 0.6)))
+            elif e.dur >= 0.9 and rnd.random() < 0.4 * amt:
+                bend.append(('meend', -float(above(e.midi - 3) if rnd.random() < 0.7 else -above(e.midi)), rnd.uniform(0.3, 0.5)))
+            peak = (prev is None or prev.midi <= e.midi) and (nxt is None or nxt.midi <= e.midi)
+            if e.dur >= 0.9 and rnd.random() < (0.75 if peak else 0.35) * amt:
+                bend.append(('gamak', float(above(e.midi)), rnd.uniform(4.8, 6.4)))
+            elif e.dur >= 1.8 and rnd.random() < 0.5 * amt:
+                bend.append(('andolan', rnd.uniform(0.25, 0.45)))
+            if nxt is not None and e.dur >= 0.75 and -4 <= nxt.midi - e.midi <= -1 and rnd.random() < 0.3 * amt:
+                bend.append(('fall', float(nxt.midi - e.midi)))
+            if bend:
+                e.bend = bend
+                e.slide = 0.0                            # the meend replaces the quick slide
+
+
+SUSTAINED_BASS = {'reese', 'growl', 'wobble', 'hoover', 'sinebass', 'moogbass', 'drone', 'tanpura'}
+
+
+def legato_bass(evs, tracks):
+    """Held basses (reese, growl, sub ...) roll on instead of choking and restarting on every note: a repeated note of
+    the same pitch is tied into the one before it, and short gaps close up, so the bass only changes where the pitch
+    changes. (Re-struck reese notes every beat dipped 3-6 dB each time - the bass sounded like it kept breaking.)"""
+    for name, t in tracks.items():
+        if t.get('layer') != 'bass' or t.get('inst') not in SUSTAINED_BASS:
+            continue
+        notes = sorted((e for e in evs if e.track == name and e.midi is not None), key=lambda e: e.beat)
+        drop = set()
+        prev = None
+        for e in notes:
+            if prev is not None:
+                gap = e.beat - (prev.beat + prev.dur)
+                if -1e-6 <= gap < 0.2:
+                    if e.midi == prev.midi and e.glide is None and not e.mod and prev.dur + gap + e.dur <= 16:
+                        prev.dur = e.beat + e.dur - prev.beat           # tie it on
+                        drop.add(id(e))
+                        continue
+                    prev.dur = e.beat - prev.beat                       # close the gap up to the next note
+            prev = e
+        if drop:
+            evs[:] = [e for e in evs if id(e) not in drop]
+
+
 def rotate_solos(evs, tracks, sections, st):
     """Solo sections pass the melody round the band, like a bluegrass jam or an 80s sax / guitar break: each 'solo'
     section is played by the next instrument in st['solos'] (track names); everywhere else the lead keeps the tune."""
@@ -2093,8 +2201,8 @@ def double_layers(evs, tracks):
                 m = e.midi + o
                 if not 28 <= m <= 100:
                     m = e.midi
-                out.append(Ev(name, e.beat, min(e.dur, max_d) if max_d else e.dur, m, e.vel * 0.9,
-                              None if e.glide is None else e.glide + (m - e.midi), e.mod))
+                out.append(e.copy(track=name, dur=min(e.dur, max_d) if max_d else e.dur, midi=m, vel=e.vel * 0.9,
+                                  glide=None if e.glide is None else e.glide + (m - e.midi)))
     return out
 
 

@@ -48,6 +48,14 @@ h3{margin:0 0 10px;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;
 .st.on{background:var(--chipon);border-color:#4a3d8f}
 .st .nm{flex:1}
 .st .bpm{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.st .fav{opacity:0;font-size:13px;color:var(--muted);padding:0 2px;transition:opacity .12s}.st:hover .fav,.st .fav.on{opacity:1}.st .fav.on{color:#f5c542}
+.res .more .chip.on{border-color:var(--acc)}
+.start .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:10px 0}
+.start .card2{border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;background:var(--bg)}
+.start .card2:hover{border-color:var(--acc)}.start .card2.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}
+.start .card2 .em{font-size:22px}.start .card2 .n{font-weight:700;margin-top:2px}.start .card2 .d{font-size:12px;color:var(--muted)}
+.lenrow{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}.lenrow .seg{width:auto;flex-wrap:wrap}.lenrow .seg button{padding:3px 10px;font-size:11.5px;white-space:nowrap;flex:none}
+.grp.pin{cursor:default;opacity:.85;color:#f5c542}
 .st .ck{width:18px;height:18px;border-radius:5px;border:1.5px solid #4a5270;display:flex;align-items:center;justify-content:center;flex:none;font-size:12px;color:#fff;cursor:pointer}
 .st .ck:hover{border-color:var(--acc2)}
 .st.in .ck{background:var(--acc2);border-color:var(--acc2);color:#04241d}
@@ -207,6 +215,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
   <div class="logo"><div class="mark"></div>Studio Lab</div>
   <div class="ver" id="ver"></div>
   <div class="sp"></div>
+  <button class="hbtn" id="startBtn" title="The quick way: pick a kind of music and press one button">✨ Start here</button>
   <button class="hbtn" id="hubBtn" title="Everything that makes sound: real instruments, your VST plugins and orchestra, genre plugins, your own samples">🎚 Sounds &amp; instruments</button>
   <button class="hbtn" id="presetBtn" title="Save or load your favourite settings">★ Presets</button>
   <button class="hbtn" id="folderBtn" title="Open the output folder">📁 Output</button>
@@ -221,7 +230,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="hint" style="margin-top:8px" id="mixHint"></div>
     </div>
     <h3>Styles</h3>
-    <input class="search" id="search" placeholder="Search styles…">
+    <input class="search" id="search" placeholder="Search genres, instruments, moods… (e.g. sitar, surf, organ)">
     <div class="tabs" id="catTabs"></div>
     <div class="hint" style="margin:-4px 0 8px">Click a name to pick it • tick boxes to <b>blend</b> styles (up to 4)</div>
     <div class="styles" id="styleList"></div>
@@ -261,7 +270,10 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f"><label>Groove feel <span class="hint">timing of each part</span></label><select id="groove"><option value="">Genre feel</option><option value="straight">Straight (on the grid)</option><option value="dilla">Lazy hip-hop (drunk, late snares)</option><option value="laidback">Laid back (reggae)</option><option value="afro">Afro swing</option><option value="dembow">Dembow push</option><option value="jazz">Jazz (ride on top)</option><option value="house">House (late hats)</option><option value="funk">Funk (pushed 16ths)</option></select></div>
       <div class="f"><label>Lead style <span class="hint">how the lead line is built</span></label><select id="leadStyle"><option value="">Genre default</option><option value="hook">Hook (sung-style melody)</option><option value="arp">Arpeggio (trance, synthwave)</option><option value="riff">Riff (rock, funk)</option><option value="ostinato">Ostinato (techno)</option><option value="bell">Bell motif (trap)</option><option value="call">Call &amp; response (afro, reggae)</option><option value="chops">Vocal-chop stabs (house, garage)</option></select></div>
       <div class="f"><label>Bass rhythm</label><select id="bassRhythm"><option value="">Style's bassline</option><option value="kick">Follow the kick drum</option></select></div>
-      <div class="f"><label>Vocal guide <span class="hint">a singable melody - always in MIDI exports</span></label><label class="auto" style="margin-top:6px"><input type="checkbox" id="vocalGuide"> hear it in the song</label></div>
+      <div class="f"><label>Bends <span class="hint">meend & gamak - the sliding, shaking notes of Indian music on sitar, veena, bansuri, violin...</span></label><select id="bends"><option value="">Genre default</option><option value="more">More</option><option value="subtle">Subtle</option><option value="off">Off</option></select></div>
+      <div class="f"><label>Vocals <span class="hint">a singer on the song's melody (the vocal line is always in MIDI exports)</span></label><select id="vocals"><option value="">Off</option><option value="guide">Guide melody (synth, no words)</option><option value="ooh">Sung - "ooh"</option><option value="aah">Sung - "aah"</option><option value="lyrics">Sung - my lyrics</option></select></div>
+      <div class="f" id="voiceF" style="display:none"><label>Voice</label><select id="voice"><option value="female">Female</option><option value="male">Male</option><option value="choir">Choir (a small group)</option><option value="robot">Robot</option></select></div>
+      <div class="f wide" id="lyricsF" style="display:none"><label>Lyrics <span class="hint">simple words work best - each syllable gets one note, and the words repeat if the song is longer</span></label><textarea id="lyrics" rows="2" placeholder="e.g. Dance with me tonight, under the city light" style="width:100%;resize:vertical"></textarea></div>
     </div></details>
 
     <details class="card"><summary>Arrangement <span class="hint">build-ups, transitions, instrument changes, ending</span></summary><div class="body">
@@ -337,6 +349,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
         <button class="btn s" id="surpriseBtn" title="Random style, fusion and mood">✦ Surprise me</button>
       </div>
       <div class="outs" id="outs"></div>
+      <div class="lenrow"><span class="hint">Full song length</span><div class="seg" id="lenPreset"></div></div>
       <div class="prog" id="prog"><i></i></div>
       <div class="status" id="status">Ready.</div>
     </div>
@@ -359,7 +372,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const LEVELS=[['drums','Drums',['kick','snare','top']],['bass','Bass',['bass']],['chords','Chords',['chords']],['pad','Pad',['pad']],['arp','Arp',['arp']],['lead','Lead',['lead']]];
 let META=null, state={closed:(()=>{try{return JSON.parse(localStorage.getItem('sl_closed')||'{}')}catch(_){return {}}})(), orch_plugin:(()=>{try{return !!localStorage.getItem('sl_orch_plugin')}catch(_){return false}})(), style:'house', part_fx:{}, levels:{}, octaves:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
-  muted:[], instruments:{}, blend_parts:{}, outputs:['mp3','midi','lmms','waveform']};
+  muted:[], instruments:{}, blend_parts:{}, outputs:(()=>{ try{ const v=JSON.parse(localStorage.getItem('sl_outs')||'null'); if(Array.isArray(v)&&v.length) return v; }catch(e){} return ['mp3','midi','lmms']; })()};
 const LAYERS=[['kick','Kick'],['snare','Snare/Clap'],['top','Hats & Perc'],['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead'],['fx','FX']];
 const OUTS=[['mp3','MP3'],['wav','WAV'],['midi','MIDI'],['stems','Stems'],['daw','DAW pack (Ableton, FL, Logic, Reaper)'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack']];
 const ROLES=[['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead']];
@@ -398,7 +411,16 @@ function renderStyles(){
       list.appendChild(f); });
   }
   state.closed=state.closed||{}; let lastGrp=null;
-  cats.forEach(c=>META.categories[c].filter(s=>(q||!isJourney(s.id))&&(!q||s.name.toLowerCase().includes(q)||s.desc.toLowerCase().includes(q)||(s.group||'').toLowerCase().includes(q))).forEach(s=>{
+  const match=s=>!q||q.split(/\s+/).every(w=>(s.name+' '+s.desc+' '+(s.group||'')+' '+(s.tags||'')+' '+s.id.replace(/_/g,' ')).toLowerCase().includes(w));
+  if(!q){                                                           // your favourites and recently used genres, any tab
+    const all=Object.values(META.categories).flat(), byId=id=>all.find(x=>x.id===id);
+    [['★ Favourites',favs()],['🕘 Recently used',recents().filter(id=>!favs().includes(id)).slice(0,6)]].forEach(([title,ids])=>{
+      ids=ids.map(byId).filter(Boolean); if(!ids.length) return;
+      const h=document.createElement('div'); h.className='grp pin'; h.innerHTML=`${title}<span class="n">${ids.length}</span>`; list.appendChild(h);
+      ids.forEach(x=>list.appendChild(styleRow(x,true)));
+    });
+  }
+  cats.forEach(c=>META.categories[c].filter(s=>(q||!isJourney(s.id))&&match(s)).forEach(s=>{
     const gk=c+'/'+(s.group||'More');
     if(gk!==lastGrp){ lastGrp=gk; const n=META.categories[c].filter(x=>(x.group||'More')===(s.group||'More')&&!isJourney(x.id)).length;
       const h=document.createElement('div'); h.className='grp'+(state.closed[gk]&&!q?' shut':'');
@@ -406,13 +428,24 @@ function renderStyles(){
       h.onclick=()=>{ state.closed[gk]=!state.closed[gk]; try{localStorage.setItem('sl_closed',JSON.stringify(state.closed))}catch(e){} renderStyles(); };
       list.appendChild(h); }
     if(state.closed[gk]&&!q&&s.id!==state.style) return;
-    const lead=s.id===state.style, mixed=inMix(s.id);
-    const d=document.createElement('div');d.className='st'+(lead?' on':'')+(mixed&&!lead?' in':'');d.title=s.desc;
-    d.innerHTML=`<span class="ck" title="${mixed?'Remove from the mix':'Add to the mix (blend)'}">${mixed?'✓':''}</span><span class="nm">${s.name}${lead&&state.blend.length?'<span class="lead">★ lead</span>':''}</span><span class="bpm">${s.bpm[0]}–${s.bpm[1]}</span>`;
-    d.querySelector('.ck').onclick=e=>{e.stopPropagation();toggleMix(s.id)};
-    d.onclick=()=>{ if(state.blend.length&&mixed){ setLead(s.id); } else { state.style=s.id; state.blend=[]; genreSounds(); state.blend_parts={}; refresh(); } };
-    list.appendChild(d);
+    list.appendChild(styleRow(s));
   }));
+  if(q&&!list.children.length) list.innerHTML='<div class="hint" style="padding:8px">No genre matches "'+esc(q)+'" - try an instrument (sitar, organ), a mood word or a tempo feel.</div>';
+}
+function favs(){ try{ return JSON.parse(localStorage.getItem('sl_favs')||'[]') }catch(e){ return [] } }
+function recents(){ try{ return JSON.parse(localStorage.getItem('sl_recent')||'[]') }catch(e){ return [] } }
+function toggleFav(id){ let f=favs(); f=f.includes(id)?f.filter(x=>x!==id):[id,...f]; try{localStorage.setItem('sl_favs',JSON.stringify(f.slice(0,40)))}catch(e){} renderStyles(); }
+function noteRecent(id){ if(!id) return; let r=recents().filter(x=>x!==id); r.unshift(id); try{localStorage.setItem('sl_recent',JSON.stringify(r.slice(0,12)))}catch(e){} }
+function styleRow(s,pinned){
+  const lead=s.id===state.style, mixed=inMix(s.id), fav=favs().includes(s.id);
+  const d=document.createElement('div');d.className='st'+(lead?' on':'')+(mixed&&!lead?' in':'');d.title=s.desc;
+  d.innerHTML=`<span class="ck" title="${mixed?'Remove from the mix':'Add to the mix (blend)'}">${mixed?'✓':''}</span><span class="nm">${s.name}${lead&&state.blend.length?'<span class="lead">★ lead</span>':''}</span><span class="fav${fav?' on':''}" title="${fav?'Remove from favourites':'Add to favourites'}">${fav?'★':'☆'}</span><span class="bpm">${s.bpm[0]}–${s.bpm[1]}</span>`;
+  d.querySelector('.ck').onclick=e=>{e.stopPropagation();toggleMix(s.id)};
+  d.querySelector('.fav').onclick=e=>{e.stopPropagation();toggleFav(s.id)};
+  d.onclick=()=>{ if(state.blend.length&&mixed){ setLead(s.id); } else {
+    if(pinned){ const c=Object.entries(META.categories).find(([k,l])=>l.some(x=>x.id===s.id)); if(c) state.cat=c[0]; renderTabs(); }
+    state.style=s.id; state.blend=[]; genreSounds(); state.blend_parts={}; refresh(); } };
+  return d;
 }
 function toggleMix(id){
   if(id===state.style){ if(!state.blend.length) return; state.style=state.blend.shift(); }
@@ -556,11 +589,15 @@ function renderMoods(){
   [null,...META.moods].forEach(x=>{const c=document.createElement('span');c.className='chip'+(state.mood===x?' on':'');c.textContent=x?x[0].toUpperCase()+x.slice(1):'Neutral';c.onclick=()=>{state.mood=x;renderMoods()};m.appendChild(c)});
 }
 function renderLayers(){ bindMutes(); }       // parts are muted with the small 'mute' boxes in Sound
+// exports that write every part as its own audio file - big (often 200-500 MB a song), so they're off unless you tick them
+const BIG_OUTS={stems:'Every part as its own WAV file - big (often 200-500 MB per song)', waveform:'A Tracktion Waveform project with every part as audio - big (often 200-500 MB per song)',
+  daw:'Projects for Ableton, FL, Logic and Reaper with every part as audio - big (often 200-500 MB per song)', pack:'A sample pack: loops and one-shots cut from the song as audio files - bigger than the song itself'};
 function renderOuts(){
   const o=$('#outs');o.innerHTML='<span class="hint" style="align-self:center">Full song exports:</span>';
   OUTS.forEach(([k,n])=>{ if(k==='mp3'&&!META.ffmpeg) return;
     const c=document.createElement('span');const on=state.outputs.includes(k);c.className='chip'+(on?' on':'');c.textContent=n;
-    c.onclick=()=>{state.outputs=on?state.outputs.filter(x=>x!==k):[...state.outputs,k];renderOuts()};o.appendChild(c)});
+    if(BIG_OUTS[k]) c.title=BIG_OUTS[k];
+    c.onclick=()=>{state.outputs=on?state.outputs.filter(x=>x!==k):[...state.outputs,k]; try{localStorage.setItem('sl_outs',JSON.stringify(state.outputs))}catch(e){} renderOuts()};o.appendChild(c)});
 }
 function isJourney(id){ return id==='cinematic_journey'||id==='cinematic_journey_low'; }
 const J_ACTS=[['tension','Tension'],['sorrow','Sorrow'],['resolve','Resolve'],['battle','Battle'],['glory','Glory'],['reflection','Reflection'],['resolution','Resolution']];
@@ -649,7 +686,8 @@ function options(){
   if($('#ending').value!=='auto') o.ending=$('#ending').value;
   if($('#counter').value) o.counter=$('#counter').value;
   if($('#layering').value) o.layering=$('#layering').value;
-  if($('#vocalGuide').checked) o.vocal_guide=true;
+  if($('#bends').value) o.bends=$('#bends').value;
+  const vc=$('#vocals').value; if(vc==='guide') o.vocal_guide=true; else if(vc){ o.vocals=vc; o.voice=$('#voice').value; if(vc==='lyrics') o.lyrics=$('#lyrics').value.slice(0,2000); }
   if($('#voicing').value) o.voicing=$('#voicing').value;
   if($('#chordColor').value) o.chord_color=$('#chordColor').value;
   const lv={}; LEVELS.forEach(([k,n,layers])=>{ const v=+((state.levels||{})[k]||0); if(v) layers.forEach(l=>lv[l]=v); }); if(Object.keys(lv).length) o.part_levels=lv;
@@ -667,7 +705,7 @@ function applyOptions(o){
   $('#swingAuto').checked=o.swing==null; if(o.swing!=null)$('#swing').value=o.swing*100;
   $('#scAuto').checked=o.sidechain==null; if(o.sidechain!=null)$('#sidechain').value=o.sidechain*100;
   $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#drFills').value=o.drum_fills||''; $('#drGhosts').value=o.drum_ghosts||''; $('#drHats').value=o.hat_density||''; $('#percSet').value=o.percussion||''; $('#drumPattern').value=o.drum_pattern||(o.kit&&(META.drum_patterns||[]).some(p=>p.id==='break:'+o.kit)?'break:'+o.kit:'genre'); $('#userDrums').checked=!!o.user_drums;
-  $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#builds').value=o.builds||'auto'; renderTraits(); setTraits(o.traits); state.octaves=Object.assign({}, o.octaves||{}); bindOctaves(); $('#transFx').value=o.transition_fx||'auto'; $('#vinyl').value=o.vinyl===true?'on':''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#vocalGuide').checked=!!o.vocal_guide;
+  $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#builds').value=o.builds||'auto'; renderTraits(); setTraits(o.traits); state.octaves=Object.assign({}, o.octaves||{}); bindOctaves(); $('#transFx').value=o.transition_fx||'auto'; $('#vinyl').value=o.vinyl===true?'on':''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#bends').value=o.bends||''; $('#vocals').value=o.vocals||(o.vocal_guide?'guide':''); $('#voice').value=o.voice||'female'; $('#lyrics').value=o.lyrics||''; syncVocals();
   $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';
   state.levels={}; LEVELS.forEach(([k,n,layers])=>{ const v=(o.part_levels||{})[layers[0]]||0; if(v) state.levels[k]=v; }); bindLevels();
   if(o.journey){ const j=o.journey; state.jOff=J_ACTS.map(a=>a[0]).filter(a=>j.acts&&!j.acts.includes(a)); $('#jPiano').value=(j.piano??.6)*100; $('#jRubato').value=(j.rubato??.5)*100;
@@ -732,6 +770,7 @@ let busy=false;
 async function run(preview, count, opts, section, onResult, varyPart, extra){
   if(busy) return; busy=true; setBusy(true);
   const o=opts||options();
+  noteRecent(o.style);
   const body={options:o, preview, count, outputs:state.outputs.length?state.outputs:['wav']};
   if(varyPart) body.vary_part=varyPart;
   if(section!=null) body.section=section;
@@ -773,7 +812,8 @@ function addResult(r, target){
     <div class="rr"><span class="lbl" title="Switch a part off (or back on) and hear this exact take again">On / off</span>${LAYERS.map(([k,n])=>`<span class="chip ${(r.options.muted||[]).includes(k)?'':'on'}" data-mu="${k}" style="cursor:pointer;font-size:11.5px;padding:2px 8px">${(r.options.muted||[]).includes(k)?'○':'●'} ${n}</span>`).join(' ')}</div>
     <div class="rr"><span class="lbl" title="🔒 keep this part in your next previews · ♥ you like this part (Surprise me learns from it)">Parts</span>${PARTSEED.map(([p])=>`<span class="pp">${p}<button class="ico" data-lk="${p}" title="Keep this ${p} part in new previews">🔒</button><button class="ico" data-lv="${p}" title="I like this ${p} part">♥</button></span>`).join('')}
       <span style="margin-left:auto"></span><button class="mini" data-a="ab" title="Compare two results back to back at matched loudness">A/B</button></div>
-    <div class="rr"><button class="mini acc" data-a="full">⬇ Full song from this</button><button class="mini acc" data-a="edit" title="Open this song in the editor: sections, parts and every sound in it">✏️ Edit</button><button class="mini" data-a="sounds" title="The same song (same notes) played on different sounds that suit the genre">🎲 New sounds</button><button class="mini" data-a="use">Use settings</button><button class="mini" data-a="save">★ Save preset</button>${(!r.preview&&(r.project||r.lib_title))?`<button class="mini ${r.kept?'acc':''}" data-a="keep" title="Kept songs are never trimmed or deleted by the clean-up">${r.kept?'⭐ Kept':'☆ Keep'}</button>`:''}
+    <div class="rr more"><span class="lbl" title="A new song that keeps what you tick from this one and changes the rest">✨ More like this</span><span class="hint">keep</span>${MORE_KEEP.map(([k,n,on])=>`<span class="chip ${on?'on':''}" data-mk="${k}" style="cursor:pointer;font-size:11.5px;padding:2px 8px">${on?'✓':'○'} ${n}</span>`).join(' ')}<button class="mini acc" data-a="more" title="New song: keeps the ticked parts, changes the rest">New version</button><span style="margin-left:auto"></span><button class="mini" data-a="diff" title="Same genre, but a different tempo, key, sounds and parts">🔀 Something different</button></div>
+    <div class="rr"><button class="mini acc" data-a="full">⬇ Full song from this</button><button class="mini acc" data-a="edit" title="Open this song in the editor: sections, parts and every sound in it">✏️ Edit</button><button class="mini" data-a="sounds" title="The same song (same notes) played on different sounds that suit the genre">🎲 New sounds</button><button class="mini" data-a="use">Use settings</button><button class="mini" data-a="share" title="Save a tiny settings file - anyone with Studio Lab can load it (Presets → Load a shared song) and get this exact song">📤 Share</button><button class="mini" data-a="save">★ Save preset</button>${(!r.preview&&(r.project||r.lib_title))?`<button class="mini ${r.kept?'acc':''}" data-a="keep" title="Kept songs are never trimmed or deleted by the clean-up">${r.kept?'⭐ Kept':'☆ Keep'}</button>`:''}
       <span style="margin-left:auto"></span><button class="rate" data-r="1" title="I like this">👍</button><button class="rate" data-r="-1" title="Not for me">👎</button></div>
     <div class="tl" title="Click a section to edit it"></div><div class="sedbox"></div>
     <div class="dragrow rr"></div>
@@ -821,8 +861,12 @@ function addResult(r, target){
     const k=b.dataset.mu; const m=new Set(o.muted||[]); m.has(k)?m.delete(k):m.add(k); o.muted=[...m];
     $('#status').textContent=(m.has(k)?'Removing ':'Bringing back ')+k+' - same take…'; run(true,1,o); });
   el.querySelector('[data-a=ab]').onclick=()=>abPick(r, el);
+  el.querySelectorAll('[data-mk]').forEach(c=>c.onclick=()=>{ const on=!c.classList.contains('on'); c.classList.toggle('on',on); c.textContent=(on?'✓ ':'○ ')+c.textContent.slice(2); });
+  el.querySelector('[data-a=more]').onclick=()=>{ const keep=[...el.querySelectorAll('[data-mk].on')].map(c=>c.dataset.mk); moreLike(r, keep); };
+  el.querySelector('[data-a=diff]').onclick=()=>somethingDifferent(r);
   el.querySelector('[data-a=full]').onclick=()=>run(false,1,r.options);
   el.querySelector('[data-a=use]').onclick=()=>applyOptions(r.options);
+  el.querySelector('[data-a=share]').onclick=()=>shareSettings(r);
   el.querySelector('[data-a=edit]').onclick=()=>openEditor(r);
   el.querySelector('[data-a=sounds]').onclick=()=>{ const o=JSON.parse(JSON.stringify(r.options)); o.seed=r.seed;
     o.instruments=rerollSounds(r.style, Object.assign({}, o.instruments||{})); $('#status').textContent='Same song, new sounds…'; run(true,1,o); };
@@ -836,7 +880,67 @@ function addResult(r, target){
   (target||$('#session')).insertBefore(el,(target||$('#session')).querySelector('.res'));
   if(!target && r.preview) togglePlay(r.id,url,btn,cv);
 }
+// ------------------------------------------------------------- start here (first run, and the ✨ button)
+const START=[['lofi','☕','Chill lo-fi','study beats, dusty keys'],['house','🏠','House','four-on-the-floor club'],['trap','🔥','Trap','808s & rolling hi-hats'],
+  ['rock','🎸','Rock','a band with guitars'],['cinematic_journey','🎬','Film score','a whole orchestra telling a story'],['synthwave','🌆','Synthwave','80s neon night drive'],
+  ['jazz','🎷','Jazz','swing, piano & solos'],['tabla_bhajan','🪔','Bhajan groove','tabla, dholak & sitar'],['monster_theme','🧛','Spooky surf','60s monster TV theme'],
+  ['outlaw_country','🤠','Outlaw country','twang, shuffle & steel'],['ambient','🌌','Ambient','floating and calm'],['dnb','⚡','Drum & bass','fast breakbeats, deep bass'],
+  ['*','🎲','Surprise me','anything at all']];
+// a song as a tiny file: the exact settings (with the seed) - loading it in Studio Lab makes the same song again
+function shareSettings(r){
+  const o=JSON.parse(JSON.stringify(r.options||{})); o.seed=r.seed; delete o.avoid;
+  const data={app:'Studio Lab', version:META.version, title:(r.name||styleName(r.style)), key:r.key, bpm:r.bpm, options:o,
+    how:'Open Studio Lab -> Presets -> Load a shared song (or 🎯 Match a reference) and pick this file.'};
+  const fn=((r.name||r.style)+'').replace(/[^A-Za-z0-9 _-]+/g,'').trim().replace(/\s+/g,'-')+'_studio-lab.json';
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:'application/json'})); a.download=fn;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove()},1000);
+  $('#status').textContent='Saved '+fn+' - send it to a friend: Presets → Load a shared song makes this exact song.';
+}
+function syncVocals(){ const v=$('#vocals').value; $('#voiceF').style.display=['ooh','aah','lyrics'].includes(v)?'':'none'; $('#lyricsF').style.display=v==='lyrics'?'':'none'; }
+function startHere(){
+  const all=Object.values(META.categories).flat(), has=id=>id==='*'||all.some(x=>x.id===id);
+  let pick=START.find(c=>c[0]===state.style)?state.style:null, mood=null;
+  $('#modalBox').className='box wide start';
+  $('#modalBox').innerHTML=`<h3 style="margin:0 0 2px">✨ What do you want to make?</h3>
+    <div class="hint">Pick a kind of music, then press <b>Make my song</b>. You'll hear a preview in a few seconds - then make the full song, or try another.</div>
+    <div class="cards">${START.filter(c=>has(c[0])).map(([id,em,n,d])=>`<div class="card2" data-sid="${id}"><div class="em">${em}</div><div class="n">${n}</div><div class="d">${d}</div></div>`).join('')}</div>
+    <div class="row" style="align-items:center;gap:6px;flex-wrap:wrap"><span class="hint">Mood (optional):</span>${[null,...META.moods.slice(0,8)].map(x=>`<span class="chip ${x===null?'on':''}" data-md="${x||''}" style="cursor:pointer">${x?x[0].toUpperCase()+x.slice(1):'Any'}</span>`).join('')}</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap">
+      <button class="btn s" id="stAll">Show me all the controls</button><button class="btn p" id="stGo" disabled>▶ Make my song</button></div>
+    <div class="hint" style="margin-top:8px">Tip: there are ${all.length} genres - use the search box on the left (try "sitar", "surf" or "organ"), and ☆ star the ones you like.</div>`;
+  const go=$('#stGo');
+  $$('#modalBox [data-sid]').forEach(c=>c.onclick=()=>{ $$('#modalBox [data-sid]').forEach(x=>x.classList.remove('on')); c.classList.add('on'); pick=c.dataset.sid; go.disabled=false; });
+  if(pick){ const c=$(`#modalBox [data-sid="${pick}"]`); if(c){ c.classList.add('on'); go.disabled=false; } }
+  $$('#modalBox [data-md]').forEach(c=>c.onclick=()=>{ $$('#modalBox [data-md]').forEach(x=>x.classList.remove('on')); c.classList.add('on'); mood=c.dataset.md||null; });
+  const done=()=>{ try{ localStorage.setItem('sl_started','1') }catch(e){} closeModal(); };
+  $('#stAll').onclick=done;
+  go.onclick=()=>{ done(); state.mood=mood; renderMoods();
+    if(pick==='*'){ $('#surpriseBtn').click(); return; }
+    const c=Object.entries(META.categories).find(([k,l])=>l.some(x=>x.id===pick)); if(c) state.cat=c[0];
+    state.style=pick; state.blend=[]; genreSounds(); state.blend_parts={}; renderTabs(); refresh(); $('#prevBtn').click(); };
+  $('#modal').classList.add('on');
+}
 const PARTSEED=[['harmony',1],['melody',2],['drums',3],['bass',4],['chords',5]];
+const MORE_KEEP=[['groove','groove',true],['chords','chords',true],['melody','melody',false],['sounds','sounds',true]];
+// a new song keeping what you liked: the kept parts reuse this song's part seeds (and its tempo + key so they still fit);
+// everything else comes from a fresh seed
+function moreLike(r, keep){
+  const o=JSON.parse(JSON.stringify(r.options)); o.seed=Math.floor(Math.random()*1e6)+1;
+  const k=Object.fromEntries(PARTSEED), ps=(r.options&&r.options.part_seeds)||{}; const seedOf=p=>ps[p]!=null?ps[p]:(r.seed*1009+k[p]);
+  const parts={groove:['drums','bass'], chords:['harmony','chords'], melody:['melody','harmony']};
+  o.part_seeds={}; keep.forEach(x=>(parts[x]||[]).forEach(p=>o.part_seeds[p]=seedOf(p)));
+  // (the harmony seed also carries the tempo, key and progression, so a kept melody still fits)
+  if(keep.includes('sounds')) o.instruments=Object.assign({}, r.main_ids||{}, (r.options&&r.options.instruments)||{});
+  else o.instruments=Object.assign({}, state.instruments||{});
+  $('#status').textContent=keep.length?'More like this - keeping '+keep.join(', ')+'…':'A fresh take on this genre…';
+  run(true,1,o);
+}
+function somethingDifferent(r){
+  const o=JSON.parse(JSON.stringify(r.options)); o.seed=Math.floor(Math.random()*1e6)+1; o.part_seeds={};
+  delete o.bpm; delete o.key; delete o.scale; delete o.progression;
+  o.instruments=rerollSounds(r.style, {});
+  $('#status').textContent='Something different in '+styleName(r.style)+'…'; run(true,1,o);
+}
 const LOCKS={};
 function renderLocks(){
   const box=$('#locks'); const k=Object.keys(LOCKS);
@@ -921,10 +1025,11 @@ async function savePreset(o){
 }
 async function presetsModal(){
   const list=await api('/api/presets');
-  $('#modalBox').innerHTML=`<h3>Presets</h3><div class="row" style="margin-bottom:10px"><button class="btn s" id="pSave">★ Save current settings</button></div>
+  $('#modalBox').innerHTML=`<h3>Presets</h3><div class="row" style="margin-bottom:10px"><button class="btn s" id="pSave">★ Save current settings</button><button class="btn s" id="pLoadShared" title="A .json file someone made with 📤 Share">📥 Load a shared song…</button></div>
    ${list.length?list.map((p,i)=>`<div class="st" data-i="${i}"><span class="nm">${esc(p.name)}</span><span class="bpm">${styleName(p.options.style)}</span></div>`).join(''):'<div class="hint">No presets yet.</div>'}
    <div style="text-align:right;margin-top:12px"><button class="btn s" onclick="closeModal()">Close</button></div>`;
   $('#pSave').onclick=()=>{closeModal();savePreset()};
+  $('#pLoadShared').onclick=()=>{ closeModal(); $('#refFile').value=''; $('#refFile').click(); };
   $$('#modalBox [data-i]').forEach(e=>e.onclick=()=>{applyOptions(list[+e.dataset.i].options);closeModal()});
   $('#modal').classList.add('on');
 }
@@ -1071,15 +1176,21 @@ async function onReference(file){
       const pcm=await decodeFile(file,22050); a=await upload('/api/upload/reference?sr=22050',new Blob([pcm.buffer]));
     }
     if(a.error){$('#refRes').textContent=a.error;return}
-    if(a.source==='settings'){ $('#refRes').innerHTML=`Studio Lab settings: <b>${esc(styleName(a.options.style))}</b> <button class="mini acc" id="refApply">Load</button>`;
-      $('#refApply').onclick=()=>{ applyOptions(a.options); $('#status').textContent='Settings loaded - press Preview.'; }; return; }
+    if(a.source==='settings'){ applyOptions(a.options); if(a.options.seed){ $('#seed').value=a.options.seed; $('#seedLock').checked=true; }
+      $('#refRes').innerHTML=`Loaded: <b>${esc(styleName(a.options.style))}</b>${a.options.seed?' (seed '+a.options.seed+', locked so Preview makes this exact song)':''}`;
+      $('#status').textContent='Shared song loaded - press Preview or Full song to hear it.'; return; }
     const show=()=>{ const bits=[`<b>${a.bpm} BPM</b> <button class="mini" id="refHalf">÷2</button><button class="mini" id="refDbl">×2</button>`, `key <b>${esc(a.key)}</b>${a.scale&&!['major','minor'].includes(a.scale)?' '+esc(a.scale):''}`];
       if(a.progression) bits.push(`chords <b>${esc(a.progression)}</b>`);
       if(a.swing) bits.push(`swing <b>${Math.round(a.swing*100)}%</b>`);
       if(a.timesig&&a.timesig!=='4/4') bits.push(`<span class="hint">${esc(a.timesig)} (played in 4/4)</span>`);
       if(a.loudness!=null) bits.push(`${a.loudness} LUFS`);
       if(a.brightness!=null) bits.push(`brightness ${a.brightness>0?'+':''}${a.brightness}`);
-      $('#refRes').innerHTML=bits.join(' · ')+' <button class="mini acc" id="refApply">Apply</button>';
+      const gs=(a.genres||[]).map((g,i)=>`<button class="mini ${i===0?'acc':''}" data-rg="${esc(g.id)}" title="${esc((g.why||[]).join(' · '))}">${esc(g.name)} <span class="hint">${g.match}%</span></button>`).join(' ');
+      $('#refRes').innerHTML=bits.join(' · ')+' <button class="mini acc" id="refApply">Apply</button>'+
+        (gs?`<div style="margin-top:6px"><span class="hint">Sounds closest to:</span> ${gs} <span class="hint">- click one to pick that genre and apply the tempo & key</span></div>`:'');
+      $$('#refRes [data-rg]').forEach(b=>b.onclick=()=>{ const id=b.dataset.rg; const c=Object.entries(META.categories).find(([k,l])=>l.some(x=>x.id===id));
+        if(c) state.cat=c[0]; state.style=id; state.blend=[]; genreSounds(); state.blend_parts={}; renderTabs(); refresh(); $('#refApply').click();
+        $('#status').textContent='Picked '+styleName(id)+' with the reference\'s tempo and key - press Preview.'; });
       $('#refHalf').onclick=()=>{a.bpm=Math.max(40,Math.round(a.bpm/2));show()}; $('#refDbl').onclick=()=>{a.bpm=Math.min(200,a.bpm*2);show()};
       $('#refApply').onclick=()=>{ $('#bpmAuto').checked=false; $('#bpm').value=a.bpm; $('#key').value=a.key;
         if(a.scale && [...$('#scale').options].some(o=>o.value===a.scale)) $('#scale').value=a.scale;
@@ -1462,9 +1573,19 @@ function renderTabs(){
   Object.keys(META.categories).forEach(c=>{const b=document.createElement('button');const n=META.categories[c].filter(s=>inMix(s.id)).length;b.innerHTML=c+(n?`<span class="cnt">${n}</span>`:'');if(c===state.cat)b.className='on';b.onclick=()=>{state.cat=c;$('#search').value='';renderTabs();renderStyles()};t.appendChild(b)});
 }
 function initSegs(){
-  seg($('#length'),[[0.5,'Short'],[1,'Normal'],[1.5,'Long'],[2,'Extended']],()=>state.length,v=>state.length=v);
-  seg($('#structure'),[['auto','Auto'],['radio','Radio'],['club','Club'],['loop','Loop']],()=>state.structure,v=>state.structure=v);
+  seg($('#length'),[[0.5,'Short'],[1,'Normal'],[1.5,'Long'],[2,'Extended']],()=>state.length,v=>{state.length=v;lenPresets()});
+  seg($('#structure'),[['auto','Auto'],['radio','Radio'],['club','Club'],['loop','Loop']],()=>state.structure,v=>{state.structure=v;lenPresets()});
   seg($('#lofi'),[[null,'Style'],[true,'On'],[false,'Off']],()=>state.lofi,v=>state.lofi=v);
+  lenPresets();
+}
+// one-click song lengths (they set Length + Structure in Basics, which stay in sync)
+const LEN_PRESETS=[['radio','📻 Radio edit (~3 min)','radio',1],['normal','Normal','auto',1],['extended','🪩 Extended / club','club',1.5],['loop','🔁 Loop (16 bars)','loop',1]];
+function lenPresets(){
+  const cur=(LEN_PRESETS.find(([k,l,st,ln])=>st===state.structure&&ln===state.length)||[])[0];
+  seg($('#lenPreset'),LEN_PRESETS.map(([k,l])=>[k,l]),()=>cur,k=>{ const p=LEN_PRESETS.find(x=>x[0]===k); state.structure=p[2]; state.length=p[3];
+    seg($('#length'),[[0.5,'Short'],[1,'Normal'],[1.5,'Long'],[2,'Extended']],()=>state.length,v=>{state.length=v;lenPresets()});
+    seg($('#structure'),[['auto','Auto'],['radio','Radio'],['club','Club'],['loop','Loop']],()=>state.structure,v=>{state.structure=v;lenPresets()});
+    lenPresets(); });
 }
 async function init(){
   META=await api('/api/meta');
@@ -1506,6 +1627,8 @@ async function init(){
   const fill=(id,list,def)=>$(id).innerHTML=`<option value="">${def}</option>`+list.map(x=>`<option value="${x}">${NICE[x]||x}</option>`).join('');
   fill('#melStyle',META.melody_styles,'Genre default'); fill('#voicing',META.voicings,'Genre default'); fill('#chordColor',META.chord_colors,'Varies per song');
   initKnobs(); tidyHints();
+  $('#startBtn').onclick=startHere;
+  $('#vocals').onchange=syncVocals;
   $('#seed').value=Math.floor(Math.random()*99999)+1;
   initSegs(); renderTabs(); renderMoods(); renderLayers(); renderOuts(); refresh();
   bindRange('simplicity',v=>v<5?'off':v<40?v+'% · lighter':v<75?v+'% · simple':v+'% · bare');
@@ -1563,7 +1686,7 @@ async function init(){
   document.addEventListener('keydown',e=>{ if(e.code==='Space'&&!['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)){e.preventDefault(); audio.paused?audio.play():audio.pause();} });
   syncAutos(); updates(false);
 }
-init();
+init().then(()=>{ try{ if(!localStorage.getItem('sl_started')) startHere(); }catch(e){} });
 document.addEventListener('click',async e=>{ const a=e.target.closest&&e.target.closest('.orchGo'); if(!a) return; e.preventDefault();
   if(/Real instruments/.test(a.dataset.note||'')){ libModal(); return }
   const V=await api('/api/vst',{}); if(!V.available){ vstModal(); return } orchModal(V); });
