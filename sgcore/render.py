@@ -13,6 +13,8 @@ from .dsp import (SR, hp, lp, eq, soft, compressor, limiter, lufs, active_rms_db
 from .instruments import INSTRUMENTS, DRUMS, fx_riser, fx_impact, fx_vinyl, fx_texture
 from .compose import SECTION_ENERGY, GROOVES
 
+HELD = 0.75     # notes held this many beats or longer (pads, sustained chords) are never swung - only short notes swing
+
 ROLE_DB = {'kick': -13, 'snare': -17, 'top': -25, 'bass': -15, 'chords': -21, 'pad': -23, 'arp': -25, 'lead': -19, 'fx': -26}
 CUT_KEYS = ('cut', 'bright')
 
@@ -64,7 +66,7 @@ class Renderer:
         self.bright = 2 ** (float(self.opts.brightness) * 1.2)
         self.track_gains = {}
 
-    def t_of(self, beat, human=True, layer=None):
+    def t_of(self, beat, human=True, layer=None, swing=True):
         st = self.st
         b = beat
         g = GROOVES.get(st.get('groove')) if layer else None
@@ -75,7 +77,7 @@ class Renderer:
                 b += g[layer][int(round(q16)) % 16] * 0.25 * amt
         unit = st.get('swing_unit', 16)
         q = beat * (4 if unit == 16 else 2)
-        if abs(q - round(q)) < 1e-6 and int(round(q)) % 2 == 1:
+        if swing and abs(q - round(q)) < 1e-6 and int(round(q)) % 2 == 1:
             b += (st['swing'] - 0.5) * (0.5 if unit == 16 else 1.0)
         t = self._bt(b) + self._rubato(beat)
         if human and st.get('human'):
@@ -326,7 +328,8 @@ class Renderer:
         # kicks are never humanised (a layered kick would flam), and a break plays as one tight unit
         tight = tcfg['name'] == kick or tcfg['layer'] == 'kick' or tcfg['name'] in brk or tcfg['name'] in ('lkick', 'lsnare')
         for i, ev in enumerate(evs):
-            s = int((self.t_of(ev.beat, human=not tight, layer=tcfg['layer']) + getattr(ev, 'strum', 0.0) * self.spb) * SR)
+            s = int((self.t_of(ev.beat, human=not tight, layer=tcfg['layer'], swing=is_drum or ev.dur < HELD)
+                     + getattr(ev, 'strum', 0.0) * self.spb) * SR)
             sig = None
             if real_drums:
                 sig = self._real_drum(tcfg.get('real') or tcfg['inst'], ev, i)
@@ -405,7 +408,7 @@ class Renderer:
         """Play this part through one of your own VST3/AU instruments (falls back to the built-in sound on failure)."""
         from . import vsthost
         sid = tcfg['inst'][4:]
-        events = [(self.t_of(e.beat, human=True, layer=tcfg['layer']) + getattr(e, 'strum', 0.0) * self.spb, max(0.02, self._dsec(e.beat, e.dur)), int(e.midi), int(max(1, min(127, e.vel * 110))))
+        events = [(self.t_of(e.beat, human=True, layer=tcfg['layer'], swing=e.dur < HELD) + getattr(e, 'strum', 0.0) * self.spb, max(0.02, self._dsec(e.beat, e.dur)), int(e.midi), int(max(1, min(127, e.vel * 110))))
                   for e in evs if e.midi is not None]
         ccs = None
         curve = (self.song.get('expr') or {}).get(tcfg['name'])

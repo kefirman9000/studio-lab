@@ -99,6 +99,9 @@ def main():
     assert r.t_of(1.0, False, 'snare') > r.t_of(1.0, False) + 0.02                    # Dilla-late backbeat
     st = compose(Options(style='boombap', seed=3, groove='straight'))
     assert Renderer(st, log=lambda *a: None).t_of(1.0, False, 'snare') == Renderer(st, log=lambda *a: None).t_of(1.0, False)
+    if bb['st']['swing'] > 0.52:                                                      # held chords / pads never swing
+        assert r.t_of(0.25, False, swing=False) < r.t_of(0.25, False) - 0.005
+        assert abs(r.t_of(0.25, False, swing=False) - 0.25 * r.spb) < 1e-6
     hk = compose(Options(style='house', seed=3, bass_rhythm='kick', variety=0))
     kicks = {round(e.beat, 3) for e in hk['events'] if e.track == 'kick'}
     assert all(round(e.beat, 3) in kicks for e in hk['events'] if e.track == 'bass')
