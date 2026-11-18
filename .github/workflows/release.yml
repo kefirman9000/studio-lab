@@ -9,6 +9,9 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      ver: ${{ steps.v.outputs.ver }}
+      exists: ${{ steps.v.outputs.exists }}
     steps:
       - uses: actions/checkout@v4
       - name: Read version
@@ -31,7 +34,11 @@ jobs:
           awk -v v="## ${VER}" '$0==v{f=1;next} /^## /{f=0} f' CHANGELOG.md > notes.md
           {
             echo ""
-            echo "**Install:** download \`studio-lab-${VER}.zip\` below, unzip it, then double-click \`Start Studio Lab (Windows).bat\` or \`Start Studio Lab (Mac).command\` (Python 3.9+ required)."
+            echo "**Install (easy - nothing else needed):** download the installer for your computer below (it appears a few minutes after this release):"
+            echo "- **Windows:** \`StudioLab-Setup-${VER}.exe\` - double-click it and follow the steps."
+            echo "- **Mac:** \`StudioLab-${VER}-Mac-AppleSilicon.dmg\` (M1/M2/M3/M4 Macs) or \`-Mac-Intel.dmg\` (older Macs) - open it and drag Studio Lab into Applications."
+            echo ""
+            echo "Or, if you already have Python 3.9+: download \`studio-lab-${VER}.zip\`, unzip it, and double-click \`Start Studio Lab (Windows).bat\` or \`Start Studio Lab (Mac).command\`."
             echo "Already installed? Click **⟳ Updates** inside the app."
           } >> notes.md
       - name: Publish
@@ -41,3 +48,10 @@ jobs:
         run: |
           VER="${{ steps.v.outputs.ver }}"
           gh release create "v${VER}" "studio-lab-${VER}.zip" --target "$GITHUB_SHA" --title "Studio Lab ${VER}" --notes-file notes.md
+
+  installers:
+    needs: release
+    if: needs.release.outputs.exists == '0'
+    uses: ./.github/workflows/installers.yml
+    with:
+      tag: v${{ needs.release.outputs.ver }}

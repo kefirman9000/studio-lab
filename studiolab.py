@@ -28,6 +28,14 @@ def _check_python():
               'Download a newer one from https://www.python.org/downloads/' % sys.version_info[:2])
 
 
+def _importable(m):
+    try:
+        __import__(m)
+        return True
+    except ImportError:
+        return False
+
+
 def _check_deps():
     missing = []
     for m in ('numpy', 'scipy'):
@@ -35,6 +43,17 @@ def _check_deps():
             __import__(m)
         except ImportError:
             missing.append(m)
+    here = os.path.dirname(os.path.abspath(__file__))
+    bundled = os.path.isdir(os.path.join(here, 'runtime')) or '.app/Contents/Resources' in sys.executable
+    if missing and bundled:                  # installed app: an update needs a new package - fetch it once, quietly
+        import subprocess
+        try:
+            subprocess.run([sys.executable, '-m', 'pip', 'install', '--disable-pip-version-check', '-q', '-r',
+                            os.path.join(here, 'requirements.txt')], timeout=600,
+                           creationflags=0x08000000 if os.name == 'nt' else 0)
+            missing = [m for m in missing if not _importable(m)]
+        except Exception:
+            pass
     if missing:
         _fail('Studio Lab needs: ' + ' '.join(missing) + '\n'
               'Install them with:   python -m pip install ' + ' '.join(missing))

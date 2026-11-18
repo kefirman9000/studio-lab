@@ -322,13 +322,10 @@ def render(out_dir, bpm=None, log=print, wind_down=True, voice='machine'):
     write_wav(wav, mix)
     files = dict(wav=wav)
     if api.have_ffmpeg():
-        import subprocess
-        from .proc import NOWIN
-        mp3 = wav[:-4] + '.mp3'
-        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', wav, '-codec:a', 'libmp3lame', '-b:a', '256k',
-                        '-metadata', 'title=Daisy Bell (A Bicycle Built for Two)', '-metadata', 'artist=Studio Lab',
-                        '-metadata', 'composer=Harry Dacre (1892)', mp3], capture_output=True, **NOWIN)
-        if os.path.exists(mp3):
+        from .dsp import write_mp3
+        mp3 = write_mp3(wav, wav[:-4] + '.mp3', 256, dict(title='Daisy Bell (A Bicycle Built for Two)', artist='Studio Lab',
+                                                          composer='Harry Dacre (1892)'))
+        if mp3:
             files['mp3'] = mp3
     secs = mix.shape[1] / SR
     log(f'Done: {secs:.0f} s')

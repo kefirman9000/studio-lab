@@ -2,8 +2,6 @@
 import json
 import os
 import shutil
-import subprocess
-from .proc import NOWIN
 import time
 
 import numpy as np
@@ -17,7 +15,8 @@ OUTPUTS = ('wav', 'mp3', 'midi', 'stems', 'lmms', 'waveform', 'pack', 'daw')
 
 
 def have_ffmpeg():
-    return shutil.which('ffmpeg') is not None
+    """MP3 export available: ffmpeg on PATH, or the lameenc encoder (bundled with the installer)."""
+    return dsp.mp3_encoder() is not None
 
 
 def song_title(song):
@@ -342,11 +341,9 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     peak = 20 * np.log10(np.max(np.abs(out)) + 1e-12)
     log(f'   master: {loud:.1f} LUFS, peak {peak:.1f} dBFS')
     if 'mp3' in outputs and have_ffmpeg():
-        mp3 = wav[:-4] + '.mp3'
-        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', wav, '-codec:a', 'libmp3lame', '-b:a', '320k',
-                        '-metadata', f'title={name}', '-metadata', f"genre={info['style']}", '-metadata', 'artist=Studio Lab', mp3],
-                       check=True, **NOWIN)
-        files['mp3'] = mp3
+        mp3 = dsp.write_mp3(wav, wav[:-4] + '.mp3', 320, dict(title=name, genre=info['style'], artist='Studio Lab'))
+        if mp3:
+            files['mp3'] = mp3
     if not preview:
         from . import exporters
         full = song

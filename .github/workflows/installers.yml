@@ -1,0 +1,102 @@
+name: installers
+# One-click installers with their own Python inside (nothing else to install):
+#   Windows: StudioLab-Setup-<ver>.exe        macOS: StudioLab-<ver>-Mac-AppleSilicon.dmg / -Mac-Intel.dmg
+# Called by release.yml for every new version (attached to the GitHub release). Pushing installer changes to any
+# other branch, or running it by hand, builds them as downloadable workflow artifacts for testing.
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        default: ''
+  workflow_dispatch:
+  push:
+    branches-ignore: [main]
+    paths: ['installer/**', '.github/workflows/installers.yml']
+permissions:
+  contents: write
+env:
+  PY_SERIES: '3.12'
+  EXTRA_PKGS: 'pedalboard soundfile lameenc'
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stage the app with a private Python
+        run: |
+          VER="$(tr -d '[:space:]' < VERSION)"; echo "VER=$VER" >> "$GITHUB_ENV"
+          gh release download --repo astral-sh/python-build-standalone --dir pbs \
+             --pattern "cpython-${PY_SERIES}.*-x86_64-pc-windows-msvc-install_only.tar.gz"
+          mkdir -p build/win/app/runtime
+          git archive HEAD | tar -x -C build/win/app
+          tar -xzf pbs/*.tar.gz -C build/win/app/runtime              # -> runtime/python/python.exe
+          PY=build/win/app/runtime/python/python.exe
+          "$PY" -m pip install --disable-pip-version-check --no-warn-script-location -q -r requirements.txt $EXTRA_PKGS
+          "$PY" -c "import numpy, scipy, pedalboard, soundfile, lameenc; print('bundled python ok')"
+          cp installer/windows/studio-lab.ico build/win/app/
+      - name: Build Setup.exe
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup -y --no-progress }
+          $src = (Resolve-Path build\win\app).Path
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Qp "/DAppVer=$env:VER" "/DSrc=$src" installer\windows\studiolab.iss
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+      - name: Self-test - install silently and make a song with the installed app
+        shell: pwsh
+        run: |
+          $setup = Get-ChildItem dist\StudioLab-Setup-*.exe | Select-Object -First 1
+          Start-Process $setup.FullName -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/CURRENTUSER','/TASKS=desktopicon' -Wait
+          $app = "$env:LOCALAPPDATA\Programs\Studio Lab"
+          if (-not (Test-Path "$app\runtime\python\pythonw.exe")) { throw 'not installed' }
+          if (-not (Test-Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Studio Lab.lnk")) { throw 'no Start menu shortcut' }
+          $env:STUDIOLAB_NO_FFMPEG = '1'
+          & "$app\runtime\python\python.exe" "$app\studiolab.py" generate --style house --length 0.3 --formats mp3 --out "$env:RUNNER_TEMP\out"
+          if (-not (Get-ChildItem "$env:RUNNER_TEMP\out\*.mp3")) { throw 'no mp3' }
+          Start-Process "$app\unins000.exe" -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES' -Wait
+          for ($i = 0; $i -lt 60 -and (Test-Path "$app\runtime"); $i++) { Start-Sleep 1 }   # the uninstaller re-launches itself
+          if (Test-Path "$app\runtime") { throw 'uninstall left the program behind' }
+          'installer self-test ok'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: dist/*.exe
+      - name: Attach to the release
+        if: inputs.tag != ''
+        run: gh release upload "${{ inputs.tag }}" dist/*.exe --clobber
+
+  mac:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            triple: aarch64-apple-darwin
+            label: AppleSilicon
+          - runner: macos-15-intel
+            triple: x86_64-apple-darwin
+            label: Intel
+    runs-on: ${{ matrix.runner }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Studio Lab.app and the .dmg (includes a self-test)
+        run: |
+          VER="$(tr -d '[:space:]' < VERSION)"
+          gh release download --repo astral-sh/python-build-standalone --dir pbs \
+             --pattern "cpython-${PY_SERIES}.*-${{ matrix.triple }}-install_only.tar.gz"
+          bash installer/mac/build.sh pbs/*.tar.gz "${{ matrix.label }}" "$VER"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac-${{ matrix.label }}
+          path: dist/*.dmg
+      - name: Attach to the release
+        if: inputs.tag != ''
+        run: gh release upload "${{ inputs.tag }}" dist/*.dmg --clobber

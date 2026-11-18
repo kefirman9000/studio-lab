@@ -33,7 +33,51 @@ def main():
     assert diagnostics.synth_params().startswith('```')
     print('ok  technical summary, synth parameter list')
     test_journey()
+    test_mp3_without_ffmpeg()
     print('all good')
+
+
+def test_mp3_without_ffmpeg():
+    """The installer bundles lameenc, so MP3 export works with no ffmpeg installed."""
+    import shutil
+    import sys
+    import tempfile
+    import types
+    import numpy as np
+    from sgcore import dsp
+    calls = {}
+
+    class Enc:
+        def set_bit_rate(self, k): calls['kbps'] = k
+        def set_in_sample_rate(self, r): calls['sr'] = r
+        def set_channels(self, c): calls['ch'] = c
+        def set_quality(self, q): pass
+        def encode(self, pcm): calls['n'] = len(pcm); return b'\xff\xfb' + b'\0' * 10
+        def flush(self): return b''
+    fake = types.ModuleType('lameenc')
+    fake.Encoder = Enc
+    old_which, old_mod = shutil.which, sys.modules.get('lameenc')
+    shutil.which = lambda *a, **k: None
+    sys.modules['lameenc'] = fake
+    d = tempfile.mkdtemp()
+    try:
+        assert dsp.mp3_encoder() == 'lameenc'
+        from sgcore import api
+        assert api.have_ffmpeg()
+        wav = os.path.join(d, 'a.wav')
+        dsp.write_wav(wav, np.zeros((2, 4410)))
+        mp3 = dsp.write_mp3(wav, os.path.join(d, 'a.mp3'), 320, dict(title='Tést', genre='house', artist='Studio Lab'))
+        data = open(mp3, 'rb').read()
+        assert data.startswith(b'ID3\x04') and b'TIT2' in data and 'Tést'.encode() in data and b'\xff\xfb' in data
+        assert calls == dict(kbps=320, sr=dsp.SR, ch=2, n=4410 * 4)
+    finally:
+        shutil.which = old_which
+        if old_mod is None:
+            sys.modules.pop('lameenc', None)
+        else:
+            sys.modules['lameenc'] = old_mod
+        shutil.rmtree(d, ignore_errors=True)
+    print('ok  MP3 export without ffmpeg (lameenc, ID3 tags)')
 
 
 def test_journey():

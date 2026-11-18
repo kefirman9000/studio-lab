@@ -14,3 +14,6 @@ sound_library/
 recent_instruments.json
 logs/
 .appwindow/
+runtime/
+build/
+dist/

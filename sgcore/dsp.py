@@ -1,4 +1,5 @@
 """Low-level DSP: oscillators, filters, envelopes, dynamics, loudness, file writing."""
+import os
 import wave
 import numpy as np
 from scipy import signal
@@ -393,6 +394,60 @@ def write_wav(path, x, rng=None):
         w.setsampwidth(2)
         w.setframerate(SR)
         w.writeframes(i16.T.tobytes())
+
+
+def _id3(tags):
+    """A small ID3v2.4 tag (UTF-8 text frames) - lameenc writes bare MP3 frames."""
+    ids = {'title': 'TIT2', 'artist': 'TPE1', 'genre': 'TCON', 'composer': 'TCOM'}
+
+    def syncsafe(n):
+        return bytes([(n >> 21) & 0x7f, (n >> 14) & 0x7f, (n >> 7) & 0x7f, n & 0x7f])
+    body = b''
+    for k, v in (tags or {}).items():
+        if k in ids and v:
+            data = b'\x03' + str(v).encode('utf-8')
+            body += ids[k].encode() + syncsafe(len(data)) + b'\x00\x00' + data
+    return b'ID3\x04\x00\x00' + syncsafe(len(body)) + body if body else b''
+
+
+def mp3_encoder():
+    """'ffmpeg', 'lameenc' (bundled with the installer) or None."""
+    import shutil
+    if shutil.which('ffmpeg') and not os.environ.get('STUDIOLAB_NO_FFMPEG'):     # (the env var: installer self-test)
+        return 'ffmpeg'
+    try:
+        import lameenc  # noqa: F401
+        return 'lameenc'
+    except ImportError:
+        return None
+
+
+def write_mp3(wav_path, mp3_path, kbps=320, tags=None):
+    """Encode a 16-bit WAV to MP3 with ffmpeg, or lameenc when ffmpeg isn't installed. Returns mp3_path or None."""
+    enc = mp3_encoder()
+    if enc == 'ffmpeg':
+        import subprocess
+        from .proc import NOWIN
+        meta = []
+        for k, v in (tags or {}).items():
+            meta += ['-metadata', f'{k}={v}']
+        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', wav_path, '-codec:a', 'libmp3lame', '-b:a', f'{kbps}k']
+                       + meta + [mp3_path], capture_output=True, **NOWIN)
+    elif enc == 'lameenc':
+        import lameenc
+        with wave.open(wav_path, 'rb') as w:
+            ch, sr, pcm = w.getnchannels(), w.getframerate(), w.readframes(w.getnframes())
+        e = lameenc.Encoder()
+        e.set_bit_rate(int(kbps))
+        e.set_in_sample_rate(sr)
+        e.set_channels(ch)
+        e.set_quality(2)
+        data = e.encode(pcm) + e.flush()
+        with open(mp3_path, 'wb') as f:
+            f.write(_id3(tags) + bytes(data))
+    else:
+        return None
+    return mp3_path if os.path.exists(mp3_path) else None
 
 
 def seed_rng(seed):
