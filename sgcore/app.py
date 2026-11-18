@@ -367,6 +367,7 @@ def meta():
                + other_insts(r, lst) for r, lst in ROLE_CHOICES.items()},
         effects=vst_effects(), voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
         drum_patterns=__import__('sgcore.drumkits', fromlist=['pattern_menu']).pattern_menu(),
+        perc_sets=__import__('sgcore.drummer', fromlist=['perc_menu']).perc_menu(), beat_feels={k: __import__('sgcore.drummer', fromlist=['beat_feel']).beat_feel(k) for k in STYLES}, drummer_menu=__import__('sgcore.drummer', fromlist=['DRUMMER_MENU']).DRUMMER_MENU,
         kits=__import__('sgcore.drumkits', fromlist=['sound_menu']).sound_menu() + [dict(id=k, group='Other synth kits', label=k.title())
                                                                          for k in KITS if k not in ('default',) and k not in
                                                                          __import__('sgcore.drumkits', fromlist=['MENU']).MENU],

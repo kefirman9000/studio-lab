@@ -14,7 +14,7 @@
 
 <p align="center">
   <img src="docs/screenshot-3.png" alt="Studio Lab - detail" width="420">&nbsp;&nbsp;
-  <img src="docs/screenshot-4.png" alt="Studio Lab - plugins" width="520">
+  <img src="docs/screenshot-4.png" alt="Studio Lab - sounds &amp; instruments" width="520">
 </p>
 
 <p align="center">
@@ -67,9 +67,26 @@ exactly the same.
 `_settings.json`. If the song is still in your output folder, it opens in the editor straight away. If not, it is
 rebuilt from its settings.
 
-## Real instruments
+## Sounds & instruments
 
-Click **🎻 Real instruments** to download free recorded instruments (all public domain / CC0, checked by checksum): an orchestra (strings, brass, woodwinds, harp, mallets), a Steinway grand and an upright, guitars, an electric and an upright bass, percussion, and six real drum kits - a studio kit, a 70s soul kit, a brushed jazz kit, a big rock kit, a modern studio kit and a dirty one - plus a collection of real snares (crisp DnB piccolo, dead 70s, huge 80s). The drum kit menu also has drum machines (808, 909, CR-78, 606, 707, DMX, LinnDrum ...), re-played breaks and dedicated drum & bass kits. Each genre picks the parts and the kit that suit it; anything not downloaded is played by the built-in synths.
+Everything that makes sound lives in one window: click **🎚 Sounds & instruments** (top right). It opens on an overview of what you have, with a tab for each: **🎻 Real instruments**, **🎻 Orchestra plugin**, **🎹 VST instruments**, **🎚 Genre VSTs**, **🎛 My samples** and **🔌 Plugins & DAWs**.
+
+Sounds you pick for a part in **Parts** stay picked when you change genre, blend or press Surprise me; parts you leave on default follow the genre. Prefer every genre to choose all its own sounds? Set **When you change genre → Genre picks** at the top of Parts.
+
+### Real instruments
+
+The **🎻 Real instruments** tab downloads free recorded instruments (all public domain / CC0, checked by checksum): an orchestra (strings, brass, woodwinds, harp, mallets), a Steinway grand and an upright, guitars, an electric and an upright bass, percussion, and six real drum kits - a studio kit, a 70s soul kit, a brushed jazz kit, a big rock kit, a modern studio kit and a dirty one - plus a collection of real snares (crisp DnB piccolo, dead 70s, huge 80s). Each genre picks the parts and the kit that suit it; anything not downloaded is played by the built-in synths.
+
+### Drums: style, drummer, percussion and sounds - four separate choices
+
+| Choice | What it changes |
+|---|---|
+| **Drum style** | What the drums play: the genre's own beat, a classic break (Amen, Think, Funky Drummer ...), the genre's programmed beat without its break, or any other genre's beat. Beats that fit your tempo are listed first, then half / double time, then the rest by feel (four-on-the-floor, half-time, two-step, breakbeat, shuffle, backbeat ...). |
+| **Drummer** | How it's played: fills (none / fewer / more), ghost notes (off / more) and hi-hats (sparse 8ths / busy 16ths). |
+| **Percussion** | What rides on top of the kit: the genre's own, none, or a set - shakers, tambourine, disco, Latin, Afro, Caribbean, woodblocks. |
+| **Drum sounds** | The kit: drum machines (808, 909, CR-78, 606, 707, DMX, LinnDrum ...), real kits, sampled-break kits, drum & bass kits, or your own samples. |
+
+Changing the drum sounds never changes the pattern: jungle on a 909 still plays its Amen break.
 
 ## Privacy
 
@@ -82,9 +99,9 @@ Click **⟳ Updates** in the top-right corner. Your files, presets and settings 
 
 ## Genre VSTs
 
-Studio Lab finds the plugins installed on your computer and uses them automatically. Click **🎚 Genre VSTs** to download free, open-source plugins - **Surge XT**, **Dexed**, **JC303** and **RipplerX** (modelled mallets, bells and harp) instruments, plus **Dragonfly Reverb** (halls, rooms, plates) and **Airwindows Consolidated** (mixing effects) - and play each genre through the plugin that defines its sound: a 303 for acid, supersaws for trance, a DX7 electric piano for city pop. Plugins you already own, like TAL-NoiseMaker, are used too; save sounds from any plugin with names like "Serum supersaw" or "BBC strings" and matching parts use them.
+Studio Lab finds the plugins installed on your computer and uses them automatically. The **🎚 Genre VSTs** tab downloads free, open-source plugins - **Surge XT**, **Dexed**, **JC303** and **RipplerX** (modelled mallets, bells and harp) instruments, plus **Dragonfly Reverb** (halls, rooms, plates) and **Airwindows Consolidated** (mixing effects) - and play each genre through the plugin that defines its sound: a 303 for acid, supersaws for trance, a DX7 electric piano for city pop. Plugins you already own, like TAL-NoiseMaker, are used too; save sounds from any plugin with names like "Serum supersaw" or "BBC strings" and matching parts use them.
 
-**Orchestra plugins** (BBC Symphony Orchestra, LABS, Kontakt ...): save one sound per section and articulation - e.g. "BBC strings legato", "BBC strings spiccato", "BBC strings pizzicato", "BBC celli", "BBC horns", "BBC low brass", "BBC flute" - and every part that plays strings, celli, horns or woodwinds uses the right one, in any genre. Try the orchestral genres: Neoclassical, Chamber, Baroque, Fantasy RPG, Hybrid Trailer, Cinematic, Waltz, Orchestral Hip Hop, Symphonic Metal. The easiest way to set this up is **🎹 VST → 🎻 Set up my orchestra**, which walks you through each section. Long notes then swell with the mod wheel (CC1), just as a player would ride it.
+**Orchestra plugins** (BBC Symphony Orchestra, LABS, Kontakt ...) keep their instruments in their own browser and don't list them to other programs, so Studio Lab detects them instead: **🎚 Sounds & instruments → 🎻 Orchestra plugin → ✨ Detect my instruments** opens the plugin once; click through the instruments (and articulations) you want in its own browser, then close it. Each one is recognised and saved with the right name - e.g. "BBC violins spiccato (Violins 1 · Spiccato)", "BBC celli pizzicato (Celli · Pizzicato)" - and every part that plays strings, celli, horns or woodwinds uses the right one, in any genre. Anything the plugin doesn't name is kept for you to name, and you can still set up one section at a time by hand. Try the orchestral genres: Neoclassical, Chamber, Baroque, Fantasy RPG, Hybrid Trailer, Cinematic, Waltz, Orchestral Hip Hop, Symphonic Metal. Long notes then swell with the mod wheel (CC1), just as a player would ride it.
 
 ```
 python studiolab.py vsts --for trance      # download what trance needs, show which plugin plays each part

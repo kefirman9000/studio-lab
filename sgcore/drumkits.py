@@ -393,3 +393,8 @@ GENRE_KIT.update({'holiday': 'brushes', 'western': 'vintage', 'chamber_pop': 'st
 GENRE_KIT.update({'funk_150': '808'})
 GENRE_KIT.setdefault('new_jack_swing', 'linn')       # SP-1200 / drum-machine era, gated snare
 GENRE_KIT.update({'jump_up': 'dnb_amen', 'dark_synthwave': 'linn'})
+
+
+# 1.51: big band and bebop are played with sticks on the ride (brushes stay for ballads, bossa and small-combo jazz);
+# metal gets a tight modern kit instead of the big rock room
+GENRE_KIT.update({'swing': 'studio', 'bebop': 'studio', 'metal': 'unruly'})

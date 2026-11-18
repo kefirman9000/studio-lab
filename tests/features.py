@@ -601,6 +601,28 @@ def test_drum_style_vs_sounds_and_orchestra_detection():
     print('ok  drum style / drum sounds / orchestra detection')
 
 
+def test_drummer_percussion_and_beat_feels():
+    """Drummer settings change only the playing; percussion sets replace the genre's; every genre's beat has a feel."""
+    from collections import Counter
+    from sgcore import drummer
+    from sgcore.styles import STYLES
+
+    def hits(**kw):
+        return Counter(e.track for e in compose(Options(style='funk', seed=4, **kw))['events'])
+    base = hits()
+    assert hits(drum_ghosts='more')['snare'] > base['snare'] and hits(drum_ghosts='off')['snare'] < base['snare']
+    assert hits(hat_density='sparse')['chat'] < base['chat'] < hits(hat_density='busy')['chat']
+    assert hits(drum_fills='more')['snare'] > hits(drum_fills='none')['snare']
+    st = compose(Options(style='house', seed=4, percussion='latin'))['st']
+    assert {'pc_conga', 'pc_guiro', 'pc_bell'} <= set(st['drums']) and 'conga' not in st['drums'] and st.get('real_cowbell')
+    assert not {k for k in compose(Options(style='afro_house', seed=4, percussion='off'))['st']['drums']} & {'conga', 'shaker', 'woodblock'}
+    assert not any(k.startswith('pc_') for k in compose(Options(style='waltz', seed=4, percussion='latin'))['st']['drums'])
+    feels = {k: drummer.beat_feel(k) for k in STYLES}
+    assert feels['house'] == 'four-on-the-floor' and feels['trap'] == 'half-time' and feels['reggaeton'] == 'dembow / clave'
+    assert feels['jungle'] == 'breakbeat' and feels['waltz'] == '3/4' and feels['chamber'] == 'no drums'
+    print('ok  drummer settings, percussion sets, beat feels')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -627,6 +649,7 @@ def main():
     test_octaves_and_ranges()
     test_lead_runs_and_ebass()
     test_drum_style_vs_sounds_and_orchestra_detection()
+    test_drummer_percussion_and_beat_feels()
     print('all good')
 
 

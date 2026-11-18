@@ -7,6 +7,7 @@ from .styles import STYLES, FORMS, FORM_VARIANTS
 from .instruments import KITS, INSTRUMENTS, PALETTES, DRUMS
 from .theory import (Key, parse_progression, parse_key, color_fits, declutter, voice_chord, VOICINGS, fold, parse_rhythm,
                      grid_of, grid_steps, lead_voicing, Ev, chord_tones_deg, COLORS)
+from . import drummer
 from .figures import gen_riff, vary_melody, gen_trap_hats, gen_acid_pattern
 from .arrange import (BIG_SECTIONS, _track_of, BUILD_STYLES, FX_SOUNDS, build_sequence, GENRE_BUILD, add_build_drums, add_build_fx,
                       add_transitions, apply_ending)
@@ -37,6 +38,10 @@ class Options:
     humanize: float = 1.0         # 0..2 timing/velocity looseness multiplier
     instruments: dict = field(default_factory=dict)   # role -> instrument name
     kit: str = None               # drum sounds: kit / machine / sampled-break kit (never changes the patterns)
+    drum_fills: str = None        # drummer: None = genre | none | fewer | more
+    drum_ghosts: str = None       # drummer: None = genre | off | more
+    hat_density: str = None       # drummer: None = genre | sparse | busy
+    percussion: str = None        # None = genre's own | off | a set from drummer.PERC_SETS (shakers, latin, afro ...)
     drum_pattern: str = None      # drum style: None/'genre' = genre's beat | 'programmed' | 'break:<kit id>' | 'style:<genre id>'
     muted: list = field(default_factory=list)          # layers to remove
     sidechain: float = None       # 0..1 pumping depth
@@ -597,6 +602,7 @@ def resolve_style(opts, rnd=None, mood=None):
         kit['kick'] = {**kit.get('kick', {}), **st['kick_shape']}
     st['kitparams'] = kit
     drumkits.install_break(st, st['tracks'])
+    drummer.apply_percussion(st, opts)                   # percussion picked on its own (or switched off)
     if opts.swing is not None:
         st['swing'] = opts.swing
     st['human'] = st['human'] * opts.humanize
@@ -1194,18 +1200,20 @@ def compose(opts):
                     pat = drumkits.bar_pattern(st, dname, slices) or pat
                 elif dname == kick_name and last_of_4 and len(pats) > 1 and rnd_d.random() < 0.2 + 0.3 * energy:
                     pat = rnd_d.choice(pats)
-                hits = parse_rhythm(pat)
+                hits = drummer.hat_hits(opts, dname, parse_rhythm(pat))
                 used = {s for s, l, c in hits}
                 for step, l, c in hits:
                     v = VEL.get(c, 0.8) * rnd_d.uniform(1 - 0.1 * opts.humanize, 1 + 0.05 * opts.humanize)
                     evs.append(Ev(dname, beat0 + step / 4, 0.25, None, v))
-                if dname in ('chat', 'shaker') and energy > 0.7:
+                hx = drummer.hat_extra(opts, dname, energy)
+                if hx > 0:
                     for step in GS:
-                        if step not in used and rnd_d.random() < (energy - 0.7) * 1.6:
+                        if step not in used and rnd_d.random() < hx:
                             evs.append(Ev(dname, beat0 + step / 4, 0.25, None, 0.35))
-                if st.get('ghosts') and dname in snares[:1]:
+                gr = drummer.ghost_rate(opts, st, energy) if dname in snares[:1] else 0.0
+                if gr > 0:
                     for step in GS:
-                        if step % 4 != 0 and step not in used and rnd_d.random() < 0.06 + 0.12 * energy:
+                        if step % 4 != 0 and step not in used and rnd_d.random() < gr:
                             evs.append(Ev(dname, beat0 + step / 4, 0.25, None, 0.28))
             if slices is not None and 'snare' in layers and st.get('break_chop'):
                 edit = drumkits.break_edits(st, rnd_d, energy, b, nbars)
@@ -1225,7 +1233,7 @@ def compose(opts):
                     evs.append(Ev(kick_name, beat0 + rnd_d.choice((1.5, 2.5, 3.5)), 0.25, None, 0.75))
             if st.get('trap_hats') and not st.get('meter') and 'top' in layers and 'chat' not in st['drums']:
                 gen_trap_hats(evs, beat0, rnd_d, energy, bool(st.get('pitch_rolls')))
-            if (st.get('fill') or energy > 0.6) and 'snare' in layers and b % 8 == 7 and snares and rnd_d.random() < (0.4 + 0.5 * energy) * (1 - S):
+            if 'snare' in layers and snares and drummer.fill_ok(opts, st, b, nbars, energy, S, rnd_d):
                 s = snares[0]
                 fills = [[13, 14, 15], [12, 13, 14, 15], [10, 13, 14, 15], [14, 15]] if G == 16 else \
                     [[x * 4 / 3 for x in f] for f in ([9, 10, 11], [8, 9, 10, 11], [10, 11])]

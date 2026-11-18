@@ -1,8 +1,8 @@
-# Studio Lab genres (216)
+# Studio Lab genres (217)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (113)
+## Electronic (114)
 
 ### House & Disco (21)
 
@@ -16,7 +16,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Bass house / UK bass | `bass_house` | 124-128 | Bass house / UK bass: a punchy four-on-the-floor around 126 with shuffled hats, a fat, distorted, talking bassline that wobbles and bends in the gaps between kicks, stabby organ / rave chords and vocal-chop style hooks; tops-only intro, short stop-start drops and a long drums-out breakdown before the last drop |
 | Big Room | `bigroom` | 126-130 | Big room / festival EDM: huge kicks, massive drops, stabby supersaw leads |
 | Deep House | `deep_house` | 118-123 | Deep house: warm organ & Rhodes 7th chords, round sub, shuffled shakers |
-| Eurodance | `eurodance` | 134-142 | 90s eurodance: driving four-on-the-floor, offbeat bass, piano stabs, big anthemic leads |
+| Eurodance | `eurodance` | 128-142 | 90s eurodance: driving four-on-the-floor, offbeat bass, piano stabs, big anthemic leads |
 | Future Funk | `future_funk` | 115-126 | Future funk: pitched-up, chopped 70s/80s disco and city-pop flavour over a swung four-on-the-floor with heavy sidechain pumping - funky bass, filter sweeps, vocal chops; bright and nostalgic |
 | Garage-house pop | `garage_house` | 120-124 | Garage-house pop (2010s UK): a 2-step garage beat at house tempo (~122) with shuffled hats and skippy kicks, a wonky, syncopated sub-and-organ bassline, warm stabby chords and a soulful hook - poppy, groovy and deep at once |
 | House | `house` | 120-127 | Classic / NYC house: four-on-the-floor 909, the bouncy M1 organ bass, offbeat piano and organ stabs, warm pads, pumping sidechain |
@@ -108,14 +108,15 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | UK road rap | `uk_road_rap` | 146-156 | UK road rap: a dark, half-time London rap beat around 150 BPM - a huge mono 808 sub sliding between the root, its leading tone and the fifth, steady ticking 8th hats with the odd roll, a hard snare on the half-time backbeat, sparse kicks, and a moody harmonic-minor piano line over low strings and choir - roomy for the bars |
 | Wonky / beat-scene bass | `wonky_beats` | 84-94 | Wonky / beat-scene bass (purple sound): a lazy, drunken hip-hop swing around 86-92 with late snares and stuttered hats, a huge round sub, detuned, pitch-bending synth chords and squelchy G-funk-ish leads, warped tape and glitches - woozy, colourful and heavy |
 
-### Pop, R&B & Hopecore (9)
+### Pop, R&B & Hopecore (10)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Alternative R&B (dark) | `alt_rnb` | 60-78 | Alternative / dark R&B: slow half-time trap drums, deep gliding 808, washed-out reverb e-piano, airy pads and a lonely guitar or synth line |
 | Glitchy IDM pop | `glitch_pop` | 96-108 | Glitchy IDM pop / electronica: a soft, swung mid-tempo beat built from clicks, cut-up percussion and tiny edits, a warm melodic bass, plucked and mallet-like synths, gentle pads and a singing lead - intricate but warm, evolving for minutes without a real breakdown |
+| Hopecore | `hopecore` | 118-140 | Hopecore: warm, tender and hopeful - intricate accordion, piano and bell arpeggios rippling in triplets over lush major 7th / add9 chords, a round sub bass, and soft, low drums (a gentle kick, a quiet snare, hats you barely hear) that often sit out entirely; long drumless openings, no big drops |
 | Hopecore (dreamy, slow) | `hopecore_dreamy` | 118-136 | Hopecore (dreamy): the slower, softer side - warm 120-135 BPM bounce with a sub-heavy kick and soft claps, gentle major piano and guitar loops, airy pads, music-box and bell melodies, a hopeful lead floating in reverb |
-| Hopecore (euphoric breaks) | `hopecore` | 150-172 | Hopecore (euphoric): bright, uplifting internet-core - fast chopped breakbeats and jersey-club kicks under big major chords on piano and supersaws, sparkling chiptune and bell arps, a soaring lead, stutter edits into emotional drops - nostalgic, hopeful and loud |
+| Hopecore breaks (fast) | `hopecore_breaks` | 150-172 | Hopecore breaks (fast): the loud breakbeat side - bright, uplifting internet-core - fast chopped breakbeats and jersey-club kicks under big major chords on piano and supersaws, sparkling chiptune and bell arps, a soaring lead, stutter edits into emotional drops - nostalgic, hopeful and loud |
 | Hyperpop | `hyperpop` | 150-170 | Hyperpop: maximal, bright and glitchy - distorted 808s, supersaws, chiptune sparkle |
 | K-pop | `kpop` | 110-132 | K-pop: polished genre-hopping pop - punchy drums, bright plucks and piano, big pre-chorus lifts, catchy hooks |
 | Minimal club pop | `club_pop` | 120-126 | Minimal club pop (late-2010s-2020s): a dry, hard 4/4 around 123 with an off-kilter kick, a big low sub, cold detuned synth stabs and one bratty hook riff - sparse, loud, mono-ish in the low end, done in two minutes |
@@ -207,7 +208,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | 80s electro-funk / boogie | `electro_funk` | 84-100 | 80s electro-funk / boogie slow jam: a slow, heavy drum-machine groove with big claps, a rubbery Minimoog bass, poly-synth chord stabs and Rhodes, a sparkly bell arp and the gliding talk-box style synth lead |
-| Disco | `disco` | 112-124 | Disco / nu-disco: four-on-the-floor, octave bass, string sweeps, brass hits, funky guitar |
+| Disco | `disco` | 112-130 | Disco / nu-disco: four-on-the-floor, octave bass, string sweeps, brass hits, funky guitar |
 | Disco Funk (70s) | `disco_funk` | 112-122 | 70s disco-funk: punchy dry four-on-the-floor, a syncopated electric-bass hook, chicken-scratch guitar, tight horn-section riffs, claps, congas and tambourine - bright, catchy party music |
 | Funk | `funk` | 96-112 | Funk: the one, syncopated 16th grooves, slap / finger bass, clavinet chops, chicken-scratch guitar, horn stabs |
 | Smooth Jazz-Funk | `smooth_funk` | 96-116 | Smooth jazz-funk: a funky slap-and-pop bass groove, crisp 16th hats, jazz-guitar octave melodies, sax answers, bright electric piano and stabby brass |

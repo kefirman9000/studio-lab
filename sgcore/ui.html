@@ -29,6 +29,7 @@ header .sp{flex:1}
 .hubtabs button.on{border-color:#6b8cff;background:#1d2740}
 .hubgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
 .hubgrid .sel{margin:0;cursor:pointer}
+.hubgrid .tag{white-space:nowrap}
 .badge{background:var(--acc);color:#fff;border-radius:99px;padding:2px 8px;font-size:11px;margin-left:6px}
 main{display:grid;grid-template-columns:300px minmax(420px,1fr) 420px;min-height:0}
 .col{overflow:auto;min-height:0;padding:16px}
@@ -261,6 +262,9 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f wide" id="drumsHead"><div class="hint" style="margin-top:6px"><b>Drums</b> <span id="drumVol"></span></div></div>
       <div class="f"><label>Drum style <span class="hint">what the drums play</span></label><select id="drumPattern"></select>
         <div class="hint">Changing the drum sounds never changes this.</div></div>
+      <div class="f"><label>Drummer <span class="hint">how the beat is played</span></label>
+        <div class="row" style="gap:4px"><select id="drFills" title="Fills"></select><select id="drGhosts" title="Ghost notes"></select><select id="drHats" title="Hi-hats"></select></div></div>
+      <div class="f"><label>Percussion <span class="hint">on top of the kit</span></label><select id="percSet"></select></div>
       <div class="f"><label>Drum sounds <span class="auto"><input type="checkbox" id="userDrums">my samples</span></label><select id="kit"></select>
         <div class="mutes"><span class="hint">mute</span><label class="auto"><input type="checkbox" data-mute="kick">kick</label><label class="auto"><input type="checkbox" data-mute="snare">snare / clap</label><label class="auto"><input type="checkbox" data-mute="top">hats &amp; perc</label><label class="auto"><input type="checkbox" data-mute="fx">FX</label></div></div>
       <div class="f wide"><div class="hint" style="margin-top:6px"><b>Tone &amp; playing style</b></div></div>
@@ -589,6 +593,10 @@ function options(){
   if(!$('#loudAuto').checked) o.loudness=+$('#loud').value;
   if($('#kit').value) o.kit=$('#kit').value;
   o.drum_pattern=$('#drumPattern').value||'genre';
+  if($('#drFills').value) o.drum_fills=$('#drFills').value;
+  if($('#drGhosts').value) o.drum_ghosts=$('#drGhosts').value;
+  if($('#drHats').value) o.hat_density=$('#drHats').value;
+  if($('#percSet').value) o.percussion=$('#percSet').value;
   if($('#userDrums').checked) o.user_drums=true;
   if(Object.keys(state.part_fx).length) o.part_fx=Object.assign({},state.part_fx);
   if(Object.keys(LOCKS).length) o.part_seeds=Object.fromEntries(Object.entries(LOCKS).map(([p,l])=>[p,l.seed]));
@@ -631,7 +639,7 @@ function applyOptions(o){
   $('#bpmAuto').checked=!o.bpm; if(o.bpm)$('#bpm').value=o.bpm; $('#key').value=o.key||''; $('#scale').value=o.scale||''; $('#prog').value=o.progression||'';
   $('#swingAuto').checked=o.swing==null; if(o.swing!=null)$('#swing').value=o.swing*100;
   $('#scAuto').checked=o.sidechain==null; if(o.sidechain!=null)$('#sidechain').value=o.sidechain*100;
-  $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#drumPattern').value=o.drum_pattern||(o.kit&&(META.drum_patterns||[]).some(p=>p.id==='break:'+o.kit)?'break:'+o.kit:'genre'); $('#userDrums').checked=!!o.user_drums;
+  $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#drFills').value=o.drum_fills||''; $('#drGhosts').value=o.drum_ghosts||''; $('#drHats').value=o.hat_density||''; $('#percSet').value=o.percussion||''; $('#drumPattern').value=o.drum_pattern||(o.kit&&(META.drum_patterns||[]).some(p=>p.id==='break:'+o.kit)?'break:'+o.kit:'genre'); $('#userDrums').checked=!!o.user_drums;
   $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#builds').value=o.builds||'auto'; renderTraits(); setTraits(o.traits); state.octaves=Object.assign({}, o.octaves||{}); bindOctaves(); $('#transFx').value=o.transition_fx||'auto'; $('#vinyl').value=o.vinyl===true?'on':''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#layering').value=o.layering||''; $('#vocalGuide').checked=!!o.vocal_guide;
   $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';
   state.levels={}; LEVELS.forEach(([k,n,layers])=>{ const v=(o.part_levels||{})[layers[0]]||0; if(v) state.levels[k]=v; }); bindLevels();
@@ -1385,13 +1393,28 @@ async function init(){
   $('#scale').innerHTML='<option value="">Auto</option>'+META.scales.map(s=>`<option value="${s}">${s.replace('_',' ')}</option>`).join('');
   { const groups={}; META.kits.forEach(k=>{ (groups[k.group]=groups[k.group]||[]).push(k) });
     const pg={}; (META.drum_patterns||[]).forEach(p=>{ (pg[p.group]=pg[p.group]||[]).push(p) });
-    window.fillDrumPatterns=()=>{ const cur=$('#drumPattern').value; const all=Object.values(META.categories).flat().filter(s=>s.id!==state.style);
-      $('#drumPattern').innerHTML='<option value="genre">Genre beat</option>'+Object.entries(pg).map(([g,ps])=>`<optgroup label="${esc(g)}">`+
+    // drum styles: beats that fit this song's tempo first, then half / double time, then the rest grouped by feel
+    window.fillDrumPatterns=()=>{ const cur=$('#drumPattern').value; const all=Object.values(META.categories).flat();
+      const me=all.find(s=>s.id===state.style)||{bpm:[100,120]}; const F=META.beat_feels||{}; const myFeel=F[state.style]||'';
+      const odd=f=>/^\d+\/\d+$/.test(f); const meterOk=s=>odd(myFeel)?F[s.id]===myFeel:!odd(F[s.id]||'');
+      const over=(a,b,k)=>a[0]<=b[1]*k&&b[0]*k<=a[1];
+      const cands=all.filter(s=>s.id!==state.style&&F[s.id]!=='no drums'&&meterOk(s));
+      const opt=s=>`<option value="style:${esc(s.id)}">${esc(s.name)} · ${esc(F[s.id]||'')} · ${s.bpm[0]}–${s.bpm[1]}</option>`;
+      const byFeel=l=>l.sort((x,y)=>(F[x.id]||'').localeCompare(F[y.id]||'')||x.name.localeCompare(y.name));
+      const fit=byFeel(cands.filter(s=>over(me.bpm,s.bpm,1)));
+      const hd=byFeel(cands.filter(s=>!over(me.bpm,s.bpm,1)&&(over(me.bpm,s.bpm,2)||over(me.bpm,s.bpm,0.5))));
+      const used=new Set([...fit,...hd].map(s=>s.id)); const rest={};
+      cands.filter(s=>!used.has(s.id)).forEach(s=>{ (rest[F[s.id]||'other']=rest[F[s.id]||'other']||[]).push(s) });
+      $('#drumPattern').innerHTML=`<option value="genre">Genre beat${myFeel?' ('+esc(myFeel)+')':''}</option>`+Object.entries(pg).map(([g,ps])=>`<optgroup label="${esc(g)}">`+
         ps.map(p=>`<option value="${esc(p.id)}">${esc(p.label)}</option>`).join('')+'</optgroup>').join('')+
-        Object.keys(META.categories).map(c=>`<optgroup label="${esc(c)} genres' beats">`+META.categories[c].filter(s=>s.id!==state.style)
-          .map(s=>`<option value="style:${esc(s.id)}">${esc(s.name)} beat</option>`).join('')+'</optgroup>').join('');
+        (fit.length?`<optgroup label="Fits this tempo (${me.bpm[0]}–${me.bpm[1]} BPM)">${fit.map(opt).join('')}</optgroup>`:'')+
+        (hd.length?`<optgroup label="Half / double time">${hd.map(opt).join('')}</optgroup>`:'')+
+        Object.keys(rest).sort().map(f=>`<optgroup label="Other tempos - ${esc(f)}">${rest[f].sort((x,y)=>x.name.localeCompare(y.name)).map(opt).join('')}</optgroup>`).join('');
       $('#drumPattern').value=[...$('#drumPattern').options].some(o=>o.value===cur)?cur:'genre'; };
     fillDrumPatterns();
+    const dm=META.drummer_menu||{}; [['#drFills','fills','Fills'],['#drGhosts','ghosts','Ghosts'],['#drHats','hats','Hi-hats']].forEach(([id,k,n])=>{
+      $(id).innerHTML=(dm[k]||[]).map(([v,l])=>`<option value="${v}">${n}: ${esc(l)}</option>`).join(''); });
+    $('#percSet').innerHTML='<option value="">Genre percussion</option><option value="off">None (kit only)</option>'+(META.perc_sets||[]).map(p=>`<option value="${esc(p.id)}">${esc(p.label)}</option>`).join('');
     $('#kit').innerHTML='<option value="">Genre sounds</option>'+Object.entries(groups).map(([g,ks])=>`<optgroup label="${esc(g)}">`+
       ks.map(k=>`<option value="${esc(k.id)}">${esc(k.label)}</option>`).join('')+'</optgroup>').join('');
     window.showGenreKit=()=>{ const k=(META.genre_kits||{})[state.style]; const o=$('#kit').options[0];
