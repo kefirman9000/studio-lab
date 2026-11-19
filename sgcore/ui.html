@@ -322,6 +322,7 @@ body:not(.helptext) .hint.qhd{display:none !important}
       <div class="prog" id="progBar"><i></i></div>
       <div class="status" id="status">Ready.</div>
     </div>
+
     <details class="card" id="journeyCard" open style="display:none"><summary>🎬 Cinematic Journey</summary><div class="body">
       <div class="f wide"><label>Story preset</label><div class="chips" id="jPresets"></div></div>
       <div class="f wide"><label>The story <span class="hint">click an act to add or leave it out · tempo, dynamics and orchestration follow the story</span></label><div class="chips" id="jActs"></div></div>
@@ -339,40 +340,38 @@ body:not(.helptext) .hint.qhd{display:none !important}
         <div class="hint">Off: the free real orchestra in 🎻 Real instruments plays every section, no setup. On: sections you saved in <a href="#" id="jBbcSet">Set up my orchestra…</a> are used (violins, celli, horns, trumpets, low brass, timpani…), with mod-wheel dynamics; anything not set up uses the real orchestra.</div></div>
     </div></details>
 
-    <details class="card" open><summary>Feel</summary><div class="body">
-      <div class="f"><label>Energy <b id="energyV"></b></label><input type="range" id="energy" min="0" max="100" value="50"></div>
+    <details class="card" open><summary>Melody &amp; harmony <span class="hint">the tune, the chords, the singer</span></summary><div class="body">
       <div class="f"><label>Complexity <b id="complexityV"></b></label><input type="range" id="complexity" min="0" max="100" value="50"></div>
       <div class="f"><label title="Strip it back: plain triads, fewer and longer notes, held chords, no counter-melody or doubling, fewer fills">Simplicity <b id="simplicityV"></b></label><input type="range" id="simplicity" min="0" max="100" value="0"></div>
       <div class="f"><label title="How much the melody repeats its opening idea: high = catchy loop, low = keeps developing">Repetition <b id="repetitionV"></b></label><input type="range" id="repetition" min="0" max="100" value="50"></div>
       <div class="f"><label title="Narrow = a few notes, chant-like · wide = big leaps">Melody range <b id="mrangeV"></b></label><input type="range" id="mrange" min="0" max="100" value="50"></div>
       <div class="f"><label title="One tune: the verse, chorus and alternate melodies grow from one motif (moved, turned upside down, thinned). Separate: each is written on its own">Melody theme</label><select id="motif"><option value="song">One tune (motif runs through)</option><option value="free">Separate melodies</option></select></div>
-      <div class="f"><label>Chord speed</label><select id="chordSpeed"><option value="">Style default</option><option value="slow">Slow (chords last twice as long)</option><option value="fast">Fast (change twice as often)</option></select></div>
-      <div class="f"><label>Swing <span class="auto"><input type="checkbox" id="swingAuto" checked>style</span></label><input type="range" id="swing" min="50" max="75" value="55" disabled></div>
-      <div class="f"><label>Humanize <b id="humanizeV"></b></label><input type="range" id="humanize" min="0" max="200" value="100"></div>
-      <div class="f wide"><label>Variety <span class="hint">how much each song re-imagines its style: instruments, tones, grooves, arrangement</span><b id="varietyV"></b></label><input type="range" id="variety" min="0" max="100" value="55"></div>
-      <div class="f"><label>Groove feel <span class="hint">timing of each part</span></label><select id="groove"><option value="">Genre feel</option><option value="straight">Straight (on the grid)</option><option value="dilla">Lazy hip-hop (drunk, late snares)</option><option value="laidback">Laid back (reggae)</option><option value="afro">Afro swing</option><option value="dembow">Dembow push</option><option value="jazz">Jazz (ride on top)</option><option value="house">House (late hats)</option><option value="funk">Funk (pushed 16ths)</option></select></div>
       <div class="f"><label>Lead style <span class="hint">how the lead line is built</span></label><select id="leadStyle"><option value="">Genre default</option><option value="hook">Hook (sung-style melody)</option><option value="arp">Arpeggio (trance, synthwave)</option><option value="riff">Riff (rock, funk)</option><option value="ostinato">Ostinato (techno)</option><option value="bell">Bell motif (trap)</option><option value="call">Call &amp; response (afro, reggae)</option><option value="chops">Vocal-chop stabs (house, garage)</option></select></div>
-      <div class="f"><label>Bass rhythm</label><select id="bassRhythm"><option value="">Style's bassline</option><option value="kick">Follow the kick drum</option></select></div>
+      <div class="f"><label>Melody style <span class="hint">how the lead phrases</span></label><select id="melStyle"></select></div>
+      <div class="f"><label>Counter-melody <span class="hint">a second line answering the lead</span></label><select id="counter"><option value="">Genre decides</option><option value="on">Always</option><option value="off">Never</option></select></div>
+      <div class="f"><label>Chord speed</label><select id="chordSpeed"><option value="">Style default</option><option value="slow">Slow (chords last twice as long)</option><option value="fast">Fast (change twice as often)</option></select></div>
+      <div class="f"><label>Chord voicing</label><select id="voicing"></select></div>
+      <div class="f"><label>Chord colour</label><select id="chordColor"></select></div>
       <div class="f"><label>Bends <span class="hint">meend & gamak - the sliding, shaking notes of Indian music on sitar, veena, bansuri, violin...</span></label><select id="bends"><option value="">Genre default</option><option value="more">More</option><option value="subtle">Subtle</option><option value="off">Off</option></select></div>
       <div class="f"><label>Vocals <span class="hint">a singer on the song's melody (the vocal line is always in MIDI exports)</span></label><select id="vocals"><option value="">Off</option><option value="guide">Guide melody (synth, no words)</option><option value="ooh">Sung - "ooh"</option><option value="aah">Sung - "aah"</option><option value="lyrics">Sung - my lyrics</option></select></div>
       <div class="f" id="voiceF" style="display:none"><label>Voice</label><select id="voice"><option value="female">Female</option><option value="male">Male</option><option value="choir">Choir (a small group)</option><option value="robot">Robot</option></select></div>
       <div class="f wide" id="lyricsF" style="display:none"><label>Lyrics <span class="hint">simple words work best - each syllable gets one note, and the words repeat if the song is longer</span></label><textarea id="lyrics" rows="2" placeholder="e.g. Dance with me tonight, under the city light" style="width:100%;resize:vertical"></textarea></div>
     </div></details>
 
-    <details class="card"><summary>Arrangement <span class="hint">build-ups, transitions, instrument changes, ending</span></summary><div class="body">
-      <div class="f"><label title="Verses, choruses and breaks play parts on different instruments from the genre's own pool">Instrument rotation</label><select id="rotation"><option value="auto">Auto (with Variety)</option><option value="off">Off - one instrument per part</option><option value="some">Some - one part changes</option><option value="lots">Lots - several parts change</option></select></div>
-      <div class="f"><label title="How hard songs ramp up into choruses and drops">Build-ups <span class="hint">ramps into big sections</span></label><select id="builds"><option value="auto">On (genre style)</option><option value="subtle">Subtle - natural, no EDM ramps</option><option value="off">Off - no build-ups</option></select></div>
-      <div class="f"><label>Build-up style</label><select id="buildStyle"><option value="">Genre default (varies per build)</option><optgroup label="Natural / band"><option value="pickup">Groove + short fill</option><option value="ride">Ride cymbal crescendo</option><option value="stops">Stop-time hits</option><option value="march">Marching snare</option><option value="tomgroove">Tom groove</option><option value="toms">Tom run</option><option value="lift">Snare lift (pop, rock)</option><option value="cymbal">Mallet cymbal roll (film)</option><option value="swell">Swell (film)</option><option value="pause">Drop-out (amapiano, garage)</option><option value="none">Nothing - just go</option></optgroup><optgroup label="Electronic"><option value="roll">Snare roll + riser (trance, big room)</option><option value="filter">Filter sweep, kick out (house, techno)</option><option value="pulse">Kick pulse + filter</option><option value="wash">Noise wash</option><option value="tapestop">Tape stop</option><option value="triplet">Triplet roll (future bass)</option><option value="kick_roll">Kick roll (hardstyle)</option><option value="stutter">Stutter + silence (dubstep)</option><option value="hats">Accelerating hats</option><option value="claps">Clap build</option><option value="halftime">Half-time, then snap</option><option value="drumless">Drums out - riser &amp; filter only</option></optgroup></select></div>
-      <div class="f"><label title="Risers, reverse cymbals, impacts, tape stops between sections">Transition FX</label><select id="transFx"><option value="auto">Varied (genre)</option><option value="fewer">Fewer</option><option value="fills">Drum fills only - no FX sounds</option><option value="off">Off - straight cuts</option></select></div>
-      <div class="f"><label>Ending</label><select id="ending"><option value="auto">Genre default</option><option value="hit">Final chord + crash</option><option value="fade">Fade out</option></select></div>
-      <div class="f"><label>Counter-melody <span class="hint">a second line answering the lead</span></label><select id="counter"><option value="">Genre decides</option><option value="on">Always</option><option value="off">Never</option></select></div>
-      <div class="f"><label>Layered sounds <span class="hint">parts doubled by a second instrument</span></label><select id="layering"><option value="">Genre &amp; variety decide</option><option value="more">More layers</option><option value="off">Off (one instrument per part)</option></select></div>
-    </div></details>
-
-
-    <details class="card"><summary>Character <span class="hint">genre traits - change one to get a different kind of song in the same genre</span></summary><div class="body" id="traitsBody">
-      <div class="f wide"><label class="auto"><input type="checkbox" id="traitSurprise"> 🎲 Surprise me - each song changes two of density, energy curve, variation, drop or texture</label>
-        <button class="mini" id="traitReset" type="button" style="margin-left:8px">↺ Genre traits</button></div>
+    <details class="card" open><summary>Groove &amp; drums <span class="hint">energy, feel and everything the drums do</span></summary><div class="body">
+      <div class="f"><label>Energy <b id="energyV"></b></label><input type="range" id="energy" min="0" max="100" value="50"></div>
+      <div class="f"><label>Swing <span class="auto"><input type="checkbox" id="swingAuto" checked>style</span></label><input type="range" id="swing" min="50" max="75" value="55" disabled></div>
+      <div class="f"><label>Humanize <b id="humanizeV"></b></label><input type="range" id="humanize" min="0" max="200" value="100"></div>
+      <div class="f"><label>Groove feel <span class="hint">timing of each part</span></label><select id="groove"><option value="">Genre feel</option><option value="straight">Straight (on the grid)</option><option value="dilla">Lazy hip-hop (drunk, late snares)</option><option value="laidback">Laid back (reggae)</option><option value="afro">Afro swing</option><option value="dembow">Dembow push</option><option value="jazz">Jazz (ride on top)</option><option value="house">House (late hats)</option><option value="funk">Funk (pushed 16ths)</option></select></div>
+      <div class="f"><label>Bass rhythm</label><select id="bassRhythm"><option value="">Style's bassline</option><option value="kick">Follow the kick drum</option></select></div>
+      <div class="f"><label>Drum style <span class="hint">what the drums play</span></label><select id="drumPattern"></select>
+        <div class="hint">Changing the drum sounds never changes this.</div></div>
+      <div class="f wide"><label>Drummer <span class="hint">how the beat is played</span></label>
+        <div class="row" style="gap:6px;display:grid;grid-template-columns:repeat(3,1fr)"><select id="drFills" title="Fills"></select><select id="drGhosts" title="Ghost notes"></select><select id="drHats" title="Hi-hats"></select></div></div>
+      <div class="f"><label>Percussion <span class="hint">on top of the kit</span></label><select id="percSet"></select></div>
+      <div class="f"><label>Drum sounds <span class="auto"><input type="checkbox" id="userDrums">my samples</span></label><select id="kit"></select>
+        <div class="mutes"><span class="hint">mute</span><label class="auto"><input type="checkbox" data-mute="kick">kick</label><label class="auto"><input type="checkbox" data-mute="snare">snare / clap</label><label class="auto"><input type="checkbox" data-mute="top">hats &amp; perc</label><label class="auto"><input type="checkbox" data-mute="fx">FX</label></div></div>
+      <div class="f wide" id="dvBox"></div>
     </div></details>
 
     <details class="card dropzone" open id="voxCard"><summary>🎤 Voice sample <span class="hint">chop, stutter or screw a short clip of a voice into the song - drop a file on this box</span></summary><div class="body">
@@ -383,25 +382,31 @@ body:not(.helptext) .hint.qhd{display:none !important}
       <div class="f voxF" style="display:none"><label>Sample pitch</label><select id="voxPitch"><option value="auto">Auto</option><option value="down">Down (screwed)</option><option value="natural">Natural</option><option value="up">Up (chipmunk)</option></select></div>
       <div class="f voxF" style="display:none"><label>How often</label><select id="voxAmount"><option value="few">A few times</option><option value="normal" selected>Normal</option><option value="lots">Lots</option></select></div>
     </div></details>
-    <details class="card" open><summary>Parts <span class="hint">every part: sound, mute and volume in one place</span></summary><div class="body" id="soundBody">
+
+    <details class="card" open><summary>Parts <span class="hint">every part: sound, mute, volume, effects - and the synth character</span></summary><div class="body" id="soundBody">
       <div class="f wide" id="drumsHead"><div class="hint" style="margin-top:6px"><b>Drums</b> <span id="drumVol"></span></div></div>
-      <div class="f"><label>Drum style <span class="hint">what the drums play</span></label><select id="drumPattern"></select>
-        <div class="hint">Changing the drum sounds never changes this.</div></div>
-      <div class="f wide"><label>Drummer <span class="hint">how the beat is played</span></label>
-        <div class="row" style="gap:6px;display:grid;grid-template-columns:repeat(3,1fr)"><select id="drFills" title="Fills"></select><select id="drGhosts" title="Ghost notes"></select><select id="drHats" title="Hi-hats"></select></div></div>
-      <div class="f"><label>Percussion <span class="hint">on top of the kit</span></label><select id="percSet"></select></div>
-      <div class="f"><label>Drum sounds <span class="auto"><input type="checkbox" id="userDrums">my samples</span></label><select id="kit"></select>
-        <div class="mutes"><span class="hint">mute</span><label class="auto"><input type="checkbox" data-mute="kick">kick</label><label class="auto"><input type="checkbox" data-mute="snare">snare / clap</label><label class="auto"><input type="checkbox" data-mute="top">hats &amp; perc</label><label class="auto"><input type="checkbox" data-mute="fx">FX</label></div></div>
-      <div class="f wide" id="dvBox"></div>
       <div class="f wide"><div class="hint" style="margin-top:6px"><b>Tone &amp; playing style</b></div></div>
-      <div class="f wide" id="fusionBox" style="display:none"><label>Fusion — which style drives each part</label><div class="body" id="fusionParts" style="padding:0;grid-template-columns:1fr 1fr 1fr"></div></div>
-      <div class="f"><label>Vinyl crackle</label><select id="vinyl"><option value="">Off</option><option value="on">On</option></select></div>
       <div class="f"><label title="Analog: velocity shapes the tone, every note is its own take, a smooth ladder filter and slow filter rides on electronic chords / arps. Classic: the synth sound before 1.77">Synth character</label><select id="synthChar"><option value="analog">Analog (alive, every note its own take)</option><option value="classic">Classic (before 1.77)</option></select></div>
       <div class="f"><label>Brightness <b id="brightnessV"></b></label><input type="range" id="brightness" min="-100" max="100" value="0"></div>
-      <div class="f"><label>Melody style <span class="hint">how the lead phrases</span></label><select id="melStyle"></select></div>
-      <div class="f"><label>Chord voicing</label><select id="voicing"></select></div>
-      <div class="f"><label>Chord colour</label><select id="chordColor"></select></div>
+      <div class="f"><label>Vinyl crackle</label><select id="vinyl"><option value="">Off</option><option value="on">On</option></select></div>
+      <div class="f wide" id="fusionBox" style="display:none"><label>Fusion — which style drives each part</label><div class="body" id="fusionParts" style="padding:0;grid-template-columns:1fr 1fr 1fr"></div></div>
     </div></details>
+
+    <details class="card"><summary>Arrangement <span class="hint">variety, build-ups, transitions, instrument changes, ending</span></summary><div class="body">
+      <div class="f wide"><label>Variety <span class="hint">how much each song re-imagines its style: instruments, tones, grooves, arrangement</span><b id="varietyV"></b></label><input type="range" id="variety" min="0" max="100" value="55"></div>
+      <div class="f"><label title="Verses, choruses and breaks play parts on different instruments from the genre's own pool">Instrument rotation</label><select id="rotation"><option value="auto">Auto (with Variety)</option><option value="off">Off - one instrument per part</option><option value="some">Some - one part changes</option><option value="lots">Lots - several parts change</option></select></div>
+      <div class="f"><label>Layered sounds <span class="hint">parts doubled by a second instrument</span></label><select id="layering"><option value="">Genre &amp; variety decide</option><option value="more">More layers</option><option value="off">Off (one instrument per part)</option></select></div>
+      <div class="f"><label title="How hard songs ramp up into choruses and drops">Build-ups <span class="hint">ramps into big sections</span></label><select id="builds"><option value="auto">On (genre style)</option><option value="subtle">Subtle - natural, no EDM ramps</option><option value="off">Off - no build-ups</option></select></div>
+      <div class="f"><label>Build-up style</label><select id="buildStyle"><option value="">Genre default (varies per build)</option><optgroup label="Natural / band"><option value="pickup">Groove + short fill</option><option value="ride">Ride cymbal crescendo</option><option value="stops">Stop-time hits</option><option value="march">Marching snare</option><option value="tomgroove">Tom groove</option><option value="toms">Tom run</option><option value="lift">Snare lift (pop, rock)</option><option value="cymbal">Mallet cymbal roll (film)</option><option value="swell">Swell (film)</option><option value="pause">Drop-out (amapiano, garage)</option><option value="none">Nothing - just go</option></optgroup><optgroup label="Electronic"><option value="roll">Snare roll + riser (trance, big room)</option><option value="filter">Filter sweep, kick out (house, techno)</option><option value="pulse">Kick pulse + filter</option><option value="wash">Noise wash</option><option value="tapestop">Tape stop</option><option value="triplet">Triplet roll (future bass)</option><option value="kick_roll">Kick roll (hardstyle)</option><option value="stutter">Stutter + silence (dubstep)</option><option value="hats">Accelerating hats</option><option value="claps">Clap build</option><option value="halftime">Half-time, then snap</option><option value="drumless">Drums out - riser &amp; filter only</option></optgroup></select></div>
+      <div class="f"><label title="Risers, reverse cymbals, impacts, tape stops between sections">Transition FX</label><select id="transFx"><option value="auto">Varied (genre)</option><option value="fewer">Fewer</option><option value="fills">Drum fills only - no FX sounds</option><option value="off">Off - straight cuts</option></select></div>
+      <div class="f"><label>Ending</label><select id="ending"><option value="auto">Genre default</option><option value="hit">Final chord + crash</option><option value="fade">Fade out</option></select></div>
+    </div></details>
+
+    <details class="card"><summary>Character <span class="hint">genre traits - change one to get a different kind of song in the same genre</span></summary><div class="body" id="traitsBody">
+      <div class="f wide"><label class="auto"><input type="checkbox" id="traitSurprise"> 🎲 Surprise me - each song changes two of density, energy curve, variation, drop or texture</label>
+        <button class="mini" id="traitReset" type="button" style="margin-left:8px">↺ Genre traits</button></div>
+    </div></details>
+
 
     <details class="card"><summary>Mix &amp; master</summary><div class="body">
       <div class="f"><label>Sidechain pump <span class="auto"><input type="checkbox" id="scAuto" checked>style</span></label><input type="range" id="sidechain" min="0" max="100" value="60" disabled></div>
@@ -415,7 +420,6 @@ body:not(.helptext) .hint.qhd{display:none !important}
       <div class="f"><label>Tape / vinyl</label><div class="seg" id="lofi"></div></div>
       <div class="f wide"><div class="hint">Each part's volume is in <b>Parts</b>, next to its sound and mute.</div></div>
     </div></details>
-
 
     <details class="card" open><summary>Basics</summary><div class="body">
       <div class="f"><label>Tempo <span class="auto"><input type="checkbox" id="bpmAuto" checked>auto</span></label>
@@ -432,6 +436,7 @@ body:not(.helptext) .hint.qhd{display:none !important}
         <div class="row"><button class="ibtn" id="refBtn" title="An audio file, a MIDI file, MusicXML (MuseScore, Sibelius, Dorico...) or Studio Lab settings">🎯 Match a reference…</button><input type="file" id="refFile" accept="audio/*,.mid,.midi,.kar,.musicxml,.xml,.mxl,.json" hidden><span class="hint" id="refRes"></span></div></div>
       <div class="f wide"><label>Chord progression <span class="hint">optional • e.g. i-VI-III-VII or 1-5-6-4</span></label><input type="text" id="prog" placeholder="auto"></div>
     </div></details>
+
 
   </div>
 

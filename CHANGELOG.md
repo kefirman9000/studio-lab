@@ -1,5 +1,40 @@
 # Changelog
 
+## 1.79.0
+- **5 new genres**, each measured on reference records you sent: tempo, key, tonal balance, loudness, loudness range, stereo and how the energy moves.
+  - **Spooky TV theme (90s mystery):**
+    - a slow electronic groove;
+    - an echoing four-note piano ostinato in a long delay;
+    - dark pads and a lonely, sliding **whistled** melody;
+    - very wide and reverb-soaked, quiet and dark on top.
+  - **UK R&B / swingbeat (mid-90s):**
+    - a heavily swung 96 BPM sampled-loop groove;
+    - deep round bass, e-piano and organ 7th / 9th chords, string swells;
+    - thick, warm, loud and nearly mono.
+  - **Vocal-trance club remix (late 2000s, instrumental):**
+    - a long DJ intro, then a driving rolling 16th bass and a gated tech-trance riff;
+    - a huge breakdown with an airy vocal-like pad where the singer would be;
+    - a full lead drop, with real contrast between the breakdown and the drops.
+  - **Cybergrind / drum-machine deathgrind:**
+    - songs about a minute long: programmed blasts, a machine-gun double kick, gravity runs and bounce parts;
+    - crushing breakdowns where the kick hits with every guitar chug.
+  - **Switch-up deathcore:** the switch-up 808 engine (a new 808 move every bar) under deathcore breakdowns and blast bursts, with the guitars chugging in time with the kick.
+- **Retuned on references:** early-2010s progressive trance (darker top, louder) and sunny melodic house.
+- **New sounds:**
+  - **Whistle.**
+  - Three synths modelled on 2000s and 2010s drum & bass:
+    - **Electro saw** (a talking, distorted saw stack);
+    - **Tech / neuro bass** (metallic, rolling, with a clean sub);
+    - **Dancefloor DnB stab** (anthemic).
+  - They're offered in DnB (not liquid, which stays soft) and selectable in any genre.
+- **The middle panel is reorganised:**
+  - **Melody & harmony:** complexity, simplicity, repetition, melody range, melody theme, lead and melody style, counter-melody, chord speed, voicing, colour, bends, vocals.
+  - **Groove & drums:** energy, swing, humanize, groove feel, bass rhythm, drum style, percussion, drum sounds and mutes, drummer.
+  - **Parts:** every sound, plus the synth character, brightness and vinyl.
+  - **Arrangement:** now also holds Variety and layered sounds.
+  - Voice sample stays above Parts, and Basics stays at the bottom by the Preview bar.
+- A breakdown can lock its kick to the guitar chugs (`kick_riff`). Sections can bring their own riffs and drum patterns.
+
 ## 1.78.0
 - **12 new part effects** (Parts panel > **+ FX**). The genres also pick some of them now and then:
   - **Auto-pan:** 1/2 note or slow over 2 bars, with the low end kept in the middle.

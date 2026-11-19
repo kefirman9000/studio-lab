@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 331 GENRES  (version 1.75.0)
+STUDIO LAB - ALL 336 GENRES  (version 1.78.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 1.75
+* = new in 1.78
 
 ========================================================================
-ELECTRONIC  (173)
+ELECTRONIC  (176)
 ========================================================================
 
 House & Disco  (29)
@@ -37,7 +37,7 @@ House & Disco  (29)
     Hi-NRG (80s)  [hi_nrg]
     Brazilian bass  [brazilian_bass]
 
-Techno & Trance  (21)
+Techno & Trance  (22)
     techno  [techno]
     minimal  [minimal]
     Melodic Techno  [melodic_techno]
@@ -48,6 +48,7 @@ Techno & Trance  (21)
     Club trance remix (2000s, riff & breakdown)  [club_trance_2000s]
     Festival psy-trance (big-room / psy hybrid)  [festival_psy]
     Progressive trance - early 2010s (emotional, instrumental)  [progressive_trance_2010s]
+    Vocal-trance club remix (late 2000s, instrumental)  [vocal_trance_remix]
     Progressive trance - electro-edged (late 2000s)  [electro_prog_trance]
     Psytrance (full-on)  [psytrance]
     Progressive psytrance (deep, hypnotic, 136)  [progressive_psy]
@@ -108,7 +109,7 @@ Drum & Bass, Breaks & Hard  (20)
     Big beat  [big_beat]
     UK hardcore / happy hardcore  [uk_hardcore]
 
-Hip-Hop, Trap & Phonk  (27)
+Hip-Hop, Trap & Phonk  (28)
     Trap  [trap]
     UK Drill  [uk_drill]
     UK road rap  [uk_road_rap]
@@ -129,6 +130,7 @@ Hip-Hop, Trap & Phonk  (27)
     Switch-up 808 (no two bars alike)  [switchup_808]
     Switch-up 808 - DJ edits (slowdowns, pitch warps)  [switchup_808_dj]
     Switch-up 808 - hard (punchy kicks)  [switchup_808_hard]
+    Switch-up deathcore (808 switch-ups + breakdowns)  [switchup_deathcore]
     Switch-up 808 - mallets (fast arpeggios)  [switchup_mallets]
     Chopped & screwed (Houston slab)  [screwed_slab]
     Beat-switch trap  [switch_trap]
@@ -160,7 +162,7 @@ Afro, Latin & Caribbean  (8)
     Funk 150 / mandelao  [funk_150]
     Gqom  [gqom]
 
-Chill, Lo-fi & Ambient  (14)
+Chill, Lo-fi & Ambient  (15)
     Lo-fi Hip Hop  [lofi]
     Downtempo  [downtempo]
     Balearic chill (sunset guitar, slow house)  [balearic_chill]
@@ -174,6 +176,7 @@ Chill, Lo-fi & Ambient  (14)
     Chant downtempo - shakuhachi & monks  [chant_downtempo]
     Mid-fi synth-funk / chillwave  [midfi_synthfunk]
     Trip-hop  [trip_hop]
+    Spooky TV theme (90s mystery, whistle & echoes)  [spooky_tv_theme]
     Berlin school (sequencer)  [berlin_school]
 
 Footwork & Juke  (6)
@@ -202,10 +205,10 @@ Hauntology  (7)
     Hauntology - cold dystopian synths  [hauntology_cold]
 
 ========================================================================
-CLASSIC  (127)
+CLASSIC  (129)
 ========================================================================
 
-Rock & Metal  (26)
+Rock & Metal  (27)
     rock  [rock]
     Indie Rock  [indie_rock]
     90s alt rock  [alt_rock_90s]
@@ -219,6 +222,7 @@ Rock & Metal  (26)
     80s boogie rock  [boogie_rock]
     Boogie blues-rock (slide)  [boogie_blues_rock]
     Nu-metal  [nu_metal]
+    Cybergrind / drum-machine deathgrind  [cybergrind]
     Spooky 60s surf / TV theme  [spooky_surf]
     Spooky surf - monster TV theme  [monster_theme]
     Spooky surf - organ & brass  [monster_organ]
@@ -254,7 +258,7 @@ Funk & Disco  (6)
     80s electro-funk / boogie  [electro_funk]
     Afrobeat (70s)  [afrobeat]
 
-Soul, R&B & Gospel  (9)
+Soul, R&B & Gospel  (10)
     Motown / 60s Soul  [motown]
     Soul Ballad (12/8)  [soul_ballad]
     Gospel  [gospel]
@@ -262,6 +266,7 @@ Soul, R&B & Gospel  (9)
     R&B / Neo-soul  [rnb]
     Neo-Soul  [neo_soul]
     New Jack Swing / 90s R&B  [new_jack_swing]
+    UK R&B / swingbeat (mid-90s)  [uk_rnb_swing]
     Quiet Storm  [quiet_storm]
     90s R&B Slow Jam  [slow_jam]
 

@@ -1355,6 +1355,8 @@ def compose(opts):
                 riff_pat = rnd_c.choice(st['riffs'])
         if opts_s.get('riffs') and S < 0.6:                # a section's own riffs (a breakdown's chug pattern)
             riff_pat = rnd_c.choice(opts_s['riffs'])
+            if opts_s.get('kick_riff') and kick_name in pchoice:   # breakdown: the kick hits with every chug
+                pchoice[kick_name] = ''.join('X' if c not in '.-' else '.' for c in riff_pat[:16]).ljust(16, '.')
         prev_bass = None
         for b in range(nbars):
             bar = bar0 + b

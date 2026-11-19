@@ -80,7 +80,7 @@ CLUB = {
     # 1.79 sounds
     'Chill, Lo-fi & Ambient': dict(arp=['handpan', 'hollowpluck'], pad=['granular', 'glassharmonica']),
     'Dubstep, Garage & Bass': dict(lead=['formantchop', 'wavetable'], arp=['formantchop', 'hollowpluck']),
-    'Drum & Bass, Breaks & Hard': dict(lead=['wavetable']),
+    'Drum & Bass, Breaks & Hard': dict(lead=['electrosaw', 'wavetable'], chords=['dancestab'], arp=['dancestab']),
     'Pop, R&B & Hopecore': dict(lead=['formantchop']),
 }
 # individual genres (inserted the same way; the genre's own sound stays first)
@@ -102,6 +102,9 @@ SPLIT_FROM = ('sawbass', 'techbass', 'organbass', 'rollbass', 'moogbass', 'deepb
 
 def _club(g, scene, pools, banned):
     adds = dict(CLUB.get(scene) or {})
+    if 'liquid' in g:                                # liquid DnB stays soft: none of the aggressive DnB synths
+        adds = {r: [x for x in v if x not in ('electrosaw', 'dancestab')] for r, v in adds.items()}
+        banned = set(banned) | {'electrosaw', 'techneuro'}
     adds.update(CLUB_GENRE.get(g) or {})             # a genre's own list replaces the scene's for that part
     for role, extra in (WORLD.get(g) or {}).items():
         adds[role] = list(extra) + [x for x in adds.get(role, []) if x not in extra]
@@ -118,6 +121,11 @@ def _club(g, scene, pools, banned):
             if v not in b and v not in banned:
                 b.insert(min(len(b), 1 + k), v)
     b = pools.get('bass')
+    if scene == 'Drum & Bass, Breaks & Hard' and b and b[0] in ('reese', 'neuro', 'dnbwob', 'growl', 'fmbass', 'bouncebass') \
+            and not _locked(g, 'bass'):
+        for k, v in enumerate(('techneuro', 'electrosaw')):
+            if v not in b and v not in banned:
+                b.insert(min(len(b), 2 + k), v)
     if b and b[0] in SPLIT_FROM and 'splitbass' not in b and 'splitbass' not in banned and not _locked(g, 'bass'):
         b.insert(min(len(b), 2), 'splitbass')
 

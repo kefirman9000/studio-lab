@@ -5259,3 +5259,89 @@ GM_PROGRAM['chuggtr'] = 30
 for _role in ('chords', 'arp', 'lead', 'bass'):
     if 'chuggtr' not in ROLE_CHOICES[_role]:
         ROLE_CHOICES[_role].append('chuggtr')
+
+
+# ----------------------------------------------------------------------------- 1.79: whistle + DnB-style synths
+def v_whistle(m, dur, p, glide=None, mod=None):
+    """Whistling: an almost pure, slightly breathy tone, sliding between notes, a wide, slow, slightly uneven
+    vibrato and soft onsets - the lonely whistled melody of a mystery-TV theme, or a western."""
+    f = float(mtof(m)) * (2.0 if float(mtof(m)) < 600 else 1.0)       # whistles live high (an octave up when low)
+    gate = int(max(dur, 0.05) * SR)
+    env = _va.adsr(gate, p.get('a', 0.05), 0.3, 0.92, p.get('r', 0.15))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = _glide_freq(f, n, None if glide is None else glide + (12 if float(mtof(glide)) < 600 else 0), 0.06)
+    vib = np.clip((t - 0.2) / 0.4, 0, 1) * (22 + 6 * np.sin(2 * np.pi * 0.7 * t)) * np.sin(2 * np.pi * 5.2 * t)
+    ph = 2 * np.pi * np.cumsum(fr * 2 ** ((vib - 25 * np.exp(-t / 0.04)) / 1200)) / SR
+    tone = np.sin(ph) + 0.03 * np.sin(2 * ph)
+    breath = bp(_rng().standard_normal(n), f * 0.85, min(f * 1.25, 16000)) * 0.12
+    y = (tone + breath) * env
+    return _st(y, 35) * 0.45
+
+
+def v_electrosaw(m, dur, p, glide=None, mod=None):
+    """Electro saw lead / bass (2010s electro DnB and dubstep): a stack of detuned saws through a formant 'talk' that
+    moves with the beat, hard-clipped and band-limited - huge, buzzing and vocal, for riffs and drops."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.003, 0.3, 0.85, 0.06)
+    n = len(env)
+    t = np.arange(n) / SR
+    spb = float(p.get('spb', 0.35))
+    x = _vb._stack(f, n, 5, 22, 0.8)
+    x = x.mean(axis=0) if np.ndim(x) == 2 else x
+    lfo = 0.5 - 0.5 * np.cos(2 * np.pi * t / (spb * p.get('rate', 1.0)))
+    a = _va.formant(x, 'a', 6.0)
+    o = _va.formant(x, 'o', 6.0)
+    y = a * lfo + o * (1 - lfo) + 0.35 * x
+    y = np.tanh(hp(y, 90) * 3.0)
+    y = lp(y, 7000)
+    return _st(y * env, 18) * 0.42
+
+
+def v_techneuro(m, dur, p, glide=None, mod=None):
+    """Tech / neuro bass: an FM-buzzed saw through a resonant comb (the metallic 'tech' tone), a fast filter
+    snap per note and a clean sine sub underneath - tight, dark and rolling (2000s tech DnB)."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.002, 0.25, 0.7, 0.03)
+    n = len(env)
+    t = np.arange(n) / SR
+    ph = 2 * np.pi * f * t
+    src = np.sin(ph + p.get('fm', 2.2) * np.sin(2 * ph + 1.5 * np.sin(0.5 * ph)))
+    d = max(2, int(SR / (f * 4)))
+    comb = src + 0.6 * np.concatenate([np.zeros(d), src[:-d]])
+    top = _va.vcf(comb, 300 + 3200 * np.exp(-t / p.get('fdecay', 0.09)), 0.55, 2.2)
+    top = hp(top, 120)
+    sub = lp(np.sin(ph), 120) * 0.7
+    return _st((top * 0.8 + sub) * env, 0) * 0.55
+
+
+def v_dancestab(m, dur, p, glide=None, mod=None):
+    """Dancefloor DnB chord stab: bright detuned saws and a square with a pitch drop into the note, a bandpassed
+    'hoover-ish' body and a short gated tail - the anthemic stab of 2000s dancefloor drum & bass."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.5), 0.04) * SR)
+    env = _va.adsr(gate, 0.002, 0.18, 0.35, 0.07)
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f * 2 ** (-0.6 * np.exp(-t / 0.03) + 0.0)
+    rng = _rng()
+    x = np.vstack([_va.saw(fr * 2 ** (-11 / 1200), n, rng.random()) + 0.5 * _va.pulse(fr, n, rng.random(), 0.35),
+                   _va.saw(fr * 2 ** (11 / 1200), n, rng.random()) + 0.5 * _va.pulse(fr, n, rng.random(), 0.65)])
+    y = _va.vcf(x * 0.6, 900 + 5500 * np.exp(-t / 0.08), 0.35, 1.6)
+    y = bp(y, 220, 7500)
+    return y * env * 0.6
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('whistle', v_whistle, 'Whistle (lonely, sliding)', ('lead',), 78),
+        ('electrosaw', v_electrosaw, 'Electro saw (talking, distorted stack)', ('lead', 'bass', 'chords'), 81),
+        ('techneuro', v_techneuro, 'Tech / neuro bass (metallic, rolling)', ('bass',), 38),
+        ('dancestab', v_dancestab, 'Dancefloor DnB stab (anthemic)', ('chords', 'arp', 'lead'), 81)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)

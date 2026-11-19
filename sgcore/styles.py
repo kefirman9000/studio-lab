@@ -4630,7 +4630,7 @@ style('sunny_melodic_house', 'Electronic',
               T('arp', 'arp', 'pluck_saw', sc=0.6, pan=-0.25, rev=0.35, dly=0.4, db=-27, p=dict(cut=3000)),
               T('lead', 'lead', 'pluck', sc=0.4, rev=0.45, dly=0.35, pan=0.1, db=-20, p=dict(bright=6000)),
               T('texture', 'fx', 'texture', db=-38)],
-      master=dict(tone=[-0.2, -1.5, -6.2, -8.6, -9.1, -12.8, -16.5, -14.0, -18.1], lufs=-9.0, air=1.4, low=1.4),
+      master=dict(tone=[-0.1, -1.05, -5.05, -7.85, -9.1, -11.85, -15.75, -13.95, -17.35], lufs=-8.5, air=1.4, low=1.4),
       pools=dict(bass=['moogbass', 'sinebass', 'sawbass', 'sf:fingerbass', 'deepbass'],
                  chords=['piano', 'm1piano', 'epiano', 'pluck_saw'],
                  pad=['strings', 'warmpad', 'glasspad', 'solina', 'lushpad'],
@@ -5026,7 +5026,7 @@ style('progressive_trance_2010s', 'Electronic',
               T('lead', 'lead', 'supersaw_lead', ott=0.35, rev=0.55, dly=0.35, sc=0.4, db=-19, p=dict(cut=7000)),
               T('counter', 'arp', 'glock', pan=-0.25, rev=0.5, dly=0.4, db=-30),
               T('texture', 'fx', 'texture', db=-38)],
-      master=dict(tone=[0, -4.6, -9.3, -6.2, -9.9, -13.5, -13.1, -13.5, -17.8], lufs=-8.5, air=1.6, low=1.2, width=1.15),
+      master=dict(tone=[0.0, -4.35, -9.85, -7.05, -11.8, -14.25, -14.15, -16.2, -19.2], lufs=-8.0, air=1.6, low=1.2, width=1.15),   # (1.79: re-measured on a reference)
       pools=dict(bass=['rollbass', 'moogbass', 'deepbass', 'sawbass'],
                  chords=['supersaw', 'hypersaw', 'polysynth', 'pianosaw'],
                  pad=['warmpad', 'trancepad', 'lushpad', 'junopad', 'strings', 'gatepad', 'atmos'],
@@ -10483,6 +10483,263 @@ style('juke_house', 'Electronic', 'Juke house (126): bouncy and hypnotic - a 3-3
       pools=dict(bass=['sinebass', '808', 'fmbass'], chords=['stab', 'organ', 'polysynth'], pad=['warmpad', 'glasspad', 'strings'],
                  lead=['pluck_saw', 'leadsaw', 'polysynth', 'pluck']),
       label='Juke house - bouncy (126)')
+
+
+# ----------------------------------------------------------------------------- 1.79: genres modelled on reference records
+# (measured with tools: tempo, key, tone balance, loudness, loudness range, stereo and how the energy moves)
+
+FORMS['spooky_tv_theme'] = [   # a mystery-TV main title: the echoing ostinato alone, the groove under it, the whistle
+    ('intro', 4, {'arp', 'pad', 'fx'}, {'filter_in': True}),
+    ('A', 8, {'arp', 'pad', 'kick', 'snare', 'top', 'bass'}, {}),
+    ('theme', 8, {'arp', 'pad', 'kick', 'snare', 'top', 'bass', 'lead'}, {'crash': True}),
+    ('B', 8, {'pad', 'chords', 'kick', 'snare', 'top', 'bass', 'lead'}, {'alt': True}),
+    ('theme', 8, {'arp', 'pad', 'chords', 'kick', 'snare', 'top', 'bass', 'lead'}, {'crash': True}),
+    ('outro', 8, {'arp', 'pad', 'fx'}, {'fade': True}),
+]
+
+style('spooky_tv_theme', 'Electronic',
+      'Spooky TV theme (90s paranormal mystery): a slow, steady electronic groove at about 87 BPM under a cold, '
+      'echoing four-note piano / bell ostinato in a minor key that keeps repeating into a long delay, dark synth pads '
+      'and a lonely, sliding whistled melody - drenched in reverb, very wide, quiet and dark on top (no air), like a '
+      'late-night TV main title',
+      bpm=(84, 90), scales=['minor', 'harmonic_minor'], swing=0.55, human=0.002, form='spooky_tv_theme', chord_size=3,
+      progs={'minor': [[0, 0, 5, 5], [0, 0, 3, 4], [0, 5, 3, 4]], 'harmonic_minor': [[0, 0, 5, 4], [0, 5, 0, 4]]},
+      chord_bars=2, voicing='open', reverb=4.2, rev_predelay=0.05, delay_beats=0.75, sc_depth=0.0, kit='linn',
+      kit_override=dict(kick=dict(pitch=50, punch=90, decay=9, drive=1.3, len=0.35, click=0.2)),
+      drums={'kick': ['X.....x...X.....', 'X.....x...X...x.'], 'snare': [BACKBEAT, '....X.......X..x'],
+             'shaker': ['x.xxx.xxx.xxx.xx', 'x.x.x.x.x.x.x.x.'], 'chat': ['..x...x...x...x.']},
+      snare_tracks=['snare'], build_family=['none', 'pickup'], transition_moves=['crash', 'none'],
+      bass=['R.......R.......', 'R.....R.R.......'], bass_lo=31,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=57,
+      arp=dict(rate=2, mode='motif', motif=(0, 2, 1, 2), oct=5),
+      lead_rh=['x-------x---x---', 'x-----------x---', 'x---x-------....', 'x-------........'], lead_oct=5, repetition=0.75,
+      gm_hint='Echoing piano / bell ostinato (long dotted delay); dark synth pads; a whistled lead with slides; soft 90s '
+              'electronic drums with a long reverb; a quiet sub bass on the roots',
+      tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.55, db=-21),
+              T('shaker', 'top', 'shaker', pan=0.3, db=-31), T('chat', 'top', 'chat', pan=-0.2, db=-32),
+              T('bass', 'bass', 'sinebass', db=-17),
+              T('chords', 'chords', 'eeriepad', rev=0.6, db=-28),
+              T('pad', 'pad', 'darkpad', wide=0.6, rev=0.7, db=-27),
+              T('arp', 'arp', 'darkpiano', rev=0.6, dly=0.55, dly_time=0.75, pan=-0.15, db=-21),
+              T('lead', 'lead', 'whistle', rev=0.65, dly=0.35, db=-20),
+              T('texture', 'fx', 'texture', db=-36)],
+      master=dict(tone=[0.0, -2.3, -2.2, -1.0, 0.0, -0.5, -13.6, -20.0, -28.4], lufs=-15.0, air=-4.0, low=0.5, width=1.3, vintage_lp=6500,
+                  gentle=True),
+      pools=dict(bass=['sinebass', 'deepbass', 'moogbass'], chords=['eeriepad', 'glasspad', 'darkpad', 'strings'],
+                 pad=['darkpad', 'eeriepad', 'glassharmonica', 'atmos', 'warmpad'],
+                 arp=['darkpiano', 'bell', 'celesta', 'musicbox', 'glock', 'piano'],
+                 lead=['whistle', 'theremin', 'glassharmonica', 'flute', 'softlead']),
+      label='Spooky TV theme (90s mystery, whistle & echoes)')
+
+
+FORMS['uk_rnb_swing'] = [
+    ('intro', 4, {'kick', 'snare', 'top', 'bass', 'chords'}, {}),
+    ('verse', 16, {'kick', 'snare', 'top', 'bass', 'chords'}, {}),
+    ('prechorus', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'pad'}, {'alt': True}),
+    ('chorus', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead'}, {'crash': True}),
+    ('verse', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {}),
+    ('chorus', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead'}, {'crash': True}),
+    ('bridge', 8, {'kick', 'top', 'bass', 'pad', 'chords'}, {'alt': True}),
+    ('chorus', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead', 'arp'}, {'crash': True}),
+    ('outro', 8, {'kick', 'snare', 'top', 'bass', 'chords'}, {'fade': True}),
+]
+
+style('uk_rnb_swing', 'Classic',
+      'UK R&B / swingbeat (mid-90s): a laid-back, heavily swung 96 BPM groove from a sampled drum loop - a fat kick, '
+      'a cracking snare and swung 16th hats - a deep, round bass, warm electric piano and organ chords with 7ths and 9ths, '
+      'string swells and a smooth synth hook; mixed thick, warm and loud, the low end up front and the top end soft, '
+      'nearly mono, the same energy from start to end',
+      bpm=(92, 100), scales=['minor', 'dorian', 'major'], swing=0.6, human=0.006, form='uk_rnb_swing', chord_size=4,
+      progs={'minor': [[0, 5, 3, 4], [0, 3, 6, 4], [0, 6, 5, 4]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 4]],
+             'major': [[0, 5, 1, 4], [0, 3, 4, 3], [0, 2, 3, 4]]},
+      kit='linn', build_family=['pickup', 'stops', 'none'], transition_moves=['crash', 'none'],
+      kit_override=dict(kick=dict(pitch=48, punch=110, decay=9, drive=1.8, len=0.4, click=0.3)),
+      drums={'kick': ['X..X......X.X...', 'X.....X...X..X..', 'X..X..X...X.....'], 'snare': [BACKBEAT, '....X.......X..x'],
+             'chat': ['x.xxx.xxx.xxx.xx', 'x.x.x.x.x.x.x.xx'], 'shaker': ['..x...x...x...x.'], 'ohat': ['......x.........']},
+      snare_tracks=['snare'],
+      bass=['R..R......R.R...', 'R.....R...R..R..', 'R..R..R...R.....'], bass_lo=31,
+      chord_rh=['x-----x---x-----', '..x...x...x...x.', 'x---------x-----'], chord_center=62,
+      arp=dict(rate=2, mode='updown', oct=5, prob=0.6),
+      lead_rh=['x.x.x...x.x.....', 'x---x.x.x-------', '..x.x.x.x---x---'], repetition=0.8,
+      gm_hint='Sampled swung drum loop (fat kick, cracking snare, swung 16th hats); deep round bass; warm e-piano and organ '
+              '7th / 9th chords; string swells; smooth synth hook',
+      tracks=[T('kick', 'kick', 'kick', db=-11), T('snare', 'snare', 'snare', rev=0.2, db=-15),
+              T('chat', 'top', 'chat', pan=0.15, db=-27), T('shaker', 'top', 'shaker', pan=-0.25, db=-31),
+              T('ohat', 'top', 'ohat', pan=-0.1, db=-30),
+              T('bass', 'bass', 'deepbass', db=-12),
+              T('chords', 'chords', 'rhodes', rev=0.2, db=-20),
+              T('pad', 'pad', 'strings', rev=0.4, db=-26),
+              T('arp', 'arp', 'organ', rev=0.25, pan=0.25, db=-27),
+              T('lead', 'lead', 'softlead', rev=0.3, dly=0.2, db=-19)],
+      master=dict(tone=[-4.7, 0.0, -5.0, -14.5, -11.0, -8.0, -10.6, -13.7, -17.4], lufs=-9.5, air=-1.0, low=2.5, width=0.85),
+      pools=dict(bass=['deepbass', 'moogbass', 'sinebass', 'fmbass', 'sf:fingerbass'],
+                 chords=['rhodes', 'epiano', 'wurli', 'organ', 'm1piano'],
+                 pad=['strings', 'solina', 'warmpad', 'choir'],
+                 arp=['organ', 'rhodes', 'pluck', 'vibes'],
+                 lead=['softlead', 'synthbrass', 'flute', 'rhodes', 'formantchop']),
+      label='UK R&B / swingbeat (mid-90s)')
+
+
+FORMS['vocal_trance_remix'] = [   # a late-2000s club remix: a long DJ build, a driving first drop, a big breakdown
+    ('intro', 16, {'kick', 'top', 'fx'}, {'filter_in': True}),
+    ('verse', 16, {'kick', 'top', 'snare', 'bass', 'fx'}, {}),
+    ('verse', 16, {'kick', 'top', 'snare', 'bass', 'arp', 'pad'}, {'crash': True}),
+    ('drop', 32, {'kick', 'snare', 'top', 'bass', 'arp', 'chords', 'pad'}, {'drop': True}),
+    ('break', 8, {'kick', 'top', 'bass', 'pad'}, {}),
+    ('break', 24, {'pad', 'chords', 'lead', 'fx'}, {'alt': True, 'crash': True}),
+    ('build', 16, {'top', 'snare', 'chords', 'pad', 'arp', 'lead'}, {'build': True}),
+    ('drop', 32, ALL, {'drop': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'arp', 'chords', 'pad'}, {'var': 1}),
+    ('outro', 16, {'kick', 'top', 'bass'}, {}),
+]
+
+style('vocal_trance_remix', 'Electronic',
+      'Vocal-trance club remix, late 2000s (instrumental): 129 BPM, a punchy kick with a driving rolling 16th bass, '
+      'off-beat hats and claps, a tight, gated tech-trance riff in the first drop, a long DJ intro that adds a layer every '
+      '16 bars, then a huge breakdown - pads, a piano / pluck theme and an airy vocal-like pad where the singer would be - '
+      'a filter-sweep build and a full drop with the lead on top; a big, loud master with real contrast between the '
+      'breakdown and the drops',
+      bpm=(128, 130), scales=['minor'], swing=0.5, human=0.002, form='vocal_trance_remix', form_scale=1,
+      progs={'minor': [[0, 5, 2, 6], [0, 3, 5, 6], [5, 6, 0, 0], [0, 6, 5, 3]]},
+      chord_size=3, chord_bars=2, voicing='open', sc_depth=0.6, sc_release=0.3, reverb=3.2, rev_predelay=0.04, rev_hp=220,
+      delay_beats=0.75, kit='909', kit_override=dict(kick=dict(pitch=50, punch=160, decay=8, drive=1.9, click=0.45)),
+      drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'chat': ['x.xxx.xxx.xxx.xx', '..x...x...x...x.'],
+             'ride': ['..x...x...x...x.'], 'crash': ['X...............']},
+      snare_tracks=['clap'],
+      bass=['.RRR.RRR.RRR.RRR', '..RR..RR..RR..RR', '.R.R.R.R.R.R.R.R'], bass_gate=0.55, bass_lo=33, sub_layer=True,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=62,
+      arp=dict(rate=2, mode='updown', oct=5),
+      lead_rh=['x-------x---x---', 'x---x---x-x-x---', 'x-----------x---', 'x---x-x-x-------'], repetition=0.8,
+      fill=True, filter_arc=True, sc_arc=True,
+      gm_hint='Punchy 909 kick, claps, off-beat hats, ride; rolling 16th bass with a sine sub; gated tech-trance riff; wide '
+              'trance pads; piano / pluck breakdown theme; airy vocal pad; supersaw lead in the last drop',
+      tracks=[T('kick', 'kick', 'kick', db=-10), T('clap', 'snare', 'clap', rev=0.3, db=-20),
+              T('ohat', 'top', 'ohat', db=-27), T('chat', 'top', 'chat', pan=-0.2, db=-30),
+              T('ride', 'top', 'ride', pan=0.25, db=-31), T('crash', 'top', 'crash', rev=0.35, db=-28),
+              T('bass', 'bass', 'rollbass', sc=0.9, db=-15, p=dict(cut=750)),
+              T('chords', 'chords', 'supersaw', rev=0.45, dly=0.15, sc=0.8, db=-24, p=dict(cut=4000)),
+              T('pad', 'pad', 'vocalpad', wide=0.4, rev=0.65, sc=0.7, db=-25),
+              T('arp', 'arp', 'techstab', dly_time=0.75, gate='x.xx.xx.x.xx.x.x', pan=0.15, rev=0.35, dly=0.35, sc=0.6, db=-24),
+              T('lead', 'lead', 'supersaw_lead', ott=0.3, rev=0.55, dly=0.35, sc=0.4, db=-19, p=dict(cut=7000)),
+              T('texture', 'fx', 'texture', db=-38)],
+      master=dict(tone=[0.0, -6.3, -7.3, -3.8, -5.0, -10.0, -12.1, -10.7, -15.2], lufs=-8.5, air=1.2, low=-1.0, width=1.1),
+      pools=dict(bass=['rollbass', 'splitbass', 'sawbass', 'moogbass'],
+                 chords=['supersaw', 'trancepad', 'hypersaw', 'piano'],
+                 pad=['vocalpad', 'trancepad', 'warmpad', 'choir', 'lushpad'],
+                 arp=['techstab', 'trancepluck', 'nordpluck', 'superpluck', 'piano'],
+                 lead=['supersaw_lead', 'analoglead', 'hypersaw', 'emolead']),
+      label='Vocal-trance club remix (late 2000s, instrumental)')
+
+
+# deathgrind with a drum machine: blasts, double-kick gravity runs and slow, crushing breakdowns, songs about a minute long
+_BLAST = dict(kick=['XXXXXXXXXXXXXXXX'], snare=['x.x.x.x.x.x.x.x.'], crash=['x...x...x...x...'], chat=['x.x.x.x.x.x.x.x.'])
+_GRAVITY = dict(kick=['XXXXXXXXXXXXXXXX'], snare=['....X.......X...'], crash=['x.......x.......'], chat=['x.x.x.x.x.x.x.x.'])
+_BOUNCE = dict(kick=['X.X.X.X.X.X.X.X.'], snare=['..x...x...x...x.'], crash=['x...x...x...x...'], chat=['x.x.x.x.x.x.x.x.'])
+_BREAKDOWN = dict(kick=['X..X..X...X.X...', 'X..X......X..X..', 'XX....X...X.....'], snare=['........X.......'],
+                  crash=['x.......x.......'], chat=['................'])
+_CHUGS = ['pp.pp.p...p.p...', 'pp....p...pp....', 'p..p..p...p.p...', 'pppp..p...p..p..']
+
+FORMS['cybergrind'] = [
+    ('intro', 4, {'kick', 'snare', 'top', 'bass', 'chords', 'fx'}, {'drums': _BLAST, 'crash': True}),
+    ('blast', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drums': _BLAST}),
+    ('breakdown', 8, {'kick', 'snare', 'top', 'bass', 'chords'}, {'drums': _BREAKDOWN, 'riffs': _CHUGS, 'kick_riff': True}),
+    ('gravity', 4, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {'drums': _GRAVITY, 'alt': True}),
+    ('blast', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drums': _BLAST, 'crash': True}),
+    ('bounce', 4, {'kick', 'snare', 'top', 'bass', 'chords'}, {'drums': _BOUNCE}),
+    ('breakdown', 12, {'kick', 'snare', 'top', 'bass', 'chords', 'fx'}, {'drums': _BREAKDOWN, 'riffs': _CHUGS, 'alt': True, 'kick_riff': True}),
+    ('blast', 4, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drums': _BLAST}),
+    ('outro', 4, {'bass', 'chords'}, {'cad': True}),
+]
+
+style('cybergrind', 'Classic',
+      'Drum-machine deathgrind / cybergrind: songs about a minute long that never let up - inhumanly fast programmed '
+      'blast beats and machine-gun double kick (16ths at ~250 BPM), crashes on every beat, then sudden, crushing half-time '
+      'breakdowns where the down-tuned, quad-tracked guitars chug locked to the kick with dead silence between the hits; '
+      'dissonant tremolo riffs and squealing pinch harmonics on top; mixed huge, low and saturated',
+      bpm=(240, 262), scales=['phrygian', 'minor', 'harmonic_minor'], swing=0.5, human=0.0, form='cybergrind', form_scale=1,
+      chord_size=2, voicing='power', kit='hard', sc_depth=0.0, reverb=1.2, own_progs=True, no_layers=True,
+      progs={'phrygian': [[0, 0, 1, 0], [0, 1, 0, 6]], 'minor': [[0, 0, 5, 6], [0, 6, 5, 0]], 'harmonic_minor': [[0, 1, 0, 4]]},
+      kit_override=dict(kick=dict(pitch=62, punch=240, sweep=80, decay=26, drive=2.4, len=0.12, click=1.0),
+                        snare=dict(crack=0.6, drive=1.6)),
+      drums=dict(_BLAST), snare_tracks=['snare'], build_family=['none', 'stops'], transition_moves=['gap', 'none'],
+      bass=['RRRRRRRRRRRRRRRR', 'R.R.R.R.R.R.R.R.'], bass_gate=0.7, bass_lo=23, fill=False,
+      chord_rh=['xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxx.xx'], chord_center=45,
+      riffs=['pppppppppppppppp', 'pp.pp.ppX-pp.pp.', 'p.ppp.ppp.ppp.pp', 'ppppX-ppppm-ppb-'], riff_lo=33, riff_chorus=0.6,
+      arp=dict(rate=1, mode='updown', oct=4),
+      lead_rh=['xxxxxxxxxxxxxxxx', 'x-x-x-x-x-x-x-x-', 'x---x---x---x---'], lead_oct=5,
+      gm_hint='Programmed blast beats and 16th double kick (very clicky triggered kick), crashes / china on the beat; '
+              'down-tuned 7/8-string guitars quad-tracked, gated chugs; a distorted bass doubling the riffs; squealing '
+              'pinch harmonics / screeching lead',
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.15, db=-15),
+              T('crash', 'top', 'crash', db=-27), T('chat', 'top', 'chat', db=-30),
+              T('bass', 'bass', 'ebass', db=-14, drive=0.7),
+              T('chords', 'chords', 'chuggtr', db=-15),
+              T('arp', 'arp', 'chuggtr', pan=0.3, db=-22),
+              T('lead', 'lead', 'screech', rev=0.25, db=-18),
+              T('texture', 'fx', 'texture', db=-34)],
+      master=dict(tone=[0.0, -0.2, -9.2, -9.2, -10.5, -11.8, -14.0, -10.9, -17.4], lufs=-7.5, air=-1.5, low=2.5, drive=0.25,
+                  width=0.95, max_gr=4.0),
+      pools=dict(bass=['ebass', 'pickbass', 'sf:pickbass', 'metalbass'], chords=['chuggtr', 'guitar', 'sf:distguitar'],
+                 arp=['chuggtr', 'guitar', 'screech'], lead=['screech', 'chuggtr', 'guitar', 'hoover']),
+      label='Cybergrind / drum-machine deathgrind')
+
+
+# the hybrid: the 808 switch-up engine (every bar a new 808 move) under deathcore breakdowns and blasts
+_SW_BREAK = dict(kick=['X..X..X...X.X...', 'X..X......X..X..', 'X.....X.X...X...'], snare=['........X.......'],
+                 chat=['x.x.x.x.x.x.x.x.', 'x...x...x...x...'])
+_SW_BLAST = dict(kick=['XXXXXXXXXXXXXXXX'], snare=['x.x.x.x.x.x.x.x.'], chat=['x.x.x.x.x.x.x.x.'])
+FORMS['switchup_deathcore'] = [
+    ('intro', 4, {'chords', 'lead', 'fx'}, {'filter_in': True}),
+    ('breakdown', 8, {'kick', 'snare', 'top', 'bass', 'chords'}, {'drop': True, 'drums': _SW_BREAK, 'riffs': _CHUGS, 'kick_riff': True,
+                                                                  'moves': ('grind', 'leap', 'roll', 'gap', 'plain')}),
+    ('switch', 8, {'kick', 'snare', 'top', 'bass', 'lead'}, {'bass_up': 40, 'bass_mod': 'fold', 'level': 0.75,
+                                                             'moves': ('roll', 'gap', 'chop', 'dive', 'plain')}),
+    ('blast', 4, {'kick', 'snare', 'top', 'bass', 'chords'}, {'drums': _SW_BLAST, 'moves': ('grind', 'roll')}),
+    ('breakdown', 12, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True, 'drums': _SW_BREAK,
+                                                                           'riffs': _CHUGS, 'alt': True,
+                                                                           'moves': ('leap', 'leap', 'roll', 'chop', 'dive', 'grind')}),
+    ('break', 4, {'bass', 'chords', 'fx'}, {'bass_up': 40, 'bass_mod': 'fold', 'level': 0.5}),
+    ('breakdown', 16, ALL, {'drop': True, 'drums': _SW_BREAK, 'riffs': _CHUGS, 'kick_riff': True, 'kick_riff': True,
+                            'moves': ('grind', 'grind', 'roll', 'wob', 'chop', 'leap')}),
+    ('outro', 4, {'bass', 'chords'}, {'cad': True}),
+]
+
+style('switchup_deathcore', 'Electronic',
+      'Switch-up deathcore: crushing deathcore breakdowns where the down-tuned guitars chug locked to the kick, over a '
+      'blown-out 808 that never plays the same bar twice - grinds, octave leaps, rolls, dives, folded buzz and dead '
+      'stops - with machine-gun blast bursts, crushed trap hats, a squealing lead and an eerie choir; phrygian, dark, '
+      'mono and slammed',
+      bpm=(150, 162), scales=['phrygian', 'harmonic_minor', 'minor'], swing=0.5, human=0.0, form='switchup_deathcore', kit='808',
+      trap_hats=False, pitch_rolls=True, chord_size=2, voicing='power', sc_depth=0.3, sc_release=0.1, reverb=2.2,
+      own_progs=True, no_rotation=True, no_layers=True,
+      progs={'phrygian': [[0, 0, 1, 1], [0, 1, 0, 1], [0, 0, 1, 0]], 'harmonic_minor': [[0, 0, 1, 1], [0, 0, 4, 4]],
+             'minor': [[0, 0, 5, 5], [0, 0, 1, 1]]},
+      kit_override=dict(kick=dict(pitch=46, punch=150, decay=16, drive=2.4, len=0.18, click=0.8),
+                        snare=dict(drive=1.8, crack=0.5), chat=dict(bits=9, srate=20000)),
+      drums=dict(_SW_BREAK), snare_tracks=['snare'], build_family=['pause', 'stutter', 'none'],
+      transition_moves=['gap', 'gap', 'tapestop', 'none'], keep_fx=['tapestop'],
+      plain_drops=True, bass_mode='808', bass_lo=23, warp_808=0.3, oct808=0.06, fifth808=0.04, glide808=0.35,
+      switchups=dict(weights={'grind': 1.5, 'leap': 1.2, 'plain': 0.5}), dj_fx=0.25,
+      chord_rh=['xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxx.xx'], chord_center=45,
+      riffs=_CHUGS + ['pppppppppppppppp'], riff_lo=33, riff_chorus=0.9,
+      arp=dict(rate=2, mode='random', oct=5, prob=0.3),
+      lead_rh=['x-------........', 'x---....x---....', 'x.x.x.x.x-------'], repetition=0.8,
+      gm_hint='Blown-out mono 808 switching up every bar (grind, leap, roll, dive, fold); down-tuned quad-tracked guitars '
+              'chugging with the kick; machine-gun blast bursts; crushed hats; squealing lead; eerie choir',
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.2, db=-15),
+              T('chat', 'top', 'chat', pan=0.1, db=-29),
+              T('bass', 'bass', '808', db=-7, sc=0.3, p=dict(drive=2.2, decay=0.35, slide=0.06)),
+              T('bass_grit', 'bass', '808', double_of='bass', octave=0, keep_inst=True, hp=220, presence=3, sc=0.9, db=-25,
+                p=dict(drive=7.5, decay=0.35, slide=0.06)),
+              T('chords', 'chords', 'chuggtr', db=-16),
+              T('pad', 'pad', 'choir', rev=0.6, db=-30),
+              T('lead', 'lead', 'screech', rev=0.4, dly=0.25, db=-19),
+              T('texture', 'fx', 'texture', db=-36)],
+      master=dict(lufs=-8.0, air=-2.0, low=4.0, drive=0.2, max_gr=5.0, width=0.85),
+      pools=dict(bass=['808'], chords=['chuggtr', 'guitar', 'sf:distguitar'], pad=['choir', 'eeriepad', 'darkpad'],
+                 lead=['screech', 'phonkbell', 'bell', 'chuggtr']),
+      label='Switch-up deathcore (808 switch-ups + breakdowns)')
+
 
 
 def _offer_genre_sounds():
