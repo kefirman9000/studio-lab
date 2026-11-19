@@ -122,10 +122,31 @@ GENRE_MELODY = {'smooth_jazz_horns': 'pentatonic', 'shakuhachi_pop': 'pentatonic
                 'hauntology': 'pentatonic', 'braindance': 'diatonic', 'liquid_dnb': 'pentatonic', 'melodic_dubstep': 'diatonic', 'jam_band': 'blues', 'soft_rock': 'pentatonic',
                 'teen_pop': 'pentatonic', 'luxury_rap': 'diatonic', 'uplifting_trance': 'diatonic', 'melodic_house': 'pentatonic',
                 'celtic_jig': 'diatonic', 'waltz': 'diatonic', 'tango': 'diatonic', 'salsa': 'diatonic', 'cumbia': 'diatonic'}
+# house / techno keyboard voicings, one picked per song (deep house's minor 9 / 11 chords in drop-2, the quartal
+# 'Detroit' stab built in fourths, open triads ...)
+# per-sound timing in house (swing added on the off-beat 16ths, then milliseconds early / late): the hats and shakers
+# swing harder than the kick, the shaker is pushed ahead, rims and congas sit a little back, the clap a hair late
+MODULAR_GENRES = {'techno': 1.0, 'hard_techno': 0.9, 'minimal': 1.0, 'dub_techno': 0.7, 'melodic_techno': 0.6, 'uk_tribal_techno': 0.8,
+                  'berlin_school': 0.6, 'acid_house': 0.5, 'tech_house': 0.5}
+TECHNO_RUMBLE = {'techno': 0.8, 'hard_techno': 1.0, 'dub_techno': 0.6, 'melodic_techno': 0.45, 'uk_tribal_techno': 0.6, 'minimal': 0.3}
+HOUSE_FEEL = {'chat': (0.05, 0.0), 'ohat': (0.0, 3.0), 'shaker': (0.07, -5.0), 'rim': (0.04, 7.0), 'conga': (0.05, 4.0),
+              'bongo': (0.05, 3.0), 'clap': (0.0, 4.0), 'tamb': (0.06, -3.0), 'perc': (0.04, 5.0)}
+HOUSE_FEEL_GENRES = {'house', 'deep_house', 'tech_house', 'melodic_house', 'organic_house', 'sunny_melodic_house',
+                     'emotive_deep_house', 'garage_house', 'tokyo_deep_house', 'nineties_club_house', 'piano_house_90s',
+                     'afro_house', 'uk_funky', 'outsider_house', 'french_house', 'nu_disco', 'mallet_house', 'pop_house_90s'}
+HOUSE_VOICINGS = {'deep_house': ['drop2', 'drop2', 'fourths', 'open'], 'tech_house': ['fourths', 'drop2', 'close'],
+                  'house': ['close', 'drop2', 'open'], 'melodic_house': ['open', 'drop2'], 'garage_house': ['drop2', 'close'],
+                  'tokyo_deep_house': ['drop2', 'fourths'], 'dub_techno': ['fourths', 'fourths', 'drop2'],
+                  'minimal': ['fourths', 'close'], 'techno': ['fourths', 'close', 'close'], 'nineties_club_house': ['close', 'drop2'],
+                  'emotive_deep_house': ['open', 'drop2'], 'organic_house': ['open', 'drop2'], 'uk_funky': ['drop2', 'fourths'],
+                  'afro_house': ['drop2', 'open'], 'outsider_house': ['fourths', 'drop2'], 'french_house': ['close', 'drop2']}
 GENRE_VOICING = {'bebop': 'rootless', 'soul_jazz': 'rootless', 'modal_jazz': 'open', 'fusion': 'drop2', 'impressionism': 'open', 'romantic': 'open', 'jazz': 'rootless', 'bossa_nova': 'rootless', 'lofi': 'rootless', 'boombap': 'rootless', 'city_pop': 'drop2',
                  'deep_house': 'drop2', 'ukgarage': 'drop2', 'funk': 'drop2', 'disco': 'drop2', 'downtempo': 'drop2',
                  'neoclassical': 'open', 'chamber': 'open', 'fantasy_rpg': 'open', 'cinematic': 'open', 'orchestral': 'open',
                  'swing': 'drop2', 'gospel': 'open', 'rnb': 'drop2', 'waltz': 'open', 'tango': 'close'}
+GENRE_COLORS_HOUSE = {'deep_house': ['9', 'm11', '9', '7'], 'tech_house': ['m11', '7', 'triad'], 'tokyo_deep_house': ['9', 'm11', '7'],
+                      'garage_house': ['9', '7'], 'house': ['7', '9', 'triad', 'triad'], 'uk_funky': ['m11', '9'],
+                      'outsider_house': ['m11', '9', '7'], 'dub_techno': ['m11', '7', 'triad']}
 GENRE_COLORS = {'jazz_rap': ['9', '7', '9', '6'], 'cloud_rap': ['add9', 'sus2', 'triad'], 'slow_jam': ['9', '7', 'add9'], 'smooth_jazz': ['add9', '9', '7', 'sus2'], 'smooth_funk': ['9', '7'], 'quiet_storm': ['9', '7', 'add9'], 'modern_country': ['triad', 'add9', 'sus2'], 'country_waltz': ['triad'], 'outlaw_country': ['triad', '7'], 'western_swing': ['6', '7', '9', '6'], 'g_funk': ['7', '9', 'triad'], 'neo_soul': ['9', '7', '9', 'add9'], 'new_jack_swing': ['7', '9', 'triad'], 'alt_rnb': ['7', 'add9', '9'], 'rage': ['triad'], 'plugg': ['add9', 'triad', '7'], 'hauntology_sunlit': ['add9', 'triad', 'sus2', '7'], 'hauntology_dark': ['triad', 'sus2', 'add9'], 'epic_orchestral': ['triad', 'sus4'], 'epic_battle': ['triad'], 'epic_choir': ['triad'], 'heroic_anthem': ['triad', 'sus4', 'add9'], 'symphonic_finale': ['triad', '7'], 'bebop': ['9', '7', '6'], 'modal_jazz': ['9', 'sus4', '7'], 'soul_jazz': ['7', '9'], 'fusion': ['9', 'add9', '7'], 'future_funk': ['7', '9'], 'italo_disco': ['triad', 'add9'], 'new_beat': ['triad'], 'gabber': ['triad'], 'rave_hardcore': ['triad', '7'], 'classical_period': ['triad'], 'romantic': ['7', 'triad', 'add9'], 'impressionism': ['add9', '9', 'sus2'], 'minimalism': ['triad', 'add9'], 'deep_dubstep': ['triad'], 'deep_dubstep_minimal': ['triad'], 'progressive_trance': ['triad', 'sus2', 'add9'], 'organic_house': ['add9', 'triad', 'sus2'], 'disco_funk': ['7', '9', 'triad'], 'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
                 'city_pop': ['7', '9', 'add9'], 'deep_house': ['7', '9', 'add9'], 'ukgarage': ['7', '9'], 'funk': ['7', '9'],
                 'blues': ['7'], 'downtempo': ['7', 'add9', '9'], 'neoclassical': ['triad', 'add9', 'add9', 'sus2'],
@@ -1080,12 +1101,17 @@ def compose(opts):
         chord_color = rnd.choice(['7', 'add9', '9'])
     sname = st.get('name') or opts.style
     sname_style = sname
-    if sname in GENRE_COLORS:                       # genres whose harmony is defined by extended chords
+    if sname in GENRE_COLORS and sname not in GENRE_COLORS_HOUSE:   # genres whose harmony is defined by extended chords
         chord_color = random.Random(opts.seed * 31 + 7).choice(GENRE_COLORS[sname])
+    elif sname in GENRE_COLORS_HOUSE:               # house: 7ths, 9ths and the minor 11th of deep house
+        chord_color = random.Random(f'{opts.seed}-{sname}-house-color').choice(GENRE_COLORS_HOUSE[sname])
     if getattr(opts, 'chord_color', None) in COLORS:
         chord_color = opts.chord_color
     if st.get('voicing') != 'power' and sname in GENRE_VOICING:
         st['voicing'] = GENRE_VOICING[sname]
+    if st.get('voicing') != 'power' and sname in HOUSE_VOICINGS:
+        rv = random.Random(f'{opts.seed}-{sname}-house-voicing')    # each song its own keyboard player: 9ths and
+        st['voicing'] = rv.choice(HOUSE_VOICINGS[sname])           # 11ths in drop-2, quartal stabs, open triads
     if getattr(opts, 'voicing', None) in VOICINGS:
         st['voicing'] = opts.voicing
     st['melody_lang'] = opts.melody_style if getattr(opts, 'melody_style', None) in MELODY_STYLES else GENRE_MELODY.get(sname, 'diatonic')
@@ -1103,6 +1129,12 @@ def compose(opts):
                                      amount=getattr(opts, 'builds', 'auto') or 'auto', family=fam)
     g = getattr(opts, 'groove', None)
     st['groove'] = None if g == 'straight' else (g if g in GROOVES else STYLE_GROOVE.get(sname))
+    if st.get('category') == 'Electronic' and 'hat_choke' not in st and 'ohat' in st.get('drums', {}) and 'chat' in st.get('drums', {}):
+        st['hat_choke'] = True                           # drum-machine hats: the closed hat chokes the open one
+    if sname in TECHNO_RUMBLE and 'kick_rumble' not in st:
+        st['kick_rumble'] = TECHNO_RUMBLE[sname]
+    if sname in HOUSE_FEEL_GENRES and g != 'straight' and not st.get('meter'):
+        st['track_feel'] = {k: v for k, v in HOUSE_FEEL.items() if k != 'kick'}
     pad_voicing = rnd.choice(['close', 'close', 'open'])
     modulate = bool(st.get('key_change')) or rnd.random() < {'teen_pop': 0.75, 'gospel': 0.35, 'soul_ballad': 0.35, 'smooth_jazz': 0.7}.get(st.get('name'), 0.22) \
         and st.get('form') in ('edm', 'song', 'trap', 'chip', 'halftime', 'song_b')   # (teen pop: the last-chorus key change)
@@ -1754,6 +1786,10 @@ def compose(opts):
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
     if st.get('granular'):                               # IDM / drill & bass: the break resequenced hit by hit, every bar
         granular_breaks(evs, tracks, sections, float(st['granular']), random.Random(opts.seed * 97 + 5))
+    _gname = st.get('name') or opts.style
+    if st.get('modular') or _gname in MODULAR_GENRES:
+        modular_drums(evs, tracks, sections, float(st.get('modular') or MODULAR_GENRES[_gname]),
+                      random.Random(f'{opts.seed}-{_gname}-modular'))
     if st.get('calm_lead'):                              # ... and the melody sits and breathes over it: long notes only
         calm = float(st['calm_lead'])
         for name in [n for n, t in tracks.items() if t.get('layer') == 'lead' and n != 'vocal' and not t.get('double_of')]:
@@ -2940,6 +2976,51 @@ def mallet_bar(key, tones, beat0, b, sname, si, big, rate, rest, memo, rnd):
             v = 1.0 if k == 0 else (0.8 if k * 2 == per else 0.62 + 0.08 * (k % 2))
             out.append(Ev('arp', t0 + k * step, step * 0.8, n, v * rnd.uniform(0.95, 1.0)))
     return out
+
+
+def modular_drums(evs, tracks, sections, amount, rnd):
+    """Modular-style sequencing for techno (and its relatives): the hats and percussion aren't a fixed loop any more.
+    - probability: off-beat hat hits only play some of the time (each song its own odds), so the line breathes;
+    - ratchets: now and then a hat hit rolls into 2-4 quick repeats inside its 16th;
+    - polymeter: one percussion part loops every 3, 5 or 7 sixteenths, drifting against the 4/4 bar and only meeting
+      it again after several bars;
+    - parameter locks: a few steps of each loop are always accented (or ghosted), the same steps every bar.
+    Kicks, claps and snares are left exactly where they are."""
+    big = [s for s in sections if s['name'] not in ('intro', 'outro')]
+    if not big:
+        return
+    inside = lambda b: any(s['bar'] * 4 <= b < (s['bar'] + s['bars']) * 4 for s in big)
+    hats = [n for n, t in tracks.items() if t.get('layer') == 'top' and n in ('chat', 'ohat', 'shaker', 'ride', 'hat2', 'perc')]
+    odds = {n: rnd.uniform(0.7, 0.92) for n in hats}
+    locks = {n: {rnd.randrange(16): rnd.choice([1.25, 1.2, 0.55]) for _ in range(2)} for n in hats}
+    out, drop = [], set()
+    for i, e in enumerate(evs):
+        if e.track not in odds or e.midi is not None or not inside(e.beat):
+            continue
+        step = int(round(e.beat * 4)) % 16
+        if step in locks[e.track]:
+            e.vel = min(1.2, e.vel * locks[e.track][step])
+        if step % 4 != 0 and rnd.random() > odds[e.track] ** (1 + amount * 0.5):
+            drop.add(i)
+            continue
+        if e.track == 'chat' and rnd.random() < 0.05 * amount:     # ratchet
+            k = rnd.choice([2, 3, 4])
+            drop.add(i)
+            for j in range(k):
+                out.append(e.copy(beat=e.beat + j * 0.25 / k, dur=0.25 / k, vel=e.vel * (1.0 - 0.12 * j)))
+    evs[:] = [e for i, e in enumerate(evs) if i not in drop] + out
+    perc = next((n for n in ('rim', 'perc', 'tom', 'conga', 'cowbell808') if n in tracks), None)
+    if perc and amount >= 0.5:                                  # the polymetric loop
+        L = rnd.choice([3, 5, 7, 5])
+        hits = sorted(rnd.sample(range(L), max(1, L // 3)))
+        evs[:] = [e for e in evs if not (e.track == perc and inside(e.beat))]
+        for s in big:
+            if s['opts'].get('build') and rnd.random() < 0.5:
+                continue
+            for k in range(s['bars'] * 16):
+                if (k % L) in hits:
+                    b = s['bar'] * 4 + k / 4
+                    evs.append(Ev(perc, b, 0.25, None, (0.85 if k % L == hits[0] else 0.62) * rnd.uniform(0.92, 1.0)))
 
 
 def granular_breaks(evs, tracks, sections, amount, rnd):

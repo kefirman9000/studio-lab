@@ -1716,7 +1716,15 @@ const HUB=[['overview','Overview'],['real','🎻 Real instruments'],['orch','�
 function hubOpenTab(id){ try{ localStorage.setItem('sl_hub', id) }catch(e){}
   return ({overview:hubOverview, real:()=>libModal(), vst:()=>vstModal(), rigs:()=>rigModal(), samples:()=>soundsModal(), plugins:()=>plugModal(),
     orch:async()=>{ const V=await api('/api/vst',{}); if(!V.available){ vstModal(); return } orchModal(V); }})[id](); }
-function openHub(id){ let t=id; if(!t){ try{ t=localStorage.getItem('sl_hub') }catch(e){} } return hubOpenTab(HUB.some(h=>h[0]===t)?t:'overview'); }
+// The hub always opens: it shows straight away (loading), and if the tab it reopens can't load - a plugin scan that
+// hangs, a library check that fails - it falls back to the overview instead of silently never appearing.
+async function openHub(id){ let t=id; if(!t){ try{ t=localStorage.getItem('sl_hub') }catch(e){} } t=HUB.some(h=>h[0]===t)?t:'overview';
+  const fail=e=>{ $('#modalBox').className='box wide'; $('#modalBox').innerHTML=`<h3>🎚 Sounds &amp; instruments</h3><div class="hint">Couldn't load this window (${esc(String((e&&e.message)||e))}). Try again, or use ⚙ Options → Report a problem.</div><div style="text-align:right;margin-top:12px"><button class="btn p" onclick="closeModal()">Close</button></div>`; $('#modal').classList.add('on'); };
+  $('#modalBox').className='box wide'; $('#modalBox').innerHTML='<h3>🎚 Sounds &amp; instruments</h3><div class="hint">Loading…</div>'; $('#modal').classList.add('on');
+  const within=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error('it took too long')),ms))]);
+  try{ await within(Promise.resolve(hubOpenTab(t)),12000); }
+  catch(e){ if(t==='overview'){ fail(e); return; } try{ localStorage.setItem('sl_hub','overview') }catch(_){}
+    try{ await within(Promise.resolve(hubOpenTab('overview')),12000); }catch(e2){ fail(e2); } } }
 function hubTabs(active){ const box=$('#modalBox'); if(!box||box.querySelector('.hubtabs')) return;
   box.className='box wide'; const bar=document.createElement('div'); bar.className='hubtabs';
   bar.innerHTML=HUB.map(([id,n])=>`<button type="button" data-hub="${id}" class="${id===active?'on':''}">${n}</button>`).join('');

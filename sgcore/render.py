@@ -119,6 +119,95 @@ def _bp_coeffs(fc, q):
     al = np.sin(w) / (2 * q)
     return np.array([al, 0, -al]) / (1 + al), np.array([1, -2 * np.cos(w) / (1 + al), (1 - al) / (1 + al)])
 
+
+def kick_rumble(kick, amount, duck=None):
+    """The techno rumble: the kick sent into a long, dark reverb, low-passed to the sub region, driven so it growls,
+    high-passed under 35 Hz and ducked by the kick itself - the rolling low-end roar between the kicks (built from the
+    kick, so it always sits in its key and its rhythm)."""
+    x = np.asarray(kick, np.float64)
+    ir = make_ir(2.6, predelay=0.0, bright=0.15)
+    wet = reverb(x, ir)[:, :x.shape[1]]
+    b, a = signal.butter(4, 190 / (SR / 2))
+    wet = signal.lfilter(b, a, wet, axis=-1)
+    pk = np.abs(wet).max() + 1e-9
+    wet = np.tanh(wet / pk * 3.0) / 3.0 * pk
+    b, a = signal.butter(2, 35 / (SR / 2), 'high')
+    wet = signal.lfilter(b, a, wet, axis=-1)
+    if duck is not None:
+        d = np.asarray(duck, np.float64)[:wet.shape[1]]
+        wet[:, :len(d)] *= (1 - 0.95 * d)[None, :]
+    else:                                                # no sidechain in this genre: duck under the kick's own body
+        ke = uniform_filter1d(np.abs(x).max(axis=0), int(0.03 * SR))
+        wet *= (1 - 0.9 * np.clip(ke / (ke.max() + 1e-9) * 2.0, 0, 1))[None, :]
+    k_rms = np.sqrt(np.mean(x ** 2)) + 1e-9
+    w_rms = np.sqrt(np.mean(wet ** 2)) + 1e-9
+    return (wet * (k_rms / w_rms) * 0.55 * amount).astype(np.float32)
+
+
+def hat_choke_env(chat, ohat, fade=0.004):
+    """Open-hat choke (as on the drum machines): the open hat's gain drops to zero, over a few ms, the moment a closed
+    hat is struck, and comes back for the next open-hat hit."""
+    n = ohat.shape[1]
+    ca = np.abs(np.asarray(chat, np.float64)).max(axis=0)[:n]
+    oa = np.abs(np.asarray(ohat, np.float64)).max(axis=0)[:n]
+    thr_c = 0.25 * (ca.max() + 1e-9)
+    thr_o = 0.25 * (oa.max() + 1e-9)
+    c_on = np.flatnonzero((ca[1:] > thr_c) & (ca[:-1] <= thr_c)) + 1
+    o_on = np.flatnonzero((oa[1:] > thr_o) & (oa[:-1] <= thr_o)) + 1
+    g = np.ones(n)
+    f = max(1, int(fade * SR))
+    j = 0
+    for c in c_on:
+        while j < len(o_on) and o_on[j] <= c:
+            j += 1
+        if j == 0 and (not len(o_on) or o_on[0] > c):
+            continue
+        end = o_on[j] if j < len(o_on) else n
+        if end - c > f:
+            g[c:c + f] = np.minimum(g[c:c + f], np.linspace(1, 0, f))
+            g[c + f:end] = 0.0
+    return g.astype(np.float32)
+
+
+TONE_BANDS = ((20, 60), (60, 120), (120, 250), (250, 500), (500, 1000), (1000, 2000), (2000, 4000), (4000, 8000), (8000, 11000))
+
+
+def band_balance(x):
+    """The tonal balance of the loudest 20 s of a mix: level per band (dB, the loudest band = 0) - measured the same
+    way the reference records were."""
+    m = np.asarray(x, np.float64).mean(axis=0)
+    n = len(m)
+    w = min(n, 20 * SR)
+    if n > w:
+        e = uniform_filter1d(m ** 2, SR)
+        s0 = int(np.argmax(np.convolve(e[::SR // 4], np.ones(80), 'valid')) * (SR // 4))
+        m = m[s0:s0 + w]
+    f, P = signal.welch(m, SR, nperseg=8192)
+    db = np.array([10 * np.log10(P[(f >= a) & (f < b)].sum() + 1e-12) for a, b in TONE_BANDS])
+    return db - db.max()
+
+
+def tone_match(x, target, log=print, amount=0.6, limit=3.0):
+    """Gentle reference matching: compare the mix's band balance with the genre's reference records and nudge each
+    band part of the way there (at most +-3 dB), with broad peaking EQs - the sub with a low shelf, the air with a high
+    shelf. Fixes a too-dark or too-thin render without forcing it onto the records."""
+    cur = band_balance(x)
+    tgt = np.asarray(target, float)
+    d = (tgt - tgt.mean()) - (cur - cur.mean())
+    d = np.clip(d * amount, -limit, limit)
+    for (a, b), g in zip(TONE_BANDS, d):
+        if abs(g) < 0.3:
+            continue
+        fc = float(np.sqrt(a * b))
+        if a == 20:
+            x = eq(x, 'lowshelf', 60, 0.7, g)
+        elif b == 11000:
+            x = eq(x, 'highshelf', 8000, 0.7, g)
+        else:
+            x = eq(x, 'peak', fc, 1.1, g)
+    log('   tone match: ' + ' '.join(f'{g:+.1f}' for g in d))
+    return x
+
 def auto_lp(buf, cut, block=256):
     """A 12 dB low-pass whose cutoff follows `cut` (Hz per sample), in blocks with carried state; blocks where it is
     wide open are (a track that never closes is passed straight through)."""
@@ -156,9 +245,16 @@ class Renderer:
         self.bright = 2 ** (float(self.opts.brightness) * 1.2)
         self.track_gains = {}
 
-    def t_of(self, beat, human=True, layer=None, swing=True):
+    def t_of(self, beat, human=True, layer=None, swing=True, track=None):
         st = self.st
         b = beat
+        feel = (st.get('track_feel') or {}).get(track) if track else None
+        if feel:                                        # each drum sound its own feel: hats swing harder than the
+            sw_x, ms = feel                             # kick, shakers push ahead, rims sit back (house groove)
+            q = beat * 4
+            if abs(q - round(q)) < 1e-6 and int(round(q)) % 2 == 1:
+                b += sw_x * 0.25
+            b += ms / 1000.0 / self.spb
         g = GROOVES.get(st.get('groove')) if layer else None
         if g and layer in g:                            # genre timing feel (e.g. Dilla-late snares, pushed Afro hats)
             q16 = beat * 4
@@ -434,7 +530,7 @@ class Renderer:
         # kicks are never humanised (a layered kick would flam), and a break plays as one tight unit
         tight = tcfg['name'] == kick or tcfg['layer'] == 'kick' or tcfg['name'] in brk or tcfg['name'] in ('lkick', 'lsnare')
         for i, ev in enumerate(evs):
-            s = int((self.t_of(ev.beat, human=not tight, layer=tcfg['layer'], swing=is_drum or ev.dur < HELD)
+            s = int((self.t_of(ev.beat, human=not tight, layer=tcfg['layer'], swing=is_drum or ev.dur < HELD, track=tcfg['name'])
                      + getattr(ev, 'strum', 0.0) * self.spb) * SR)
             sig = None
             if real_drums:
@@ -628,6 +724,7 @@ class Renderer:
         sc_depth = st['sc_depth']
         duck = self.sidechain_curve(st['sc_release']) if sc_depth > 0 else None
         mix = np.zeros((2, L), dtype=np.float32)
+        self._hats = {}
         drums = np.zeros((2, L), dtype=np.float32)
         rev_send = np.zeros((2, L), dtype=np.float32)
         dly_send = np.zeros((2, L), dtype=np.float32)
@@ -742,6 +839,15 @@ class Renderer:
                 dly_send += buf * np.float32(tcfg['dly'] * opts.delay)
             if dub_send is not None and tcfg.get('throw'):
                 dub_send += buf * throw[None, :] * np.float32(tcfg['throw'] * max(0.3, opts.delay))
+            if st.get('hat_choke') and name in ('ohat', 'chat'):
+                self._hats[name] = buf                     # (the open hat is choked by the closed hat below)
+            if st.get('kick_rumble') and name == st.get('kick_track', 'kick') and np.any(buf):
+                rum = kick_rumble(buf, float(st['kick_rumble']), duck)
+                mix += rum
+                if stems_dir:
+                    rp = os.path.join(stems_dir, f'{ti + 1:02d}_{name}_rumble.wav')
+                    write_wav_float(rp, rum)
+                    stems.append(dict(name=name + '_rumble', layer='bass', inst='rumble', path=rp))
             if tcfg['layer'] in ('kick', 'snare', 'top'):
                 drums += buf
             else:
@@ -787,6 +893,10 @@ class Renderer:
                 stems.append(dict(name='fx', layer='fx', inst='fx', path=path))
         # ---- drum bus
         self.log('   drum bus: glue compression + saturation')
+        if st.get('hat_choke') and 'ohat' in self._hats and 'chat' in self._hats:
+            oh = self._hats['ohat']
+            drums -= oh                                    # the open hat rings only until the closed hat shuts it
+            drums += oh * hat_choke_env(self._hats['chat'], oh)[None, :]
         drums = drum_bus(drums, float(st.get('drum_drive', 0.25)))
         if stems_dir and np.any(drums):
             path = os.path.join(stems_dir, '00_drum_bus.wav')
@@ -1214,6 +1324,8 @@ def master(x, cfg, log=print):
         x = eq(x, 'peak', 320, 1.0, -1.5)
     x = eq(x, 'peak', 3000, 0.8, 0.5)
     x = eq(x, 'highshelf', 9000, 0.7, cfg.get('air', 1.5))
+    if cfg.get('tone'):                # steer the tonal balance toward the genre's reference records
+        x = tone_match(x, cfg['tone'], log)
     if cfg.get('vintage_lp'):        # a 60s tape / tube top end: rolls off above this (Hz) - dark, warm, bass-forward
         x = lp(x, float(cfg['vintage_lp']))
     if cfg.get('lofi'):

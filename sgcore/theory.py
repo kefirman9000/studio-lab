@@ -105,6 +105,8 @@ def color_fits(key, deg, color):
         return iv(3) == 5 and fifth_ok
     if color in ('add9', '9', 'add9no3'):
         return iv(1) == 2 and fifth_ok                # a major 9th; a minor 9th grinds against the root
+    if color == 'm11':
+        return iv(2) == 3 and iv(1) == 2 and fifth_ok and iv(3) == 5 and iv(6) == 10
     if color == '6':
         return iv(5) == 9 and fifth_ok                # a major 6th; a minor 6th rubs against the 5th
     return True
@@ -136,6 +138,11 @@ def voice_chord(key, deg, size, center, voicing='close', color=None):
         lo = center - 6
         r = lo + ((root - lo) % 12)
         return [r, r + 7, r + 12]
+    if voicing == 'fourths':                        # quartal stab (Detroit / deep house / dub techno): the chord built
+        base = key.deg(deg, 4)                      # in stacked diatonic fourths from the root - 1, 4, b7, b3 (+ 5)
+        lo = center - 6
+        r = lo + ((base % 12 - lo) % 12)
+        return [r + key.deg(deg + 3 * k, 4) - base for k in range(min(4, max(3, size)))]
     offs = COLORS[color] if color in COLORS else [2 * i for i in range(size)]
     if voicing == 'rootless':                       # jazz piano: the bass has the root, hands play 3-5-7-9
         offs = [o for o in offs if o != 0]
@@ -153,7 +160,7 @@ def voice_chord(key, deg, size, center, voicing='close', color=None):
     return declutter(notes, key, deg, color)
 
 
-VOICINGS = ['close', 'open', 'drop2', 'rootless', 'power']
+VOICINGS = ['close', 'open', 'drop2', 'rootless', 'power', 'fourths']
 
 
 def fold(m, lo):
@@ -243,4 +250,5 @@ def chord_tones_deg(chord, lo, hi):
 
 # chord colours: scale-degree stacks above the root (0=root 2=3rd 4=5th 6=7th 8=9th, 1/3 = sus2/sus4, 5 = 6th)
 COLORS = {'triad': [0, 2, 4], '7': [0, 2, 4, 6], 'add9': [0, 2, 4, 8], 'sus2': [0, 1, 4], 'sus4': [0, 3, 4],
-          '9': [0, 2, 4, 6, 8], '6': [0, 2, 4, 5], 'add9no3': [0, 4, 8]}
+          '9': [0, 2, 4, 6, 8], '6': [0, 2, 4, 5], 'add9no3': [0, 4, 8],
+          'm11': [0, 2, 6, 8, 10]}             # the deep-house minor 11th (1 b3 b7 9 11, no 5th) - minor chords only

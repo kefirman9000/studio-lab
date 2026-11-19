@@ -683,10 +683,10 @@ class Handler(BaseHTTPRequestHandler):
                     res = analyze(pcm, sr_)
                     try:                                  # the genres this sounds closest to (tempo, key, drum feel, sound)
                         from . import genrematch
-                        from .styles import STYLES, LABELS
+                        from .styles import LABELS as _LABELS   # (a local 'STYLES' here broke every other endpoint)
                         x_ = np.asarray(pcm, dtype=np.float64)
                         genrematch.analyze_reference(x_, sr_, res)
-                        res['genres'] = genrematch.suggest(res, STYLES, LABELS, top=6)
+                        res['genres'] = genrematch.suggest(res, STYLES, _LABELS, top=6)
                         res.pop('feels', None)
                     except Exception as e:                # suggestions are a bonus - the analysis still applies
                         res['genres_error'] = str(e)
@@ -747,8 +747,14 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({'ok': True})
         if p == '/api/vst':
             from . import vsthost
-            return self._json(dict(available=vsthost.available(), plugins=vsthost.find_plugins(), sounds=vsthost.list_sounds(),
-                                   folder=vsthost.PLUGIN_DIR, python=sys.executable, real=real_insts(None)))
+            out = dict(available=False, plugins=[], sounds=[], folder=vsthost.PLUGIN_DIR, python=sys.executable, real=[])
+            for k, fn in (('available', vsthost.available), ('plugins', vsthost.find_plugins), ('sounds', vsthost.list_sounds),
+                          ('real', lambda: real_insts(None))):
+                try:                                     # one broken part (an odd plugin folder) never blanks the window
+                    out[k] = fn()
+                except Exception as e:
+                    out.setdefault('errors', []).append(f'{k}: {e}')
+            return self._json(out)
         if p == '/api/vst/install':
             from . import vsthost
             return self._json({'job': bg_job(lambda log: {'ok': vsthost.install(log)})})

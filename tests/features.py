@@ -1122,6 +1122,25 @@ def test_va_synth():
     assert lo_ < 0.78                                                         # the bass band held under its ceiling
     sp_ = np.abs(np.fft.rfft(ll[0, SR // 2:SR // 2 + SR]))
     assert sp_[135] / sp_[45] < 0.02                                           # ...without distorting it (no 3rd harmonic)
+    from sgcore.theory import voice_chord as _vc, Key as _K                                 # 1.70
+    assert _vc(_K(9, 'minor'), 0, 4, 62, 'fourths') == [57, 62, 67, 72]                  # A - D - G - C quartal stab
+    from sgcore.render import hat_choke_env, kick_rumble, band_balance, tone_match
+    ch = np.zeros((2, SR)); oh = np.zeros((2, SR))
+    oh[:, 1000:20000] = 0.5
+    ch[:, 8000:8200] = 0.8
+    g_ = hat_choke_env(ch, oh)
+    assert g_[5000] == 1.0 and g_[9000] == 0.0                                           # the closed hat chokes the open one
+    kk = np.zeros((2, SR * 2)); kk[:, ::SR // 2] = 1.0
+    ru = kick_rumble(kk, 1.0)
+    assert ru.shape == kk.shape and np.isfinite(ru).all() and np.abs(ru).max() > 0
+    nz2 = np.random.default_rng(5).standard_normal((2, SR * 3)) * 0.1
+    bb0 = band_balance(nz2)
+    tm_ = tone_match(nz2, list(bb0 + np.array([3, 0, 0, 0, 0, 0, 0, 0, -3])), lambda *a: None)
+    bb1 = band_balance(tm_)
+    assert bb1[0] - bb1[-1] > bb0[0] - bb0[-1] + 1.0                                     # nudged toward the target
+    s70 = compose(Options(style='techno', seed=3))
+    assert s70['st'].get('kick_rumble') and s70['st'].get('hat_choke')
+    assert compose(Options(style='deep_house', seed=3))['st'].get('track_feel')
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars

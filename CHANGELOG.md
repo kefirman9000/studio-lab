@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.70.0
+- **Techno rumble, done the real way:** in techno, hard, dub, melodic, tribal techno and minimal, the kick itself is sent into a long, dark reverb. The result is low-passed to the sub region, driven so it growls, high-passed under 35 Hz and ducked by the kick: the rolling low-end roar between the kicks. Because it's built from the kick, it always sits in the kick's key and rhythm. It comes out as its own stem ("kick_rumble").
+- **Modular-style sequencing** (techno family, acid house, tech house, Berlin school):
+  - Off-beat hats only play some of the time, with each song getting its own odds.
+  - Hits now and then roll into 2-4 quick ratchets.
+  - One percussion part loops every 3, 5 or 7 sixteenths, drifting against the bar.
+  - A few steps of each loop are always accented or ghosted (parameter locks).
+  - Kicks, claps and snares stay put.
+- **Deep-house chord voicings:**
+  - New minor-11th chords (1 - b3 - b7 - 9 - 11) and the quartal "Detroit" stab built in stacked fourths.
+  - Each house / techno song now picks its own keyboard voicing (drop-2 9ths and 11ths, quartal stabs, open or close triads) and its own colour (7ths, 9ths, minor 11ths).
+- **House groove per sound:** in the house genres the closed hats and shakers swing harder than the kick, the shaker is pushed ahead, the rims and congas sit a little back and the clap is a hair late. It feels played rather than quantized.
+- **Open-hat choke:** in the electronic genres with drum-machine hats, the closed hat cuts the open hat off the moment it's struck, as on a real drum machine.
+- **Fix - "Sounds & instruments" not opening:** the Genre VSTs page's server call failed (a naming clash in the server code, there since 1.54). The hub reopens on the last page you used, so once that page was Genre VSTs the whole window silently never appeared. Now:
+  - The server call is fixed.
+  - The window always opens straight away, showing "loading…".
+  - If a page can't load, it falls back to the overview instead of never showing.
+- **Automatic tone matching to the reference records:** genres modelled on your reference tracks now carry the records' tonal balance. That covers emotive / melodic / organic / sunny deep house, the trance genres, club trance, festival psy, the progressive trance genres, and anthemic and liquid DnB. The master compares each render with it and nudges every band part of the way there (at most +-3 dB), which fixes a too-dark or too-thin render without forcing it onto the records.
+
 ## 1.69.0
 - **More dubstep / bass-music basses,** built from your notes on growls:
   - **Dark smooth wobble:** rounded saw and triangle through a low, gently resonant filter swept only from very dark to warm, over a heavy sub. For deep and dark dubstep.

@@ -76,6 +76,13 @@ def test_ui_sound_menus():
     assert ui.index('id="voxCard"') < ui.index('<summary>Parts') and 'id="voxQuickUp"' in ui     # voice samples: own card, easy to find
     assert '<details class="card dropzone" open id="voxCard">' in ui and "vc.addEventListener('drop'" in ui   # drop a clip on it
     assert '_styleAnchor' in ui and 'd.dataset.id=s.id' in ui                                 # clicked genre row stays put
+    assert "it took too long" in ui and "hubOpenTab('overview')" in ui                     # the sounds hub always opens
+    import ast as _ast                                                                      # no endpoint shadows STYLES
+    _src = open(os.path.join(os.path.dirname(__file__), '..', 'sgcore', 'app.py')).read()
+    for _fn in _ast.walk(_ast.parse(_src)):
+        if isinstance(_fn, _ast.FunctionDef) and _fn.name == '_post':
+            assert not any(isinstance(x, _ast.ImportFrom) and any((a.asname or a.name) == 'STYLES' for a in x.names)
+                           for x in _ast.walk(_fn)), 'a local STYLES import in _post breaks the other endpoints'
     assert 'id="fontSel"' in ui and "applyFont()" in ui and 'id="denseSel"' in ui and ".st.alt{" in ui   # font menu, compact striped list
     print('ok  part sound menus save your pick; no duplicate element ids')
 
