@@ -1,8 +1,8 @@
-# Studio Lab genres (314)
+# Studio Lab genres (320)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (158)
+## Electronic (163)
 
 ### House & Disco (28)
 
@@ -56,7 +56,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | UK tribal techno-bass (broken kicks, rolling percussion) | `uk_tribal_techno` | 128-134 | UK tribal techno-bass: a driving, broken groove around 128-134 - kicks that skip and swing instead of four on the floor, rolling tribal toms, congas and shakers, crisp 16th hats - over a huge, rolling sub, with dark, minimal stabs and a hypnotic, stripped-back feel |
 | Uplifting Trance | `uplifting_trance` | 134-140 | Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw leads and plucky arps, a long piano / pad breakdown that explodes into the drop |
 
-### Dubstep, Garage & Bass (22)
+### Dubstep, Garage & Bass (24)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -69,6 +69,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Deep dubstep - rolling percussion (140) | `deep_dubstep_rolling` | 138-142 | Rolling deep dubstep: modern soundsystem half-time at 140 - kick on 1, snare on 3 - with rolling, shuffling 16th percussion (shakers, rims, tight hats) that never stops moving, a heavy clean sub with a dark, filtered mid-bass growling on top of it, minor-key stabs and a lonely motif in a wide, dark space |
 | Dubstep (classic UK) | `dubstep` | 138-142 | Dark / UK dubstep: half-time at 140, deep clean sub with a slow wobbling mid-bass, sparse syncopated drums, lots of space, dark atmospheres |
 | Early dubstep (stepper era) | `early_dubstep` | 138-142 | Early dubstep (2005-07 "stepper" era): half-time 140 with a kick on 1, snare on 3 and busy, swung 2-step hats and shakers, a rolling sub with a mid-range bass that steps between a few notes, eerie synth stabs and sirens - darker than garage, cleaner than brostep, long DJ sections and a 16-bar breakdown |
+| Emotive 2-step house (vocal chops, warm keys) | `emotive_2step` | 120-128 | Emotive 2-step house: a warm, swung UK groove around 120-126 - skippy 2-step kicks, a crisp backbeat and shuffled hats - with a deep, rounded sub, wistful chopped vocal hooks, warm Rhodes / organ chords and soft pads; melancholic and euphoric at once, late-night and close |
 | Future Bass | `future_bass` | 140-160 | Future bass: lush pitch-chopped supersaw chords, vocal chops, half-time trap drums |
 | Future garage | `future_garage` | 128-136 | Future garage / atmospheric 2-step: a swung, skippy garage beat around 130 with sparse ghostly kicks, rimshots and crackle, a warm round sub on the root, washed-out pads and pitched, breathy vocal-chop textures, soft Rhodes and piano under heavy reverb - late-night, melancholic and hazy |
 | Glitch future bass (chopped vocals, 154) | `glitch_future_bass` | 150-160 | Glitch future bass: emotional, bright future bass at 150-160 in half-time - huge detuned supersaw chords pumping and swelling with the sidechain, a chopped, glitched vocal hook stuttering through the drop, sparkling plucks, rolls and stutter edits, and a soft, pretty breakdown |
@@ -79,6 +80,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Rolling atmospheric bass (wonky, wide) | `rolling_atmos_bass` | 118-130 | Rolling atmospheric bass: a wonky, swung beat around 120-130 with a lazy, drunk snare on 2 and 4 and shuffled hats, a deep bassline that rolls and slides under everything, wide, hazy pads and smeared chords, glitchy, pitched vocal fragments and tape wobble - heavy at the bottom, dreamy and spacious on top |
 | Speed garage | `speed_garage` | 130-136 | Speed garage (late 90s UK): a fast, shuffled four-on-the-floor with garage snares and open hats, the huge warping, filtered bassline, organ stabs, ragga vocal chops and rewinds |
 | Steppy halftime / acid step (140) | `steppy_halftime` | 138-142 | Steppy halftime / acid step: deep, techy half-time at 140 - a steady stepping kick pulse, the snare on 3, tight shuffled percussion - with a heavy, clean sub carrying the track and, often, a squelching acid line twisting over it; minimal, dark, mono and pressured, almost nothing on top |
+| Sub pressure 140 (dark, all sub) | `sub_pressure_140` | 138-142 | Sub pressure 140: a dark, minimal 140 groove that is almost all sub - a heavy, held sine bass pressing on one note for bars at a time, a stark kick and backbeat with sparse, skippy hits, nearly nothing in the mids or on top except a lonely, filtered motif and some air; mono, hypnotic and physical |
 | UK Garage | `ukgarage` | 130-134 | UK garage / 2-step: skippy shuffled drums, organ stabs, vocal chops, sub bass |
 | UK bassline (140) | `bassline_140` | 136-142 | UK bassline (Northern / speed-garage style): a bouncy four-on-the-floor around 138-142 with shuffled garage hats, a warbling, organ-like wobble bass that bounces in octaves and talks between the kicks, bright stabs and a chopped vocal-style hook - cheeky, fast and built for the rave |
 | UK funky | `uk_funky` | 126-132 | UK funky: London house at 130 with a soca and Afro swing - a house kick under syncopated snares, tribal toms and congas, a bouncy sub bass, warm keys and vocal hooks |
@@ -167,19 +169,22 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Moombahton | `moombahton` | 106-112 | Moombahton: dembow groove at 110 with big-room synths and heavy drops |
 | Reggaeton | `reggaeton` | 88-100 | Reggaeton: dembow rhythm, deep 808s, plucky synths, latin percussion |
 
-### Chill, Lo-fi & Ambient (11)
+### Chill, Lo-fi & Ambient (14)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | 90s new-age chill (chant) | `new_age_chant` | 92-100 | Early-90s new-age chill: a slow, heavy hip-hop funk break around 96 under monk-like chanted choir chords, a breathy bamboo-flute melody, deep pads and a single pedal bass note - mysterious, spacious and hypnotic |
 | Ambient | `ambient` | 66-80 | Ambient: slow evolving pads, glassy bells and a soft lead on tape loops of different lengths that drift against each other, huge reverbs, no drums |
 | Ambient beat (dark, sub-heavy) | `ambient_beat` | 140-150 | Ambient beat (dark, sub-heavy, airy): slow half-time drums tucked under washed-out pads, a long sustained 808 sub doing most of the work, soft ticking hats, reversed swells and distant bells - wide, dark and weightless |
+| Analog arp drive (pulsing sequence, pumping pads) | `analog_arp_drive` | 122-132 | Analog arp drive: a glowing, driving synth piece around 122-132 - a 16th-note analog sequence pulsing and filtering through the whole track, pumping against a steady kick, huge swelling pads, a punchy live-sounding snare and bass guitar, a soaring synth melody and long builds where the sequence opens up; warm, saturated and euphoric without ever getting harsh |
 | Balearic chill (sunset guitar, slow house) | `balearic_chill` | 94-108 | Balearic chill: a sunset groove around 95-108 - a soft four-on-the-floor kick, shakers and congas, a warm round bass, a nylon-string guitar picking under warm pads and Rhodes, a gentle melody drifting in the delay - mellow, golden and soft, nothing sharp on top |
 | Berlin school (sequencer) | `berlin_school` | 100-128 | Berlin school (70s): long, hypnotic analog sequencer patterns - a pulsing 16th-note sequence that slowly shifts, string-machine and choir pads, a drifting lead, no drums - spacey and cosmic |
 | Chant downtempo - shakuhachi & monks | `chant_downtempo` | 92-100 | Chant downtempo (early 90s): it opens on a lone, breathy shakuhachi calling over a dark pad - then a monk choir chants slow minor chords, and a heavy, lazy hip-hop break around 96 drops in under it with a deep pedal sub; the shakuhachi answers the chant between the drums - mystical, sensual, cavernous |
 | Downtempo | `downtempo` | 85-100 | Downtempo / chillout: laid-back beats, Rhodes & piano, warm pads, glassy bells |
+| Hazy downtempo (pumping pads, dusty break, wide) | `hazy_downtempo` | 74-90 | Hazy downtempo: a slow, dusty beat at 75-90 - a soft hip-hop break with busy, quiet 16th hats - under deep, pumping analog pads that swell and breathe with the kick, a round synth bass, wordless vocal pads, a gentle plucked arpeggio and a guitar or synth melody floating far away in the reverb; a huge, wide, dreamy stereo field and a warm, tape-soft top |
 | Lo-fi Hip Hop | `lofi` | 72-88 | Lo-fi hip hop: swung boom-bap, jazzy 7th/9th Rhodes chords, warm bass, vinyl + tape wobble |
 | Mid-fi synth-funk / chillwave | `midfi_synthfunk` | 80-100 | Mid-fi synth-funk / chillwave: a slow, crunchy drum-machine groove around 80-100 with a fat gated snare, a rubbery analog bass, detuned, warbly poly-synth chords and arps soaked in tape wobble and chorus, a warm square lead - nostalgic, hazy and funky, like a worn 80s VHS |
+| Sunlit chillwave (live drums, chorus guitar, analog synths) | `sunrise_chillwave` | 114-128 | Sunlit chillwave (live band): a warm, nostalgic, sun-faded sound - a long ambient intro of tape hiss, soft analog pads and a chorus-drenched guitar picking in the delay, then a real drummer drives a straight, motorik indie beat with a picked bass guitar underneath, a bright analog synth arpeggio sparkling on top and a simple synth melody; slow, open major-key chords, pads breathing with the kick, a breakdown with the drums out, a slow fade |
 | Trip-hop | `trip_hop` | 76-96 | Trip-hop: slow, heavy, dusty breakbeats, a deep sub, dark minor Rhodes and string chords, a haunting theremin-like lead, harpsichord or vibes colour and vinyl crackle - moody, cinematic and smoky |
 | Vaporwave | `vaporwave` | 58-74 | Vaporwave: slowed 80s nostalgia - lush Rhodes, sax, chorused pads, tape haze |
 
@@ -217,7 +222,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hauntology II (sunlit tape) | `hauntology_sunlit` | 82-96 | Hauntology II - sunlit tape: warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
 | Hauntology III (dark film haze) | `hauntology_dark` | 64-80 | Hauntology III - dark film haze: slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
 
-## Classic (126)
+## Classic (127)
 
 ### Rock & Metal (26)
 
@@ -250,7 +255,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Surf rock (60s) | `surf_rock` | 146-160 | Surf rock (early-60s instrumental surf): a fast, straight beat driven by the floor tom, a twangy guitar melody tremolo-picked in bursts on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and now and then a combo organ or sax - sunny, wet and full speed ahead |
 | Symphonic Metal | `symphonic_metal` | 120-170 | Symphonic metal: double-kick drums and power chords under choir, string ostinatos and a soaring lead |
 
-### Pop & Indie (10)
+### Pop & Indie (11)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -264,6 +269,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Musical theatre / Broadway | `musical_theatre` | 88-132 | Musical theatre / Broadway: a pit band and orchestra behind a big show tune - piano driving the harmony, strings and horns swelling into the chorus, light kit, a soaring melody, and the last chorus a key change up |
 | Pop | `pop` | 95-122 | Pop: four-chord hooks, piano & guitar, punchy drums, sing-along lead line |
 | Psychedelic synth-pop | `psych_pop` | 110-122 | Psychedelic synth-pop (2010s-20s): punchy, dry, compressed drums with a fat kick around 112-120, a melodic, busy bass guitar, phased and chorused synth chords that swell and swirl, dreamy pads and a wistful synth / guitar lead - big, warm and woozy |
+| Velvet pop (soft, warm, dark) | `velvet_pop` | 100-112 | Velvet pop: a soft, intimate pop groove around 100-110 - a muffled, close drum machine with a gentle backbeat, a deep, warm bass carrying the song, mellow organ / Rhodes chords and soft synth pads, a little glockenspiel or guitar shimmer, everything velvety and dark with no sharp top - built for a breathy vocal |
 
 ### Funk & Disco (6)
 

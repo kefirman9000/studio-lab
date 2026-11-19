@@ -961,6 +961,11 @@ def test_math_rock_meters():
     for g in ('rolling_atmos_bass', 'beat_tape_cinematic', 'uk_tribal_techno', 'steppy_halftime', 'balearic_chill'):
         x = compose(Options(style=g, seed=1))
         assert x['events'] and x['st']['bpm'][0] <= x['bpm'] <= x['st']['bpm'][1] + 2
+    for g in ('sunrise_chillwave', 'hazy_downtempo', 'analog_arp_drive', 'velvet_pop', 'emotive_2step', 'sub_pressure_140'):
+        x = compose(Options(style=g, seed=1))
+        assert x['events'] and x['st']['master'].get('air', 0) <= 0.6
+    sun = {t['name']: t for t in compose(Options(style='sunrise_chillwave', seed=3))['st']['tracks']}
+    assert sun['chords'].get('chorus') and sun['pad'].get('chorus') and sun['pad'].get('sc')   # chorus guitar, breathing pads
     print('ok  math rock: real odd bars (7/8, 3/4, 5/8), tapped loops across the bar line; five reference-batch genres')
 
 

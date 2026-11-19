@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 314 GENRES  (version 1.56.5)
+STUDIO LAB - ALL 320 GENRES  (version 1.56.7)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
 * = new in 1.56
 
 ========================================================================
-ELECTRONIC  (158)
+ELECTRONIC  (163)
 ========================================================================
 
 House & Disco  (28)
@@ -52,7 +52,7 @@ Techno & Trance  (14)
     Hard techno (150)  [hard_techno]
     Dub techno  [dub_techno]
 
-Dubstep, Garage & Bass  (22)
+Dubstep, Garage & Bass  (24)
     Dubstep (classic UK)  [dubstep]
     Brostep  [brostep]
     Riddim  [riddim]
@@ -63,6 +63,8 @@ Dubstep, Garage & Bass  (22)
     Deep dubstep - rollers (sub-weight)  [deep_dubstep_rollers]
     Deep dubstep - rolling percussion (140)  [deep_dubstep_rolling]
     Steppy halftime / acid step (140)  [steppy_halftime]  *
+    Sub pressure 140 (dark, all sub)  [sub_pressure_140]  *
+    Emotive 2-step house (vocal chops, warm keys)  [emotive_2step]  *
     Rolling atmospheric bass (wonky, wide)  [rolling_atmos_bass]  *
     Chipmunk 2-step (pitched vocal chops)  [chipmunk_2step]
     Glitch future bass (chopped vocals, 154)  [glitch_future_bass]
@@ -87,8 +89,8 @@ Drum & Bass, Breaks & Hard  (19)
     jungle  [jungle]
     Breakcore  [breakcore]
     Braindance / IDM  [braindance]
-    IDM jungle - moody theme (synth intro, chopped breaks)  [idm_jungle_theme]  *
-    Drill & bass - spacey (intricate breaks, jazz colours)  [drill_space]  *
+    IDM jungle - moody theme (synth intro, chopped breaks)  [idm_jungle_theme]
+    Drill & bass - spacey (intricate breaks, jazz colours)  [drill_space]
     Breakbeat Hardcore / Rave  [rave_hardcore]
     Hardstyle  [hardstyle]
     Hardcore / Gabber  [gabber]
@@ -148,10 +150,13 @@ Afro, Latin & Caribbean  (8)
     Funk 150 / mandelao  [funk_150]
     Gqom  [gqom]
 
-Chill, Lo-fi & Ambient  (11)
+Chill, Lo-fi & Ambient  (14)
     Lo-fi Hip Hop  [lofi]
     Downtempo  [downtempo]
     Balearic chill (sunset guitar, slow house)  [balearic_chill]  *
+    Sunlit chillwave (live drums, chorus guitar, analog synths)  [sunrise_chillwave]  *
+    Hazy downtempo (pumping pads, dusty break, wide)  [hazy_downtempo]  *
+    Analog arp drive (pulsing sequence, pumping pads)  [analog_arp_drive]  *
     ambient  [ambient]
     Ambient beat (dark, sub-heavy)  [ambient_beat]
     Vaporwave  [vaporwave]
@@ -187,7 +192,7 @@ Hauntology  (7)
     Hauntology - cold dystopian synths  [hauntology_cold]
 
 ========================================================================
-CLASSIC  (126)
+CLASSIC  (127)
 ========================================================================
 
 Rock & Metal  (26)
@@ -218,9 +223,10 @@ Rock & Metal  (26)
     Rockabilly (slap bass & twang)  [rockabilly]
     Post-punk  [post_punk]
 
-Pop & Indie  (10)
+Pop & Indie  (11)
     pop  [pop]
     Bedroom / indie pop  [bedroom_pop]
+    Velvet pop (soft, warm, dark)  [velvet_pop]  *
     Chamber Pop  [chamber_pop]
     City Pop  [city_pop]
     Holiday  [holiday]

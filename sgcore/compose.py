@@ -138,7 +138,7 @@ GENRE_COLORS = {'jazz_rap': ['9', '7', '9', '6'], 'cloud_rap': ['add9', 'sus2', 
                 'soul_ballad': ['triad', '7', '6'], 'waltz': ['triad'], 'celtic_jig': ['triad', 'sus2'], 'ska': ['triad', '7'],
                 'cumbia': ['triad'], 'dancehall': ['triad', '7'], 'hauntology': ['add9', '7', 'triad', 'sus2'],
                 'braindance': ['add9', 'sus2', '7', 'add9no3'], 'liquid_dnb': ['7', '9', 'add9'], 'neurofunk': ['triad', 'add9no3'],
-                'melodic_dubstep': ['triad', 'add9', 'sus2'], 'brostep': ['triad'], 'memphis_phonk': ['triad'], 'switchup_808': ['add9', 'add9', 'triad'], 'switchup_808_dj': ['add9', 'add9', 'triad'], 'switchup_808_hard': ['triad', 'add9'], 'idm_jungle_theme': ['add9', '7', 'triad'], 'math_rock': ['add9', '7', 'add9', 'sus2'], 'drill_space': ['9', '7', 'add9'], 'switchup_mallets': ['add9', 'triad'], 'phonk': ['triad'], 'house_phonk': ['triad'], 'brazilian_phonk': ['triad'], 'jam_band': ['triad', '7', 'sus4'],
+                'melodic_dubstep': ['triad', 'add9', 'sus2'], 'brostep': ['triad'], 'memphis_phonk': ['triad'], 'switchup_808': ['add9', 'add9', 'triad'], 'switchup_808_dj': ['add9', 'add9', 'triad'], 'switchup_808_hard': ['triad', 'add9'], 'idm_jungle_theme': ['add9', '7', 'triad'], 'math_rock': ['add9', '7', 'add9', 'sus2'], 'sunrise_chillwave': ['add9', 'sus2', '7', 'add9'], 'hazy_downtempo': ['add9', '7', 'sus2'], 'analog_arp_drive': ['add9', 'sus2', 'triad'], 'velvet_pop': ['7', 'add9', '9'], 'drill_space': ['9', '7', 'add9'], 'switchup_mallets': ['add9', 'triad'], 'phonk': ['triad'], 'house_phonk': ['triad'], 'brazilian_phonk': ['triad'], 'jam_band': ['triad', '7', 'sus4'],
                 'soft_rock': ['triad', 'add9', '7', 'sus2'], 'teen_pop': ['triad', 'add9', '7'], 'luxury_rap': ['7', 'add9', '9', 'triad'],
                 'uplifting_trance': ['triad', 'add9', 'sus2'], 'melodic_house': ['add9', '7', 'triad', 'sus2'], 'punk': ['triad'], 'indie_rock': ['triad', 'add9', 'sus2']}
 
@@ -2799,7 +2799,7 @@ MALLET_CELLS = ('roll', 'roll', 'trill', 'trill', 'hop', 'run', 'octave', 'rest'
 
 
 def mallet_bar(key, tones, beat0, b, sname, si, big, rate, rest, memo, rnd):
-    """One bar of mallet playing, modelled on the user's 'Mallets' reference - not a straight arpeggio: each beat is a
+    """One bar of mallet playing, modelled on the user's mallet reference - not a straight arpeggio: each beat is a
     cell, all on the beat - a roll (one note struck again and again, the mallet tremolo), a trill with its neighbour,
     a hop between two chord tones, a short run up to a note then a roll on it, an octave bounce, or a rest. A bar's
     four cells are a motif that repeats for two bars with small changes, and a new one comes every four bars; the

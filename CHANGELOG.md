@@ -1,17 +1,27 @@
 # Changelog
 
+## 1.56.7
+- **Three new sunlit chillwave genres**, from your eleven references of one artist's work - each family of its records:
+  - **Sunlit chillwave (live drums, chorus guitar, analog synths)**: a long ambient intro of tape hiss, warm pads and a chorus-drenched guitar picking in the delay, then a real drummer driving a straight indie beat, a picked bass guitar, a bright analog arp and a simple synth melody; slow, open major-key chords (IV-V-I, I-V-vi-IV), pads breathing with the kick, a breakdown with the drums out, a slow fade.
+  - **Hazy downtempo (pumping pads, dusty break, wide)**: 75-90 BPM, a soft break with busy quiet hats, deep analog pads swelling with the kick, a round synth bass, wordless vocal pads and a very wide, dreamy stereo field.
+  - **Analog arp drive (pulsing sequence, pumping pads)**: a 16th-note analog sequence whose filter opens over the builds, pumping against a steady kick, swelling pads, bass guitar and a soaring synth lead.
+  - All three: tape-warm (almost nothing above 8 kHz), chorus on the guitars and pads, sus / add9 colour, one sound per part kept for the whole song.
+- **Velvet pop (soft, warm, dark)**, from your soft-pop instrumental: a muffled, close drum machine, a deep warm bass carrying the song, mellow organ / Rhodes chords and soft pads, nothing sharp on top.
+- **Emotive 2-step house** (swung 2-step, deep sub, chopped vocal hooks, warm keys) and **Sub pressure 140** (dark, minimal 140 that is almost all sub), from your last three references.
+- Removed artist names from the notes (genres are named for how they sound).
+
 ## 1.56.6
-- **New genre: Math rock** (Classic → Rock & Metal), from the Vasudeva album: a clean guitar tapping a looping two-hand figure of 5, 6, 7 or 8 notes that drifts against the bar line, a second clean guitar on the melody (panned the other way), a melodic fingered bass, a busy, precise drummer (ghost notes, ride, fills, accents hit together with the guitars), bright major / lydian keys with added 9ths - and **real odd time signatures**: bars of 7/8, 3/4 and 5/8 between the 4/4 ones (riffs that cycle 4/4-4/4-4/4-7/8, all-7/8 riffs, 3/4 + 7/8 ...). The odd bars are shorter, not squashed: every note keeps its length, and the MIDI export carries the tempo changes so it lines up in a DAW.
+- **New genre: Math rock** (Classic → Rock & Metal), from your reference album: a clean guitar tapping a looping two-hand figure of 5, 6, 7 or 8 notes that drifts against the bar line, a second clean guitar on the melody (panned the other way), a melodic fingered bass, a busy, precise drummer (ghost notes, ride, fills, accents hit together with the guitars), bright major / lydian keys with added 9ths - and **real odd time signatures**: bars of 7/8, 3/4 and 5/8 between the 4/4 ones (riffs that cycle 4/4-4/4-4/4-7/8, all-7/8 riffs, 3/4 + 7/8 ...). The odd bars are shorter, not squashed: every note keeps its length, and the MIDI export carries the tempo changes so it lines up in a DAW.
 - **Five more genres from your reference batch**: **Rolling atmospheric bass** (wonky swung beat, a deep rolling bassline, hazy wide pads, glitchy vocal chops), **Cinematic beat tape** (instrumental hip hop layered like a film score), **UK tribal techno-bass** (broken skipping kicks, tribal toms and congas, a huge rolling sub), **Steppy halftime / acid step** (140 half-time with a stepping kick, deep sub, often an acid line) and **Balearic chill** (sunset nylon guitar over a soft slow house groove).
-- Your other references are already covered: Original Sin → Jump-up / Dancefloor liquid DnB, Joy Orbison → UK bass 130, Cybotron → Electro, Nero → DnB / Neurofunk, Nora En Pure → Melodic house, Hebbe → Trap / Glitch future bass.
+- Your other references are already covered by existing genres: Jump-up / Dancefloor liquid DnB, UK bass 130, Electro, DnB / Neurofunk, Melodic house and Trap / Glitch future bass.
 
 
 ## 1.56.5
-- **New genre: IDM jungle - moody theme**, from your "Theme from Ernest Borgnine" reference: half a minute of warm, detuned pads and a melancholy synth theme alone, then frantic chopped jungle breaks crash in with no bass, then a nimble, melodic bass guitar; dark minor chords, a breakdown back to the synths, and a key change up for the last stretch (~160 BPM).
-- **New genre: Drill & bass - spacey**, from "Hasty Boom Alert": hyper-detailed breaks at 172-190 under bright, spacious jazz-fusion chords (Rhodes, vibes), a soft lead drifting in long delays, a very wide, airy mix and a busy bass guitar; it opens on the synths and drops the drums for a floating breakdown.
+- **New genre: IDM jungle - moody theme**, from your reference: half a minute of warm, detuned pads and a melancholy synth theme alone, then frantic chopped jungle breaks crash in with no bass, then a nimble, melodic bass guitar; dark minor chords, a breakdown back to the synths, and a key change up for the last stretch (~160 BPM).
+- **New genre: Drill & bass - spacey**, from your other reference: hyper-detailed breaks at 172-190 under bright, spacious jazz-fusion chords (Rhodes, vibes), a soft lead drifting in long delays, a very wide, airy mix and a busy bass guitar; it opens on the synths and drops the drums for a floating breakdown.
 - Both follow your notes on the style: **the break is resequenced hit by hit, so no two drum bars are the same** - flams, micro-stutters (32nd / 48th bursts), reversed and re-pitched single hits, kicks and snares swapping places, ghost hits filling every gap, hat ratchets, and edits in the middle of phrases too - while the **melody stays calm**: simple, long notes that sit and breathe over the chaos.
 - **The growl bass is gone from the switch-up / bass-warp genres.** The high bass notes are now played by a new **Mid-bass** sound: a round, saturated, warm tone (the way a distorted 808 sounds up high), low-passed so it's thick, not thin, squeaky or snarling. The 808's own "growl" move (the long growl section in Bass-warp fast) is rebuilt too: a warm, saturated 808 with a slow low-pass "wah" instead of harsh square grit.
-- **Switch-up 808 - mallets plays like the reference now, not one long arpeggio.** Each beat is its own figure, the way your "Mallets" track does it: a roll (one note struck over and over in 32nds), a trill with the note next door, a hop between two chord tones, a quick run up into a note, an octave bounce - or a rest. Four beats make a motif that repeats for two bars with a small change, a new motif comes every four bars, the note it sits on walks between chord tones like a tune, and the quieter sections leave more gaps.
+- **Switch-up 808 - mallets plays like the reference now, not one long arpeggio.** Each beat is its own figure, the way your reference does it: a roll (one note struck over and over in 32nds), a trill with the note next door, a hop between two chord tones, a quick run up into a note, an octave bounce - or a rest. Four beats make a motif that repeats for two bars with a small change, a new motif comes every four bars, the note it sits on walks between chord tones like a tune, and the quieter sections leave more gaps.
 
 
 ## 1.56.4
@@ -25,7 +35,7 @@
 
 ## 1.56.2
 - **New genre: Switch-up 808 - hard (punchy kicks)**: the switch-up 808 beat made aggressive - hard, distorted kicks with a sharp click and a fast pitch drop (more of them, double kicks), the 808 ducking hard out of their way, cracking crushed snares and claps, a dirtier 808, cowbell stabs, and a louder mix.
-- **New genre: Switch-up 808 - mallets (fast arpeggios)**, from your "Mallets" reference: marimba and vibes rippling through the chords in 32nd notes (about 45 ms apart) and two-octave cascades over the switching 808, opening and closing on the mallets alone.
+- **New genre: Switch-up 808 - mallets (fast arpeggios)**, from your reference: marimba and vibes rippling through the chords in 32nd notes (about 45 ms apart) and two-octave cascades over the switching 808, opening and closing on the mallets alone.
 - **Renamed**: "Shadow 808" is now **Switch-up 808** (and Switch-up 808 - DJ edits). Songs saved with the old names still open.
 
 
@@ -323,7 +333,7 @@ Genre research, round 2 (your reference tracks), your genre-spec review, and gen
 
 ## 1.42.0
 Genre research, round 1: production guides and genre write-ups checked against the genre settings.
-- **Sunny melodic house**: now follows your three Nora En Pure references. It uses their radio-edit shape: keys and pads with the hats joining, kick and sub without hats, 16 bars in full, a 12-bar kick-out breakdown carried by hats, keys and the lead, kick and sub alone, then the last 24 bars.
+- **Sunny melodic house**: now follows your three melodic-house references. It uses their radio-edit shape: keys and pads with the hats joining, kick and sub without hats, 16 bars in full, a 12-bar kick-out breakdown carried by hats, keys and the lead, kick and sub alone, then the last 24 bars.
 - **Amapiano**: 108-115 BPM (112 at the centre). The log drum now bends between root and fifth into the kick's gaps, and the shakers are accented.
 - **Reggaeton**: drops take everything out but the bass, then come back on the snare.
 - **Dancehall**: modern riddim tempo (92-106), a verse / chorus song form, and a second off-beat rim pattern.
@@ -692,7 +702,7 @@ Genres checked against the electronic and multi-genre production bibles (tempo, 
 - **Four new genres:**
   - *Dubstep (classic UK / Tempa)* - half-time 140, a heavy clean sub as the main voice, sparse shuffled 2-step drums, dub delays and reverb, dark minor/phrygian moods and lots of space. Soundsystem dubstep, not brostep.
   - *Progressive Trance (emotional)* - Above & Beyond-style: simple emotive chords, a big singable supersaw or pluck lead, long builds, a piano breakdown and a clean, wide drop.
-  - *Organic Melodic House* - Nora En Pure-style: warm four-on-the-floor with shakers and congas, piano, flute, harp and soft strings; hypnotic and spacious, no big drops.
+  - *Organic Melodic House*: warm four-on-the-floor with shakers and congas, piano, flute, harp and soft strings; hypnotic and spacious, no big drops.
   - *Disco Funk (70s)* - KC & the Sunshine Band-style: dry punchy four-on-the-floor, a syncopated bass hook, chicken-scratch guitar, horn riffs, claps, congas and tambourine.
   - The melodic genres default to simpler, more repetitive melodies (until you move the Simplicity / Repetition knobs yourself).
 - **Instruments change between song sections.** Drops/choruses, verses and breakdowns can each use a different genre-fitting instrument for a part, so one song doesn't use the same sounds all the way through.
