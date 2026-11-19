@@ -685,7 +685,7 @@ PHRASE_FAMILY = {
 
 
 def lead_octave_shift(mel, st):
-    """Octaves to move the lead by so it sits where the genre's lead lives, whatever the key: around E5-E6 for a
+    """Octaves to move the lead by so it sits where the genre's lead lives, whatever the key: around G4-G5 for a
     sung-style or synth lead (a little higher for trap bells and trance arps), and always clear above the chords so the
     melody isn't buried. Riff leads (rock, metal, funk, blues) already place themselves low and are left alone."""
     if not mel or (st.get('lead_device') == 'riff' and not st.get('lead_lo')):
@@ -694,7 +694,7 @@ def lead_octave_shift(mel, st):
     if st.get('lead_lo'):                               # genres whose lead lives lower (phonk cowbells sit around A3-A4)
         lo = st['lead_lo']
     else:
-        lo = max(12 * (st.get('lead_oct', 5) + 1) + 1, st.get('chord_center', 62) + 8)
+        lo = max(12 * (st.get('lead_oct', 5) + 1) - 6, st.get('chord_center', 62) + 4)   # mean ~G4-G5 (oct 5)
         lo += {'bell': 3, 'arp': 2}.get(st.get('lead_device'), 0)
     k = 0
     while mean + k >= lo + 12:

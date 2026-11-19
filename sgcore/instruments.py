@@ -2765,7 +2765,7 @@ def v2_supersaw_lead(m, dur, p, glide=None, mod=None):
     fr = fr * 2 ** (np.clip((t - 0.3) / 0.35, 0, 1) * p.get('vib', 12) * np.sin(2 * np.pi * 5.2 * t) / 1200)
     body = _va.jp_supersaw(fr, n, 0.45, 0.65, 0.7)
     mids = _va.jp_supersaw(fr * 1.0015, n, 0.7, 0.85, 1.0)
-    air = _hpf(_va.jp_supersaw(fr * 2, n, 0.55, 0.8, 1.0), 2500, 2) * 0.45
+    air = _hpf(_va.jp_supersaw(fr * 2, n, 0.55, 0.8, 1.0), 3500, 2) * 0.22
     noise_ = _hpf(np.random.default_rng().standard_normal((2, n)), 7000, 2) * 0.04
     fe = 0.6 + 0.4 * np.exp(-t * 5)
     top = p.get('cut', 9000)
@@ -2979,3 +2979,184 @@ for _name, _fn, _info, _roles in (
     INSTRUMENTS[_name] = _fn
 GM_PROGRAM.update({'junopad': 89, 'junopoly': 90, 'junobass': 38, 'jupiterpad': 89, 'obstab': 62, 'moog_lead': 81,
                    'hypersaw': 81, 'dxbass': 39})
+
+
+# ----------------------------------------------------------------------------- 1.61: real-sounding basses
+def _rs(seed=None):
+    return np.random.default_rng(seed)
+
+
+def _bass_exc(f, kind='finger', bright=1.0):
+    """How the string is set moving: a finger rolls off it (soft, round), a pick flicks it (bright click), a slapping
+    thumb or a popped finger hits it hard against the frets (bright, plus clank). The excitation is shaped like the
+    string at the plucking point (a comb at that fraction of its length)."""
+    P = SR / f
+    L = max(8, int(P))
+    rng = _rs()
+    cut, beta, amp = {'finger': (1800, 0.2, 1.0), 'pick': (6000, 0.1, 1.0), 'thumb': (8000, 0.3, 1.3),
+                      'pop': (10000, 0.08, 1.2), 'upright': (900, 0.3, 1.1)}[kind]
+    x = np.arange(L) / L
+    k = max(1, int(beta * L))
+    tri_ = np.where(np.arange(L) < k, x / beta, (1 - x) / (1 - beta))     # a finger pulls the string into a triangle
+    w = {'finger': 0.06, 'pick': 0.03, 'thumb': 0.035, 'pop': 0.015, 'upright': 0.1}[kind]
+    d = (x - beta + 0.5) % 1.0 - 0.5
+    hit = np.exp(-0.5 * (d / w) ** 2)                                     # a pick / thumb / pop strikes it: a narrow pulse
+    mix = {'finger': 0.35, 'pick': 0.6, 'thumb': 0.9, 'pop': 0.9, 'upright': 0.15}[kind]
+    tri_ = tri_ / (np.abs(tri_ - tri_.mean()).max() + 1e-9)
+    hit = hit / (np.abs(hit - hit.mean()).max() + 1e-9)
+    shape = (1 - mix) * tri_ + mix * hit
+    shape = shape - shape.mean() + 0.06 * rng.uniform(-1, 1, L)
+    bl, al = signal.butter(2, min(0.45, cut * bright / (SR / 2)))
+    burst = signal.lfilter(bl, al, np.tile(shape, 3))[L:2 * L]   # (circular: the shape wraps along the string)
+    burst = burst - burst.mean()
+    return burst / (np.abs(burst).max() + 1e-9) * amp
+
+
+def _glide_curve(y, f, glide, t_s=0.06):
+    """Bend a rendered note from the previous note's pitch into its own (a slide up / down the neck)."""
+    if glide is None:
+        return y
+    f0 = float(mtof(glide))
+    n = len(y)
+    t = np.arange(n) / SR
+    ratio = (f + (f0 - f) * np.exp(-t / t_s)) / f
+    pos = np.cumsum(ratio) - ratio[0]
+    return np.interp(pos, np.arange(n), y, right=0.0)
+
+
+def _bass_string(m, dur, p, glide, kind, t60, bright, pickup, release=0.12, comp=0.0):
+    f = float(mtof(m))
+    gate = int(max(dur, 0.04) * SR)
+    n = gate + int(release * SR)
+    y = _va.string(f, n, _bass_exc(f, kind, p.get('tone', 1.0)), t60=t60 * (55.0 / max(f, 30)) ** 0.35, bright=bright,
+                   gate=gate, mute_t60=p.get('mute', 0.09), pickup=pickup)
+    y = _glide_curve(y, f, glide)
+    if comp:                                                     # the bassist's compressor: the note holds its level
+        e = np.sqrt(signal.lfilter([0.002], [1, -0.998], y * y) + 1e-9)
+        e = np.maximum(e, e.max() * 0.04)
+        gn = np.minimum((e / e.max()) ** (-comp), 4.0)
+        gn[gate:] = gn[gate - 1] if gate > 0 else 1.0
+        y = y * gn
+    return y, f, n, gate
+
+
+def v_ebass(m, dur, p, glide=None, mod=None):
+    """Electric finger bass (P / J style): a waveguide string plucked by a finger, read by a pickup near the bridge
+    (the hollow, punchy midrange), muted by the fretting hand at the end of the note, then the DI / amp tone - a
+    round low end, a little 800 Hz growl, the top rolled off - and gentle compression."""
+    y, f, n, gate = _bass_string(m, dur, p, glide, 'finger', 11.0, 0.62, 0.13, comp=0.7)
+    t = np.arange(n) / SR
+    y = y + 0.12 * np.sin(2 * np.pi * f * t) * np.exp(-t * 1.2) * np.minimum(t / 0.004, 1)   # body under the pickup
+    y = eq(eq(hp(y, 35), 'peak', 85, 0.9, 3.0), 'peak', 800, 1.2, p.get('growl', 2.5))
+    y = lp(y, p.get('bright', 1400) * 2.6)
+    y = np.tanh(y * 1.6) / 1.6
+    y[gate:] *= np.exp(-np.arange(n - gate) / (0.03 * SR))
+    return y * 0.6
+
+
+def v_pickbass(m, dur, p, glide=None, mod=None):
+    """Picked electric bass: the pick's bright click and a mid-forward, slightly grindy tone - rock, punk, post-punk,
+    new wave, motown-style pick lines."""
+    y, f, n, gate = _bass_string(m, dur, p, glide, 'pick', 5.0, 0.75, 0.1, comp=0.55)
+    t = np.arange(n) / SR
+    y = y + 0.25 * hp(_rs().standard_normal(n), 2500) * np.exp(-t * 350)                   # the pick on the string
+    y = eq(eq(hp(y, 40), 'peak', 100, 0.9, 2.0), 'peak', 1300, 1.0, 3.5)
+    y = lp(y, p.get('bright', 2000) * 2.8)
+    y = np.tanh(y * 2.2) / 2.0
+    y[gate:] *= np.exp(-np.arange(n - gate) / (0.025 * SR))
+    return y * 1.05
+
+
+def v_slapbass(m, dur, p, glide=None, mod=None):
+    """Slap bass: low notes thumbed (a hard, bright thud with the string clanking on the frets), high notes popped
+    (a sharp snap), the classic scooped funk tone. `mod='pop'` forces a pop."""
+    pop = mod == 'pop' or (mod is None and m >= 50)
+    y, f, n, gate = _bass_string(m, dur, p, glide, 'pop' if pop else 'thumb', 3.0, 0.92, 0.12, comp=0.4)
+    t = np.arange(n) / SR
+    clank = bp(_rs().standard_normal(n), 1800, 6000) * np.exp(-t * (120 if pop else 70)) * (0.5 if pop else 0.4)
+    y = y + clank
+    y = eq(eq(eq(hp(y, 35), 'peak', 70, 0.9, 4.0), 'peak', 550, 1.0, -4.0), 'peak', 3000, 1.0, 4.0)   # the scoop
+    y = np.tanh(y * 2.0) / 1.8
+    y[gate:] *= np.exp(-np.arange(n - gate) / (0.02 * SR))
+    return y * 0.92
+
+
+def v_fretless(m, dur, p, glide=None, mod=None):
+    """Fretless bass: no frets to stop the string, so notes slide and sing - a softer attack, a long singing sustain
+    and the 'mwah' as the string buzzes on the fingerboard, slides between notes."""
+    y, f, n, gate = _bass_string(m, dur, p, None, 'finger', 9.0, 0.55, 0.15, comp=0.7)
+    t = np.arange(n) / SR
+    y = _glide_curve(y, f, glide, 0.11)
+    mw = 1200 + 900 * np.exp(-t * 3.5)                            # the mwah: a moving mid formant
+    y = y + 0.5 * _va.vcf(y, mw, 0.55, 1.0) * np.exp(-t * 1.5)
+    y = lp(eq(hp(y, 35), 'peak', 90, 0.9, 2.5), 4200)
+    y = np.tanh(y * 1.5) / 1.5
+    y[gate:] *= np.exp(-np.arange(n - gate) / (0.05 * SR))
+    return y * 0.5
+
+
+def v_upright(m, dur, p, glide=None, mod=None):
+    """Upright (double) bass, pizzicato: a long, heavy gut string plucked with the side of the finger near the end of
+    the fingerboard - a woody thump, a big low body resonance, a quick bloom that settles into a soft sustain - jazz,
+    swing, bluegrass, rockabilly, folk."""
+    y, f, n, gate = _bass_string(m, max(dur, 0.25), p, glide, 'upright', 3.0, 0.4, 0.0, release=0.18, comp=0.3)
+    t = np.arange(n) / SR
+    thump = 0.5 * np.sin(2 * np.pi * f * t) * np.exp(-t * 9) * np.minimum(t / 0.003, 1)
+    finger = 0.12 * bp(_rs().standard_normal(n), 300, 1500) * np.exp(-t * 90)              # the finger on the string
+    y = y + thump + finger
+    y = eq(eq(eq(hp(y, 32), 'peak', 95, 1.1, 3.0), 'peak', 210, 1.4, 2.5), 'peak', 650, 1.2, 2.5)  # the box resonances
+    y = lp(y, p.get('bright', 900) * 2.6)
+    y = np.tanh(y * 1.3) / 1.3
+    g = int(max(dur, 0.25) * SR)
+    y[g:] *= np.exp(-np.arange(n - g) / (0.06 * SR))
+    return y * 0.68
+
+
+def v_sinebass(m, dur, p, glide=None, mod=None):
+    """Warm sine bass: a pure, phase-continuous sine that can slide between notes, a soft click-free attack, and a
+    touch of tube-like saturation so its 2nd / 3rd harmonics let it be heard on small speakers."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, p.get('a', 0.006), p.get('d', 0.5), p.get('s', 0.8), p.get('r', 0.08))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.05) if glide is not None else np.full(n, f)
+    x = np.sin(2 * np.pi * np.cumsum(fr) / SR)
+    sat = p.get('sat', 1.0)
+    y = np.tanh(x * (1.0 + 0.9 * sat) + 0.15 * sat) - np.tanh(0.15 * sat)                   # asymmetric: 2nd harmonic
+    y = lp(y / np.tanh(1.0 + 0.9 * sat), p.get('cut', 700) * 1.4)
+    return y * env * 0.95
+
+
+def v_sawbass(m, dur, p, glide=None, mod=None):
+    """Analog saw bass: saw + square sub into a resonant 24 dB filter with a punchy envelope, glide, a little drive."""
+    if p.get('reverse'):
+        return INSTRUMENTS['sawbass_v1'](m, dur, p, glide, mod)
+    cut = p.get('cut', 2200)
+    return _va.voice(m, dur, dict(p, cut=150), glide, saw_mix=1.0, pulse_mix=0.0, sub=0.55, unison=2, detune=4,
+                     spread=0.0, res=0.25, fenv=_oct(150, cut), fd=1.0 / max(4.0, p.get('fdecay', 16)) * 4,
+                     fs=0.25, amp=(p.get('a', 0.003), p.get('d', 0.18), p.get('s', 0.6), 0.05), drive=1.7,
+                     keytrack=0.25, drift=1.0, stereo=False, hp=30) * 0.62
+
+
+for _name, _fn, _info, _roles in (
+        ('ebass', v_ebass, None, None), ('upright', v_upright, None, None), ('sinebass', v_sinebass, None, None),
+        ('sawbass', v_sawbass, None, None),
+        ('pickbass', v_pickbass, 'Picked electric bass', ('bass',)),
+        ('slapbass', v_slapbass, 'Slap bass (thumb + pop)', ('bass',)),
+        ('fretless', v_fretless, 'Fretless bass', ('bass', 'lead'))):
+    if _info is None:
+        if _name + '_v1' not in INSTRUMENTS:
+            INSTRUMENTS[_name + '_v1'] = INSTRUMENTS[_name]
+            INSTRUMENT_INFO[_name + '_v1'] = (INSTRUMENT_INFO.get(_name) or _name) + ' (classic sound, before 1.61)'
+            for _role, _lst in ROLE_CHOICES.items():
+                if _name in _lst and _name + '_v1' not in _lst:
+                    _lst.append(_name + '_v1')
+            GM_PROGRAM[_name + '_v1'] = GM_PROGRAM.get(_name, 0)
+    else:
+        INSTRUMENT_INFO[_name] = _info
+        for _role in _roles:
+            if _name not in ROLE_CHOICES[_role]:
+                ROLE_CHOICES[_role].append(_name)
+    INSTRUMENTS[_name] = _fn
+GM_PROGRAM.update({'pickbass': 34, 'slapbass': 36, 'fretless': 35})

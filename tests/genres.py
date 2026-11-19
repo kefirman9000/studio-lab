@@ -244,7 +244,7 @@ def main():
             song = compose(Options(style=s, seed=k))
             ld = [e.midi for e in song['events'] if e.track == 'lead' and e.midi is not None]
             if ld:
-                assert 70 <= sum(ld) / len(ld) <= 88, (s, k, song['key'].name(), sum(ld) / len(ld))   # same register in any key
+                assert 64 <= sum(ld) / len(ld) <= 82, (s, k, song['key'].name(), sum(ld) / len(ld))   # same register in any key
     for i in ('polysynth', 'synthbrass', 'moogbass', 'glasspad', 'solina', 'wurli', 'vibes', 'upright', 'mutedgtr', 'harmonica',
               'trumpet', 'pedalsteel'):
         y = INSTRUMENTS[i](64, 0.8, {})

@@ -347,3 +347,43 @@ def juno_chorus(x, mode=2, mix=0.5):
         d = (mid + sgn * dep * tri) * SR / 1000.0
         out.append(mono * (1 - 0.3 * mix) + np.interp(idx - d, idx, wet_src, left=0.0) * mix)
     return np.vstack(out)
+
+
+def string(f, n, exc, t60=4.0, bright=0.5, gate=None, mute_t60=0.12, pickup=0.0):
+    """A plucked string as a digital waveguide (Karplus-Strong family), computed one period at a time so numpy can do
+    the work: the excitation `exc` is fed into a delay line one period long, whose loop has a one-pole low-pass (how
+    fast the high harmonics die: `bright` 0..1), a fractional-delay tap for exact tuning and a loss set so the note
+    falls 60 dB in `t60` seconds. From `gate` (samples) the finger mutes the string (`mute_t60`). `pickup` (0..0.5)
+    reads the string at that point of its length - a comb that gives a pickup its tone."""
+    P = SR / float(f)
+    L = int(P)
+    frac = P - L
+    # one-pole loop low-pass y = (1-a) x + a y[-1]; its phase delay at f is ~a/(1-a) samples - take it off the line
+    a = float(np.clip(0.55 - 0.5 * bright, 0.02, 0.6))
+    lag = a / (1 - a)
+    Lw = P - lag
+    L = max(2, int(Lw))
+    frac = Lw - L
+    y = np.zeros(n + L + 2)
+    exc = np.asarray(exc, float)
+    x = np.zeros(n)
+    x[:min(n, len(exc))] = exc[:n]
+    g_on = 10 ** (-3.0 / (f * t60))
+    g_off = 10 ** (-3.0 / (f * max(0.01, mute_t60)))
+    zi = np.zeros(1)
+    b_lp, a_lp = [1 - a], [1, -a]
+    off = L + 2                                                  # y[off + i] is output sample i
+    for s in range(0, n, L):
+        e = min(n, s + L)
+        i0 = off + s
+        d0 = y[i0 - L:i0 - L + (e - s)]                          # delayed by L
+        d1 = y[i0 - L - 1:i0 - L - 1 + (e - s)]                  # delayed by L + 1
+        tap = (1 - frac) * d0 + frac * d1
+        z, zi = signal.lfilter(b_lp, a_lp, tap, zi=zi)
+        g = g_on if gate is None or s < gate else g_off
+        y[i0:i0 + (e - s)] = x[s:e] + g * z
+    out = y[off:off + n]
+    if pickup:
+        k = max(1, int(round(pickup * P)))
+        out = out - np.concatenate([np.zeros(k), out[:-k]]) * 0.5
+    return out

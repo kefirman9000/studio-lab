@@ -463,7 +463,7 @@ def test_surf_and_monster_theme():
         assert {1, -1} <= {y - x for x, y in zip(b, b[1:])}
         n = {k: sum(e.track == k for e in s['events']) for k in ('pad', 'chords', 'arp', 'lead', 'riff')}
         assert all(n.values()) and n['arp'] >= 120, n                # a busy organ break
-    assert sfm.fallback_for('pickbass') == 'ebass' and sfm.fallback_for('fingerbass') == 'ebass'
+    assert sfm.fallback_for('pickbass') == 'pickbass' and sfm.fallback_for('fingerbass') == 'ebass'
     print('ok  surf rock feel, monster TV theme riff, pick / finger bass fall back to a bass (not a synth pluck)')
 
 
@@ -1038,6 +1038,24 @@ def test_va_synth():
     sp18 = np.abs(np.fft.rfft(y18)) ** 2
     f18 = np.fft.rfftfreq(SR, 1 / SR)
     assert sp18[(f18 > 3000) & (f18 < 6000)].mean() < sp18[(f18 > 100) & (f18 < 400)].mean() * 1e-3
+    for k in ('ebass', 'pickbass', 'slapbass', 'fretless', 'upright', 'sinebass', 'sawbass'):          # 1.61 basses
+        for mm in (28, 40, 52):
+            a = np.asarray(INSTRUMENTS[k](mm, 0.5, {}, None, None))
+            assert np.isfinite(a).all() and 0.05 < np.abs(a).max() < 1.2, (k, mm, np.abs(a).max())
+        assert k + '_v1' in INSTRUMENTS or k in ('pickbass', 'slapbass', 'fretless')
+    from sgcore.dsp import mtof as _mt
+    for fq in (41.2, 98.0):                                                  # the waveguide string is in tune
+        ws = va.string(fq, SR, np.random.default_rng(0).standard_normal(int(SR / fq)), t60=3)[SR // 4:]
+        wsp = np.abs(np.fft.rfft((ws - ws.mean()) * np.hanning(len(ws))))
+        wf = np.fft.rfftfreq(len(ws), 1 / SR)
+        band = (wf > fq * 0.8) & (wf < fq * 1.2)
+        assert abs(wf[band][np.argmax(wsp[band])] - fq) < 2.0
+    eb = np.asarray(INSTRUMENTS['ebass'](40, 1.0, {}, None, None))
+    assert np.abs(eb[int(0.9 * SR):int(1.0 * SR)]).max() > 0.05 * np.abs(eb).max()   # a bass note sustains
+    assert np.abs(eb[-200:]).max() < 0.02                                    # and is muted at the end
+    from sgcore.soundfont import fallback_for
+    assert fallback_for('slapbass') == 'slapbass' and fallback_for('pickbass') == 'pickbass'
+    _ = _mt
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars

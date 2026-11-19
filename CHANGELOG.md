@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.61.0
+- **Leads sit an octave lower in many genres.** The melody register used to centre around E5-E6, which put a lot of synth and vocal-style leads an octave above where they'd normally be played. It now centres around G4-G5, still above the chords. Genres with their own lead register (riff leads, phonk cowbells, the G-funk whistle) keep theirs, though the whistle comes down a little.
+- The supersaw lead's octave-up "air" layer is quieter and higher, so it adds sparkle without making the lead sound an octave up.
+- **Real-sounding basses.** The bass guitars are now physical models: a waveguide string (computed a period at a time, exactly in tune), set moving the way a bassist does it, read by a pickup, muted by the fretting hand at the end of each note, then the DI / amp tone and gentle compression.
+  - **Electric bass** (the most-used bass, ~50 genres): a finger pluck, a bridge-pickup midrange, a round low end and a little 800 Hz growl. Notes now sustain like a real bass and stop cleanly.
+  - New **Picked bass** (rock, punk, post-punk, garage, metal, surf), **Slap bass** (low notes thumbed with fret clank, high notes popped, scooped funk tone - funk, disco, fusion, new jack swing) and **Fretless bass** (soft attack, singing sustain, the "mwah", slides between notes - fusion, smooth jazz, city pop, soft rock).
+  - **Upright bass** rebuilt: a heavy plucked gut string with a woody thump and the body resonances of the instrument.
+  - When the sampled bass sounds aren't installed, the "sampled" finger / pick / slap basses now fall back to these models instead of a generic sound.
+- **Sine bass** is phase-continuous and can slide, with a touch of asymmetric saturation so it's heard on small speakers; **Saw bass** moved to the analog voice (saw + square sub, resonant 24 dB filter, glide). The old sounds are kept as "(classic sound, before 1.61)".
+
 ## 1.60.0
 - **Classic-hardware voices** for the instruments that cover the most genres:
   - **Acid bass (303) rebuilt:** one saw (or the lopsided square) into an 18 dB/oct resonant low-pass that squelches but stops short of self-oscillating. Accented notes get a louder VCA, a short fixed filter decay and the accent circuit's extra cutoff "wow" that grows with resonance; slid notes glide over ~60 ms with no new attack, and the filter envelope carries on through the slide instead of re-triggering. The old sound is kept as "Acid bass (classic sound, before 1.60)".
