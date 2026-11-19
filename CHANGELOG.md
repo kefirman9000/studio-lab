@@ -1,5 +1,51 @@
 # Changelog
 
+## 1.72.0
+- **Breath sounds like breath, not white noise** (flute, ney, shakuhachi, tin whistle, breathy lead, sax, harmonica, older flute / sax):
+  - **Before:** the air was plain filtered noise sitting beside the tone.
+  - **Now:** the air is shaped like a real player's breath:
+    - it resonates in the instrument's bore, so it carries the note's pitch;
+    - it pulses with each vibration of the air jet or reed;
+    - it wavers slowly with the breath, and its fizzy top end is softened.
+- **Indian and Arabic slides land on the right notes:**
+  - **Meend glides from the scale note below or above:** a bug sometimes started the glide on a note outside the raga, so it slid in from an off-key pitch.
+  - **Ornaments aim at real quarter-tone notes in Bayati, Rast and Saba:** gamak shakes, glides and falls now target the maqam's actual notes, not the piano key next to them.
+  - **The whole band plays the maqam's quarter tones:** chords, pads and bass now play the half-flat notes too. Before, only the melody did, so it clashed by a quarter tone with the chords (every Rast chord).
+- **Mastering:**
+  - **True-peak limiting:** the limiter reads the waveform between the samples (4x oversampled), and a final check keeps every master under -1 dBTP. No clipping after MP3 / AAC conversion, and loudness is unchanged.
+  - **Kick / bass separation for genres without sidechain ducking:** the bass's lowest band (under 110 Hz) dips briefly under each kick, so the two don't blur into one boom.
+  - **Mix check in the log after every render:**
+    - loudness, true peak and peak-to-loudness ratio (how much punch is left);
+    - stereo correlation, how mono the low end is, and how much the sections contrast;
+    - plain warnings when something's off.
+- **Mastering target buttons** under Loudness:
+  - **Streaming** (-14 LUFS): the most dynamic. Streaming services turn louder songs down to this level anyway.
+  - **Balanced** (-10 LUFS): loud but still punchy.
+  - **Club** (-8 LUFS): dense and loud for DJ sets.
+- **Mix check on every result:** a "mix ✓" or "mix: N notes" tag. Hover it to see the numbers and any warnings.
+- **Fix:** silent renders (NaN) in some trance / future bass / psytrance songs, caused by a rounding error in the multiband "OTT" effect.
+
+## 1.71.0
+- **"genre picks" tick box on every part** (Parts panel, next to each sound):
+  - **Ticked:** the genre chooses that part's sound for each song from its suggestions.
+  - **Unticked:** the part keeps the sound shown, starting from the genre's own sound or the one you just heard.
+  - Picking a sound from the menu unticks it, and ticking it again hands the choice back to the genre. You can always see which parts are yours and which are the genre's.
+- **Parts panel tidied:** the "genre picks" box is now a small tick at the start of each row, under one column heading instead of the words on every line. The sound menu is wider, and the genre's own sound now shows as "★ name" instead of "Style default (name)", so the names fit.
+- **New synths:**
+  - **Mono synth (SH-101 style):** saw, a moving pulse and a square sub an octave down, a breath of noise, a snappy key-tracked filter and glide. The round, rubbery bass and bleep sound of techno, minimal, acid, electro and Berlin school, gentler than the 303.
+  - **Sharp digital pluck:** two saws with an FM edge on the attack and a bright filter snapping shut very fast, for crisp, bouncy trance arps.
+  - **Rave stab:** a detuned saw-and-square stack with a downward pitch "whoop", a resonant band-limited filter and a hard, short envelope, for 90s hardcore, rave, eurodance and hard trance.
+- **New production effects for any part:**
+  - **OTT-style multiband squash:** quiet detail pulled up and peaks held down in three bands, for dense, forward EDM synths.
+  - **Mid/side widening:** above 200 Hz, with a little Haas delay, the low end kept mono.
+  - **A part's own echo time:** for example a 1/8 echo on the pluck under the genre's dotted-8th lead delay.
+  - The trance genres now use them: wide pads, squashed leads, and plucks with their own 1/8 echo. So do future bass and melodic dubstep chords, deep-house and progressive-house pads, anthemic-DnB chords and big-room leads.
+- **Phonk, closer to the real palette** (drift phonk, house phonk, Brazilian phonk, Memphis phonk):
+  - **Cowbell:** the 808 cowbell lead is now overdriven until it cuts like a synth, bit-crushed and gated short, the way phonk producers process it.
+  - **808:** split into a clean sine sub under the driven growl, so the low end stays solid and round on big speakers while the distortion lives in the mids where small speakers hear it. It still glides between notes.
+  - **Drums:** the whole kit is lightly bit-crushed and saturated harder as a group.
+  - The lo-fi tape texture on the mix, the Phrygian riffs and the trap hat rolls stay as they were.
+
 ## 1.70.0
 - **Techno rumble, done the real way:** in techno, hard, dub, melodic, tribal techno and minimal, the kick itself is sent into a long, dark reverb. The result is low-passed to the sub region, driven so it growls, high-passed under 35 Hz and ducked by the kick: the rolling low-end roar between the kicks. Because it's built from the kick, it always sits in the kick's key and rhythm. It comes out as its own stem ("kick_rumble").
 - **Modular-style sequencing** (techno family, acid house, tech house, Berlin school):

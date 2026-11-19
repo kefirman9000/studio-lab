@@ -2219,6 +2219,12 @@ def add_ornaments(evs, tracks, key, amt, rnd):
             if (m + k) % 12 in scale:
                 return k
         return 2
+
+    def below(m):                                        # semitones down to the next scale note
+        for k in (1, 2, 3):
+            if (m - k) % 12 in scale:
+                return k
+        return 2
     for name, t in tracks.items():
         if t.get('layer') not in ('lead', 'arp') or t.get('inst') not in BENDABLE:
             continue
@@ -2233,7 +2239,10 @@ def add_ornaments(evs, tracks, key, amt, rnd):
             if prev is not None and 1 <= abs(diff) <= 5 and rnd.random() < (0.85 if e.dur >= 0.9 else 0.3) * amt:
                 bend.append(('meend', float(diff), rnd.uniform(0.35, 0.6)))
             elif e.dur >= 0.9 and rnd.random() < 0.4 * amt:
-                bend.append(('meend', -float(above(e.midi - 3) if rnd.random() < 0.7 else -above(e.midi)), rnd.uniform(0.3, 0.5)))
+                # a pull into the note from the scale note below (mostly) or above - always a note of the raga, never a
+                # chromatic one (before 1.72 the 'below' start was worked out from 3 semitones down and often missed the
+                # scale, so the glide started on an out-of-key pitch)
+                bend.append(('meend', -float(below(e.midi)) if rnd.random() < 0.7 else float(above(e.midi)), rnd.uniform(0.3, 0.5)))
             peak = (prev is None or prev.midi <= e.midi) and (nxt is None or nxt.midi <= e.midi)
             if e.dur >= 0.9 and rnd.random() < (0.75 if peak else 0.35) * amt:
                 bend.append(('gamak', float(above(e.midi)), rnd.uniform(4.8, 6.4)))
@@ -2254,13 +2263,26 @@ def maqam_quarters(evs, tracks, key):
     if not q:
         return
     pcs = {(key.root + key.scale[d]) % 12: v for d, v in q.items()}
+
+    def real(m):                                         # where a note actually sounds in this maqam
+        return m + pcs.get(int(round(m)) % 12, 0.0)
     for e in evs:
         t = tracks.get(e.track, {})
-        if e.midi is None or (t.get('layer') not in ('lead', 'arp') and e.track != 'vocal'):
+        if e.midi is None or (t.get('layer') not in ('lead', 'arp', 'chords', 'pad', 'bass') and e.track != 'vocal'):
             continue
-        v = pcs.get(e.midi % 12)
-        if v:
-            e.bend = [('shift', v)] + [b for b in (e.bend or []) if b[0] != 'shift']
+        # every pitched part plays the maqam's real notes (since 1.72): before, only the melody bent its half-flat notes
+        # and the chords / pads / bass kept the 12-tone note right under it - a quarter-tone clash on every Rast chord
+        v = pcs.get(e.midi % 12, 0.0)
+        new = [('shift', v)] if v else []
+        for b in (e.bend or []):
+            if b[0] == 'shift':
+                continue
+            if b[0] in ('meend', 'gamak', 'fall'):       # ornaments aim at real maqam notes, not the piano key beside them
+                tgt = e.midi + float(b[1])
+                b = (b[0], real(tgt) - real(e.midi)) + tuple(b[2:])
+            new.append(b)
+        if new or e.bend:
+            e.bend = new or None
 
 
 def sync_drones(evs, tracks, bpm):

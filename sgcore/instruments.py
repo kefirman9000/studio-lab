@@ -10,6 +10,31 @@ def _rng():
     return dsp.get_rng()
 
 
+def _aspirate(x, f, ph=None, tube=0.55, top=5.0):
+    """Turn plain band-passed noise into breath. Hiss beside a tone sounds like white noise; real breath is air
+    turbulence *inside* the instrument: it resonates in the bore (so the noise carries the note's harmonics - a comb
+    tuned to the pitch), it pulses with the vibrating air jet / reed (amplitude follows each cycle of the tone), it
+    wavers slowly with the player's breath, and its fizzy top is soft. Keeps the input's level and envelope."""
+    x = np.asarray(x, np.float64)
+    n = len(x)
+    if n < 64 or not np.any(x):
+        return x
+    r0 = float(np.sqrt(np.mean(x ** 2)))
+    y = lp(x, min(max(f * top, 2500.0), 8000.0))
+    P = max(2, int(round(SR / max(f, 30.0))))
+    out = y * (1 - tube)                                 # feedback comb at the note's period, done P samples at a time
+    for i in range(P, n, P):
+        j = min(n, i + P)
+        out[i:j] += tube * out[i - P:j - P]
+    if ph is None:
+        ph = 2 * np.pi * f * np.arange(n) / SR
+    out = out * (0.45 + 0.55 * (0.5 + 0.5 * np.cos(np.asarray(ph)[:n])))      # pitch-synchronous pulsing
+    w = lp(dsp.get_rng().standard_normal(n), 5.0)
+    out = out * (1 + 0.15 * np.tanh(w / (np.std(w) + 1e-9)))   # the slow waver of a real breath
+    r1 = float(np.sqrt(np.mean(out ** 2)))
+    return out * (r0 / (r1 + 1e-12)) * 0.85
+
+
 def i_sawbass(m, dur, p, glide=None, mod=None):
     f = float(mtof(m))
     if p.get('reverse'):                                # hardstyle reverse bass: swells up after the kick, cut dead at the end
@@ -88,6 +113,10 @@ def i_808(m, dur, p, glide=None, mod=None):
     drive = 3.0 + (drive - 3.0) * min(1.0, (55.0 / max(f, 1.0)) ** 0.7) if drive > 3.0 else drive
     up = signal.resample_poly(y * amp * rel, 4, 1)
     z = signal.resample_poly(soft(up, drive), 1, 4)[:n]
+    if p.get('split') and not w:                                   # phonk: a clean sine sub under the driven growl,
+        sub = lp(y * amp * rel, 110) * 0.9                         # so the low end stays solid and round while the
+        mid = hp(lp(lp(z, 3800), 3800), 2.2 * f if f > 45 else 100)   # distortion lives in the mids
+        return sub + mid * p.get('mid', 0.85)
     if w == 'growl':                                               # the growl: a low-pass that opens and closes
         z = _sweep_lp(z, 380, 1400, 2.2 / max(0.2, p.get('spb', 0.37) * 2))
         return z * 1.15
@@ -1009,7 +1038,7 @@ def i_sax(m, dur, p, glide=None, mod=None):
     t = np.arange(n) / SR
     fv = vibrato(f, n, rate=5.2, cents=14, delay=0.25) * (1 - 0.03 * np.exp(-t * 25))
     src = square(fv, n, pw=0.42) * 0.6 + saw(fv, n) * 0.4
-    y = bp(src, 450, 1400) + 0.6 * bp(src, 1600, 3000) + 0.12 * bp(noise(n), 1500, 5000) * (0.4 + 0.6 * np.exp(-t * 12))
+    y = bp(src, 450, 1400) + 0.6 * bp(src, 1600, 3000) + 0.12 * _aspirate(bp(noise(n), 1500, 5000), f) * (0.4 + 0.6 * np.exp(-t * 12))
     return soft(y * env * 1.6, 1.4) * 0.5
 
 
@@ -1019,7 +1048,7 @@ def i_flute(m, dur, p, glide=None, mod=None):
     n = len(env)
     fv = vibrato(f, n, rate=5.0, cents=12, delay=0.2)
     y = sine(fv, n) + 0.12 * sine(fv * 2, n) + 0.05 * sine(fv * 3, n)
-    y += 0.08 * bp(noise(n), f * 0.8, min(f * 3, 15000))
+    y += 0.08 * _aspirate(bp(noise(n), f * 0.8, min(f * 3, 15000)), f)
     return y * env * 0.6
 
 
@@ -1405,7 +1434,7 @@ def i_harmonica(m, dur, p, glide=None, mod=None):
     bend = 2 ** ((-60 * np.exp(-t * 18)) / 1200)                # a small scoop up into the pitch
     fv = vibrato(f, n, rate=5.2, cents=p.get('vib', 12), delay=0.3) * bend
     x = square(fv, n, pw=0.3) * 0.6 + saw(fv, n) * 0.4
-    y = bp(x, 400, 4000) + 0.12 * bp(noise(n), 1500, 5000)
+    y = bp(x, 400, 4000) + 0.12 * _aspirate(bp(noise(n), 1500, 5000), f)
     y = eq(y, 'peak', 1700, 1.4, 5)
     return y * env * 0.4
 
@@ -1869,7 +1898,7 @@ def i_tinwhistle(m, dur, p, glide=None, mod=None):
     cut = np.where(t < 0.035, 2 ** (3 / 12), 1.0) if p.get('cut', True) and dur > 0.2 else 1.0
     ph = 2 * np.pi * np.cumsum(fv * cut) / SR
     x = np.sin(ph) + 0.12 * np.sin(2 * ph) + 0.05 * np.sin(3 * ph)
-    breath = bp(noise(n), f * 1.5, min(f * 6, 16000)) * (0.25 * np.exp(-t * 30) + 0.04)
+    breath = _aspirate(bp(noise(n), f * 1.5, min(f * 6, 16000)), f, ph) * (0.25 * np.exp(-t * 30) + 0.04)
     return (x + breath) * env * 0.3
 
 
@@ -2417,7 +2446,7 @@ def i_shakuhachi(m, dur, p, glide=None, mod=None):
     ph = 2 * np.pi * np.cumsum(fr) / SR
     tone = np.sin(ph) + 0.22 * np.sin(2 * ph) + 0.1 * np.sin(3 * ph) + 0.03 * np.sin(5 * ph)
     over = 0.55 * np.sin(2 * ph + 0.7) * np.exp(-t * 22)              # the overblown puff an octave up as it speaks
-    air = bp(noise(n), f * 0.9, min(f * 4.5, 16000)) * (0.32 + 0.9 * np.exp(-t * 14))   # breath, strongest at the chiff
+    air = _aspirate(bp(noise(n), f * 0.9, min(f * 4.5, 16000)), f, ph, tube=0.4) * (0.32 + 0.9 * np.exp(-t * 14))   # breath, strongest at the chiff
     env = adsr(dur * SR, 0.035, 0.25, 0.82, 0.18)
     env = np.pad(env, (0, max(0, n - len(env))))[:n]
     breath = 1 + 0.08 * np.sin(2 * np.pi * 0.9 * t)
@@ -2461,7 +2490,7 @@ def i_ney(m, dur, p, glide=None, mod=None):
     fr = f * 2 ** ((cents + vib) / 1200)
     ph = 2 * np.pi * np.cumsum(fr) / SR
     tone = np.sin(ph) + 0.12 * np.sin(2 * ph) + 0.05 * np.sin(3 * ph)
-    air = bp(noise(n), f * 0.8, min(f * 6, 15000)) * (0.7 + 0.5 * np.exp(-t * 9))
+    air = _aspirate(bp(noise(n), f * 0.8, min(f * 6, 15000)), f, ph, tube=0.3) * (0.5 + 0.4 * np.exp(-t * 9))
     env = adsr(dur * SR, 0.09, 0.2, 0.9, 0.22)
     env = np.pad(env, (0, max(0, n - len(env))))[:n]
     y = (tone * 0.8 + air) * env * (1 + 0.1 * np.sin(2 * np.pi * 0.7 * t))
@@ -3276,7 +3305,7 @@ def v_breathlead(m, dur, p, glide=None, mod=None):
     fr = np.broadcast_to(fr, (n,)) * 2 ** (np.clip((t - 0.35) / 0.5, 0, 1) * p.get('vib', 14) * np.sin(2 * np.pi * 4.8 * t) / 1200)
     ph = 2 * np.pi * np.cumsum(fr) / SR
     tone = 2 / np.pi * np.arcsin(np.sin(ph)) * 0.7 + np.sin(ph) * 0.4 + 0.12 * np.sin(2 * ph)
-    breath = bp(_rng().standard_normal(n), f * 1.5, min(9000.0, f * 8)) * (0.25 + 0.5 * np.exp(-t / 0.08))
+    breath = _aspirate(bp(_rng().standard_normal(n), f * 1.5, min(9000.0, f * 8)), f, ph) * (0.25 + 0.5 * np.exp(-t / 0.08))
     y = lp(tone + breath * p.get('breath', 0.5), 5000)
     return np.vstack([y, np.roll(y, 40)]) * env * 0.5
 
@@ -3689,7 +3718,7 @@ def v_sax(m, dur, p, glide=None, mod=None):
     y = _va.vcf(x, cut, 0.12, 1.4)
     for fc, q, g in ((500, 1.3, 4.0), (1600, 1.4, 3.0), (2800, 1.8, 2.0)):
         y = eq(y, 'peak', fc, q, g)
-    y = y + 0.07 * bp(_rng().standard_normal(n), 1200, 6000) * (0.3 + 0.7 * blow)
+    y = y + 0.07 * _aspirate(bp(_rng().standard_normal(n), 1200, 6000), f) * (0.3 + 0.7 * blow)
     if p.get('growl'):
         y = y * (1 + 0.25 * np.sin(2 * np.pi * 32 * t))
     y = np.tanh(y * 1.5) * env
@@ -3712,7 +3741,7 @@ def v_flute(m, dur, p, glide=None, mod=None):
     y = np.sin(ph) + over * np.sin(2 * ph) + 0.06 * np.sin(3 * ph)
     y = y * (1 + 0.08 * vib)
     rng = _rng()
-    breath = bp(rng.standard_normal(n), f * 0.8, min(f * 4, 16000)) * 0.12
+    breath = _aspirate(bp(rng.standard_normal(n), f * 0.8, min(f * 4, 16000)), f, ph) * 0.12
     chiff = bp(rng.standard_normal(n), f * 1.5, min(f * 6, 16000)) * np.exp(-t / 0.025) * 0.5
     y = (y + breath + chiff) * env
     return np.vstack([y, np.roll(y, 30)]) * 0.45
@@ -4295,6 +4324,74 @@ for _name, _fn, _info, _roles in (('orchhit', v_orchhit, 'Orchestra hit (80s sam
     INSTRUMENTS[_name] = _fn
     INSTRUMENT_INFO[_name] = _info
     GM_PROGRAM[_name] = 55 if _name == 'orchhit' else 81
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.71: classic mono + rave / trance voices
+def v_sh101(m, dur, p, glide=None, mod=None):
+    """SH-101-style mono synth: one oscillator mixing saw, a variable pulse and a square sub an octave down, a little
+    noise, into a snappy 24 dB filter with key tracking and a fast envelope - the round, rubbery bass and bleep sequence
+    sound of techno, minimal, acid and electro (gentler and rounder than the 303)."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.02) * SR)
+    env = _va.adsr(gate, 0.002, p.get('d', 0.18), p.get('s', 0.35), p.get('r', 0.05))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.04) if glide is not None else np.full(n, f)
+    pw = p.get('pw', 0.35) + 0.1 * np.sin(2 * np.pi * 0.7 * t)
+    x = _va.saw(fr, n) * p.get('saw', 0.6) + _va.pulse(fr, n, 0.0, pw) * 0.6 + _va.pulse(fr / 2, n, 0.0, 0.5) * p.get('sub', 0.5)
+    x = x + 0.03 * _rng().standard_normal(n)
+    kt = (f / 110.0) ** 0.5
+    cut = p.get('cut', 500) * kt * (1 + p.get('envmod', 3.5) * np.exp(-t / p.get('fdecay', 0.08)))
+    y = _va.vcf(x, cut, p.get('res', 0.35), 1.3)
+    y = hp(y, 30) * env * 0.6
+    return np.vstack([y, y])
+
+
+def v_nordpluck(m, dur, p, glide=None, mod=None):
+    """Sharp digital pluck (the late-90s / 2000s virtual-analog trance pluck): two saws with a touch of FM edge on the
+    attack, a bright filter snapping shut very fast, a tight stereo spread - crisp, bouncy and clean, for trance arps
+    and offbeat plucks."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.02) * SR)
+    env = _va.adsr(gate, 0.001, p.get('d', 0.16), 0.05, 0.12)
+    n = len(env)
+    t = np.arange(n) / SR
+    ph = 2 * np.pi * f * t
+    edge = np.sin(ph + 2.5 * np.exp(-t / 0.01) * np.sin(3 * ph)) * 0.4
+    x = np.vstack([_va.saw(np.full(n, f * 2 ** (-6 / 1200)), n) + edge, _va.saw(np.full(n, f * 2 ** (6 / 1200)), n, 0.3) + edge])
+    cut = 500 * (p.get('cut', 9000) / 500) ** np.exp(-t / p.get('fdecay', 0.045))
+    y = _va.vcf(x, cut, 0.2, 1.2)
+    return _hpf(y, 200) * env * 0.5
+
+
+def v_ravestab(m, dur, p, glide=None, mod=None):
+    """Rave stab (the early-90s hardcore / trance chord stab): a detuned saw-and-square stack with a downward pitch
+    'whoop' into the note, a band-limited, slightly resonant filter and a hard, short envelope - huge and a bit
+    cheesy, as it should be."""
+    f = float(mtof(m))
+    gate = int(min(max(dur, 0.05), 0.4) * SR)
+    env = _va.adsr(gate, 0.001, 0.18, 0.4, 0.1)
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f * 2 ** (p.get('whoop', 3.0) * np.exp(-t / 0.03) / 12)
+    x = np.zeros((2, n))
+    for k, c in enumerate((-14, -5, 5, 14)):
+        x[k % 2] += _va.saw(fr * 2 ** (c / 1200), n, _rng().random())
+    x += _va.pulse(fr, n, 0.2, 0.5)[None, :] * 0.6
+    y = _va.vcf(x * 0.4, p.get('cut', 3800) * (1 + 0.8 * np.exp(-t / 0.06)), 0.3, 1.5)
+    b, a = signal.butter(2, [180 / (SR / 2), 7000 / (SR / 2)], 'band')
+    return signal.lfilter(b, a, y, axis=-1) * env * 0.6
+
+
+for _name, _fn, _info, _roles, _gm in (('sh101', v_sh101, 'Mono synth (SH-101 style bass / bleeps)', ('bass', 'arp', 'lead'), 38),
+                                       ('nordpluck', v_nordpluck, 'Sharp digital pluck (trance)', ('arp', 'lead', 'chords'), 81),
+                                       ('ravestab', v_ravestab, 'Rave stab (90s hardcore / trance)', ('chords', 'arp', 'lead'), 81)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)

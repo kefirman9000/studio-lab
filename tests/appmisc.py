@@ -76,6 +76,7 @@ def test_ui_sound_menus():
     assert ui.index('id="voxCard"') < ui.index('<summary>Parts') and 'id="voxQuickUp"' in ui     # voice samples: own card, easy to find
     assert '<details class="card dropzone" open id="voxCard">' in ui and "vc.addEventListener('drop'" in ui   # drop a clip on it
     assert '_styleAnchor' in ui and 'd.dataset.id=s.id' in ui                                 # clicked genre row stays put
+    assert 'data-gpick=' in ui and 'ihead' in ui                                      # who picks each part's sound
     assert "it took too long" in ui and "hubOpenTab('overview')" in ui                     # the sounds hub always opens
     import ast as _ast                                                                      # no endpoint shadows STYLES
     _src = open(os.path.join(os.path.dirname(__file__), '..', 'sgcore', 'app.py')).read()

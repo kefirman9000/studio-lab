@@ -124,11 +124,15 @@ input.knobbed{position:fixed;left:0;top:0;opacity:0;pointer-events:none;width:1p
 .row{display:flex;gap:6px;align-items:center}
 .ibtn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 9px;cursor:pointer}
 /* each part on one row: the label's pieces become grid cells next to the sound menu */
-.card .body>.f.inst:not(.wide){grid-column:1/-1;display:grid;grid-template-columns:minmax(64px,auto) minmax(150px,1fr) auto auto auto auto;align-items:center;gap:4px 10px}
+.card .body>.f.inst:not(.wide){grid-column:1/-1;display:grid;grid-template-columns:16px minmax(52px,auto) minmax(210px,1fr) auto auto auto auto;align-items:center;gap:4px 8px}
+.f.inst:not(.wide) .gpick{order:-1;display:flex;align-items:center;justify-content:center}
+.gpick input{width:12px;height:12px;margin:0;cursor:pointer;accent-color:var(--acc)}
+.f.inst.ihead{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:-4px}
+.f.inst.ihead>span{white-space:nowrap}
 .f.inst:not(.wide)>label{display:contents}
 .f.inst:not(.wide)>select:not(.fxsel){order:2;min-width:0}
 .f.inst:not(.wide) .vol{order:3}
-.f.inst:not(.wide) .vol input[type=range]{width:78px}
+.f.inst:not(.wide) .vol input[type=range]{width:56px}
 .f.inst:not(.wide) .octsel{order:4;width:auto}
 .f.inst:not(.wide) .auto:has([data-mute]){order:5}
 .f.inst:not(.wide) [data-dice]{order:6}
@@ -216,6 +220,7 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 .vol{display:inline-flex;align-items:center;gap:4px;margin-left:6px;font-weight:400}
 .vol input[type=range]{width:84px;height:14px;vertical-align:middle}
 .vol b{font-family:var(--mono);font-size:10.5px;min-width:38px;opacity:.75}
+.mpre{display:flex;gap:4px;margin-top:4px}.mpre .mini{padding:1px 7px;font-size:11px}
 </style>
 </head>
 <body>
@@ -349,7 +354,8 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
       <div class="f"><label>Stereo width <b id="widthV"></b></label><input type="range" id="width" min="0" max="200" value="100"></div>
       <div class="f"><label>Bass boost <b id="bassV"></b></label><input type="range" id="bass" min="-6" max="6" value="0" step="0.5"></div>
       <div class="f"><label>Drive / saturation <b id="driveV"></b></label><input type="range" id="drive" min="0" max="100" value="0"></div>
-      <div class="f"><label>Loudness <span class="auto"><input type="checkbox" id="loudAuto" checked>style</span></label><input type="range" id="loud" min="-18" max="-6" value="-10" step="0.5" disabled></div>
+      <div class="f"><label>Loudness <span class="auto"><input type="checkbox" id="loudAuto" checked>style</span></label><input type="range" id="loud" min="-18" max="-6" value="-10" step="0.5" disabled>
+        <div class="mpre" title="Mastering targets"><button class="mini" data-lp="-14" title="Streaming: -14 LUFS - most dynamic; Spotify / YouTube turn louder songs down to this anyway">Streaming</button><button class="mini" data-lp="-10" title="Balanced: -10 LUFS - loud but still punchy">Balanced</button><button class="mini" data-lp="-8" title="Club: -8 LUFS - dense and loud for DJ sets and big systems (less punch)">Club</button></div></div>
       <div class="f"><label>Tape / vinyl</label><div class="seg" id="lofi"></div></div>
       <div class="f wide"><div class="hint">Each part's volume is in <b>Parts</b>, next to its sound and mute.</div></div>
     </div></details>
@@ -590,6 +596,9 @@ function renderSelected(){
     h.querySelector('[data-snd-roll=all]').onclick=()=>{ state.locked={}; rerollSounds(state.style, state.instruments); renderSelected(); $('#status').textContent='New sounds picked from the genre\'s suggestions - press Preview to hear them.'; };
     h.querySelector('[data-snd-roll=reset]').onclick=()=>{ state.instruments={}; state.locked={}; renderSelected(); };
     h.querySelector('[data-vol-reset]').onclick=()=>{ state.levels={}; bindLevels(); }; }
+  if(!jParts){ const hd=document.createElement('div'); hd.className='f inst ihead';
+    hd.innerHTML='<span title="Ticked: the genre picks this part\'s sound for each song. Unticked: the part keeps its sound.">🎲</span><span>Part</span><span>Sound <span style="text-transform:none;letter-spacing:0">(ticked = the genre picks · ★ = its own sound)</span></span>';
+    $('#soundBody').appendChild(hd); }
   rows.forEach(([r,label,role,defInst])=>{
     const w=document.createElement('div');w.className='f inst';
     const pool=(!jParts&&!state.blend.length)?(((META.style_pools||{})[state.style]||{})[r]||[]):[];
@@ -598,14 +607,21 @@ function renderSelected(){
     (META.roles[role]||[]).forEach(i=>{ if(pool.includes(i.id)) return; (groups[i.group||'Built-in']=groups[i.group||'Built-in']||[]).push(i)});
     const opts=Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${(state.instruments[r]||(state.locked||{})[r])===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('');
     const dn=defInst?((META.roles[role]||[]).find(i=>i.id===defInst)||{name:defInst}).name:'none';
-    const dl=state.blend.length?'Auto (from the fused styles)':jParts?`Score default (${dn})`:`Style default (${dn})`;
+    const dl=state.blend.length?'Auto (from the fused styles)':jParts?`Score default (${dn})`:`★ ${dn}`;
     const fxs=(META.effects||[]);
     const mute=jParts?'':`<span class="auto" title="Switch this part off (e.g. no lead for an instrumental bed)"><input type="checkbox" data-mute="${r}" ${state.muted.includes(r)?'checked':''}>mute</span>`;
     const dice=pool.length>1?`<button class="ico" data-dice="${r}" title="Try another sound that suits this genre">🎲</button>`:'';
-    w.innerHTML=`<label>${label} ${dice} ${mute} ${jParts?'':volHtml(r)} ${jParts?'':octHtml(r,(state.octaves||{})[r])}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
+    const gpick=!(state.instruments[r]||(state.locked||{})[r]);
+    const gp=jParts?'':`<span class="gpick" title="${gpick?'Genre picks: the genre chooses this part\'s sound for each song (from its suggestions). Untick to keep one sound.':'Yours: this part keeps the sound shown. Tick to let the genre choose a sound for each song again.'}"><input type="checkbox" data-gpick="${r}" ${gpick?'checked':''}></span>`;
+    w.innerHTML=`<label>${label} ${dice} ${gp} ${mute} ${jParts?'':volHtml(r)} ${jParts?'':octHtml(r,(state.octaves||{})[r])}</label><select><option value="">${dl}</option>${jParts?`<option value="off" ${state.instruments[r]==='off'?'selected':''}>🔇 Off (silent)</option>`:''}${opts}</select>`+
       (fxs.length&&!jParts?`<select class="fxsel" title="Run this part through one of your effect plugins"><option value="">no effect plugin</option>${fxs.map(f=>`<option ${state.part_fx[r]===f?'selected':''}>${esc(f)}</option>`).join('')}</select>`:'');
     // the part's sound menu (not the octave menu that sits before it in the row)
-    w.querySelector(':scope > select:not(.fxsel):not(.octsel)').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else { delete state.instruments[r]; if(state.locked) delete state.locked[r]; } };
+    w.querySelector(':scope > select:not(.fxsel):not(.octsel)').onchange=e=>{ if(e.target.value) state.instruments[r]=e.target.value; else { delete state.instruments[r]; if(state.locked) delete state.locked[r]; }
+      const cb=w.querySelector('[data-gpick]'); if(cb) cb.checked=!(state.instruments[r]||(state.locked||{})[r]); };
+    if(w.querySelector('[data-gpick]')) w.querySelector('[data-gpick]').onchange=e=>{
+      if(e.target.checked){ delete state.instruments[r]; if(state.locked) delete state.locked[r]; }
+      else { state.instruments[r]=(state.locked||{})[r]||defInst||pool[0]||''; if(!state.instruments[r]) delete state.instruments[r]; }
+      renderSelected(); };
     if(w.querySelector('[data-dice]')) w.querySelector('[data-dice]').onclick=e=>{ e.preventDefault(); const cur=state.instruments[r]||pool[0];
       const opts=pool.filter(x=>x!==cur); const pick=opts[Math.floor(Math.random()*opts.length)];
       if(state.locked) delete state.locked[r]; state.instruments[r]=pick; renderSelected(); };
@@ -881,6 +897,9 @@ async function run(preview, count, opts, section, onResult, varyPart, extra){
 }
 function setBusy(b){['#prevBtn','#varBtn','#fullBtn','#surpriseBtn'].forEach(s=>$(s).disabled=b);$('#progBar').style.display=b?'block':'none';if(!b)$('#progBar>i').style.width='0'}
 
+function mixTag(r){ const m=r.mix_report; if(!m) return '';
+  const tip=`Mix check: ${m.lufs} LUFS · true peak ${m.true_peak} dBTP · punch (PLR) ${m.plr} dB · stereo correlation ${m.correlation} · low-end side ${m.low_side_db} dB · section contrast ${m.section_contrast} dB`+(m.warnings.length?'\n⚠ '+m.warnings.join('\n⚠ '):'\nNothing to fix');
+  return `<span class="tag ${m.warnings.length?'':'ok'}" title="${esc(tip)}">${m.warnings.length?'mix: '+m.warnings.length+' note'+(m.warnings.length>1?'s':''):'mix ✓'} · ${m.lufs} LUFS</span> `; }
 function addResult(r, target){
   $('#emptyS')&&($('#emptyS').style.display='none');
   const el=document.createElement('div');el.className='res new'; el.dataset.rid=r.id;
@@ -890,7 +909,7 @@ function addResult(r, target){
   const fusion=r.fusion?Object.entries(r.fusion).map(([p,s])=>`${p}←<span>${styleName(s)}</span>`).join(' · '):'';
   el.innerHTML=`<div class="top"><button class="play">▶</button><div style="min-width:0"><div class="tt">${title}</div>
     <div class="mt">${r.key} · ${r.meter&&r.meter!=='4/4'?r.meter+' · ':''}${r.bpm_quarter&&r.bpm_quarter!==r.bpm?r.bpm_quarter:r.bpm} BPM · seed ${r.seed}${r.mood?' · '+r.mood:''}${r.preview?' · preview':' · '+r.duration}</div>
-    ${(r.arrangement&&r.arrangement.length)||r.genre_fit?`<div class="tags">${r.genre_fit?`<span class="tag ${r.genre_fit.score>=100?'ok':''}" title="Genre check: ${esc(r.genre_fit.checks.map(c=>(c.ok?'✓ ':'✗ ')+c.name).join(' · '))}">genre fit ${r.genre_fit.score}%</span>`:''}${(r.arrangement||[]).map(a=>`<span class="tag">${esc(a)}</span>`).join(' ')}</div>`:''}</div></div>
+    ${(r.arrangement&&r.arrangement.length)||r.genre_fit||r.mix_report?`<div class="tags">${mixTag(r)}${r.genre_fit?`<span class="tag ${r.genre_fit.score>=100?'ok':''}" title="Genre check: ${esc(r.genre_fit.checks.map(c=>(c.ok?'✓ ':'✗ ')+c.name).join(' · '))}">genre fit ${r.genre_fit.score}%</span>`:''}${(r.arrangement||[]).map(a=>`<span class="tag">${esc(a)}</span>`).join(' ')}</div>`:''}</div></div>
     <canvas class="wave"></canvas>
     <div class="info">Chords <span>${r.chords}</span> · alt <span>${r.chords_alt}</span><br>${inst}${fusion?'<br>Fusion '+fusion:''}</div>
     <div class="rr"><span class="lbl" title="New version of one part; everything else stays exactly the same">Re-roll</span>${['drums','bass','chords','melody','harmony'].map(p=>`<button class="mini" data-p="${p}">${p}</button>`).join('')}
@@ -1860,6 +1879,7 @@ async function init(){
   $('#jBbc').onchange=e=>{ state.orch_plugin=e.target.checked; try{ localStorage.setItem('sl_orch_plugin', state.orch_plugin?'1':'') }catch(_){} };
   $('#jBbcSet').onclick=async e=>{ e.preventDefault(); const V=await api('/api/vst',{}); if(!V.available){ vstModal(); return } orchModal(V); };
   bindRange('reverb',v=>v+'%'); bindRange('delay',v=>v+'%'); bindRange('width',v=>v+'%'); bindRange('bass',v=>(v>0?'+':'')+v+' dB'); bindRange('drive',v=>v+'%');
+  document.querySelectorAll('[data-lp]').forEach(b=>b.onclick=()=>{ $('#loudAuto').checked=false; $('#loud').value=b.dataset.lp; syncAutos(); });
   $('#bpm').oninput=syncAutos; ['bpmAuto','swingAuto','scAuto','loudAuto'].forEach(a=>$('#'+a).onchange=syncAutos);
   $('#search').oninput=renderStyles;
   $('#dice').onclick=()=>$('#seed').value=Math.floor(Math.random()*999999)+1;

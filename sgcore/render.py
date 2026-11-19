@@ -56,6 +56,8 @@ def track_fx(buf, tcfg, spb):
     trem     - amp tremolo synced to the beat: {'rate': beats per cycle, 'depth': 0..1} or a depth (16ths default)
     wah      - an auto-wah: a resonant band-pass that follows the playing's loudness (funk guitar, clavinet)
     crush    - a bit-crusher: fewer bits and a lower sample rate (lo-fi, chip, glitch)
+    ott      - a three-band upward / downward squash (dense, forward EDM synths)
+    wide     - mid / side widening above 200 Hz with a little Haas, the bass kept mono (pads, supersaws)
     Each value is the amount (0..1) unless noted."""
     x = np.asarray(buf, np.float64)
     n = x.shape[1]
@@ -105,6 +107,32 @@ def track_fx(buf, tcfg, spb):
                 b, a = _bp_coeffs(float(fc[s0]), 4.0)
                 out[c, s0:e], zi = signal.lfilter(b, a, x[c, s0:e], zi=zi)
         x = x * (1 - amt) + out * amt * 2.5
+    if tcfg.get('ott'):                                  # multiband squash ('OTT'): quiet details pulled up, peaks held
+        amt = float(tcfg['ott'])                         # down, per band - the dense, forward synth sound of EDM
+        bands_ = [(None, 200), (200, 2500), (2500, None)]
+        out = np.zeros_like(x)
+        for lo_, hi_ in bands_:
+            if lo_ is None:
+                bnd = signal.sosfiltfilt(signal.butter(2, hi_ / (SR / 2), output='sos'), x, axis=-1)
+            elif hi_ is None:
+                bnd = signal.sosfiltfilt(signal.butter(2, lo_ / (SR / 2), 'high', output='sos'), x, axis=-1)
+            else:
+                bnd = signal.sosfiltfilt(signal.butter(2, [lo_ / (SR / 2), hi_ / (SR / 2)], 'band', output='sos'), x, axis=-1)
+            k = max(16, int(0.012 * SR))
+            env = np.sqrt(np.maximum(uniform_filter1d((bnd ** 2).mean(axis=0), k), 0.0)) + 1e-6
+            ref = float(np.percentile(env[env > env.max() * 0.01], 70)) if np.any(env > env.max() * 0.01) else 1.0
+            g = np.clip((ref / env) ** (0.5 * amt), 0.25, 4.0)
+            out += bnd * g[None, :]
+        r0 = np.sqrt(np.mean(x ** 2)) + 1e-9
+        x = out * (r0 / (np.sqrt(np.mean(out ** 2)) + 1e-9))
+    if tcfg.get('wide'):                                 # mid / side widening above 200 Hz (the low end stays mono)
+        amt = float(tcfg['wide'])
+        mid_, side_ = (x[0] + x[1]) / 2, (x[0] - x[1]) / 2
+        side_ = signal.lfilter(*signal.butter(2, 200 / (SR / 2), 'high'), side_)
+        haas = np.concatenate([np.zeros(int(0.011 * SR)), mid_[:-int(0.011 * SR)]])
+        hp_h = signal.lfilter(*signal.butter(2, 300 / (SR / 2), 'high'), haas)
+        side_ = side_ * (1 + 0.8 * amt) + 0.15 * amt * hp_h
+        x = np.vstack([mid_ + side_, mid_ - side_])
     if tcfg.get('crush'):
         amt = float(tcfg['crush'])
         bits = 2 ** (12 - 7 * amt)
@@ -207,6 +235,40 @@ def tone_match(x, target, log=print, amount=0.6, limit=3.0):
             x = eq(x, 'peak', fc, 1.1, g)
     log('   tone match: ' + ' '.join(f'{g:+.1f}' for g in d))
     return x
+
+
+def mix_report(y, song=None, spb=None):
+    """Quality check of a finished master - what a mastering engineer looks at:
+    loudness (LUFS), true peak (dBTP, 4x oversampled), peak-to-loudness ratio (PLR - how much punch the limiter left),
+    stereo correlation (+1 mono ... 0 wide ... <0 phasey), low-end mono-compatibility (side energy under 120 Hz) and
+    section contrast (how much louder the big sections are than the quiet ones). Returns numbers + plain warnings."""
+    from .dsp import lufs as _lufs
+    y = np.asarray(y, np.float64)
+    L = float(_lufs(y))
+    tp = 20 * np.log10(float(np.max(np.abs(signal.resample_poly(y, 4, 1, axis=-1)))) + 1e-12)
+    st_win = int(3 * SR)
+    sl = [float(_lufs(y[:, i:i + st_win])) for i in range(0, max(1, y.shape[1] - st_win), st_win)] if y.shape[1] > st_win * 2 else [L]
+    plr = tp - L
+    m, s_ = (y[0] + y[1]) / 2, (y[0] - y[1]) / 2
+    corr = float(np.corrcoef(y[0], y[1])[0, 1]) if np.std(y[0]) > 0 and np.std(y[1]) > 0 else 1.0
+    lo_m = signal.sosfilt(signal.butter(4, 120 / (SR / 2), output='sos'), m)
+    lo_s = signal.sosfilt(signal.butter(4, 120 / (SR / 2), output='sos'), s_)
+    low_side = 10 * np.log10((np.mean(lo_s ** 2) + 1e-12) / (np.mean(lo_m ** 2) + 1e-12))
+    good = [v for v in sl if v > -60]
+    contrast = (float(np.percentile(good, 90)) - float(np.percentile(good, 20))) if len(good) > 4 else 0.0
+    warn = []
+    if tp > -0.9:
+        warn.append('true peak above -1 dBTP')
+    if plr < 7.5:
+        warn.append('very squashed (little punch left)')
+    if corr < 0.15:
+        warn.append('very wide / phasey stereo - check in mono')
+    if low_side > -12:
+        warn.append('stereo low end (bass not mono)')
+    if contrast < 2.0 and len(good) > 20:
+        warn.append('sections all equally loud (little contrast)')
+    return dict(lufs=round(L, 1), true_peak=round(float(tp), 1), plr=round(float(plr), 1), correlation=round(corr, 2),
+                low_side_db=round(float(low_side), 1), section_contrast=round(contrast, 1), warnings=warn)
 
 def auto_lp(buf, cut, block=256):
     """A 12 dB low-pass whose cutoff follows `cut` (Hz per sample), in blocks with carried state; blocks where it is
@@ -567,7 +629,7 @@ class Renderer:
             buf = self._gate(buf, tcfg['gate'])
         if tcfg.get('chorus'):
             buf = chorus(buf, float(tcfg['chorus']))
-        if any(tcfg.get(k) for k in ('phaser', 'flanger', 'trem', 'wah', 'crush')) and np.any(buf):
+        if any(tcfg.get(k) for k in ('phaser', 'flanger', 'trem', 'wah', 'crush', 'wide', 'ott')) and np.any(buf):
             buf = track_fx(buf, tcfg, self.spb).astype(np.float32)
         if tcfg.get('sweep') and np.any(buf):             # techno: a filter that opens and closes over 16-32 bars
             lo_hz, hi_hz, bars = tcfg['sweep']
@@ -725,6 +787,8 @@ class Renderer:
         duck = self.sidechain_curve(st['sc_release']) if sc_depth > 0 else None
         mix = np.zeros((2, L), dtype=np.float32)
         self._hats = {}
+        self._dly_extra = {}
+        self._dodge = None
         drums = np.zeros((2, L), dtype=np.float32)
         rev_send = np.zeros((2, L), dtype=np.float32)
         dly_send = np.zeros((2, L), dtype=np.float32)
@@ -818,6 +882,11 @@ class Renderer:
                 th = (tcfg['pan'] * min(1.0, opts.width) + 1) * np.pi / 4
                 buf[0] *= np.float32(np.cos(th) * np.sqrt(2))
                 buf[1] *= np.float32(np.sin(th) * np.sqrt(2))
+            if tcfg['layer'] == 'bass' and not (duck is not None and tcfg['sc']) and not st.get('no_dodge') and np.any(buf):
+                if self._dodge is None:                     # kick / bass separation: the bass's lowest band (< 110 Hz)
+                    self._dodge = self.sidechain_curve(0.18)   # dips ~5 dB for the length of each kick, so the two
+                lo_ = lp(buf, 110, 2).astype(np.float32)      # never sum into one smeared boom (genres with no
+                buf = buf - lo_ * (0.45 * self._dodge[None, :buf.shape[1]])   # sidechain of their own)
             if duck is not None and tcfg['sc']:
                 if sc_mult is not None:                   # the pumping deepens in the drops, eases in the breakdown
                     buf *= (1 - duck * np.minimum(1.0, sc_depth * tcfg['sc'] * sc_mult).astype(np.float32))[None, :]
@@ -835,7 +904,12 @@ class Renderer:
             buf *= env32[None, :]
             if tcfg['rev']:
                 rev_send += buf * np.float32(tcfg['rev'] * opts.reverb)
-            if tcfg['dly']:
+            if tcfg['dly'] and tcfg.get('dly_time'):         # this part's own echo time (a 1/8 pluck under a dotted-8th lead)
+                k_ = float(tcfg['dly_time'])
+                if k_ not in self._dly_extra:
+                    self._dly_extra[k_] = np.zeros((2, L), dtype=np.float32)
+                self._dly_extra[k_] += buf * np.float32(tcfg['dly'] * opts.delay)
+            elif tcfg['dly']:
                 dly_send += buf * np.float32(tcfg['dly'] * opts.delay)
             if dub_send is not None and tcfg.get('throw'):
                 dub_send += buf * throw[None, :] * np.float32(tcfg['throw'] * max(0.3, opts.delay))
@@ -897,6 +971,12 @@ class Renderer:
             oh = self._hats['ohat']
             drums -= oh                                    # the open hat rings only until the closed hat shuts it
             drums += oh * hat_choke_env(self._hats['chat'], oh)[None, :]
+        if st.get('drum_crush'):                          # phonk: the whole kit a little bit-crushed (lo-fi grit)
+            c = float(st['drum_crush'])
+            q = 2 ** (14 - 6 * c)
+            hold = max(1, int(1 + 3 * c))
+            dm = np.round(np.asarray(drums, np.float64) * q) / q
+            drums = np.repeat(dm[:, ::hold], hold, axis=1)[:, :drums.shape[1]].astype(np.float32)
         drums = drum_bus(drums, float(st.get('drum_drive', 0.25)))
         if stems_dir and np.any(drums):
             path = os.path.join(stems_dir, '00_drum_bus.wav')
@@ -923,6 +1003,9 @@ class Renderer:
             if duck is not None:
                 rv *= (1 - duck * sc_depth * 0.7)[None, :]
             returns += rv * 0.55
+        for k_, snd in self._dly_extra.items():
+            if np.any(snd):
+                returns += hp(pingpong(snd.astype(np.float64), k_ * self.spb, fb=0.4), 250) * 0.45
         if np.any(dly_send):
             dl = hp(pingpong(dly_send.astype(np.float64), st['delay_beats'] * self.spb, fb=0.42), 250)
             returns += dl * 0.45
@@ -1363,4 +1446,10 @@ def master(x, cfg, log=print):
         if abs(err) < 0.1 or (err > 0 and g_db >= g_cap - 1e-6):
             break
         g_db += err
+    # true peak: the peaks between the samples (4x oversampled) kept under -1 dBTP, so the file never clips when
+    # it's converted to MP3 / AAC or played through a DAC that reconstructs the waveform
+    tp = float(np.max(np.abs(signal.resample_poly(y, 4, 1, axis=-1)))) if y.size else 0.0
+    ceil_ = 10 ** (-1.0 / 20)
+    if tp > ceil_:
+        y = y * (ceil_ / tp)
     return y

@@ -821,8 +821,16 @@ def test_arabic_maqam():
             k = s['key']
             q = MAQAM_QUARTER.get(k.scale_name)
             shifted = [e for e in s['events'] if e.bend and any(b[0] == 'shift' for b in e.bend)]
-            assert all(tr[e.track]['layer'] in ('lead', 'arp') or e.track == 'vocal' for e in shifted)
+            # every pitched part plays the quarter tones (1.72) - drums never
+            assert all(tr[e.track]['layer'] in ('lead', 'arp', 'chords', 'pad', 'bass') or e.track == 'vocal' for e in shifted)
             if q:
+                real = {(k.root + k.scale[d]) % 12 + q.get(d, 0.0) for d in range(len(k.scale))}
+                for e in s['events']:                    # ornaments aim at the maqam's real notes
+                    sh = sum(b[1] for b in (e.bend or []) if b[0] == 'shift')
+                    for b in (e.bend or []):
+                        if b[0] in ('meend', 'gamak', 'fall'):
+                            tg = (e.midi + sh + b[1]) % 12
+                            assert any(abs(tg - r) < 1e-6 or abs(tg - r) > 12 - 1e-6 for r in real), (g, seed, e.midi, e.bend)
                 seen.add(k.scale_name)
                 assert shifted, (g, seed, k.scale_name)
                 pcs = {(k.root + k.scale[d]) % 12 for d in q}
@@ -1141,6 +1149,17 @@ def test_va_synth():
     s70 = compose(Options(style='techno', seed=3))
     assert s70['st'].get('kick_rumble') and s70['st'].get('hat_choke')
     assert compose(Options(style='deep_house', seed=3))['st'].get('track_feel')
+    sp808 = np.asarray(INSTRUMENTS['808'](33, 0.8, {'drive': 9.0, 'split': True}, None, None))   # 1.71: clean sub + growl
+    assert np.isfinite(sp808).all() and 0.05 < np.abs(sp808).max() < 2.0
+    from sgcore.styles import STYLES as _S5
+    assert _S5['phonk'].get('drum_crush') and [t for t in _S5['phonk']['tracks'] if t['name'] == 'lead'][0]['p'].get('drive')
+    for k in ('sh101', 'nordpluck', 'ravestab'):                                             # 1.71 synths
+        a = np.asarray(INSTRUMENTS[k](48 if k == 'sh101' else 67, 0.3, {}, None, None))
+        assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.3, (k, np.abs(a).max())
+    zz2 = np.random.default_rng(4).standard_normal((2, SR)) * 0.2
+    for fxk in ('ott', 'wide'):
+        yy = track_fx(zz2, {fxk: 0.5}, 0.5)
+        assert yy.shape == zz2.shape and np.isfinite(yy).all(), fxk
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars

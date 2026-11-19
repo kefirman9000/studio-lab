@@ -342,6 +342,14 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     loud = dsp.lufs(out)
     peak = 20 * np.log10(np.max(np.abs(out)) + 1e-12)
     log(f'   master: {loud:.1f} LUFS, peak {peak:.1f} dBFS')
+    try:
+        from .render import mix_report
+        info['mix_report'] = mix_report(out)
+        mr = info['mix_report']
+        log(f"   mix check: {mr['true_peak']} dBTP, PLR {mr['plr']} dB, correlation {mr['correlation']}, low-end side "
+            f"{mr['low_side_db']} dB, section contrast {mr['section_contrast']} dB" + (' - ' + '; '.join(mr['warnings']) if mr['warnings'] else ' - OK'))
+    except Exception as e:                                 # the report is a bonus - never fail a render for it
+        log(f'   (mix check skipped: {e})')
     if 'mp3' in outputs and have_ffmpeg():
         mp3 = dsp.write_mp3(wav, wav[:-4] + '.mp3', 320, dict(title=name, genre=info['style'], artist='Studio Lab'))
         if mp3:
