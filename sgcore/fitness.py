@@ -43,7 +43,10 @@ SIGNATURE = {   # genre -> (part, instruments, label): the sound that defines it
     'brostep': ('bass', {'growl', 'wobble', 'fmbass', 'reese', 'fmgrowl', 'talkgrowl', 'metalbass', 'darkwob', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'dnbwob'}, 'aggressive mid-bass'),
     'neurofunk': ('bass', {'growl', 'reese', 'fmbass', 'wobble', 'neuro', 'dnbwob', 'metalbass', 'fmgrowl', 'talkgrowl'}, 'neuro / reese bass'),
     'amapiano': ('bass', {'logdrum'}, 'log drum'), 'trap': ('bass', {'808'}, '808'), 'uk_drill': ('bass', {'808'}, '808'),
-    'festival_psy': ('bass', {'psybass', 'rollbass', 'sawbass'}, 'rolling psy bass'),
+    'festival_psy': ('bass', {'psybass', 'rollbass', 'sawbass', 'psyroll'}, 'rolling psy bass'),
+    'progressive_psy': ('bass', {'psyroll', 'psybass', 'rollbass'}, 'rolling psy bass'),
+    'goa_trance': ('bass', {'psyroll', 'psybass', 'sawbass', 'rollbass'}, 'rolling psy bass'),
+    'darkpsy': ('bass', {'psyroll', 'psybass', 'fmbass'}, 'rolling psy bass'),
     'uplifting_trance': ('lead', {'supersaw_lead', 'leadsaw', 'pluck_saw', 'piano', 'vox', 'emolead', 'hypersaw'}, 'trance lead'),
 }
 

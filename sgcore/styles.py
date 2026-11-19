@@ -423,12 +423,12 @@ style('psytrance', 'Electronic', 'Psytrance: relentless kick-bass rolls, acid sq
       form='groove',
       tune_kick=True,
       kick_shape=dict(pitch=50, punch=220, sweep=36, decay=15, drive=2.6, len=0.26, click=0.6),
-      pools=dict(bass=['sawbass', 'fmbass', 'acid', 'moogbass', 'rollbass'],
+      pools=dict(bass=['sawbass', 'psyroll', 'psybass', 'fmbass', 'acid', 'moogbass', 'rollbass'],
                  chords=['stab', 'warmpad', 'organ', 'polysynth'],
                  pad=['warmpad', 'choir', 'supersaw', 'glasspad'],
                  arp=['acid', 'pluck_saw', 'pluck', 'stab'],
-                 lead=['acid', 'leadsaw', 'hoover', 'pluck_saw']),
-      label='Psytrance')
+                 lead=['acid', 'leadsaw', 'hoover', 'pluck_saw', 'psylead', 'goalead']),
+      no_sounds=['supersaw', 'hypersaw', 'supersaw_lead', 'emolead', 'mhpluck', 'superpluck', 'lushpad', 'vocalchop', 'vox', 'jp_supersaw', 'futurechord', 'rumble'], label='Psytrance (full-on)')
 
 style('techno', 'Electronic', 'Peak-time techno: distorted kick, rolling 16th bass, dub stabs drowned in delay',
       bpm=(128, 134), scales=['minor'], progs=[[0, 0, 0, 0], [0, 0, 5, 5], [0, 6, 0, 5]], chord_size=3,
@@ -4787,6 +4787,149 @@ style('festival_psy', 'Electronic',
                  arp=['acid', 'psylead', 'technoseq', 'superpluck', 'techstab'],
                  lead=['psylead', 'supersaw_lead', 'emolead', 'hardlead', 'hypersaw', 'progpluck']),
       label='Festival psy-trance (big-room / psy hybrid)')
+
+# v1.73: the psytrance family (user request + reference tracks). Measured on progressive-psy references at 136 BPM:
+# kick on every beat, the bass on the three 16ths after it with notes so short the sub dips to nothing between them,
+# a short kick (~70-140 ms of sub), the low end bone-dry and mono (side energy 50-65 dB down), a DARK top (the
+# 4-11 kHz bands 25-35 dB under the bass), loud (-7.5 to -9 LUFS) and very long, steady sections - the hypnosis comes
+# from the kick-bass engine and slowly evolving layers, not from big drops.
+FORMS['progressive_psy'] = [
+    ('intro', 32, {'kick', 'top', 'fx', 'pad'}, {'filter_in': True}),
+    ('verse', 32, {'kick', 'top', 'snare', 'bass', 'fx', 'arp'}, {}),
+    ('drop', 32, {'kick', 'snare', 'top', 'bass', 'arp', 'chords', 'fx'}, {'drop': True}),
+    ('break', 16, {'pad', 'arp', 'lead', 'fx'}, {'alt': True, 'crash': True}),
+    ('build', 16, {'kick', 'top', 'pad', 'arp', 'lead', 'fx'}, {'build': True}),
+    ('drop', 32, ALL, {'drop': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'arp', 'fx'}, {'var': 1}),
+    ('outro', 32, {'kick', 'top', 'bass'}, {}),
+]
+
+style('progressive_psy', 'Electronic',
+      'Progressive psytrance: 134-138 BPM, deep and hypnotic - a short, tight kick on every beat and the rolling psy bass '
+      'playing three short, plucky notes between every kick (a clean sine sub under a filtered saw, retriggered on every '
+      'note), filtered acid lines and atmospheric pads evolving slowly over long 32-bar sections, few melodies, a dark, '
+      'smooth top end and a dry, mono low end; built from the groove outward',
+      bpm=(134, 138), scales=['minor', 'phrygian'], swing=0.5, human=0.0015, form='progressive_psy', form_scale=1,
+      progs={'minor': [[0, 0, 0, 0], [0, 0, 5, 0], [0, 0, 6, 0]], 'phrygian': [[0, 0, 0, 0], [0, 0, 1, 0]]},
+      own_progs=True, chord_size=3, sc_depth=0.35, sc_release=0.22, reverb=2.8, rev_predelay=0.03, rev_hp=300, delay_beats=0.75,
+      kit='techno', kit_override=dict(kick=dict(pitch=47, punch=190, sweep=40, decay=16, drive=2.2, len=0.2, click=0.5, hold=0.02)),
+      drums={'kick': [FOUR], 'clap': ['....x.......x...', '............x...'], 'ohat': [OFFHAT],
+             'chat': ['x.xxx.xxx.xxx.xx', '.x.x.x.x.x.x.x.x'], 'shaker': ['.xx..xx..xx..xx.'], 'crash': ['X...............']},
+      snare_tracks=['clap'],
+      bass=['.RRR.RRR.RRR.RRR', '.RRR.RRR.RRR.RO.', '.RRR.RRR.RR..RRR'], bass_gate=0.4, bass_lo=27,
+      chord_rh=['......x.........', '......x.......x.'], chord_center=60,
+      arp=dict(rate=1, mode='random', oct=4, prob=0.6),
+      lead_rh=['x.x.....x.x.....', 'x...x...x.x.x...', 'x-------x---....'], lead_oct=4, fill=True,
+      repetition=0.9, filter_arc=True, sc_arc=True, tune_kick=True,
+      gm_hint='Short tuned kick; rolling split psy bass K-B-B-B; filtered acid line; dark atmospheric pad; sparse lead; '
+              'shaker + offbeat hats; long 32-bar sections',
+      tracks=[T('kick', 'kick', 'kick', db=-8), T('clap', 'snare', 'clap', rev=0.35, db=-23),
+              T('ohat', 'top', 'ohat', db=-27), T('chat', 'top', 'chat', pan=-0.2, db=-30),
+              T('shaker', 'top', 'shaker', pan=0.25, db=-30), T('crash', 'top', 'crash', rev=0.3, db=-29),
+              T('bass', 'bass', 'psyroll', db=-11, sc=0.25),
+              T('chords', 'chords', 'techstab', rev=0.4, dly=0.35, dly_time=0.75, sc=0.6, db=-27),
+              T('pad', 'pad', 'darkpad', wide=0.4, rev=0.6, sc=0.7, db=-27),
+              T('arp', 'arp', 'acid', pan=0.15, rev=0.3, dly=0.35, dly_time=0.75, db=-25, p=dict(res=7, cut=450)),
+              T('lead', 'lead', 'psylead', rev=0.45, dly=0.35, sc=0.3, db=-22),
+              T('texture', 'fx', 'texture', db=-35)],
+      master=dict(tone=[0.0, -1.7, -7.8, -13.7, -17.5, -18.9, -23.0, -27.6, -31.6], lufs=-8.0, air=0.5, low=1.2, width=1.0),
+      pools=dict(bass=['psyroll', 'psybass', 'rollbass'],
+                 chords=['techstab', 'stab', 'dubstab', 'progpluck'],
+                 pad=['darkpad', 'atmos', 'eeriepad', 'trancepad'],
+                 arp=['acid', 'technoseq', 'psylead', 'sh101', 'psyzap'],
+                 lead=['psylead', 'acid', 'goalead', 'progpluck']),
+      no_sounds=['supersaw', 'hypersaw', 'supersaw_lead', 'emolead', 'mhpluck', 'superpluck', 'lushpad', 'vocalchop', 'vox', 'jp_supersaw', 'futurechord', 'rumble'], label='Progressive psytrance (deep, hypnotic, 136)')
+
+FORMS['goa_trance'] = [
+    ('intro', 16, {'kick', 'top', 'fx', 'pad', 'arp'}, {'filter_in': True}),
+    ('verse', 32, {'kick', 'top', 'snare', 'bass', 'arp', 'fx'}, {}),
+    ('drop', 32, {'kick', 'snare', 'top', 'bass', 'arp', 'lead', 'chords'}, {'drop': True}),
+    ('break', 16, {'pad', 'lead', 'arp', 'fx'}, {'alt': True, 'crash': True}),
+    ('build', 16, {'kick', 'top', 'snare', 'pad', 'arp', 'lead'}, {'build': True}),
+    ('drop', 32, ALL, {'drop': True}),
+    ('drop', 16, ALL, {'var': 1, 'alt': True}),
+    ('outro', 16, {'kick', 'top', 'bass', 'arp'}, {}),
+]
+
+style('goa_trance', 'Electronic',
+      'Goa trance (classic 90s psychedelic trance): 140-148 BPM, melodic and layered - squelchy detuned-saw lead melodies '
+      'with an eastern colour (phrygian dominant, harmonic minor), several interlocking acid / 303 arpeggios, a rolling '
+      'bass under a punchy kick, choirs and pads in the breakdowns, brighter and busier than modern psy',
+      bpm=(140, 148), scales=['phrygian_dominant', 'harmonic_minor', 'phrygian'], swing=0.5, human=0.002, form='goa_trance',
+      progs={'phrygian_dominant': [[0, 1, 0, 0], [0, 0, 1, 6]], 'harmonic_minor': [[0, 5, 4, 0], [0, 0, 5, 4]],
+             'phrygian': [[0, 1, 0, 0], [0, 6, 1, 0]]},
+      own_progs=True, chord_size=3, sc_depth=0.3, sc_release=0.25, reverb=3.0, delay_beats=0.75,
+      kit='trance', kit_override=dict(kick=dict(pitch=50, punch=200, sweep=38, decay=14, drive=2.4, len=0.26, click=0.55)),
+      drums={'kick': [FOUR], 'clap': ['....x.......x...'], 'ohat': [OFFHAT], 'chat': ['xxxxxxxxxxxxxxxx'],
+             'ride': ['..x...x...x...x.'], 'crash': ['X...............']},
+      snare_tracks=['clap'],
+      bass=['.RRR.RRR.RRR.RRR', '.RRR.RRR.RRR.ROO'], bass_gate=0.5, bass_lo=29,
+      chord_rh=['x.......x.......'], chord_center=62,
+      arp=dict(rate=1, mode='updown', oct=4, prob=0.85),
+      lead_rh=['x.xxx.x.x.xxx.x.', 'x-x-x---x-x-xxx-', 'xxx.xxx.xxx.x.x.', 'x---x-x-x---x-x-'], lead_oct=4, fill=True,
+      repetition=0.8, filter_arc=True, tune_kick=True, ornament=0.0,
+      gm_hint='Punchy kick; rolling bass; squelchy goa lead in phrygian dominant; two acid arps; choir / pad breakdowns',
+      tracks=[T('kick', 'kick', 'kick', db=-9), T('clap', 'snare', 'clap', rev=0.35, db=-22),
+              T('ohat', 'top', 'ohat', db=-26), T('chat', 'top', 'chat', pan=0.2, db=-30), T('ride', 'top', 'ride', pan=-0.25, db=-31),
+              T('crash', 'top', 'crash', rev=0.3, db=-28),
+              T('bass', 'bass', 'psyroll', db=-12, sc=0.2, p=dict(cut=2600, sq=0.45)),
+              T('chords', 'chords', 'stab', rev=0.45, dly=0.4, db=-26),
+              T('pad', 'pad', 'choir', rev=0.65, db=-27),
+              T('arp', 'arp', 'acid', pan=-0.25, rev=0.35, dly=0.45, dly_time=0.75, db=-24, p=dict(res=9, cut=700)),
+              T('lead', 'lead', 'goalead', rev=0.45, dly=0.4, dly_time=0.75, db=-20, phaser=0.3),
+              T('texture', 'fx', 'texture', db=-35)],
+      master=dict(tone=[-3.0, 0.0, -6.5, -9.5, -12.0, -13.5, -14.5, -18.0, -20.0], lufs=-8.5, air=1.5, low=1.0, width=1.1),
+      pools=dict(bass=['psyroll', 'psybass', 'sawbass', 'rollbass'],
+                 chords=['stab', 'ravestab', 'organ', 'polysynth'],
+                 pad=['choir', 'warmpad', 'strings', 'glasspad', 'eeriepad'],
+                 arp=['acid', 'sh101', 'goalead', 'pluck_saw', 'psylead'],
+                 lead=['goalead', 'acid', 'psylead', 'leadsaw', 'sh101']),
+      no_sounds=['supersaw', 'hypersaw', 'supersaw_lead', 'emolead', 'mhpluck', 'superpluck', 'lushpad', 'vocalchop', 'vox', 'jp_supersaw', 'futurechord', 'rumble'], label='Goa trance (classic 90s psychedelic)')
+
+FORMS['darkpsy'] = [
+    ('intro', 16, {'kick', 'top', 'fx', 'arp'}, {'filter_in': True}),
+    ('verse', 32, {'kick', 'top', 'snare', 'bass', 'arp', 'fx'}, {}),
+    ('drop', 32, {'kick', 'snare', 'top', 'bass', 'arp', 'lead', 'fx'}, {'drop': True}),
+    ('break', 8, {'pad', 'arp', 'fx'}, {'alt': True, 'crash': True}),
+    ('build', 8, {'kick', 'top', 'snare', 'arp', 'fx'}, {'build': True}),
+    ('drop', 32, ALL, {'drop': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'arp', 'lead', 'fx'}, {'var': 1, 'alt': True}),
+    ('outro', 16, {'kick', 'top', 'bass'}, {}),
+]
+
+style('darkpsy', 'Electronic',
+      'Dark psy / forest: 148-158 BPM, heavy and abstract - a hard, short kick and a gritty, growling rolling bass '
+      '(K-B-B-B), laser zaps, twisted squelches and glitchy blips instead of melodies, eerie pads in short breaks, '
+      'flangers and bit-crushed percussion; hypnotic, intense and strange',
+      bpm=(148, 158), scales=['phrygian', 'minor'], swing=0.5, human=0.001, form='darkpsy',
+      progs={'phrygian': [[0, 0, 0, 0], [0, 0, 1, 0]], 'minor': [[0, 0, 0, 0], [0, 0, 6, 0]]},
+      own_progs=True, chord_size=3, sc_depth=0.25, sc_release=0.2, reverb=2.2, delay_beats=0.75,
+      kit='techno', kit_override=dict(kick=dict(pitch=46, punch=230, sweep=44, decay=18, drive=3.4, len=0.18, click=0.65, hold=0.015)),
+      drums={'kick': [FOUR], 'clap': ['....x.......x...', '....x.......x..x'], 'ohat': [OFFHAT],
+             'chat': ['xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxx.xx'], 'rim': ['..x....x..x...x.'], 'crash': ['X...............']},
+      snare_tracks=['clap'], drum_crush=0.25,
+      bass=['.RRR.RRR.RRR.RRR', '.RRR.RRR.RRO.RRR'], bass_gate=0.38, bass_lo=27,
+      chord_rh=['......x.........'], chord_center=58,
+      arp=dict(rate=1, mode='random', oct=4, prob=0.55),
+      lead_rh=['x.x..x.x..x.x...', 'xx..x..xx..x..x.', 'x.......x.x.x...'], lead_oct=4, fill=True,
+      repetition=0.85, filter_arc=True, tune_kick=True,
+      gm_hint='Hard short kick; growling rolling psy bass; laser zaps; twisted squelches; eerie pad; crushed percussion',
+      tracks=[T('kick', 'kick', 'kick', db=-8), T('clap', 'snare', 'clap', rev=0.3, db=-23),
+              T('ohat', 'top', 'ohat', db=-27), T('chat', 'top', 'chat', pan=-0.2, db=-29), T('rim', 'top', 'rim', pan=0.3, db=-28),
+              T('crash', 'top', 'crash', rev=0.3, db=-29),
+              T('bass', 'bass', 'psyroll', db=-11, sc=0.2, p=dict(growl=0.6, cut=2000, res=0.45)),
+              T('chords', 'chords', 'techstab', rev=0.35, dly=0.3, flanger=0.3, db=-28),
+              T('pad', 'pad', 'eeriepad', rev=0.6, db=-28),
+              T('arp', 'arp', 'psyzap', pan=0.2, rev=0.3, dly=0.35, dly_time=0.75, db=-25),
+              T('lead', 'lead', 'psylead', rev=0.35, dly=0.3, flanger=0.25, db=-22, p=dict(rate=9.0)),
+              T('texture', 'fx', 'texture', db=-34)],
+      master=dict(tone=[0.0, -1.5, -7.5, -12.0, -15.0, -16.5, -19.0, -22.5, -26.0], lufs=-8.0, air=1.0, low=1.2, width=1.0),
+      pools=dict(bass=['psyroll', 'psybass', 'fmbass'],
+                 chords=['techstab', 'stab', 'darkpiano'],
+                 pad=['eeriepad', 'darkpad', 'atmos'],
+                 arp=['psyzap', 'acid', 'psylead', 'technoseq'],
+                 lead=['psylead', 'psyzap', 'acid', 'crushlead']),
+      no_sounds=['supersaw', 'hypersaw', 'supersaw_lead', 'emolead', 'mhpluck', 'superpluck', 'lushpad', 'vocalchop', 'vox', 'jp_supersaw', 'futurechord', 'rumble'], label='Dark psy / forest (148-158)')
 
 FORMS['progressive_trance_2010s'] = [   # the extended early-2010s progressive trance arc: layers come in one at a time
     ('intro', 16, {'kick', 'top', 'fx', 'pad'}, {'filter_in': True}),

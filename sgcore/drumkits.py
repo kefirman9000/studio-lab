@@ -80,6 +80,9 @@ KIT_MENU = [
     ('909', 'Drum machines', 'TR-909 (house)', '909', None, None),
     ('trance', 'Drum machines', 'Trance 909 (rolling kick, open hats)', 'trance', None, None),
     ('techno', 'Drum machines', 'Techno 909 (hard, rumble)', 'techno', None, None),
+    ('909_classic', 'Drum machines', 'TR-909 (classic sound, before 1.72)', '909_classic', None, None),
+    ('trance_classic', 'Drum machines', 'Trance 909 (classic sound, before 1.72)', 'trance_classic', None, None),
+    ('techno_classic', 'Drum machines', 'Techno 909 (classic sound, before 1.72)', 'techno_classic', None, None),
     ('linn', 'Drum machines', '80s LinnDrum-style (gated snare)', 'linn', None, None),
     ('punchy', 'Drum machines', 'Punchy EDM', 'punchy', None, None),
     ('hard', 'Drum machines', 'Hardstyle / big room', 'hard', None, None),
@@ -375,7 +378,7 @@ GENRE_KIT.update({'dnb': 'dnb_rollers', 'liquid_dnb': 'liquid', 'neurofunk': 'ne
 CHOP.update({'jungle': 0.55, 'dnb': 0.15, 'neurofunk': 0.1, 'liquid_dnb': 0.08, 'idm_jungle_theme': 0.7, 'drill_space': 0.95})
 GENRE_KIT.update({'idm_jungle_theme': 'jungle_raw', 'drill_space': 'amen', 'math_rock': 'rusty', 'sunrise_chillwave': 'rusty', 'analog_arp_drive': 'rusty'})
 GENRE_KIT.update({'hopecore_breaks': 'amen', 'hopecore': 'soft', 'alt_rock_90s': 'rock', 'bedroom_pop': '707',
-                  'electro_funk': 'dmx', 'ps1_game': 'think', 'nineties_club_house': '909', 'pop_house_90s': '909', 'sunny_melodic_house': '909', 'emotive_deep_house': '909', 'club_trance_2000s': '909', 'festival_psy': '909', 'progressive_trance_2010s': '909', 'electro_prog_trance': '909'})
+                  'electro_funk': 'dmx', 'ps1_game': 'think', 'nineties_club_house': '909', 'pop_house_90s': '909', 'sunny_melodic_house': '909', 'emotive_deep_house': '909', 'club_trance_2000s': '909', 'festival_psy': '909', 'progressive_psy': 'techno', 'goa_trance': 'trance', 'darkpsy': 'techno', 'progressive_trance_2010s': '909', 'electro_prog_trance': '909'})
 CHOP.update({'hopecore_breaks': 0.45, 'ps1_game': 0.12})
 GENRE_KIT.update({'swing_tomtom': 'studio', 'big_band_50s': 'studio'})
 GENRE_KIT.update({k: 'vintage' for k in ('hauntology_melody', 'hauntology_campfire', 'hauntology_cold')})
@@ -411,3 +414,83 @@ GENRE_KIT.update({'french_house': '909', 'trip_hop': 'levee', 'big_beat': 'skull
                   'pop_punk': 'rock', 'doom_metal': 'rock', 'stoner_raga': 'rock', 'garage_rock': 'vintage', 'rockabilly': 'vintage', 'anatolian_psych': 'vintage', 'ethio_jazz': 'vintage', 'thai_funk': 'vintage', 'post_punk': 'rock', 'krautrock': 'vintage', 'klezmer': 'vintage', 'anime_opening': 'unruly', 'musical_theatre': 'studio'})
 CHOP.update({'big_beat': 0.2, 'trip_hop': 0.0})
 GENRE_KIT.update({'juke_raw': '808', 'juke_house': '808'})
+
+
+# ----------------------------------------------------------------------------- 1.73: each song picks its drum voices
+# Like the instrument parts: on a drum-machine genre, every song can take its kick, snare, clap and hats from a
+# different machine that suits the genre (a 909 kick under a 707 clap and 606 hats ...), so two songs of one genre
+# don't share one kit. The genre's own kit stays the most likely pick. Lock a voice (untick it in the Sound panel)
+# and it keeps that machine: opts.drum_voices {voice: kit id}.
+VOICES = {'kick': ('kick',), 'snare': ('snare',), 'clap': ('clap',), 'hats': ('chat', 'ohat')}
+VOICE_LABEL = {'kick': 'Kick', 'snare': 'Snare', 'clap': 'Clap', 'hats': 'Hi-hats'}
+MACHINES = ['909', 'trance', 'techno', '808', '707', '606', 'linn', 'dmx', 'cr78', 'punchy', 'hard', 'soft', 'dnb',
+            'phonk808', '909_classic', 'trance_classic', 'techno_classic']
+_HOUSE = {'kick': ['909', 'punchy', 'soft', 'trance'], 'snare': ['909', '707', '606'], 'clap': ['909', '707', '808', 'trance'],
+          'hats': ['909', '606', '707', '808']}
+_TECHNO = {'kick': ['techno', '909', 'trance', 'punchy', 'hard'], 'snare': ['909', 'techno', '707'], 'clap': ['909', 'techno', '707', '808'],
+           'hats': ['909', 'techno', '606', '707']}
+_TRANCE = {'kick': ['trance', '909', 'punchy', 'techno'], 'snare': ['trance', '909', '707'], 'clap': ['trance', '909', '707'],
+           'hats': ['trance', '909', '606']}
+_ELECTRO = {'kick': ['808', '606', 'dmx', '707'], 'snare': ['808', '606', '707', 'dmx'], 'clap': ['808', '707', 'dmx'],
+            'hats': ['808', '606', '707', 'cr78']}
+_TRAP = {'kick': ['808', 'punchy', 'phonk808'], 'snare': ['808', '707', 'dmx'], 'clap': ['808', '707', '909'], 'hats': ['808', '707', '606']}
+_RETRO = {'kick': ['linn', 'dmx', '707', '808'], 'snare': ['linn', 'dmx', '707'], 'clap': ['linn', '707', '808'], 'hats': ['linn', '707', 'cr78', '808']}
+FAMILY_VOICES = {'House & Disco': _HOUSE, 'Techno & Trance': _TECHNO, 'Hip-Hop, Trap & Phonk': _TRAP, 'Retro & Video Game': _RETRO,
+                 'Pop, R&B & Hopecore': _ELECTRO, 'Footwork & Juke': _TRAP, 'Dubstep, Garage & Bass': _HOUSE,
+                 'Chill, Lo-fi & Ambient': _ELECTRO, 'Afro, Latin & Caribbean': _ELECTRO}
+SWAP_CHANCE = 0.45
+
+
+def is_machine(kit_id, preset):
+    """A synthesized drum-machine kit (not a real recorded kit, not a break)."""
+    from .instruments import KITS
+    if kit_id:
+        m = MENU.get(kit_id)
+        if not m or m[4] or m[5]:
+            return False
+    return preset in KITS
+
+
+def pick_voices(st, opts, kit_id, preset, style):
+    """Choose (or keep) each drum voice's machine and write it into st['kitparams']. Returns {voice: kit id}."""
+    import random
+    from .instruments import KITS
+    from .genre_groups import group_of
+    mine = dict(getattr(opts, 'drum_voices', None) or {})
+    if not is_machine(kit_id, preset) or st.get('no_drum_swap'):
+        return {}
+    fam = FAMILY_VOICES.get(group_of(st.get('name') or style)) if st.get('category') == 'Electronic' else None
+    if not fam and not mine:
+        return {}
+    rnd = random.Random((getattr(opts, 'seed', 0) or 0) * 67 + 5)
+    kit = st['kitparams']
+    own = kit_id or preset
+    picks = {}
+    for v, keys in VOICES.items():
+        pick = mine.get(v)
+        if pick not in KITS:
+            pick = None
+        own_kick = v == 'kick' and (st.get('kick_shape') or 'kick' in (st.get('kit_override') or {}))
+        auto = fam and v in fam and not getattr(opts, 'kit', None) and not own_kick   # your kit / the genre's own kick stay
+        r_ = rnd.random()
+        if pick is None and auto and r_ < SWAP_CHANCE:
+            pick = rnd.choice([k for k in fam[v] if k in KITS])
+        if pick is None or pick == own:
+            picks[v] = own
+            continue
+        for k in keys:
+            src = KITS[pick].get(k)
+            if src is not None or k in kit:
+                new = dict(src or {})
+                if k == 'kick':                               # the genre's tuning / length keep the kick in the song
+                    for keep in ('len', 'pitch') if st.get('tune_kick') else ('len',):
+                        if keep in kit.get('kick', {}):
+                            new[keep] = kit['kick'][keep]
+                kit[k] = new
+        picks[v] = pick
+    return picks
+
+
+def voice_menu():
+    """[(kit id, label)] - the drum machines a voice can take."""
+    return [(k, MENU[k][2]) for k in MACHINES if k in MENU] + [(k, k) for k in MACHINES if k not in MENU]

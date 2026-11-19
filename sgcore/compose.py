@@ -72,6 +72,8 @@ class Options:
     traits: dict = None           # genre-trait overrides {category: value} (see sgcore/traits.py); {'_surprise': True} = random
     part_levels: dict = field(default_factory=dict)   # layer -> dB offset (-12..+6), e.g. {'lead': -3}
     part_fx: dict = field(default_factory=dict)       # layer -> effect plugin name (e.g. {'lead': 'ValhallaSupermassive'})
+    part_effects: dict = field(default_factory=dict)  # part -> built-in effect preset (sgcore.part_effects; 'none' = dry)
+    drum_voices: dict = field(default_factory=dict)   # drum voice (kick / snare / clap / hats) -> drum machine id, locked
     ending: str = 'auto'          # auto | hit (final chord + crash) | fade
     vocal_guide: bool = False     # also play the vocal guide melody (it is always in the MIDI export)
     skip_intro: bool = False      # start the song on its first main section (no intro)
@@ -644,6 +646,7 @@ def resolve_style(opts, rnd=None, mood=None):
     if st.get('kick_shape') and not getattr(opts, 'kit', None):    # the genre's own kick, whatever drum preset it sits on
         kit['kick'] = {**kit.get('kick', {}), **st['kick_shape']}
     st['kitparams'] = kit
+    st['drum_picks'] = drumkits.pick_voices(st, opts, kit_id, preset, groove_of)   # each song: its own kick / snare / clap / hats
     drumkits.install_break(st, st['tracks'])
     drummer.apply_percussion(st, opts)                   # percussion picked on its own (or switched off)
     if opts.swing is not None:
@@ -1836,7 +1839,13 @@ def compose(opts):
     bar_steps = cut_meters(evs, fx, sections, st, random.Random(opts.seed * 101 + 7)) if st.get('cut_meters') else None
     sname ='+'.join([opts.style] + [b for b in (opts.blend or []) if b != opts.style])
     expr = expression_curves(evs, tracks, sections, fx, bar0)
+    try:                                                 # effects on the parts: the genre's picks and yours
+        from . import part_effects as _pfx
+        picked_fx = _pfx.apply(st, tracks, opts, opts.style)
+    except Exception:
+        picked_fx = {}
     song = dict(style=sname, seed=opts.seed, bpm=bpm, key=key, events=evs, sections=sections, fx=fx, expr=expr,
+                part_effects=picked_fx, drum_picks=st.get('drum_picks') or {},
                 meter=st.get('meter') or '4/4', harm_alts=len(harm_alts),
                 total_bars=bar0, prog_main=prog_main, prog_alt=prog_alt, prog_verse=prog_verse, chord_color=chord_color,
                 modulate=modulate, st=st, opts=opts, user_opts=user_opts, vocal=vocal,

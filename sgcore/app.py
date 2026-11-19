@@ -103,8 +103,31 @@ def storage_loop():
         time.sleep(3600)
 
 
+def _native_window_support():
+    """Windows: install pywebview in the background (once) so the NEXT launch opens Studio Lab in a native window - it
+    then runs as its own app (pythonw), so a pinned taskbar shortcut and the running window are one taskbar button.
+    Without it the app window is an Edge / Chrome app window, which Windows groups with the browser."""
+    if sys.platform != 'win32' or load_settings().get('no_native_window'):
+        return
+    try:
+        import webview  # noqa: F401
+        return
+    except ImportError:
+        pass
+    try:
+        import subprocess
+        exe = sys.executable
+        if exe.lower().endswith('pythonw.exe'):
+            exe = exe[:-len('pythonw.exe')] + 'python.exe'
+        subprocess.run([exe, '-m', 'pip', 'install', '--user', '--quiet', 'pywebview'], capture_output=True, timeout=600,
+                       creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+    except Exception as e:
+        print('native window support not installed:', e)
+
+
 def startup_detect():
     """Scan plugin folders; if any plugin the genre rigs can play is installed, make sure VST support is ready."""
+    _native_window_support()
     try:
         detected(refresh=True)
         from . import vsthost, vstrigs
@@ -388,7 +411,7 @@ def meta():
         roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Built-in (suits this part)') for i in lst] + real_insts(r) + vst_insts(r) + user_insts()
                + other_insts(r, lst) for r, lst in ROLE_CHOICES.items()},
         vox_samples=__import__('sgcore.usersounds', fromlist=['listing']).listing()['vocal'],
-        effects=vst_effects(), voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
+        effects=vst_effects(), part_effects=[[k, v] for k, v in __import__('sgcore.part_effects', fromlist=['menu']).menu()], drum_voice_menu=[[k, v] for k, v in __import__('sgcore.drumkits', fromlist=['voice_menu']).voice_menu()], voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
         drum_patterns=__import__('sgcore.drumkits', fromlist=['pattern_menu']).pattern_menu(),
         perc_sets=__import__('sgcore.drummer', fromlist=['perc_menu']).perc_menu(), beat_feels={k: __import__('sgcore.drummer', fromlist=['beat_feel']).beat_feel(k) for k in STYLES}, drummer_menu=__import__('sgcore.drummer', fromlist=['DRUMMER_MENU']).DRUMMER_MENU,
         kits=__import__('sgcore.drumkits', fromlist=['sound_menu']).sound_menu() + [dict(id=k, group='Other synth kits', label=k.title())

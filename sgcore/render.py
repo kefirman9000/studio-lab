@@ -515,8 +515,25 @@ class Renderer:
         except Exception:
             return None
 
-    def _drum(self, name, inst=None):
+    ROUND_ROBIN = ('chat', 'ohat', 'clap', 'snare', 'shaker', 'ride', 'rim')
+
+    def _drum(self, name, inst=None, var=0):
+        """One drum hit. Noisy hits (hats, claps, snares, shakers ...) come in three takes that the pattern cycles
+        through (round robin) - a real drum machine's noise is never the same twice, and one frozen sample repeated
+        16 times a bar is the 'machine-gun' sound of cheap programming. Kicks and toms stay one take."""
         inst = inst or name
+        if var and inst in self.ROUND_ROBIN and not getattr(self.opts, 'user_drums', False) and not self.st.get('sampled_kit'):
+            key = ('drum', name, var)
+            sig = self.cache.get(key)
+            if sig is None:
+                base = self._drum(name, inst)                     # make sure take 0 exists first (stable order)
+                saved = self.cache.pop(('drum', name))
+                try:
+                    sig = self._drum(name, inst)
+                finally:
+                    self.cache[('drum', name)] = saved
+                self.cache[key] = sig
+            return sig
         sig = self.cache.get(('drum', name))
         if sig is None:
             user = None
@@ -598,7 +615,8 @@ class Renderer:
             if real_drums:
                 sig = self._real_drum(tcfg.get('real') or tcfg['inst'], ev, i)
             if sig is None:
-                sig = self._drum(tcfg['name'], tcfg['inst']) if is_drum else self._note(tcfg, ev, p)
+                sig = self._drum(tcfg['name'], tcfg['inst'], var=(int(round(ev.beat * 4)) * 5 + int(ev.vel * 7)) % 3) \
+                    if is_drum else self._note(tcfg, ev, p)
             if is_drum and ev.mod and sig is not None:      # break edits: reversed / re-pitched / cut-short hits
                 sig = drum_mod(sig, ev.mod)
                 if ev.mod == 'rev':                         # a reversed hit swells INTO its beat and ends on it
@@ -1032,6 +1050,24 @@ class Renderer:
         return mix
 
 
+def clip_stage(x, ceiling_db=-1.0, knee_db=-0.5, out_db=0.8):
+    """Mastering clipper ahead of the limiter (2x oversampled): the kick / snare transients that poke above the ceiling
+    are rounded off sample by sample, with no attack or release. A limiter alone ducks the whole mix for each kick and
+    holds it down for its release - in a four-on-the-floor drop that's 2-4 dB of constant gain reduction, which flattens
+    the drop down to the level of the breakdown. The clipper takes the first dB or two of that instead, so the limiter
+    only catches what's left and the arrangement keeps its loud and quiet parts."""
+    c = 10 ** (ceiling_db / 20)
+    k = c * 10 ** (knee_db / 20)
+    top = c * 10 ** (out_db / 20)
+    if float(np.max(np.abs(x))) <= k:
+        return x
+    u = signal.resample_poly(x, 2, 1, axis=-1)
+    a = np.abs(u)
+    w = top - k
+    u = np.where(a > k, np.sign(u) * (k + w * np.tanh((a - k) / w)), u)
+    return signal.resample_poly(u, 1, 2, axis=-1)[..., :x.shape[-1]].astype(x.dtype)
+
+
 def peak_round(x, ceiling_db=-1.0, above_db=2.5):
     """Round off only the rare extreme peaks (more than `above_db` over the limiter's ceiling - a crash landing on a
     kick) sample by sample, so the limiter doesn't have to duck the whole mix for them."""
@@ -1396,6 +1432,21 @@ def tape_wobble(x, depth=1.0):
     return np.vstack([np.interp(idx, np.arange(n), x[c]) for c in range(2)])
 
 
+
+def loud_part_lufs(x, win=3.0, top=0.35):
+    """Loudness of a song's loud parts: the louder ~third of its 3-second windows (gated like LUFS), so a chorus or a
+    drop sets the level, not the intro. Short songs / loops: plain integrated loudness."""
+    n = int(win * SR)
+    if x.shape[-1] < n * 6:
+        return lufs(x)
+    vals = np.array([lufs(x[:, i:i + n]) for i in range(0, x.shape[-1] - n, n)])
+    vals = vals[vals > -50]
+    if len(vals) < 6:
+        return lufs(x)
+    thr = np.percentile(vals, 100 * (1 - top))
+    loud = vals[vals >= thr]
+    return float(10 * np.log10(np.mean(10 ** (loud / 10))))
+
 def master(x, cfg, log=print):
     log('   mastering: EQ > glue comp > stereo image > saturation > limiter')
     x = hp(x, 28)
@@ -1418,7 +1469,7 @@ def master(x, cfg, log=print):
     if gentle:     # acoustic / orchestral: keep the dynamics, no pumping glue
         x = compressor(x, thresh=-24, ratio=1.3, attack=0.05, release=0.4, win=0.03)
     else:
-        x = compressor(x, thresh=-20, ratio=2.0, attack=0.025, release=0.2, win=0.02)
+        x = compressor(x, thresh=cfg.get('glue_thresh', -14), ratio=2.0, attack=0.025, release=0.2, win=0.02)
     mid = (x[0] + x[1]) / 2
     side = hp((x[0] - x[1]) / 2, 120, 2) * 1.15 * cfg.get('width', 1.0)
     x = np.vstack([mid + side, mid - side])
@@ -1426,7 +1477,12 @@ def master(x, cfg, log=print):
     if not gentle or cfg.get('drive', 0) > 0:
         x = soft(x * 1.1, drv) / 1.1
     target = cfg.get('lufs', -10)
-    g_db = target - lufs(x)
+    # the loudness target is for the song's LOUD parts (drops, choruses), the way a mastering engineer works - not the
+    # whole-song average. Aiming the average at -10 squashed a dynamic track: long quiet intros / breakdowns pulled the
+    # average down, so the drop got pushed into the limiter until it was barely louder than the breakdown (a 5 dB
+    # arrangement came out ~1 dB apart). Flat songs land where they did; dynamic ones keep their build-ups and drops.
+    meas = loud_part_lufs if not cfg.get('integrated') else lufs
+    g_db = target - meas(x)
     # never let the limiter squash the drum hits: at most `max_gr` dB of gain reduction on the loud peaks (99.9th
     # percentile). A song that can't reach its loudness target without that ends up a little quieter, not distorted.
     a = np.max(np.abs(x), axis=0)
@@ -1438,11 +1494,15 @@ def master(x, cfg, log=print):
     lo = signal.sosfiltfilt(signal.butter(2, 120 / (SR / 2), output='sos'), x.mean(axis=0))
     lp999 = float(np.percentile(np.abs(lo), 99.9)) + 1e-9
     g_cap = min(g_cap, 1.5 + 20 * np.log10(0.8 * 10 ** (-1.0 / 20) / lp999))
+    clip_amt = float(cfg.get('clip', 0.0 if gentle else 1.0))
     y = x
     for _ in range(8):
         g_db = min(g_db, g_cap)
-        y = limiter(low_limit(peak_round(x * 10 ** (g_db / 20)), 10 ** (-1.0 / 20) * 0.78), ceiling_db=-1.0)
-        err = target - lufs(y)
+        y = peak_round(x * 10 ** (g_db / 20))
+        if clip_amt > 0:
+            y = clip_stage(y, out_db=0.8 * clip_amt)
+        y = limiter(low_limit(y, 10 ** (-1.0 / 20) * 0.78), ceiling_db=-1.0)
+        err = target - meas(y)
         if abs(err) < 0.1 or (err > 0 and g_db >= g_cap - 1e-6):
             break
         g_db += err

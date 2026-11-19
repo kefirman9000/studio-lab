@@ -1,5 +1,76 @@
 # Changelog
 
+## 1.74.0
+- **Each song picks its own drum sounds**, using the same tick-box system as the instrument parts (Sound panel > **Drum voices**):
+  - On drum-machine genres, every song can take its kick, snare, clap and hi-hats from a different machine that suits the genre.
+    - For example, a 909 kick under a 707 clap and 606 hats in house.
+    - Techno and trance draw on the 909 / techno / 707 / 606 machines.
+    - Trap draws on the 808 machines; synthwave on the LinnDrum, DMX and 707.
+  - The genre's own kit stays the most likely pick.
+  - A genre whose kick is part of its identity (psy, hardstyle ...) keeps that kick.
+  - The machine each voice used in your last song shows with a ★.
+  - **Untick a voice** to keep that machine for every song, or pick any machine yourself. **Tick it** to let the genre choose again.
+- **Runs like an app on your computer:**
+  - Options > "Create app shortcut" now makes a shortcut on the desktop and in the Start menu, with the Studio Lab icon. It starts with no console window.
+  - Right-click it > **Pin to taskbar**.
+  - On Windows, Studio Lab installs a native app window (pywebview, using the Edge WebView2 built into Windows) in the background, so the pinned icon and the open window are one taskbar button.
+  - Downloads work in that window too.
+- **A more professional look:**
+  - **Transport bar** along the bottom:
+    - play / pause (space bar), the song's title and details;
+    - a clickable waveform to jump around, the time, its loudness and a volume control (remembered).
+  - **Mixer view** for the Parts panel (List | Mixer switch): every part as a channel strip with its sound, volume, octave, mute and FX chain side by side.
+  - **One consistent line-icon set** instead of emoji on the buttons.
+  - **Calmer colours:** one accent for the main action (Preview). Full song and the other buttons are neutral, with no glows.
+  - **Help sentences moved into a small (i)** next to each control (hover to read). Options > "Show help text" brings them back.
+  - **Tighter type scale:** odd in-between font sizes are evened out.
+
+## 1.73.0
+- **Effects on every part, picked by the genre or by you** (Parts panel, an **FX** line under each part):
+  - **Genre picks:** the electronic, pop, lo-fi and retro families each choose effects that suit each part, and every song rolls its own:
+    - house chords through a chorus or phaser;
+    - a dotted-1/8 echo on a trance or techno lead;
+    - a slow filter sweep on a techno arp;
+    - OTT on a dubstep bass;
+    - a phaser on DnB pads.
+  - About half the parts stay dry, so the mix keeps some room.
+  - The genre's picks for your last song show as dashed ★ chips.
+  - **Your own chain:** "+ FX" adds as many effects as you want, ✕ removes one, and ↺ goes back to the genre's picks.
+  - **16 effects:** chorus, phaser, flanger, tremolo (8ths / 16ths), auto-wah, bit-crusher (light / lo-fi), OTT, stereo widener, drive (warm / dirty), echo (1/8, dotted 1/8, 1/4) and a slow filter sweep.
+- **Analog-modelled drum machines for house, techno and trance** (the 909, Techno 909 and Trance 909 kits):
+  - **Kick:** the body holds for a moment before it decays, the pitch drops in two stages, it has a beater click, and its drive is smoothed so it's fat rather than fizzy.
+  - **Snare:** shell tones that drop in pitch, plus a separate "snappy" noise.
+  - **Clap:** 3-4 slightly uneven hand hits with a reverb-like tail.
+  - **Hats:** six-oscillator metal with a softer top end.
+  - The old sounds stay in the drum menu as "classic sound, before 1.72".
+- **Round-robin drums:** hats, claps, snares, shakers, rides and rims cycle through three takes instead of repeating one frozen sample (the "machine-gun" effect).
+- **Mastering keeps the song's dynamics:**
+  - **Loudness target set by the loud parts:** the target is now measured on the drops and choruses, not the whole-song average. Before, long quiet intros pulled the average down and the drop was pushed into the limiter until it was barely louder than the breakdown.
+  - **Clipper before the limiter:** a 2x oversampled clipper rounds off the kick and snare peaks with no attack or release. The limiter alone ducked the whole mix on every kick and squashed the drops.
+  - **Gentler glue compressor:** it now only works on the loud parts.
+  - **A trance song, section by section:** before, intro / drop / breakdown came out at -10.4 / -10.0 / -12.6 LUFS. Now they're -11.3 / -8.6 / -16.6, close to the mix's own arrangement.
+- **Level visualizer:** it now spans the whole top bar, with more bands and finer detail.
+- **Three new psytrance genres** (Techno & Trance), built from reference tracks and a psy production guide:
+  - **Progressive psytrance (136):** deep and hypnotic.
+    - A short, tuned kick on every beat, with the rolling bass playing three short notes between kicks (K-B-B-B).
+    - Long 32-bar sections, filtered acid lines and dark pads.
+    - A dark, smooth top end and a bone-dry mono low end, as measured on the references.
+  - **Goa trance (140-148):** the classic 90s sound.
+    - Squelchy detuned-saw leads in phrygian dominant / harmonic minor and interlocking acid arps.
+    - Choirs in the breakdowns, brighter and busier than modern psy.
+  - **Dark psy / forest (148-158):** a hard short kick, a growling rolling bass, laser zaps instead of melodies, flangers and crushed percussion.
+  - **Full-on:** the existing Psytrance genre is now labelled "full-on" and can also use the new psy sounds.
+- **New psy synths:**
+  - **Psy rolling bass:** split the way producers build it - a clean sine sub under a filtered saw / square bite.
+    - Oscillators restart on every note, so all three 16ths attack the same.
+    - A fast plucky filter, almost no sustain, and a tiny cutoff change per note so the roll breathes.
+    - "Growl" setting for dark psy.
+  - **Goa lead:** squelchy detuned saws with a slow filter LFO.
+  - **Psy zap:** laser blips.
+- **Fixes in the Parts panel:**
+  - The "Also playing in your last song" and extra-part rows were squeezed into a 16-pixel column, with titles wrapping letter by letter. They now have their own two-column layout.
+  - The effect-plugin menu sits on the FX line instead of floating on its own row.
+
 ## 1.72.0
 - **Breath sounds like breath, not white noise** (flute, ney, shakuhachi, tin whistle, breathy lead, sax, harmonica, older flute / sax):
   - **Before:** the air was plain filtered noise sitting beside the tone.

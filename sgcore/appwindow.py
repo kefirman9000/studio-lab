@@ -60,6 +60,11 @@ def open_window(url, quit_app):
     w, h, pos = last_geometry()
     try:
         import webview  # pywebview (optional)
+        try:
+            webview.settings['ALLOW_DOWNLOADS'] = True          # export buttons save files like in a browser
+            webview.settings['OPEN_EXTERNAL_LINKS_IN_BROWSER'] = True
+        except Exception:
+            pass
         kw = dict(x=pos[0], y=pos[1]) if pos else {}
         webview.create_window('Studio Lab', url, width=w, height=h, min_size=(900, 600), **kw)
         try:
@@ -95,7 +100,9 @@ def open_window(url, quit_app):
 
 
 def make_shortcut():
-    """A desktop shortcut that starts Studio Lab with no console window. Returns the shortcut path."""
+    """Shortcuts that start Studio Lab like an installed app, with no console window: one on the desktop and one in
+    the Start menu (Windows) - right-click either one > "Pin to taskbar" (or pin it from the Start menu). With the
+    native window (pywebview) the running window groups under the pinned icon. Returns the desktop shortcut path."""
     root = updater.ROOT
     script = os.path.join(root, 'studiolab.py')
     desk = os.path.join(os.path.expanduser('~'), 'Desktop')
@@ -103,14 +110,18 @@ def make_shortcut():
         exe = sys.executable
         w = os.path.join(os.path.dirname(exe), 'pythonw.exe')
         target = w if os.path.isfile(w) else exe
-        lnk = os.path.join(desk, 'Studio Lab.lnk')
-        ico = os.path.join(root, 'sgcore', 'icon.ico')
-        ps = ("$s=(New-Object -ComObject WScript.Shell).CreateShortcut($env:SL_LNK);"
+        ico = os.path.join(root, 'installer', 'windows', 'studio-lab.ico')
+        # the real Desktop / Start menu folders (the desktop is often moved into OneDrive)
+        ps = ("$sh=New-Object -ComObject WScript.Shell;"
+              "$d=[Environment]::GetFolderPath('Desktop');$m=[Environment]::GetFolderPath('Programs');"
+              "foreach($f in @($d,$m)){ $s=$sh.CreateShortcut((Join-Path $f 'Studio Lab.lnk'));"
               "$s.TargetPath=$env:SL_EXE;$s.Arguments='\"'+$env:SL_SCRIPT+'\"';$s.WorkingDirectory=$env:SL_ROOT;"
-              "if(Test-Path $env:SL_ICO){$s.IconLocation=$env:SL_ICO};$s.Description='Studio Lab';$s.Save()")
-        env = dict(os.environ, SL_LNK=lnk, SL_EXE=target, SL_SCRIPT=script, SL_ROOT=root, SL_ICO=ico)
+              "if(Test-Path $env:SL_ICO){$s.IconLocation=$env:SL_ICO+',0'};$s.Description='Studio Lab - music generator';$s.Save() };"
+              "Write-Output (Join-Path $d 'Studio Lab.lnk')")
+        env = dict(os.environ, SL_EXE=target, SL_SCRIPT=script, SL_ROOT=root, SL_ICO=ico)
         r = subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-Command', ps], env=env, capture_output=True, text=True,
                            creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+        lnk = (r.stdout or '').strip().splitlines()[-1] if (r.stdout or '').strip() else os.path.join(desk, 'Studio Lab.lnk')
         if r.returncode != 0 or not os.path.exists(lnk):
             raise RuntimeError('could not create the shortcut: ' + (r.stderr or '').strip()[-300:])
         return lnk

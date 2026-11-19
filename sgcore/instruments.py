@@ -353,9 +353,95 @@ def d_hardkick(p):
     return fade_out(soft(y, 1.4), 0.02)
 
 
+def _analog_kick(p):
+    """Analog drum-machine kick (909 / techno / house - since 1.72): a bridged-T style body - a sine pushed through a
+    soft triangle shaper (the 909's slightly square, 'woody' tone), a two-stage pitch drop (a fast click-like sweep
+    from high, then a slower settle into the note), the body HELD for a moment before it decays (an analog kick doesn't
+    start fading the instant it's hit - that's the weight), the beater click (a 1 ms pulse plus a short noise burst,
+    like the 909's sampled attack), and drive smoothed back down so it's fat, not fizzy."""
+    n = int(p.get('len', 0.5) * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 50)
+    f = f0 + p.get('punch', 140) * np.exp(-t * p.get('sweep', 40) * 1.6) + f0 * 0.9 * np.exp(-t * 14)
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    body = np.sin(ph)
+    body = np.tanh(body * 1.6) / np.tanh(1.6) * 0.7 + 0.3 * (2 / np.pi) * np.arcsin(np.sin(ph))
+    hold = p.get('hold', 0.035)
+    dec = p.get('decay', 7)
+    env = np.where(t < hold, 1.0, np.exp(-(t - hold) * dec)) * np.minimum(1.0, t / 0.0008)
+    y = body * env
+    click = np.zeros(n)
+    k = int(0.001 * SR)
+    click[:k] = np.hanning(2 * k)[k:]                    # the beater: a 1 ms pulse
+    click = lp(click, 6000) * 3.0 + bp(noise(n), 2200, 9000) * np.exp(-t * 400) * 0.9
+    y = y + click * p.get('click', 0.4)
+    drv = p.get('drive', 1.8)
+    y = np.tanh(y * drv) / np.tanh(drv)
+    y = lp(y, 5500 + 2500 * min(1.0, p.get('click', 0.4)))
+    return fade_out(y, 0.02)
+
+
+def _analog_snare(p):
+    """Analog snare (909-style): two shell oscillators that drop slightly in pitch as they ring (the head), and the
+    'snappy' - noise through a high and a low filter with its own, longer envelope - mixed by `snap`."""
+    n = int(p.get('len', 0.35) * SR)
+    t = np.arange(n) / SR
+    tf = p.get('tone', 185)
+    drop = 1 + 0.18 * np.exp(-t * 60)
+    ph1 = 2 * np.pi * np.cumsum(tf * drop) / SR
+    ph2 = 2 * np.pi * np.cumsum(tf * 1.62 * drop) / SR
+    shell = ((2 / np.pi) * np.arcsin(np.sin(ph1)) * 0.65 + np.sin(ph2) * 0.35) * np.exp(-t * p.get('tdecay', 24))
+    nz = noise(n)
+    wires = (hp(lp(nz, min(p.get('nhi', 9000), 7500)), p.get('nlo', 1500)) * 0.75 + bp(nz, 2500, 6500) * 0.45) \
+        * np.exp(-t * p.get('decay', 15)) * np.minimum(1.0, t / 0.0015)
+    y = shell * p.get('body', 0.7) * 1.2 + wires * p.get('snap', 1.1)
+    if p.get('crack'):
+        y += p['crack'] * hp(noise(n), 2500) * np.exp(-t * 600)
+    return fade_out(soft(y, p.get('drive', 1.4)), 0.02)
+
+
+def _analog_clap(p):
+    """Analog hand clap: a band-passed noise source hit 3-4 times a few ms apart (the 'hands', each a sharp sawtooth
+    envelope - slightly uneven, like real hands), then the reverb-like tail: the same noise through a narrower band,
+    decaying slower. Two filter bands give the 'body' (~1.1 kHz) and the 'slap' (~2.5 kHz)."""
+    n = int(0.6 * SR)
+    t = np.arange(n) / SR
+    nz = noise(n)
+    src = bp(nz, 800, 1600) * 0.8 + bp(nz, 1800, 3600) * 0.6
+    rng = _rng()
+    env = np.zeros(n)
+    o = 0.0
+    for _ in range(int(p.get('hands', 4)) - 1):
+        on = t >= o
+        env[on] += np.exp(-(t[on] - o) * 330) * (0.85 + 0.3 * rng.random())
+        o += 0.0085 + 0.003 * rng.random()
+    on = t >= o
+    tail = np.zeros(n)
+    tail[on] = np.exp(-(t[on] - o) * p.get('tail', 13))
+    y = src * env + bp(nz, 900, 2200) * tail * 0.85
+    return fade_out(soft(y * 1.3, 1.2), 0.03)
+
+
+def _analog_hat(p, n_sec, decay):
+    """Analog hi-hat: six square oscillators at inharmonic ratios (the 808 / 909 metal) through two band-passes,
+    plus noise - with a 'choke-able' envelope. `tone` shifts the metal up / down; `metal` vs noise sets how
+    clangy or airy it is."""
+    n = int(n_sec * SR)
+    t = np.arange(n) / SR
+    sc = p.get('tone', 1.0) * 1.75
+    m = _metallic(n, sc)
+    nz = noise(n)
+    metal = bp(m, 6000, 10500) * 1.4 + bp(m, 3200, 6000) * 0.4
+    x = metal * p.get('metal', 0.7) + lp(hp(nz, min(p.get('hp', 7500), 6500)), 12000) * (1 - p.get('metal', 0.7) * 0.6)
+    env = np.exp(-t * decay) * np.minimum(1.0, t / 0.0006)
+    return fade_out(lp(hp(x, 4500), 13000) * env, 0.01)
+
+
 def d_kick(p):
     if p.get('tail'):
         return d_hardkick(p)
+    if p.get('model') == 'analog':
+        return _analog_kick(p)
     n = int(p.get('len', 0.5) * SR)
     t = np.arange(n) / SR
     f = p.get('pitch', 48) + p.get('punch', 120) * np.exp(-t * p.get('sweep', 40))
@@ -367,6 +453,8 @@ def d_kick(p):
 def d_snare(p):
     """Snare: a pitched shell tone + band-passed wire noise. Optional: crack (a hard stick transient - the crisp DnB
     snare), nlo / nhi (the wire band), tdecay (how long the shell rings), drive (a squashed, distorted neuro snare)."""
+    if p.get('model') == 'analog':
+        return _analog_snare(p)
     n = int(p.get('len', 0.35) * SR)
     t = np.arange(n) / SR
     tf = p.get('tone', 185)
@@ -379,6 +467,8 @@ def d_snare(p):
 
 
 def d_clap(p):
+    if p.get('model') == 'analog':
+        return _analog_clap(p)
     n = int(0.45 * SR)
     t = np.arange(n) / SR
     nz = bp(noise(n), 900, 4200)
@@ -390,6 +480,8 @@ def d_clap(p):
 
 
 def d_chat(p):
+    if p.get('model') == 'analog':
+        return _analog_hat(p, 0.14, p.get('decay', 70))
     n = int(0.12 * SR)
     t = np.arange(n) / SR
     x = hp(p.get('metal', 0.6) * _metallic(n) + 0.5 * noise(n), p.get('hp', 7000))
@@ -397,6 +489,8 @@ def d_chat(p):
 
 
 def d_ohat(p):
+    if p.get('model') == 'analog':
+        return _analog_hat(p, 0.7, p.get('decay', 8))
     n = int(0.6 * SR)
     t = np.arange(n) / SR
     x = hp(p.get('metal', 0.6) * _metallic(n) + 0.5 * noise(n), p.get('hp', 6500))
@@ -836,6 +930,9 @@ KITS = {
                 clap=dict(tail=11), chat=dict(decay=80), ohat=dict(decay=10)),
     '909': dict(kick=dict(pitch=50, punch=140, decay=8, drive=2.2, click=0.45), snare=dict(tone=190, snap=1.2, body=0.6, decay=14),
                 chat=dict(decay=60), ohat=dict(decay=7)),
+}
+KITS['909_classic'] = {d: dict(v) for d, v in KITS['909'].items()}
+KITS.update({
     'punchy': dict(kick=dict(pitch=54, punch=160, sweep=50, decay=9, drive=2.4, click=0.5), snare=dict(tone=200, snap=1.3, decay=15)),
     'hard': dict(kick=dict(pitch=55, punch=320, sweep=22, decay=3.5, drive=7.0, len=0.7, click=0.6), snare=dict(tone=210, snap=1.4, decay=13)),
     'soft': dict(kick=dict(pitch=50, punch=70, decay=9, drive=1.2, click=0.08), snare=dict(tone=170, snap=0.6, body=0.9, decay=22),
@@ -885,7 +982,18 @@ KITS = {
     'phonk808': dict(kick=dict(pitch=48, punch=100, decay=4, drive=4.5, len=0.9, click=0.3),
                      snare=dict(tone=240, snap=1.4, body=0.6, decay=15, drive=2.6, bits=10, srate=22050),
                      clap=dict(tail=11), chat=dict(decay=85, bits=10, srate=22050), ohat=dict(decay=9)),
-}
+})
+# v1.72: the house / techno / trance drum machines on the analog-modelled voices (held kick body, two-stage pitch drop,
+# beater click; 909-style snare and clap; six-oscillator metal hats). The old sounds stay as '<kit>_classic'.
+for _k in ('909', 'trance', 'techno'):
+    if _k != '909':
+        KITS[_k + '_classic'] = {d: dict(v) for d, v in KITS[_k].items()}
+    for _d in ('kick', 'snare', 'clap', 'chat', 'ohat'):
+        KITS[_k].setdefault(_d, {})
+        KITS[_k][_d] = dict(KITS[_k][_d], model='analog')
+KITS['909']['kick'].update(hold=0.04, drive=1.9)
+KITS['techno']['kick'].update(hold=0.05, drive=2.6)
+KITS['trance']['kick'].update(hold=0.03)
 
 
 # =============================================================================
@@ -4389,6 +4497,78 @@ def v_ravestab(m, dur, p, glide=None, mod=None):
 for _name, _fn, _info, _roles, _gm in (('sh101', v_sh101, 'Mono synth (SH-101 style bass / bleeps)', ('bass', 'arp', 'lead'), 38),
                                        ('nordpluck', v_nordpluck, 'Sharp digital pluck (trance)', ('arp', 'lead', 'chords'), 81),
                                        ('ravestab', v_ravestab, 'Rave stab (90s hardcore / trance)', ('chords', 'arp', 'lead'), 81)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.73: psytrance family
+def v_psyroll(m, dur, p, glide=None, mod=None):
+    """Rolling psy bass, built the way psy producers build it: a SPLIT bass - a clean sine sub for the very bottom
+    (under ~95 Hz, mono, steady) and a filtered saw / square on top for the bite - with the oscillators reset on every
+    note (each of the three 16ths between the kicks attacks identically), a fast-attack, short-decay filter envelope
+    (the 'pluck' on each note), a short amp envelope with almost no sustain (the note is gone before the next one or
+    the kick), and a tiny random cutoff change per note so the roll breathes instead of machine-gunning.
+    p: cut (filter peak), fdecay (s), res, sq (square mix), bite (top layer level), growl (FM grit, dark psy)."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.16), 0.02) * SR)
+    env = _va.adsr(gate, 0.0008, p.get('d', 0.07), 0.12, 0.012)
+    n = len(env)
+    t = np.arange(n) / SR
+    rng = _rng()
+    ph = 2 * np.pi * f * t                              # phase reset: every note starts at 0
+    sub = lp(np.sin(ph), 110) * np.minimum(1.0, t / 0.002)
+    src = 2 * ((f * t) % 1.0) - 1                       # saw from phase 0
+    src = src * 0.75 + np.sign(np.sin(ph)) * p.get('sq', 0.3)
+    if p.get('growl'):
+        src = np.sin(ph + float(p['growl']) * 2.5 * np.sin(2 * ph) * np.exp(-t / 0.05)) * 0.5 + src * 0.6
+    var = 1 + 0.18 * (rng.random() - 0.5)
+    cut = 140 + (p.get('cut', 2200) * var - 140) * np.exp(-t / p.get('fdecay', 0.026))
+    bite = _va.vcf(src, cut, p.get('res', 0.35), 1.6)
+    bite = hp(bite, 95)
+    y = sub * 0.95 + bite * p.get('bite', 0.85)
+    return np.tanh(y * 1.3) * env * 0.75
+
+
+def v_goalead(m, dur, p, glide=None, mod=None):
+    """Goa lead: two detuned saws and a square an octave down through a resonant low-pass that squelches - a fast
+    envelope on every note plus a slow LFO that sweeps the filter over the phrase - with a little vibrato and glide:
+    the bubbling, melodic, slightly eastern lead lines of 90s Goa trance."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.004, 0.15, 0.75, p.get('r', 0.1))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.04) if glide is not None else np.full(n, f)
+    fr = fr * 2 ** (np.clip((t - 0.15) / 0.3, 0, 1) * 12 * np.sin(2 * np.pi * 5.5 * t) / 1200)
+    x = _va.saw(fr * 2 ** (7 / 1200), n) * 0.5 + _va.saw(fr * 2 ** (-7 / 1200), n) * 0.5 + _va.pulse(fr * 0.5, n, 0.0, 0.5) * 0.35
+    lfo = 0.5 - 0.5 * np.cos(2 * np.pi * p.get('rate', 0.7) * t)
+    cut = 350 + p.get('cut', 2600) * (0.55 * np.exp(-t / 0.09) + 0.45 * lfo)
+    y = _va.vcf(x, cut, p.get('res', 0.62), 1.8)
+    y = np.tanh(y * 1.4)
+    return np.vstack([y, np.roll(y, 35)]) * env * 0.45
+
+
+def v_psyzap(m, dur, p, glide=None, mod=None):
+    """Psy zap: a sine that dives from three octaves above the note down onto it in a few milliseconds, with a little
+    FM and noise on the attack - the laser 'pew' / bubbling percussive blips of dark and forest psy."""
+    f = float(mtof(m))
+    n = int((min(dur, 0.35) + 0.08) * SR)
+    t = np.arange(n) / SR
+    fr = f * 2 ** (p.get('dive', 36) * np.exp(-t / p.get('speed', 0.012)) / 12)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    x = np.sin(ph + 1.2 * np.exp(-t / 0.03) * np.sin(3 * ph)) + 0.25 * hp(noise(n), 3000) * np.exp(-t * 200)
+    env = np.exp(-t * p.get('decay', 14)) * np.minimum(1.0, t / 0.0005)
+    y = x * env
+    return np.vstack([y, np.roll(y, 60)]) * 0.5
+
+
+for _name, _fn, _info, _roles, _gm in (('psyroll', v_psyroll, 'Psy rolling bass (split sub + bite, phase reset)', ('bass',), 38),
+                                       ('goalead', v_goalead, 'Goa lead (squelchy detuned saws)', ('lead', 'arp'), 81),
+                                       ('psyzap', v_psyzap, 'Psy zap (laser blips, dark / forest psy)', ('arp', 'lead'), 81)):
     INSTRUMENTS[_name] = _fn
     INSTRUMENT_INFO[_name] = _info
     GM_PROGRAM[_name] = _gm
