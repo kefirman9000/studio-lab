@@ -3435,3 +3435,101 @@ for _name, _fn, _info, _roles, _gm in (
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.65: Rhodes, modelled acoustic guitars, hard lead
+def v_rhodes(m, dur, p, glide=None, mod=None):
+    """Rhodes-style electric piano (tine + tonebar): a hammer strikes a tine whose sine-like vibration passes an
+    electromagnetic pickup slightly off-centre - so the louder the note the more it 'barks' (even and odd harmonics
+    from the pickup's non-linear field), a short metallic tine ping and hammer thump at the attack, a fast-then-slow
+    decay, felt dampers at the release and the suitcase's stereo tremolo. The warm EP of soul, R&B, jazz, lo-fi and
+    deep house (the DX-style FM piano is still 'Electric piano')."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    n = gate + int(0.25 * SR)
+    t = np.arange(n) / SR
+    k = f / 261.6
+    amp = (0.55 * np.exp(-t * (2.2 + 1.5 * k)) + 0.45 * np.exp(-t * (0.35 + 0.35 * k)))
+    x = np.sin(2 * np.pi * f * t + 0.3 * np.sin(2 * np.pi * f * t) * np.exp(-t * 6)) * amp
+    bark = p.get('bark', 1.0) * (1.1 - 0.4 * min(1.0, k))
+    off = 0.45
+    dr = 2.8 * bark
+    y = (np.tanh(dr * (x + off)) - np.tanh(dr * off)) / dr
+    y = y - lp(y, 25)                                              # (the pickup's offset is DC: off)
+    if f * 7.1 < 16000:
+        y = y + 0.08 * np.sin(2 * np.pi * f * 7.1 * t) * np.exp(-t * 40)       # tine ping
+    y = y + 0.05 * lp(_rng().standard_normal(n), 900) * np.exp(-t * 160)        # hammer thump
+    rel = np.ones(n)
+    rel[gate:] = np.exp(-np.arange(n - gate) / (0.07 * SR))
+    y = lp(y * rel * np.minimum(t / 0.0015, 1), p.get('bright', 5500))
+    tr = p.get('trem', 0.22)
+    lfo = np.sin(2 * np.pi * p.get('trem_rate', 4.6) * t + _rng().random() * 6.28)
+    return np.vstack([y * (1 + tr * lfo), y * (1 - tr * lfo)]) * 0.85
+
+
+def _guitar_body(y, nylon=False):
+    """The guitar's box: the air resonance (~100 Hz), the top plate (~200 Hz), the upper plate modes, a gentle top."""
+    for fc, q, g in (((98 if nylon else 105), 2.0, 5.0), ((195 if nylon else 210), 2.5, 4.0), (400, 2.0, 2.0), (1100, 1.5, -2.0 if nylon else 1.0)):
+        y = eq(y, 'peak', fc, q, g)
+    return lp(hp(y, 70), 4500 if nylon else 8000)
+
+
+def v_acguitar(m, dur, p, glide=None, mod=None):
+    """Steel-string acoustic guitar: a waveguide string flicked by a pick, ringing on (it isn't muted until the next
+    chord), through the resonances of the wooden body. `mod='pm'` = palm-muted."""
+    f = float(mtof(m))
+    pm = mod == 'pm'
+    gate = int(max(dur, 0.05) * SR)
+    n = gate + int((0.08 if pm else 0.6) * SR)
+    y = _va.string(f, n, _bass_exc(f, 'pick', p.get('tone', 1.2)), t60=(0.25 if pm else 6.0) * (110.0 / max(f, 60)) ** 0.5,
+                   bright=0.35 if pm else 0.75, gate=gate, mute_t60=0.25, pickup=0.0)
+    y = _guitar_body(y)
+    t = np.arange(n) / SR
+    y = y + 0.06 * hp(_rng().standard_normal(n), 3000) * np.exp(-t * 300)       # the pick on the string
+    return np.vstack([y, np.roll(y, 25)]) * 0.55
+
+
+def v_nylon(m, dur, p, glide=None, mod=None):
+    """Nylon-string (classical) guitar: a soft, round finger pluck on a waveguide string with a shorter, warmer ring,
+    through the body's resonances - bossa nova, flamenco, Latin, lo-fi and folk."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    n = gate + int(0.5 * SR)
+    y = _va.string(f, n, _bass_exc(f, 'finger', p.get('tone', 1.6)), t60=3.2 * (110.0 / max(f, 60)) ** 0.5, bright=0.5,
+                   gate=gate, mute_t60=0.3, pickup=0.0)
+    y = _guitar_body(y, nylon=True)
+    return np.vstack([y, np.roll(y, 25)]) * 0.48
+
+
+def v_hardlead(m, dur, p, glide=None, mod=None):
+    """Hard-dance lead (euphoric hardstyle / hardcore): a supersaw stack with an octave layer driven hard into a
+    clipper, the bite pushed at 2.5 kHz, glide, and a fast vibrato that comes in late - huge, harsh and singing."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.004, 0.2, 0.9, p.get('r', 0.18))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.04) if glide is not None else np.full(n, f)
+    fr = fr * 2 ** (np.clip((t - 0.25) / 0.3, 0, 1) * 22 * np.sin(2 * np.pi * 6.2 * t) / 1200)
+    x = _va.jp_supersaw(fr, n, 0.6, 0.75, 1.0) + 0.5 * _va.jp_supersaw(fr * 2, n, 0.5, 0.7, 1.0)
+    x = _vb.dist(x, p.get('drive', 4.0), 'hard')
+    x = eq(_va.vcf(x, p.get('cut', 9000), 0.1, 1.0), 'peak', 2500, 1.0, 3.0)
+    return _hpf(x, 220) * env * 0.22
+
+
+_n65 = []
+for _name, _fn, _info, _roles, _gm in (
+        ('rhodes', v_rhodes, 'Rhodes electric piano (tine, bark, tremolo)', ('chords', 'arp', 'lead'), 4),
+        ('nylon', v_nylon, 'Nylon-string guitar (modelled)', ('chords', 'arp', 'lead'), 24),
+        ('hardlead', v_hardlead, 'Hard-dance lead (driven supersaw)', ('lead',), 81)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+INSTRUMENTS['acguitar_v1'] = INSTRUMENTS['acguitar']
+INSTRUMENT_INFO['acguitar_v1'] = 'Acoustic guitar (classic sound, before 1.65)'
+INSTRUMENTS['acguitar'] = v_acguitar
+INSTRUMENTS['steelguitar'] = v_acguitar                      # the sampled steel guitar's stand-in
+INSTRUMENT_INFO['steelguitar'] = 'Steel-string guitar (modelled)'

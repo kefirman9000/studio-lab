@@ -1080,6 +1080,11 @@ def test_va_synth():
         assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.3, (k, np.abs(a).max())
     lv = [float(np.sqrt(np.mean(np.asarray(INSTRUMENTS['vocalchop'](mm, 0.3, {})) ** 2))) for mm in range(60, 70)]
     assert max(lv) < min(lv) * 1.2                                                        # every vowel the same level
+    for k in ('rhodes', 'acguitar', 'nylon', 'hardlead', 'steelguitar'):                     # 1.65
+        a = np.asarray(INSTRUMENTS[k](55, 0.6, {}, None, None))
+        assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.3, (k, np.abs(a).max())
+    from sgcore.soundfont import fallback_for as _fb
+    assert _fb('nylon') == 'nylon' and _fb('steelguitar') == 'steelguitar' and 'acguitar_v1' in INSTRUMENTS
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars

@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.65.0
+- **Rhodes electric piano:** a model of the tine-and-pickup piano. The pickup "barks" harder the louder the note (bright attack, mellow sustain), with a short tine ping and hammer thump, a fast-then-slow decay, felt dampers and the suitcase's stereo tremolo. It is now the main keys sound of neo-soul, R&B, lo-fi and deep house, and an option in jazz, gospel, soul, city pop, smooth jazz and Tokyo deep house. The DX-style FM piano is still there as "Electric piano".
+- **Modelled acoustic guitars:**
+  - **Steel-string:** pick-flicked waveguide strings that ring on, through the air and top-plate resonances of the body, with palm mutes. It replaces the old synth acoustic guitar, which is kept as "(classic sound, before 1.65)".
+  - **Nylon-string:** a soft, round finger pluck with a warmer, shorter ring. Bossa nova, flamenco rumba, tango, son, folk, cumbia, bachata, samba and lo-fi can use it.
+  - When the sampled guitars aren't installed, the "sampled" nylon and steel guitars now fall back to these models.
+- **Hard-dance lead:** a supersaw with an octave layer driven hard into a clipper, with its bite pushed and a late, fast vibrato, for hardstyle, gabber, UK hardcore, rave hardcore and hard trance.
+- Test runs now delete their temporary renders when they finish. They had been leaving gigabytes of WAVs in the temp folder.
+
 ## 1.64.0
 - **New synths:**
   - **Vocal chops:** short sung syllables through vowel formants, the vowel moving with the note (ah, oh, eh, oo, ee), each one levelled, with a scoop in and a clean cut out. These are the pitched vocal-chop hooks of house, future bass, tropical house, garage and DnB.

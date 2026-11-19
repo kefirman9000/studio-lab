@@ -313,14 +313,14 @@ style('deep_house', 'Electronic', 'Deep house: warm organ & Rhodes 7th chords, r
       tracks=[T('kick', 'kick', 'kick'), T('clap', 'snare', 'clap', rev=0.25, db=-21),
               T('rim', 'top', 'rim', pan=0.3, db=-30), T('ohat', 'top', 'ohat', pan=-0.15, db=-28),
               T('shaker', 'top', 'shaker', pan=0.25, db=-30), T('bass', 'bass', 'sinebass', sc=0.8, p=dict(cut=500)),
-              T('chords', 'chords', 'epiano', rev=0.3, dly=0.15, sc=0.7),
+              T('chords', 'chords', 'rhodes', rev=0.3, dly=0.15, sc=0.7),
               T('pad', 'pad', 'warmpad', rev=0.4, sc=0.8, p=dict(cut=1200)),
               T('arp', 'arp', 'epiano', pan=0.2, rev=0.3, dly=0.3, sc=0.5, db=-27),
               T('lead', 'lead', 'epiano', rev=0.35, dly=0.3, sc=0.4)],
       master=dict(lufs=-10.0, air=1.0, low=1.5),
       form='groove',
       pools=dict(bass=['sinebass', 'fmbass', 'sf:fingerbass', 'organbass', 'junobass', 'deepbass'],
-                 chords=['epiano', 'organ', 'wurli', 'stab', 'piano', 'junopoly'],
+                 chords=['rhodes', 'epiano', 'organ', 'wurli', 'stab', 'piano', 'junopoly'],
                  pad=['warmpad', 'strings', 'choir', 'glasspad', 'junopad'],
                  arp=['epiano', 'piano', 'pluck', 'vibes', 'mhpluck'],
                  lead=['epiano', 'sax', 'flute', 'trumpet', 'vocalchop']),
@@ -624,7 +624,7 @@ style('hardstyle', 'Electronic', 'Hardstyle: distorted pitched kicks, screeching
                  chords=['supersaw', 'stab', 'polysynth', 'synthbrass'],
                  pad=['choir', 'strings', 'warmpad', 'vox'],
                  arp=['pluck_saw', 'pluck', 'stab', 'acid'],
-                 lead=['supersaw_lead', 'hoover', 'leadsaw', 'polysynth']),
+                 lead=['supersaw_lead', 'hoover', 'leadsaw', 'polysynth', 'hardlead']),
       label='Hardstyle')
 
 # from the references: a short intro, a light verse, the first drop, a long second drop, a 12-bar hats-and-chords
@@ -856,13 +856,13 @@ style('lofi', 'Electronic', 'Lo-fi hip hop: swung boom-bap, jazzy 7th/9th Rhodes
       lead_rh=['x--.x-x---......', '..x-x-x-x---....', 'x---..x-x-x-----', '....x-x-x---x---'],
       tracks=[T('kick', 'kick', 'kick', db=-15), T('snare', 'snare', 'snare', rev=0.2),
               T('rim', 'top', 'rim', pan=0.25, db=-30), T('chat', 'top', 'chat', pan=-0.15, db=-24),
-              T('bass', 'bass', 'sinebass', sc=0.6), T('chords', 'chords', 'epiano', sc=0.8, rev=0.25, chops=True),
+              T('bass', 'bass', 'sinebass', sc=0.6), T('chords', 'chords', 'rhodes', sc=0.8, rev=0.25, chops=True),
               T('lead', 'lead', 'pluck', rev=0.3, dly=0.2, pan=0.2, p=dict(bright=3000, damp=0.995)),
               T('vinyl', 'fx', 'vinyl', db=-40)],
       master=dict(lufs=-12.0, air=-3.0, low=1.5, lofi=True),
       sampler=True,
       pools=dict(bass=['sinebass', 'sf:acbass', 'sf:fingerbass', '808'],
-                 chords=['epiano', 'piano', 'sf:nylon', 'guitar', 'organ', 'wurli', 'lofikeys'],
+                 chords=['rhodes', 'epiano', 'piano', 'sf:nylon', 'guitar', 'organ', 'wurli', 'lofikeys', 'nylon'],
                  lead=['pluck', 'epiano', 'flute', 'sax', 'kalimba', 'bell', 'sf:cleanguitar', 'vibes']),
       label='Lo-fi Hip Hop')
 
@@ -1016,7 +1016,7 @@ style('jazz', 'Classic', 'Jazz / swing: walking bass, ride-cymbal swing, piano c
       form_scale=1.75,
       comp_snare=True,
       pools=dict(bass=['upright', 'sf:acbass'],
-                 chords=['piano', 'epiano', 'guitar', 'organ', 'vibes', 'wurli'],
+                 chords=['piano', 'epiano', 'guitar', 'organ', 'vibes', 'wurli', 'rhodes'],
                  arp=['piano', 'guitar', 'epiano', 'vibes'],
                  lead=['trumpet', 'sax', 'sf:tenorsax', 'sf:mutedtrumpet', 'piano', 'guitar', 'flute', 'clarinet', 'vibes']))
 
@@ -1345,7 +1345,7 @@ style('city_pop', 'Classic', 'City pop: 80s Japanese pop - slap-style bass, lush
               T('lead', 'lead', 'sax', rev=0.35, dly=0.2)],
       master=dict(lufs=-10.0, air=2.0, low=1.0),
       pools=dict(bass=['fmbass', 'sf:slapbass', 'sf:fingerbass', 'moogbass', 'dxbass', 'fretless'],
-                 chords=['epiano', 'piano', 'guitar', 'brass', 'polysynth', 'wurli', 'synthbrass', 'junopoly'],
+                 chords=['epiano', 'piano', 'guitar', 'brass', 'polysynth', 'wurli', 'synthbrass', 'junopoly', 'rhodes'],
                  pad=['strings', 'warmpad', 'solina', 'sf:slowstrings', 'jupiterpad'],
                  arp=['guitar', 'sf:cleanguitar', 'epiano', 'marimba', 'mutedgtr', 'vibes', 'dxbell'],
                  lead=['sax', 'sf:tenorsax', 'brass', 'leadsaw', 'epiano', 'flute', 'synthbrass', 'trumpet']),
@@ -1365,10 +1365,10 @@ style('bossa_nova', 'Classic', 'Bossa nova: gentle syncopated nylon guitar, rim 
               T('lead', 'lead', 'flute', rev=0.35, dly=0.15)],
       master=dict(lufs=-14.0, air=1.0, low=0.5),
       pools=dict(bass=['upright', 'sf:acbass', 'sf:fingerbass', 'ebass'],
-                 chords=['acguitar', 'guitar', 'sf:nylon', 'piano', 'epiano', 'vibes', 'wurli'],
+                 chords=['acguitar', 'guitar', 'sf:nylon', 'piano', 'epiano', 'vibes', 'wurli', 'nylon'],
                  pad=['strings', 'warmpad', 'organ', 'solina'],
                  arp=['piano', 'guitar', 'sf:nylon', 'vibes'],
-                 lead=['flute', 'sax', 'clarinet', 'piano', 'sf:nylon', 'vibes']),
+                 lead=['flute', 'sax', 'clarinet', 'piano', 'sf:nylon', 'vibes', 'nylon']),
       label='Bossa Nova')
 
 style('blues', 'Classic', 'Blues shuffle: 12-bar form, swung grooves, piano, organ and expressive lead guitar',
@@ -1430,7 +1430,7 @@ style('folk', 'Classic', 'Folk / acoustic: strummed guitar, warm piano, gentle p
               T('lead', 'lead', 'flute', rev=0.35)],
       master=dict(lufs=-13.0, air=1.0, low=0.5),
       pools=dict(bass=['upright', 'sf:acbass', 'sf:fingerbass', 'ebass'],
-                 chords=['acguitar', 'guitar', 'sf:nylon', 'piano', 'harp'],
+                 chords=['acguitar', 'guitar', 'sf:nylon', 'piano', 'harp', 'nylon'],
                  pad=['strings', 'sf:slowstrings', 'organ', 'solina'],
                  arp=['piano', 'guitar', 'sf:nylon', 'harp'],
                  lead=['flute', 'violin', 'clarinet', 'oboe', 'guitar', 'sf:nylon', 'piano', 'harmonica']))
@@ -1850,7 +1850,7 @@ style('soul_ballad', 'Classic', 'Soul / doo-wop ballad (12/8): triplet piano, sl
               T('lead', 'lead', 'sax', rev=0.35, db=-18)],
       master=dict(lufs=-12.0, air=1.2, low=1.0),
       pools=dict(bass=['ebass', 'sf:fingerbass', 'sf:acbass', 'sf:pickbass', 'fretless'],
-                 chords=['piano', 'epiano', 'organ', 'guitar', 'wurli'],
+                 chords=['piano', 'epiano', 'organ', 'guitar', 'wurli', 'rhodes'],
                  pad=['organ', 'strings', 'choir', 'warmpad'],
                  lead=['sax', 'sf:tenorsax', 'guitar', 'organ', 'strings', 'trumpet']),
       label='Soul Ballad (12/8)')
@@ -1873,7 +1873,7 @@ style('gospel', 'Classic', 'Gospel: Hammond organ and piano, choir, hand claps, 
               T('lead', 'lead', 'piano', rev=0.3, db=-18)],
       master=dict(lufs=-11.0, air=1.4, low=1.0),
       pools=dict(bass=['ebass', 'sf:fingerbass', 'fmbass', 'sf:pickbass'],
-                 chords=['organ', 'piano', 'epiano', 'wurli'],
+                 chords=['organ', 'piano', 'epiano', 'wurli', 'rhodes'],
                  pad=['choir', 'organ', 'strings', 'warmpad'],
                  arp=['piano', 'organ', 'epiano', 'vibes'],
                  lead=['piano', 'organ', 'choir', 'sax', 'guitar']),
@@ -1968,13 +1968,13 @@ style('rnb', 'Classic', 'R&B: lazy swung drums, Rhodes 9th chords, deep sub bass
       tracks=[T('kick', 'kick', 'kick', db=-15), T('snare', 'snare', 'snare', rev=0.3, db=-18),
               T('snap', 'snare', 'snap', db=-22), T('chat', 'top', 'chat', db=-28),
               T('bass', 'bass', 'sinebass', db=-13, p=dict(cut=500)),
-              T('chords', 'chords', 'epiano', rev=0.3, dly=0.15, chorus=0.5),
+              T('chords', 'chords', 'rhodes', rev=0.3, dly=0.15, chorus=0.5),
               T('pad', 'pad', 'warmpad', rev=0.4, db=-28),
               T('lead', 'lead', 'sf:cleanguitar', rev=0.35, dly=0.2, db=-20)],
       master=dict(lufs=-11.0, air=1.4, low=1.8),
       form_scale=0.75,
       pools=dict(bass=['sinebass', 'sf:fingerbass', 'fmbass', '808', 'moogbass'],
-                 chords=['epiano', 'piano', 'guitar', 'sf:cleanguitar', 'organ', 'wurli', 'polysynth'],
+                 chords=['rhodes', 'epiano', 'piano', 'guitar', 'sf:cleanguitar', 'organ', 'wurli', 'polysynth'],
                  pad=['warmpad', 'strings', 'glasspad', 'solina'],
                  lead=['sf:cleanguitar', 'guitar', 'softlead', 'epiano', 'sax', 'flute']),
       label='R&B / Neo-soul')
@@ -2134,7 +2134,7 @@ style('cumbia', 'Classic', 'Cumbia: guira scrape and congas, kick on one and thr
       master=dict(lufs=-11.0, air=1.3, low=1.2),
       real_cowbell=True,
       pools=dict(bass=['ebass', 'sf:fingerbass', 'sinebass', 'sf:pickbass'],
-                 chords=['guitar', 'sf:cleanguitar', 'organ', 'accordion', 'mutedgtr'],
+                 chords=['guitar', 'sf:cleanguitar', 'organ', 'accordion', 'mutedgtr', 'nylon'],
                  arp=['marimba', 'guitar', 'flute', 'vibes'],
                  lead=['accordion', 'sf:accordion', 'flute', 'organ', 'brass', 'guitar', 'trumpet']),
       label='Cumbia')
@@ -2153,7 +2153,7 @@ style('tango', 'Classic', 'Tango: the marcato four and the 3-3-2 síncopa, bando
               T('lead', 'lead', 'violin', rev=0.35, db=-17, p=dict(vib=16))],
       master=dict(lufs=-13.0, air=1.2, low=0.7),
       pools=dict(bass=['cello', 'sf:contrabass', 'ebass', 'contrabass'],
-                 chords=['piano', 'accordion', 'strings', 'epiano'],
+                 chords=['piano', 'accordion', 'strings', 'epiano', 'nylon'],
                  pad=['bandoneon', 'accordion', 'strings', 'solina'],
                  arp=['pizz', 'piano', 'harp', 'spiccato'],
                  lead=['violin', 'bandoneon', 'accordion', 'sf:fiddle']),
@@ -2907,7 +2907,7 @@ style('melodic_house', 'Electronic', 'Melodic deep house: warm rolling bassline,
               T('texture', 'fx', 'texture', rev=0.5, db=-38)],
       master=dict(lufs=-9.5, air=1.6, low=1.3),
       pools=dict(bass=['moogbass', 'sinebass', 'sawbass', 'sf:fingerbass', 'deepbass'],
-                 chords=['warmpad', 'piano', 'polysynth', 'epiano', 'strings', 'junopoly'],
+                 chords=['warmpad', 'piano', 'polysynth', 'epiano', 'strings', 'junopoly', 'rhodes'],
                  pad=['glasspad', 'strings', 'warmpad', 'choir', 'solina', 'junopad', 'lushpad'],
                  arp=['harp', 'pluck', 'guitar', 'pizz', 'mhpluck'],
                  lead=['piano', 'pluck', 'guitar', 'sf:nylon', 'violin', 'flute', 'breathlead', 'vocalchop']),
@@ -3522,7 +3522,7 @@ style('gabber', 'Electronic', 'Hardcore / gabber (90s Rotterdam): 170-200 BPM fo
       tune_kick=True,
       kick_shape=dict(tail=2.0, punch=420, sweep=30, decay=4.5, drive=18.0, len=0.42, click=0.8),
       pools=dict(chords=['hoover', 'stab', 'supersaw', 'organ'],
-                 lead=['leadsaw', 'hoover', 'supersaw_lead', 'polysynth'],
+                 lead=['leadsaw', 'hoover', 'supersaw_lead', 'polysynth', 'hardlead'],
                  arp=['pluck_saw', 'chip', 'pluck', 'stab'],
                  bass=['sinebass', '808', 'moogbass', 'reese'],
                  pad=['choir', 'strings', 'warmpad', 'vox']),
@@ -3546,7 +3546,7 @@ style('rave_hardcore', 'Electronic', 'Breakbeat hardcore / early UK rave (1990-9
                  chords=['piano', 'stab', 'organ', 'epiano'],
                  pad=['choir', 'strings', 'warmpad', 'vox'],
                  arp=['stab', 'piano', 'm1piano', 'hoover'],
-                 lead=['hoover', 'leadsaw', 'vox']),
+                 lead=['hoover', 'leadsaw', 'vox', 'hardlead']),
       label='Breakbeat Hardcore / Rave')
 
 style('future_funk', 'Electronic', 'Future funk: pitched-up, chopped 70s/80s disco and city-pop flavour over a swung four-on-the-floor '
@@ -3624,7 +3624,7 @@ style('soul_jazz', 'Classic', 'Hard bop / soul jazz: organ trio grooves - Hammon
               T('chords', 'chords', 'organ', pan=-0.2, rev=0.2, db=-22, p=dict(leslie=0.0), leslie_fx=6.0, overdrive=0.35),
               T('arp', 'arp', 'guitar', pan=0.3, db=-26), T('lead', 'lead', 'sax', rev=0.25, db=-17)],
       master=dict(lufs=-13.0, air=1.2, low=1.0),
-      pools=dict(chords=['organ', 'epiano', 'piano', 'wurli'],
+      pools=dict(chords=['organ', 'epiano', 'piano', 'wurli', 'rhodes'],
                  arp=['guitar', 'mutedgtr', 'piano', 'sf:cleanguitar'],
                  lead=['sax', 'sf:tenorsax', 'guitar', 'organ'],
                  bass=['organ', 'organbass', 'upright', 'sf:acbass']),
@@ -3922,7 +3922,7 @@ style('smooth_jazz', 'Classic', 'Smooth jazz, soprano-sax ballad style: a sopran
               T('lead', 'lead', 'sopsax', rev=0.55, dly=0.18, db=-15, vibfx=1.0)],
       arp=dict(rate=2, mode='updown', oct=4, prob=0.3), master=dict(lufs=-12.5, air=1.8, low=1.0),
       pools=dict(bass=['sf:fingerbass', 'moogbass', 'ebass', 'upright', 'fretless'],
-                 chords=['epiano', 'piano', 'polysynth', 'wurli'],
+                 chords=['epiano', 'piano', 'polysynth', 'wurli', 'rhodes'],
                  pad=['glasspad', 'warmpad', 'strings', 'solina'],
                  arp=['acguitar', 'vibes', 'piano', 'epiano'],
                  lead=['sopsax', 'sax', 'flute', 'acguitar']),
@@ -3967,7 +3967,7 @@ style('quiet_storm', 'Classic', 'Quiet storm / late-night smooth (late-night rad
               T('lead', 'lead', 'sax', rev=0.5, dly=0.2, db=-16)],
       master=dict(lufs=-13.0, air=1.0, low=1.3),
       pools=dict(bass=['sf:fingerbass', 'moogbass', 'ebass', 'upright'],
-                 chords=['epiano', 'wurli', 'piano', 'clav'],
+                 chords=['epiano', 'wurli', 'piano', 'clav', 'rhodes'],
                  pad=['strings', 'warmpad', 'glasspad', 'solina'],
                  lead=['sax', 'acguitar', 'flute', 'softlead']),
       label='Quiet Storm')
@@ -4104,11 +4104,11 @@ style('neo_soul', 'Classic', 'Neo-soul: drunk, behind-the-beat drums, lush Rhode
       gm_hint='Rhodes / Wurlitzer; finger bass; brushed / dusty kit with ghost notes; clean jazz guitar; flute',
       tracks=[T('kick', 'kick', 'kick', db=-15), T('snare', 'snare', 'snare', rev=0.25, db=-18), T('rim', 'top', 'rim', db=-29),
               T('chat', 'top', 'chat', pan=-0.15, db=-29), T('bass', 'bass', 'moogpluck', db=-14, p=dict(cut=900)),
-              T('chords', 'chords', 'epiano', rev=0.3, dly=0.1, db=-19), T('pad', 'pad', 'warmpad', rev=0.4, db=-29),
+              T('chords', 'chords', 'rhodes', rev=0.3, dly=0.1, db=-19), T('pad', 'pad', 'warmpad', rev=0.4, db=-29),
               T('lead', 'lead', 'sf:cleanguitar', rev=0.3, dly=0.15, pan=0.2, db=-21)],
       master=dict(lufs=-11.5, air=0.8, low=1.8),
       pools=dict(bass=['moogpluck', 'sf:fingerbass', 'upright', 'sinebass'],
-                 chords=['epiano', 'wurli', 'piano', 'organ'],
+                 chords=['rhodes', 'epiano', 'wurli', 'piano', 'organ'],
                  pad=['warmpad', 'organ', 'strings', 'glasspad'],
                  lead=['sf:cleanguitar', 'flute', 'epiano', 'sax', 'vibes', 'guitar']),
       label='Neo-Soul')
@@ -4158,7 +4158,7 @@ style('alt_rnb', 'Electronic', 'Alternative / dark R&B: slow half-time trap drum
               T('chords', 'chords', 'epiano', rev=0.55, dly=0.2, db=-20), T('pad', 'pad', 'glasspad', rev=0.6, db=-27),
               T('lead', 'lead', 'sf:cleanguitar', rev=0.5, dly=0.3, pan=-0.15, db=-22), T('texture', 'fx', 'texture', db=-40)],
       master=dict(lufs=-10.5, air=1.2, low=2.2),
-      pools=dict(chords=['epiano', 'wurli', 'piano', 'polysynth'], pad=['glasspad', 'warmpad', 'strings', 'choir'],
+      pools=dict(chords=['epiano', 'wurli', 'piano', 'polysynth', 'rhodes'], pad=['glasspad', 'warmpad', 'strings', 'choir'],
                  lead=['sf:cleanguitar', 'softlead', 'epiano', 'guitar']),
       label='Alternative R&B (dark)')
 
@@ -4221,7 +4221,7 @@ style('jazz_rap', 'Classic', 'Jazz rap: a dusty swung break, upright bass walkin
               T('lead', 'lead', 'trumpet', rev=0.3, dly=0.1, pan=-0.15, db=-21), T('vinyl', 'fx', 'vinyl', db=-40)],
       master=dict(lufs=-10.5, air=-1.0, low=1.6),
       pools=dict(bass=['upright', 'sf:acbass', 'sinebass', 'sf:fingerbass'],
-                 chords=['epiano', 'piano', 'wurli', 'vibes', 'lofikeys'],
+                 chords=['epiano', 'piano', 'wurli', 'vibes', 'lofikeys', 'rhodes'],
                  arp=['vibes', 'piano', 'epiano', 'marimba'],
                  lead=['trumpet', 'sax', 'flute', 'vibes', 'piano']),
       label='Jazz Rap')
@@ -4265,7 +4265,7 @@ style('slow_jam', 'Classic', '90s R&B slow jam: candle-lit and swung - DX electr
               T('lead', 'lead', 'sf:cleanguitar', rev=0.35, dly=0.2, db=-20)],
       master=dict(lufs=-11.0, air=1.4, low=1.8),
       pools=dict(bass=['sinebass', 'moogbass', '808', 'reese'],
-                 chords=['epiano', 'wurli', 'piano', 'clav'],
+                 chords=['epiano', 'wurli', 'piano', 'clav', 'rhodes'],
                  pad=['strings', 'warmpad', 'solina', 'sf:slowstrings'],
                  lead=['sf:cleanguitar', 'epiano', 'sax', 'softlead']),
       label='90s R&B Slow Jam')
@@ -5608,8 +5608,8 @@ style('flamenco_rumba', 'Classic',
               T('arp', 'arp', 'acguitar', pan=0.3, rev=0.25, db=-24),
               T('lead', 'lead', 'acguitar', rev=0.3, db=-15)],
       master=dict(lufs=-11.5, air=1.2, low=0.8),
-      pools=dict(bass=['upright', 'ebass', 'sf:acbass'], chords=['acguitar', 'guitar', 'mandolin'], arp=['acguitar', 'guitar', 'mandolin'],
-                 lead=['acguitar', 'guitar', 'violin']),
+      pools=dict(bass=['upright', 'ebass', 'sf:acbass'], chords=['acguitar', 'guitar', 'mandolin', 'nylon'], arp=['acguitar', 'guitar', 'mandolin'],
+                 lead=['acguitar', 'guitar', 'violin', 'nylon']),
       label='Flamenco rumba (guitar & palmas)')
 
 FORMS['klezmer'] = [('doina', 8, {'pad', 'lead'}, {'filter_in': True}),
@@ -5861,7 +5861,7 @@ style('son_cubano', 'Classic',
               T('arp', 'arp', 'tres', pan=0.2, rev=0.2, db=-19),
               T('lead', 'lead', 'trumpet', rev=0.25, db=-16)],
       master=dict(lufs=-12.0, air=1.2, low=0.8),
-      pools=dict(bass=['upright', 'sf:acbass', 'ebass'], chords=['acguitar', 'guitar', 'piano'], arp=['tres', 'piano', 'acguitar'],
+      pools=dict(bass=['upright', 'sf:acbass', 'ebass'], chords=['acguitar', 'guitar', 'piano', 'nylon'], arp=['tres', 'piano', 'acguitar'],
                  lead=['trumpet', 'sf:trumpet', 'flute', 'tres']),
       label='Son cubano (tres & bongos)')
 
@@ -7205,7 +7205,7 @@ style('folk_jam', 'Classic',
                  chords=['acguitar', 'sf:nylon', 'sf:steelguitar', 'piano'],
                  pad=['organ', 'strings', 'warmpad', 'solina'],
                  arp=['mandolin', 'banjo', 'acguitar', 'sf:steelguitar'],
-                 lead=['guitar', 'organ', 'pedalsteel', 'harmonica']),
+                 lead=['guitar', 'organ', 'pedalsteel', 'harmonica', 'nylon']),
       label='Acoustic folk-rock jam')
 
 # garage-house pop (2-step house with a hook): 24 bars in full, a 12-bar strip-down, 32 bars full, an 8-bar
@@ -7705,7 +7705,7 @@ style('tokyo_deep_house', 'Electronic',
               T('arp', 'arp', 'piano', dly=0.25, db=-27), T('lead', 'lead', 'vox', rev=0.4, dly=0.3, db=-20)],
       master=dict(lufs=-9.5, air=1.4, low=1.6, width=1.0),
       pools=dict(bass=['moogbass', 'sinebass', 'sf:fingerbass', 'fmbass', 'deepbass'],
-                 chords=['epiano', 'piano', 'polysynth', 'wurli'],
+                 chords=['epiano', 'piano', 'polysynth', 'wurli', 'rhodes'],
                  pad=['strings', 'warmpad', 'solina', 'sf:slowstrings'],
                  arp=['piano', 'vibes', 'pluck', 'epiano', 'mhpluck'],
                  lead=['softlead', 'sax', 'flute', 'vox']),
@@ -8023,7 +8023,7 @@ style('hard_trance', 'Electronic',
                  chords=['supersaw', 'stab', 'polysynth', 'synthbrass', 'hypersaw'],
                  pad=['warmpad', 'strings', 'glasspad', 'solina'],
                  arp=['acid', 'pluck_saw', 'pluck', 'stab', 'superpluck'],
-                 lead=['hoover', 'supersaw_lead', 'leadsaw', 'acid', 'hypersaw']),
+                 lead=['hoover', 'supersaw_lead', 'leadsaw', 'acid', 'hypersaw', 'hardlead']),
       label='Hard trance / hands-up')
 
 
@@ -8222,7 +8222,7 @@ style('modern_gospel', 'Classic', 'Modern gospel: a big choir pad, Hammond organ
               T('lead', 'lead', 'piano', rev=0.35, db=-18)],
       master=dict(lufs=-10.0, air=1.8, low=1.5),
       pools=dict(bass=['808', 'sinebass', 'moogbass', 'ebass'],
-                 chords=['organ', 'piano', 'epiano', 'warmpad'],
+                 chords=['organ', 'piano', 'epiano', 'warmpad', 'rhodes'],
                  pad=['choir', 'strings', 'warmpad', 'solina'],
                  arp=['piano', 'organ', 'epiano', 'pluck'],
                  lead=['piano', 'organ', 'synthbrass', 'softlead']),
@@ -9438,7 +9438,7 @@ style('uk_hardcore', 'Electronic', 'UK hardcore / happy hardcore: 170+ BPM four-
               T('lead', 'lead', 'supersaw_lead', rev=0.3, dly=0.3, sc=0.5, db=-18)],
       master=dict(lufs=-8.0, air=2.0, low=1.0),
       pools=dict(bass=['sawbass', 'fmbass', 'reese'], chords=['piano', 'm1piano', 'stab', 'supersaw'], pad=['supersaw', 'strings', 'choir'],
-                 arp=['pluck_saw', 'pluck', 'piano'], lead=['supersaw_lead', 'hoover', 'leadsaw', 'vox']),
+                 arp=['pluck_saw', 'pluck', 'piano'], lead=['supersaw_lead', 'hoover', 'leadsaw', 'vox', 'hardlead']),
       label='UK hardcore / happy hardcore')
 
 style('dub_techno', 'Electronic', 'Dub techno: a soft four-on-the-floor under a single deep chord stab that echoes and fades '
@@ -9796,7 +9796,7 @@ style('bachata', 'Classic', 'Bachata (Dominican): a romantic, swaying 4/4 - bong
               T('chords', 'chords', 'acguitar', pan=-0.25, rev=0.25, db=-21), T('arp', 'arp', 'guitar', pan=0.25, rev=0.25, db=-24, p=dict(dist=0)),
               T('lead', 'lead', 'guitar', rev=0.3, dly=0.15, db=-18, p=dict(dist=0, bright=6000))],
       master=dict(lufs=-11.0, air=1.5, low=1.1),
-      pools=dict(bass=['ebass', 'sf:fingerbass', 'upright'], chords=['acguitar', 'sf:nylon', 'guitar'], arp=['guitar', 'acguitar', 'mandolin'],
+      pools=dict(bass=['ebass', 'sf:fingerbass', 'upright'], chords=['acguitar', 'sf:nylon', 'guitar', 'nylon'], arp=['guitar', 'acguitar', 'mandolin'],
                  lead=['guitar', 'acguitar', 'sf:nylon']),
       label='Bachata')
 
@@ -9837,7 +9837,7 @@ style('samba', 'Classic', 'Samba (Brazil): a bright 2-feel carnival groove - the
               T('bass', 'bass', 'acguitar', db=-16, p=dict(bright=3000)), T('chords', 'chords', 'mandolin', pan=-0.25, rev=0.2, db=-21),
               T('arp', 'arp', 'acguitar', pan=0.25, rev=0.2, db=-25), T('lead', 'lead', 'flute', rev=0.3, db=-18)],
       master=dict(lufs=-11.0, air=1.6, low=1.0),
-      pools=dict(bass=['acguitar', 'sf:nylon', 'upright', 'ebass'], chords=['mandolin', 'acguitar', 'sf:nylon'], arp=['acguitar', 'piano', 'mandolin'],
+      pools=dict(bass=['acguitar', 'sf:nylon', 'upright', 'ebass'], chords=['mandolin', 'acguitar', 'sf:nylon', 'nylon'], arp=['acguitar', 'piano', 'mandolin'],
                  lead=['flute', 'sax', 'clarinet', 'trumpet']),
       label='Samba')
 
