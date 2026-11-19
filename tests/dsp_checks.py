@@ -106,6 +106,62 @@ def test_master_neutral_width_and_true_peak():
     assert abs(render.loud_part_lufs(y) - -9) < 0.6, render.loud_part_lufs(y)
 
 
+def test_ladder_filter():
+    from sgcore import fastdsp
+    if not fastdsp.HAVE_NUMBA:
+        print('   (numba not installed - ladder skipped)')
+        return
+    rng = np.random.default_rng(0)
+    x = rng.standard_normal(SR) * 0.3
+    y = fastdsp.ladder(x, 1000.0, 0.3, 1.2, SR)
+    assert np.isfinite(y).all()
+    P = np.abs(np.fft.rfft(y)) ** 2
+    f = np.fft.rfftfreq(len(y), 1 / SR)
+    lo, hi = P[(f > 80) & (f < 300)].mean(), P[(f > 7000) & (f < 9000)].mean()
+    assert 10 * np.log10(lo / hi) > 60                       # 24 dB / oct: three octaves up is far down
+    s = fastdsp.ladder(x * 0.01, np.geomspace(200, 8000, SR), 1.0, 1.0, SR)
+    assert np.isfinite(s).all() and np.max(np.abs(s)) < 2.0   # self-oscillation stays bounded
+
+
+def test_analog_notes_vary_and_respond_to_velocity():
+    from sgcore import va
+    from sgcore.instruments import INSTRUMENTS
+    va.CHARACTER = 'analog'
+    def hf(v):
+        out = []
+        for _ in range(8):
+            va.NOTE = {'vel': v}
+            y = np.asarray(INSTRUMENTS['stab'](60, 0.4, {'vel': v, 'spb': 0.5}), float).mean(axis=0)
+            va.NOTE = None
+            P = np.abs(np.fft.rfft(y)) ** 2
+            f = np.fft.rfftfreq(len(y), 1 / SR)
+            out.append(10 * np.log10(P[f > 2000].sum() / P[f < 2000].sum()))
+        return np.mean(out)
+    assert hf(1.0) > hf(0.6) + 2.0                           # harder = brighter, not only louder
+    a = np.asarray(INSTRUMENTS['pluck_saw'](60, 0.3, {'spb': 0.5}))
+    b = np.asarray(INSTRUMENTS['pluck_saw'](60, 0.3, {'spb': 0.5}))
+    assert a.shape == b.shape and not np.allclose(a, b)      # every take differs
+    va.CHARACTER = 'classic'
+    c = np.asarray(INSTRUMENTS['stab'](60, 0.4, {'spb': 0.5}))
+    va.CHARACTER = 'analog'
+    assert np.isfinite(c).all()
+
+
+def test_fdn_reverb():
+    from sgcore import fastdsp
+    if not fastdsp.HAVE_NUMBA:
+        print('   (numba not installed - FDN skipped)')
+        return
+    ir = fastdsp.fdn_ir(2.0, SR, size=1.0, bright=0.5, predelay=0.02, seed=1)
+    assert np.isfinite(ir).all() and abs(np.sum(ir ** 2) / 2 - 1) < 1e-6
+    def t60(band):
+        y = dsp.bp(ir, *band).mean(0) ** 2
+        e = 10 * np.log10(np.cumsum(y[::-1])[::-1] + 1e-20)
+        e -= e[0]
+        return np.argmax(e < -30) / SR * 2
+    assert t60((5000, 9000)) < t60((200, 500))               # highs die away faster than lows
+
+
 if __name__ == '__main__':
     fails = 0
     for name, fn in sorted(globals().items()):

@@ -99,6 +99,7 @@ class Options:
     repetition: float = 0.5       # 0..1 how much the melody repeats its opening idea (catchy loop <-> developing line)
     melody_range: float = 0.5     # 0..1 narrow (a few notes) <-> wide (big leaps)
     chord_speed: str = None       # None = style | slow (chords last twice as long) | fast (change twice as often)
+    synth_character: str = 'analog'   # analog (velocity shapes the tone, every note its own take, ladder filter) | classic (before 1.77)
     motif: str = 'song'           # song (verse / chorus / alt melodies grow from one motif) | free (each written on its own)
     rotation: str = 'auto'        # instrument rotation between sections: auto | off | some | lots
     avoid: dict = field(default_factory=dict)          # role -> instruments your recent songs used (picked less often)

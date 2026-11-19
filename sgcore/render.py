@@ -12,6 +12,9 @@ from .dsp import (SR, hp, lp, eq, soft, compressor, limiter, low_limit, lufs, ac
                   make_spring_ir, dub_delay, svf_sweep,
                   sweep_region, write_wav_float)
 from .instruments import INSTRUMENTS, DRUMS, fx_riser, fx_impact, fx_vinyl, fx_texture
+from . import va as _va
+
+SYNTH_TAKES = 3          # analog character: takes per (note, length, velocity layer)
 from .compose import SECTION_ENERGY, GROOVES
 
 HELD = 0.75     # notes held this many beats or longer (pads, sustained chords) are never swung - only short notes swing
@@ -430,14 +433,31 @@ class Renderer:
             p = self._params(tcfg)
         if tcfg['inst'].startswith('sf:'):
             return self._sampled(tcfg, ev, dur, p)
-        key = (tcfg['name'], ev.midi, dur, ev.glide, ev.mod)
+        user = tcfg['inst'].startswith('user:')
+        if _va.analog() and not user:
+            # every note its own take: one of three velocity layers (soft / medium / hard - the tone changes, not only
+            # the level) x one of SYNTH_TAKES takes, alternating along the part, so repeated notes are never the
+            # identical waveform (the 'machine-gun', MIDI-file sound of copy-pasted notes)
+            v_ = float(ev.vel)
+            vl = 0.6 if v_ < 0.72 else (0.8 if v_ < 0.9 else 1.0)
+            take = (int(round(ev.beat * 4)) * 7 + int(ev.midi or 0)) % SYNTH_TAKES
+            key = (tcfg['name'], ev.midi, dur, ev.glide, ev.mod, vl, take)
+        else:
+            vl, key = None, (tcfg['name'], ev.midi, dur, ev.glide, ev.mod)
         sig = self.cache.get(key)
         if sig is None:
             fn = INSTRUMENTS.get(tcfg['inst'])
-            if fn is None and tcfg['inst'].startswith('user:'):
+            if fn is None and user:
                 from .usersounds import sampler
                 fn = sampler(tcfg['inst'][5:])
-            sig = fn(ev.midi, dur, p, ev.glide, ev.mod).astype(np.float32)
+            if vl is not None:
+                _va.NOTE = {'vel': vl}
+                try:
+                    sig = fn(ev.midi, dur, dict(p, vel=vl), ev.glide, ev.mod).astype(np.float32)
+                finally:
+                    _va.NOTE = None
+            else:
+                sig = fn(ev.midi, dur, p, ev.glide, ev.mod).astype(np.float32)
             self.cache[key] = sig
         return sig
 
@@ -564,6 +584,21 @@ class Renderer:
 
     ROUND_ROBIN = ('chat', 'ohat', 'clap', 'snare', 'shaker', 'ride', 'rim')
 
+    def _drum_accent(self, name, sig, vel):
+        """Drum-machine accent (analog character): a harder hit is brighter as well as louder - the noise and the top
+        of the hit come up, a soft one is duller. Three layers per take, cached."""
+        vl = 0 if vel < 0.62 else (1 if vel < 0.88 else 2)
+        if vl == 1:
+            return sig
+        key = ('acc', name, id(sig), vl)
+        y = self.cache.get(key)
+        if y is None:
+            top = hp(sig, 4500).astype(np.float32)
+            y = (sig + top * np.float32(0.6 if vl == 2 else -0.45)).astype(np.float32)
+            self.cache[key] = y
+            self.cache[('acc_ref', name, id(sig))] = sig      # keep the source alive so its id() stays unique
+        return y
+
     def _drum(self, name, inst=None, var=0):
         """One drum hit. Noisy hits (hats, claps, snares, shakers ...) come in three takes that the pattern cycles
         through (round robin) - a real drum machine's noise is never the same twice, and one frozen sample repeated
@@ -664,6 +699,8 @@ class Renderer:
             if sig is None:
                 sig = self._drum(tcfg['name'], tcfg['inst'], var=(int(round(ev.beat * 4)) * 5 + int(ev.vel * 7)) % 3) \
                     if is_drum else self._note(tcfg, ev, p)
+                if is_drum and sig is not None and _va.analog() and tcfg['name'] != kick and tcfg['layer'] != 'kick':
+                    sig = self._drum_accent(tcfg['name'], sig, ev.vel)
             if is_drum and ev.mod and sig is not None:      # break edits: reversed / re-pitched / cut-short hits
                 sig = drum_mod(sig, ev.mod)
                 if ev.mod == 'rev':                         # a reversed hit swells INTO its beat and ends on it
@@ -805,6 +842,24 @@ class Renderer:
     ARC_SC = {'drop': (1.25, 1.25), 'chorus': (1.2, 1.2), 'climax': (1.25, 1.25), 'break': (0.5, 0.5),
               'breakdown': (0.5, 0.5), 'build': (0.6, 1.2), 'intro': (0.8, 0.8), 'outro': (0.8, 0.8)}
 
+    def knob_ride(self, tcfg, L):
+        """A producer riding the cutoff knob (analog character, electronic genres): the chords' and arp's low-pass
+        drifts slowly open and closed over 8 or 16 bars, each part on its own cycle - so a loop that repeats for
+        32 bars still moves, instead of sitting frozen like a MIDI file. Gentle (~1.3 octaves at most); parts that
+        already sweep their own filter are left alone. -> cutoff multiplier per sample (or None)."""
+        if tcfg['layer'] not in ('chords', 'arp') or tcfg.get('sweep') or tcfg.get('no_ride'):
+            return None
+        r = random.Random(f"{getattr(self.opts, 'seed', 0)}-{tcfg['name']}-ride")
+        if r.random() < 0.3:                              # not every part, not every song
+            return None
+        bars = r.choice([8, 16, 16])
+        period = bars * 4 * self.spb
+        t = np.arange(L) / SR
+        depth = r.uniform(0.6, 1.3)                       # octaves
+        ph = r.random() * 2 * np.pi
+        lfo = 0.5 - 0.5 * np.cos(2 * np.pi * t / period + ph)   # 0 = most closed, 1 = open
+        return (2.0 ** (-depth * (1 - lfo))).astype(np.float64)
+
     def filter_arc(self, song, b2s, L):
         """Filter automation across the arrangement (trance / techno): the synths' low-pass is part-closed in the intro
         and groove, darker in the breakdown and slowly opening, swept open through the build and wide open in the drop -
@@ -844,6 +899,8 @@ class Renderer:
 
     def render(self, stems_dir=None, progress=None):
         song, st, opts = self.song, self.st, self.opts
+        _va.CHARACTER = 'classic' if getattr(opts, 'synth_character', 'analog') == 'classic' else 'analog'
+        _va._RNG = np.random.default_rng((int(getattr(opts, 'seed', 0) or 0) * 7919 + 57) % (2 ** 32))   # reproducible
         L = self.length
         by_track = {}
         for e in song['events']:
@@ -926,8 +983,11 @@ class Renderer:
             if tcfg.get('presence'):                          # amp-style tone: scoop the boxy 400 Hz, push the 2.5 kHz bite
                 pr = float(tcfg['presence'])
                 buf = eq(eq(buf, 'peak', 400, 0.9, -0.6 * pr), 'peak', 2500, 0.8, pr).astype(np.float32)
+            ride = self.knob_ride(tcfg, L) if (_va.analog() and st.get('category') == 'Electronic') else None
             if arc_cut is not None and tcfg['layer'] in ('chords', 'pad', 'arp', 'lead'):
-                buf = auto_lp(buf, arc_cut).astype(np.float32)
+                buf = auto_lp(buf, arc_cut * ride if ride is not None else arc_cut).astype(np.float32)
+            elif ride is not None:
+                buf = auto_lp(buf, 16000.0 * ride).astype(np.float32)
             if tcfg['layer'] in ('chords', 'pad', 'arp'):
                 for s0, s1 in lpsweeps:
                     sweep_region(buf, s0, s1, 'lp', 250, 18000)
@@ -1060,7 +1120,8 @@ class Renderer:
         self.log('   reverb + delay returns')
         returns = np.zeros_like(mix)
         if np.any(rev_send):
-            ir = make_spring_ir(st['reverb']) if st.get('spring') else make_ir(st['reverb'], predelay=st.get('rev_predelay', 0.02))
+            ir = make_spring_ir(st['reverb']) if st.get('spring') else room_ir(st['reverb'], st.get('rev_predelay', 0.02),
+                                                                                 st.get('category'))
             rv = eq(reverb(rev_send.astype(np.float64), ir), 'lowshelf', 300, 0.7, -4.0)
             if st.get('rev_hp'):                         # a high-passed return keeps the low end tight (trance halls)
                 rv = hp(rv, st['rev_hp'])
@@ -1103,6 +1164,27 @@ class Renderer:
         self.stems = stems
         self.stem_env = env
         return mix
+
+
+_IR_CACHE = {}
+
+
+def room_ir(decay, predelay=0.02, category=None):
+    """The main reverb's impulse response. Analog character (with numba): a room from the 8-line delay network -
+    early reflections, then a dense, slowly moving tail whose highs die away faster than its lows, like a real hall
+    or plate (electronic genres a little brighter, acoustic ones warmer and bigger-sounding). Classic: the decaying
+    filtered noise used before 1.77. Cached per setting."""
+    from . import fastdsp
+    if not (_va.analog() and fastdsp.HAVE_NUMBA):
+        return make_ir(decay, predelay=predelay)
+    bright = 0.7 if category == 'Electronic' else 0.5
+    size = float(np.clip(decay / 2.5, 0.4, 1.6))
+    key = (round(float(decay), 2), round(float(predelay), 3), bright)
+    if key not in _IR_CACHE:
+        ir = fastdsp.fdn_ir(float(decay), SR, size=size, bright=bright, predelay=float(predelay), seed=7)
+        _IR_CACHE[key] = hp(ir, 180)                    # (like make_ir: the reverb never muddies the low end)
+        _IR_CACHE[key] /= np.sqrt(np.sum(_IR_CACHE[key] ** 2) / 2) + 1e-12
+    return _IR_CACHE[key]
 
 
 def clip_stage(x, ceiling_db=-1.0, knee_db=-0.5, out_db=0.8):

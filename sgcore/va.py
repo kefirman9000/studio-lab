@@ -18,6 +18,29 @@ from .dsp import SR, mtof
 
 _RNG = np.random.default_rng(57)
 
+# 'analog' (1.77): every note is its own take - a velocity that changes the tone (harder = brighter, more filter
+# envelope, a little more drive), slightly different tuning, cutoff and envelope times from note to note like a real
+# analog poly, and the per-sample ladder filter. 'classic': the sound before 1.77, note for note.
+# The renderer sets this per song (Options.synth_character).
+CHARACTER = 'analog'
+NOTE = None          # the note being synthesised: {'vel': layer} (set by the renderer around each note, else None)
+
+
+def analog():
+    return CHARACTER == 'analog'
+
+
+def note_tone(p, spread=1.0):
+    """(cutoff multiplier, envelope multiplier, drive multiplier) for this note: velocity + analog variation.
+    p['vel'] is the note's velocity layer (set by the renderer); 1.0s in classic mode."""
+    if not analog():
+        return 1.0, 1.0, 1.0
+    vel = float(p.get('vel', (NOTE or {}).get('vel', 0.8)))
+    cm = 2 ** (1.1 * (vel - 0.8) + spread * _RNG.normal(0.0, 0.07))
+    em = (0.7 + 0.375 * vel) * 2 ** (spread * _RNG.normal(0.0, 0.05))
+    dm = 0.9 + 0.15 * vel
+    return float(cm), float(em), float(dm)
+
 
 def _blep(t, dt):
     """PolyBLEP residual for a phase t in [0, 1) advancing dt per sample."""
@@ -74,9 +97,20 @@ def _biquad_lp(fc, q):
     return b, a
 
 
-def vcf(x, cut, res=0.2, drive=1.2, block=96):
+def vcf(x, cut, res=0.2, drive=1.2, block=96, tone=True):
     """Resonant 24 dB/oct low-pass with a moving cutoff `cut` (Hz, array or number). res 0..1 (self-oscillation ~1).
-    Driven into soft saturation before the filter, like an analog VCF's input stage."""
+    Driven into soft saturation before the filter, like an analog VCF's input stage.
+    Analog character (with numba): a per-sample zero-delay-feedback transistor ladder (sgcore.fastdsp.ladder) - the
+    cutoff moves smoothly sample by sample (no steps on fast plucks), the resonance tracks the cutoff and compresses
+    on loud notes. Classic: two cookbook stages updated every `block` samples (the sound before 1.77)."""
+    if analog():
+        from . import fastdsp
+        if tone and NOTE is not None:                # instruments built straight on the filter (supersaws, stabs
+            cm, _, dm = note_tone({})                # ...): their notes respond to velocity too
+            cut = np.asarray(cut, float) * cm
+            drive = drive * dm
+        if fastdsp.HAVE_NUMBA:
+            return fastdsp.ladder(x, cut, res, drive, SR)
     x = np.tanh(np.asarray(x, float) * drive) / np.tanh(drive)
     n = x.shape[-1]
     cut = np.broadcast_to(np.asarray(cut, float), (n,))
@@ -109,11 +143,18 @@ def voice(m, dur, p, glide=None, *, saw_mix=1.0, pulse_mix=0.0, sub=0.0, noise=0
     detune = detune * p.get('detune', 1.0)
     fd = p.get('fdecay_s', fd)
     fenv = p.get('fenv', fenv)
+    tune = 0.0
+    if analog():                        # this note's own take: velocity -> tone, and the small analog differences
+        cm, em, dm = note_tone(p)
+        cut, fenv, drive = cut * cm, fenv * em, drive * dm
+        jit = 2 ** _RNG.normal(0.0, 0.06)
+        d_, fd = d_ * jit, fd * jit
+        tune = _RNG.normal(0.0, 1.6)                  # cents: oscillators never quite land on the same pitch
     gate = int(max(dur, 0.01) * SR)
     env = adsr(gate, a_, d_, s_, r_)
     n = len(env)
     t = np.arange(n) / SR
-    f = float(mtof(m + 12 * octave))
+    f = float(mtof(m + 12 * octave)) * 2 ** (tune / 1200)
     fr = np.full(n, f)
     if glide is not None:
         f0 = float(mtof(glide + 12 * octave))
@@ -154,7 +195,7 @@ def voice(m, dur, p, glide=None, *, saw_mix=1.0, pulse_mix=0.0, sub=0.0, noise=0
     kt = (f / 261.6) ** keytrack
     fe = adsr(gate, fa, fd, fs, max(0.05, r_)) if fenv else np.zeros(n)
     cutoff = np.clip(cut * kt * 2 ** (fenv * fe[:n]), 25.0, SR * 0.42)
-    y = vcf(np.vstack([L, R]), cutoff, res, drive)
+    y = vcf(np.vstack([L, R]), cutoff, res, drive, tone=False)
     if hp:
         bh, ah = signal.butter(2, hp / (SR / 2), 'high')
         y = signal.lfilter(bh, ah, y, axis=-1)

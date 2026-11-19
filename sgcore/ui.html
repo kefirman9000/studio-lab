@@ -395,6 +395,7 @@ body:not(.helptext) .hint.qhd{display:none !important}
       <div class="f wide"><div class="hint" style="margin-top:6px"><b>Tone &amp; playing style</b></div></div>
       <div class="f wide" id="fusionBox" style="display:none"><label>Fusion — which style drives each part</label><div class="body" id="fusionParts" style="padding:0;grid-template-columns:1fr 1fr 1fr"></div></div>
       <div class="f"><label>Vinyl crackle</label><select id="vinyl"><option value="">Off</option><option value="on">On</option></select></div>
+      <div class="f"><label title="Analog: velocity shapes the tone, every note is its own take, a smooth ladder filter and slow filter rides on electronic chords / arps. Classic: the synth sound before 1.77">Synth character</label><select id="synthChar"><option value="analog">Analog (alive, every note its own take)</option><option value="classic">Classic (before 1.77)</option></select></div>
       <div class="f"><label>Brightness <b id="brightnessV"></b></label><input type="range" id="brightness" min="-100" max="100" value="0"></div>
       <div class="f"><label>Melody style <span class="hint">how the lead phrases</span></label><select id="melStyle"></select></div>
       <div class="f"><label>Chord voicing</label><select id="voicing"></select></div>
@@ -827,7 +828,7 @@ function options(){
   const o={style:state.style, seed:+$('#seed').value||1, blend:state.blend, blend_parts:state.blend_parts, mood:state.mood,
     length:state.length, structure:state.structure, energy:$('#energy').value/100, complexity:$('#complexity').value/100,
     simplicity:$('#simplicity').value/100, repetition:$('#repetition').value/100, melody_range:$('#mrange').value/100,
-    humanize:$('#humanize').value/100, variety:$('#variety').value/100, instruments:Object.assign({}, (instMode()==='keep'&&!state.blend.length)?(state.locked||{}):{}, state.instruments), muted:state.muted, brightness:$('#brightness').value/100,
+    humanize:$('#humanize').value/100, variety:$('#variety').value/100, instruments:Object.assign({}, (instMode()==='keep'&&!state.blend.length)?(state.locked||{}):{}, state.instruments), muted:state.muted, brightness:$('#brightness').value/100, synth_character:$('#synthChar').value||'analog',
     reverb:$('#reverb').value/100, delay:$('#delay').value/100, width:$('#width').value/100, bass_boost:+$('#bass').value,
     drive:$('#drive').value/100, lofi:state.lofi};
   if(!$('#bpmAuto').checked) o.bpm=+$('#bpm').value;
@@ -885,7 +886,7 @@ function applyOptions(o){
   state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.locked={}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
   $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#motif').value=o.motif||'song'; $('#rotation').value=o.rotation||'auto';
   $('#songName').value=o.title||''; $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
-  $('#brightness').value=(o.brightness||0)*100; $('#reverb').value=(o.reverb??1)*100; $('#delay').value=(o.delay??1)*100; $('#width').value=(o.width??1)*100;
+  $('#brightness').value=(o.brightness||0)*100; $('#synthChar').value=o.synth_character||'analog'; $('#reverb').value=(o.reverb??1)*100; $('#delay').value=(o.delay??1)*100; $('#width').value=(o.width??1)*100;
   $('#bass').value=o.bass_boost||0; $('#drive').value=(o.drive||0)*100;
   $('#bpmAuto').checked=!o.bpm; if(o.bpm)$('#bpm').value=o.bpm; $('#key').value=o.key||''; $('#scale').value=o.scale||''; $('#prog').value=o.progression||'';
   $('#swingAuto').checked=o.swing==null; if(o.swing!=null)$('#swing').value=o.swing*100;

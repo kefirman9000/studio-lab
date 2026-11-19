@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.77.0
+- **The electronic synths sound played, not programmed** (Sound panel > **Synth character: Analog**, on by default):
+  - **Every note is its own take.** Before, every repeat of the same note was the exact same copy, which is the "machine-gun", MIDI-file sound.
+    - Now each note picks one of three takes, with tuning, filter cutoff and envelope times varying slightly from note to note, like a real analog poly.
+  - **Velocity shapes the tone**, not only the level: a harder note is brighter, with more filter envelope and a little more drive. Three velocity layers per note.
+  - **Drum-machine accents:** harder hats, claps and snares are brighter as well as louder; soft ones are duller.
+  - **New ladder filter:** a transistor-ladder model, worked out sample by sample.
+    - Plucks and stabs close smoothly instead of in small steps.
+    - The resonance follows the cutoff and compresses on loud notes.
+    - It's about 3x faster than the old filter.
+  - **Filter rides:** on electronic chords and arps, the cutoff drifts slowly open and closed over 8 or 16 bars, each part on its own cycle. A long loop keeps moving, the way a producer rides the knob.
+  - **New reverb:** early reflections, then a dense, slowly moving tail whose highs die away faster than its lows, like a real room or hall.
+  - **Classic (before 1.77)** brings back the old sound exactly. From the command line: `--synth classic`.
+- **New club synths**, offered right after each genre's own sound in house, techno and trance:
+  - **House chord stab** (chord-memory stab with a pitch snap and a noise tick);
+  - **Dub-techno chord** (dark, for long echoes);
+  - **Techno bleep** (an FM blip);
+  - **Hypnotic techno sequence** (resonant, a little different on every note);
+  - **Layered trance pluck** (supersaw + an octave-down body + an attack tick);
+  - **Analog mono lead** (breathing, with glide and delayed vibrato);
+  - **Split club bass** (a clean sine sub under a filtered top).
+- numba is now in requirements.txt (optional speed-up; the start files install it quietly). Without it, the old filter and reverb are used.
+
 ## 1.76.0
 - **One tune per song** (Feel card > **Melody theme**, on by default):
   - The verse, chorus and alternate melodies now grow from one motif instead of being written separately.

@@ -4680,3 +4680,150 @@ for _name, _fn, _info, _roles, _gm in (('kidchoir', v_kidchoir, "Children's choi
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.77: club synths (analog character)
+# Built for the per-sample ladder filter (va.vcf in analog mode): each note responds to its velocity layer (brighter
+# and more envelope when played harder) and every take differs a little - tuning, cutoff, envelope times.
+
+def _blip(n, cents=25.0, tau=0.012):
+    """Pitch 'blip' into the note (cents above, settling in tau s) - the snap of an analog envelope on the VCO."""
+    t = np.arange(n) / SR
+    return 2 ** (cents * np.exp(-t / tau) / 1200)
+
+
+def _click(n, level=0.25, hp_hz=2500.0, dur=0.006):
+    """A short noise transient on the attack (the 'tick' that makes a stab or pluck cut through a dense mix)."""
+    k = min(n, int(dur * SR))
+    y = np.zeros(n)
+    if k > 8:
+        y[:k] = hp(_rng().standard_normal(k), hp_hz) * np.exp(-np.arange(k) / (k / 4)) * level
+    return y
+
+
+def v_housechord(m, dur, p, glide=None, mod=None):
+    """House chord stab, built like a hardware poly's chord-memory stab: two saws a few cents apart and a square
+    an octave down, a pitch snap and a noise tick on the attack, through a resonant ladder that snaps from bright to
+    warm, with a short body and a little drive - the stab that sits on the off-beat of a house groove."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.6), 0.04) * SR)
+    env = _va.adsr(gate, 0.0015, p.get('d', 0.2), p.get('s', 0.25), p.get('r', 0.09))
+    n = len(env)
+    t = np.arange(n) / SR
+    rng = _rng()
+    fr = f * _blip(n, 20.0, 0.01)
+    x = np.vstack([_va.saw(fr * 2 ** (-7 / 1200), n, rng.random()), _va.saw(fr * 2 ** (7 / 1200), n, rng.random())])
+    x += _va.pulse(fr / 2, n, rng.random(), 0.5)[None, :] * 0.35
+    x += _click(n, 0.3)[None, :]
+    cut = 420 + (p.get('cut', 6500) - 420) * np.exp(-t / p.get('fdecay', 0.09))
+    y = _va.vcf(x * 0.7, cut, p.get('res', 0.42), 1.5)
+    return _hpf(y, 170) * env * 0.62
+
+
+def v_dubchord(m, dur, p, glide=None, mod=None):
+    """Dub-techno chord: a soft stack of detuned saws, a dark resonant low-pass that barely opens, a slow-ish decay -
+    the muffled chord that lives in a long echo and a big reverb (the track supplies those)."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 1.0), 0.05) * SR)
+    env = _va.adsr(gate, 0.004, p.get('d', 0.45), p.get('s', 0.2), p.get('r', 0.35))
+    n = len(env)
+    t = np.arange(n) / SR
+    rng = _rng()
+    x = np.zeros((2, n))
+    for k, c in enumerate((-9, -3, 4, 10)):
+        x[k % 2] += _va.saw(np.full(n, f * 2 ** (c / 1200)), n, rng.random()) * 0.5
+    cut = p.get('cut', 900) * (1 + 0.9 * np.exp(-t / 0.15))
+    y = _va.vcf(x, cut, p.get('res', 0.5), 1.25)
+    return _hpf(y, 200) * env * 0.85
+
+
+def v_bleep(m, dur, p, glide=None, mod=None):
+    """Techno bleep: a sine with a fast FM 'blip' on the attack (ratio 2:1, the index dying in a few ms) and a tiny
+    resonant tick - the clean, hypnotic sequencer bleep of minimal and Detroit-style techno."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.25), 0.02) * SR)
+    env = _va.adsr(gate, 0.0008, p.get('d', 0.09), 0.0, 0.05)
+    n = len(env)
+    t = np.arange(n) / SR
+    idx = p.get('fm', 3.0) * (0.6 + 0.5 * float(p.get('vel', 0.8))) * np.exp(-t / 0.012)
+    ph = 2 * np.pi * f * t * float(_blip(1, 8.0)[0])
+    y = np.sin(ph + idx * np.sin(2 * ph))
+    y = y + 0.25 * _va.vcf(_va.saw(np.full(n, f), n), 300 + 5000 * np.exp(-t / 0.02), 0.5, 1.0)
+    y = y * env
+    return np.vstack([y, np.roll(y, 9)]) * 0.5
+
+
+def v_trancepluck(m, dur, p, glide=None, mod=None):
+    """Layered trance pluck, stacked the way it's done in a big trance arp: a supersaw pluck for the width, a
+    triangle body an octave down for weight, and a noise tick for the attack - each through its own envelope, the
+    saw layer through the ladder snapping shut."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.5), 0.02) * SR)
+    env = _va.adsr(gate, 0.001, p.get('d', 0.24), 0.08, 0.16)
+    n = len(env)
+    t = np.arange(n) / SR
+    saws = _va.jp_supersaw(f, n, 0.35, 0.65, 0.9)
+    cut = 380 * (p.get('cut', 8000) / 380) ** np.exp(-t * p.get('fdecay', 11))
+    top = _hpf(_va.vcf(saws, cut, 0.3, 1.2), 160)
+    body = tri(f / 2, n) * np.exp(-t / 0.13) * 0.32
+    y = top * env + body[None, :] * np.minimum(1.0, t / 0.002) + _click(n, 0.18, 4000)[None, :]
+    return y * 0.62
+
+
+def v_analoglead(m, dur, p, glide=None, mod=None):
+    """Analog mono lead: two saws and a pulse with slow width movement, three-voice unison, a ladder filter with its
+    own envelope (bite on the attack, then it settles), glide and a delayed vibrato - a lead that breathes, for
+    trance, techno and progressive."""
+    return _va.voice(m, dur, dict(p, cut=p.get('cut', 1600)), glide, saw_mix=1.0, pulse_mix=0.45, pw=0.4, pwm=0.5,
+                     pwm_rate=0.4, unison=3, detune=9, spread=0.55, res=0.32, fenv=2.0, fd=0.35, fs=0.35,
+                     amp=(0.006, 0.4, 0.85, 0.22), drive=1.45, keytrack=0.55, vib=p.get('vib', 16), vib_delay=0.3,
+                     slide=0.07, drift=2.5) * 0.48
+
+
+def v_hypnoseq(m, dur, p, glide=None, mod=None):
+    """Hypnotic techno sequence: saw + square through a resonant ladder, a short decay, the cutoff and resonance
+    moving a little on every note (a modular sequence with a randomised CV) - the rolling, evolving one-bar line of
+    hypnotic and Berlin techno."""
+    rng = _rng()
+    c = p.get('cut', 1300) * 2 ** rng.normal(0.0, 0.35)
+    return _va.voice(m, dur, dict(p, cut=c), glide, saw_mix=1.0, pulse_mix=0.6, pw=0.5, unison=1, res=0.55 + 0.15 * rng.random(),
+                     fenv=1.6, fd=0.09, fs=0.0, amp=(0.001, p.get('d', 0.16), 0.0, 0.05), drive=1.8, keytrack=0.4,
+                     drift=1.0, stereo=False) * 0.55
+
+
+def v_splitbass(m, dur, p, glide=None, mod=None):
+    """Split club bass, the modern way: a clean sine sub for the very bottom (under ~100 Hz, mono, steady) and a
+    saw / square top through the ladder for the bite and the groove, each with its own envelope - the sub stays
+    solid on any system while the top carries the movement. House, techno and trance."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.002, p.get('d', 0.22), p.get('s', 0.55), 0.04)
+    n = len(env)
+    t = np.arange(n) / SR
+    ph = 2 * np.pi * f * t
+    if glide is not None:
+        f0 = float(mtof(glide))
+        fr = f + (f0 - f) * np.exp(-t / 0.05)
+        ph = 2 * np.pi * np.cumsum(fr) / SR
+    sub = np.sin(ph) * (0.75 if f < 110 else 0.45)
+    top = (2 * ((ph / (2 * np.pi)) % 1.0) - 1) * 0.7 + np.sign(np.sin(ph)) * 0.25
+    cut = 220 + (p.get('cut', 1900) - 220) * np.exp(-t / p.get('fdecay', 0.11))
+    bite = _hpf(_va.vcf(top, cut, p.get('res', 0.3), 1.6), 110, 2)
+    y = (lp(sub, 140) + bite * p.get('bite', 0.55)) * env
+    return np.vstack([y, y]) * 0.6
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('housechord', v_housechord, 'House chord stab (chord memory, punchy)', ('chords', 'arp', 'lead'), 81),
+        ('dubchord', v_dubchord, 'Dub-techno chord (dark, for long echoes)', ('chords', 'arp', 'pad'), 81),
+        ('bleep', v_bleep, 'Techno bleep (FM blip, hypnotic)', ('arp', 'lead'), 81),
+        ('trancepluck', v_trancepluck, 'Layered trance pluck (saws + body + tick)', ('arp', 'lead', 'chords'), 81),
+        ('analoglead', v_analoglead, 'Analog mono lead (breathing, glide)', ('lead', 'arp'), 81),
+        ('hypnoseq', v_hypnoseq, 'Hypnotic techno sequence (resonant, moving)', ('arp', 'bass', 'lead'), 38),
+        ('splitbass', v_splitbass, 'Split club bass (clean sub + filtered top)', ('bass',), 38)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
