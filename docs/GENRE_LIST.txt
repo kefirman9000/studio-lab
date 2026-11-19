@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 327 GENRES  (version 1.69.0)
+STUDIO LAB - ALL 331 GENRES  (version 1.75.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 1.69
+* = new in 1.75
 
 ========================================================================
-ELECTRONIC  (170)
+ELECTRONIC  (173)
 ========================================================================
 
 House & Disco  (29)
@@ -37,7 +37,7 @@ House & Disco  (29)
     Hi-NRG (80s)  [hi_nrg]
     Brazilian bass  [brazilian_bass]
 
-Techno & Trance  (18)
+Techno & Trance  (21)
     techno  [techno]
     minimal  [minimal]
     Melodic Techno  [melodic_techno]
@@ -47,9 +47,12 @@ Techno & Trance  (18)
     Progressive Trance (emotional)  [progressive_trance]
     Club trance remix (2000s, riff & breakdown)  [club_trance_2000s]
     Festival psy-trance (big-room / psy hybrid)  [festival_psy]
-    Progressive trance - early 2010s (emotional, instrumental)  [progressive_trance_2010s]  *
-    Progressive trance - electro-edged (late 2000s)  [electro_prog_trance]  *
-    Psytrance  [psytrance]
+    Progressive trance - early 2010s (emotional, instrumental)  [progressive_trance_2010s]
+    Progressive trance - electro-edged (late 2000s)  [electro_prog_trance]
+    Psytrance (full-on)  [psytrance]
+    Progressive psytrance (deep, hypnotic, 136)  [progressive_psy]
+    Goa trance (classic 90s psychedelic)  [goa_trance]
+    Dark psy / forest (148-158)  [darkpsy]
     Late-90s trance-pop  [trance_pop_90s]
     Hard trance / hands-up  [hard_trance]
     UK bass / 130  [uk_bass_130]
@@ -358,10 +361,10 @@ Hindu devotional  (9)
     Carnatic kriti (veena & mridangam)  [carnatic_kriti]
 
 ========================================================================
-ORCHESTRAL  (30)
+ORCHESTRAL  (31)
 ========================================================================
 
-Film & Trailer  (7)
+Film & Trailer  (8)
     Cinematic Journey (ultimate orchestral)  [cinematic_journey]
     Cinematic Journey - Dark & Low  [cinematic_journey_low]
     Cinematic / Epic  [cinematic]
@@ -369,6 +372,7 @@ Film & Trailer  (7)
     Adventure / Fantasy  [adventure]
     Dark Tension  [tension]
     Hybrid Trailer  [hybrid_trailer]
+    Festive cinematic Christmas (full orchestra)  [festive_cinematic]
 
 Epic  (5)
     Epic Orchestral  [epic_orchestral]
