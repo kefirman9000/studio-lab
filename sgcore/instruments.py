@@ -2510,3 +2510,120 @@ INSTRUMENT_INFO['shakuhachi'] = 'Shakuhachi (breathy bamboo flute / 80s sampler)
 ROLE_CHOICES['lead'] += ['shakuhachi']
 ROLE_CHOICES['arp'] += ['shakuhachi']
 GM_PROGRAM['shakuhachi'] = 77
+
+
+# ----------------------------------------------------------------------------- 1.57: the built-in analog synth
+# The classic synth sounds are rebuilt on one virtual-analog voice (sgcore/va.py): band-limited oscillators with
+# unison and drift, a resonant 24 dB low-pass with its own envelope, analog-style envelopes. Same names and the same
+# track parameters (cut / a / d / s / r ...), so every genre that uses them sounds better at once. The previous
+# versions stay available as '<name>_v1'.
+from . import va as _va  # noqa: E402
+
+
+def _oct(lo, hi):
+    return float(np.log2(max(hi, 1.0) / max(lo, 1.0)))
+
+
+def v_warmpad(m, dur, p, glide=None, mod=None):
+    """Juno-style pad: saw + slowly moving pulse + sub, three detuned voices, a soft resonant filter that opens as
+    the pad swells in."""
+    return _va.voice(m, dur, dict(p, cut=p.get('cut', 1100) * 0.7), glide, saw_mix=0.9, pulse_mix=0.45, pwm=0.6, pwm_rate=0.45,
+                     sub=0.2, unison=3, detune=9, spread=0.8, res=0.12, fenv=0.6, fa=p.get('a', 1.2) * 1.1, fd=2.0, fs=1.0,
+                     amp=(1.2, 1.0, 0.85, 2.0), drive=1.05, keytrack=0.3) * 0.42
+
+
+def v_polysynth(m, dur, p, glide=None, mod=None):
+    """Prophet-style poly: saw + pulse, two detuned voices, filter envelope 'bwow' on each chord."""
+    top = p.get('cut', 1800) * 1.6
+    fenv = 1.8
+    return _va.voice(m, dur, dict(p, cut=top / 2 ** fenv), glide, saw_mix=1.0, pulse_mix=0.6, pw=0.42, unison=2, detune=7,
+                     res=0.28, fenv=fenv, fd=p.get('fdecay', 0.4) * 1.2, fs=0.35, amp=(0.006, 0.35, 0.7, 0.35),
+                     drive=1.25, keytrack=0.4) * 0.4
+
+
+def v_supersaw(m, dur, p, glide=None, mod=None):
+    """Supersaw: seven saws spread wide in pitch and stereo, bright, high-passed so the low end stays clean."""
+    return _va.voice(m, dur, dict(p, cut=p.get('cut', 3000) * 1.6), glide, saw_mix=1.0, unison=7, detune=34, spread=1.0,
+                     res=0.08, amp=(0.25, 0.6, 0.85, 0.6), drive=1.1, keytrack=0.2, hp=140) * 0.5
+
+
+def v_leadsaw(m, dur, p, glide=None, mod=None):
+    """Mono saw lead: saw + a touch of pulse, gentle unison, glide, delayed vibrato, a filter that bites on the attack."""
+    top = p.get('cut', 5000)
+    return _va.voice(m, dur, dict(p, cut=top / 2), glide, saw_mix=1.0, pulse_mix=0.3, unison=2, detune=6, res=0.25,
+                     fenv=1.0, fd=0.28, fs=0.0, vib=p.get('vib', 14), amp=(0.004, 0.3, 0.85, 0.15), drive=1.3,
+                     keytrack=0.5) * 0.5
+
+
+def v_softlead(m, dur, p, glide=None, mod=None):
+    """Soft square lead (the 'sine-ish' synth melody of chillwave / synthpop): hollow, rounded, slow vibrato."""
+    return _va.voice(m, dur, dict(p, cut=p.get('cut', 3000) * 0.8), glide, saw_mix=0.2, pulse_mix=1.0, pw=0.5, unison=1,
+                     res=0.12, fenv=0.6, fd=0.25, fs=0.0, vib=p.get('vib', 18), vib_rate=5.0, amp=(0.03, 0.3, 0.85, 0.3),
+                     drive=1.05, keytrack=0.4) * 0.7
+
+
+def v_pluck_saw(m, dur, p, glide=None, mod=None):
+    """Synth pluck: saw + pulse with the filter snapping shut - the arp sound of house, trance and chillwave."""
+    top = p.get('cut', 6000)
+    fenv = _oct(320, top)
+    return _va.voice(m, dur, dict(p, cut=320), glide, saw_mix=1.0, pulse_mix=0.3, unison=2, detune=8, res=0.3, fenv=fenv,
+                     fd=5.0 / p.get('fdecay', 14), fs=0.0, amp=(0.002, p.get('d', 0.3), p.get('s', 0.15), 0.14),
+                     drive=1.2, keytrack=0.6) * 0.62
+
+
+def v_stab(m, dur, p, glide=None, mod=None):
+    """Chord stab: bright saws through a filter that closes fast - house / rave / dub-techno stabs."""
+    top = p.get('cut', 5000)
+    fenv = _oct(260, top)
+    return _va.voice(m, dur, dict(p, cut=260), glide, saw_mix=1.0, pulse_mix=0.5, unison=2, detune=10, res=0.32, fenv=fenv,
+                     fd=5.0 / p.get('fdecay', 20), fs=0.0, amp=(0.002, p.get('d', 0.22), p.get('s', 0.2), 0.08),
+                     drive=1.3, keytrack=0.5) * 0.55
+
+
+def v_sawbass(m, dur, p, glide=None, mod=None):
+    """Saw bass: saw + sub-octave square, a filter envelope with some resonance, driven."""
+    if p.get('reverse'):
+        return INSTRUMENTS['sawbass_v1'](m, dur, p, glide, mod)
+    top = p.get('cut', 2200)
+    fenv = _oct(170, top)
+    y = _va.voice(m, dur, dict(p, cut=170), glide, saw_mix=1.0, sub=0.55, unison=1, res=0.3, fenv=fenv,
+                  fd=5.0 / p.get('fdecay', 16), fs=0.1, amp=(p.get('a', 0.003), p.get('d', 0.18), p.get('s', 0.6), 0.05),
+                  drive=1.7, keytrack=0.3, drift=1.0, stereo=False)
+    return y * 0.5
+
+
+def v_moogbass(m, dur, p, glide=None, mod=None):
+    """Minimoog-style bass: two saws a few cents apart + square sub, a fat resonant ladder-ish filter that settles."""
+    if p.get('pluck'):
+        return v_moogpluck(m, dur, p, glide, mod)
+    cut = p.get('cut', 500)
+    sus = p.get('fsus', 0.55)
+    return _va.voice(m, dur, dict(p, cut=cut * 0.9), glide, saw_mix=1.0, pulse_mix=0.5, pw=0.5, sub=0.35, unison=2,
+                     detune=5, spread=0.0, res=0.38, fenv=_oct(cut * 0.9, cut * 3.5), fd=p.get('fd', 0.3), fs=sus,
+                     amp=(p.get('a', 0.004), p.get('d', 0.35), p.get('s', 0.88), p.get('r', 0.08)), drive=1.9,
+                     keytrack=0.0, drift=1.5, stereo=False, hp=30) * 0.55
+
+
+def v_moogpluck(m, dur, p, glide=None, mod=None):
+    """Plucked Moog bass (G-funk / boogie): the same fat oscillators, but the filter snaps shut after the attack."""
+    cut = p.get('cut', 500)
+    return _va.voice(m, dur, dict(p, cut=cut * 0.35), glide, saw_mix=1.0, pulse_mix=0.5, sub=0.35, unison=2, detune=5,
+                     spread=0.0, res=0.35, fenv=_oct(cut * 0.35, cut * 3.5), fd=p.get('fd', 0.12), fs=0.0,
+                     amp=(0.003, 0.4, 0.5, 0.06), drive=1.9, keytrack=0.0, drift=1.5, stereo=False, hp=30) * 0.6
+
+
+def v_epiano(m, dur, p, glide=None, mod=None):
+    """DX7 electric piano (FM): warm body and the bright 'tine' bark on the attack, tremolo."""
+    return _va.fm_epiano(m, dur, p, glide)
+
+
+for _name, _fn in (('warmpad', v_warmpad), ('polysynth', v_polysynth), ('supersaw', v_supersaw), ('leadsaw', v_leadsaw),
+                   ('softlead', v_softlead), ('pluck_saw', v_pluck_saw), ('stab', v_stab), ('sawbass', v_sawbass),
+                   ('moogbass', v_moogbass), ('moogpluck', v_moogpluck), ('epiano', v_epiano)):
+    INSTRUMENTS[_name + '_v1'] = INSTRUMENTS[_name]
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name + '_v1'] = (INSTRUMENT_INFO.get(_name) or _name) + ' (classic sound, before 1.57)'
+    for _role, _lst in ROLE_CHOICES.items():                   # the old sound stays pickable next to the new one
+        if _name in _lst and _name + '_v1' not in _lst:
+            _lst.append(_name + '_v1')
+    GM_PROGRAM[_name + '_v1'] = GM_PROGRAM.get(_name, 0)

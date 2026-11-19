@@ -969,6 +969,35 @@ def test_math_rock_meters():
     print('ok  math rock: real odd bars (7/8, 3/4, 5/8), tapped loops across the bar line; five reference-batch genres')
 
 
+def test_va_synth():
+    """v1.57: the built-in analog synth - band-limited oscillators (no aliasing hash), a resonant moving filter, unison
+    spread across the stereo field, and the rebuilt classic sounds (old ones still there as *_v1)."""
+    import numpy as np
+    from sgcore import va
+    from sgcore.dsp import SR
+    from sgcore.instruments import INSTRUMENTS, ROLE_CHOICES
+    x = va.saw(np.full(SR, 3520.0), SR)
+    sp = np.abs(np.fft.rfft(x * np.hanning(SR))) ** 2
+    f = np.fft.rfftfreq(SR, 1 / SR)
+    harm = np.abs(f / 3520.0 - np.round(f / 3520.0)) * 3520.0 < 4
+    assert sp[~harm & (f > 200)].sum() / sp.sum() < 0.01                  # PolyBLEP: aliasing stays tiny
+    n = SR
+    noise = np.random.default_rng(1).standard_normal(n)
+    y = va.vcf(noise, 1000.0, res=0.9)
+    sy = np.abs(np.fft.rfft(y)) ** 2
+    fy = np.fft.rfftfreq(n, 1 / SR)
+    band = lambda a, b: sy[(fy > a) & (fy < b)].mean()
+    assert band(900, 1100) > 3 * band(300, 500) and band(900, 1100) > 30 * band(4000, 6000)   # resonant 24 dB low-pass
+    v = va.voice(57, 1.0, {}, unison=5, detune=20, spread=1.0)
+    assert v.shape[0] == 2 and np.abs(v[0] - v[1]).mean() > 0.05            # unison voices spread in stereo
+    for k in ('warmpad', 'polysynth', 'supersaw', 'leadsaw', 'softlead', 'pluck_saw', 'stab', 'sawbass', 'moogbass', 'epiano'):
+        a = np.asarray(INSTRUMENTS[k](60, 0.5, {}, None, None))
+        assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.5, k
+        assert k + '_v1' in INSTRUMENTS
+    assert 'warmpad_v1' in ROLE_CHOICES['pad']
+    print('ok  built-in analog synth: band-limited, resonant moving filter, stereo unison; classic sounds kept')
+
+
 def test_christmas_orchestral():
     """v1.45: Christmas film-score orchestra - joyful 3/4 carol with a last-chorus key change, mischief 4/4 chase."""
     from sgcore.compose import Options, compose
@@ -1164,6 +1193,7 @@ def main():
     test_dj_effects()
     test_idm_drill()
     test_math_rock_meters()
+    test_va_synth()
     test_v144_drums_layers_new_genres()
     test_bass_warp_trap()
     test_christmas_orchestral()

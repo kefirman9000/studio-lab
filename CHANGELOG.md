@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.57.0
+- **A built-in analog synth.** The classic synth sounds are rebuilt on one proper virtual-analog voice: band-limited oscillators (saw, pulse with pulse-width modulation, a sub-octave, noise), up to 7 unison voices spread across the stereo field with free-running phases and a slow analog drift, a **resonant 24 dB low-pass filter that moves through each note** with its own envelope and key tracking, a soft drive stage in front of it, and analog-style envelopes. No install - every genre using these sounds gets the upgrade at once:
+  - **Warm pad** (Juno-style: saw + moving pulse + sub, the filter opening as it swells), **Poly synth** (Prophet-style filter "bwow"), **Supersaw** (7 voices, wide), **Saw lead** (glide, delayed vibrato, a filter bite), **Soft lead** (hollow square), **Pluck** and **Stab** (the filter snapping shut), **Saw bass**, **Moog bass** and **plucked Moog bass** (fat, resonant, settling filter).
+  - **Electric piano** is now a DX7-style FM e-piano: a warm body plus the bright "tine" bark on the attack, harder notes bark more, with tremolo.
+  - The previous sounds are still there to pick, marked "(classic sound, before 1.57)".
+- **More synths you can add**: Vital, TyrellN6 (a free Juno-style synth, great for the chillwave genres) and the sfizz sampler (for free SFZ instrument libraries) are now listed under Plugins with their download pages. They need an account or their own installer, so the app can't fetch them by itself.
+
+
 ## 1.56.7
 - **Three new sunlit chillwave genres**, from your eleven references of one artist's work - each family of its records:
   - **Sunlit chillwave (live drums, chorus guitar, analog synths)**: a long ambient intro of tape hiss, warm pads and a chorus-drenched guitar picking in the delay, then a real drummer driving a straight indie beat, a picked bass guitar, a bright analog arp and a simple synth melody; slow, open major-key chords (IV-V-I, I-V-vi-IV), pads breathing with the kick, a breakdown with the drums out, a slow fade.

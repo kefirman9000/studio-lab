@@ -106,6 +106,13 @@ KNOWN = [
          plays='sampled pianos, strings, choir - save a sound (e.g. "LABS soft piano") and matching parts use it'),
     dict(id='chowtape', name='CHOW Tape Model', url='https://chowdsp.com/products.html',
          plays='analog tape saturation - pick it as an effect on any part (only offered with an installer, so install it yourself)'),
+    dict(id='vital', name='Vital', url='https://vital.audio',
+         plays='wavetable synth (free plan): modern pads, plucks, basses, future bass and melodic dubstep leads - free account needed'),
+    dict(id='tyrelln6', name='TyrellN6', url='https://u-he.com/products/tyrelln6/',
+         plays='Juno-style analog poly (free): warm chillwave / synthwave pads, plucks and basses'),
+    dict(id='sfizz', name='sfizz (SFZ sampler)', url='https://sfz.tools/sfizz/',
+         plays='plays free SFZ instrument libraries (e.g. the Salamander grand piano, free guitars and drums) - its '
+               'installer is an app, so install it yourself, then save a sound in it'),
     dict(id='byod', name='BYOD (Build Your Own Distortion)', url='https://chowdsp.com/products.html',
          plays='guitar distortion - pick it as an effect on guitar parts (only offered with an installer, so install it yourself)'),
 ]
