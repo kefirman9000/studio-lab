@@ -1572,7 +1572,7 @@ def i_pedalsteel(m, dur, p, glide=None, mod=None):
     x = saw(fv, n) * 0.5 + 0.5 * sine(fv, n) + 0.25 * sine(fv * 2, n)
     y = lp(x, p.get('cut', 3000))
     y = eq(y, 'peak', 900, 1.0, 2)
-    return np.vstack([y, np.roll(y, 220)]) * env * 0.35
+    return _ms_stereo(y, 220) * env * 0.35
 
 
 INSTRUMENTS.update({'polysynth': i_polysynth, 'synthbrass': i_synthbrass, 'moogbass': i_moogbass, 'moogpluck': i_moogpluck, 'glasspad': i_glasspad,
@@ -1602,7 +1602,7 @@ def i_phonkbell(m, dur, p, glide=None, mod=None):
     y = bp(x, f * 0.85, f * 5) * (0.65 * np.exp(-t * 11) + 0.35 * np.exp(-t * 3.2))
     y = soft(y * p.get('drive', 4.0), 2.2)                          # crushed and saturated
     y = eq(lp(y, 7000), 'peak', 1400, 1.0, 3)
-    return np.vstack([y, np.roll(y, 90)]) * fade_out(np.ones(n), 0.03) * 0.42
+    return _ms_stereo(y, 90) * fade_out(np.ones(n), 0.03) * 0.42
 
 
 INSTRUMENTS['phonkbell'] = i_phonkbell
@@ -1866,7 +1866,7 @@ def i_m1piano(m, dur, p, glide=None, mod=None):
         y[g:] *= np.exp(-np.arange(n - g) / (0.07 * SR))
     y = eq(eq(hp(y, 160), 'peak', 3100, 0.9, 5.0), 'highshelf', 7500, 0.7, 3.0)
     y = soft(y * 0.9, 1.2) * np.minimum(t / 0.001, 1) * 0.32
-    return np.vstack([y, np.roll(y, 90)])
+    return _ms_stereo(y, 90)
 
 
 def i_accordion2(m, dur, p, glide=None, mod=None):
@@ -1887,7 +1887,7 @@ def i_accordion2(m, dur, p, glide=None, mod=None):
     y += 0.03 * bp(noise(n), 800, 4000) * np.exp(-t * 6)                       # air at the bellows push
     push = 1 + 0.25 * np.exp(-t * 9) + 0.035 * np.sin(2 * np.pi * 0.7 * t)
     y = hp(y, 110) * env * push * 0.2
-    return np.vstack([y, np.roll(y, 160)])
+    return _ms_stereo(y, 160)
 
 
 def i_bandoneon(m, dur, p, glide=None, mod=None):
@@ -1903,7 +1903,7 @@ def i_bandoneon(m, dur, p, glide=None, mod=None):
     y = eq(eq(y, 'peak', 700, 1.0, 4.0), 'peak', 1600, 1.4, 2.0)
     y += 0.05 * bp(noise(n), 500, 2500) * np.exp(-t * 8)
     y = hp(y, 100) * env * (1 + 0.2 * np.exp(-t * 6)) * 0.24
-    return np.vstack([y, np.roll(y, 110)])
+    return _ms_stereo(y, 110)
 
 
 def i_banjo2(m, dur, p, glide=None, mod=None):
@@ -1931,7 +1931,7 @@ def i_pedalsteel2(m, dur, p, glide=None, mod=None):
     x = np.sin(ph) + 0.5 * np.sin(2 * ph) + 0.3 * np.sin(3 * ph) + 0.15 * np.sin(4 * ph) + 0.08 * np.sin(5 * ph)
     y = eq(eq(x, 'peak', 2300, 1.5, 4.0), 'peak', 200, 1.0, -3.0)
     y = soft(y * 0.8, 1.2) * env * 0.3
-    return np.vstack([y, np.roll(y, 300)])
+    return _ms_stereo(y, 300)
 
 
 def i_logdrum2(m, dur, p, glide=None, mod=None):
@@ -1992,7 +1992,7 @@ def i_mandolin(m, dur, p, glide=None, mod=None):
     else:
         y = i_pluck(m, dur, pp) + 0.8 * i_pluck(m + 0.07, dur, pp)
     y = eq(eq(hp(y, 200), 'peak', 1100, 1.2, 4.0), 'peak', 3200, 1.5, 3.0)
-    return np.vstack([y, np.roll(y, 70)]) * 0.5
+    return _ms_stereo(y, 70) * 0.5
 
 
 def i_tinwhistle(m, dur, p, glide=None, mod=None):
@@ -2034,7 +2034,7 @@ def i_drone(m, dur, p, glide=None, mod=None):
             for r, a, c in ((1.0, 1.0, 0), (1.0, 0.7, 4), (1.5, 0.5, -3), (0.5, 0.6, 2)))
     env = np.minimum(t / 0.3, 1) * np.clip((dur + 0.3 - t) / 0.3, 0, 1)
     y = eq(lp(x, 2200), 'peak', 900, 1.5, 4.0) * env * 0.1
-    return np.vstack([y, np.roll(y, 200)])
+    return _ms_stereo(y, 200)
 
 
 def _jawari(y, amount):
@@ -2064,7 +2064,7 @@ def i_sitar(m, dur, p, glide=None, mod=None):
     g = int(dur * SR) + int(0.4 * SR)
     if g < n:
         y[g:] *= np.exp(-np.arange(n - g) / (0.1 * SR))
-    return np.vstack([y, np.roll(y, 150)]) * 0.12
+    return _ms_stereo(y, 150) * 0.12
 
 
 def i_tanpura(m, dur, p, glide=None, mod=None):
@@ -2088,7 +2088,7 @@ def i_tanpura(m, dur, p, glide=None, mod=None):
         out[s:s + L] += _jawari(x, 1.5)[:L] * 0.5 * gains[k % 4]
         k += 1
     y = lp(hp(out, 80), 6000) * 0.09
-    return np.vstack([y, np.roll(y, 240)])
+    return _ms_stereo(y, 240)
 
 
 def i_koto(m, dur, p, glide=None, mod=None):
@@ -2105,7 +2105,7 @@ def i_koto(m, dur, p, glide=None, mod=None):
         y = np.interp(idx, np.arange(n), y)
     y = eq(eq(hp(y, 140), 'peak', 600, 1.0, 4.0), 'peak', 2200, 1.6, 5.0)
     y += 0.25 * bp(noise(n), 2000, 7000) * np.exp(-t * 300)
-    return np.vstack([y, np.roll(y, 90)]) * 0.55 * (1 if f else 1)
+    return _ms_stereo(y, 90) * 0.55 * (1 if f else 1)
 
 
 def d_bodhran(p):
@@ -2183,7 +2183,7 @@ def i_whine(m, dur, p, glide=None, mod=None):
     ph = 2 * np.pi * np.cumsum(fr) / SR
     x = 0.7 * np.sin(ph) + 0.35 * np.sign(np.sin(ph)) * 0.5 + 0.15 * np.sin(2 * ph)
     y = lp(x, p.get('cut', 3200)) * env * 0.35
-    return np.vstack([y, np.roll(y, 120)])
+    return _ms_stereo(y, 120)
 
 
 VOWELS = {'u': (320, 800, 2500), 'o': (450, 850, 2600), 'a': (750, 1250, 2650), 'e': (450, 1900, 2600), 'i': (300, 2300, 3000)}
@@ -2210,7 +2210,7 @@ def i_talkbox(m, dur, p, glide=None, mod=None):
         cut = np.interp(pos, np.arange(len(seq)), fk)
         out += svf_sweep(src, cut, q=6.0 - k * 1.2, mode='bandpass') * (1.0, 0.6, 0.35)[k]
     y = hp(out, 150) * env * 0.5
-    return np.vstack([y, np.roll(y, 90)])
+    return _ms_stereo(y, 90)
 
 
 INSTRUMENTS.update({'whine': i_whine, 'talkbox': i_talkbox})
@@ -2244,7 +2244,7 @@ def i_harmonium(m, dur, p, glide=None, mod=None):
     env = adsr(int(dur * SR), 0.035, 0.1, 0.92, 0.09)
     env = np.pad(env, (0, max(0, n - len(env))))[:n]
     y = eq(hp(y * env * bellows, 110), 'peak', 1800, 1.0, 2.0) * 0.16
-    return np.vstack([y, np.roll(y, 70)])
+    return _ms_stereo(y, 70)
 
 
 def i_santoor(m, dur, p, glide=None, mod=None):
@@ -2269,7 +2269,7 @@ def i_santoor(m, dur, p, glide=None, mod=None):
     y += 0.5 * bp(noise(n), 2500, 9000) * np.exp(-t * 120)          # the mallet tick
     y += 0.35 * np.sin(2 * np.pi * f * 4.2 * t) * np.exp(-t * 18)  # bell-like inharmonic ping on the strike
     y = eq(hp(y, 150), 'peak', 3200, 1.2, 3.0) * 0.12
-    return np.vstack([y, np.roll(y, 110)]) * fade_out(np.ones(n), 0.15)
+    return _ms_stereo(y, 110) * fade_out(np.ones(n), 0.15)
 
 
 def d_manjira(p):
@@ -2362,7 +2362,7 @@ def i_saz(m, dur, p, glide=None, mod=None):
     g = int(dur * SR) + int(0.15 * SR)
     if g < n:
         y[g:] *= np.exp(-np.arange(n - g) / (0.08 * SR))
-    return np.vstack([y, np.roll(y, 120)]) * 0.11
+    return _ms_stereo(y, 120) * 0.11
 
 
 def i_oud(m, dur, p, glide=None, mod=None):
@@ -2383,7 +2383,7 @@ def i_oud(m, dur, p, glide=None, mod=None):
     g = int(dur * SR) + int(0.1 * SR)
     if g < n:
         y[g:] *= np.exp(-np.arange(n - g) / (0.07 * SR))
-    return np.vstack([y, np.roll(y, 90)]) * 0.13
+    return _ms_stereo(y, 90) * 0.13
 
 
 def i_veena(m, dur, p, glide=None, mod=None):
@@ -2429,7 +2429,7 @@ def i_tres(m, dur, p, glide=None, mod=None):
     g = int(dur * SR) + int(0.08 * SR)
     if g < n:
         y[g:] *= np.exp(-np.arange(n - g) / (0.06 * SR))
-    return np.vstack([y, np.roll(y, 100)]) * 0.09
+    return _ms_stereo(y, 100) * 0.09
 
 
 def i_gamelan(m, dur, p, glide=None, mod=None):
@@ -2448,7 +2448,7 @@ def i_gamelan(m, dur, p, glide=None, mod=None):
     g = int(dur * SR) + int(0.25 * SR)
     if p.get('damp') and g < n:
         y[g:] *= np.exp(-np.arange(n - g) / (0.05 * SR))
-    return np.vstack([y, np.roll(y, 160)])
+    return _ms_stereo(y, 160)
 
 
 def d_gong(p):
@@ -2560,7 +2560,7 @@ def i_shakuhachi(m, dur, p, glide=None, mod=None):
     breath = 1 + 0.08 * np.sin(2 * np.pi * 0.9 * t)
     y = (tone * breath + over + air) * env
     y = eq(hp(y, max(120, f * 0.6)), 'peak', 1400, 1.0, 2.5) * 0.5
-    return np.vstack([y, np.roll(y, 90)])
+    return _ms_stereo(y, 90)
 
 
 def i_qanun(m, dur, p, glide=None, mod=None):
@@ -2582,7 +2582,7 @@ def i_qanun(m, dur, p, glide=None, mod=None):
         y[s:] += one(n - s) * (1.0 if k == 0 else 0.55)
         k += 1
     y = eq(hp(y, 110), 'peak', 2400, 1.0, 2.0) * 0.16
-    return np.vstack([y, np.roll(y, 70)]) * fade_out(np.ones(n), 0.1)
+    return _ms_stereo(y, 70) * fade_out(np.ones(n), 0.1)
 
 
 def i_ney(m, dur, p, glide=None, mod=None):
@@ -2603,7 +2603,7 @@ def i_ney(m, dur, p, glide=None, mod=None):
     env = np.pad(env, (0, max(0, n - len(env))))[:n]
     y = (tone * 0.8 + air) * env * (1 + 0.1 * np.sin(2 * np.pi * 0.7 * t))
     y = eq(hp(y, max(100, f * 0.55)), 'peak', 900, 0.9, 2.0) * 0.45
-    return np.vstack([y, np.roll(y, 120)])
+    return _ms_stereo(y, 120)
 
 
 def d_riq(p):
@@ -2655,6 +2655,20 @@ GM_PROGRAM['shakuhachi'] = 77
 # track parameters (cut / a / d / s / r ...), so every genre that uses them sounds better at once. The previous
 # versions stay available as '<name>_v1'.
 from . import va as _va  # noqa: E402
+
+
+def _ms_stereo(y, d, k=0.35):
+    """(1.82) Mono-safe stereo from a mono note: a delayed, high-passed copy goes into the SIDE (left +, right -), so
+    left + right gives back the note exactly - no comb filter in mono. (The old way - the right channel a copy delayed
+    by d samples - hollowed notes out on phones / club systems in mono.) Classic synth character keeps the old way."""
+    y = np.asarray(y, float)
+    if _va.CHARACTER == 'classic':
+        return np.vstack([y, np.roll(y, d)])
+    if d <= 0:
+        return np.vstack([y, y])
+    dl = np.concatenate([np.zeros(d), y[:-d]]) if d < len(y) else np.zeros_like(y)
+    side = hp(dl, 300) * k
+    return np.vstack([y + side, y - side])
 
 
 def _oct(lo, hi):
@@ -2823,7 +2837,7 @@ def v_mellotron(m, dur, p, glide=None, mod=None):
         x = _va.formant(x, 'a', 3.0) * 2.2 + 0.25 * x
     x = bp(x, 180 if not flute else 250, 6500) + 0.01 * noise(n)
     y = x * env
-    return np.vstack([y, np.roll(y, 120)]) * (0.5 if flute else 0.6)
+    return _ms_stereo(y, 120) * (0.5 if flute else 0.6)
 
 
 def v_dxbell(m, dur, p, glide=None, mod=None):
@@ -3415,7 +3429,7 @@ def v_breathlead(m, dur, p, glide=None, mod=None):
     tone = 2 / np.pi * np.arcsin(np.sin(ph)) * 0.7 + np.sin(ph) * 0.4 + 0.12 * np.sin(2 * ph)
     breath = _aspirate(bp(_rng().standard_normal(n), f * 1.5, min(9000.0, f * 8)), f, ph) * (0.25 + 0.5 * np.exp(-t / 0.08))
     y = lp(tone + breath * p.get('breath', 0.5), 5000)
-    return np.vstack([y, np.roll(y, 40)]) * env * 0.5
+    return _ms_stereo(y, 40) * env * 0.5
 
 
 for _name, _fn, _info, _roles, _gm in (
@@ -3527,7 +3541,7 @@ def v_vocalchop(m, dur, p, glide=None, mod=None):
         y = y + g * signal.lfilter(b, a, src)
     y = hp(y, 180)
     y = y / (np.sqrt(np.mean(y[:gate] ** 2)) + 1e-9) * 0.2 * env     # every vowel at the same level
-    return np.vstack([y, np.roll(y, 30)])
+    return _ms_stereo(y, 30)
 
 
 def v_fbchord(m, dur, p, glide=None, mod=None):
@@ -3628,7 +3642,7 @@ def v_acguitar(m, dur, p, glide=None, mod=None):
     y = _guitar_body(y)
     t = np.arange(n) / SR
     y = y + 0.06 * hp(_rng().standard_normal(n), 3000) * np.exp(-t * 300)       # the pick on the string
-    return np.vstack([y, np.roll(y, 25)]) * 0.55
+    return _ms_stereo(y, 25) * 0.55
 
 
 def v_nylon(m, dur, p, glide=None, mod=None):
@@ -3640,7 +3654,7 @@ def v_nylon(m, dur, p, glide=None, mod=None):
     y = _va.string(f, n, _bass_exc(f, 'finger', p.get('tone', 1.6)), t60=3.2 * (110.0 / max(f, 60)) ** 0.5, bright=0.5,
                    gate=gate, mute_t60=0.3, pickup=0.0)
     y = _guitar_body(y, nylon=True)
-    return np.vstack([y, np.roll(y, 25)]) * 0.48
+    return _ms_stereo(y, 25) * 0.48
 
 
 def v_hardlead(m, dur, p, glide=None, mod=None):
@@ -3778,7 +3792,7 @@ def v_eguitar_clean(m, dur, p, glide=None, mod=None):
     y = lp(y, 7500)
     if pm:
         y = eq(y, 'peak', 160, 1.0, 4.0)
-    return np.vstack([y, np.roll(y, 20)]) * 0.66
+    return _ms_stereo(y, 20) * 0.66
 
 
 def v_eguitar_crunch(m, dur, p, glide=None, mod=None):
@@ -3791,7 +3805,7 @@ def v_eguitar_crunch(m, dur, p, glide=None, mod=None):
     y = lp(lp(y, 5200), 6000)
     if pm:
         y = eq(y, 'peak', 140, 1.0, 5.0)
-    return np.vstack([y, np.roll(y, 30)]) * 0.22
+    return _ms_stereo(y, 30) * 0.22
 
 
 def v_eguitar_dist(m, dur, p, glide=None, mod=None):
@@ -3806,7 +3820,7 @@ def v_eguitar_dist(m, dur, p, glide=None, mod=None):
     y = signal.lfilter(b, a, y)
     if pm:
         y = eq(y, 'peak', 120, 1.0, 5.0)
-    return np.vstack([y, np.roll(y, 35)]) * 0.18
+    return _ms_stereo(y, 35) * 0.18
 
 
 def v_sax(m, dur, p, glide=None, mod=None):
@@ -3830,7 +3844,7 @@ def v_sax(m, dur, p, glide=None, mod=None):
     if p.get('growl'):
         y = y * (1 + 0.25 * np.sin(2 * np.pi * 32 * t))
     y = np.tanh(y * 1.5) * env
-    return np.vstack([y, np.roll(y, 25)]) * 0.4
+    return _ms_stereo(y, 25) * 0.4
 
 
 def v_flute(m, dur, p, glide=None, mod=None):
@@ -3852,7 +3866,7 @@ def v_flute(m, dur, p, glide=None, mod=None):
     breath = _aspirate(bp(rng.standard_normal(n), f * 0.8, min(f * 4, 16000)), f, ph) * 0.12
     chiff = bp(rng.standard_normal(n), f * 1.5, min(f * 6, 16000)) * np.exp(-t / 0.025) * 0.5
     y = (y + breath + chiff) * env
-    return np.vstack([y, np.roll(y, 30)]) * 0.45
+    return _ms_stereo(y, 30) * 0.45
 
 
 for _name, _fn in (('strings', v_strings), ('piano', v_piano), ('guitar', v_eguitar_clean), ('sax', v_sax), ('flute', v_flute)):
@@ -3902,7 +3916,7 @@ def v_marimba(m, dur, p, glide=None, mod=None):
     t = np.arange(n) / SR
     y = y * (1 + 0.6 * (1 - np.exp(-t / 0.02))) + 0.08 * lp(_rng().standard_normal(n), 3000) * np.exp(-t * 300)
     y *= np.minimum(t / 0.001, 1)
-    return np.vstack([y, np.roll(y, 20)]) * 0.42
+    return _ms_stereo(y, 20) * 0.42
 
 
 def v_celesta(m, dur, p, glide=None, mod=None):
@@ -3917,7 +3931,7 @@ def v_celesta(m, dur, p, glide=None, mod=None):
     g = int(max(dur, 0.1) * SR)
     if g < n:
         y[g:] *= np.exp(-np.arange(n - g) / (0.4 * SR))
-    return np.vstack([y, np.roll(y, 20)]) * 0.42
+    return _ms_stereo(y, 20) * 0.42
 
 
 def v_glock(m, dur, p, glide=None, mod=None):
@@ -3928,7 +3942,7 @@ def v_glock(m, dur, p, glide=None, mod=None):
     y = _modes(f, n, [(1.0, 1.0, 1.0), (2.76, 0.35, 4.0), (5.4, 0.18, 9.0), (8.93, 0.08, 16.0)], p.get('hard', 1.3))
     t = np.arange(n) / SR
     y = y * np.minimum(t / 0.0005, 1) + 0.04 * hp(_rng().standard_normal(n), 5000) * np.exp(-t * 400)
-    return np.vstack([y, np.roll(y, 15)]) * 0.38
+    return _ms_stereo(y, 15) * 0.38
 
 
 def v_kalimba(m, dur, p, glide=None, mod=None):
@@ -3940,7 +3954,7 @@ def v_kalimba(m, dur, p, glide=None, mod=None):
     y = eq(y, 'peak', 400, 1.0, 3.0)
     t = np.arange(n) / SR
     y = y * np.minimum(t / 0.001, 1) + 0.05 * bp(_rng().standard_normal(n), 800, 4000) * np.exp(-t * 200)
-    return np.vstack([y, np.roll(y, 20)]) * 0.45
+    return _ms_stereo(y, 20) * 0.45
 
 
 _CHOIR_V = {'a': ((800, 1150, 2900, 3900, 4950), (80, 90, 120, 130, 140), (0, -6, -32, -20, -50)),
@@ -4029,7 +4043,7 @@ def v_harp(m, dur, p, glide=None, mod=None):
     y = _va.string(f, n, _bass_exc(f, 'finger', p.get('tone', 1.8)), t60=4.5 * (220.0 / max(f, 60)) ** 0.5, bright=0.45)
     y = lp(eq(hp(y, 60), 'peak', 300, 1.0, 3.0), 6000)
     y = y / (np.sqrt(np.mean(y[:int(0.2 * SR)] ** 2)) + 1e-9) * 0.13
-    return np.vstack([y, np.roll(y, 25)])
+    return _ms_stereo(y, 25)
 
 
 def v_pizz(m, dur, p, glide=None, mod=None):
@@ -4063,7 +4077,7 @@ def v_clav(m, dur, p, glide=None, mod=None):
     y = eq(eq(hp(y, 180), 'peak', 1500, 1.0, 5.0), 'peak', 3500, 1.2, 3.0)
     y = np.tanh(y * 2.0)
     y = y / (np.sqrt(np.mean(y[:min(n, int(0.1 * SR))] ** 2)) + 1e-9) * 0.13
-    return np.vstack([y, np.roll(y, 15)])
+    return _ms_stereo(y, 15)
 
 
 def v_mutedgtr(m, dur, p, glide=None, mod=None):
@@ -4125,7 +4139,7 @@ def v_churchbell(m, dur, p, glide=None, mod=None):
     y = y * np.minimum(t / 0.001, 1) + 0.03 * hp(_rng().standard_normal(n), 4000) * np.exp(-t * 250)
     y = fade_out(y, 0.05)
     y = y / (np.sqrt(np.mean(y[:int(0.3 * SR)] ** 2)) + 1e-9) * 0.14
-    return np.vstack([y, np.roll(y, 20)])
+    return _ms_stereo(y, 20)
 
 
 def v_tubular(m, dur, p, glide=None, mod=None):
@@ -4136,7 +4150,7 @@ def v_tubular(m, dur, p, glide=None, mod=None):
     y = _modes(f, n, [(1.0, 0.5, 0.5), (2.76, 1.0, 0.7), (5.4, 0.7, 1.1), (8.9, 0.35, 1.8), (13.3, 0.15, 3.0)], p.get('hard', 1.0))
     y = fade_out(y * np.minimum(np.arange(n) / SR / 0.001, 1), 0.1)
     y = y / (np.sqrt(np.mean(y[:int(0.4 * SR)] ** 2)) + 1e-9) * 0.13
-    return np.vstack([y, np.roll(y, 30)])
+    return _ms_stereo(y, 30)
 
 
 for _name, _fn in (('horn', v_horn), ('trombone', v_trombone), ('tuba', v_tuba), ('tubular', v_tubular)):
@@ -4404,7 +4418,7 @@ def v_musicbox(m, dur, p, glide=None, mod=None):
     t = np.arange(n) / SR
     y = y * np.minimum(t / 0.0005, 1) + 0.03 * hp(_rng().standard_normal(n), 6000) * np.exp(-t * 500)
     y = y / (np.sqrt(np.mean(y[:int(0.2 * SR)] ** 2)) + 1e-9) * 0.13
-    return np.vstack([y, np.roll(y, 15)])
+    return _ms_stereo(y, 15)
 
 
 def v_crushlead(m, dur, p, glide=None, mod=None):
@@ -4421,7 +4435,7 @@ def v_crushlead(m, dur, p, glide=None, mod=None):
     hold = 4
     y = np.repeat(np.round(x[::hold] * 32) / 32, hold)[:n]
     y = lp(y, 7000) * env
-    return np.vstack([y, np.roll(y, 20)]) * 0.5
+    return _ms_stereo(y, 20) * 0.5
 
 
 for _name, _fn, _info, _roles in (('orchhit', v_orchhit, 'Orchestra hit (80s sampler stab)', ('chords', 'arp', 'lead')),
@@ -4549,7 +4563,7 @@ def v_goalead(m, dur, p, glide=None, mod=None):
     cut = 350 + p.get('cut', 2600) * (0.55 * np.exp(-t / 0.09) + 0.45 * lfo)
     y = _va.vcf(x, cut, p.get('res', 0.62), 1.8)
     y = np.tanh(y * 1.4)
-    return np.vstack([y, np.roll(y, 35)]) * env * 0.45
+    return _ms_stereo(y, 35) * env * 0.45
 
 
 def v_psyzap(m, dur, p, glide=None, mod=None):
@@ -4563,7 +4577,7 @@ def v_psyzap(m, dur, p, glide=None, mod=None):
     x = np.sin(ph + 1.2 * np.exp(-t / 0.03) * np.sin(3 * ph)) + 0.25 * hp(noise(n), 3000) * np.exp(-t * 200)
     env = np.exp(-t * p.get('decay', 14)) * np.minimum(1.0, t / 0.0005)
     y = x * env
-    return np.vstack([y, np.roll(y, 60)]) * 0.5
+    return _ms_stereo(y, 60) * 0.5
 
 
 for _name, _fn, _info, _roles, _gm in (('psyroll', v_psyroll, 'Psy rolling bass (split sub + bite, phase reset)', ('bass',), 38),
@@ -4626,7 +4640,7 @@ def v_xylophone(m, dur, p, glide=None, mod=None):
     y = _modes(f, n, [(1.0, 1.0, 9.0), (3.0, 0.45, 22.0), (6.2, 0.15, 45.0)], p.get('hard', 1.4))
     y = y + 0.18 * bp(_rng().standard_normal(n), 2500, 9000) * np.exp(-t * 400)
     y *= np.minimum(t / 0.0006, 1)
-    return np.vstack([y, np.roll(y, 15)]) * 0.4
+    return _ms_stereo(y, 15) * 0.4
 
 
 def v_bassclarinet(m, dur, p, glide=None, mod=None):
@@ -4642,7 +4656,7 @@ def v_bassclarinet(m, dur, p, glide=None, mod=None):
     x = _va.vcf(x, 900 + 1800 * env, 0.1, 1.0)
     br = _aspirate(bp(_rng().standard_normal(n), 400, 2500), f, ph) * 0.04
     y = np.tanh((x + br) * 1.2) * env
-    return np.vstack([y, np.roll(y, 25)]) * 0.42
+    return _ms_stereo(y, 25) * 0.42
 
 
 def d_triangle(p):
@@ -4750,7 +4764,7 @@ def v_bleep(m, dur, p, glide=None, mod=None):
     y = np.sin(ph + idx * np.sin(2 * ph))
     y = y + 0.25 * _va.vcf(_va.saw(np.full(n, f), n), 300 + 5000 * np.exp(-t / 0.02), 0.5, 1.0)
     y = y * env
-    return np.vstack([y, np.roll(y, 9)]) * 0.5
+    return _ms_stereo(y, 9) * 0.5
 
 
 def v_trancepluck(m, dur, p, glide=None, mod=None):
@@ -4834,7 +4848,7 @@ for _name, _fn, _info, _roles, _gm in (
 
 def _st(y, d=25):
     y = np.asarray(y, float)
-    return y if y.ndim == 2 else np.vstack([y, np.roll(y, d)])
+    return y if y.ndim == 2 else _ms_stereo(y, d)
 
 
 def _gate_tail(y, dur, tail=0.15):

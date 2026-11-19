@@ -325,11 +325,14 @@ def auto_lp(buf, cut, block=256):
     """A 12 dB low-pass whose cutoff follows `cut` (Hz per sample), in blocks with carried state; blocks where it is
     wide open are (a track that never closes is passed straight through)."""
     from .dsp import biquad
+    from . import fastdsp
     x = np.asarray(buf, np.float64)
     out = x.copy()
     n = x.shape[1]
     if float(np.min(cut[:n])) >= 17500:
         return out
+    if fastdsp.HAVE_NUMBA:                               # (1.82) per sample, one compiled pass: smoother and ~10x faster
+        return fastdsp.svf_lp(x, cut[:n], SR)
     zi = np.zeros((2, 2))
     for s0 in range(0, n, block):
         e = min(n, s0 + block)

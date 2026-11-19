@@ -172,3 +172,34 @@ def fdn_ir(decay, sr, size=1.0, bright=0.6, predelay=0.02, seed=0, er=0.6):
     ir = ers + tail * env[None, :] * 0.9
     ir /= np.sqrt(np.sum(ir ** 2) / 2) + 1e-12
     return ir
+
+
+@njit(cache=True, fastmath=True)
+def _svf_lp_kernel(x, g, k):
+    """State-variable (TPT) 12 dB low-pass with a per-sample cutoff coefficient g = tan(pi fc / SR); k = 1/Q."""
+    n = x.shape[0]
+    y = np.empty(n)
+    ic1 = 0.0
+    ic2 = 0.0
+    for i in range(n):
+        gi = g[i]
+        a1 = 1.0 / (1.0 + gi * (gi + k))
+        a2 = gi * a1
+        a3 = gi * a2
+        v3 = x[i] - ic2
+        v1 = a1 * ic1 + a2 * v3
+        v2 = ic2 + a2 * ic1 + a3 * v3
+        ic1 = 2.0 * v1 - ic1
+        ic2 = 2.0 * v2 - ic2
+        y[i] = v2
+    return y
+
+
+def svf_lp(x, cut, sr, q=0.707):
+    """A smooth, per-sample moving 12 dB low-pass (for filter rides / arcs) on (n,) or (2, n) input."""
+    x = np.asarray(x, np.float64)
+    n = x.shape[-1]
+    g = np.tan(np.pi * np.clip(np.broadcast_to(np.asarray(cut, np.float64), (n,)), 20.0, sr * 0.45) / sr)
+    if x.ndim == 1:
+        return _svf_lp_kernel(x, g, 1.0 / q)
+    return np.vstack([_svf_lp_kernel(np.ascontiguousarray(x[c]), g, 1.0 / q) for c in range(x.shape[0])])

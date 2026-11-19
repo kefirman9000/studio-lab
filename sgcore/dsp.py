@@ -291,13 +291,13 @@ def low_limit(x, ceiling=0.72, split=120.0, hold=0.03, release=0.18):
     return hi + lo * gs
 
 
-def limiter(x, ceiling_db=-1.0, lookahead=0.005, release=0.08, hold=0.012):
+def limiter(x, ceiling_db=-1.0, lookahead=0.005, release=0.08, hold=0.012, os=4):
     c = 10 ** (ceiling_db / 20)
     a = np.max(np.abs(x), axis=0)
-    if x.shape[-1] > 64:                                 # true-peak detection: the waveform between the samples (4x
+    if x.shape[-1] > 64 and os > 1:                      # true-peak detection: the waveform between the samples (4x
         from scipy.signal import resample_poly           # oversampled) can swing ~1-2 dB above the sample peaks on
-        up = np.max(np.abs(resample_poly(x, 4, 1, axis=-1)), axis=0)     # bright, dense masters - the limiter now
-        a = np.maximum(a, up[:len(a) * 4].reshape(-1, 4).max(axis=1)[:len(a)])   # sees those peaks too
+        up = np.max(np.abs(resample_poly(x, os, 1, axis=-1)), axis=0)    # bright, dense masters - the limiter now
+        a = np.maximum(a, up[:len(a) * os].reshape(-1, os).max(axis=1)[:len(a)])   # sees those peaks too
     W = int(lookahead * SR) | 1
     pk = maximum_filter1d(a, size=max(2 * W + 1, int(hold * SR) | 1))   # held over ~half a bass cycle: no audio-rate gain
     g = np.minimum(1.0, c / np.maximum(pk, 1e-9))

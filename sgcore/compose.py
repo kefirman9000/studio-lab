@@ -2355,16 +2355,20 @@ def add_layer_tracks(st, opts):
             inst = r.choice(pool)
             octv = 12 if inst in OCT_UP and role in ('lead', 'arp') else (-12 if inst in OCT_DOWN and role == 'lead' else 0)
         picks += 1
-        if role == 'bass' and inst == 'sinebass' and t['inst'] not in SUB_BASSES:
-            # (1.80) a clean sub layer takes the bottom, so the mid bass above it is high-passed - two subs on the same
-            # notes (a reese's own sub + the sine) beat against each other and spike into the limiter: the
-            # 'clipping bass' on the low notes
-            t['hp'] = max(float(t.get('hp') or 0), 95.0)
+        layer_hp = None
+        if role == 'bass':
+            # (1.80 / 1.82) only ONE sound owns the sub: two basses on the same notes (a reese's own sub + a sine, a
+            # growl + a saw ...) beat against each other and spike into the limiter - the 'clipping bass'. A sub-type
+            # sound (sine, 808, deep bass) takes the bottom; otherwise the main bass keeps it and the layer is cut.
+            if inst in SUB_BASSES and t['inst'] not in SUB_BASSES:
+                t['hp'] = max(float(t.get('hp') or 0), 95.0)
+            else:
+                layer_hp = 110.0
         base_db = t['db'] if t.get('db') is not None else {'bass': -15, 'chords': -21, 'pad': -23, 'arp': -25, 'lead': -19}[role]
         st['tracks'].append(dict(name=t['name'] + '_layer', layer=role, inst=inst, pan=-(t.get('pan') or 0) * 0.6,
                                  rev=t.get('rev') or 0.0, dly=t.get('dly') or 0.0, sc=t.get('sc') or 0.0,
-                                 db=base_db - (4 if role == 'bass' else 6), hp=None, drive=None, p={},
-                                 double_of=t['name'], octave=octv))
+                                 db=base_db - (4 if role == 'bass' else 6), hp=layer_hp if role == 'bass' else None,
+                                 drive=None, p={}, double_of=t['name'], octave=octv))
 
 
 def add_slides(evs, tracks, st, key, rnd):

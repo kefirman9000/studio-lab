@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.82.0
+- **Mono-safe stereo on 69 instruments:**
+  - Many voices made their stereo by copying the note into the right channel 1-2 ms late. Played back in mono (phones, club PAs, radio) that copy cancels part of the sound and hollows the note out.
+  - Now the delayed copy goes into the side signal only, so mono gives back the note exactly.
+  - A plucked instrument used to lose about 3 dB in mono; now about 0.5 dB.
+  - Classic synth character keeps the old way.
+- **Only one sound owns the sub:**
+  - When two basses play together, a sub-type sound (sine, 808, deep bass) takes the bottom and the other is high-passed.
+  - With no sub-type sound, the main bass keeps the low end and its layer is cut below 110 Hz.
+  - An audit of every genre (3 seeds each) now finds no electronic genre with two full-range basses stacked. The remaining pairs are natural ones: celli over contrabass, a surf guitar doubling the bass.
+- **Faster:**
+  - The moving low-pass behind filter rides and filter arcs is now one smooth per-sample pass.
+  - A trance preview renders about 1.5 s faster (13 s to 11 s).
+  - Long sessions were checked: render time and memory stay flat from song to song.
+
 ## 1.81.0
 - **7 new trance synths**, offered right after each trance genre's own sounds (trance, uplifting, progressive, club 2000s, early-2010s progressive, vocal-trance remix, electro-prog, 90s trance-pop, hard trance):
   - **Classic trance pluck:** detuned saws and a square, a snappy filter and a wide chorus, made for 1/16 arps into a dotted delay.
