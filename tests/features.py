@@ -1099,6 +1099,10 @@ def test_va_synth():
     for fxk, fxv in (('phaser', 0.6), ('flanger', 0.5), ('trem', {'rate': 0.25, 'depth': 0.5}), ('wah', 0.6), ('crush', 0.5)):
         yy = track_fx(zz, {fxk: fxv}, 0.5)
         assert yy.shape == zz.shape and np.isfinite(yy).all() and not np.allclose(yy, zz), fxk
+    for k in ('marimba', 'celesta', 'glock', 'kalimba', 'choir', 'brass', 'harp', 'pizz', 'clav', 'mutedgtr', 'twang'):   # 1.67
+        for mm in (48, 72):
+            a = np.asarray(INSTRUMENTS[k](mm, 0.6, {}, None, None))
+            assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.3, (k, mm, np.abs(a).max())
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars

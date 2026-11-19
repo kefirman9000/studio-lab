@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.67.0
+The next batch of widely used first-generation sounds is rebuilt. Old ones are kept as "(classic sound, before 1.67)".
+- **Choir:** six singers, each a breathy glottal pulse with their own pitch, vibrato and timing, through the five formants of the vowel ("aah" by default, or "ooh" and the others). The formants sit lower for low voices and higher for high ones, with a slow swell and a wide stage.
+- **Brass section:** three players whose buzzing-lip tone opens with the breath. They are a little out of time and tune with each other, with a scoop into each note and a punchy attack. This is the horn section of soul, funk, ska, salsa and big band; synth brass is still "Synth brass".
+- **Mallets by modal synthesis:**
+  - **Marimba:** bars tuned 1 : 4 : 10, a yarn mallet, and the resonator tube's bloom.
+  - **Celesta:** felt on steel plates, pure and sweet.
+  - **Kalimba:** a steel tine, its quick high overtone, the box buzz and the thumb click.
+  - **Glockenspiel (new):** bright steel bars with their inharmonic shimmer. It was added to the Christmas, musical-theatre, lullaby, adventure, fantasy, indie and anime genres.
+- **Harp, pizzicato strings and clavinet** are now modelled strings:
+  - **Harp:** a round fingertip pluck with a long free ring.
+  - **Pizzicato:** four players plucking a hair apart, through the violin-family body.
+  - **Clavinet:** a bright, nasal struck string with two pickups, choked by the yarn damper.
+- **Palm-muted guitar** and **twang (Telecaster)** now use the modelled electric guitar string and amp.
+- **French horns, trombones and tuba** now use the new brass-section model: the horns mellow and slower, the trombones broader, the tuba darkest with a round low bloom.
+- **Tubular bells** are rebuilt by modal synthesis (the tube's strong upper partials and a long, beating ring), and there is a new **church bell** (hum tone, strike tone and the minor-third partial that makes a bell sound like a bell).
+
 ## 1.66.0
 I went through every genre and counted which instruments they lean on and which built-in sounds stand in for them. The most-used acoustic stand-ins were still simple first-generation sounds, so they are rebuilt. Each old sound is kept as "(classic sound, before 1.66)".
 - **String section** (used by ~210 genres): seven players a few cents apart, each with their own vibrato and slow drift, spread across the stage. The bow brightens as it bites in, with a whisper of bow noise, through the body resonances (warm 280 Hz, the 2.8 kHz singing formant, the nasal dip between).

@@ -3733,3 +3733,282 @@ for _name, _fn, _info, _gm in (('cleanguitar', v_eguitar_clean, 'Clean electric 
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
 INSTRUMENT_INFO['guitar'] = 'Electric guitar (clean, modelled)'
+
+
+# ----------------------------------------------------------------------------- 1.67: mallets, choir, brass section, plucked strings
+def _modes(f, n, modes, hard=1.0, rng=None):
+    """Modal synthesis: a struck bar / tine / bell as a sum of its vibration modes (ratio to the fundamental, level,
+    decay rate in 1/s). The mallet's hardness brings out the high modes; above 16 kHz they are left out."""
+    t = np.arange(n) / SR
+    y = np.zeros(n)
+    rng = rng or _rng()
+    for r, a, d in modes:
+        fr = f * r
+        if fr > 16000:
+            continue
+        y += a * (hard ** (np.log2(max(r, 1.0)) * 0.6)) * np.sin(2 * np.pi * fr * t + rng.random() * 6.28) * np.exp(-t * d)
+    return y
+
+
+def v_marimba(m, dur, p, glide=None, mod=None):
+    """Marimba: a rosewood bar tuned so its 2nd mode sits two octaves up (4x) and the 3rd near 10x, struck with a yarn
+    mallet; a tuned tube under the bar makes the fundamental bloom. Warm, woody, quick."""
+    f = float(mtof(m))
+    n = int(min(1.6, 0.5 + 220 / f) * SR)
+    k = (f / 261.6) ** 0.5
+    y = _modes(f, n, [(1.0, 1.0, 3.2 * k), (3.99, 0.32, 10 * k), (9.9, 0.1, 25 * k)], p.get('hard', 0.9))
+    t = np.arange(n) / SR
+    y = y * (1 + 0.6 * (1 - np.exp(-t / 0.02))) + 0.08 * lp(_rng().standard_normal(n), 3000) * np.exp(-t * 300)
+    y *= np.minimum(t / 0.001, 1)
+    return np.vstack([y, np.roll(y, 20)]) * 0.42
+
+
+def v_celesta(m, dur, p, glide=None, mod=None):
+    """Celesta: felt hammers on steel plates over wooden resonators - a pure, sweet, bell-like tone with a soft attack
+    and a clean ring, the high modes fading fast. Fairy-tale and Christmas sparkle."""
+    f = float(mtof(m))
+    n = int(min(2.5, 0.8 + 400 / f) * SR)
+    k = (f / 523.0) ** 0.5
+    y = _modes(f, n, [(1.0, 1.0, 1.4 * k), (2.0, 0.12, 4 * k), (3.0, 0.06, 7 * k), (5.4, 0.05, 18 * k)], p.get('hard', 0.6))
+    t = np.arange(n) / SR
+    y *= np.minimum(t / 0.002, 1)
+    g = int(max(dur, 0.1) * SR)
+    if g < n:
+        y[g:] *= np.exp(-np.arange(n - g) / (0.4 * SR))
+    return np.vstack([y, np.roll(y, 20)]) * 0.42
+
+
+def v_glock(m, dur, p, glide=None, mod=None):
+    """Glockenspiel: hard mallets on steel bars - bright, piercing, long-ringing, with the inharmonic 2.76x / 5.4x
+    bar modes giving its metallic shimmer."""
+    f = float(mtof(m))
+    n = int(min(3.0, 1.2 + 500 / f) * SR)
+    y = _modes(f, n, [(1.0, 1.0, 1.0), (2.76, 0.35, 4.0), (5.4, 0.18, 9.0), (8.93, 0.08, 16.0)], p.get('hard', 1.3))
+    t = np.arange(n) / SR
+    y = y * np.minimum(t / 0.0005, 1) + 0.04 * hp(_rng().standard_normal(n), 5000) * np.exp(-t * 400)
+    return np.vstack([y, np.roll(y, 15)]) * 0.38
+
+
+def v_kalimba(m, dur, p, glide=None, mod=None):
+    """Kalimba (thumb piano): a steel tine plucked by the thumb over a small wooden box - a round fundamental, the
+    tine's high, quickly fading overtone, a buzz of the box and a soft thumb click."""
+    f = float(mtof(m))
+    n = int(min(2.0, 0.7 + 300 / f) * SR)
+    y = _modes(f, n, [(1.0, 1.0, 2.2), (5.9, 0.22, 22.0), (12.7, 0.08, 45.0)], p.get('hard', 1.0))
+    y = eq(y, 'peak', 400, 1.0, 3.0)
+    t = np.arange(n) / SR
+    y = y * np.minimum(t / 0.001, 1) + 0.05 * bp(_rng().standard_normal(n), 800, 4000) * np.exp(-t * 200)
+    return np.vstack([y, np.roll(y, 20)]) * 0.45
+
+
+_CHOIR_V = {'a': ((800, 1150, 2900, 3900, 4950), (80, 90, 120, 130, 140), (0, -6, -32, -20, -50)),
+            'o': ((450, 800, 2830, 3800, 4950), (70, 80, 100, 130, 135), (0, -11, -22, -22, -50)),
+            'u': ((325, 700, 2530, 3500, 4950), (50, 60, 170, 180, 200), (0, -16, -35, -40, -60)),
+            'e': ((400, 1600, 2700, 3300, 4950), (60, 80, 120, 150, 200), (0, -24, -30, -35, -60)),
+            'i': ((270, 2140, 2950, 3900, 4950), (60, 90, 100, 120, 120), (0, -12, -26, -26, -44))}
+
+
+def v_choir(m, dur, p, glide=None, mod=None):
+    """Choir: six singers on the note, each a breathy glottal pulse with their own pitch, vibrato and timing, through
+    the five formants of the vowel ('aah' by default, `vowel` = o / u / e / i for 'ooh' and the rest), the formants
+    shifted down a little for low (men's) voices and up for high ones; a slow swell and a wide stage."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.1) * SR)
+    env = _va.adsr(gate, p.get('a', 0.4), 0.5, 0.9, p.get('r', 0.8))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr_, bw_, g_ = _CHOIR_V.get(p.get('vowel', 'a'), _CHOIR_V['a'])
+    shift = (f / 300.0) ** 0.12
+    rng = _rng()
+    L = np.zeros(n)
+    R = np.zeros(n)
+    for i in range(6):
+        c = rng.normal(0, 7)
+        vib = np.clip((t - rng.uniform(0.1, 0.4)) / 0.5, 0, 1) * rng.uniform(15, 30) * np.sin(2 * np.pi * rng.uniform(4.8, 5.8) * t + rng.random() * 6.28)
+        ph = np.cumsum(f * 2 ** ((c + vib) / 1200)) / SR + rng.random()
+        pulse = (2 * (ph % 1.0) - 1.0)
+        src = signal.lfilter([1.0], [1, -0.85], pulse) * 0.3 + rng.standard_normal(n) * 0.04
+        v = 0
+        for fc, bw, gd in zip(fr_, bw_, g_):
+            fcs = min(fc * shift, SR * 0.45)
+            b, a = signal.iirpeak(fcs / (SR / 2), fcs / bw)
+            v = v + 10 ** (gd / 20) * signal.lfilter(b, a, src)
+        d = int(rng.uniform(0, 0.03) * SR)
+        v = np.concatenate([np.zeros(d), v[:n - d]])
+        pan = i / 5
+        L += v * np.cos(pan * np.pi / 2)
+        R += v * np.sin(pan * np.pi / 2)
+    y = hp(np.vstack([L, R]), 120)
+    y = y / (np.sqrt(np.mean(y[:, :min(n, int(0.8 * SR))] ** 2)) + 1e-9) * 0.12
+    return y * env
+
+
+def _brass_voice(fr, n, t, bright, a_):
+    """One brass player: the lips' buzz (every harmonic) through a bell whose brightness opens with the breath, a
+    short 'blat' as the note speaks."""
+    x = _va.saw(fr, n)
+    cut = bright * (0.3 + 0.7 * np.clip(t / max(a_, 0.01), 0, 1)) * (1 + 0.5 * np.exp(-t / 0.05))
+    y = _va.vcf(x, cut, 0.15, 1.6)
+    return eq(y, 'peak', 1200, 1.0, 3.0)
+
+
+def v_brass(m, dur, p, glide=None, mod=None):
+    """Brass section: three players (trumpet / trombone colour by register) on the note, each a buzzing-lip voice whose
+    bell opens with the breath, a little out of time and tune with each other, a scoop into the note and a punchy
+    attack - the horn section of soul, funk, ska, salsa and big band (synth brass is 'Synth brass')."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    a_ = p.get('a', 0.03)
+    env = _va.adsr(gate, a_, 0.25, 0.82, p.get('r', 0.12))
+    n = len(env)
+    t = np.arange(n) / SR
+    rng = _rng()
+    bright = p.get('cut', 3800) * (f / 440) ** 0.25
+    L = np.zeros(n)
+    R = np.zeros(n)
+    for i in range(3):
+        c = rng.normal(0, 5)
+        fr = f * 2 ** ((c - 40 * np.exp(-t / 0.03) + np.clip((t - 0.3) / 0.4, 0, 1) * 10 * np.sin(2 * np.pi * rng.uniform(5, 6) * t)) / 1200)
+        v = _brass_voice(fr, n, t, bright, a_)
+        d = int(rng.uniform(0, 0.015) * SR)
+        v = np.concatenate([np.zeros(d), v[:n - d]])
+        pan = 0.2 + 0.3 * i
+        L += v * np.cos(pan * np.pi / 2)
+        R += v * np.sin(pan * np.pi / 2)
+    y = np.tanh(np.vstack([L, R]) * 0.9) * env
+    return hp(y, 90) * 0.55
+
+
+def v_harp(m, dur, p, glide=None, mod=None):
+    """Concert harp: a gut / nylon string plucked by the fingertip near its middle (round, few high partials), a long,
+    free ring (harpists let the strings sound), the soundboard's warmth."""
+    f = float(mtof(m))
+    n = int(min(4.0, 1.2 + 300 / f) * SR)
+    y = _va.string(f, n, _bass_exc(f, 'finger', p.get('tone', 1.8)), t60=4.5 * (220.0 / max(f, 60)) ** 0.5, bright=0.45)
+    y = lp(eq(hp(y, 60), 'peak', 300, 1.0, 3.0), 6000)
+    y = y / (np.sqrt(np.mean(y[:int(0.2 * SR)] ** 2)) + 1e-9) * 0.13
+    return np.vstack([y, np.roll(y, 25)])
+
+
+def v_pizz(m, dur, p, glide=None, mod=None):
+    """Pizzicato strings: a section plucking - four short, woody plucks a hair apart in time and tune, through the
+    violin family's body resonances."""
+    f = float(mtof(m))
+    n = int(min(1.2, 0.35 + 120 / f) * SR)
+    rng = _rng()
+    out = np.zeros((2, n))
+    for i in range(4):
+        fi = f * 2 ** (rng.normal(0, 6) / 1200)
+        y = _va.string(fi, n, _bass_exc(fi, 'finger', 1.5), t60=0.55 * (220.0 / max(f, 60)) ** 0.4, bright=0.4)
+        d = int(rng.uniform(0, 0.02) * SR)
+        y = np.concatenate([np.zeros(d), y[:n - d]])
+        pan = i / 3
+        out[0] += y * np.cos(pan * np.pi / 2)
+        out[1] += y * np.sin(pan * np.pi / 2)
+    for fc, q, g in ((280, 1.2, 4.0), (520, 1.5, 2.0), (2800, 1.6, 2.0)):
+        out = eq(out, 'peak', fc, q, g)
+    out = hp(out, 100)
+    return out / (np.sqrt(np.mean(out[:, :int(0.15 * SR)] ** 2)) + 1e-9) * 0.13
+
+
+def v_clav(m, dur, p, glide=None, mod=None):
+    """Clavinet: a string struck from below by a rubber tip and read by two pickups - bright, nasal and percussive; the
+    yarn damper chokes it the moment the key comes up. Funk's rhythm keyboard."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.6), 0.04) * SR)
+    n = gate + int(0.03 * SR)
+    y = _va.string(f, n, _bass_exc(f, 'pop', p.get('tone', 1.2)), t60=2.5, bright=0.85, gate=gate, mute_t60=0.02, pickup=0.08)
+    y = eq(eq(hp(y, 180), 'peak', 1500, 1.0, 5.0), 'peak', 3500, 1.2, 3.0)
+    y = np.tanh(y * 2.0)
+    y = y / (np.sqrt(np.mean(y[:min(n, int(0.1 * SR))] ** 2)) + 1e-9) * 0.13
+    return np.vstack([y, np.roll(y, 15)])
+
+
+def v_mutedgtr(m, dur, p, glide=None, mod=None):
+    """Palm-muted / chicken-scratch electric guitar: the modelled string choked by the palm into the clean amp - the
+    short, percussive 'chk' of funk, afrobeats, disco and highlife."""
+    return v_eguitar_clean(m, min(dur, 0.2), dict(p, pickup=0.1), glide, 'pm')
+
+
+def v_twang(m, dur, p, glide=None, mod=None):
+    """Telecaster twang: the modelled string on a bright bridge pickup, a snappy attack, the amp pushed just into grit
+    (surf, country, rockabilly, desert blues)."""
+    y = np.asarray(v_eguitar_clean(m, dur, dict(p, pickup=0.07, dist=p.get('dist', 0.6), tone=1.5), glide, mod))
+    return eq(y, 'peak', 3000, 1.0, 3.0) * 0.9
+
+
+for _name, _fn in (('marimba', v_marimba), ('celesta', v_celesta), ('kalimba', v_kalimba), ('choir', v_choir),
+                   ('brass', v_brass), ('harp', v_harp), ('pizz', v_pizz), ('clav', v_clav), ('mutedgtr', v_mutedgtr),
+                   ('twang', v_twang)):
+    if _name + '_v1' not in INSTRUMENTS:
+        INSTRUMENTS[_name + '_v1'] = INSTRUMENTS[_name]
+        INSTRUMENT_INFO[_name + '_v1'] = (INSTRUMENT_INFO.get(_name) or _name) + ' (classic sound, before 1.67)'
+        for _role, _lst in ROLE_CHOICES.items():
+            if _name in _lst and _name + '_v1' not in _lst:
+                _lst.append(_name + '_v1')
+        GM_PROGRAM[_name + '_v1'] = GM_PROGRAM.get(_name, 0)
+    INSTRUMENTS[_name] = _fn
+INSTRUMENTS['glock'] = v_glock
+INSTRUMENT_INFO['glock'] = 'Glockenspiel'
+GM_PROGRAM['glock'] = 9
+for _role in ('arp', 'lead'):
+    ROLE_CHOICES[_role].append('glock')
+
+
+def v_horn(m, dur, p, glide=None, mod=None):
+    """French horns: the brass-section model played mellow - a darker bell, a softer, slower attack, more warmth."""
+    return v_brass(m, dur, dict(p, cut=p.get('cut', 1500), a=p.get('a', 0.08)), glide, mod)
+
+
+def v_trombone(m, dur, p, glide=None, mod=None):
+    """Trombones: the brass-section model a little darker and broader, with the slide's lazy scoop."""
+    return v_brass(m, dur, dict(p, cut=p.get('cut', 2400), a=p.get('a', 0.05)), glide, mod)
+
+
+def v_tuba(m, dur, p, glide=None, mod=None):
+    """Tuba: the brass model at its darkest, with a round low-end bloom."""
+    y = np.asarray(v_brass(m, dur, dict(p, cut=p.get('cut', 900), a=p.get('a', 0.06)), glide, mod))
+    return eq(y, 'peak', 90, 1.0, 4.0)
+
+
+def v_churchbell(m, dur, p, glide=None, mod=None):
+    """Church bell: a struck metal bell by modal synthesis - its hum tone an octave below, the strike tone, the minor-third
+    partial that makes a bell sound like a bell, the bright upper partials that fade first, and a long ring."""
+    f = float(mtof(m))
+    n = int((max(dur, 0.1) + p.get('ring', 1.6)) * SR)
+    d = p.get('decay', 1.0)
+    y = _modes(f, n, [(0.5, 0.35, 0.6 * d), (1.0, 1.0, 1.0 * d), (1.19, 0.45, 1.3 * d), (1.5, 0.3, 1.8 * d),
+                      (2.0, 0.35, 2.4 * d), (2.5, 0.15, 3.5 * d), (3.0, 0.12, 4.5 * d), (4.2, 0.08, 7 * d)], p.get('hard', 1.0))
+    t = np.arange(n) / SR
+    y = y * np.minimum(t / 0.001, 1) + 0.03 * hp(_rng().standard_normal(n), 4000) * np.exp(-t * 250)
+    y = fade_out(y, 0.05)
+    y = y / (np.sqrt(np.mean(y[:int(0.3 * SR)] ** 2)) + 1e-9) * 0.14
+    return np.vstack([y, np.roll(y, 20)])
+
+
+def v_tubular(m, dur, p, glide=None, mod=None):
+    """Tubular bells (chimes): long brass tubes struck at the top - the tube's strong 2nd-4th partials heard as the
+    pitch, a long, slowly beating ring."""
+    f = float(mtof(m))
+    n = int((max(dur, 2.5) + 1.5) * SR)
+    y = _modes(f, n, [(1.0, 0.5, 0.5), (2.76, 1.0, 0.7), (5.4, 0.7, 1.1), (8.9, 0.35, 1.8), (13.3, 0.15, 3.0)], p.get('hard', 1.0))
+    y = fade_out(y * np.minimum(np.arange(n) / SR / 0.001, 1), 0.1)
+    y = y / (np.sqrt(np.mean(y[:int(0.4 * SR)] ** 2)) + 1e-9) * 0.13
+    return np.vstack([y, np.roll(y, 30)])
+
+
+for _name, _fn in (('horn', v_horn), ('trombone', v_trombone), ('tuba', v_tuba), ('tubular', v_tubular)):
+    if _name + '_v1' not in INSTRUMENTS:
+        INSTRUMENTS[_name + '_v1'] = INSTRUMENTS[_name]
+        INSTRUMENT_INFO[_name + '_v1'] = (INSTRUMENT_INFO.get(_name) or _name) + ' (classic sound, before 1.67)'
+        for _role, _lst in ROLE_CHOICES.items():
+            if _name in _lst and _name + '_v1' not in _lst:
+                _lst.append(_name + '_v1')
+        GM_PROGRAM[_name + '_v1'] = GM_PROGRAM.get(_name, 0)
+    INSTRUMENTS[_name] = _fn
+
+INSTRUMENTS['churchbell'] = v_churchbell
+INSTRUMENT_INFO['churchbell'] = 'Church bell (hum, strike, minor third)'
+GM_PROGRAM['churchbell'] = 14
+for _role in ('arp', 'lead'):
+    ROLE_CHOICES[_role].append('churchbell')
