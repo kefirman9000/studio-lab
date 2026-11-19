@@ -474,7 +474,7 @@ def pick_voices(st, opts, kit_id, preset, style):
     fam = FAMILY_VOICES.get(group_of(st.get('name') or style)) if st.get('category') == 'Electronic' else None
     if not fam and not mine:
         return {}
-    rnd = random.Random((getattr(opts, 'seed', 0) or 0) * 67 + 5)
+    rnd = random.Random((getattr(opts, 'seed', 0) or 0) * 67 + 5 + 7919 * int(getattr(opts, 'sound_seed', 0) or 0))
     kit = st['kitparams']
     own = kit_id or preset
     picks = {}

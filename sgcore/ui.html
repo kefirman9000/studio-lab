@@ -274,6 +274,7 @@ body:not(.helptext) .hint.qhd{display:none !important}
 .xparts .xh{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:6px}
 .xparts select{min-width:0}
 .snd .lev{display:flex;align-items:center;gap:6px;font-size:12px;margin-top:4px}.snd .lev input{flex:1;min-width:60px}.snd .lev b{min-width:44px;font-weight:600}
+#editor .etabs{max-width:420px;margin:0 0 10px}#editor .nt-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}#editor .nt-bar select{width:auto;max-width:340px}#editor .nt-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}#editor .nt-scroll canvas{display:block;cursor:crosshair}
 </style>
 </head>
 <body>
@@ -418,6 +419,8 @@ body:not(.helptext) .hint.qhd{display:none !important}
       <div class="f"><label>Loudness <span class="auto"><input type="checkbox" id="loudAuto" checked>style</span></label><input type="range" id="loud" min="-18" max="-6" value="-10" step="0.5" disabled>
         <div class="mpre" title="Mastering targets"><button class="mini" data-lp="-14" title="Streaming: -14 LUFS - most dynamic; Spotify / YouTube turn louder songs down to this anyway">Streaming</button><button class="mini" data-lp="-10" title="Balanced: -10 LUFS - loud but still punchy">Balanced</button><button class="mini" data-lp="-8" title="Club: -8 LUFS - dense and loud for DJ sets and big systems (less punch)">Club</button></div></div>
       <div class="f"><label>Tape / vinyl</label><div class="seg" id="lofi"></div></div>
+      <div class="f"><label title="Mastering character laid over the genre's own master">Master for</label><select id="masterPreset"><option value="">Genre default</option><option value="radio">Radio (dense, even, small speakers)</option><option value="vinyl">Vinyl cut (mono-safe lows, gentle highs, dynamic)</option><option value="film">Film / picture stem (-18 LUFS, no squeeze)</option></select></div>
+      <div class="f"><label title="After mastering, Studio Lab reads its own mix check (stereo, punch, tone against the genre's reference records, harshness), fixes what it finds and masters again - keeping whichever version checks better"><input type="checkbox" id="prodPass"> Production pass <span class="hint">check &amp; fix the master</span></label></div>
       <div class="f wide"><div class="hint">Each part's volume is in <b>Parts</b>, next to its sound and mute.</div></div>
     </div></details>
 
@@ -662,7 +665,7 @@ function renderSelected(){
     h.innerHTML=`<div class="rr" style="margin:0"><button class="mini acc" data-snd-roll="all" title="Pick a different sound for every part from this genre's suggestions">🎲 Re-roll sounds</button><button class="mini" data-snd-roll="reset" title="Back to the genre's own sounds">↺ Genre sounds</button><button class="mini" data-vol-reset="1" title="Every part back to the genre's own balance">↺ Volumes</button><span class="hint" style="margin-left:6px">Each part's list starts with the sounds that suit this genre. 🎲 next to a part tries another one.</span></div>`;
     $('#soundBody').appendChild(h);
     h.querySelector('[data-snd-roll=all]').onclick=()=>{ state.locked={}; rerollSounds(state.style, state.instruments); renderSelected(); $('#status').textContent='New sounds picked from the genre\'s suggestions - press Preview to hear them.'; };
-    h.querySelector('[data-snd-roll=reset]').onclick=()=>{ state.instruments={}; state.locked={}; renderSelected(); };
+    h.querySelector('[data-snd-roll=reset]').onclick=()=>{ state.instruments={}; state.locked={}; delete state.sound_seed; renderSelected(); };
     h.querySelector('[data-vol-reset]').onclick=()=>{ state.levels={}; bindLevels(); }; }
   if(!jParts){ const hd=document.createElement('div'); hd.className='f inst ihead';
     hd.innerHTML='<span title="Ticked: the genre picks this part\'s sound for each song. Unticked: the part keeps its sound.">🎲</span><span>Part</span><span>Sound <span style="text-transform:none;letter-spacing:0">(ticked = the genre picks · ★ = its own sound)</span></span>';
@@ -749,6 +752,7 @@ function fxRow(w, r){
 function soundName(id){ for(const r of Object.keys(META.roles||{})){ const i=(META.roles[r]||[]).find(x=>x.id===id); if(i) return i.name; }
   return String(id).replace(/^sf:/,'').replace(/_/g,' ')+(String(id).startsWith('sf:')?' (recorded)':''); }
 function rerollSounds(style, into){
+  state.sound_seed=1+Math.floor(Math.random()*1e6);      // also re-picks layers, section sounds and drum voices (same notes)
   const pools=(META.style_pools||{})[style]||{};
   Object.entries(pools).forEach(([role,pool])=>{ if(!pool||pool.length<2) return; const cur=into[role]||pool[0];
     const opts=pool.filter(x=>x!==cur); const pick=opts[Math.floor(Math.random()*opts.length)];
@@ -858,7 +862,7 @@ function options(){
   if(Object.keys(LOCKS).length) o.part_seeds=Object.fromEntries(Object.entries(LOCKS).map(([p,l])=>[p,l.seed]));
   if($('#melStyle').value) o.melody_style=$('#melStyle').value;
   if($('#groove').value) o.groove=$('#groove').value;
-  if($('#chordSpeed').value) o.chord_speed=$('#chordSpeed').value; o.motif=$('#motif').value||'song';
+  if($('#chordSpeed').value) o.chord_speed=$('#chordSpeed').value; o.motif=$('#motif').value||'song'; if($('#masterPreset').value) o.master_preset=$('#masterPreset').value; if($('#prodPass').checked) o.production_pass=true; if(state.ref_tone) o.ref_tone=state.ref_tone; if(state.sound_seed) o.sound_seed=state.sound_seed;
   if($('#rotation').value!=='auto') o.rotation=$('#rotation').value;
   if($('#leadStyle').value) o.lead_style=$('#leadStyle').value;
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
@@ -890,7 +894,7 @@ function applyOptions(o){
   state.style=o.style; state.blend=o.blend||[]; state.blend_parts=o.blend_parts||{}; state.mood=o.mood||null;
   state.part_fx=Object.assign({},o.part_fx||{}); state.part_effects=JSON.parse(JSON.stringify(o.part_effects||{})); state.drum_voices=Object.assign({},o.drum_voices||{}); state.extra_parts=JSON.parse(JSON.stringify(o.extra_parts||[])); if(typeof renderDrumVoices==='function') renderDrumVoices();
   state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.locked={}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
-  $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#motif').value=o.motif||'song'; $('#rotation').value=o.rotation||'auto';
+  $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#masterPreset').value=o.master_preset||''; $('#prodPass').checked=!!o.production_pass; $('#motif').value=o.motif||'song'; $('#rotation').value=o.rotation||'auto';
   $('#songName').value=o.title||''; $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
   $('#brightness').value=(o.brightness||0)*100; $('#synthChar').value=o.synth_character||'analog'; $('#reverb').value=(o.reverb??1)*100; $('#delay').value=(o.delay??1)*100; $('#width').value=(o.width??1)*100;
   $('#bass').value=o.bass_boost||0; $('#drive').value=(o.drive||0)*100;
@@ -1066,7 +1070,7 @@ function addResult(r, target){
   el.querySelector('[data-a=share]').onclick=()=>shareSettings(r);
   el.querySelector('[data-a=edit]').onclick=()=>openEditor(r);
   el.querySelector('[data-a=sounds]').onclick=()=>{ const o=JSON.parse(JSON.stringify(r.options)); o.seed=r.seed;
-    o.instruments=rerollSounds(r.style, Object.assign({}, o.instruments||{})); $('#status').textContent='Same song, new sounds…'; run(true,1,o); };
+    o.instruments=rerollSounds(r.style, Object.assign({}, o.instruments||{})); o.sound_seed=state.sound_seed; $('#status').textContent='Same song, new sounds…'; run(true,1,o); };
   if(r.part_effects&&r.style===state.style) state.lastFx=r.part_effects;
   if(r.drum_picks&&r.style===state.style){ state.lastDrums=r.drum_picks; renderDrumVoices(); }
   if(r.tracks&&r.style===state.style){ state.lastTracks=r.tracks; if(!target){ lockFrom(r); renderSelected(); } }
@@ -1399,6 +1403,104 @@ function soundSelect(tr, pick){
   return `<select data-snd="${esc(tr.id)}"><option value="">Keep (${esc(tr.sound)})</option><option value="off" ${pick==='off'?'selected':''}>🔇 Off (silent)</option>`+
     Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${pick===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('')+'</select>';
 }
+// ------------------------------------------------------------- song editor: Notes & volume tab (1.80)
+// A piano roll of one sound at a time with its volume line underneath (all the other lines faint). The volume line
+// starts from the programmed one (full level where the part plays, silent where it rests). Drag points; double-click
+// to add a point or a note; right-click a point to remove it; click a note to select it, drag it to move it, Delete
+// to remove it. Every edit is kept with the song's settings (automation / note_edits), so Preview and Full song use it.
+function notesTab(host, r, ED){
+  host.innerHTML=`<div class="nt-bar"><label class="hint">Sound</label><select id="ntTrack"></select>
+      <label class="hint" style="margin-left:8px">Zoom</label><input type="range" id="ntZoom" min="4" max="48" value="12" style="width:120px">
+      <button class="mini" id="ntReset" title="Back to the programmed volume line for this sound">↺ Volume line</button>
+      <button class="mini" id="ntUndoNotes" title="Undo every note edit on this sound">↺ Notes</button>
+      <span class="hint" id="ntInfo" style="margin-left:auto"></span></div>
+    <div class="nt-scroll" id="ntScroll"><canvas id="ntCv"></canvas></div>
+    <div class="hint" style="margin-top:6px">Click a note to select it · drag to move · Delete removes it · double-click empty space to add a note.
+      Volume line: drag a point · double-click to add one · right-click removes it · the bottom of the lane is silent.</div>`;
+  const cv=host.querySelector('#ntCv'), sc=host.querySelector('#ntScroll'), sel=host.querySelector('#ntTrack');
+  let D=null, cur=null, sel_=null, drag=null, zoom=12;
+  const ROLL=300, SEC=18, LANE=120, GAP=6, H=SEC+ROLL+GAP+LANE;
+  const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888';
+  const key=(t,b,m)=>t+'|'+(+b).toFixed(3)+'|'+(m==null?'d':m);
+  ED.edits=ED.edits||{del:[],add:[]};
+  const isDel=(t,n)=>ED.edits.del.some(d=>d[0]===t&&Math.abs(d[1]-n[0])<0.0005&&d[2]===n[2]);
+  function notesOf(t){ const base=(D.notes[t]||[]).filter(n=>!isDel(t,n)).map(n=>({n, orig:true}));
+    const add=ED.edits.add.filter(a=>a[0]===t).map(a=>({n:[a[1],a[2],a[3],a[4]], orig:false, ref:a}));
+    return base.concat(add); }
+  function line(t){ return ED.auto[t] ? ED.auto[t] : (D.programmed[t]||[[0,0]]).map(p=>p.slice()); }
+  function setLine(t,pts){ ED.auto[t]=pts.sort((a,b)=>a[0]-b[0]); }
+  const dbY=db=>SEC+ROLL+GAP+LANE-6-(Math.max(-60,Math.min(6,db))+60)/66*(LANE-12);
+  const yDb=y=>{ const v=(SEC+ROLL+GAP+LANE-6-y)/(LANE-12)*66-60; return v<-57?-60:Math.min(6,Math.round(v*2)/2); };
+  function range(){ const ns=notesOf(cur).map(o=>o.n[2]).filter(m=>m!=null);
+    if(!ns.length) return [0,0,true]; let lo=Math.min(...ns)-2, hi=Math.max(...ns)+2; if(hi-lo<12){ const c=(hi+lo)/2; lo=Math.floor(c-6); hi=Math.ceil(c+6); } return [lo,hi,false]; }
+  function draw(){
+    const W=Math.max(sc.clientWidth-4, D.beats*zoom+20); cv.width=W*devicePixelRatio; cv.height=H*devicePixelRatio;
+    cv.style.width=W+'px'; cv.style.height=H+'px'; const g=cv.getContext('2d'); g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    g.clearRect(0,0,W,H); const x=b=>10+b*zoom;
+    D.sections.forEach((s,i)=>{ g.fillStyle=i%2?css('--panel2'):css('--chip'); g.fillRect(x(s.bar*4),0,s.bars*4*zoom,SEC);
+      g.fillStyle=css('--muted'); g.font='11px sans-serif'; g.fillText(s.name, x(s.bar*4)+4, 13);
+      g.fillStyle=i%2?'rgba(255,255,255,.015)':'rgba(255,255,255,.035)'; g.fillRect(x(s.bar*4),SEC,s.bars*4*zoom,ROLL); });
+    g.strokeStyle=css('--line'); g.lineWidth=1;
+    for(let b=0;b<=D.beats;b+=4){ g.globalAlpha=b%16?0.35:0.9; g.beginPath(); g.moveTo(x(b)+.5,SEC); g.lineTo(x(b)+.5,SEC+ROLL); g.stroke(); }
+    g.globalAlpha=1;
+    const [lo,hi,drum]=range(); const rowH=drum?ROLL/3:ROLL/(hi-lo+1);
+    const ny=m=>drum?SEC+ROLL/3:SEC+(hi-m)*rowH;
+    if(!drum){ for(let m=lo;m<=hi;m++){ if([1,3,6,8,10].includes(((m%12)+12)%12)){ g.fillStyle='rgba(0,0,0,.18)'; g.fillRect(0,ny(m),W,rowH); } } }
+    notesOf(cur).forEach(o=>{ const n=o.n; const on=sel_&&sel_.n===n;
+      g.fillStyle=on?css('--acc2'):(o.orig?css('--acc'):css('--warn')); g.globalAlpha=0.45+0.55*(n[3]||0.8);
+      g.fillRect(x(n[0]), ny(n[2]==null?lo:n[2])+1, Math.max(2,n[1]*zoom-1), Math.max(2,rowH-2)); });
+    g.globalAlpha=1;
+    const top=SEC+ROLL+GAP; g.fillStyle=css('--panel2'); g.fillRect(0,top,W,LANE);
+    g.strokeStyle=css('--line'); [0,-12,-24].forEach(db=>{ g.beginPath(); g.moveTo(0,dbY(db)+.5); g.lineTo(W,dbY(db)+.5); g.stroke(); g.fillStyle=css('--muted'); g.fillText((db?db:'0')+' dB',W-40>0?sc.scrollLeft+4:4,dbY(db)-2); });
+    D.tracks.forEach(t=>{ if(t.id===cur) return; const pts=line(t.id); g.strokeStyle='rgba(160,170,200,.18)'; g.beginPath();
+      pts.forEach((p,i)=>{ const X=x(p[0]),Y=dbY(p[1]); i?g.lineTo(X,Y):g.moveTo(X,Y); }); g.stroke(); });
+    const pts=line(cur); g.strokeStyle=css('--acc2'); g.lineWidth=2; g.beginPath();
+    pts.forEach((p,i)=>{ const X=x(p[0]),Y=dbY(p[1]); i?g.lineTo(X,Y):g.moveTo(X,Y); }); g.stroke(); g.lineWidth=1;
+    pts.forEach(p=>{ g.fillStyle=css('--acc2'); g.beginPath(); g.arc(x(p[0]),dbY(p[1]),4,0,7); g.fill(); });
+    const tr=D.tracks.find(t=>t.id===cur)||{}; host.querySelector('#ntInfo').textContent=`${tr.part||cur} · ${notesOf(cur).length} notes · ${ED.edits.del.filter(d=>d[0]===cur).length+ED.edits.add.filter(a=>a[0]===cur).length} note edits${ED.auto[cur]?' · custom volume line':''}`;
+  }
+  function hit(ev){ const rc=cv.getBoundingClientRect(); const X=ev.clientX-rc.left, Y=ev.clientY-rc.top; const b=(X-10)/zoom;
+    const [lo,hi,drum]=range(); const rowH=drum?ROLL/3:ROLL/(hi-lo+1);
+    return {X,Y,b,lane:Y>SEC+ROLL+GAP, roll:Y>SEC&&Y<SEC+ROLL, m:drum?null:Math.round(hi-(Y-SEC)/rowH+0.5-0.5)};
+  }
+  function findNote(h){ const [lo,hi,drum]=range(); const rowH=drum?ROLL/3:ROLL/(hi-lo+1);
+    return notesOf(cur).reverse().find(o=>{ const n=o.n; const y0=drum?SEC+ROLL/3:SEC+(hi-n[2])*rowH; return h.b>=n[0]&&h.b<=n[0]+Math.max(n[1],2/zoom)&&h.Y>=y0&&h.Y<=y0+rowH; }); }
+  function findPt(h){ const pts=line(cur); return pts.findIndex(p=>Math.abs(10+p[0]*zoom-h.X)<7&&Math.abs(dbY(p[1])-h.Y)<7); }
+  const snap=b=>Math.max(0,Math.round(b*4)/4);
+  function removeNote(o){ if(o.orig) ED.edits.del.push([cur,o.n[0],o.n[2]]); else ED.edits.add=ED.edits.add.filter(a=>a!==o.ref); }
+  cv.onmousedown=ev=>{ const h=hit(ev); ev.preventDefault();
+    if(h.lane){ const i=findPt(h); if(ev.button===2){ if(i>=0){ const pts=line(cur); pts.splice(i,1); setLine(cur,pts.length?pts:[[0,0]]); draw(); } return; }
+      if(i>=0){ drag={pt:i, pts:line(cur)}; setLine(cur,drag.pts); } return; }
+    if(h.roll){ const o=findNote(h); sel_=o||null; if(o) drag={note:o, b0:h.b, m0:h.m, moved:false}; draw(); } };
+  cv.onmousemove=ev=>{ if(!drag) return; const h=hit(ev);
+    if(drag.pt!=null){ const p=drag.pts[drag.pt]; p[0]=Math.max(0,Math.min(D.beats,Math.round(h.b*4)/4)); p[1]=yDb(h.Y); setLine(cur,drag.pts); draw(); return; }
+    if(drag.note){ const db=snap(h.b-drag.b0+drag.note.n[0])-drag.note.n[0]; const dm=(h.m!=null&&drag.m0!=null)?h.m-drag.m0:0;
+      if(db||dm){ const o=drag.note, n=o.n.slice(); n[0]=Math.max(0,n[0]+db); if(n[2]!=null) n[2]=Math.max(0,Math.min(127,n[2]+dm));
+        removeNote(o); const a=[cur,n[0],n[1],n[2],n[3]]; ED.edits.add.push(a); drag.note={n:[n[0],n[1],n[2],n[3]],orig:false,ref:a};
+        drag.b0=h.b; drag.m0=h.m; sel_=drag.note; draw(); } } };
+  window.addEventListener('mouseup',()=>{ drag=null; });
+  cv.oncontextmenu=ev=>ev.preventDefault();
+  cv.ondblclick=ev=>{ const h=hit(ev);
+    if(h.lane){ const pts=line(cur); pts.push([Math.round(h.b*4)/4, yDb(h.Y)]); setLine(cur,pts); draw(); return; }
+    if(h.roll && !findNote(h)){ const [lo,hi,drum]=range(); const a=[cur, snap(h.b), drum?0.25:0.5, drum?null:h.m, 0.85]; ED.edits.add.push(a);
+      sel_={n:[a[1],a[2],a[3],a[4]],orig:false,ref:a}; draw(); } };
+  const onKey=ev=>{ if(!host.isConnected){ document.removeEventListener('keydown',onKey); return; }
+    if((ev.key==='Delete'||ev.key==='Backspace') && sel_ && host.offsetParent){ ev.preventDefault(); removeNote(sel_); sel_=null; draw(); } };
+  document.addEventListener('keydown',onKey);
+  host.querySelector('#ntZoom').oninput=e=>{ zoom=+e.target.value; draw(); };
+  host.querySelector('#ntReset').onclick=()=>{ delete ED.auto[cur]; draw(); };
+  host.querySelector('#ntUndoNotes').onclick=()=>{ ED.edits.del=ED.edits.del.filter(d=>d[0]!==cur); ED.edits.add=ED.edits.add.filter(a=>a[0]!==cur); sel_=null; draw(); };
+  const jump=()=>{ const ns=notesOf(cur); if(ns.length){ sc.scrollLeft=Math.max(0, 10+Math.min(...ns.map(o=>o.n[0]))*zoom-40); } };
+  sc.onscroll=()=>{ if(D) draw(); };
+  sel.onchange=()=>{ cur=sel.value; sel_=null; draw(); jump(); };
+  host.querySelector('#ntInfo').textContent='Loading the notes…';
+  api('/api/notes',{options:ED.opts()}).then(d=>{
+    if(!d||d.error){ host.querySelector('#ntInfo').textContent='Could not load the notes'+(d&&d.error?': '+d.error:''); return; }
+    D=d; const withNotes=D.tracks.filter(t=>(D.notes[t.id]||[]).length);
+    sel.innerHTML=withNotes.map(t=>`<option value="${esc(t.id)}">${esc(t.part)} — ${esc(t.sound)}</option>`).join('');
+    cur=(withNotes.find(t=>t.layer==='lead')||withNotes[0]||{}).id; sel.value=cur; draw(); jump(); });
+}
+
 function openEditor(r){
   EDSTYLE=r.style;
   const ed=$('#editor'), box=$('#editorBox'); ed.style.display='block'; document.body.style.overflow='hidden';
@@ -1412,7 +1514,7 @@ function openEditor(r){
     <div class="f" style="max-width:420px"><label><b>Drum kit</b> <span class="hint">the whole kit at once</span></label><select id="edKit"></select></div>
     ${tracks.length?`<div class="sounds">${tracks.map(tr=>`<div class="snd"><label><b>${esc(tr.part)}</b> ${tr.drum?'':octHtml(tr.id,(r.options&&r.options.octaves||{})[tr.id],'data-edoct')}</label><div class="s">${esc(tr.sound)} · ${tr.notes} notes</div>${soundSelect(tr, picks[tr.id])}${levHtml(tr.id, tlev[tr.id])}</div>`).join('')}</div>`
       :'<div class="hint">This song was made with an older version - press Preview below once to list its sounds.</div>'}
-    <div class="rr"><button class="btn s" data-e="roll" style="padding:7px 12px" title="Same song, new sounds picked from the genre's suggestions">🎲 Re-roll sounds</button><button class="btn s" data-e="prev" style="padding:7px 12px">▶ Preview with these sounds</button><button class="btn g" data-e="full" style="padding:7px 12px">⬇ Full song with these sounds</button><span class="hint" style="margin-left:8px">Same song, same notes - only the sounds you change are different.</span></div>`;
+    <div class="rr"><button class="btn s" data-e="roll" style="padding:7px 12px" title="Same song, new sounds picked from the genre's suggestions">🎲 Re-roll sounds</button><button class="btn s" data-e="prev" style="padding:7px 12px">▶ Preview with these changes</button><button class="btn g" data-e="full" style="padding:7px 12px">⬇ Full song with these changes</button><span class="hint" style="margin-left:8px">Same song - only what you change (sounds, levels, notes, volume lines) is different.</span></div>`;
   if(r.urls&&(r.urls.mp3||r.urls.wav)){ addResult(Object.assign({}, r, {id:(r.id||'ed')+'_ed'}), $('#edCard'));
     setTimeout(()=>{ const cv=$('#edCard canvas'); if(cv) drawWave(cv, r.urls.mp3||r.urls.wav); }, 80); }
   const first=$('#edCard .blk'); if(first) first.click();
@@ -1427,12 +1529,26 @@ function openEditor(r){
   let kitPick=(r.options&&r.options.kit)||'';
   const edOct=Object.assign({}, (r.options&&r.options.octaves)||{});
   box.querySelectorAll('[data-edoct]').forEach(e=>e.onchange=()=>{ const v=+e.value; if(v) edOct[e.dataset.edoct]=v; else delete edOct[e.dataset.edoct]; });
-  const opts=()=>{ const o=JSON.parse(JSON.stringify(r.options||{})); o.seed=r.seed; o.instruments=Object.assign({}, o.instruments||{}, picks); if(kitPick) o.kit=kitPick; else delete o.kit; if(Object.keys(edOct).length) o.octaves=Object.assign({}, edOct); else delete o.octaves;
+  const ED={auto:Object.assign({}, (r.options&&r.options.automation)||{}), edits:JSON.parse(JSON.stringify((r.options&&r.options.note_edits)||{del:[],add:[]}))};
+  ED.edits.del=ED.edits.del||[]; ED.edits.add=ED.edits.add||[];
+  { const head=box.querySelector('.ehead'); const tabs=document.createElement('div'); tabs.className='tabs etabs';
+    tabs.innerHTML='<button class="on" data-et="a">Sections &amp; sounds</button><button data-et="b">Notes &amp; volume</button>';
+    head.after(tabs); const A=document.createElement('div'); A.id='edTabA'; const B=document.createElement('div'); B.id='edTabB'; B.style.display='none';
+    const rr=[...box.children].filter(c=>c.classList.contains('rr')).pop();
+    [...box.children].forEach(c=>{ if(c!==head && c!==tabs && c!==rr) A.appendChild(c); });
+    tabs.after(A); A.after(B);
+    tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{ tabs.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+      const nb=b.dataset.et==='b'; A.style.display=nb?'none':''; B.style.display=nb?'':'none';
+      if(nb && !B.dataset.ready){ B.dataset.ready='1'; notesTab(B, r, ED); } }); }
+  const opts=()=>{ const o=JSON.parse(JSON.stringify(r.options||{})); o.seed=r.seed;
+    if(Object.keys(ED.auto).length) o.automation=JSON.parse(JSON.stringify(ED.auto)); else delete o.automation;
+    if(ED.edits.del.length||ED.edits.add.length) o.note_edits=JSON.parse(JSON.stringify(ED.edits)); else delete o.note_edits; o.instruments=Object.assign({}, o.instruments||{}, picks); if(kitPick) o.kit=kitPick; else delete o.kit; if(Object.keys(edOct).length) o.octaves=Object.assign({}, edOct); else delete o.octaves;
     if(Object.keys(tlev).length) o.track_levels=Object.assign({}, tlev); else delete o.track_levels;
     Object.keys(o.instruments).forEach(k=>{ if(!picks[k] && tracks.some(t=>t.id===k)) delete o.instruments[k]; }); return o; };
+  ED.opts=opts;
   box.querySelector('[data-e=close]').onclick=closeEditor;
   box.querySelector('[data-e=prev]').onclick=()=>run(true,1,opts(),null,res=>openEditor(res));
-  box.querySelector('[data-e=roll]').onclick=()=>{ rerollSounds(r.style, picks); run(true,1,opts(),null,res=>openEditor(res)); };
+  box.querySelector('[data-e=roll]').onclick=()=>{ rerollSounds(r.style, picks); const o=opts(); o.sound_seed=state.sound_seed; run(true,1,o,null,res=>openEditor(res)); };
   box.querySelector('[data-e=full]').onclick=()=>run(false,1,opts(),null,res=>{ addResult(res); openEditor(res); });
 }
 function closeEditor(){ $('#editor').style.display='none'; document.body.style.overflow=''; $('#editorBox').innerHTML=''; }
@@ -1495,13 +1611,14 @@ async function onReference(file){
       if(a.loudness!=null) bits.push(`${a.loudness} LUFS`);
       if(a.brightness!=null) bits.push(`brightness ${a.brightness>0?'+':''}${a.brightness}`);
       const gs=(a.genres||[]).map((g,i)=>`<button class="mini ${i===0?'acc':''}" data-rg="${esc(g.id)}" title="${esc((g.why||[]).join(' · '))}">${esc(g.name)} <span class="hint">${g.match}%</span></button>`).join(' ');
+      if(a.tone) bits.push(`<label class="auto" title="Steer the master toward this song's tonal balance (lows, mids, highs)"><input type="checkbox" id="refTone" checked>match its tone</label>`);
       $('#refRes').innerHTML=bits.join(' · ')+' <button class="mini acc" id="refApply">Apply</button>'+
         (gs?`<div style="margin-top:6px"><span class="hint">Sounds closest to:</span> ${gs} <span class="hint">- click one to pick that genre and apply the tempo & key</span></div>`:'');
       $$('#refRes [data-rg]').forEach(b=>b.onclick=()=>{ const id=b.dataset.rg; const c=Object.entries(META.categories).find(([k,l])=>l.some(x=>x.id===id));
         if(c) state.cat=c[0]; state.style=id; state.blend=[]; genreSounds(); state.blend_parts={}; renderTabs(); refresh(); $('#refApply').click();
         $('#status').textContent='Picked '+styleName(id)+' with the reference\'s tempo and key - press Preview.'; });
       $('#refHalf').onclick=()=>{a.bpm=Math.max(40,Math.round(a.bpm/2));show()}; $('#refDbl').onclick=()=>{a.bpm=Math.min(200,a.bpm*2);show()};
-      $('#refApply').onclick=()=>{ $('#bpmAuto').checked=false; $('#bpm').value=a.bpm; $('#key').value=a.key;
+      $('#refApply').onclick=()=>{ state.ref_tone=(a.tone&&$('#refTone')&&$('#refTone').checked)?a.tone:null; $('#bpmAuto').checked=false; $('#bpm').value=a.bpm; $('#key').value=a.key;
         if(a.scale && [...$('#scale').options].some(o=>o.value===a.scale)) $('#scale').value=a.scale;
         if(a.progression) $('#prog').value=a.progression;
         if(a.swing){ $('#swingAuto').checked=false; $('#swing').value=Math.round(a.swing*100); }

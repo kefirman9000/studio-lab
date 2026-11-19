@@ -177,6 +177,28 @@ def test_new_part_effects():
             assert pid in part_effects.describe(t), (pid, part_effects.describe(t))
 
 
+def test_editor_automation_and_note_edits():
+    from sgcore.compose import Options, compose
+    from sgcore.render import Renderer
+    from sgcore.api import song_notes
+    base = dict(style='house', seed=5, length=0.3)
+    d = song_notes(base)
+    lead = d['notes']['lead']
+    first = lead[0]
+    s = compose(Options(**dict(base, note_edits={'del': [['lead', first[0], first[2]]], 'add': [['lead', 2.0, 0.5, 70, 0.9]]})))
+    ev = [(round(e.beat, 3), e.midi) for e in s['events'] if e.track == 'lead']
+    assert (round(first[0], 3), first[2]) not in ev and (2.0, 70) in ev
+    lvl = {}
+    for auto in ({}, {'lead': [[0, -60]]}):
+        r = Renderer(compose(Options(**dict(base, automation=auto))), log=lambda *a: None)
+        r.render(None)
+        lvl[bool(auto)] = r
+    a = lvl[True].automation_curve([[0, -60]], 1000)
+    assert float(np.max(a)) == 0.0
+    b = lvl[True].automation_curve([[0, 0], [4, -12]], int(lvl[True].t_of(8, human=False) * SR))
+    assert abs(20 * np.log10(b[-1]) + 12) < 0.2 and abs(b[10] - 1) < 0.01
+
+
 if __name__ == '__main__':
     fails = 0
     for name, fn in sorted(globals().items()):

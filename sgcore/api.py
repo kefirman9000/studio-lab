@@ -324,7 +324,10 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     r = Renderer(song, log=log)
     mix = r.render(stems_dir, progress=progress)
     r.premaster_peak = float(np.max(np.abs(mix)))
-    out = master(mix, song['st']['master'], log=log)
+    mcfg = dict(song['st']['master'])
+    out = master(mix, mcfg, log=log)
+    if getattr(opts, 'production_pass', False) and not loop:
+        out, info['production_pass'] = production_pass(mix, mcfg, out, log=log)
     if loop:
         out = wrap_loop(out, r._bt(song['total_bars'] * 4))
         info['loop_seconds'] = round(out.shape[-1] / dsp.SR, 3)
@@ -415,3 +418,65 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     if progress:
         progress(1.0)
     return info
+
+
+def song_notes(opts):
+    """The song editor's note timeline: compose only (no audio) and return every sound's notes, the sections and each
+    sound's programmed volume line (full level where its part plays, silent where it rests)."""
+    if isinstance(opts, dict):
+        opts = Options.from_dict(opts)
+    song = compose(opts)
+    tracks = _tracks(song)
+    notes = {}
+    for e in song['events']:
+        notes.setdefault(e.track, []).append([round(float(e.beat), 3), round(float(e.dur), 3),
+                                              None if e.midi is None else int(e.midi), round(float(e.vel), 2)])
+    secs = [dict(name=x['name'], bar=x['bar'], bars=x['bars'], layers=x['layers']) for x in song['sections']]
+    by_name = {t['name']: t for t in song['st']['tracks']}
+    prog = {}
+    for tr in tracks:
+        lay = (by_name.get(tr['id']) or {}).get('layer', tr['layer'])
+        pts = []
+        for x in secs:
+            v = 0.0 if lay in x['layers'] else -60.0
+            pts += [[x['bar'] * 4.0, v], [(x['bar'] + x['bars']) * 4.0 - 0.01, v]]
+        prog[tr['id']] = pts
+    return dict(tracks=tracks, notes=notes, sections=secs, beats=song['total_bars'] * 4, bpm=song['bpm'],
+                programmed=prog, automation=dict(getattr(opts, 'automation', None) or {}),
+                note_edits=getattr(opts, 'note_edits', None) or {})
+
+
+def production_pass(mix, cfg, out, log=print):
+    """A second mastering pass, driven by the mix check: what an engineer would change after listening back.
+    Too wide / phasey -> narrower; squashed -> less limiting and a quieter target; tone far from the genre's references
+    -> a stronger tone match; harsh highs that build up -> a stronger dynamic EQ. Masters again from the same mix (fast:
+    nothing is re-rendered) and keeps the new master only if the new check is better. -> (master, [changes])."""
+    from .render import mix_report, master
+    rep = mix_report(out, tone=cfg.get('tone'))
+    c = dict(cfg)
+    changes = []
+    if rep['correlation'] < 0.3 or rep['mono_drop'] > 1.5:
+        c['width'] = float(c.get('width', 1.0)) * 0.8
+        c['min_corr'] = 0.45                              # (the width guard's target: the wide parts stop cancelling)
+        changes.append('narrower stereo (it lost level in mono)')
+    if rep['plr'] < 8.0:
+        c['max_gr'] = max(1.0, float(c.get('max_gr', 3.0)) - 1.5)
+        c['lufs'] = float(c.get('lufs', -10)) - 1.0
+        changes.append('less limiting, 1 dB quieter (it was squashed)')
+    if rep.get('tone_dev') and max(abs(d) for d in rep['tone_dev'][:8]) > 4.5 and c.get('tone'):
+        c['tone_amount'] = 0.9
+        changes.append('stronger tone match to the genre references')
+    if rep.get('dyn_eq', {}).get('3600_time', 0) > 0.35:
+        c['dyn_eq'] = 1.4
+        changes.append('more de-harshing in the loud parts')
+    if not changes:
+        log('   production pass: the mix check is clean - nothing to change')
+        return out, []
+    y = master(mix, c, log=lambda *a: None)
+    rep2 = mix_report(y, tone=c.get('tone'))
+    if len(rep2['warnings']) <= len(rep['warnings']):
+        log('   production pass: ' + '; '.join(changes))
+        return y, changes
+    log('   production pass: tried ' + '; '.join(changes) + ' - the first master was better, kept it')
+    return out, []
+

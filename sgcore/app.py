@@ -704,6 +704,15 @@ class Handler(BaseHTTPRequestHandler):
                     from .analysis import analyze
                     sr_ = int(q.get('sr', 44100))
                     res = analyze(pcm, sr_)
+                    try:                                  # its tonal balance, for 'match its tone' (1.80)
+                        from .render import band_balance
+                        from scipy.signal import resample_poly
+                        xm = np.asarray(pcm, dtype=np.float64)
+                        if sr_ != 44100:
+                            xm = resample_poly(xm, 44100, sr_, axis=-1)
+                        res['tone'] = [round(float(v), 1) for v in band_balance(xm if xm.ndim == 2 else np.vstack([xm, xm]))]
+                    except Exception:                     # noqa: BLE001 - a bonus
+                        pass
                     try:                                  # the genres this sounds closest to (tempo, key, drum feel, sound)
                         from . import genrematch
                         from .styles import LABELS as _LABELS   # (a local 'STYLES' here broke every other endpoint)
@@ -726,6 +735,12 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 return self._json(open_project(body.get('name'), body.get('settings')))
             except ValueError as e:
+                return self._json({'error': str(e)}, 400)
+        if p == '/api/notes':                             # song editor: the note timeline + volume lines
+            try:
+                from .api import song_notes
+                return self._json(song_notes(body.get('options') or {}))
+            except Exception as e:                       # noqa: BLE001 - shown in the editor, never crashes the app
                 return self._json({'error': str(e)}, 400)
         if p == '/api/generate':
             o = body.get('options', {})

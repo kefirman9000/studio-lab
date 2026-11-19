@@ -845,6 +845,19 @@ class Renderer:
     ARC_SC = {'drop': (1.25, 1.25), 'chorus': (1.2, 1.2), 'climax': (1.25, 1.25), 'break': (0.5, 0.5),
               'breakdown': (0.5, 0.5), 'build': (0.6, 1.2), 'intro': (0.8, 0.8), 'outro': (0.8, 0.8)}
 
+    def automation_curve(self, points, n):
+        """A volume line drawn in the song editor -> gain per sample. points: [[beat, dB], ...] (dB <= -60 = silent);
+        between two points the level moves in a straight line in dB, before the first / after the last it holds."""
+        off = float((self.song.get('preview_of') or (0, 0))[0]) * 4      # previews / section windows start mid-song
+        pts = sorted((float(b) - off, float(d)) for b, d in points if b is not None and d is not None)
+        if not pts:
+            return np.ones(n, dtype=np.float32)
+        xs = np.array([self.t_of(b, human=False) * SR for b, _ in pts])
+        ds = np.clip(np.array([d for _, d in pts]), -80.0, 12.0)
+        db = np.interp(np.arange(n), xs, ds)
+        g = np.where(db <= -60, 0.0, 10 ** (db / 20)).astype(np.float32)
+        return uniform_filter1d(g, 64)                    # no clicks at the corners
+
     def knob_ride(self, tcfg, L):
         """A producer riding the cutoff knob (analog character, electronic genres): the chords' and arp's low-pass
         drifts slowly open and closed over 8 or 16 bars, each part on its own cycle - so a loop that repeats for
@@ -1035,6 +1048,9 @@ class Renderer:
                 if tcfg['layer'] != 'fx':
                     buf[:, s0:s1] = 0
             buf *= env32[None, :]
+            auto = (getattr(opts, 'automation', None) or {}).get(name)
+            if auto and np.any(buf):                       # your volume line from the song editor
+                buf *= self.automation_curve(auto, buf.shape[1])[None, :]
             if tcfg['layer'] in ('kick', 'bass') and np.any(buf):   # low-band envelopes for the kick / bass overlap check
                 lo_e = np.abs(lp(buf.mean(axis=0), 100, 2))
                 hop = 441
@@ -1170,7 +1186,34 @@ class Renderer:
             progress((n_tracks + 1) / (n_tracks + 3))
         self.stems = stems
         self.stem_env = env
+        if _va.analog() and st.get('category') == 'Electronic' and not st.get('no_section_width'):
+            mix = self.section_width(mix)
         return mix
+
+    # how wide each kind of section sits (above 150 Hz; 1 = as mixed): the drop opens up after a narrower break / build
+    SECTION_WIDTH = {'intro': 0.85, 'break': 0.82, 'breakdown': 0.82, 'build': 0.88, 'calm': 0.85, 'outro': 0.88,
+                     'drop': 1.12, 'chorus': 1.08, 'climax': 1.12, 'hook': 1.08}
+
+    def section_width(self, mix):
+        """Width automation across the arrangement (analog character, electronic genres): intros, breakdowns and builds
+        a little narrower, drops and choruses a little wider - the drop feels bigger by contrast. Smoothed over a bar,
+        the low end untouched."""
+        L = mix.shape[1]
+        w = np.ones(L)
+        for sec in self.song.get('sections', []):
+            k = self.SECTION_WIDTH.get(sec['name'], 1.12 if sec['opts'].get('drop') else 1.0)
+            a = int(self.t_of(sec['bar'] * 4, human=False) * SR)
+            b = min(L, int(self.t_of((sec['bar'] + sec['bars']) * 4, human=False) * SR))
+            if b > a:
+                w[a:b] = k
+        if np.allclose(w, 1.0):
+            return mix
+        w = uniform_filter1d(w, max(1, int(4 * self.spb * SR)))
+        x = mix.astype(np.float64)
+        mid, side = (x[0] + x[1]) / 2, (x[0] - x[1]) / 2
+        lo = signal.sosfiltfilt(signal.butter(2, 150 / (SR / 2), output='sos'), side)
+        side = lo + (side - lo) * w
+        return np.vstack([mid + side, mid - side]).astype(mix.dtype)
 
 
 _IR_CACHE = {}
@@ -1194,7 +1237,38 @@ def room_ir(decay, predelay=0.02, category=None):
     return _IR_CACHE[key]
 
 
-def clip_stage(x, ceiling_db=-1.0, knee_db=-0.5, out_db=0.8):
+def split_low(x, f=150.0):
+    """Zero-phase band split: low (below f) + high = x exactly, so clipping the high band never touches the bass."""
+    lo = signal.sosfiltfilt(signal.butter(2, f / (SR / 2), output='sos'), x, axis=-1)
+    return lo, x - lo
+
+
+def clip_stage(x, ceiling_db=-1.0, knee_db=-0.5, out_db=0.8, split=150.0):
+    """(1.80) Clips only the band above `split` Hz: the drum transients that poke over the ceiling are rounded off,
+    but the bass waveform underneath is never flattened (clipping a sub or 808 is the fuzzy 'clipping bass' sound).
+    The bass band is kept in check by the slow bass-safe pre-limiter (dsp.low_limit) instead."""
+    if split:
+        lo, hi = split_low(x, split)
+        c = 10 ** (ceiling_db / 20)
+        if float(np.max(np.abs(x))) <= c * 10 ** (knee_db / 20):
+            return x
+        room = np.maximum(c * 10 ** (out_db / 20) - np.max(np.abs(lo), axis=0), c * 0.25)   # what the bass leaves free
+        return lo + _soft_clip_to(hi, room, knee=10 ** (knee_db / 20))
+    return _clip_full(x, ceiling_db, knee_db, out_db)
+
+
+def _soft_clip_to(h, room, knee=0.944):
+    """Soft-clip (2x oversampled) each sample of h to its own limit `room` (an array), starting at knee * room."""
+    up = signal.resample_poly(h, 2, 1, axis=-1)
+    rm = np.repeat(room, 2)[:up.shape[-1]]
+    k = rm * knee
+    w = np.maximum(rm - k, 1e-9)
+    a = np.abs(up)
+    up = np.where(a > k, np.sign(up) * (k + w * np.tanh((a - k) / w)), up)
+    return signal.resample_poly(up, 1, 2, axis=-1)[..., :h.shape[-1]]
+
+
+def _clip_full(x, ceiling_db=-1.0, knee_db=-0.5, out_db=0.8):
     """Mastering clipper ahead of the limiter (2x oversampled): the kick / snare transients that poke above the ceiling
     are rounded off sample by sample, with no attack or release. A limiter alone ducks the whole mix for each kick and
     holds it down for its release - in a four-on-the-floor drop that's 2-4 dB of constant gain reduction, which flattens
@@ -1685,7 +1759,7 @@ def master(x, cfg, log=print):
     x = eq(x, 'peak', 3000, 0.8, 0.5)
     x = eq(x, 'highshelf', 9000, 0.7, cfg.get('air', 1.5))
     if cfg.get('tone'):                # steer the tonal balance toward the genre's reference records
-        x = tone_match(x, cfg['tone'], log)
+        x = tone_match(x, cfg['tone'], log, amount=float(cfg.get('tone_amount', 0.6)))
     if cfg.get('vintage_lp'):        # a 60s tape / tube top end: rolls off above this (Hz) - dark, warm, bass-forward
         x = lp(x, float(cfg['vintage_lp']))
     if cfg.get('lofi'):
@@ -1733,7 +1807,8 @@ def master(x, cfg, log=print):
         y = peak_round(x * 10 ** (g_db / 20))
         if clip_amt > 0:
             y = clip_stage(y, out_db=0.8 * clip_amt)
-        y = limiter(low_limit(y, 10 ** (-1.0 / 20) * 0.78), ceiling_db=-1.0)
+        y = limiter(low_limit(y, 10 ** (-1.0 / 20) * 0.78), ceiling_db=-1.0, hold=0.025)   # (held for a whole 40 Hz cycle:
+        #                                                         the gain never wobbles inside one bass wave - 1.80)
         err = target - meas(y)
         if abs(err) < 0.1 or (err > 0 and g_db >= g_cap - 1e-6):
             break

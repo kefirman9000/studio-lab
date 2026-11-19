@@ -71,6 +71,12 @@ class Options:
     octaves: dict = None          # part (role like 'lead' or a track name) -> octaves up (+) / down (-)
     traits: dict = None           # genre-trait overrides {category: value} (see sgcore/traits.py); {'_surprise': True} = random
     part_levels: dict = field(default_factory=dict)   # layer -> dB offset (-12..+6), e.g. {'lead': -3}
+    master_preset: str = None     # None = genre | streaming | radio | club | vinyl (vinyl-safe) | film (stem, no squeeze)
+    ref_tone: list = None         # tonal balance of a reference song (9 bands, dB) - the master is steered toward it
+    production_pass: bool = False # after the master: read the mix check, fix what it finds, master again
+    sound_seed: int = None        # 🎲 Re-roll sounds: re-picks every sound (layers, section sounds, drum voices), same notes
+    automation: dict = field(default_factory=dict)    # song editor volume lines: track id -> [[beat, dB], ...] (dB <= -60 = silent)
+    note_edits: dict = None       # song editor note edits: {'del': [[track, beat, midi]], 'add': [[track, beat, dur, midi, vel]]}
     track_levels: dict = field(default_factory=dict)  # one sound (track id: 'lkick', 'pad_sw2', 'x1' ...) -> dB offset (-24..+9)
     part_fx: dict = field(default_factory=dict)       # layer -> effect plugin name (e.g. {'lead': 'ValhallaSupermassive'})
     part_effects: dict = field(default_factory=dict)  # part -> built-in effect preset (sgcore.part_effects; 'none' = dry)
@@ -350,6 +356,13 @@ TONE_DEFAULTS = {'sawbass': dict(cut=2200), 'supersaw': dict(cut=3000, detune=1.
 PART_K = {'harmony': 1, 'melody': 2, 'drums': 3, 'bass': 4, 'chords': 5}
 
 
+def _snd(opts):
+    """The sound re-roll (🎲 Re-roll sounds): a new sound_seed re-picks the sounds - main parts, layers, the sounds that
+    take over in other sections, the drum-machine voices - while every note stays the same."""
+    sd = getattr(opts, 'sound_seed', None)
+    return f'-snd{int(sd)}' if sd else ''
+
+
 def apply_variety(st, opts, rnd):
     """Give every song its own palette: instrument swaps, tone tweaks, extra groove patterns, kit and arrangement."""
     v = max(0.0, min(1.0, float(opts.variety)))
@@ -391,7 +404,7 @@ def apply_variety(st, opts, rnd):
         pool = POOLS.get(owner, {}).get(role)
         if role not in part_rng:                      # seeded per part + genre, so genres don't all pick alike
             sd = ps.get(part) if ps.get(part) is not None else opts.seed * 1009 + PART_K[part]
-            part_rng[role] = random.Random(f'{sd}-{role}-{owner}-variety')
+            part_rng[role] = random.Random(f'{sd}-{role}-{owner}-variety' + _snd(opts))
         rr = part_rng[role]
         free = role not in (opts.instruments or {}) and not t.get('user_pick') and not chip_locked and not t.get('double_of') \
             and (t['name'] == role or st.get('composer') or t.get('switch_of'))     # a genre's named extra parts keep their sound
@@ -671,6 +684,12 @@ def resolve_style(opts, rnd=None, mood=None):
         m['lufs'] = opts.loudness
     m['air'] = m.get('air', 1.5) + 3.0 * opts.brightness
     m['low'] = m.get('low', 1.0) + opts.bass_boost
+    mp = getattr(opts, 'master_preset', None)
+    if mp:                                               # mastering targets (Mix & master)
+        m.update(MASTER_PRESETS.get(mp, {}))
+    rt = getattr(opts, 'ref_tone', None)
+    if isinstance(rt, (list, tuple)) and len(rt) == 9:     # match a reference song's tonal balance
+        m['tone'] = [float(v) for v in rt]
     m['genre_width'] = float(st['master'].get('width', 1.0))     # the genre's own width (it used to be overwritten)
     m['width'] = opts.width
     m['drive'] = opts.drive
@@ -1091,7 +1110,7 @@ def compose(opts):
         add_counter_track(st, opts)
         add_layer_tracks(st, opts)
         add_bass_switch_tracks(st)
-        add_section_switch_tracks(st, opts, random.Random(f'{opts.seed}-rotation-{opts.style}'))
+        add_section_switch_tracks(st, opts, random.Random(f'{opts.seed}-rotation-{opts.style}' + _snd(opts)))
     add_extra_parts(st, opts)                            # your extra instruments (Parts panel > + Add instrument)
     debell(st, opts)
     chords_t = next((t for t in st['tracks'] if t['name'] == 'chords'), None)
@@ -1909,6 +1928,8 @@ def compose(opts):
         evs = [e for e in evs if e.track not in off]
     if muted:                                            # parts you switched off: everything else stays note-for-note
         evs = [e for e in evs if tracks.get(e.track, {}).get('layer') not in muted]
+    if getattr(opts, 'note_edits', None):                 # your note edits (song editor > Notes & volume)
+        evs = apply_note_edits(evs, opts.note_edits, tracks)
     bar_steps = cut_meters(evs, fx, sections, st, random.Random(opts.seed * 101 + 7)) if st.get('cut_meters') else None
     sname ='+'.join([opts.style] + [b for b in (opts.blend or []) if b != opts.style])
     expr = expression_curves(evs, tracks, sections, fx, bar0)
@@ -1978,6 +1999,43 @@ COUNTER_STYLES = {
     'soft_rock': ['organ', 'epiano', 'guitar'], 'jam_band': ['organ', 'piano'], 'uplifting_trance': ['pluck_saw', 'strings'], 'rnb': ['strings', 'guitar'], 'bluegrass': ['banjo', 'guitar'], 'salsa': ['flute', 'violin'],
 }
 
+
+# mastering presets: settings laid over the genre's master
+MASTER_PRESETS = {
+    'streaming': dict(lufs=-14.0),
+    'balanced': dict(lufs=-10.0),
+    'club': dict(lufs=-8.0, max_gr=4.0),
+    'radio': dict(lufs=-9.0, glue_thresh=-16.0, clip=1.0, max_gr=4.0),        # dense and even, for small speakers
+    'vinyl': dict(lufs=-12.0, air=-1.5, clip=0.0, max_gr=2.0, width=0.85, dyn_eq=1.0),   # mono-safe, gentle highs
+    'film': dict(lufs=-18.0, gentle=True, clip=0.0, max_gr=1.0, integrated=True),        # a stem for picture: no squeeze
+}
+
+
+def apply_note_edits(evs, edits, tracks):
+    """Your edits from the song editor's note timeline, applied on top of the composed song (so a re-render with the
+    same settings keeps them): edits = {'del': [[track, beat, midi], ...], 'add': [[track, beat, dur, midi, vel], ...]}.
+    A deleted note is matched by its track, start (to 1/1000 of a beat) and pitch (drum hits: pitch null)."""
+    from .theory import Ev
+    gone = set()
+    for d in (edits.get('del') or []):
+        try:
+            gone.add((str(d[0]), round(float(d[1]), 3), None if d[2] is None else int(d[2])))
+        except (TypeError, ValueError, IndexError):
+            continue
+    out = [e for e in evs if (e.track, round(float(e.beat), 3), None if e.midi is None else int(e.midi)) not in gone]
+    for a in (edits.get('add') or []):
+        try:
+            tr, beat, dur, midi, vel = str(a[0]), float(a[1]), float(a[2]), a[3], float(a[4])
+        except (TypeError, ValueError, IndexError):
+            continue
+        if tr not in tracks or beat < 0 or not (0.01 <= dur <= 64):
+            continue
+        out.append(Ev(tr, beat, dur, None if midi is None else max(0, min(127, int(midi))), max(0.05, min(1.0, vel))))
+    out.sort(key=lambda e: e.beat)
+    return out
+
+
+SUB_BASSES = ('808', '808dist', '808long', '808punch', 'sinebass', 'logdrum', 'chipbass', 'deepbass', 'splitbass', 'rumble', 'subwob')
 
 EXTRA_FOLLOWS = ('lead', 'counter', 'chords', 'pad', 'arp', 'bass')
 
@@ -2275,7 +2333,7 @@ def add_layer_tracks(st, opts):
             continue
         part = {'bass': 'bass', 'lead': 'melody', 'arp': 'melody'}.get(role, 'chords')
         sd = ps.get(part) if ps.get(part) is not None else opts.seed * 1009 + PART_K[part]
-        r = random.Random(f'{sd}-{role}-layer')
+        r = random.Random(f'{sd}-{role}-layer' + _snd(opts))
         owner = fusion.get({'bass': 'bass', 'chords': 'harmony', 'pad': 'harmony'}.get(role, 'melody'), opts.style)
         if role == 'bass':
             forced = st.get('sub_layer') and t['inst'] not in ('808', 'sinebass', 'logdrum', 'chipbass') and want != 'off'
@@ -2297,6 +2355,11 @@ def add_layer_tracks(st, opts):
             inst = r.choice(pool)
             octv = 12 if inst in OCT_UP and role in ('lead', 'arp') else (-12 if inst in OCT_DOWN and role == 'lead' else 0)
         picks += 1
+        if role == 'bass' and inst == 'sinebass' and t['inst'] not in SUB_BASSES:
+            # (1.80) a clean sub layer takes the bottom, so the mid bass above it is high-passed - two subs on the same
+            # notes (a reese's own sub + the sine) beat against each other and spike into the limiter: the
+            # 'clipping bass' on the low notes
+            t['hp'] = max(float(t.get('hp') or 0), 95.0)
         base_db = t['db'] if t.get('db') is not None else {'bass': -15, 'chords': -21, 'pad': -23, 'arp': -25, 'lead': -19}[role]
         st['tracks'].append(dict(name=t['name'] + '_layer', layer=role, inst=inst, pan=-(t.get('pan') or 0) * 0.6,
                                  rev=t.get('rev') or 0.0, dly=t.get('dly') or 0.0, sc=t.get('sc') or 0.0,

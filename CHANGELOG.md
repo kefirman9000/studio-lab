@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.80.0
+- **Song editor > new "Notes & volume" tab:**
+  - A piano roll of any sound in the song (lead, layers, drums, section sounds), with that sound's **volume line** underneath and every other sound's line shown faintly behind it.
+  - **Volume line:** it starts from the programmed one (full where the part plays, silent where it rests). Drag a point, double-click to add one, right-click to remove it; the bottom of the lane is silent.
+  - **Notes:** click to select, drag to move (in time and pitch), Delete to remove, double-click to add.
+  - **↺ Volume line** and **↺ Notes** undo one sound's edits.
+  - Edits are saved with the song's settings, so **Preview** / **Full song with these changes** and later re-renders keep them.
+- **🎲 Re-roll sounds now re-picks everything you hear:** the main sounds, the layers under them, the sounds that take over in other sections, and the drum-machine voices. Every note stays the same, so a re-rolled song really does sound different. **↺ Genre sounds** goes back.
+- **Clipping bass fixed (DnB and other layered basses):**
+  - When a clean sine sub is layered under a mid bass (reese, growl, saw ...), the mid bass is now high-passed above the sub. The two subs on the same notes used to beat against each other and spike into the limiter.
+  - The mastering clipper now works only above 150 Hz, so it can't flatten a bass wave.
+  - The final limiter holds for a whole 40 Hz cycle, so its gain no longer wobbles inside a bass note.
+  - The example DnB song now masters 3 dB louder with more low-end headroom.
+- **Production tools** (Mix & master):
+  - **Master for:** Radio (dense, even), Vinyl cut (mono-safe lows, gentle highs, dynamic) or Film / picture stem (-18 LUFS, no squeeze).
+  - **Production pass:** after mastering, Studio Lab reads its own mix check (stereo, punch, tone against the genre's references, harshness), fixes what it finds and masters again from the same mix, keeping whichever version checks better. The result card lists what it changed.
+  - **Match a reference > match its tone:** the master is steered toward a reference song's tonal balance, not just its tempo, key and loudness.
+  - **Section width (analog character, electronic genres):** intros, breakdowns and builds sit a little narrower, so the drops open up wider.
+
 ## 1.79.0
 - **5 new genres**, each measured on reference records you sent: tempo, key, tonal balance, loudness, loudness range, stereo and how the energy moves.
   - **Spooky TV theme (90s mystery):**
