@@ -1,5 +1,42 @@
 # Changelog
 
+## 1.69.0
+- **More dubstep / bass-music basses,** built from your notes on growls:
+  - **Dark smooth wobble:** rounded saw and triangle through a low, gently resonant filter swept only from very dark to warm, over a heavy sub. For deep and dark dubstep.
+  - **Sub wobble:** a pure sine sub that swells on the LFO, for deep pressure.
+  - **FM growl:**
+    - A pure sine carrier frequency-modulated by a sine and a square an octave and a twelfth up.
+    - One synced LFO drives the FM amount, a pitch bend and a moving formant band, so the sidebands "talk".
+    - Four detuned voices go through multi-band distortion, an all-pass smear, an OTT-style squash and more saturation, with a clean sub split underneath. It glides between notes.
+  - **Talking growl:** a vowel filter walked "wa - oo - ee - ow" by a stepped LFO (the drawn-LFO growl), with the pitch bending along and hard clipping after the formants.
+  - **Metallic neuro bass:** an FM tone through a resonant comb tuned to the note, its feedback moving with the LFO, hard-clipped and squashed.
+  - **Fuzzy filter bass:** one analog saw into a screaming low-pass, its cutoff pushed by the envelope and wobbled by hand, with overdriven resonance and glide. This is the rubbery late-90s French / electro bass.
+  - Deep, early, chill and melodic dubstep get the dark and sub wobbles; dubstep, brostep, riddim and midtempo get the growls; neurofunk, DnB and jump-up get the metallic bass; electro, French house, bass house, big beat, electro-funk, nu-disco and outsider house get the fuzzy bass. Wobbles in drum & bass now move at DnB speeds.
+- **Trance:** a new **progressive pluck-lead** (round, mid-focused, resonant, made for long dotted delays) and a **trance-gated supersaw pad** (a wide supersaw chopped into 16ths by a built-in, tempo-synced gate).
+- **Switch-up / phonk / Memphis voices:**
+  - **Orchestra hit:** brass, strings and a timpani thump in one crunchy 80s sampler stab.
+  - **Horror piano:** detuned against itself, with tape wow, crushed to 10 bits.
+  - **Eerie pad:** players drifting slowly out of tune, a dark filter and hiss.
+  - **Music box:** a glassy steel-comb ping with its mechanical tick.
+  - **Crushed lead:** a 6-bit saw with portamento.
+  - Added to the switch-up, phonk, Memphis and bass-warp genres; the music box also goes to the lullaby, dark hauntology and witch-house genres.
+- **New genre - Progressive trance, early 2010s (instrumental),** from your breakdown:
+  - **Drums:** a rounded 129 bpm kick, a crisp layered clap, off-beat hats with 16ths in the energetic parts, shakers and rides.
+  - **Bass:** three layers (sine sub on the roots, a round short mid-bass, the rolling off-beat notes) pumping against the kick.
+  - **Synths:** warm wide pads, a bright digital pluck in delayed arps, a smooth layered supersaw lead with a simple rising-and-falling hook, and high bell counter-lines.
+  - **Harmony:** minor chords that move slowly, two bars each, in open voicings.
+  - **Arrangement:** an extended arc where every section adds a layer, then a long, exposed breakdown and a full melodic drop.
+  - It stays strictly instrumental (no vocal or choir sounds) and never reaches for aggressive festival or techno sounds.
+- **New genre - Progressive trance, electro-edged (late 2000s),** from your notes:
+  - 130 bpm in i - iv - VI - VII minor harmony.
+  - A strong driving bassline and a short piano theme in the breaks, with evolving filtered and trance-gated pads and layered leads.
+  - A push-pull arrangement where the melodic break keeps interrupting the groove, then heavy low-pass builds bring it back with a tighter, mid-heavy electro edge.
+- **Anthemic drum & bass, after your four new tracks:**
+  - The mid-bass now moves: an 8th-note filter LFO inside a slow one-bar sweep. In the tracks that movement sits at 2 per beat and once per bar.
+  - The chords follow their progressions: vi - IV and vi - I - IV in major, i - VI, i - v and i - III - VII in minor, mostly two bars per chord.
+- **Fix - bass clipping:** in bass-heavy genres (screwed, 808 genres) a loud sub could drive the final limiter, whose fast gain changes rode the bass waveform itself and distorted the low notes. The master now has a bass-safe pre-limiter on the band below 120 Hz, whose gain is held over a whole bass cycle and released slowly. The final limiter holds its gain over half a bass cycle, and the loudness target never pushes the bass band past about 80% of the ceiling, so a bass-heavy song comes out a little quieter instead of clipped.
+- **Fix - the genre list no longer jumps when you click a genre:** the row you clicked stays exactly where it was on screen while the list and the description above it update.
+
 ## 1.68.0
 - **Every electronic genre has a much wider list of suggested sounds.** Many offered only 1-4 per part (drum & bass, trap, house, techno...), so the Sound panel's "Suggested for this genre" list was short and songs kept picking the same few sounds. Each scene now has its own idiomatic set, added after the genre's own sounds, so the signature sound stays first and most likely. Every part now has up to 8.
   - **House:** the deep, Juno, organ, rubbery-tech and bass-house basses; the 90s house piano, Rhodes, sampled stabs, Juno chords, house organ, anthem keys and woody plucks; lush, Juno and vocal pads; vocal chops and breathy leads.

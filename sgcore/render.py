@@ -8,7 +8,7 @@ import numpy as np
 from scipy import signal
 from scipy.ndimage import uniform_filter1d
 
-from .dsp import (SR, hp, lp, eq, soft, compressor, limiter, lufs, active_rms_db, make_ir, reverb, pingpong,
+from .dsp import (SR, hp, lp, eq, soft, compressor, limiter, low_limit, lufs, active_rms_db, make_ir, reverb, pingpong,
                   make_spring_ir, dub_delay, svf_sweep,
                   sweep_region, write_wav_float)
 from .instruments import INSTRUMENTS, DRUMS, fx_riser, fx_impact, fx_vinyl, fx_texture
@@ -1238,10 +1238,15 @@ def master(x, cfg, log=print):
     p999 = float(np.percentile(a, 99.9)) + 1e-9
     max_gr = float(cfg.get('max_gr', 3.0))
     g_cap = max_gr + 20 * np.log10(10 ** (-1.0 / 20) / p999)
+    # and never push a loud bass line into the limiter: the band below 120 Hz may reach ~80% of the ceiling (the
+    # bass-safe pre-limiter takes at most another 1.5 dB) - a bass-heavy song ends up a little quieter, not clipped
+    lo = signal.sosfiltfilt(signal.butter(2, 120 / (SR / 2), output='sos'), x.mean(axis=0))
+    lp999 = float(np.percentile(np.abs(lo), 99.9)) + 1e-9
+    g_cap = min(g_cap, 1.5 + 20 * np.log10(0.8 * 10 ** (-1.0 / 20) / lp999))
     y = x
     for _ in range(8):
         g_db = min(g_db, g_cap)
-        y = limiter(peak_round(x * 10 ** (g_db / 20)), ceiling_db=-1.0)
+        y = limiter(low_limit(peak_round(x * 10 ** (g_db / 20)), 10 ** (-1.0 / 20) * 0.78), ceiling_db=-1.0)
         err = target - lufs(y)
         if abs(err) < 0.1 or (err > 0 and g_db >= g_cap - 1e-6):
             break

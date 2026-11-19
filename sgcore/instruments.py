@@ -3330,6 +3330,11 @@ def v_bouncebass(m, dur, p, glide=None, mod=None):
     fo = fr * (1 if f > 55 else 2)
     x = _va.saw(fo * 2 ** (-5 / 1200), n) * 0.6 + _va.saw(fo * 2 ** (5 / 1200), n, 0.5) * 0.6 + _va.pulse(fo * 2, n, 0.2, 0.4) * 0.3
     cut = p.get('cut', 700) * (1 + 3.0 * np.exp(-t / p.get('fdecay', 0.12)))
+    if p.get('lfo'):                                              # the moving liquid / dancefloor bass: an 8th-note
+        spb = p.get('spb', 0.35)                                  # filter LFO inside a slow one-bar sweep
+        fast = 0.5 - 0.5 * np.cos(2 * np.pi * t / (float(p['lfo']) * spb))
+        slow = 0.5 - 0.5 * np.cos(2 * np.pi * t / (float(p.get('sweep', 4)) * spb))
+        cut = cut * (0.45 + 0.9 * fast) * (0.6 + 0.8 * slow)
     mid = _vb.dist(_va.vcf(x, cut, 0.4, 1.4), 1.8)
     mid = _vb._split_hp(mid, f)
     sub = np.sin(2 * np.pi * np.cumsum(fr * (1 if f < 70 else 0.5)) / SR)
@@ -4143,3 +4148,153 @@ for _name, _fn, _info, _roles, _gm in (
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
 INSTRUMENT_INFO['m1piano'] = '90s house piano (bright, glassy)'
+
+
+# ----------------------------------------------------------------------------- 1.69: more dubstep / bass-music basses
+for _name, _fn, _info in (('darkwob', _vb.dark_wobble, 'Dark smooth wobble (deep dubstep)'),
+                          ('subwob', _vb.sub_wobble, 'Sub wobble (deep pressure)'),
+                          ('fmgrowl', _vb.fm_growl, 'FM growl (brostep / neuro, talking sidebands)'),
+                          ('talkgrowl', _vb.talk_growl, 'Talking growl (stepped vowel LFO)'),
+                          ('metalbass', _vb.metal_bass, 'Metallic neuro bass (comb + FM)'),
+                          ('fuzzbass', _vb.fuzz_bass, 'Fuzzy filter bass (rubbery electro)')):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = 39
+    if _name not in ROLE_CHOICES['bass']:
+        ROLE_CHOICES['bass'].append(_name)
+
+
+def v_progpluck(m, dur, p, glide=None, mod=None):
+    """Progressive / tech-trance pluck-lead: two saws and a hollow square through a resonant band-limited filter that
+    falls slowly from bright to dark, mid-focused and round rather than glassy - built to be fed into long dotted
+    delays and big reverbs, the hypnotic riff of progressive and tech trance."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.002, p.get('d', 0.35), 0.3, p.get('r', 0.25))
+    n = len(env)
+    t = np.arange(n) / SR
+    x = np.vstack([_va.saw(np.full(n, f * 2 ** (-7 / 1200)), n), _va.saw(np.full(n, f * 2 ** (7 / 1200)), n, 0.4)])
+    x = x + _va.pulse(np.full(n, f), n, 0.25, 0.5)[None, :] * 0.5
+    cut = 300 * (p.get('cut', 4200) / 300) ** np.exp(-t / p.get('fdecay', 0.22))
+    y = _va.vcf(x, cut, p.get('res', 0.42), 1.4)
+    y = eq(_hpf(y, 220), 'peak', 1100, 1.0, 3.0)
+    return y * env * 0.55
+
+
+def v_gatepad(m, dur, p, glide=None, mod=None):
+    """Trance-gated supersaw pad: a wide JP supersaw chord chopped into 16ths by a built-in, tempo-synced gate (each
+    slice with a soft edge), the filter breathing slowly - the pulsing wall of progressive and tech trance."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.1) * SR)
+    env = _va.adsr(gate, 0.02, 0.4, 0.9, p.get('r', 0.3))
+    n = len(env)
+    t = np.arange(n) / SR
+    spb = p.get('spb', 0.45)
+    step = spb / 4
+    ph = (t / step) % 1.0
+    duty = p.get('duty', 0.55)
+    g = np.clip(np.minimum(ph / 0.06, (duty - ph) / 0.06), 0, 1)
+    x = _va.jp_supersaw(f, n, 0.5, 0.75, 1.0)
+    cut = p.get('cut', 3600) * (1 + 0.3 * np.sin(2 * np.pi * 0.1 * t))
+    y = _hpf(_va.vcf(x, cut, 0.12, 1.05), 160)
+    return y * env * (0.15 + 0.85 * g) * 0.55
+
+
+for _name, _fn, _info, _roles in (('progpluck', v_progpluck, 'Progressive pluck-lead (round, delayed)', ('lead', 'arp')),
+                                  ('gatepad', v_gatepad, 'Trance-gated supersaw pad (16ths)', ('pad', 'chords'))):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = 81
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+# switch-up / Memphis / phonk voices
+def v_orchhit(m, dur, p, glide=None, mod=None):
+    """Orchestra hit: the 80s sampler's whole orchestra in one stab - brass, strings and a timpani thump struck
+    together, crunched to 8-bit-ish resolution, short and huge (Memphis, phonk, freestyle, early hip hop)."""
+    f = float(mtof(m))
+    n = int(0.55 * SR)
+    t = np.arange(n) / SR
+    br = np.asarray(v_brass(m, 0.25, {'a': 0.005}), float)[:, :n]
+    st = np.asarray(v_strings(m + 12, 0.25, {'a': 0.005}), float)[:, :n]
+    br = np.pad(br, ((0, 0), (0, max(0, n - br.shape[1]))))
+    st = np.pad(st, ((0, 0), (0, max(0, n - st.shape[1]))))
+    thump = (np.sin(2 * np.pi * (f / 4 if f > 200 else f / 2) * t) * np.exp(-t * 12))[None, :] * 0.5
+    y = (br + st * 0.6 + thump) * np.exp(-t / 0.18)[None, :]
+    y = np.repeat(np.round(y[:, ::3] * 160) / 160, 3, axis=1)[:, :n]
+    y = lp(y, 7000)
+    return y / (np.sqrt(np.mean(y[:, :int(0.1 * SR)] ** 2)) + 1e-9) * 0.18
+
+
+def v_darkpiano(m, dur, p, glide=None, mod=None):
+    """Horror piano (Memphis / switch-up): the piano out of tune with itself (each note doubled a little flat), slow
+    tape wow, the top rolled off and crushed to 10 bits - eerie, cheap, haunted."""
+    a = np.asarray(v_piano(m, dur, p), float)
+    b = np.asarray(v_piano(m - 0.25, dur, p), float)
+    n = min(a.shape[1], b.shape[1])
+    y = a[:, :n] * 0.7 + b[:, :n] * 0.5
+    t = np.arange(n) / SR
+    wow = 1 + 0.004 * np.sin(2 * np.pi * 0.45 * t + _rng().random() * 6.28)
+    pos = np.cumsum(wow) - wow[0]
+    idx = np.arange(n)
+    y = np.vstack([np.interp(pos, idx, y[c], right=0.0) for c in range(2)])
+    y = np.round(lp(y, 4200) * 512) / 512
+    return y * 1.1
+
+
+def v_eeriepad(m, dur, p, glide=None, mod=None):
+    """Eerie pad: a choir-and-strings bed whose players drift slowly out of tune against each other (beating, almost
+    dissonant), a dark filter and tape hiss - the haunted backdrop of horrorcore, phonk and switch-up tracks."""
+    st = np.asarray(v_strings(m, dur, dict(p, spread=28, a=p.get('a', 0.8), cut=1800)), float)
+    n = st.shape[1]
+    t = np.arange(n) / SR
+    drift = 2 ** ((18 * np.sin(2 * np.pi * 0.07 * t + _rng().random() * 6.28)) / 1200)
+    f = float(mtof(m))
+    ph = 2 * np.pi * np.cumsum(f * drift) / SR
+    ghost = (np.sin(ph) + 0.3 * np.sin(2 * ph)) * np.minimum(t / 1.0, 1) * 0.08
+    y = st + ghost[None, :] + 0.004 * _rng().standard_normal((2, n))
+    return lp(y, 2600) * 1.1
+
+
+def v_musicbox(m, dur, p, glide=None, mod=None):
+    """Music box: tiny steel comb teeth plucked by a turning drum - a high, glassy, quickly fading ping with its
+    inharmonic overtones, the comb's buzz and a little mechanical tick. Lullabies, horror and switch-up intros."""
+    f = float(mtof(m))
+    n = int(min(1.8, 0.6 + 300 / f) * SR)
+    y = _modes(f, n, [(1.0, 1.0, 2.5), (3.06, 0.35, 9.0), (6.7, 0.15, 20.0)], p.get('hard', 1.2))
+    t = np.arange(n) / SR
+    y = y * np.minimum(t / 0.0005, 1) + 0.03 * hp(_rng().standard_normal(n), 6000) * np.exp(-t * 500)
+    y = y / (np.sqrt(np.mean(y[:int(0.2 * SR)] ** 2)) + 1e-9) * 0.13
+    return np.vstack([y, np.roll(y, 15)])
+
+
+def v_crushlead(m, dur, p, glide=None, mod=None):
+    """Crushed lead: a detuned saw lead with portamento crushed to 6 bits at a low sample rate - the gritty, aliased,
+    cheap-sampler lead of phonk, Memphis and switch-up drops."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.004, 0.2, 0.85, 0.08)
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.06) if glide is not None else np.full(n, f)
+    x = (_va.saw(fr * 2 ** (-8 / 1200), n) + _va.saw(fr * 2 ** (8 / 1200), n, 0.4)) * 0.5
+    x = lp(x, 5000)
+    hold = 4
+    y = np.repeat(np.round(x[::hold] * 32) / 32, hold)[:n]
+    y = lp(y, 7000) * env
+    return np.vstack([y, np.roll(y, 20)]) * 0.5
+
+
+for _name, _fn, _info, _roles in (('orchhit', v_orchhit, 'Orchestra hit (80s sampler stab)', ('chords', 'arp', 'lead')),
+                                  ('darkpiano', v_darkpiano, 'Horror piano (detuned, crushed, wobbly)', ('chords', 'arp', 'lead')),
+                                  ('eeriepad', v_eeriepad, 'Eerie pad (drifting, haunted)', ('pad', 'chords')),
+                                  ('musicbox', v_musicbox, 'Music box', ('arp', 'lead')),
+                                  ('crushlead', v_crushlead, 'Crushed lead (6-bit saw, portamento)', ('lead',))):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = 55 if _name == 'orchhit' else 81
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)

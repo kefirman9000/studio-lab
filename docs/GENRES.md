@@ -1,8 +1,8 @@
-# Studio Lab genres (325)
+# Studio Lab genres (327)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (168)
+## Electronic (170)
 
 ### House & Disco (29)
 
@@ -38,7 +38,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Tropical house | `tropical_house` | 100-115 | Tropical house: a relaxed four-on-the-floor around 105, soft snaps and shakers, warm piano chords, marimba and steel-pan plucks, a pan-flute or sax hook - sunny, laid-back and summery |
 | UK bounce house (bassline, vocal chops) | `uk_bounce_house` | 122-126 | UK bounce house: a four-on-the-floor groove at 122-126 with busy, shuffling percussion and crisp claps, a rubbery, bouncing bassline doing most of the work, chopped vocal hooks answering it and short organ / piano stabs - radio-friendly, warm and made for dancing |
 
-### Techno & Trance (16)
+### Techno & Trance (18)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -52,6 +52,8 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Minimal | `minimal` | 124-128 | Minimal techno: sparse clicks and blips, deep sub, lots of space and delay |
 | New Beat | `new_beat` | 100-116 | New beat (late-80s Belgium): slow, heavy, stomping four-on-the-floor at ~100-115 BPM, industrial EBM drums, dark acid-tinged bass and sampled stabs - hypnotic and menacing |
 | Progressive Trance (emotional) | `progressive_trance` | 128-136 | Emotional progressive trance / melodic progressive house: simple emotive chords, a big singable lead, long builds, a piano breakdown and a clean, wide drop - melody over complexity |
+| Progressive trance - early 2010s (emotional, instrumental) | `progressive_trance_2010s` | 128-130 | Progressive trance, early 2010s (instrumental): a rounded 129 bpm four-on-the-floor, a crisp layered clap on 2 and 4, off-beat hats with 16ths in the energetic parts, shakers and rides; a clean three-layer bass (sine sub on the roots, a round short mid-bass and the rolling off-beat notes) pumping against the kick; warm wide analog pads, a bright digital pluck in delayed arpeggios, a smooth layered supersaw lead with a simple rising-and-falling hook, high bell-like counter-lines; minor-key chords that move slowly with suspensions; an extended DJ arrangement where every section adds a layer, a long, exposed breakdown and a full melodic drop - no vocals or choirs |
+| Progressive trance - electro-edged (late 2000s) | `electro_prog_trance` | 129-131 | Progressive trance, electro-edged (late 2000s): 130 bpm in A-minor-style i - iv - VI - VII harmony, a strong, driving bassline carrying the drops, closed and open hats with claps on 2 and 4 getting more aggressive in the electro sections, evolving filtered pads, a short piano theme in the melodic breaks, layered analog-style leads; built on contrast - the melodic break keeps stopping the groove, then heavy low-pass builds and white-noise risers bring it back with a tighter, mid-heavy electro bass |
 | Psytrance | `psytrance` | 140-148 | Psytrance: relentless kick-bass rolls, acid squelches, hypnotic phrygian riffs |
 | Techno | `techno` | 128-134 | Peak-time techno: distorted kick, rolling 16th bass, dub stabs drowned in delay |
 | Trance | `trance` | 132-140 | Uplifting trance: gated supersaw chords, rolling offbeat bass, euphoric leads |

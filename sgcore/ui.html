@@ -468,9 +468,20 @@ function seg(el, items, get, set){
 function bindRange(id, fmt){const el=$('#'+id), v=$('#'+id+'V');const u=()=>{if(v)v.textContent=fmt(+el.value)};el.oninput=u;u();}
 
 function inMix(id){return id===state.style||state.blend.includes(id)}
+function scrollParent(el){ for(let p=el&&el.parentElement;p;p=p.parentElement){ const o=getComputedStyle(p).overflowY; if((o==='auto'||o==='scroll')&&p.scrollHeight>p.clientHeight) return p; } return null; }
+let _styleAnchor=null;     // the row you clicked stays exactly where it was on screen when the list is rebuilt
 function renderStyles(){
   const q=$('#search').value.toLowerCase().trim();
-  const list=$('#styleList'); list.innerHTML='';
+  const list=$('#styleList');
+  const sc=scrollParent(list), keep=sc?sc.scrollTop:0;
+  let anchorId=null, anchorY=0;
+  if(sc&&_styleAnchor){ const r=list.querySelector(`.st[data-id="${CSS.escape(_styleAnchor)}"]`); if(r){ anchorId=_styleAnchor; anchorY=r.getBoundingClientRect().top; } }
+  _styleAnchor=null;
+  if(sc) sc.style.minHeight=sc.clientHeight+'px';
+  list.innerHTML='';
+  requestAnimationFrame(()=>{ if(!sc) return; sc.style.minHeight='';
+    const r=anchorId?list.querySelector(`.st[data-id="${CSS.escape(anchorId)}"]`):null;
+    if(r) sc.scrollTop+= r.getBoundingClientRect().top-anchorY; else sc.scrollTop=keep; });
   const cats=q?Object.keys(META.categories):[state.cat];
   if(!q&&state.cat==='Orchestral'&&META.categories.Orchestral.some(s=>s.id==='cinematic_journey')){
     [['cinematic_journey','🎬 Cinematic Journey','The ultimate orchestral generator: tension → sorrow → resolve → glory → reflection, full symphony orchestra, solo piano, rubato and huge dynamics.'],
@@ -510,7 +521,8 @@ function toggleFav(id){ let f=favs(); f=f.includes(id)?f.filter(x=>x!==id):[id,.
 function noteRecent(id){ if(!id) return; let r=recents().filter(x=>x!==id); r.unshift(id); try{localStorage.setItem('sl_recent',JSON.stringify(r.slice(0,12)))}catch(e){} }
 function styleRow(s,pinned){
   const lead=s.id===state.style, mixed=inMix(s.id), fav=favs().includes(s.id);
-  const d=document.createElement('div');d.className='st'+(lead?' on':'')+(mixed&&!lead?' in':'');d.title=(String(s.name).replace(/<[^>]*>/g,'')+' - '+s.desc);
+  const d=document.createElement('div');d.className='st'+(lead?' on':'')+(mixed&&!lead?' in':'');d.dataset.id=s.id;
+  d.addEventListener('mousedown',()=>{ _styleAnchor=s.id; }, true);d.title=(String(s.name).replace(/<[^>]*>/g,'')+' - '+s.desc);
   d.innerHTML=`<span class="ck" title="${mixed?'Remove from the mix':'Add to the mix (blend)'}">${mixed?'✓':''}</span><span class="nm">${s.name}${lead&&state.blend.length?'<span class="lead">★ lead</span>':''}</span><span class="fav${fav?' on':''}" title="${fav?'Remove from favourites':'Add to favourites'}">${fav?'★':'☆'}</span><span class="bpm">${s.bpm[0]}–${s.bpm[1]}</span>`;
   d.querySelector('.ck').onclick=e=>{e.stopPropagation();toggleMix(s.id)};
   d.querySelector('.fav').onclick=e=>{e.stopPropagation();toggleFav(s.id)};

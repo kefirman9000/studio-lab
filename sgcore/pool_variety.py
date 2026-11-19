@@ -91,8 +91,9 @@ def widen():
                     if role == 'bass' and main.get('bass') not in extra:
                         continue                   # a bass line is written for its sound (a sub, an 808, a walking
                                                    # line, a 303): only genres already on one of the scene's basses widen
+                    banned = set(STYLES[g].get('no_sounds') or ())
                     for inst in extra:
                         if len(lst) >= TARGET:
                             break
-                        if inst in INSTRUMENTS and inst not in lst:
+                        if inst in INSTRUMENTS and inst not in lst and inst not in banned:
                             lst.append(inst)

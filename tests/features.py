@@ -1109,6 +1109,19 @@ def test_va_synth():
     from sgcore.styles import POOLS as _P4
     assert all(len(_P4[g][r]) >= 6 for g in ('dnb', 'house', 'techno', 'dubstep') for r in ('chords', 'pad', 'arp', 'lead'))
     assert _P4['trap']['bass'] == ['808']                                    # a genre's defining part keeps its own list
+    for k in ('darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass', 'progpluck', 'gatepad', 'orchhit',
+              'darkpiano', 'eeriepad', 'musicbox', 'crushlead'):                                  # 1.69
+        a = np.asarray(INSTRUMENTS[k](40 if k in ('darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass') else 67,
+                                      0.6, {'spb': 0.43}, None, 0.5 if k in ('darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass') else None))
+        assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.6, (k, np.abs(a).max())
+    from sgcore.dsp import low_limit
+    tt = np.arange(SR * 2) / SR
+    loud = np.vstack([np.sin(2 * np.pi * 45 * tt)] * 2) * 1.4 + np.vstack([np.sin(2 * np.pi * 2000 * tt)] * 2) * 0.1
+    ll = low_limit(loud, 0.7)
+    lo_ = np.abs(ll - np.vstack([np.sin(2 * np.pi * 2000 * tt)] * 2) * 0.1)[:, SR // 2:].max()
+    assert lo_ < 0.78                                                         # the bass band held under its ceiling
+    sp_ = np.abs(np.fft.rfft(ll[0, SR // 2:SR // 2 + SR]))
+    assert sp_[135] / sp_[45] < 0.02                                           # ...without distorting it (no 3rd harmonic)
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars

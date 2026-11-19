@@ -267,11 +267,35 @@ def compressor(x, thresh=-18.0, ratio=3.0, attack=0.01, release=0.15, knee=6.0, 
     return x * 10 ** (-g / 20)
 
 
-def limiter(x, ceiling_db=-1.0, lookahead=0.005, release=0.08):
+def low_limit(x, ceiling=0.72, split=120.0, hold=0.03, release=0.18):
+    """Bass-safe pre-limiter: the band below `split` gets its own slow limiter - its gain is held over a whole cycle of
+    the lowest notes (30 ms) and released slowly - so a loud sub / 808 never drives the final brick-wall limiter, whose
+    fast gain changes would ride the bass waveform itself and distort it ('clipping' on the low notes)."""
+    lo = signal.sosfiltfilt(signal.butter(2, split / (SR / 2), output='sos'), x, axis=-1)
+    hi = x - lo
+    a = np.max(np.abs(lo), axis=0)
+    pk = maximum_filter1d(a, size=int(hold * SR) | 1)
+    g = np.minimum(1.0, ceiling / np.maximum(pk, 1e-9))
+    B = 64
+    n = len(g)
+    nb = int(np.ceil(n / B))
+    gb = np.pad(g, (0, nb * B - n), constant_values=1.0).reshape(nb, B).min(axis=1)
+    cr = np.exp(-B / (release * SR))
+    out = np.empty(nb)
+    y = 1.0
+    for i in range(nb):
+        v = gb[i]
+        y = v if v < y else v + (y - v) * cr
+        out[i] = y
+    gs = uniform_filter1d(np.repeat(out, B)[:n], size=int(hold * SR) | 1)
+    return hi + lo * gs
+
+
+def limiter(x, ceiling_db=-1.0, lookahead=0.005, release=0.08, hold=0.012):
     c = 10 ** (ceiling_db / 20)
     a = np.max(np.abs(x), axis=0)
     W = int(lookahead * SR) | 1
-    pk = maximum_filter1d(a, size=2 * W + 1)
+    pk = maximum_filter1d(a, size=max(2 * W + 1, int(hold * SR) | 1))   # held over ~half a bass cycle: no audio-rate gain
     g = np.minimum(1.0, c / np.maximum(pk, 1e-9))
     B = 32
     n = len(g)

@@ -452,3 +452,154 @@ def atmosphere(m, dur, p, glide=None, mod=None):
         y += _bp(nz, fc, 40.0) * g
     y = y * 3.0 + 0.08 * np.sin(2 * np.pi * f * t)
     return y * env * 1.5
+
+
+# ----------------------------------------------------------------------------- 1.69: more dubstep / bass-music basses
+def _ott(y, amt=0.6, win=0.01):
+    """Upward + downward 'OTT'-style squash: every moment pushed toward the same level (amt 0..1)."""
+    k = max(16, int(win * SR))
+    env = np.sqrt(np.convolve((y ** 2).mean(axis=0) if y.ndim == 2 else y ** 2, np.ones(k) / k, 'same')) + 1e-6
+    tgt = float(np.percentile(env, 90))
+    g = (tgt / env) ** amt
+    g = np.minimum(g, 6.0)
+    return y * g
+
+
+def _stepped_lfo(n, hz, steps=(0.0, 0.66, 0.33, 1.0), glide=0.25):
+    """A stepped LFO (the drawn 'wa-wa-oo-ee' curve): `steps` values per cycle, each step slewing into the next."""
+    t = np.arange(n) / SR
+    ph = (t * hz) % 1.0
+    idx = np.minimum((ph * len(steps)).astype(int), len(steps) - 1)
+    v = np.asarray(steps, float)[idx]
+    k = max(1, int(glide / max(hz, 0.1) / len(steps) * SR))
+    return np.convolve(v, np.ones(k) / k, 'same')
+
+
+def dark_wobble(m, dur, p, glide=None, mod=None):
+    """Smooth dark wobble (deep / dark dubstep): a rounded saw-and-triangle tone through a low, gently resonant 24 dB
+    filter that a sine LFO sweeps only from very dark to warm - no fizz, no screech - over a heavy mono sub."""
+    f = float(mtof(m))
+    env = _env(dur, 0.01, 0.1, 1.0, 0.06)
+    n = len(env)
+    fo = f if f > 50 else f * 2
+    x = _stack(fo, n, 2, 8, 0.0) * 0.6
+    x = x + np.vstack([2 / np.pi * np.arcsin(np.sin(2 * np.pi * fo * np.arange(n) / SR))] * 2) * 0.5
+    lfo = _lfo(n, _rate(mod, p, 1.0), p.get('shape', 'sine'))
+    y = va.vcf(x, 70 * (p.get('cut', 700) / 70) ** lfo, 0.3, 1.2)
+    y = dist(y, 1.3)
+    y = _split_hp(y, f) * 0.8
+    return (y + _sub(f, n, p.get('sub', 1.0))) * env * 0.55
+
+
+def sub_wobble(m, dur, p, glide=None, mod=None):
+    """Sub wobble ('sub wub'): a pure sine sub whose level and a whisper of 2nd harmonic swell on the LFO - the deep,
+    felt-not-heard pressure of dark and deep dubstep."""
+    f = float(mtof(m))
+    env = _env(dur, 0.01, 0.1, 1.0, 0.08)
+    n = len(env)
+    t = np.arange(n) / SR
+    fs = f if f < 70 else f / 2
+    lfo = _lfo(n, _rate(mod, p, 1.0), p.get('shape', 'sine'))
+    ph = 2 * np.pi * fs * t
+    y = np.sin(ph) * (0.55 + 0.45 * lfo) + 0.12 * lfo * np.sin(2 * ph)
+    y = np.tanh(y * 1.3)
+    return np.vstack([y, y]) * env * 0.6
+
+
+def fm_growl(m, dur, p, glide=None, mod=None):
+    """FM growl (brostep / neuro): a pure sine carrier frequency-modulated by a sine and a square an octave and a
+    twelfth up, the FM amount, a +-pitch bend and a moving formant band all driven by one synced LFO (so the sidebands
+    'talk'), four detuned voices, multi-band distortion (the low-mids and the top crushed separately), an all-pass
+    smear, an OTT squash and more saturation - with a clean sine sub split off underneath. Glides between notes."""
+    f = float(mtof(m))
+    env = _env(dur, 0.003, 0.08, 1.0, 0.04)
+    n = len(env)
+    t = np.arange(n) / SR
+    fo = (f if f > 55 else f * 2)
+    lfo = _lfo(n, _rate(mod, p, 0.5), p.get('shape', 'saw'))
+    bend = 2 ** ((p.get('bend', 1.5) * (lfo - 0.5)) / 12)
+    if glide is not None:
+        g0 = float(mtof(glide)) / f
+        bend = bend * (1 + (g0 - 1) * np.exp(-t / 0.05))
+    idx = p.get('fm', 1.0) * (1.2 + 3.0 * lfo)
+    L = np.zeros(n)
+    R = np.zeros(n)
+    for k, c in enumerate((-9, -3, 3, 9)):
+        fr = fo * bend * 2 ** (c / 1200)
+        ph = 2 * np.pi * np.cumsum(fr) / SR + _RNG.random()
+        modu = np.sin(2 * ph) + 0.5 * np.sign(np.sin(3 * ph))
+        v = np.sin(ph + idx * modu)
+        if k % 2:
+            R += v
+        else:
+            L += v
+    x = np.vstack([L, R]) * 0.5
+    form = _bp(x, 350 + 1600 * lfo, 3.5) * 1.6 + 0.4 * x
+    lo = signal.lfilter(*signal.butter(2, 900 / (SR / 2)), form, axis=-1)
+    hi = form - lo
+    y = dist(lo, 3.0) * 0.7 + dist(hi * 1.5, 4.0, 'hard') * 0.5
+    y = y + 0.6 * _bp(y, 1200 + 1800 * (1 - lfo), 1.2)       # the all-pass / phaser-ish smear
+    y = _ott(y, 0.55)
+    y = dist(y * 0.8, 1.8)
+    y = _split_hp(y, f) * 0.42
+    return (y + _sub(f, n, p.get('sub', 0.85))) * env * 0.6
+
+
+def talk_growl(m, dur, p, glide=None, mod=None):
+    """Talking growl: an FM / saw tone through a vowel filter that a stepped LFO walks 'wa - oo - ee - ow' (the drawn
+    LFO curve of modern growls), the pitch bending with it, clipped hard after the formants - over a clean sub."""
+    f = float(mtof(m))
+    env = _env(dur, 0.003, 0.08, 1.0, 0.04)
+    n = len(env)
+    fo = f if f > 55 else f * 2
+    rate = _rate(mod, p, 0.5)
+    st = _stepped_lfo(n, rate, p.get('steps', (0.1, 0.85, 0.35, 1.0)))
+    fr = fo * 2 ** ((st - 0.5) * p.get('bend', 2.0) / 12)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    x = np.sin(ph + (1.5 + 2.5 * st) * np.sin(2 * ph)) + 0.4 * va.saw(fr, n)
+    x = np.vstack([x, np.roll(x, 30)])
+    y = _vowel(x, st) * 2.4 + 0.2 * x
+    y = dist(y, 3.5, 'hard')
+    y = _split_hp(_ott(y, 0.5), f) * 0.42
+    return (y + _sub(f, n, p.get('sub', 0.85))) * env * 0.6
+
+
+def metal_bass(m, dur, p, glide=None, mod=None):
+    """Metallic neuro bass: an FM tone through a resonant comb (a hollow, ringing metal tube tuned to the note) whose
+    feedback moves with the LFO, then hard-clipped and OTT-squashed - the cold, mechanical neurofunk bass."""
+    f = float(mtof(m))
+    env = _env(dur, 0.003, 0.08, 1.0, 0.04)
+    n = len(env)
+    fo = f if f > 55 else f * 2
+    t = np.arange(n) / SR
+    lfo = _lfo(n, _rate(mod, p, 0.25), p.get('shape', 'square'))
+    ph = 2 * np.pi * fo * t
+    x = np.sin(ph + (2.0 + 3.0 * lfo) * np.sin(ph * 1.5)) + 0.3 * va.saw(np.full(n, fo * 1.003), n)
+    d = max(2, int(round(SR / (fo * 2))))
+    y = x.copy()
+    for _ in range(3):                                   # a short comb with LFO-moved feedback
+        y[d:] = y[d:] + (0.45 + 0.4 * lfo[d:]) * y[:-d]
+    y = y / (np.abs(y).max() + 1e-9)
+    y = dist(np.vstack([y, np.roll(y, 25)]) * 2.0, 3.0, 'hard')
+    y = _split_hp(_ott(y, 0.5), f) * 0.42
+    return (y + _sub(f, n, p.get('sub', 0.8))) * env * 0.6
+
+
+def fuzz_bass(m, dur, p, glide=None, mod=None):
+    """Fuzzy filter bass (the late-90s French / electro rubbery bass): one analog saw into a screaming 12 dB
+    Sallen-Key-style low-pass and high-pass pair, the cutoff pushed by the envelope and wobbled slowly by hand, the
+    resonance overdriven into a fuzzy 'quack', glide between notes."""
+    f = float(mtof(m))
+    env = _env(dur, 0.004, 0.2, 0.9, 0.05)
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = np.full(n, f) if glide is None else f + (float(mtof(glide)) - f) * np.exp(-t / 0.06)
+    x = va.saw(fr * 2 ** (np.sin(2 * np.pi * 0.3 * t) * 4 / 1200), n)
+    wob = 0.5 - 0.5 * np.cos(2 * np.pi * p.get('wob', 0.9) * t + _RNG.random() * 6.28)
+    cut = p.get('cut', 420) * (1 + 2.2 * np.exp(-t / 0.15)) * (0.7 + 0.9 * wob)
+    y = va.vcf(x, cut, p.get('res', 0.7), 2.2)
+    y = dist(y * 1.8, 2.5)
+    b, a = signal.butter(1, 45 / (SR / 2), 'high')
+    y = signal.lfilter(b, a, y)
+    y = y + 0.4 * np.sin(2 * np.pi * np.cumsum(fr) / SR)
+    return np.vstack([y, y]) * env * 0.55
