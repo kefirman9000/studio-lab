@@ -45,7 +45,7 @@ GROUPS = {
     ],
     'Orchestral': [
         ('Film & Trailer', ['cinematic_journey', 'cinematic_journey_low', 'cinematic', 'film_piano', 'adventure', 'tension',
-                            'hybrid_trailer']),
+                            'hybrid_trailer', 'festive_cinematic']),
         ('Epic', ['epic_orchestral', 'epic_battle', 'epic_choir', 'heroic_anthem', 'symphonic_finale']),
         ('Solo Piano', ['piano_miniature']),
         ('Ambient & Experimental', ['field_ambient', 'fourth_world']),

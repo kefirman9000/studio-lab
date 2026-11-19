@@ -1112,6 +1112,57 @@ style('orchestral', 'Orchestral', 'Classical / romantic orchestra: lyrical violi
                  lead=['violin', 'flute', 'oboe', 'clarinet', 'cello', 'horn']),
       label='Orchestral')
 
+# v1.75: festive cinematic Christmas (user notes on the classic late-80s / 90s family-Christmas film score): a warm,
+# nostalgic carol-like theme, Nutcracker-style celesta sparkle, the melody doubled by celesta + glockenspiel + high
+# woodwinds, sleigh bells, harp arpeggios, pizzicato, horns on a counter-melody, a choir on the big statements, rich
+# diatonic harmony with maj7 / add9 shimmer and smooth bass lines, and a sparse-to-full build (high glitter first,
+# lower instruments and choir as it grows).
+FORMS['festive_cinematic'] = [
+    ('intro', 4, {'arp', 'pad', 'lead'}, {'filter_in': True}),
+    ('A', 16, {'chords', 'lead', 'arp', 'bass'}, {}),
+    ('B', 16, {'chords', 'lead', 'arp', 'bass', 'pad', 'top'}, {'alt': True}),
+    ('A', 16, {'chords', 'lead', 'arp', 'bass', 'pad', 'kick', 'top'}, {'crash': True}),
+    ('C', 8, {'chords', 'pad', 'arp', 'lead'}, {'alt': True}),
+    ('A', 16, ALL, {'crash': True}),
+    ('outro', 8, {'arp', 'pad', 'chords'}, {'fade': True}),
+]
+
+style('festive_cinematic', 'Orchestral',
+      'Festive cinematic Christmas: a warm, nostalgic carol-like theme for full orchestra - celesta and glockenspiel '
+      'sparkle doubling the melody, sleigh bells, harp arpeggios, pizzicato, horns on a counter-melody and a choir on '
+      'the big statements; rich maj7 / add9 harmony with smooth, stepwise bass lines; it starts with high, glittering '
+      'textures and grows to the full orchestra',
+      bpm=(76, 104), scales=['major'], human=0.012, form='festive_cinematic', reverb=3.3, sec_vel=[0.5, 0.62, 0.78, 0.9, 0.58, 1.0, 0.5],
+      progs={'major': [[0, 0, 3, 0], [0, 2, 3, 4], [0, 5, 1, 4], [3, 4, 2, 5], [0, 3, 1, 4], [0, 4, 5, 3]]},
+      own_progs=True, chord_size=4, chord_bars=1,
+      drums={'timp': ['X...............', 'X.......X.......'], 'sleigh': ['x.x.x.x.x.x.x.x.', 'xxxxxxxxxxxxxxxx'], 'crash': ['X...............'],
+             'triangle': ['x.......x.......', '........x.......'], 'windchime': ['X...............', '................']},
+      kick_track='timp',
+      bass=['R-------F-------', 'R---R---F---F---', 'R-------R---F---'], bass_lo=31,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=60,
+      arp=dict(rate=2, mode='updown', oct=5),
+      lead_rh=['x---x-x-x-------', 'x-x-x---x---x---', 'x-----x-x---x---', 'x---x---x---x---'], lead_oct=5, fill=False,
+      gm_hint='Flute / strings theme doubled by celesta + glockenspiel; harp arpeggios; warm strings; horns counter-melody; '
+              'choir; pizzicato bass; sleigh bells; timpani',
+      tracks=[T('timp', 'kick', 'timp', rev=0.45, db=-24),
+              T('sleigh', 'top', 'sleigh', pan=0.3, rev=0.3, db=-30), T('crash', 'top', 'crash', rev=0.5, db=-31),
+              T('triangle', 'top', 'triangle', pan=-0.3, rev=0.5, db=-33), T('windchime', 'top', 'windchime', pan=0.2, rev=0.5, db=-31),
+              T('bass', 'bass', 'contrabass', rev=0.35, db=-20, p=dict(a=0.08)),
+              T('chords', 'chords', 'strings', rev=0.45, db=-21, p=dict(a=0.25, r=0.6)),
+              T('pad', 'pad', 'choir', rev=0.55, db=-25),
+              T('arp', 'arp', 'harp', rev=0.4, pan=-0.3, db=-23),
+              T('lead', 'lead', 'flute', rev=0.45, db=-17),
+              T('lead_cel', 'lead', 'celesta', rev=0.45, pan=0.25, db=-24, double_of='lead', octave=12),
+              T('lead_glock', 'lead', 'glock', rev=0.5, pan=-0.2, db=-31, double_of='lead', octave=12),
+              T('bass_pizz', 'bass', 'pizz', rev=0.35, pan=0.2, db=-27, double_of='bass', octave=12)],
+      master=dict(tone=[-18.0, -10.0, -6.0, -0.4, 0.0, -6.5, -11.4, -20.5, -29.0], lufs=-17.0, air=1.0, low=0.5, width=1.05, gentle=True),
+      pools=dict(bass=['contrabass', 'cello', 'sf:contrabass', 'bassclarinet'],
+                 chords=['strings', 'sf:slowstrings', 'tremolo', 'harp'],
+                 pad=['choir', 'kidchoir', 'strings', 'horn', 'organ'],
+                 arp=['harp', 'celesta', 'pizz', 'glock', 'xylophone', 'piccolo'],
+                 lead=['flute', 'violin', 'violins', 'oboe', 'clarinet', 'celesta', 'horn', 'piccolo', 'kidchoir']),
+      label='Festive cinematic Christmas (full orchestra)')
+
 style('film_piano', 'Orchestral', 'Emotional film score: solo piano theme over warm strings, celesta sparkles',
       bpm=(64, 84), scales=['major', 'minor'], human=0.015,
       progs={'major': [[0, 4, 5, 3], [5, 3, 0, 4], [0, 5, 3, 4]], 'minor': [[0, 5, 2, 6], [0, 3, 5, 4]]},
@@ -4418,12 +4469,12 @@ style('cinematic_journey_low', 'Orchestral', 'Cinematic Journey - Dark & Low: th
 # replaced by the genre's own sound for that part.
 BELLS = {'bell', 'celesta', 'sf:glock', 'sf:musicbox', 'sf:tubular', 'glock', 'musicbox', 'tubular', 'sf:celesta'}
 MALLETS = {'marimba', 'kalimba', 'vibes', 'steeldrum', 'sf:marimba', 'sf:vibes', 'sf:kalimba', 'sf:steeldrum', 'sf:xylophone'}
-BELL_OK = {'drill_space', 'idm_jungle_theme', 'rolling_atmos_bass', 'uk_tribal_techno', 'aarti', 'witch_house', 'anime_opening', 'latin_trap', 'adventure', 'ambient', 'braindance', 'brostep', 'chamber_pop', 'chillstep', 'cinematic', 'cloud_rap',
+BELL_OK = {'festive_cinematic', 'drill_space', 'idm_jungle_theme', 'rolling_atmos_bass', 'uk_tribal_techno', 'aarti', 'witch_house', 'anime_opening', 'latin_trap', 'adventure', 'ambient', 'braindance', 'brostep', 'chamber_pop', 'chillstep', 'cinematic', 'cloud_rap',
            'deep_dubstep', 'deep_dubstep_minimal', 'downtempo', 'dubstep', 'epic_choir', 'epic_orchestral', 'fantasy_rpg', 'film_piano',
            'hauntology', 'hauntology_dark', 'hauntology_sunlit', 'holiday', 'hybrid_trailer', 'impressionism', 'lofi',
            'neoclassical', 'orchestral', 'orchestral_hiphop', 'plugg', 'rage', 'riddim', 'symphonic_finale',
            'tension', 'trap', 'waltz'}
-MALLET_OK = {'drill_space', 'idm_jungle_theme', 'balearic_chill', 'tropical_house', 'uk_funky', 'witch_house', 'adventure', 'afro_house', 'afrobeats', 'amapiano', 'ambient', 'bossa_nova', 'braindance', 'chamber_pop',
+MALLET_OK = {'festive_cinematic', 'drill_space', 'idm_jungle_theme', 'balearic_chill', 'tropical_house', 'uk_funky', 'witch_house', 'adventure', 'afro_house', 'afrobeats', 'amapiano', 'ambient', 'bossa_nova', 'braindance', 'chamber_pop',
              'chillstep', 'cinematic', 'city_pop', 'cloud_rap', 'cumbia', 'dancehall', 'deep_dubstep', 'deep_dubstep_minimal', 'downtempo',
              'dubstep', 'epic_choir', 'epic_orchestral', 'fantasy_rpg', 'film_piano', 'g_funk', 'hauntology',
              'hauntology_dark', 'hauntology_sunlit', 'holiday', 'hybrid_trailer', 'impressionism', 'jazz', 'jazz_rap',

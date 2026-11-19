@@ -74,6 +74,7 @@ class Options:
     part_fx: dict = field(default_factory=dict)       # layer -> effect plugin name (e.g. {'lead': 'ValhallaSupermassive'})
     part_effects: dict = field(default_factory=dict)  # part -> built-in effect preset (sgcore.part_effects; 'none' = dry)
     drum_voices: dict = field(default_factory=dict)   # drum voice (kick / snare / clap / hats) -> drum machine id, locked
+    extra_parts: list = None      # extra instruments: [{inst, follows (lead/counter/chords/pad/arp/bass), octave, db, pan}]
     ending: str = 'auto'          # auto | hit (final chord + crash) | fade
     vocal_guide: bool = False     # also play the vocal guide melody (it is always in the MIDI export)
     skip_intro: bool = False      # start the song on its first main section (no intro)
@@ -149,7 +150,7 @@ GENRE_VOICING = {'bebop': 'rootless', 'soul_jazz': 'rootless', 'modal_jazz': 'op
 GENRE_COLORS_HOUSE = {'deep_house': ['9', 'm11', '9', '7'], 'tech_house': ['m11', '7', 'triad'], 'tokyo_deep_house': ['9', 'm11', '7'],
                       'garage_house': ['9', '7'], 'house': ['7', '9', 'triad', 'triad'], 'uk_funky': ['m11', '9'],
                       'outsider_house': ['m11', '9', '7'], 'dub_techno': ['m11', '7', 'triad']}
-GENRE_COLORS = {'jazz_rap': ['9', '7', '9', '6'], 'cloud_rap': ['add9', 'sus2', 'triad'], 'slow_jam': ['9', '7', 'add9'], 'smooth_jazz': ['add9', '9', '7', 'sus2'], 'smooth_funk': ['9', '7'], 'quiet_storm': ['9', '7', 'add9'], 'modern_country': ['triad', 'add9', 'sus2'], 'country_waltz': ['triad'], 'outlaw_country': ['triad', '7'], 'western_swing': ['6', '7', '9', '6'], 'g_funk': ['7', '9', 'triad'], 'neo_soul': ['9', '7', '9', 'add9'], 'new_jack_swing': ['7', '9', 'triad'], 'alt_rnb': ['7', 'add9', '9'], 'rage': ['triad'], 'plugg': ['add9', 'triad', '7'], 'hauntology_sunlit': ['add9', 'triad', 'sus2', '7'], 'hauntology_dark': ['triad', 'sus2', 'add9'], 'epic_orchestral': ['triad', 'sus4'], 'epic_battle': ['triad'], 'epic_choir': ['triad'], 'heroic_anthem': ['triad', 'sus4', 'add9'], 'symphonic_finale': ['triad', '7'], 'bebop': ['9', '7', '6'], 'modal_jazz': ['9', 'sus4', '7'], 'soul_jazz': ['7', '9'], 'fusion': ['9', 'add9', '7'], 'future_funk': ['7', '9'], 'italo_disco': ['triad', 'add9'], 'new_beat': ['triad'], 'gabber': ['triad'], 'rave_hardcore': ['triad', '7'], 'classical_period': ['triad'], 'romantic': ['7', 'triad', 'add9'], 'impressionism': ['add9', '9', 'sus2'], 'minimalism': ['triad', 'add9'], 'deep_dubstep': ['triad'], 'deep_dubstep_minimal': ['triad'], 'progressive_trance': ['triad', 'sus2', 'add9'], 'organic_house': ['add9', 'triad', 'sus2'], 'disco_funk': ['7', '9', 'triad'], 'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
+GENRE_COLORS = {'festive_cinematic': ['7', 'add9', '7', 'triad'], 'jazz_rap': ['9', '7', '9', '6'], 'cloud_rap': ['add9', 'sus2', 'triad'], 'slow_jam': ['9', '7', 'add9'], 'smooth_jazz': ['add9', '9', '7', 'sus2'], 'smooth_funk': ['9', '7'], 'quiet_storm': ['9', '7', 'add9'], 'modern_country': ['triad', 'add9', 'sus2'], 'country_waltz': ['triad'], 'outlaw_country': ['triad', '7'], 'western_swing': ['6', '7', '9', '6'], 'g_funk': ['7', '9', 'triad'], 'neo_soul': ['9', '7', '9', 'add9'], 'new_jack_swing': ['7', '9', 'triad'], 'alt_rnb': ['7', 'add9', '9'], 'rage': ['triad'], 'plugg': ['add9', 'triad', '7'], 'hauntology_sunlit': ['add9', 'triad', 'sus2', '7'], 'hauntology_dark': ['triad', 'sus2', 'add9'], 'epic_orchestral': ['triad', 'sus4'], 'epic_battle': ['triad'], 'epic_choir': ['triad'], 'heroic_anthem': ['triad', 'sus4', 'add9'], 'symphonic_finale': ['triad', '7'], 'bebop': ['9', '7', '6'], 'modal_jazz': ['9', 'sus4', '7'], 'soul_jazz': ['7', '9'], 'fusion': ['9', 'add9', '7'], 'future_funk': ['7', '9'], 'italo_disco': ['triad', 'add9'], 'new_beat': ['triad'], 'gabber': ['triad'], 'rave_hardcore': ['triad', '7'], 'classical_period': ['triad'], 'romantic': ['7', 'triad', 'add9'], 'impressionism': ['add9', '9', 'sus2'], 'minimalism': ['triad', 'add9'], 'deep_dubstep': ['triad'], 'deep_dubstep_minimal': ['triad'], 'progressive_trance': ['triad', 'sus2', 'add9'], 'organic_house': ['add9', 'triad', 'sus2'], 'disco_funk': ['7', '9', 'triad'], 'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
                 'city_pop': ['7', '9', 'add9'], 'deep_house': ['7', '9', 'add9'], 'ukgarage': ['7', '9'], 'funk': ['7', '9'],
                 'blues': ['7'], 'downtempo': ['7', 'add9', '9'], 'neoclassical': ['triad', 'add9', 'add9', 'sus2'],
                 'baroque': ['triad'], 'chamber': ['triad', 'triad', '7'], 'holiday': ['triad', '6', '7', 'add9'],
@@ -1030,6 +1031,7 @@ def compose(opts):
         add_layer_tracks(st, opts)
         add_bass_switch_tracks(st)
         add_section_switch_tracks(st, opts, random.Random(f'{opts.seed}-rotation-{opts.style}'))
+    add_extra_parts(st, opts)                            # your extra instruments (Parts panel > + Add instrument)
     debell(st, opts)
     chords_t = next((t for t in st['tracks'] if t['name'] == 'chords'), None)
     if chords_t and attack_class(chords_t['inst']) == 'hit':      # a pad under struck chords swells in, never a late 2nd hit
@@ -1888,6 +1890,7 @@ BASS_PASS = {'math_rock': 0.45, 'idm_jungle_theme': 0.5, 'drill_space': 0.6, 'po
              'cumbia': 0.25, 'kpop': 0.2, 'jam_band': 0.5, 'soft_rock': 0.4, 'teen_pop': 0.2}
 # genres that get a counter-melody (when the genre decides): the instruments that play it, likeliest first
 COUNTER_STYLES = {
+    'festive_cinematic': ['horn', 'cello', 'clarinet'],
     'orchestral': ['cello', 'horn', 'clarinet', 'flute'], 'cinematic': ['horn', 'cello', 'strings'],
     'film_piano': ['cello', 'violin', 'oboe'], 'adventure': ['horn', 'strings', 'cello'], 'tension': ['cello', 'clarinet'],
     'neoclassical': ['cello', 'violin'], 'chamber': ['cello', 'sf:viola', 'violin'], 'baroque': ['oboe', 'violin', 'flute'],
@@ -1903,6 +1906,48 @@ COUNTER_STYLES = {
     'kpop': ['strings', 'pluck', 'bell'], 'teen_pop': ['strings', 'pluck', 'vox'], 'luxury_rap': ['horn', 'strings', 'choir'],
     'soft_rock': ['organ', 'epiano', 'guitar'], 'jam_band': ['organ', 'piano'], 'uplifting_trance': ['pluck_saw', 'strings'], 'rnb': ['strings', 'guitar'], 'bluegrass': ['banjo', 'guitar'], 'salsa': ['flute', 'violin'],
 }
+
+
+EXTRA_FOLLOWS = ('lead', 'counter', 'chords', 'pad', 'arp', 'bass')
+
+
+def add_extra_parts(st, opts):
+    """Extra instruments on top of the genre's parts - a celesta and glockenspiel doubling the melody an octave or two
+    up, horns on the counter-melody, a choir on the chords, pizzicato on the bass: the way an orchestrator thickens a
+    line. Each one plays exactly the notes of the part it follows (octave-shifted), at its own level and pan.
+    'counter' adds the counter-melody itself when the song doesn't have one."""
+    from .instruments import INSTRUMENTS
+    ex = list(getattr(opts, 'extra_parts', None) or [])[:8]
+    if not ex:
+        return
+    names = {t['name'] for t in st['tracks']}
+    for i, x in enumerate(ex):
+        if not isinstance(x, dict):
+            continue
+        inst, f = x.get('inst'), x.get('follows', 'lead')
+        if not inst or f not in EXTRA_FOLLOWS or not (inst in INSTRUMENTS or str(inst).startswith(('sf:', 'real:', 'vst:'))):
+            continue
+        lead = next((t for t in st['tracks'] if t['name'] == 'lead'), None)
+        if f == 'counter' and 'counter' not in names:
+            if not lead:
+                continue
+            st['tracks'].append(dict(name='counter', layer='lead', inst=inst, pan=-0.3 if (lead.get('pan') or 0) >= 0 else 0.3,
+                                     rev=max(0.3, lead.get('rev') or 0), dly=0.1, sc=0.0, db=-24 + float(x.get('db', 0) or 0),
+                                     hp=None, drive=None, p={}, counter=True, user_pick=True, extra=True))
+            names.add('counter')
+            continue
+        src = next((t for t in st['tracks'] if t['name'] == f), None) or \
+            next((t for t in st['tracks'] if t['layer'] == f and not t.get('double_of')), None)
+        if not src:
+            continue
+        name = f'extra{i + 1}'
+        st['tracks'].append(dict(name=name, layer=src['layer'], inst=inst,
+                                 pan=float(x.get('pan', (-0.35 if i % 2 else 0.35))), rev=max(0.3, src.get('rev') or 0),
+                                 dly=src.get('dly') or 0.0, sc=src.get('sc') or 0.0,
+                                 db=(src.get('db') if src.get('db') is not None else -22) + float(x.get('db', -4) or 0),
+                                 hp=None, drive=None, p={}, double_of=src['name'], octave=int(x.get('octave', 0) or 0),
+                                 user_pick=True, extra=True))
+        names.add(name)
 
 
 def add_counter_track(st, opts):
@@ -2029,6 +2074,15 @@ def shape_dynamics(evs, tracks, sections, st):
         pos = ((e.beat - b0) % 16) / 16
         arc = 1 + 0.07 * math.sin(math.pi * min(1.0, pos / 0.75))
         e.vel = max(0.2, min(1.0, e.vel * f * arc))
+    sv = st.get('sec_vel')
+    if sv:                                               # film-score dynamics: a whole section played softer / louder
+        for i, (b0, b1, s_) in enumerate(secs):          # (every part, synths and drums too) - the pp opening that
+            g = float(sv[min(i, len(sv) - 1)])           # grows to the tutti, the 10-15 dB a film cue spans
+            if abs(g - 1.0) < 1e-6:
+                continue
+            for e in evs:
+                if b0 <= e.beat < b1:
+                    e.vel = max(0.06, min(1.0, e.vel * g))
 
 
 EXPRESSIVE = {'strings', 'violin', 'cello', 'viola', 'contrabass', 'slowstrings', 'tremolo', 'spiccato', 'horn', 'brass', 'trumpet',
@@ -2100,7 +2154,7 @@ def debell(st, opts):
         role = t['layer']
         if role not in ('arp', 'lead', 'chords', 'pad') or t['inst'].startswith(('vst:', 'user:', 'real:')):
             continue
-        if mine.get(role) == t['inst']:
+        if mine.get(role) == t['inst'] or t.get('extra'):     # your picks and your extra instruments stay
             continue
         if bell_allowed(name, t['inst']):
             # even where they fit, a bell / mallet that isn't the genre's own sound for this part is an occasional colour

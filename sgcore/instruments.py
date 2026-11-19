@@ -4575,3 +4575,108 @@ for _name, _fn, _info, _roles, _gm in (('psyroll', v_psyroll, 'Psy rolling bass 
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.75: festive / film-score orchestra
+def v_kidchoir(m, dur, p, glide=None, mod=None):
+    """Children's choir: young voices - pure, high and almost without vibrato, a softer, rounder 'ooh' with less of
+    the adult chest resonance, a gentle swell and a little air. The innocent carol sound of a Christmas film score."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.1) * SR)
+    env = _va.adsr(gate, p.get('a', 0.25), 0.4, 0.9, p.get('r', 0.7))
+    n = len(env)
+    t = np.arange(n) / SR
+    rng = _rng()
+    L = np.zeros(n)
+    R = np.zeros(n)
+    fr_ = (420, 900, 2700, 3600) if p.get('vowel', 'o') == 'o' else (850, 1300, 3000, 3900)
+    for i in range(5):
+        c = rng.normal(0, 5)
+        vib = np.clip((t - 0.4) / 0.6, 0, 1) * rng.uniform(4, 9) * np.sin(2 * np.pi * rng.uniform(5.0, 5.8) * t + rng.random() * 6.28)
+        ph = 2 * np.pi * np.cumsum(f * 2 ** ((c + vib) / 1200)) / SR + rng.random() * 6.28
+        src = np.sin(ph) + 0.35 * np.sin(2 * ph) + 0.15 * np.sin(3 * ph) + 0.06 * np.sin(4 * ph)
+        v = src * 0.4
+        for fc, g in zip(fr_, (1.0, 0.5, 0.18, 0.08)):
+            b, a = signal.iirpeak(min(fc * (f / 500) ** 0.1, SR * 0.45) / (SR / 2), 4.0)
+            v = v + g * signal.lfilter(b, a, src)
+        v = v + 0.03 * bp(rng.standard_normal(n), 2000, 7000)
+        d = int(rng.uniform(0, 0.025) * SR)
+        v = np.concatenate([np.zeros(d), v[:n - d]])
+        pan = 0.15 + 0.7 * i / 4
+        L += v * np.cos(pan * np.pi / 2)
+        R += v * np.sin(pan * np.pi / 2)
+    y = hp(np.vstack([L, R]), 180)
+    y = y / (np.sqrt(np.mean(y[:, :min(n, int(0.8 * SR))] ** 2)) + 1e-9) * 0.12
+    return y * env
+
+
+def v_piccolo(m, dur, p, glide=None, mod=None):
+    """Piccolo: the little flute an octave above - bright, piercing and agile, almost a pure tone with a crisp chiff:
+    the sparkling runs and 'falling snow' figures of a Christmas score."""
+    y = v_flute(m, dur, dict(p, a=p.get('a', 0.03)))
+    return eq(y, 'highshelf', 3000, 0.7, 3.0) * 0.85
+
+
+def v_xylophone(m, dur, p, glide=None, mod=None):
+    """Xylophone: hard mallets on rosewood bars tuned so the 2nd mode sits a twelfth up (3x) - short, dry, bright and
+    clacky: the comic, scampering mallet runs of cartoon and family-film scoring."""
+    f = float(mtof(m))
+    n = int(min(0.9, 0.25 + 120 / f) * SR)
+    t = np.arange(n) / SR
+    y = _modes(f, n, [(1.0, 1.0, 9.0), (3.0, 0.45, 22.0), (6.2, 0.15, 45.0)], p.get('hard', 1.4))
+    y = y + 0.18 * bp(_rng().standard_normal(n), 2500, 9000) * np.exp(-t * 400)
+    y *= np.minimum(t / 0.0006, 1)
+    return np.vstack([y, np.roll(y, 15)]) * 0.4
+
+
+def v_bassclarinet(m, dur, p, glide=None, mod=None):
+    """Bass clarinet: a reed on a cylindrical bore, so mostly ODD harmonics - a dark, hollow, woody tone with a soft
+    breathy edge; staccato it's the sneaky, comic low-woodwind sound of cartoon villains."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, p.get('a', 0.03), 0.2, 0.85, p.get('r', 0.08))
+    n = len(env)
+    t = np.arange(n) / SR
+    ph = 2 * np.pi * np.cumsum(f * 2 ** (np.clip((t - 0.3) / 0.4, 0, 1) * 8 * np.sin(2 * np.pi * 5 * t) / 1200)) / SR
+    x = sum((1.0 / k) * np.sin(k * ph) for k in (1, 3, 5, 7, 9)) + 0.12 * np.sin(2 * ph)
+    x = _va.vcf(x, 900 + 1800 * env, 0.1, 1.0)
+    br = _aspirate(bp(_rng().standard_normal(n), 400, 2500), f, ph) * 0.04
+    y = np.tanh((x + br) * 1.2) * env
+    return np.vstack([y, np.roll(y, 25)]) * 0.42
+
+
+def d_triangle(p):
+    """Triangle: a steel rod bent into a triangle - a high, ringing, inharmonic shimmer with a bright 'ting'."""
+    n = int(p.get('len', 1.6) * SR)
+    t = np.arange(n) / SR
+    y = _modes(p.get('pitch', 1250.0), n, [(1.0, 0.6, 2.5), (2.76, 0.8, 2.0), (5.4, 0.7, 2.8), (8.9, 0.5, 3.5), (12.1, 0.35, 4.0)], 1.0)
+    y = hp(y, 2500) + 0.25 * hp(noise(n), 6000) * np.exp(-t * 300)
+    return fade_out(y * np.minimum(t / 0.0005, 1), 0.1)
+
+
+def d_windchime(p):
+    """Wind chimes / bell tree: a quick glissando of small tuned bars, each ringing on - the 'magic' shimmer at the
+    start of a scene."""
+    n = int(2.2 * SR)
+    y = np.zeros(n)
+    rng = _rng()
+    base = p.get('pitch', 2000.0)
+    for k in range(12):
+        s0 = int((k * 0.035 + rng.uniform(0, 0.01)) * SR)
+        f = base * 2 ** ((11 - k) * 0.17 + rng.normal(0, 0.02))
+        m = n - s0
+        y[s0:] += _modes(f, m, [(1.0, 1.0, 3.0), (2.8, 0.4, 5.0)], 1.0) * (0.6 + 0.4 * rng.random())
+    return fade_out(hp(y, 1500), 0.2)
+
+
+DRUMS.update({'triangle': d_triangle, 'windchime': d_windchime})
+for _name, _fn, _info, _roles, _gm in (('kidchoir', v_kidchoir, "Children's choir (pure, high)", ('pad', 'lead', 'chords'), 53),
+                                       ('piccolo', v_piccolo, 'Piccolo (bright, sparkling)', ('lead', 'arp'), 73),
+                                       ('xylophone', v_xylophone, 'Xylophone (hard, comic)', ('arp', 'lead'), 14),
+                                       ('bassclarinet', v_bassclarinet, 'Bass clarinet (dark, comic low woodwind)', ('bass', 'lead', 'arp'), 72)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)

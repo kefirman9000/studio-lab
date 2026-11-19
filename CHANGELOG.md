@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.75.0
+- **Extra instruments** (Parts panel > **+ Add instrument**): add as many rows as the arrangement needs, beyond bass / chords / pad / arp / lead.
+  - Each extra doubles the melody, chords, pad, arp or bass, or plays the counter-melody (added when the song doesn't have one).
+  - Set its own instrument, octave (-1 to +2) and level.
+  - "+ Add instrument" suggests the classic orchestration moves in turn:
+    - celesta and glockenspiel an octave or two above the melody;
+    - horns on the counter-melody;
+    - a choir on the chords;
+    - pizzicato on the bass;
+    - flute.
+  - Your extras are never swapped out by the genre.
+- **New genre: Festive cinematic Christmas (full orchestra)** (Orchestral > Film & Trailer):
+  - A warm, nostalgic carol-like theme, the melody doubled by celesta + glockenspiel, harp arpeggios, pizzicato doubling the bass.
+  - Horns or cello on a counter-melody, a choir, sleigh bells and timpani.
+  - Rich maj7 / add9 harmony with smooth, stepwise bass lines.
+  - It starts with high, glittering textures and grows to the full orchestra.
+  - **Film-score dynamics:** the opening plays very softly and each section grows louder, up to the full tutti (every part, not only the fader).
+  - Mixed like a film score: quieter (-17 LUFS) with lots of headroom, with a tonal balance measured on film-score references.
+- **New orchestral / festive sounds:**
+  - Children's choir: pure and high, with almost no vibrato.
+  - Piccolo.
+  - Xylophone: hard mallets, comic runs.
+  - Bass clarinet: dark and woody, the sneaky low-woodwind sound.
+  - Triangle and wind chimes / bell tree, as drums.
+
 ## 1.74.0
 - **Each song picks its own drum sounds**, using the same tick-box system as the instrument parts (Sound panel > **Drum voices**):
   - On drum-machine genres, every song can take its kick, snare, clap and hi-hats from a different machine that suits the genre.

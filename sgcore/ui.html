@@ -270,6 +270,9 @@ body:not(.helptext) .hint.qhd{display:none !important}
 .dvgrid{display:grid;grid-template-columns:16px 64px minmax(160px,1fr) 16px 64px minmax(160px,1fr);gap:6px 8px;align-items:center}
 .dvgrid .gpick{display:flex;justify-content:center}
 .dvgrid select{min-width:0}
+.f.inst.xparts{display:grid !important;grid-template-columns:minmax(120px,170px) minmax(170px,1fr) 92px 92px 26px;gap:6px 8px;align-items:center}
+.xparts .xh{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:6px}
+.xparts select{min-width:0}
 </style>
 </head>
 <body>
@@ -454,7 +457,7 @@ body:not(.helptext) .hint.qhd{display:none !important}
 (function(){ const P='__SL_UIPREFS__'; try{ if(P&&typeof P==='object') for(const [k,v] of Object.entries(P)) if(localStorage.getItem(k)!==v) localStorage.setItem(k,v); }catch(e){} })();
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const LEVELS=[['drums','Drums',['kick','snare','top']],['bass','Bass',['bass']],['chords','Chords',['chords']],['pad','Pad',['pad']],['arp','Arp',['arp']],['lead','Lead',['lead']]];
-let META=null, state={closed:(()=>{try{return JSON.parse(localStorage.getItem('sl_closed')||'{}')}catch(_){return {}}})(), orch_plugin:(()=>{try{return !!localStorage.getItem('sl_orch_plugin')}catch(_){return false}})(), style:'house', part_fx:{}, part_effects:{}, lastFx:{}, drum_voices:{}, lastDrums:{}, levels:{}, octaves:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
+let META=null, state={closed:(()=>{try{return JSON.parse(localStorage.getItem('sl_closed')||'{}')}catch(_){return {}}})(), orch_plugin:(()=>{try{return !!localStorage.getItem('sl_orch_plugin')}catch(_){return false}})(), style:'house', part_fx:{}, part_effects:{}, lastFx:{}, drum_voices:{}, lastDrums:{}, extra_parts:[], levels:{}, octaves:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
   muted:[], instruments:{}, blend_parts:{}, outputs:(()=>{ try{ const v=JSON.parse(localStorage.getItem('sl_outs')||'null'); if(Array.isArray(v)&&v.length) return v; }catch(e){} return ['mp3','midi','lmms']; })()};
 const LAYERS=[['kick','Kick'],['snare','Snare/Clap'],['top','Hats & Perc'],['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead'],['fx','FX']];
 const OUTS=[['mp3','MP3'],['wav','WAV'],['midi','MIDI'],['stems','Stems'],['daw','DAW pack (Ableton, FL, Logic, Reaper)'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack']];
@@ -699,9 +702,10 @@ function renderSelected(){
     w.querySelector(':scope > select').onchange=e=>{ if(e.target.value) state.instruments[x.id]=e.target.value; else delete state.instruments[x.id]; };
     $('#soundBody').appendChild(w);
   });
+  if(!jParts) extraRows();
   // every other sound the last song of this genre used (section switches, layers, build-up drums ...)
   const shown=new Set([...ROLES.map(([r])=>r), ...extras.map(x=>x.id)]);
-  const more=(!jParts&&!state.blend.length&&state.lastTracks)?state.lastTracks.filter(tr=>!shown.has(tr.id)):[];
+  const more=(!jParts&&!state.blend.length&&state.lastTracks)?state.lastTracks.filter(tr=>!shown.has(tr.id)&&!/^extra\d+$/.test(tr.id)):[];
   if(more.length){ const h=document.createElement('div'); h.className='f wide inst';
     h.innerHTML='<div class="hint">Also playing in your last song - change or switch off any of them.</div>'; $('#soundBody').appendChild(h);
     more.forEach(tr=>{ const w=document.createElement('div'); w.className='f inst xrow';
@@ -842,6 +846,7 @@ function options(){
   if(Object.keys(state.part_fx).length) o.part_fx=Object.assign({},state.part_fx);
   if(Object.keys(state.part_effects).length) o.part_effects=JSON.parse(JSON.stringify(state.part_effects));
   if(Object.keys(state.drum_voices||{}).length) o.drum_voices=Object.assign({},state.drum_voices);
+  if((state.extra_parts||[]).length) o.extra_parts=JSON.parse(JSON.stringify(state.extra_parts));
   if(Object.keys(LOCKS).length) o.part_seeds=Object.fromEntries(Object.entries(LOCKS).map(([p,l])=>[p,l.seed]));
   if($('#melStyle').value) o.melody_style=$('#melStyle').value;
   if($('#groove').value) o.groove=$('#groove').value;
@@ -875,7 +880,7 @@ function options(){
 }
 function applyOptions(o){
   state.style=o.style; state.blend=o.blend||[]; state.blend_parts=o.blend_parts||{}; state.mood=o.mood||null;
-  state.part_fx=Object.assign({},o.part_fx||{}); state.part_effects=JSON.parse(JSON.stringify(o.part_effects||{})); state.drum_voices=Object.assign({},o.drum_voices||{}); if(typeof renderDrumVoices==='function') renderDrumVoices();
+  state.part_fx=Object.assign({},o.part_fx||{}); state.part_effects=JSON.parse(JSON.stringify(o.part_effects||{})); state.drum_voices=Object.assign({},o.drum_voices||{}); state.extra_parts=JSON.parse(JSON.stringify(o.extra_parts||[])); if(typeof renderDrumVoices==='function') renderDrumVoices();
   state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.locked={}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
   $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#rotation').value=o.rotation||'auto';
   $('#songName').value=o.title||''; $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
@@ -2117,6 +2122,31 @@ function renderDrumVoices(){
   box.querySelectorAll('[data-dv]').forEach(sel=>sel.onchange=()=>{ const v=sel.dataset.dv; if(sel.value) state.drum_voices[v]=sel.value; else delete state.drum_voices[v]; renderDrumVoices(); });
   box.querySelectorAll('[data-dvp]').forEach(cb=>cb.onchange=()=>{ const v=cb.dataset.dvp;
     if(cb.checked) delete state.drum_voices[v]; else if(last[v]) state.drum_voices[v]=last[v]; renderDrumVoices(); });
+}
+
+// ------------------------------------------------------------- extra instruments: more rows under the parts (orchestration)
+const XFOLLOW=[['lead','Doubles the melody'],['counter','Counter-melody'],['chords','Doubles the chords'],['pad','Doubles the pad'],['arp','Doubles the arp'],['bass','Doubles the bass']];
+function allInstruments(){ const seen=new Set(), out=[]; Object.entries(META.roles||{}).forEach(([r,l])=>(l||[]).forEach(i=>{ if(!seen.has(i.id)){ seen.add(i.id); out.push(i); } }));
+  const g={}; out.forEach(i=>{ (g[i.group||'Built-in']=g[i.group||'Built-in']||[]).push(i); }); return g; }
+function extraRows(){
+  state.extra_parts=state.extra_parts||[];
+  const w=document.createElement('div'); w.className='f inst wide xparts';
+  const groups=allInstruments();
+  const instOpts=cur=>Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${cur===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('');
+  w.innerHTML=`<div class="xh">Extra instruments <span class="qh" data-tip="Thicken the arrangement like an orchestrator: e.g. celesta + glockenspiel doubling the melody an octave or two up, horns on a counter-melody, a choir on the chords, pizzicato on the bass. Each extra plays the notes of the part it follows.">i</span>
+      <button class="mini" id="xAdd" style="margin-left:auto">+ Add instrument</button></div>`+
+    state.extra_parts.map((x,i)=>`<select data-xf="${i}" title="What it plays">${XFOLLOW.map(([k,l])=>`<option value="${k}" ${x.follows===k?'selected':''}>${l}</option>`).join('')}</select>`+
+      `<select data-xi="${i}" title="Instrument">${instOpts(x.inst)}</select>`+
+      `<select data-xo="${i}" title="Octave">${[-12,0,12,24].map(o=>`<option value="${o}" ${(+x.octave||0)===o?'selected':''}>${o>0?'+':''}${o/12} oct</option>`).join('')}</select>`+
+      `<select data-xd="${i}" title="Level against the part it follows">${[-12,-8,-4,0,3].map(d=>`<option value="${d}" ${(x.db??-4)===d?'selected':''}>${d>0?'+':''}${d} dB</option>`).join('')}</select>`+
+      `<button class="ico" data-xx="${i}" title="Remove">✕</button>`).join('');
+  $('#soundBody').appendChild(w);
+  w.querySelector('#xAdd').onclick=e=>{ e.preventDefault(); const sug=[['celesta','lead',12],['glock','lead',24],['horn','counter',0],['choir','chords',0],['pizz','bass',12],['flute','lead',12]];
+    const used=new Set(state.extra_parts.map(x=>x.inst)); const s=sug.find(([i])=>!used.has(i))||sug[0];
+    state.extra_parts.push({inst:s[0],follows:s[1],octave:s[2],db:-4}); renderSelected(); };
+  const upd=(sel,key,num)=>w.querySelectorAll(`[data-${sel}]`).forEach(el=>el.onchange=()=>{ const x=state.extra_parts[+el.dataset[sel]]; x[key]=num?+el.value:el.value; });
+  upd('xf','follows'); upd('xi','inst'); upd('xo','octave',1); upd('xd','db',1);
+  w.querySelectorAll('[data-xx]').forEach(b=>b.onclick=e=>{ e.preventDefault(); state.extra_parts.splice(+b.dataset.xx,1); renderSelected(); });
 }
 </script>
 </body>
