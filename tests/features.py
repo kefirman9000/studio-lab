@@ -1023,6 +1023,21 @@ def test_va_synth():
     sp2 = np.abs(np.fft.rfft(s[: SR // 4])) ** 2
     f2 = np.fft.rfftfreq(SR // 4, 1 / SR)
     assert sp2[f2 > 12000].sum() / sp2.sum() < 0.01                        # oversampled sync: no fizz
+    for k in ('junopad', 'junopoly', 'junobass', 'jupiterpad', 'obstab', 'moog_lead', 'hypersaw', 'dxbass', 'acid'):   # 1.60
+        a = np.asarray(INSTRUMENTS[k](40 if k in ('junobass', 'dxbass', 'acid') else 64, 0.8, {}, None, None))
+        assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.3, (k, np.abs(a).max())
+    assert 'acid_v1' in INSTRUMENTS and 'acid_v1' in ROLE_CHOICES['bass']
+    plain = np.asarray(INSTRUMENTS['acid'](40, 0.3, {}, None, 0))
+    accent = np.asarray(INSTRUMENTS['acid'](40, 0.3, {}, None, 1))
+    assert np.sqrt((accent ** 2).mean()) > np.sqrt((plain ** 2).mean()) * 1.1          # 303 accent: louder, brighter
+    slid = np.asarray(INSTRUMENTS['acid'](43, 0.3, {}, 40, 0))
+    assert np.abs(slid[:40]).max() > np.abs(plain[:40]).max()                         # a slide has no new attack
+    jc = va.juno_chorus(np.sin(2 * np.pi * 220 * np.arange(SR) / SR), 2)
+    assert jc.shape == (2, SR) and np.abs(jc[0] - jc[1]).mean() > 0.02               # BBD chorus: L and R move apart
+    y18 = va.vcf18(np.random.default_rng(1).standard_normal(SR), 500.0, 0.3)
+    sp18 = np.abs(np.fft.rfft(y18)) ** 2
+    f18 = np.fft.rfftfreq(SR, 1 / SR)
+    assert sp18[(f18 > 3000) & (f18 < 6000)].mean() < sp18[(f18 > 100) & (f18 < 400)].mean() * 1e-3
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars

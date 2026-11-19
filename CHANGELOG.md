@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.60.0
+- **Classic-hardware voices** for the instruments that cover the most genres:
+  - **Acid bass (303) rebuilt:** one saw (or the lopsided square) into an 18 dB/oct resonant low-pass that squelches but stops short of self-oscillating. Accented notes get a louder VCA, a short fixed filter decay and the accent circuit's extra cutoff "wow" that grows with resonance; slid notes glide over ~60 ms with no new attack, and the filter envelope carries on through the slide instead of re-triggering. The old sound is kept as "Acid bass (classic sound, before 1.60)".
+  - **Juno pad, Juno poly chords and Juno bass:** a single rock-steady DCO (saw + modulated pulse + square sub) with the high-pass, a gentle 24 dB filter and the stereo bucket-brigade chorus (modes I, II and I+II, left and right swept in opposite directions, darker wet path). Used in house, deep house, nu-disco, Italo, eurodance, city pop, vaporwave and more.
+  - **Jupiter pad:** two drifting saw oscillators per voice, slow filter swell, lighter chorus - the lush 80s pad (synthwave, synth-pop, city pop).
+  - **OB brass stab:** two bright saws per voice through an open filter with a fast swell - the big 80s rock / synth-pop chord stab.
+  - **Mono analog lead:** three oscillators overdriving the mixer into the resonant ladder filter, glide and a late vibrato (funk, G-funk, electro, synthwave).
+  - **Hypersaw:** two supersaw stacks (fourteen saws) plus a sub, high-passed and wide, for 2000s trance / progressive / electro chords and leads.
+  - **FM solid bass:** a 1:1 FM bass whose brightness snaps from bark to round, with a little feedback edge (synth-pop, freestyle, electro-funk, city pop).
+- Drum machines: the 808, 909, 707 and LinnDrum kits were already modelled voice by voice (pitch-swept sine kicks, tone + noise snares, metallic hats) and stay as they are.
+
 ## 1.59.0
 - **Trance synths, built the way the genre builds them:**
   - **Supersaw** is now a JP-8000-style supersaw: seven saws at the original's relative offsets, its non-linear detune curve and its centre-vs-sides mix, spread across the stereo field.

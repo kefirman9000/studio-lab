@@ -305,3 +305,45 @@ def jp_supersaw(fr, n, detune=0.5, mix=0.7, spread=1.0):
         L += s * g * np.cos(pan * np.pi / 2)
         R += s * g * np.sin(pan * np.pi / 2)
     return np.vstack([L, R]) * 0.45
+
+
+def vcf18(x, cut, res=0.5, drive=1.0, block=64):
+    """TB-303-style low-pass: an 18 dB/oct slope (one resonant 2-pole stage + a one-pole), squelchy resonance that
+    sings but stops just short of self-oscillation, and a soft-clipping input like the diode ladder's."""
+    x = np.tanh(np.asarray(x, float) * drive) / np.tanh(drive)
+    n = x.shape[-1]
+    cut = np.broadcast_to(np.asarray(cut, float), (n,))
+    q = 0.6 + 9.0 * float(np.clip(res, 0, 0.95)) ** 1.4
+    chans = x if x.ndim == 2 else x[None, :]
+    out = np.empty_like(chans)
+    for c in range(chans.shape[0]):
+        z1, z2 = np.zeros(2), np.zeros(1)
+        for s in range(0, n, block):
+            e = min(n, s + block)
+            fc = float(np.clip(cut[s], 30.0, SR * 0.4))
+            b1, a1 = _biquad_lp(fc, q)
+            pole = np.exp(-2 * np.pi * fc / SR)
+            y, z1 = signal.lfilter(b1, a1, chans[c, s:e], zi=z1)
+            out[c, s:e], z2 = signal.lfilter([1 - pole], [1, -pole], y, zi=z2)
+    out *= 1.0 / (1.0 + 0.25 * float(res))
+    return out if x.ndim == 2 else out[0]
+
+
+def juno_chorus(x, mode=2, mix=0.5):
+    """The Juno-60/106 BBD chorus: the (mono) voice through a short delay swept by a triangle LFO, the left and right
+    copies swept in opposite directions and summed with the dry signal. Mode I is slow and gentle, II faster and deeper,
+    I+II a fast shallow shimmer. The bucket-brigade wet path is darker than the dry one."""
+    mono = x.mean(axis=0) if np.ndim(x) == 2 else np.asarray(x, float)
+    n = len(mono)
+    t = np.arange(n) / SR
+    rate, lo, hi = {1: (0.513, 1.66, 5.35), 2: (0.863, 1.66, 5.35), 3: (9.75, 3.3, 3.7)}.get(mode, (0.863, 1.66, 5.35))
+    tri = 2 * np.abs(2 * ((t * rate + _RNG.random()) % 1.0) - 1) - 1
+    mid, dep = (lo + hi) / 2, (hi - lo) / 2
+    idx = np.arange(n, dtype=float)
+    bl, al = signal.butter(2, 7500 / (SR / 2))
+    wet_src = signal.lfilter(bl, al, mono)
+    out = []
+    for sgn in (1.0, -1.0):
+        d = (mid + sgn * dep * tri) * SR / 1000.0
+        out.append(mono * (1 - 0.3 * mix) + np.interp(idx - d, idx, wet_src, left=0.0) * mix)
+    return np.vstack(out)

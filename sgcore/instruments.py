@@ -2830,3 +2830,152 @@ for _name, _fn, _info, _roles in (
                 ROLE_CHOICES[_role].append(_name)
     INSTRUMENTS[_name] = _fn
 GM_PROGRAM.update({'trancepad': 90, 'rollbass': 38, 'superpluck': 81, 'neuro': 39, 'houseorgan': 17})
+
+
+# ----------------------------------------------------------------------------- 1.60: the classic-hardware voices
+def _q01(r):
+    """Old acid params give resonance as a filter Q (5..10); the new voices take 0..1."""
+    r = float(r)
+    return float(np.clip((r - 3.0) / 7.0, 0.15, 0.92)) if r > 1.5 else r
+
+
+def v_acid303(m, dur, p, glide=None, mod=None):
+    """TB-303: one saw (or the 303's lopsided square) into an 18 dB resonant low-pass. The decay knob sets the filter
+    envelope; accented notes get a louder VCA, a short fixed decay and the accent circuit's extra cutoff 'wow' that grows
+    with resonance; slid notes glide over ~60 ms with no new attack - the filter envelope carries on instead of
+    re-triggering, which is the 'squelch' of a slide."""
+    acc = bool(mod)
+    slide = glide is not None
+    f = float(mtof(m))
+    gate = int(max(dur, 0.02) * SR)
+    n = gate + int(0.012 * SR)
+    t = np.arange(n) / SR
+    fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.06) if slide else np.full(n, f)
+    if p.get('wave', 'saw') == 'saw':
+        x = _va.saw(fr, n)
+    else:
+        x = _va.pulse(fr, n, 0.0, 0.45) * 0.85 + _va.saw(fr, n) * 0.15
+    res = _q01(p.get('res', 0.7))
+    envmod = p.get('envmod', 0.6)
+    envmod = envmod / 9.0 if envmod > 1.5 else envmod           # old param: a multiplier around 6
+    dec = 0.2 if acc else p.get('decay', 0.5)
+    env = np.exp(-t / dec) * (0.35 if slide else 1.0)
+    octs = envmod * 4.2 * env
+    if acc:                                                      # the accent "sweep" capacitor
+        bump = (1 - np.exp(-t / 0.012)) * np.exp(-t / 0.22)
+        octs = octs + (0.7 + 1.6 * res) * bump
+    cut = p.get('cut', 380) * 0.85 * 2 ** octs
+    y = _va.vcf18(x, cut, res, 1.3 + (0.5 if acc else 0.0))
+    amp = np.exp(-t / 3.0) * (1.45 if acc else 1.0)
+    if not slide:
+        amp *= np.minimum(t / 0.003, 1)
+    amp[gate:] *= np.exp(-np.arange(n - gate) / (0.004 * SR))
+    return _hpf(np.tanh(y * amp * 1.4) * 0.62, 28)
+
+
+def v_junopad(m, dur, p, glide=None, mod=None):
+    """Juno-106 pad: one rock-steady DCO (saw + slowly modulated pulse + square sub), the high-pass, a gentle 24 dB
+    filter that swells open with the pad, then the stereo BBD chorus II that makes the Juno sound."""
+    x = _va.voice(m, dur, dict(p, cut=p.get('cut', 1500) * 0.6), glide, saw_mix=0.85, pulse_mix=0.5, pwm=0.7,
+                  pwm_rate=0.5, sub=0.3, unison=1, drift=0.0, res=0.15, fenv=0.8, fa=p.get('a', 0.9), fd=1.8, fs=0.85,
+                  amp=(0.9, 1.0, 0.9, 1.6), drive=1.05, keytrack=0.35, stereo=False, hp=70)
+    return _va.juno_chorus(x, p.get('chorus', 2), 0.55) * 0.4
+
+
+def v_junopoly(m, dur, p, glide=None, mod=None):
+    """Juno-106 poly chord: the same DCO with a quick filter 'blip' and chorus I - the house / garage / synth-pop
+    chord and stab patch."""
+    x = _va.voice(m, dur, dict(p, cut=p.get('cut', 1600) * 0.5), glide, saw_mix=1.0, pulse_mix=0.45, pw=0.4, sub=0.2,
+                  unison=1, drift=0.0, res=0.22, fenv=1.6, fd=p.get('fd', 0.22), fs=0.35, amp=(0.003, 0.45, 0.6, 0.25),
+                  drive=1.15, keytrack=0.4, stereo=False, hp=90)
+    return _va.juno_chorus(x, p.get('chorus', 1), 0.5) * 0.45
+
+
+def v_junobass(m, dur, p, glide=None, mod=None):
+    """Juno-106 bass: narrow pulse + square sub through a plucky resonant filter, no chorus - the round, rubbery
+    house / deep house bass."""
+    return _va.voice(m, dur, dict(p, cut=p.get('cut', 300)), glide, saw_mix=0.3, pulse_mix=1.0, pw=0.3, sub=0.6,
+                     unison=1, drift=0.0, res=0.3, fenv=2.2, fd=p.get('fd', 0.16), fs=0.2, amp=(0.002, 0.3, 0.7, 0.05),
+                     drive=1.4, keytrack=0.2, stereo=False, hp=30) * 0.4
+
+
+def v_jupiterpad(m, dur, p, glide=None, mod=None):
+    """Jupiter-8 pad: two saw VCOs per voice, gently out of tune and drifting, into the warm 24 dB filter with a slow
+    swell, a lighter chorus - the lush 80s pad."""
+    x = _va.voice(m, dur, dict(p, cut=p.get('cut', 1800) * 0.55), glide, saw_mix=1.0, pulse_mix=0.25, sub=0.12,
+                  unison=2, detune=11, spread=0.0, drift=2.5, res=0.2, fenv=1.0, fa=p.get('a', 1.0) * 1.2, fd=2.5,
+                  fs=0.8, amp=(1.0, 1.0, 0.9, 1.8), drive=1.1, keytrack=0.3, stereo=False, hp=60)
+    return _va.juno_chorus(x, 1, 0.35) * 0.48
+
+
+def v_obstab(m, dur, p, glide=None, mod=None):
+    """OB-Xa brass: two bright saws per voice a few cents apart through the open, barely resonant filter, a fast swell
+    on each chord - the big 80s rock / synth-pop keyboard stab."""
+    return _va.voice(m, dur, dict(p, cut=p.get('cut', 2600) * 0.7), glide, saw_mix=1.0, pulse_mix=0.3, pw=0.45, sub=0.1,
+                     unison=2, detune=9, spread=0.7, drift=2.0, res=0.1, fenv=1.3, fa=0.012, fd=0.35, fs=0.55,
+                     amp=(p.get('a', 0.004), 0.5, 0.78, 0.22), drive=1.45, keytrack=0.4, hp=80) * 0.42
+
+
+def v_moog_lead(m, dur, p, glide=None, mod=None):
+    """Minimoog lead: three oscillators (two saws a few cents apart + a square an octave down) overdriving the mixer
+    into the resonant ladder filter, glide, and the mod-wheel vibrato coming in late."""
+    top = p.get('cut', 2400)
+    return _va.voice(m, dur, dict(p, cut=top / 2.3), glide, saw_mix=1.0, sub=0.45, unison=2, detune=6, spread=0.0,
+                     drift=2.0, res=0.45, fenv=1.2, fd=0.35, fs=0.4, amp=(0.004, 0.3, 0.9, 0.12), drive=2.1,
+                     vib=p.get('vib', 18), vib_delay=0.35, slide=0.08, keytrack=0.6, stereo=False, hp=60) * 0.5
+
+
+def v_hypersaw(m, dur, p, glide=None, mod=None):
+    """Virus-style hypersaw: two supersaw stacks a few cents apart (fourteen saws), a sub, high-passed and wide - the
+    huge 2000s trance / electro / big-room chord and lead."""
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, p.get('a', 0.008), 0.4, 0.85, p.get('r', 0.3))
+    n = len(env)
+    f = float(mtof(m))
+    x = _va.jp_supersaw(f * 2 ** (-7 / 1200), n, 0.55, 0.75, 1.0) + _va.jp_supersaw(f * 2 ** (7 / 1200), n, 0.55, 0.75, 1.0)
+    x = x * 0.75 + _va.saw(np.full(n, f / 2), n)[None, :] * 0.18
+    return _hpf(_va.vcf(x, p.get('cut', 5200), 0.1, 1.1), 130) * env * 0.5
+
+
+def v_dxbass(m, dur, p, glide=None, mod=None):
+    """DX7 solid bass: a sine carrier phase-modulated 1:1 with an index that snaps from bright to round, a little
+    operator feedback for edge, and a sine sub - the 80s funk / pop FM bass."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.02) * SR)
+    env = _va.adsr(gate, 0.002, 0.6, 0.55, 0.06)
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.05) if glide is not None else np.full(n, f)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    idx = p.get('index', 2.6) * np.exp(-t * 10) + 0.7
+    modu = np.sin(ph + 0.4 * np.sin(ph))                         # feedback-ish modulator
+    y = np.sin(ph + idx * modu) * 0.8 + np.sin(ph) * 0.35
+    return np.tanh(y * 1.2) * env * 0.6
+
+
+for _name, _fn, _info, _roles in (
+        ('acid', v_acid303, None, None),
+        ('junopad', v_junopad, 'Juno pad (DCO + BBD chorus)', ('pad', 'chords')),
+        ('junopoly', v_junopoly, 'Juno poly chords (house / synth-pop)', ('chords', 'arp')),
+        ('junobass', v_junobass, 'Juno bass (round house bass)', ('bass',)),
+        ('jupiterpad', v_jupiterpad, 'Jupiter pad (lush 80s)', ('pad', 'chords')),
+        ('obstab', v_obstab, 'OB brass stab (big 80s chords)', ('chords', 'lead')),
+        ('moog_lead', v_moog_lead, 'Mono analog lead (3-osc ladder)', ('lead',)),
+        ('hypersaw', v_hypersaw, 'Hypersaw (14 saws, chords / leads)', ('chords', 'lead', 'pad')),
+        ('dxbass', v_dxbass, 'FM solid bass (80s funk / pop)', ('bass',))):
+    if _info is None:
+        if _name + '_v1' not in INSTRUMENTS:
+            INSTRUMENTS[_name + '_v1'] = INSTRUMENTS[_name]
+            INSTRUMENT_INFO[_name + '_v1'] = (INSTRUMENT_INFO.get(_name) or _name) + ' (classic sound, before 1.60)'
+            for _role, _lst in ROLE_CHOICES.items():
+                if _name in _lst and _name + '_v1' not in _lst:
+                    _lst.append(_name + '_v1')
+            GM_PROGRAM[_name + '_v1'] = GM_PROGRAM.get(_name, 0)
+    else:
+        INSTRUMENT_INFO[_name] = _info
+        for _role in _roles:
+            if _name not in ROLE_CHOICES[_role]:
+                ROLE_CHOICES[_role].append(_name)
+    INSTRUMENTS[_name] = _fn
+GM_PROGRAM.update({'junopad': 89, 'junopoly': 90, 'junobass': 38, 'jupiterpad': 89, 'obstab': 62, 'moog_lead': 81,
+                   'hypersaw': 81, 'dxbass': 39})
