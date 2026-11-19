@@ -47,7 +47,7 @@ SIGNATURE = {   # genre -> (part, instruments, label): the sound that defines it
     'progressive_psy': ('bass', {'psyroll', 'psybass', 'rollbass'}, 'rolling psy bass'),
     'goa_trance': ('bass', {'psyroll', 'psybass', 'sawbass', 'rollbass'}, 'rolling psy bass'),
     'darkpsy': ('bass', {'psyroll', 'psybass', 'fmbass'}, 'rolling psy bass'),
-    'uplifting_trance': ('lead', {'supersaw_lead', 'leadsaw', 'pluck_saw', 'piano', 'vox', 'emolead', 'hypersaw'}, 'trance lead'),
+    'uplifting_trance': ('lead', {'supersaw_lead', 'leadsaw', 'pluck_saw', 'piano', 'vox', 'emolead', 'hypersaw', 'screamlead'}, 'trance lead'),
 }
 for _g, (_part, _set, _lbl) in list(SIGNATURE.items()):      # the 808 variants (1.79) are 808s too
     if '808' in _set:

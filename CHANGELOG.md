@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.81.0
+- **7 new trance synths**, offered right after each trance genre's own sounds (trance, uplifting, progressive, club 2000s, early-2010s progressive, vocal-trance remix, electro-prog, 90s trance-pop, hard trance):
+  - **Classic trance pluck:** detuned saws and a square, a snappy filter and a wide chorus, made for 1/16 arps into a dotted delay.
+  - **Trance bell:** an FM bell layered with a short pluck.
+  - **Uplifting screamer lead:** a wide supersaw stack plus a pulse an octave up, with long glide, delayed vibrato and a touch of grit. Now also a valid lead for uplifting trance.
+  - **Trance strings:** a warm string-machine ensemble that swells in, for breakdowns.
+  - **Laser pluck:** a pitch-diving "pew" arp (hard trance gets it first).
+  - **Uplifting supersaw stab:** a filter "bwow" on the off-beat chords.
+  - **FM rolling bass:** the trance roll with an FM "tok" for bite, over a clean sub.
+- A part that a genre's authenticity check protects can now take sounds that check already accepts.
+
 ## 1.80.0
 - **Song editor > new "Notes & volume" tab:**
   - A piano roll of any sound in the song (lead, layers, drums, section sounds), with that sound's **volume line** underneath and every other sound's line shown faintly behind it.

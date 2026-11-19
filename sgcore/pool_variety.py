@@ -94,6 +94,12 @@ VARIANTS_808 = ('808dist', '808long', '808punch')
 _TECHNO = dict(chords=['dubchord', 'housechord'], arp=['hypnoseq', 'bleep'], lead=['analoglead'])
 CLUB_GENRE = {g: _TECHNO for g in ('techno', 'minimal', 'melodic_techno', 'hard_techno', 'uk_tribal_techno',
                                    'berlin_school', 'acid_techno', 'industrial_techno', 'detroit_techno', 'hypnotic_techno')}
+_TRANCE = dict(arp=['sylpluck', 'trancebell', 'laserpluck'], lead=['screamlead', 'trancebell'], chords=['upstab'],
+               pad=['trancestrings'], bass=['fmroll'])
+for _g in ('trance', 'uplifting_trance', 'progressive_trance', 'club_trance_2000s', 'progressive_trance_2010s',
+           'vocal_trance_remix', 'electro_prog_trance', 'trance_pop_90s', 'hard_trance'):
+    CLUB_GENRE[_g] = _TRANCE
+CLUB_GENRE['hard_trance'] = dict(_TRANCE, arp=['laserpluck', 'sylpluck'])
 CLUB_GENRE.update({'minimal': dict(_TECHNO, arp=['bleep', 'hypnoseq']), 'dub_techno': dict(chords=['dubchord'], lead=['dubchord']),
                    'tech_house': dict(chords=['housechord'], arp=['hypnoseq', 'housechord'], lead=['analoglead'])})
 SPLIT_FROM = ('sawbass', 'techbass', 'organbass', 'rollbass', 'moogbass', 'deepbass', 'junobass')   # bass lines that
@@ -110,8 +116,11 @@ def _club(g, scene, pools, banned):
         adds[role] = list(extra) + [x for x in adds.get(role, []) if x not in extra]
     for role, extra in adds.items():
         lst = pools.get(role)
-        if lst is None or _locked(g, role):
+        if lst is None or role == 'bass':
             continue
+        if _locked(g, role):                              # a protected part only takes sounds its own check accepts
+            from .fitness import SIGNATURE
+            extra = [x for x in extra if x in SIGNATURE[g][1]]
         for k, inst in enumerate([x for x in extra if x not in banned][:3]):
             if inst not in lst:
                 lst.insert(min(len(lst), 1 + k), inst)
@@ -126,6 +135,9 @@ def _club(g, scene, pools, banned):
         for k, v in enumerate(('techneuro', 'electrosaw')):
             if v not in b and v not in banned:
                 b.insert(min(len(b), 2 + k), v)
+    if b and 'fmroll' in (adds.get('bass') or []) and b[0] in ('rollbass', 'sawbass', 'psyroll', 'moogbass') \
+            and 'fmroll' not in b and not _locked(g, 'bass'):
+        b.insert(min(len(b), 1), 'fmroll')
     if b and b[0] in SPLIT_FROM and 'splitbass' not in b and 'splitbass' not in banned and not _locked(g, 'bass'):
         b.insert(min(len(b), 2), 'splitbass')
 

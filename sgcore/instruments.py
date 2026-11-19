@@ -5345,3 +5345,132 @@ for _name, _fn, _info, _roles, _gm in (
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.81: more trance voices
+def v_sylpluck(m, dur, p, glide=None, mod=None):
+    """Classic trance pluck (the 2000s software-synth pluck): two detuned saws and a square a few cents apart, a
+    filter that snaps shut in ~0.1 s with a little resonance, a short amp tail and a wide chorus - bouncy and bright,
+    made for 1/16 arps into a dotted delay."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.4), 0.02) * SR)
+    env = _va.adsr(gate, 0.001, p.get('d', 0.2), 0.0, 0.12)
+    n = len(env)
+    t = np.arange(n) / SR
+    rng = _rng()
+    x = np.vstack([_va.saw(np.full(n, f * 2 ** (-9 / 1200)), n, rng.random()) + 0.5 * _va.pulse(np.full(n, f * 2 ** (4 / 1200)), n, rng.random(), 0.5),
+                   _va.saw(np.full(n, f * 2 ** (9 / 1200)), n, rng.random()) + 0.5 * _va.pulse(np.full(n, f * 2 ** (-4 / 1200)), n, rng.random(), 0.5)])
+    cut = 300 * (p.get('cut', 9000) / 300) ** np.exp(-t / p.get('fdecay', 0.06))
+    y = _hpf(_va.vcf(x * 0.6, cut, 0.3, 1.2), 180) * env
+    return _va.juno_chorus(y, 2, 0.35) * 0.6
+
+
+def v_trancebell(m, dur, p, glide=None, mod=None):
+    """Trance bell: an FM bell (a bright, slightly inharmonic 3.5:1 strike that fades to a pure tone) layered with a
+    short saw pluck for the body - the glassy counter-melody of a breakdown or the arp of a big drop."""
+    f = float(mtof(m))
+    n = int(min(2.2, 0.8 + 300 / f) * SR)
+    t = np.arange(n) / SR
+    idx = 3.0 * np.exp(-t / 0.15) + 0.3
+    bell = np.sin(2 * np.pi * f * t + idx * np.sin(2 * np.pi * f * 3.5 * t)) * np.exp(-t / 0.9)
+    bell += 0.3 * np.sin(2 * np.pi * f * 2 * t) * np.exp(-t / 0.4)
+    pl = _va.vcf(_va.saw(np.full(n, f), n), 300 + 6000 * np.exp(-t / 0.05), 0.2, 1.1) * np.exp(-t / 0.18)
+    y = (bell * 0.6 + pl * 0.35) * np.minimum(t / 0.001, 1)
+    return _st(_gate_tail(y, dur + 0.6, 0.5), 30) * 0.5
+
+
+def v_screamlead(m, dur, p, glide=None, mod=None):
+    """Uplifting 'screamer' lead: a wide stack of detuned saws plus a pulse an octave up for the bite, a filter
+    that opens on every note, a long glide between notes, delayed vibrato and a touch of grit - the lead that
+    soars over the last drop."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.04) * SR)
+    env = _va.adsr(gate, 0.005, 0.3, 0.9, p.get('r', 0.3))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = _glide_freq(f, n, glide, p.get('slide', 0.09))
+    fr = fr * 2 ** (np.clip((t - 0.25) / 0.35, 0, 1) * p.get('vib', 18) * np.sin(2 * np.pi * 5.6 * t) / 1200)
+    body = _va.jp_supersaw(fr, n, 0.55, 0.7, 0.9)
+    octv = _va.pulse(fr * 2, n, _rng().random(), 0.3) * 0.28
+    x = body + octv[None, :]
+    cut = p.get('cut', 6000) * (0.55 + 0.45 * np.exp(-t / 0.12)) + 1500
+    y = np.tanh(_va.vcf(x, cut, 0.18, 1.4) * 1.6) / 1.6
+    return _hpf(y, 200) * env * 0.55
+
+
+def v_trancestrings(m, dur, p, glide=None, mod=None):
+    """Trance strings: a string-machine ensemble (saws with a slow, three-way chorus 'ensemble') that swells in, a
+    soft low-pass that opens a little as it grows - the warm breakdown strings under a piano or a vocal."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.2) * SR)
+    env = _va.adsr(gate, p.get('a', 0.5), 0.6, 0.9, p.get('r', 1.0))
+    n = len(env)
+    t = np.arange(n) / SR
+    rng = _rng()
+    x = np.zeros((2, n))
+    for k, c in enumerate((-8, -3, 3, 8)):
+        lfo = 1 + 0.0025 * np.sin(2 * np.pi * (0.6 + 0.23 * k) * t + rng.random() * 6)
+        x[k % 2] += _va.saw(f * 2 ** (c / 1200) * lfo, n, rng.random()) * 0.5
+    y = _va.vcf(x, p.get('cut', 2600) * (0.6 + 0.4 * (1 - np.exp(-t / 1.2))), 0.1, 1.0)
+    y = eq(_hpf(y, 160), 'peak', 3000, 0.8, -2.0)
+    return y * env * 0.5
+
+
+def v_laserpluck(m, dur, p, glide=None, mod=None):
+    """Laser pluck: a square + saw whose pitch dives an octave into the note in a few milliseconds ('pew'), through a
+    snappy filter - the zappy arp of 90s / 2000s trance and hard trance."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.3), 0.02) * SR)
+    env = _va.adsr(gate, 0.001, p.get('d', 0.14), 0.0, 0.07)
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f * 2 ** (p.get('dive', 1.0) * np.exp(-t / 0.012))
+    x = _va.pulse(fr, n, 0.0, 0.4) * 0.7 + _va.saw(fr * 2 ** (6 / 1200), n, 0.3) * 0.5
+    y = _va.vcf(x, 400 + 7000 * np.exp(-t / 0.05), 0.35, 1.3) * env
+    return _st(_hpf(y, 200), 22) * 0.6
+
+
+def v_upstab(m, dur, p, glide=None, mod=None):
+    """Uplifting supersaw stab: the JP supersaw stack with a fast filter 'bwow' (opening, then settling), a short
+    body and a gated tail - the chord stabs on the off-beats of an uplifting or tech-trance drop."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.5), 0.04) * SR)
+    env = _va.adsr(gate, 0.002, p.get('d', 0.18), 0.3, 0.07)
+    n = len(env)
+    t = np.arange(n) / SR
+    x = _va.jp_supersaw(f, n, 0.5, 0.75, 1.0)
+    cut = 900 + p.get('cut', 7000) * np.exp(-t / 0.07) * (1 - np.exp(-t / 0.004))
+    y = _va.vcf(x, cut, 0.3, 1.3)
+    return _hpf(y, 170) * env * 0.65
+
+
+def v_fmroll(m, dur, p, glide=None, mod=None):
+    """FM rolling bass: the trance roll with more bite - a sine sub plus a short FM 'tok' on top (2:1, the index
+    dying in ~40 ms) and a snappy filtered saw, each note reset so every 16th attacks the same - tight and punchy."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.2), 0.02) * SR)
+    env = _va.adsr(gate, 0.0008, p.get('d', 0.09), 0.2, 0.015)
+    n = len(env)
+    t = np.arange(n) / SR
+    ph = 2 * np.pi * f * t
+    sub = lp(np.sin(ph), 110)
+    tok = np.sin(ph + 2.6 * np.exp(-t / 0.04) * np.sin(2 * ph))
+    sawl = _va.vcf(2 * ((f * t) % 1.0) - 1, 180 + 2200 * np.exp(-t / 0.03), 0.3, 1.5)
+    y = (sub * 0.7 + hp(tok, 120) * 0.35 + _hpf(sawl, 120) * 0.3) * env
+    return _st(y, 0) * 0.6
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('sylpluck', v_sylpluck, 'Classic trance pluck (bright, chorused)', ('arp', 'lead', 'chords'), 81),
+        ('trancebell', v_trancebell, 'Trance bell (FM bell + pluck)', ('arp', 'lead'), 11),
+        ('screamlead', v_screamlead, 'Uplifting screamer lead (soaring, glide)', ('lead',), 81),
+        ('trancestrings', v_trancestrings, 'Trance strings (warm ensemble)', ('pad', 'chords'), 50),
+        ('laserpluck', v_laserpluck, 'Laser pluck (zappy pitch-dive arp)', ('arp', 'lead'), 81),
+        ('upstab', v_upstab, 'Uplifting supersaw stab', ('chords', 'arp', 'lead'), 81),
+        ('fmroll', v_fmroll, 'FM rolling bass (punchy trance roll)', ('bass',), 38)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
