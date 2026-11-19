@@ -1103,6 +1103,12 @@ def test_va_synth():
         for mm in (48, 72):
             a = np.asarray(INSTRUMENTS[k](mm, 0.6, {}, None, None))
             assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.3, (k, mm, np.abs(a).max())
+    for k in ('m1piano', 'samplerstab', 'techbass', 'bhbass', 'psybass', 'psylead'):          # 1.68
+        a = np.asarray(INSTRUMENTS[k](48 if 'bass' in k else 67, 0.4, {}, None, None))
+        assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.3, (k, np.abs(a).max())
+    from sgcore.styles import POOLS as _P4
+    assert all(len(_P4[g][r]) >= 6 for g in ('dnb', 'house', 'techno', 'dubstep') for r in ('chords', 'pad', 'arp', 'lead'))
+    assert _P4['trap']['bass'] == ['808']                                    # a genre's defining part keeps its own list
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars

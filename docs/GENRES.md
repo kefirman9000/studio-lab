@@ -1,8 +1,8 @@
-# Studio Lab genres (324)
+# Studio Lab genres (325)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (167)
+## Electronic (168)
 
 ### House & Disco (29)
 
@@ -38,12 +38,13 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Tropical house | `tropical_house` | 100-115 | Tropical house: a relaxed four-on-the-floor around 105, soft snaps and shakers, warm piano chords, marimba and steel-pan plucks, a pan-flute or sax hook - sunny, laid-back and summery |
 | UK bounce house (bassline, vocal chops) | `uk_bounce_house` | 122-126 | UK bounce house: a four-on-the-floor groove at 122-126 with busy, shuffling percussion and crisp claps, a rubbery, bouncing bassline doing most of the work, chopped vocal hooks answering it and short organ / piano stabs - radio-friendly, warm and made for dancing |
 
-### Techno & Trance (15)
+### Techno & Trance (16)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Club trance remix (2000s, riff & breakdown) | `club_trance_2000s` | 136-140 | Club trance remix (early-2000s, vocal-trance style): a tight 909 kick at 138 with a galloping off-beat rolling bass, open hats and driving 16th hats, a punchy syncopated tech-trance synth riff through a dotted delay, gated supersaw chords and a wide pad; long DJ intro and groove, a big breakdown where the pad, a breathy vocal-like lead and the chords slowly filter open, a snare-roll build and long full sections - dark, dense and hypnotic |
 | Dub techno | `dub_techno` | 118-126 | Dub techno: a soft four-on-the-floor under a single deep chord stab that echoes and fades through long, filtered delays and reverb, a round sub, hiss and crackle - hypnotic, misty and slowly shifting |
+| Festival psy-trance (big-room / psy hybrid) | `festival_psy` | 134-138 | Festival psy-trance (big-room / psy hybrid): a hard, tight kick at 134-138 with the rolling psy bass playing three short notes between every kick (K-B-B-B), squelchy FM psy leads and acid lines twisting over it, big supersaw chords and a wide pad in the breakdown with an emotional, singable lead, a long snare-and-riser build and a main riff drop; very wide mids, a tight mono low end |
 | Hard techno (150) | `hard_techno` | 145-160 | Hard techno (2020s): 145-160 BPM, a distorted, saturated kick with a rumbling sub tail, driving 16th hats, off-beat open hats, sparse industrial stabs and a screaming acid or rave lead - relentless and loud |
 | Hard trance / hands-up | `hard_trance` | 136-144 | Hard trance / hands-up (2000s): a pounding 909 kick around 140 with offbeat open hats, a driving 16th-note rolling bass pinned to the root, hard supersaw and hoover-style riffs, acid squelches and a catchy synth hook - short, punchy breakdowns with a classic snare roll and long, relentless main sections |
 | Late-90s trance-pop | `trance_pop_90s` | 130-138 | Late-90s vocal trance-pop / UK dance: a pumping four-on-the-floor around 134 with an offbeat octave bass, big warm string-synth and supersaw chords, a sweet vocal-style hook and plucked arps - euphoric and radio-sized, built of clear verses and choruses |

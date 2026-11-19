@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.68.0
+- **Every electronic genre has a much wider list of suggested sounds.** Many offered only 1-4 per part (drum & bass, trap, house, techno...), so the Sound panel's "Suggested for this genre" list was short and songs kept picking the same few sounds. Each scene now has its own idiomatic set, added after the genre's own sounds, so the signature sound stays first and most likely. Every part now has up to 8.
+  - **House:** the deep, Juno, organ, rubbery-tech and bass-house basses; the 90s house piano, Rhodes, sampled stabs, Juno chords, house organ, anthem keys and woody plucks; lush, Juno and vocal pads; vocal chops and breathy leads.
+  - **Techno / trance:** tech-trance riff and dub stabs, hypersaw, dark pad and atmosphere, techno sequence, psy and emotional leads, the rolling psy bass.
+  - **Drum & bass:** reese, neuro, DnB wobble and bouncing bass; anthem keys, Rhodes and sampled stabs; lush, vocal and trance pads; bleeps, vocal chops and the emotional, breathy and sync leads.
+  - **Dubstep / garage / bass:** all the wobbles, growl, reese and mid-bass; future-bass chords; vocal chops.
+  - **Trap / phonk, pop, chill and retro scenes** get their own sets too.
+  - The part a genre's authenticity rules check (trap's 808, dubstep's mid-bass, trance's lead) keeps exactly its own list. A bass line written for a sub, an 808, a walking line or a 303 is never handed a sound it wasn't written for.
+- **House synths upgraded:**
+  - **90s house piano** rebuilt on the new acoustic piano, with a glassy FM tine on the attack, hollowed low mids, a pushed top and a little chorus.
+  - New **sampled chord stab:** detuned saws and an organ-ish pulse snapped shut, crunched to 12 bits like the old samplers.
+  - New **rubbery tech-house bass,** whose pitch snaps down into each note. It is now tech house's own bass.
+  - New **bass-house bass:** a growling "yoy" that snaps on every note, over a clean sub. It is now bass house's own bass.
+- **New genre - Festival psy-trance (big-room / psy hybrid),** based on your reference tracks:
+  - A hard, tight kick at 134-138 with the rolling psy bass playing three short notes between every kick (K-B-B-B).
+  - Squelchy FM psy leads and acid lines over it.
+  - Big supersaw chords and a wide pad in the breakdown, with an emotional lead.
+  - A long snare-and-riser build into the main riff drop, with very wide mids and a tight mono low end.
+- **Interface:**
+  - **New default font:** a modern UI font (Inter / Segoe UI Variable / SF Pro, whichever your computer has). ⚙ Options → Appearance now has a **Font** menu: Modern, Rounded, Geometric, Humanist, System default or Monospace.
+  - **Compact genre list:** the list is now tight table rows with an alternating background tinted from your accent colour. Long names are trimmed to one line, with the full name in the tooltip. Options → Appearance → **Genre list → Roomy** brings back the old spacing.
+- **New psy synths:** a **psy rolling bass** (tight saw with a snappy filter and a pitch click) and a **psy lead** (an FM tone whose index is swept by an envelope and a fast LFO, with a vowel formant on top, driven and wide).
+
 ## 1.67.0
 The next batch of widely used first-generation sounds is rebuilt. Old ones are kept as "(classic sound, before 1.67)".
 - **Choir:** six singers, each a breathy glottal pulse with their own pitch, vibrato and timing, through the five formants of the vowel ("aah" by default, or "ooh" and the others). The formants sit lower for low voices and higher for high ones, with a slow swell and a wide stage.

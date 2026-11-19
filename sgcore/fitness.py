@@ -43,6 +43,7 @@ SIGNATURE = {   # genre -> (part, instruments, label): the sound that defines it
     'brostep': ('bass', {'growl', 'wobble', 'fmbass', 'reese', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'dnbwob'}, 'aggressive mid-bass'),
     'neurofunk': ('bass', {'growl', 'reese', 'fmbass', 'wobble', 'neuro', 'dnbwob'}, 'neuro / reese bass'),
     'amapiano': ('bass', {'logdrum'}, 'log drum'), 'trap': ('bass', {'808'}, '808'), 'uk_drill': ('bass', {'808'}, '808'),
+    'festival_psy': ('bass', {'psybass', 'rollbass', 'sawbass'}, 'rolling psy bass'),
     'uplifting_trance': ('lead', {'supersaw_lead', 'leadsaw', 'pluck_saw', 'piano', 'vox', 'emolead', 'hypersaw'}, 'trance lead'),
 }
 

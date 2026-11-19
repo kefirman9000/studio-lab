@@ -3400,3 +3400,9 @@ STYLE_GROOVE = {'jazz_rap': 'dilla', 'slow_jam': 'laidback', 'smooth_jazz': 'lai
                 'swing': 'jazz', 'afro_house': 'afro', 'dancehall': 'dembow', 'cumbia': 'afro', 'hauntology': 'dilla'}
 
 
+
+
+from .pool_variety import widen as _widen_pools  # noqa: E402  (needs SIGNATURE_STRICT above)
+_widen_pools()
+from .styles import _offer_genre_sounds  # noqa: E402
+_offer_genre_sounds()

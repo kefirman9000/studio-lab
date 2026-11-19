@@ -4012,3 +4012,134 @@ INSTRUMENT_INFO['churchbell'] = 'Church bell (hum, strike, minor third)'
 GM_PROGRAM['churchbell'] = 14
 for _role in ('arp', 'lead'):
     ROLE_CHOICES[_role].append('churchbell')
+
+
+# ----------------------------------------------------------------------------- 1.68: house upgrade + psy
+def v_m1piano(m, dur, p, glide=None, mod=None):
+    """The 90s house piano (the classic workstation 'Piano 16''): a bright acoustic piano layered with a glassy FM
+    tine on the attack, the low mids hollowed out and the top pushed, a short release and a little chorus - the
+    pumping, glassy piano chords of 90s / piano house."""
+    pn = np.asarray(v_piano(m, min(dur, 1.2), dict(p, hammer=1.5)), float)
+    n = pn.shape[1]
+    t = np.arange(n) / SR
+    f = float(mtof(m))
+    tine = np.sin(2 * np.pi * f * t + 1.8 * np.exp(-t * 9) * np.sin(2 * np.pi * f * 3.5 * t)) * np.exp(-t * 5) * 0.12
+    y = pn + tine[None, :]
+    y = eq(eq(eq(y, 'peak', 380, 1.0, -4.0), 'peak', 3000, 1.0, 4.0), 'highshelf', 7000, 0.7, 2.0)
+    g = int(max(dur, 0.05) * SR)
+    if g < n:
+        y[:, g:] *= np.exp(-np.arange(n - g) / (0.08 * SR))[None, :]
+    return _va.juno_chorus(y, 1, 0.25) * 1.1
+
+
+def v_samplerstab(m, dur, p, glide=None, mod=None):
+    """Sampled chord stab: the house / garage / rave chord stab as it came out of a 12-bit sampler - bright detuned
+    saws and an organ-ish pulse snapped shut by the filter, then crunched to 12 bits at a lower rate (the grit and
+    'air' of the old samplers), with a short tail."""
+    f = float(mtof(m))
+    gate = int(min(max(dur, 0.06), 0.35) * SR)
+    env = _va.adsr(gate, 0.002, 0.16, 0.25, 0.08)
+    n = len(env)
+    t = np.arange(n) / SR
+    x = _vb._stack(f, n, 3, 12, 0.4)
+    cut = 400 * (p.get('cut', 7000) / 400) ** np.exp(-t / 0.09)
+    y = _va.vcf(x, cut, 0.25, 1.3)
+    hold = 2
+    y = np.repeat(np.round(y[:, ::hold] * 2048) / 2048, hold, axis=1)[:, :n]
+    y = lp(y, 9000)
+    return y * env * 0.55
+
+
+def v_techbass(m, dur, p, glide=None, mod=None):
+    """Rubbery tech-house bass: a sine / triangle whose pitch snaps down into the note (the 'boing'), a little FM
+    wobble on the attack, a short, round body - the bouncy, rubbery bassline of tech house and minimal."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.002, p.get('d', 0.18), p.get('s', 0.5), 0.04)
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f * 2 ** (p.get('snap', 7.0) * np.exp(-t / 0.025) / 12)
+    if glide is not None:
+        fr = fr * 0 + f + (float(mtof(glide)) - f) * np.exp(-t / 0.04)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    y = np.sin(ph + 1.2 * np.exp(-t / 0.05) * np.sin(2 * ph)) * 0.8 + 2 / np.pi * np.arcsin(np.sin(ph)) * 0.3
+    y = lp(np.tanh(y * 1.6), p.get('cut', 1600))
+    return hp(y, 28) * env * 0.6
+
+
+def v_bhbass(m, dur, p, glide=None, mod=None):
+    """Bass-house bass: a square-and-saw mid-bass whose filter and vowel formant snap 'yoy' on every note, driven hard,
+    over a clean sub - the growling, talking bassline of bass house and G-house."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.002, 0.2, 0.7, 0.04)
+    n = len(env)
+    t = np.arange(n) / SR
+    fo = f if f > 55 else f * 2
+    x = _va.pulse(np.full(n, fo), n, 0.0, 0.35) * 0.6 + _va.saw(np.full(n, fo * 1.005), n) * 0.6
+    sweep = np.exp(-t / p.get('fdecay', 0.09))
+    y = _va.vcf(x, 250 + 2600 * sweep, 0.5, 1.6)
+    y = y + 0.9 * _vb._vowel(y, 0.15 + 0.7 * sweep)
+    y = _vb._split_hp(_vb.dist(y, 3.0), f) * 0.5
+    sub = _vb._sub(f, n, 0.8)
+    return np.vstack([y + sub, y + sub]) * env * 0.55
+
+
+def v_psybass(m, dur, p, glide=None, mod=None):
+    """Psy / festival rolling bass: a tight saw with a snappy filter envelope and a small pitch click, mono and very
+    short - three of them between every kick (the 'K-B-B-B' roll)."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.2), 0.02) * SR)
+    env = _va.adsr(gate, 0.001, p.get('d', 0.09), 0.2, 0.02)
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f * 2 ** (2.0 * np.exp(-t / 0.006) / 12)
+    x = _va.saw(fr, n) * 0.8 + np.sin(2 * np.pi * np.cumsum(fr) / SR) * 0.5
+    cut = 150 * (p.get('cut', 2600) / 150) ** np.exp(-t / p.get('fdecay', 0.035))
+    y = _va.vcf(x, cut, 0.3, 1.5)
+    return hp(y, 30) * env * 0.7
+
+
+def v_psylead(m, dur, p, glide=None, mod=None):
+    """Psy / festival lead: an FM tone whose modulation index is swept by a resonant filter envelope and a fast
+    LFO, a vowel formant on top, driven and wide - the squelchy, twisting, alien lead riffs of psytrance and
+    psy-influenced festival music."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.003, 0.2, 0.8, p.get('r', 0.12))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.03) if glide is not None else np.full(n, f)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    lfo = 0.5 - 0.5 * np.cos(2 * np.pi * p.get('rate', 6.0) * t)
+    idx = 0.8 + 3.5 * np.exp(-t / 0.12) + 1.5 * lfo
+    x = np.sin(ph + idx * np.sin(ph * p.get('ratio', 2.0)))
+    x = np.vstack([x, x]) + _va.jp_supersaw(fr, n, 0.4, 0.5, 1.0) * 0.4
+    y = _va.vcf(x, 600 + 5000 * (0.4 * np.exp(-t / 0.1) + 0.6 * lfo), 0.45, 1.6)
+    y = y + 0.5 * _vb._vowel(y, lfo)
+    y = _vb.dist(y, 2.5)
+    return _hpf(y, 200) * env * 0.35
+
+
+for _name, _fn in (('m1piano', v_m1piano),):
+    if _name + '_v1' not in INSTRUMENTS:
+        INSTRUMENTS[_name + '_v1'] = INSTRUMENTS[_name]
+        INSTRUMENT_INFO[_name + '_v1'] = (INSTRUMENT_INFO.get(_name) or _name) + ' (classic sound, before 1.68)'
+        for _role, _lst in ROLE_CHOICES.items():
+            if _name in _lst and _name + '_v1' not in _lst:
+                _lst.append(_name + '_v1')
+        GM_PROGRAM[_name + '_v1'] = GM_PROGRAM.get(_name, 0)
+    INSTRUMENTS[_name] = _fn
+for _name, _fn, _info, _roles, _gm in (
+        ('samplerstab', v_samplerstab, 'Sampled chord stab (12-bit, house / garage / rave)', ('chords', 'arp', 'lead'), 81),
+        ('techbass', v_techbass, 'Rubbery tech-house bass', ('bass',), 38),
+        ('bhbass', v_bhbass, 'Bass-house bass (growling "yoy")', ('bass',), 39),
+        ('psybass', v_psybass, 'Psy rolling bass (K-B-B-B)', ('bass',), 38),
+        ('psylead', v_psylead, 'Psy lead (squelchy FM riff)', ('lead', 'arp'), 81)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+INSTRUMENT_INFO['m1piano'] = '90s house piano (bright, glassy)'
