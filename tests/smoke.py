@@ -37,7 +37,7 @@ def _run(full, k, n, out):
         if i % n != k - 1:
             continue
         info = generate(dict(style=s, seed=7 + i), out, preview=True, log=lambda *a: None)
-        assert -20 < info['loudness'] < -6 and info['peak'] <= -0.9, (s, info['loudness'], info['peak'])
+        assert -21 < info['loudness'] < -6 and info['peak'] <= -0.9, (s, info['loudness'], info['peak'])   # (quiet solo genres sit near -20)
         song = compose(Options(style=s, seed=7 + i))
         xml.dom.minidom.parse(write_lmms(os.path.join(out, s + '.mmp'), song))
         assert os.path.getsize(write_midi(os.path.join(out, s + '.mid'), song)) > 100

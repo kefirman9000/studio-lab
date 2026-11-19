@@ -1,4 +1,2 @@
 numpy>=1.22
 scipy>=1.8
-# optional speed-up for the analog ladder filter and the reverb (the app works without it)
-numba>=0.57; python_version < "3.14"

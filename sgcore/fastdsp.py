@@ -1,7 +1,7 @@
 """Per-sample DSP kernels (1.77): the analog-modelled ladder filter and the feedback-delay-network reverb.
 
-These need a loop over every sample, which is far too slow in plain Python. With numba installed (it is in
-requirements.txt and in the installers) they're compiled to machine code the first time they run and cached on disk.
+These need a loop over every sample, which is far too slow in plain Python. With numba installed (the installers and
+start files add it wherever a ready-made build exists) they're compiled to machine code the first time they run and cached on disk.
 Without numba, HAVE_NUMBA is False and the callers fall back to their older block-based versions, so nothing breaks.
 """
 import math

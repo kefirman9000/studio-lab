@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.77.1
+- Installers: numba (the optional speed-up for the analog filter and reverb) is added only where a ready-made build exists. The Intel Mac installer build failed trying to compile it. Without numba, the app uses its fallback filter and reverb.
+- Smoke test: quiet solo genres (solo piano) may sit near -20 LUFS (the loudness meter is exact since 1.76).
+
 ## 1.77.0
 - **The electronic synths sound played, not programmed** (Sound panel > **Synth character: Analog**, on by default):
   - **Every note is its own take.** Before, every repeat of the same note was the exact same copy, which is the "machine-gun", MIDI-file sound.
@@ -21,7 +25,7 @@
   - **Layered trance pluck** (supersaw + an octave-down body + an attack tick);
   - **Analog mono lead** (breathing, with glide and delayed vibrato);
   - **Split club bass** (a clean sine sub under a filtered top).
-- numba is now in requirements.txt (optional speed-up; the start files install it quietly). Without it, the old filter and reverb are used.
+- numba (optional speed-up) is installed quietly by the installers and start files wherever a ready-made build exists. Without it, the old filter and reverb are used.
 
 ## 1.76.0
 - **One tune per song** (Feel card > **Melody theme**, on by default):

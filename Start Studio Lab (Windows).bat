@@ -7,7 +7,7 @@ if not defined PY goto nopython
 %PY% -c "import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)" 2>nul || goto oldpython
 %PY% -c "import numpy, scipy" 2>nul || %PY% -m pip install --user -r requirements.txt
 rem Optional: numba makes the analog synth filter and the reverb fast (skipped quietly if it can't install).
-%PY% -c "import numba" 2>nul || %PY% -m pip install --user --quiet numba >nul 2>nul
+%PY% -c "import numba" 2>nul || %PY% -m pip install --user --quiet --only-binary=:all: numba >nul 2>nul
 rem Optional: a native app window (pywebview, uses the Edge WebView2 built into Windows) - pins to the taskbar cleanly.
 %PY% -c "import webview" 2>nul || %PY% -m pip install --user --quiet pywebview >nul 2>nul
 rem Start with no console window (pythonw); Studio Lab opens in its own app window.

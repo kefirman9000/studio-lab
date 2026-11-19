@@ -14,6 +14,9 @@ PY="$APP/Contents/Resources/python/bin/python3"
 export PYTHONPYCACHEPREFIX="$PWD/build/pycache"
 "$PY" -m pip install --disable-pip-version-check --no-warn-script-location -q \
       -r "$APP/Contents/Resources/app/requirements.txt" pedalboard soundfile lameenc
+# optional: numba (fast analog ladder filter + reverb). Only where a ready-made wheel exists (not on every Intel Mac).
+"$PY" -m pip install --disable-pip-version-check --no-warn-script-location -q --only-binary=:all: numba \
+      || echo "numba not available here - the app uses its fallback filter / reverb"
 "$PY" -c "import numpy, scipy, pedalboard, soundfile, lameenc; print('bundled python ok')"
 
 cp installer/mac/launcher.sh "$APP/Contents/MacOS/Studio Lab"

@@ -13,5 +13,5 @@ if ! python3 -c "import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)"; 
   exit 1
 fi
 python3 -c "import numpy, scipy" 2>/dev/null || python3 -m pip install --user -r requirements.txt
-python3 -c "import numba" 2>/dev/null || python3 -m pip install --user --quiet numba >/dev/null 2>&1 || true   # optional speed-up
+python3 -c "import numba" 2>/dev/null || python3 -m pip install --user --quiet --only-binary=:all: numba >/dev/null 2>&1 || true   # optional speed-up
 python3 studiolab.py

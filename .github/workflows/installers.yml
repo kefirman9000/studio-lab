@@ -39,6 +39,7 @@ jobs:
           tar -xzf pbs/*.tar.gz -C build/win/app/runtime              # -> runtime/python/python.exe
           PY=build/win/app/runtime/python/python.exe
           "$PY" -m pip install --disable-pip-version-check --no-warn-script-location -q -r requirements.txt $EXTRA_PKGS
+          "$PY" -m pip install --disable-pip-version-check --no-warn-script-location -q --only-binary=:all: numba || echo "numba not available here - the app uses its fallback filter / reverb"
           "$PY" -c "import numpy, scipy, pedalboard, soundfile, lameenc; print('bundled python ok')"
           cp installer/windows/studio-lab.ico build/win/app/
       - name: Build Setup.exe
