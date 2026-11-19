@@ -39,6 +39,7 @@ def main(argv=None):
     ap.add_argument('--repetition', type=float, help='0..1 how much the melody repeats its opening idea')
     ap.add_argument('--melody-range', type=float, help='0..1 narrow <-> wide')
     ap.add_argument('--chord-speed', choices=['slow', 'fast'])
+    ap.add_argument('--motif', choices=['song', 'free'], help='song: one motif runs through verse, chorus and alt melodies')
     ap.add_argument('--rotation', choices=['auto', 'off', 'some', 'lots'], help='instruments changing between verses / choruses / breaks')
     ap.add_argument('--groove', choices=['straight', 'dilla', 'laidback', 'afro', 'dembow', 'jazz', 'house', 'funk'])
     ap.add_argument('--lead', choices=['hook', 'arp', 'riff', 'ostinato', 'bell', 'call', 'chops'], help='lead style (default: genre)')
@@ -108,7 +109,7 @@ def main(argv=None):
                 o['instruments'] = dict(p.split('=', 1) for p in a.inst)
             o.setdefault('vst_rig', not a.no_vst_rig)
             for k, v in (('simplicity', a.simplicity), ('repetition', a.repetition), ('melody_range', a.melody_range),
-                         ('chord_speed', a.chord_speed), ('rotation', a.rotation)):
+                         ('chord_speed', a.chord_speed), ('rotation', a.rotation), ('motif', a.motif)):
                 if v is not None:
                     o[k] = v
             if a.vocal_guide:

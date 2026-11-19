@@ -237,11 +237,35 @@ def tone_match(x, target, log=print, amount=0.6, limit=3.0):
     return x
 
 
-def mix_report(y, song=None, spb=None):
+def loudness_range(y, win=3.0, hop=1.0):
+    """EBU R128 loudness range (LRA): the spread between the 10th and 95th percentile of the short-term (3 s)
+    loudness, gated at -70 LUFS absolute and 20 LU below the average. Also returns the loudest short-term value."""
+    n, h = int(win * SR), int(hop * SR)
+    if y.shape[-1] < n * 2:
+        L = float(lufs(y))
+        return 0.0, L
+    from .dsp import k_weight
+    k = k_weight(y)
+    cs = np.concatenate([[0.0], np.cumsum(np.sum(k ** 2, axis=0))])
+    st_ = np.arange(0, k.shape[-1] - n, h)
+    z = (cs[st_ + n] - cs[st_]) / n
+    lk = -0.691 + 10 * np.log10(z + 1e-12)
+    g = lk[lk > -70]
+    if len(g) < 3:
+        return 0.0, float(np.max(lk))
+    rel = -0.691 + 10 * np.log10(np.mean(10 ** ((g + 0.691) / 10))) - 20
+    g = g[g > rel]
+    return float(np.percentile(g, 95) - np.percentile(g, 10)), float(np.max(lk))
+
+
+def mix_report(y, song=None, spb=None, tone=None, low_env=None, dyn_eq=None):
     """Quality check of a finished master - what a mastering engineer looks at:
     loudness (LUFS), true peak (dBTP, 4x oversampled), peak-to-loudness ratio (PLR - how much punch the limiter left),
-    stereo correlation (+1 mono ... 0 wide ... <0 phasey), low-end mono-compatibility (side energy under 120 Hz) and
-    section contrast (how much louder the big sections are than the quiet ones). Returns numbers + plain warnings."""
+    loudness range (LRA) and the loudest 3-second moment, stereo correlation (+1 mono ... 0 wide ... <0 phasey),
+    how much quieter the song gets folded to mono, low-end mono-compatibility (side energy under 120 Hz), section
+    contrast (how much louder the big sections are than the quiet ones), the tonal balance against the genre's
+    reference records, and how often the kick and the bass hit the low end at the same moment.
+    Returns numbers + plain warnings."""
     from .dsp import lufs as _lufs
     y = np.asarray(y, np.float64)
     L = float(_lufs(y))
@@ -256,6 +280,19 @@ def mix_report(y, song=None, spb=None):
     low_side = 10 * np.log10((np.mean(lo_s ** 2) + 1e-12) / (np.mean(lo_m ** 2) + 1e-12))
     good = [v for v in sl if v > -60]
     contrast = (float(np.percentile(good, 90)) - float(np.percentile(good, 20))) if len(good) > 4 else 0.0
+    lra, st_max = loudness_range(y)
+    mono_drop = L - float(_lufs(np.vstack([m, m])))       # how much loudness goes missing in mono (phasey parts cancel)
+    tone_dev = None
+    if tone and len(tone) == 9:
+        bb = band_balance(y)
+        tone_dev = [round(float(a - b), 1) for a, b in zip(bb, tone)]
+    kb_overlap = None        # share of the kick hits where the bass's low end is strong at the same moment (info:
+    if low_env and low_env.get('kick') is not None and low_env.get('bass') is not None:   # sidechain / dodge handle it)
+        k_, b_ = low_env['kick'], low_env['bass']
+        n_ = min(len(k_), len(b_))
+        k_, b_ = k_[:n_] / (np.max(k_[:n_]) + 1e-9), b_[:n_] / (np.max(b_[:n_]) + 1e-9)
+        hit = k_ > 0.5
+        kb_overlap = round(float(np.mean(b_[hit] > 0.5)), 2) if np.any(hit) else 0.0
     warn = []
     if tp > -0.9:
         warn.append('true peak above -1 dBTP')
@@ -263,12 +300,22 @@ def mix_report(y, song=None, spb=None):
         warn.append('very squashed (little punch left)')
     if corr < 0.15:
         warn.append('very wide / phasey stereo - check in mono')
+    if mono_drop > 1.5:
+        warn.append(f'loses {mono_drop:.1f} dB in mono (wide parts cancel out)')
     if low_side > -12:
         warn.append('stereo low end (bass not mono)')
     if contrast < 2.0 and len(good) > 20:
         warn.append('sections all equally loud (little contrast)')
+    if tone_dev:
+        names = ('sub', 'bass', 'low-mids', 'mids', 'upper mids', 'presence', 'highs', 'air', 'top air')
+        far = [(names[i], d) for i, d in enumerate(tone_dev) if abs(d) > 4.5 and i < 8]
+        if far:
+            warn.append('tone vs genre refs: ' + ', '.join(f"{n} {'+' if d > 0 else ''}{d:.0f} dB" for n, d in far[:3]))
     return dict(lufs=round(L, 1), true_peak=round(float(tp), 1), plr=round(float(plr), 1), correlation=round(corr, 2),
-                low_side_db=round(float(low_side), 1), section_contrast=round(contrast, 1), warnings=warn)
+                low_side_db=round(float(low_side), 1), section_contrast=round(contrast, 1), lra=round(lra, 1),
+                st_max=round(st_max, 1), mono_drop=round(float(mono_drop), 1), tone_dev=tone_dev,
+                kick_bass_overlap=kb_overlap, dyn_eq=dyn_eq or {}, warnings=warn)
+
 
 def auto_lp(buf, cut, block=256):
     """A 12 dB low-pass whose cutoff follows `cut` (Hz per sample), in blocks with carried state; blocks where it is
@@ -526,7 +573,7 @@ class Renderer:
             key = ('drum', name, var)
             sig = self.cache.get(key)
             if sig is None:
-                base = self._drum(name, inst)                     # make sure take 0 exists first (stable order)
+                self._drum(name, inst)                            # make sure take 0 exists first (stable order)
                 saved = self.cache.pop(('drum', name))
                 try:
                     sig = self._drum(name, inst)
@@ -807,6 +854,7 @@ class Renderer:
         self._hats = {}
         self._dly_extra = {}
         self._dodge = None
+        self.low_env = {}                                   # layer -> 10 ms peak envelope below 100 Hz (kick, bass)
         drums = np.zeros((2, L), dtype=np.float32)
         rev_send = np.zeros((2, L), dtype=np.float32)
         dly_send = np.zeros((2, L), dtype=np.float32)
@@ -920,6 +968,13 @@ class Renderer:
                 if tcfg['layer'] != 'fx':
                     buf[:, s0:s1] = 0
             buf *= env32[None, :]
+            if tcfg['layer'] in ('kick', 'bass') and np.any(buf):   # low-band envelopes for the kick / bass overlap check
+                lo_e = np.abs(lp(buf.mean(axis=0), 100, 2))
+                hop = 441
+                m_ = len(lo_e) // hop
+                e_ = lo_e[:m_ * hop].reshape(m_, hop).max(axis=1)
+                prev_ = self.low_env.get(tcfg['layer'])
+                self.low_env[tcfg['layer']] = e_ if prev_ is None else np.maximum(prev_[:m_], e_[:len(prev_)])
             if tcfg['rev']:
                 rev_send += buf * np.float32(tcfg['rev'] * opts.reverb)
             if tcfg['dly'] and tcfg.get('dly_time'):         # this part's own echo time (a 1/8 pluck under a dotted-8th lead)
@@ -1447,8 +1502,90 @@ def loud_part_lufs(x, win=3.0, top=0.35):
     loud = vals[vals >= thr]
     return float(10 * np.log10(np.mean(10 ** (loud / 10))))
 
+def oversampled(fn, x, factor=2):
+    """Run a non-linear stage (saturation, clipping) at `factor` x the sample rate, so the harmonics it adds above
+    the audio band are filtered off instead of folding back down as harsh, out-of-key aliasing."""
+    if x.shape[-1] < 64:
+        return fn(x)
+    u = signal.resample_poly(x, factor, 1, axis=-1)
+    return signal.resample_poly(fn(u), 1, factor, axis=-1)[..., :x.shape[-1]]
+
+
+# dynamic EQ bands on the master: (centre Hz, Q, max cut dB, how far above the song's own average the band must
+# rise before it's cut). They only act when that band builds up (a muddy chord stack, a harsh lead in the drop).
+DYN_EQ_BANDS = ((300.0, 1.1, 3.0, 2.5), (3600.0, 1.4, 3.0, 3.5))
+
+
+def dynamic_eq(x, bands=DYN_EQ_BANDS, amount=1.0, block=1024):
+    """Dynamic EQ: each band's level is followed (about 0.2 s) and compared with its own long-term level across the song.
+    Where it climbs more than `over` dB above that, a bell cut of up to `max_cut` dB follows it down, smoothly.
+    The rest of the time the band is left alone, unlike a static EQ cut that thins the whole song."""
+    if amount <= 0 or x.shape[-1] < block * 4:
+        return x, {}
+    y = np.asarray(x, np.float64)
+    stats = {}
+    mono = y.mean(axis=0)
+    nb = len(mono) // block
+    full = 10 * np.log10(uniform_filter1d(np.mean(mono[:nb * block].reshape(nb, block) ** 2, axis=1), 9) + 1e-12)
+    for f0, q, max_cut, over in bands:
+        bw = f0 / q
+        sos = signal.butter(2, [max(20.0, f0 - bw / 2) / (SR / 2), min(SR * 0.45, f0 + bw / 2) / (SR / 2)], 'band',
+                            output='sos')
+        band = signal.sosfilt(sos, y.mean(axis=0))
+        n = len(band) // block
+        if n < 4:
+            continue
+        pw = uniform_filter1d(np.mean(band[:n * block].reshape(n, block) ** 2, axis=1), 9)   # ~0.2 s: build-ups,
+        lvl = 10 * np.log10(pw + 1e-12) - full[:n]       # the band's SHARE of the mix (not its level: a drop is
+        loud = float(np.percentile(full[:n], 80))        # louder in every band - that's not a build-up)
+        live = full[:n] > loud - 4                        # judged in the full sections only: a sparse intro (piano
+        ref = float(np.median(lvl[live])) if np.any(live) else float(np.median(lvl))   # alone) isn't mud
+        cut = np.clip((lvl - ref - over) * 0.6, 0.0, max_cut) * amount
+        cut *= np.clip((full[:n] - (loud - 8)) / 4, 0, 1)
+        cut = uniform_filter1d(cut, 3)
+        if float(np.max(cut)) < 0.2:
+            stats[int(f0)] = 0.0
+            continue
+        stats[int(f0)] = round(float(np.mean(cut[cut > 0.2])), 1) if np.any(cut > 0.2) else 0.0   # avg cut when on
+        stats[f'{int(f0)}_time'] = round(float(np.mean(cut > 0.2)), 2)                             # share of the song
+        out = np.empty_like(y)
+        zi = None
+        for i in range(n + 1):                         # block-wise bell cut, coefficients per block, state carried
+            s0, s1 = i * block, min(y.shape[-1], (i + 1) * block)
+            if s0 >= s1:
+                break
+            g = -float(cut[min(i, n - 1)])
+            b, a = _peak_coeffs(f0, q, g)
+            if zi is None:
+                zi = np.zeros((2, 2))
+            for c in range(2):
+                out[c, s0:s1], zi[c] = signal.lfilter(b, a, y[c, s0:s1], zi=zi[c])
+        y = out
+    return y, stats
+
+
+def _peak_coeffs(f0, q, gain_db):
+    A = 10 ** (gain_db / 40)
+    w = 2 * np.pi * f0 / SR
+    al = np.sin(w) / (2 * q)
+    b = np.array([1 + al * A, -2 * np.cos(w), 1 - al * A])
+    a = np.array([1 + al / A, -2 * np.cos(w), 1 - al / A])
+    return b / a[0], a / a[0]
+
+
+def mono_safe_width(mid, side, w, min_corr=0.2):
+    """Width guard: the widest setting (up to `w`) whose left / right correlation stays at or above `min_corr`, so a
+    wide genre still sounds wide but doesn't turn phasey and fall apart in mono (phones, club PAs, radio).
+    Correlation of (m + w s, m - w s) = (M - w^2 S) / (M + w^2 S), with M, S the mid / side energies."""
+    M = float(np.mean(mid[::4] ** 2)) + 1e-12
+    S = float(np.mean(side[::4] ** 2)) + 1e-12
+    w_max = np.sqrt(M * (1 - min_corr) / ((1 + min_corr) * S))
+    return float(min(w, max(w_max, min(w, 0.6))))     # (never narrower than 0.6 just to pass the guard)
+
+
 def master(x, cfg, log=print):
-    log('   mastering: EQ > glue comp > stereo image > saturation > limiter')
+    master.last_dyn_eq = {}
+    log('   mastering: EQ > dynamic EQ > glue comp > stereo image > saturation > limiter')
     x = hp(x, 28)
     l0 = lufs(x)
     x *= 10 ** ((-18 - l0) / 20)
@@ -1466,16 +1603,22 @@ def master(x, cfg, log=print):
         x = lp(x, 9500)
         x = tape_wobble(x, cfg.get('wobble', 1.0))
         x = soft(x * 1.4, 1.3) / 1.4
+    if cfg.get('dyn_eq', 1.0) > 0:     # tame low-mid build-up / harshness only where it happens
+        x, master.last_dyn_eq = dynamic_eq(x, amount=float(cfg.get('dyn_eq', 0.6 if gentle else 1.0)))
     if gentle:     # acoustic / orchestral: keep the dynamics, no pumping glue
         x = compressor(x, thresh=-24, ratio=1.3, attack=0.05, release=0.4, win=0.03)
     else:
         x = compressor(x, thresh=cfg.get('glue_thresh', -14), ratio=2.0, attack=0.025, release=0.2, win=0.02)
     mid = (x[0] + x[1]) / 2
-    side = hp((x[0] - x[1]) / 2, 120, 2) * 1.15 * cfg.get('width', 1.0)
+    # width 1.0 = the mix as it is (it used to widen every song by 15%); the genre's width x your width slider
+    w_ = max(0.0, min(2.0, float(cfg.get('genre_width', 1.0)) * float(cfg.get('width', 1.0))))
+    side = hp((x[0] - x[1]) / 2, 120, 2)               # below 120 Hz the side is removed: the low end stays mono
+    w_ = mono_safe_width(mid, side, w_, float(cfg.get('min_corr', 0.2)))
+    side = side * w_
     x = np.vstack([mid + side, mid - side])
     drv = 1.05 + 2.0 * cfg.get('drive', 0.0)
     if not gentle or cfg.get('drive', 0) > 0:
-        x = soft(x * 1.1, drv) / 1.1
+        x = oversampled(lambda u: soft(u * 1.1, drv) / 1.1, x)
     target = cfg.get('lufs', -10)
     # the loudness target is for the song's LOUD parts (drops, choruses), the way a mastering engineer works - not the
     # whole-song average. Aiming the average at -10 squashed a dynamic track: long quiet intros / breakdowns pulled the
@@ -1508,8 +1651,12 @@ def master(x, cfg, log=print):
         g_db += err
     # true peak: the peaks between the samples (4x oversampled) kept under -1 dBTP, so the file never clips when
     # it's converted to MP3 / AAC or played through a DAC that reconstructs the waveform
-    tp = float(np.max(np.abs(signal.resample_poly(y, 4, 1, axis=-1)))) if y.size else 0.0
     ceil_ = 10 ** (-1.0 / 20)
-    if tp > ceil_:
-        y = y * (ceil_ / tp)
+    tp = float(np.max(np.abs(signal.resample_poly(y, 4, 1, axis=-1)))) if y.size else 0.0
+    if tp > ceil_:                          # a last overshoot: limit just those peaks a little harder (turning the whole
+        over_db = 20 * np.log10(tp / ceil_)    # song down for one peak used to land it under its loudness target)
+        y = limiter(y, ceiling_db=-1.0 - over_db - 0.05)
+        tp = float(np.max(np.abs(signal.resample_poly(y, 4, 1, axis=-1))))
+        if tp > ceil_:
+            y = y * (ceil_ / tp)
     return y

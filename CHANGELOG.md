@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.76.0
+- **One tune per song** (Feel card > **Melody theme**, on by default):
+  - The verse, chorus and alternate melodies now grow from one motif instead of being written separately.
+  - The chorus states the motif in full.
+  - The alternate sections move it to their own chords, turn it upside down or sequence it a step higher.
+  - The verse plays it lower and thinner, and climbs toward the chorus.
+  - Arpeggio, riff and ostinato leads replay the main figure on the other sections' chords.
+  - Arabic maqam genres keep their free, taqsim-like lines.
+  - "Separate melodies" brings back the old way. From the command line: `--motif free`.
+- **Mastering fixes:**
+  - The master's saturation now runs oversampled, so bright, loud genres lose the harsh fold-back distortion.
+  - **Width:** 1.0 now means "as mixed". The master used to widen every song by 15%.
+  - Each genre's own width setting now works (it was being overwritten by the width slider).
+  - **Mono-safe width:** a wide genre is pulled back only as far as needed to stay mono-compatible.
+  - **True peak:** the last stray peaks over -1 dBTP are limited on their own. The whole song used to be turned down for them, which left it under its loudness target.
+  - **Dynamic EQ** (300 Hz and 3.6 kHz): cuts low-mid build-up and harshness only in the full sections where they happen, and leaves the rest of the song alone.
+  - Loudness (LUFS) is now measured with the exact standard filters; it read about 0.2 dB low before.
+- **New exports:** **WAV 24-bit** (no dither) and **FLAC** (needs ffmpeg), in the export chips.
+- **Mix check additions:**
+  - loudness range (LRA) and the loudest 3-second moment;
+  - how much quieter the song gets in mono;
+  - how far the tone is from the genre's reference records, band by band;
+  - how often the kick and bass hit the low end together;
+  - what the dynamic EQ did.
+- New fast test suite: `python -m tests.dsp_checks`.
+
 ## 1.75.0
 - **Extra instruments** (Parts panel > **+ Add instrument**): add as many rows as the arrangement needs, beyond bass / chords / pad / arp / lead.
   - Each extra doubles the melody, chords, pad, arp or bass, or plays the counter-melody (added when the song doesn't have one).

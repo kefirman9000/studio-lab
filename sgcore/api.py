@@ -344,12 +344,23 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     log(f'   master: {loud:.1f} LUFS, peak {peak:.1f} dBFS')
     try:
         from .render import mix_report
-        info['mix_report'] = mix_report(out)
+        info['mix_report'] = mix_report(out, song, tone=song['st']['master'].get('tone'), low_env=getattr(r, 'low_env', None),
+                                        dyn_eq=getattr(master, 'last_dyn_eq', None))
         mr = info['mix_report']
         log(f"   mix check: {mr['true_peak']} dBTP, PLR {mr['plr']} dB, correlation {mr['correlation']}, low-end side "
             f"{mr['low_side_db']} dB, section contrast {mr['section_contrast']} dB" + (' - ' + '; '.join(mr['warnings']) if mr['warnings'] else ' - OK'))
     except Exception as e:                                 # the report is a bonus - never fail a render for it
         log(f'   (mix check skipped: {e})')
+    if 'wav24' in outputs or 'flac' in outputs:          # the master at full resolution: 24-bit, no dither
+        w24 = dsp.write_wav(os.path.join(outdir, title + '_24bit.wav'), out, bits=24)
+        if 'flac' in outputs:
+            fl = dsp.write_flac(w24, w24[:-4] + '.flac')
+            if fl:
+                files['flac'] = fl
+        if 'wav24' in outputs:
+            files['wav24'] = w24
+        else:
+            os.remove(w24)
     if 'mp3' in outputs and have_ffmpeg():
         mp3 = dsp.write_mp3(wav, wav[:-4] + '.mp3', 320, dict(title=name, genre=info['style'], artist='Studio Lab'))
         if mp3:

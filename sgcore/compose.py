@@ -99,6 +99,7 @@ class Options:
     repetition: float = 0.5       # 0..1 how much the melody repeats its opening idea (catchy loop <-> developing line)
     melody_range: float = 0.5     # 0..1 narrow (a few notes) <-> wide (big leaps)
     chord_speed: str = None       # None = style | slow (chords last twice as long) | fast (change twice as often)
+    motif: str = 'song'           # song (verse / chorus / alt melodies grow from one motif) | free (each written on its own)
     rotation: str = 'auto'        # instrument rotation between sections: auto | off | some | lots
     avoid: dict = field(default_factory=dict)          # role -> instruments your recent songs used (picked less often)
     title: str = None             # song name (front of every exported file name); None = an invented name that fits the song
@@ -668,6 +669,7 @@ def resolve_style(opts, rnd=None, mood=None):
         m['lufs'] = opts.loudness
     m['air'] = m.get('air', 1.5) + 3.0 * opts.brightness
     m['low'] = m.get('low', 1.0) + opts.bass_boost
+    m['genre_width'] = float(st['master'].get('width', 1.0))     # the genre's own width (it used to be overwritten)
     m['width'] = opts.width
     m['drive'] = opts.drive
     if opts.lofi is not None:
@@ -782,11 +784,40 @@ def shape_melody(notes, phrase_bars, key, opts, rnd):
     return notes
 
 
-def gen_melody(key, prog, chord_bars, st, rnd, complexity):
+def _thin_cell(rh, rnd):
+    """A verse version of a rhythm cell: the off-beat notes thinned out, the kept notes held a little longer."""
+    keep = [n for n in rh if n[0] % 4 == 0 or rnd.random() < 0.45]
+    if len(keep) < 2:
+        keep = list(rh[:2])
+    out = []
+    for i, (step, l, c) in enumerate(keep):
+        nxt = keep[i + 1][0] if i + 1 < len(keep) else 16
+        out.append((step, max(l, min(nxt - step, l * 2)), c))
+    return out
+
+
+def theme_device(notes, role, rnd):
+    """Lead devices (arps, riffs, ostinatos ...) share the song's idea by replaying the main figure's seed on the
+    other sections' chords; the verse version drops some of the off-beat notes."""
+    if role != 'verse':
+        return notes
+    return [n for n in notes if abs(n[0] * 4 - round(n[0] * 4)) > 1e-6 or round(n[0] * 4) % 4 == 0 or rnd.random() < 0.6]
+
+
+def gen_melody(key, prog, chord_bars, st, rnd, complexity, theme=None, role='main'):
+    """theme: a dict shared by the song's melodies (main first, then alt / verse). The main melody writes its opening
+    two-bar motif into it - rhythm cells and the notes relative to the first chord - and the alt and verse melodies
+    are built from that motif (moved to their own chords; the alt one inverted or sequenced, the verse one lower and
+    sparser), so a song has one tune in different shapes instead of three unrelated ones. theme=None: the old way."""
     from .leads import GENERATORS
     dev = st.get('lead_device', 'hook')
     if dev in GENERATORS:                              # genre lead device (arpeggio, riff, ostinato, bell, call, chops)
-        return GENERATORS[dev](key, prog, chord_bars, st, rnd, complexity)
+        if theme is None:
+            return GENERATORS[dev](key, prog, chord_bars, st, rnd, complexity)
+        if 'dev_seed' not in theme:
+            theme['dev_seed'] = rnd.random()
+        notes, pb = GENERATORS[dev](key, prog, chord_bars, st, random.Random(theme['dev_seed']), complexity)
+        return theme_device(notes, role, random.Random(theme['dev_seed'] + 1)), pb
     phrase_bars = 2 * len(prog) * chord_bars
     fam = PHRASE_FAMILY.get(st.get('name'), 'sparse' if st.get('category') == 'Orchestral' else 'sung')
     if st.get('meter'):
@@ -802,12 +833,35 @@ def gen_melody(key, prog, chord_bars, st, rnd, complexity):
     idx = list(range(len(pool)))
     rnd.shuffle(idx)
     rr = [pool[idx[i % len(idx)]] for i in range(4)]
-    plan8 = [rr[i] for i in rnd.choice(PHRASE_PLANS)]
+    plan = rnd.choice(PHRASE_PLANS)
     lo, hi = -3, 10
     d = prog[0] + rnd.choice([0, 2, 4, 4, 7])
     while d > hi:
         d -= 7
     contour = rnd.choice(['arch', 'rise', 'fall', 'wave', 'valley', 'arch'])   # the phrase's overall shape
+    given = None                                     # (b8, i) -> degree: the song's motif, placed on this melody's chords
+    if theme is not None and theme.get('cells'):
+        cells = theme['cells']
+        if role == 'verse':
+            cells = [_thin_cell(c, rnd) for c in cells]
+        rr[plan[0]], rr[plan[1]] = cells[0], cells[1] if plan[1] != plan[0] else cells[0]
+        shift = prog[0] - theme['root']
+        shift -= 7 * round(shift / 7) if abs(shift) > 3 else 0         # nearest copy of the new chord root
+        mode = 'lower' if role == 'verse' else rnd.choice(['sequence', 'invert', 'sequence', 'same'])
+        deg = {tuple(int(x) for x in k_.split(',')): v for k_, v in theme['deg'].items()}   # (JSON-safe keys)
+        first = deg.get((0, 0), prog[0])
+        given = {}
+        for k_, v in deg.items():
+            if mode == 'invert':
+                v = first - (v - first)              # the motif turned upside down around its first note
+            elif mode == 'lower':
+                v -= 2                               # the verse sits a little lower than the chorus
+            elif mode == 'sequence':
+                v += rnd.choice([1, 2, -1]) if k_ == (0, 0) else 0
+            given[k_] = max(lo, min(hi, v + shift))
+        if role == 'verse':
+            contour = rnd.choice(['rise', 'valley', 'wave'])          # verses climb toward the chorus
+    plan8 = [rr[i] for i in plan]
     shape = {'arch': lambda x: 0.3 + 0.6 * math.sin(math.pi * x), 'rise': lambda x: 0.2 + 0.7 * x, 'fall': lambda x: 0.85 - 0.6 * x,
              'wave': lambda x: 0.5 + 0.3 * math.sin(4 * math.pi * x), 'valley': lambda x: 0.8 - 0.6 * math.sin(math.pi * x)}[contour]
     seq_shift = rnd.choice([0, 1, 2, 2, -1, 3])          # bars 3-4 restate bars 1-2 a step or two higher (a sequence)
@@ -828,7 +882,9 @@ def gen_melody(key, prog, chord_bars, st, rnd, complexity):
         reuse = b8 in (2, 3, 4, 5)
         src = b8 % 2
         for i, (step, l, c) in enumerate(rh):
-            if reuse and (src, i) in motif:
+            if given is not None and b8 < 2 and (bar < 8 or phrase_bars <= 8) and (b8, i) in given:
+                d = given[(b8, i)]                         # the song's motif, on this melody's chords
+            elif reuse and (src, i) in motif:
                 d = motif[(src, i)] + (seq_shift if b8 in (2, 3) else 0)
             else:
                 d += rnd.choices(steps, w)[0]
@@ -869,6 +925,9 @@ def gen_melody(key, prog, chord_bars, st, rnd, complexity):
             elif lang == 'bebop' and strong and lrnd.random() < 0.12 + 0.2 * complexity and t - 0.25 >= prev_end:
                 notes.append((t - 0.25, 0.22, midi - 1, vel * 0.8))          # chromatic approach from below
             notes.append((t, ln / 4 * 0.92, midi, vel))
+    if theme is not None and not theme.get('cells') and role == 'main':
+        theme.update(cells=[[list(n) for n in plan8[0]], [list(n) for n in plan8[1]]], root=prog[0],
+                     deg={f'{a},{b}': v for (a, b), v in motif.items()})
     return notes, phrase_bars
 
 
@@ -1153,9 +1212,13 @@ def compose(opts):
     st['chord_bars'] = cb
     chord_size = st['chord_size'] + (1 if cx > 0.72 else 0) - (1 if cx < 0.28 and st['chord_size'] > 3 else 0)
     chord_size = max(3, min(5, chord_size))
-    mel_main, ph_bars = gen_melody(key, prog_main, cb, st, rnd_m, cx)
-    mel_alt, ph_alt = gen_melody(key, prog_alt, cb, st, rnd_m, cx)
-    mel_verse, ph_verse = gen_melody(key, prog_verse, cb, st, rnd_m, cx)
+    from .theory import MAQAM_QUARTER
+    theme = {} if (getattr(opts, 'motif', 'song') or 'song') != 'free' and key.scale_name not in MAQAM_QUARTER else None
+    # (one tune for the whole song; maqam melodies stay free - modal, taqsim-like lines that keep finding the half-flat notes)
+    mel_main, ph_bars = gen_melody(key, prog_main, cb, st, rnd_m, cx, theme, 'main')
+    mel_alt, ph_alt = gen_melody(key, prog_alt, cb, st, rnd_m, cx, theme, 'alt')
+    mel_verse, ph_verse = gen_melody(key, prog_verse, cb, st, rnd_m, cx, theme, 'verse')
+    st['_motif'] = theme
     mel_main, mel_alt, mel_verse = [shape_melody(x, p_, key, opts, random.Random(opts.seed * 53 + i_))
                                     for i_, (x, p_) in enumerate(((mel_main, ph_bars), (mel_alt, ph_alt), (mel_verse, ph_verse)))]
     lead_k = lead_octave_shift(mel_main, st)            # same register in every key (not an octave higher in B than in C)
@@ -1256,7 +1319,8 @@ def compose(opts):
         prog = prog_alt if opts_s.get('alt') else (prog_verse if is_verse else prog_main)
         mel, ph = (mel_alt, ph_alt) if opts_s.get('alt') else ((mel_verse, ph_verse) if is_verse else (mel_main, ph_bars))
         if (ed.get('seeds') or {}).get('melody') is not None:
-            mel, ph = gen_melody(key, prog, cb, st, random.Random(f"{ed['seeds']['melody']}-melody-edit"), cx)
+            mel, ph = gen_melody(key, prog, cb, st, random.Random(f"{ed['seeds']['melody']}-melody-edit"), cx,
+                                 st.get('_motif') if ed.get('vary') is not None else None, 'alt')
             mel = [(a, b_, m + lead_k, v) for a, b_, m, v in mel]
         if opts_s.get('build'):
             seq = st.get('build_seq') or [st.get('build_style', 'roll')]

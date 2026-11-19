@@ -317,10 +317,27 @@ def limiter(x, ceiling_db=-1.0, lookahead=0.005, release=0.08, hold=0.012):
     return np.clip(y, -c, c)
 
 
+def k_weight(x):
+    """ITU-R BS.1770 K-weighting, the spec's two filters re-derived exactly for this sample rate (the same way the
+    reference meters do). The plain cookbook shelf it replaces read ~0.2 dB low on a 1 kHz tone."""
+    f0, G, Q = 1681.974450955533, 3.999843853973347, 0.7071752369554196
+    K = np.tan(np.pi * f0 / SR)
+    Vh = 10 ** (G / 20)
+    Vb = Vh ** 0.4996667741545416
+    a0 = 1 + K / Q + K * K
+    b1 = [(Vh + Vb * K / Q + K * K) / a0, 2 * (K * K - Vh) / a0, (Vh - Vb * K / Q + K * K) / a0]
+    a1 = [1.0, 2 * (K * K - 1) / a0, (1 - K / Q + K * K) / a0]
+    f0, Q = 38.13547087602444, 0.5003270373238773
+    K = np.tan(np.pi * f0 / SR)
+    a0 = 1 + K / Q + K * K
+    a2 = [1.0, 2 * (K * K - 1) / a0, (1 - K / Q + K * K) / a0]
+    y = signal.lfilter(b1, a1, x, axis=-1)
+    return signal.lfilter([1.0, -2.0, 1.0], a2, y, axis=-1)
+
+
 def lufs(x):
     """Integrated loudness, ITU-R BS.1770 (K-weighting + gating)."""
-    y = eq(x, 'highshelf', 1681.97, 0.7072, 4.0)
-    y = eq(y, 'highpass', 38.135, 0.5003)
+    y = k_weight(x)
     blk, hop = int(0.4 * SR), int(0.1 * SR)
     cs = np.concatenate([[0.0], np.cumsum(np.sum(y ** 2, axis=0))])
     starts = np.arange(0, y.shape[1] - blk, hop)
@@ -411,10 +428,19 @@ def write_wav_float(path, x):
         f.write(data)
 
 
-def write_wav(path, x, rng=None):
-    """16-bit stereo WAV with TPDF dither."""
+def write_wav(path, x, rng=None, bits=16):
+    """Stereo WAV. 16-bit gets TPDF dither (the noise that keeps quiet fades smooth at 16 bits); 24-bit needs none."""
     rng = rng or RNG
     x = np.clip(np.asarray(x, dtype=np.float64), -1, 1)
+    if bits == 24:
+        i32 = np.clip(np.round(x * 8388607), -8388608, 8388607).astype('<i4')
+        raw = i32.T.reshape(-1).view(np.uint8).reshape(-1, 4)[:, :3].tobytes()   # little-endian: drop the top byte
+        with wave.open(path, 'wb') as w:
+            w.setnchannels(2)
+            w.setsampwidth(3)
+            w.setframerate(SR)
+            w.writeframes(raw)
+        return path
     d = (rng.random(x.shape) - rng.random(x.shape)) / 32768.0
     i16 = np.clip(np.round((x + d) * 32767), -32768, 32767).astype('<i2')
     with wave.open(path, 'wb') as w:
@@ -422,6 +448,22 @@ def write_wav(path, x, rng=None):
         w.setsampwidth(2)
         w.setframerate(SR)
         w.writeframes(i16.T.tobytes())
+    return path
+
+
+def write_flac(wav_path, flac_path):
+    """Lossless FLAC (24-bit source -> 24-bit FLAC) through ffmpeg; None when ffmpeg isn't installed."""
+    import shutil
+    import subprocess
+    ff = shutil.which('ffmpeg')
+    if not ff:
+        return None
+    try:
+        subprocess.run([ff, '-y', '-loglevel', 'error', '-i', wav_path, '-c:a', 'flac', '-compression_level', '8', flac_path],
+                       check=True, timeout=600, **({'creationflags': 0x08000000} if os.name == 'nt' else {}))
+        return flac_path
+    except Exception:
+        return None
 
 
 def _id3(tags):

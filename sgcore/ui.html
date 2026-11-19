@@ -344,6 +344,7 @@ body:not(.helptext) .hint.qhd{display:none !important}
       <div class="f"><label title="Strip it back: plain triads, fewer and longer notes, held chords, no counter-melody or doubling, fewer fills">Simplicity <b id="simplicityV"></b></label><input type="range" id="simplicity" min="0" max="100" value="0"></div>
       <div class="f"><label title="How much the melody repeats its opening idea: high = catchy loop, low = keeps developing">Repetition <b id="repetitionV"></b></label><input type="range" id="repetition" min="0" max="100" value="50"></div>
       <div class="f"><label title="Narrow = a few notes, chant-like · wide = big leaps">Melody range <b id="mrangeV"></b></label><input type="range" id="mrange" min="0" max="100" value="50"></div>
+      <div class="f"><label title="One tune: the verse, chorus and alternate melodies grow from one motif (moved, turned upside down, thinned). Separate: each is written on its own">Melody theme</label><select id="motif"><option value="song">One tune (motif runs through)</option><option value="free">Separate melodies</option></select></div>
       <div class="f"><label>Chord speed</label><select id="chordSpeed"><option value="">Style default</option><option value="slow">Slow (chords last twice as long)</option><option value="fast">Fast (change twice as often)</option></select></div>
       <div class="f"><label>Swing <span class="auto"><input type="checkbox" id="swingAuto" checked>style</span></label><input type="range" id="swing" min="50" max="75" value="55" disabled></div>
       <div class="f"><label>Humanize <b id="humanizeV"></b></label><input type="range" id="humanize" min="0" max="200" value="100"></div>
@@ -460,7 +461,7 @@ const LEVELS=[['drums','Drums',['kick','snare','top']],['bass','Bass',['bass']],
 let META=null, state={closed:(()=>{try{return JSON.parse(localStorage.getItem('sl_closed')||'{}')}catch(_){return {}}})(), orch_plugin:(()=>{try{return !!localStorage.getItem('sl_orch_plugin')}catch(_){return false}})(), style:'house', part_fx:{}, part_effects:{}, lastFx:{}, drum_voices:{}, lastDrums:{}, extra_parts:[], levels:{}, octaves:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
   muted:[], instruments:{}, blend_parts:{}, outputs:(()=>{ try{ const v=JSON.parse(localStorage.getItem('sl_outs')||'null'); if(Array.isArray(v)&&v.length) return v; }catch(e){} return ['mp3','midi','lmms']; })()};
 const LAYERS=[['kick','Kick'],['snare','Snare/Clap'],['top','Hats & Perc'],['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead'],['fx','FX']];
-const OUTS=[['mp3','MP3'],['wav','WAV'],['midi','MIDI'],['stems','Stems'],['daw','DAW pack (Ableton, FL, Logic, Reaper)'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack']];
+const OUTS=[['mp3','MP3'],['wav','WAV'],['wav24','WAV 24-bit'],['flac','FLAC'],['midi','MIDI'],['stems','Stems'],['daw','DAW pack (Ableton, FL, Logic, Reaper)'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack']];
 const ROLES=[['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead']];
 let audio=new Audio(), playingId=null;
 // ------------------------------------------------------------- the levels visualizer in the top bar
@@ -775,7 +776,7 @@ const BIG_OUTS={stems:'Every part as its own WAV file - big (often 200-500 MB pe
   daw:'Projects for Ableton, FL, Logic and Reaper with every part as audio - big (often 200-500 MB per song)', pack:'A sample pack: loops and one-shots cut from the song as audio files - bigger than the song itself'};
 function renderOuts(){
   const o=$('#outs');o.innerHTML='<span class="hint" style="align-self:center">Full song exports:</span>';
-  OUTS.forEach(([k,n])=>{ if(k==='mp3'&&!META.ffmpeg) return;
+  OUTS.forEach(([k,n])=>{ if((k==='mp3'||k==='flac')&&!META.ffmpeg) return;
     const c=document.createElement('span');const on=state.outputs.includes(k);c.className='chip'+(on?' on':'');c.textContent=n;
     if(BIG_OUTS[k]) c.title=BIG_OUTS[k];
     c.onclick=()=>{state.outputs=on?state.outputs.filter(x=>x!==k):[...state.outputs,k]; try{localStorage.setItem('sl_outs',JSON.stringify(state.outputs))}catch(e){} renderOuts()};o.appendChild(c)});
@@ -850,7 +851,7 @@ function options(){
   if(Object.keys(LOCKS).length) o.part_seeds=Object.fromEntries(Object.entries(LOCKS).map(([p,l])=>[p,l.seed]));
   if($('#melStyle').value) o.melody_style=$('#melStyle').value;
   if($('#groove').value) o.groove=$('#groove').value;
-  if($('#chordSpeed').value) o.chord_speed=$('#chordSpeed').value;
+  if($('#chordSpeed').value) o.chord_speed=$('#chordSpeed').value; o.motif=$('#motif').value||'song';
   if($('#rotation').value!=='auto') o.rotation=$('#rotation').value;
   if($('#leadStyle').value) o.lead_style=$('#leadStyle').value;
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
@@ -882,7 +883,7 @@ function applyOptions(o){
   state.style=o.style; state.blend=o.blend||[]; state.blend_parts=o.blend_parts||{}; state.mood=o.mood||null;
   state.part_fx=Object.assign({},o.part_fx||{}); state.part_effects=JSON.parse(JSON.stringify(o.part_effects||{})); state.drum_voices=Object.assign({},o.drum_voices||{}); state.extra_parts=JSON.parse(JSON.stringify(o.extra_parts||[])); if(typeof renderDrumVoices==='function') renderDrumVoices();
   state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.locked={}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
-  $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#rotation').value=o.rotation||'auto';
+  $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#motif').value=o.motif||'song'; $('#rotation').value=o.rotation||'auto';
   $('#songName').value=o.title||''; $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
   $('#brightness').value=(o.brightness||0)*100; $('#reverb').value=(o.reverb??1)*100; $('#delay').value=(o.delay??1)*100; $('#width').value=(o.width??1)*100;
   $('#bass').value=o.bass_boost||0; $('#drive').value=(o.drive||0)*100;

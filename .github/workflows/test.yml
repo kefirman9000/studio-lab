@@ -30,7 +30,7 @@ jobs:
       fail-fast: false
       matrix:
         suite: ['smoke --shard 1/3', 'smoke --shard 2/3', 'smoke --shard 3/3', 'genres', 'features',
-                'vstpacks', 'samplelibs', 'appmisc', 'mixcheck']
+                'vstpacks', 'samplelibs', 'appmisc', 'mixcheck', 'dsp_checks']
     name: ${{ matrix.suite }}
     steps:
       - uses: actions/checkout@v4
