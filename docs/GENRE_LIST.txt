@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 320 GENRES  (version 1.56.7)
+STUDIO LAB - ALL 321 GENRES  (version 1.57.1)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 1.56
+* = new in 1.57
 
 ========================================================================
-ELECTRONIC  (163)
+ELECTRONIC  (164)
 ========================================================================
 
 House & Disco  (28)
@@ -48,7 +48,7 @@ Techno & Trance  (14)
     Late-90s trance-pop  [trance_pop_90s]
     Hard trance / hands-up  [hard_trance]
     UK bass / 130  [uk_bass_130]
-    UK tribal techno-bass (broken kicks, rolling percussion)  [uk_tribal_techno]  *
+    UK tribal techno-bass (broken kicks, rolling percussion)  [uk_tribal_techno]
     Hard techno (150)  [hard_techno]
     Dub techno  [dub_techno]
 
@@ -62,10 +62,10 @@ Dubstep, Garage & Bass  (24)
     Deep Dubstep - sparse & eerie  [deep_dubstep_minimal]
     Deep dubstep - rollers (sub-weight)  [deep_dubstep_rollers]
     Deep dubstep - rolling percussion (140)  [deep_dubstep_rolling]
-    Steppy halftime / acid step (140)  [steppy_halftime]  *
-    Sub pressure 140 (dark, all sub)  [sub_pressure_140]  *
-    Emotive 2-step house (vocal chops, warm keys)  [emotive_2step]  *
-    Rolling atmospheric bass (wonky, wide)  [rolling_atmos_bass]  *
+    Steppy halftime / acid step (140)  [steppy_halftime]
+    Sub pressure 140 (dark, all sub)  [sub_pressure_140]
+    Emotive 2-step house (vocal chops, warm keys)  [emotive_2step]
+    Rolling atmospheric bass (wonky, wide)  [rolling_atmos_bass]
     Chipmunk 2-step (pitched vocal chops)  [chipmunk_2step]
     Glitch future bass (chopped vocals, 154)  [glitch_future_bass]
     Future Bass  [future_bass]
@@ -99,7 +99,7 @@ Drum & Bass, Breaks & Hard  (19)
     Big beat  [big_beat]
     UK hardcore / happy hardcore  [uk_hardcore]
 
-Hip-Hop, Trap & Phonk  (26)
+Hip-Hop, Trap & Phonk  (27)
     Trap  [trap]
     UK Drill  [uk_drill]
     UK road rap  [uk_road_rap]
@@ -114,6 +114,7 @@ Hip-Hop, Trap & Phonk  (26)
     House Phonk  [house_phonk]
     Brazilian Phonk  [brazilian_phonk]
     Hard trap (brass & strings)  [hard_trap]
+    Trap metal (clipped 808s, drop-tuned guitars)  [trap_metal]  *
     Bass-warp trap (808 switch-ups)  [bass_warp_trap]
     Bass-warp trap - fast (160)  [bass_warp_fast]
     Switch-up 808 (no two bars alike)  [switchup_808]
@@ -153,10 +154,10 @@ Afro, Latin & Caribbean  (8)
 Chill, Lo-fi & Ambient  (14)
     Lo-fi Hip Hop  [lofi]
     Downtempo  [downtempo]
-    Balearic chill (sunset guitar, slow house)  [balearic_chill]  *
-    Sunlit chillwave (live drums, chorus guitar, analog synths)  [sunrise_chillwave]  *
-    Hazy downtempo (pumping pads, dusty break, wide)  [hazy_downtempo]  *
-    Analog arp drive (pulsing sequence, pumping pads)  [analog_arp_drive]  *
+    Balearic chill (sunset guitar, slow house)  [balearic_chill]
+    Sunlit chillwave (live drums, chorus guitar, analog synths)  [sunrise_chillwave]
+    Hazy downtempo (pumping pads, dusty break, wide)  [hazy_downtempo]
+    Analog arp drive (pulsing sequence, pumping pads)  [analog_arp_drive]
     ambient  [ambient]
     Ambient beat (dark, sub-heavy)  [ambient_beat]
     Vaporwave  [vaporwave]
@@ -215,7 +216,7 @@ Rock & Metal  (26)
     Surf rock (60s)  [surf_rock]
     Shoegaze  [shoegaze]
     Post-rock  [post_rock]
-    Math rock (tapped guitars, odd meters)  [math_rock]  *
+    Math rock (tapped guitars, odd meters)  [math_rock]
     Pop-punk / emo  [pop_punk]
     Doom / stoner metal  [doom_metal]
     Stoner rock - raga / psych (sitar, tabla)  [stoner_raga]
@@ -226,7 +227,7 @@ Rock & Metal  (26)
 Pop & Indie  (11)
     pop  [pop]
     Bedroom / indie pop  [bedroom_pop]
-    Velvet pop (soft, warm, dark)  [velvet_pop]  *
+    Velvet pop (soft, warm, dark)  [velvet_pop]
     Chamber Pop  [chamber_pop]
     City Pop  [city_pop]
     Holiday  [holiday]
@@ -257,7 +258,7 @@ Soul, R&B & Gospel  (9)
 
 Hip-Hop  (8)
     Boom Bap  [boombap]
-    Cinematic beat tape (instrumental hip hop)  [beat_tape_cinematic]  *
+    Cinematic beat tape (instrumental hip hop)  [beat_tape_cinematic]
     Jazz Rap  [jazz_rap]
     G-Funk (West Coast)  [g_funk]
     Mid-90s smooth rap  [smooth_90s_rap]

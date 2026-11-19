@@ -391,7 +391,7 @@ GENRE_KIT.update({'holiday': 'brushes', 'western': 'vintage', 'chamber_pop': 'st
                   'boogie_rock': 'rock', 'boogie_blues_rock': 'rock', 'spooky_surf': 'vintage', 'surf_rock': 'vintage', 'monster_theme': 'vintage', 'monster_organ': 'vintage', 'nu_metal': 'rock', 'soul_sample_rap': 'vintage',
                   'new_age_chant': 'funky_drummer', 'midfi_synthfunk': 'linn', 'uk_bass_130': 'techno', 'hard_trance': 'trance',
                   'nu_disco': '909', 'piano_house_90s': '909', 'tokyo_deep_house': '909', 'smooth_90s_rap': '808',
-                  'bay_rap': '808', 'futuristic_bounce': '808', 'hard_trap': '808', 'switch_trap': '808', 'bass_warp_trap': '808', 'bass_warp_fast': '808', 'switchup_808': '808', 'switchup_808_dj': '808', 'switchup_808_hard': '808', 'switchup_mallets': '808', 'screwed_slab': '808', 'club_pop': '707',
+                  'bay_rap': '808', 'futuristic_bounce': '808', 'hard_trap': '808', 'switch_trap': '808', 'bass_warp_trap': '808', 'bass_warp_fast': '808', 'switchup_808': '808', 'switchup_808_dj': '808', 'switchup_808_hard': '808', 'switchup_mallets': '808', 'screwed_slab': '808', 'trap_metal': '808', 'club_pop': '707',
                   'garage_house': 'punchy', 'future_garage': 'vintage', 'grime': 'punchy'})
 GENRE_KIT.update({'funk_150': '808'})
 GENRE_KIT.setdefault('new_jack_swing', 'linn')       # SP-1200 / drum-machine era, gated snare

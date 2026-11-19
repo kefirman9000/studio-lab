@@ -974,6 +974,7 @@ def test_va_synth():
     spread across the stereo field, and the rebuilt classic sounds (old ones still there as *_v1)."""
     import numpy as np
     from sgcore import va
+    from sgcore.compose import Options, compose
     from sgcore.dsp import SR
     from sgcore.instruments import INSTRUMENTS, ROLE_CHOICES
     x = va.saw(np.full(SR, 3520.0), SR)
@@ -995,6 +996,9 @@ def test_va_synth():
         assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.5, k
         assert k + '_v1' in INSTRUMENTS
     assert 'warmpad_v1' in ROLE_CHOICES['pad']
+    tm = compose(Options(style='trap_metal', seed=1))
+    assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
+    assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars
     print('ok  built-in analog synth: band-limited, resonant moving filter, stereo unison; classic sounds kept')
 
 

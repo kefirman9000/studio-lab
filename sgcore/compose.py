@@ -2611,7 +2611,7 @@ def dj_effects(evs, fx, tracks, sections, amount, rnd, slow=None):
             fx.append(('djslow', beg, sec['bar'] * 4 - beg))
 
 
-VOX_SCREW = {'switchup_808', 'switchup_808_dj', 'switchup_808_hard', 'switchup_mallets', 'screwed_slab', 'memphis_phonk', 'phonk', 'house_phonk', 'brazilian_phonk',
+VOX_SCREW = {'switchup_808', 'switchup_808_dj', 'switchup_808_hard', 'switchup_mallets', 'trap_metal', 'screwed_slab', 'memphis_phonk', 'phonk', 'house_phonk', 'brazilian_phonk',
              'bass_warp_trap', 'bass_warp_fast', 'switch_trap', 'witch_house', 'cloud_rap', 'hard_trap', 'trap', 'plugg', 'rage',
              'uk_drill', 'wonky_beats', 'trip_hop', 'vaporwave', 'outsider_house'}
 VOX_STUTTER = {'jersey_club', 'juke', 'juke_raw', 'juke_house', 'footwork', 'footwork_soulful', 'footwork_dark', 'baltimore_club',

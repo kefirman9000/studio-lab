@@ -16,7 +16,7 @@ GROUPS = {
         ('Drum & Bass, Breaks & Hard', ['dnb', 'liquid_dnb', 'liquid_euphoric', 'liquid_dancefloor', 'neurofunk', 'neurofunk_lite', 'jump_up', 'jungle', 'breakcore', 'braindance', 'idm_jungle_theme', 'drill_space', 'rave_hardcore',
                                         'hardstyle', 'gabber', 'electro', 'funky_breaks', 'big_beat', 'uk_hardcore']),
         ('Hip-Hop, Trap & Phonk', ['trap', 'uk_drill', 'uk_road_rap', 'rage', 'plugg', 'cloud_rap', 'luxury_rap', 'orchestral_hiphop',
-                                   'jersey_club', 'phonk', 'memphis_phonk', 'house_phonk', 'brazilian_phonk', 'hard_trap', 'bass_warp_trap', 'bass_warp_fast', 'switchup_808', 'switchup_808_dj', 'switchup_808_hard', 'switchup_mallets', 'screwed_slab', 'switch_trap', 'wonky_beats', 'baltimore_club', 'witch_house', 'latin_trap']),
+                                   'jersey_club', 'phonk', 'memphis_phonk', 'house_phonk', 'brazilian_phonk', 'hard_trap', 'trap_metal', 'bass_warp_trap', 'bass_warp_fast', 'switchup_808', 'switchup_808_dj', 'switchup_808_hard', 'switchup_mallets', 'screwed_slab', 'switch_trap', 'wonky_beats', 'baltimore_club', 'witch_house', 'latin_trap']),
         ('Pop, R&B & Hopecore', ['synthpop', 'kpop', 'teen_pop', 'hyperpop', 'alt_rnb', 'hopecore', 'hopecore_dreamy', 'hopecore_breaks', 'club_pop', 'glitch_pop', 'freestyle']),
         ('Afro, Latin & Caribbean', ['afrobeats', 'amapiano', 'reggaeton', 'moombahton', 'dancehall', 'baile_funk', 'funk_150', 'gqom']),
         ('Chill, Lo-fi & Ambient', ['lofi', 'downtempo', 'balearic_chill', 'sunrise_chillwave', 'hazy_downtempo', 'analog_arp_drive', 'ambient', 'ambient_beat', 'vaporwave', 'new_age_chant', 'chant_downtempo', 'midfi_synthfunk', 'trip_hop', 'berlin_school']),

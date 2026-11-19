@@ -7100,6 +7100,47 @@ FORMS['hard_trap'] = [('intro', 8, {'chords', 'pad', 'top'}, {}),
                       ('break', 4, {'top', 'chords', 'pad'}, {'alt': True}),
                       ('hook', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad'}, {'drop': True}),
                       ('outro', 8, {'chords', 'top'}, {'fade': True})]
+# v1.57.1: trap metal, from the user's reference instrumental (~106 BPM with the snare on 3, a full-scale -5 dB RMS
+# master - clipped, 62% of the energy in the sub, nearly mono, E phrygian-dominant: a flat 2nd and a major 3rd)
+FORMS['trap_metal'] = [('intro', 4, {'chords', 'fx'}, {'filter_in': True}),
+                       ('verse', 8, {'kick', 'snare', 'top', 'bass', 'chords'}, {'drop': True}),
+                       ('hook', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True}),
+                       ('verse', 8, {'kick', 'snare', 'top', 'bass', 'chords'}, {'alt': True}),
+                       ('break', 2, {'chords'}, {'level': 0.8}),
+                       ('hook', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True}),
+                       ('outro', 2, {'bass', 'chords'}, {'cad': True})]
+style('trap_metal', 'Electronic',
+      'Trap metal: short, violent and loud - blown-out, clipping 808s and kicks, a half-time snare cracking on 3, hats and '
+      'rolls, drop-tuned distorted guitar chugs and power chords locked to the 808 in a sinister phrygian-dominant key, a '
+      'shrieking or eerie lead on the hook - mixed as loud as it gets, mono and slammed into the limiter',
+      bpm=(100, 112), scales=['phrygian_dominant', 'phrygian', 'harmonic_minor'], form='trap_metal', kit='808', trap_hats=True,
+      progs={'phrygian_dominant': [[0, 0, 1, 0], [0, 1, 0, 6]], 'phrygian': [[0, 0, 1, 1], [0, 1, 0, 6]],
+             'harmonic_minor': [[0, 0, 5, 4], [0, 0, 1, 4]]}, own_progs=True, chord_size=2, voicing='power',
+      sc_depth=0.25, reverb=1.2, swing=0.5, human=0.0, no_rotation=True, no_layers=True,
+      kit_override=dict(kick=dict(pitch=50, punch=200, decay=10, drive=4.5, click=0.8, len=0.22),
+                        snare=dict(bits=9, drive=3.5, snap=1.7), clap=dict(bits=9, drive=2.5)),
+      drums={'kick': ['X..XX.XXX..XX..X', 'X..X..X.X..X....', 'X.XX..X.X..XX.X.'], 'snare': [HALF, '........X.....x.'],
+             'clap': [HALF], 'ohat': ['..x.......x.....']},
+      snare_tracks=['snare', 'clap'], bass_mode='808', bass_lo=26, glide808=0.25, oct808=0.08,
+      chord_rh=['x.x.x...x.x.x...', 'x..x..x.x..x..x.', 'x-x-x-x-x-x-x-x-'], chord_center=50,
+      arp=dict(rate=2, mode='random', oct=5, prob=0.3),
+      lead_rh=['x-------x-------', 'x---x---x---x---', 'x.x.x.x.x-x-x---'], lead_oct=5, repetition=0.9,
+      gm_hint='Clipping, distorted 808 + kick; half-time snare; trap hats; drop-tuned distorted guitar chugs / power '
+              'chords; eerie bell or screech lead; slammed, mono master',
+      tracks=[T('kick', 'kick', 'kick', db=-10), T('snare', 'snare', 'snare', rev=0.1, db=-13),
+              T('clap', 'snare', 'clap', rev=0.15, db=-17), T('chat', 'top', 'chat', pan=0.1, db=-24),
+              T('ohat', 'top', 'ohat', pan=-0.1, db=-27),
+              T('bass', 'bass', '808', db=-6, sc=0.3, p=dict(drive=6.0, decay=0.4, slide=0.05)),
+              T('bass_grit', 'bass', '808', double_of='bass', octave=0, keep_inst=True, hp=180, presence=4, sc=0.6, db=-18,
+                p=dict(drive=9.0, decay=0.4, slide=0.05)),
+              T('chords', 'chords', 'sf:distguitar', rev=0.1, pan=-0.25, db=-15, presence=3),
+              T('chords_r', 'chords', 'sf:distguitar', double_of='chords', keep_inst=True, pan=0.25, db=-16, presence=3),
+              T('lead', 'lead', 'phonkbell', rev=0.3, dly=0.2, db=-18)],
+      master=dict(lufs=-6.0, air=0.0, low=4.0, drive=0.65, max_gr=9.0, width=0.5),
+      pools=dict(bass=['808'], chords=['sf:distguitar', 'sf:odguitar', 'guitar'],
+                 lead=['phonkbell', 'screech', 'leadsaw', 'bell']),
+      label='Trap metal (clipped 808s, drop-tuned guitars)')
+
 style('hard_trap', 'Electronic',
       'Hard trap (brass & strings, early 2010s - late 2010s): a menacing horn / string / choir loop in a minor key, huge '
       'distorted 808s pinned to the root, machine-gun hi-hat rolls, claps on the half-time backbeat, and the beat '

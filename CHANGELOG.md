@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.57.1
+- **New genre: Trap metal (clipped 808s, drop-tuned guitars)**, from your reference instrumental: short, violent and loud - blown-out, clipping 808s and kicks, a half-time snare cracking on 3, hats and rolls, double-tracked drop-tuned guitar chugs and power chords locked to the 808 in a sinister phrygian-dominant key, an eerie lead on the hook, mixed as loud as it gets (~-6 LUFS), mono and slammed. Voice samples get chopped & screwed in it too.
+
+
 ## 1.57.0
 - **A built-in analog synth.** The classic synth sounds are rebuilt on one proper virtual-analog voice: band-limited oscillators (saw, pulse with pulse-width modulation, a sub-octave, noise), up to 7 unison voices spread across the stereo field with free-running phases and a slow analog drift, a **resonant 24 dB low-pass filter that moves through each note** with its own envelope and key tracking, a soft drive stage in front of it, and analog-style envelopes. No install - every genre using these sounds gets the upgrade at once:
   - **Warm pad** (Juno-style: saw + moving pulse + sub, the filter opening as it swells), **Poly synth** (Prophet-style filter "bwow"), **Supersaw** (7 voices, wide), **Saw lead** (glide, delayed vibrato, a filter bite), **Soft lead** (hollow square), **Pluck** and **Stab** (the filter snapping shut), **Saw bass**, **Moog bass** and **plucked Moog bass** (fat, resonant, settling filter).

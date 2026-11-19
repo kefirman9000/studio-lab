@@ -1,8 +1,8 @@
-# Studio Lab genres (320)
+# Studio Lab genres (321)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (163)
+## Electronic (164)
 
 ### House & Disco (28)
 
@@ -109,7 +109,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Neurofunk (lighter) | `neurofunk_lite` | 172-176 | Neurofunk, lighter and more melodic: the tight 174 two-step and a dark reese, but with clearer chords, a pad underneath and a lead you can hum - less extreme sound design than full neurofunk |
 | UK hardcore / happy hardcore | `uk_hardcore` | 168-178 | UK hardcore / happy hardcore: 170+ BPM four-on-the-floor, bouncing off-beat octave bass, rolling piano chords, euphoric supersaw leads and big builds into massive major-key drops |
 
-### Hip-Hop, Trap & Phonk (26)
+### Hip-Hop, Trap & Phonk (27)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -135,6 +135,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Switch-up 808 - hard (punchy kicks) | `switchup_808_hard` | 162-172 | Switch-up 808 - hard: the switch-up 808 beat made aggressive - hard, punchy, distorted kicks that hit like a fist (a sharp click, a fast pitch drop, slammed through saturation) with the 808 ducking out of their way, cracking crushed snares and claps, a dirtier growling 808 that still switches up bar to bar, cowbell stabs, DJ slowdowns and stutters into the drops, and a loud, pressured mix |
 | Switch-up 808 - mallets (fast arpeggios) | `switchup_mallets` | 155-168 | Switch-up 808 - mallets: the switch-up 808 beat under fast, restless mallet playing - marimba and vibes in 32nd-note rolls on one note, trills, hops between chord tones, quick runs and octave bounces, each beat its own figure in motifs that change every few bars, with rests between - over the switching, leaping 808, a dark phrygian rub and the DJ edits (slowdowns into the drops, pitched hats); the mallets alone with no sub to open and close |
 | Trap | `trap` | 136-150 | Modern trap: half-time snares, rolling hi-hats, gliding 808s, dark bells |
+| Trap metal (clipped 808s, drop-tuned guitars) | `trap_metal` | 100-112 | Trap metal: short, violent and loud - blown-out, clipping 808s and kicks, a half-time snare cracking on 3, hats and rolls, drop-tuned distorted guitar chugs and power chords locked to the 808 in a sinister phrygian-dominant key, a shrieking or eerie lead on the hook - mixed as loud as it gets, mono and slammed into the limiter |
 | UK Drill | `uk_drill` | 140-145 | UK/NY drill: sliding 808s, triplet hats, offbeat snares, dark piano & strings |
 | UK road rap | `uk_road_rap` | 146-156 | UK road rap: a dark, half-time London rap beat around 150 BPM - a huge mono 808 sub sliding between the root, its leading tone and the fifth, steady ticking 8th hats with the odd roll, a hard snare on the half-time backbeat, sparse kicks, and a moody harmonic-minor piano line over low strings and choir - roomy for the bars |
 | Witch house | `witch_house` | 60-80 | Witch house: slowed, occult and hazy - half-time trap drums dragged down to 70, a booming 808, pitched-down choir and chopped vocal drones, eerie bells and murky synths drowned in reverb |

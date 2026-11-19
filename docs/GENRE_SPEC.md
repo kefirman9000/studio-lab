@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (320 genres)
+# Studio Lab - technical genre rules (321 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -2959,6 +2959,36 @@ Chopped & screwed (Houston slab): a slowed-down, syrupy hip-hop beat at 60-72 BP
 - **Mix** {'lufs': -10.0, 'air': -5.0, 'low': 4.0, 'lofi': True, 'wobble': 1.0, 'width': 0.5, 'vintage_lp': 4200} · reverb 2.0 · sc_depth 0.2
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 44, 'decay': 11}, 'snare': {'decay': 9, 'tone': 160, 'bits': 11}, 'chat': {'bits': 9, 'srate': 16000}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'chopped': 0.45, 'dj_fx': 0.9, 'dj_slow': 0.9, 'switchups': {'moves': ('roll', 'gap', 'stop', 'dive', 'chop', 'leap', 'plain', 'plain'), 'weights': {'plain': 1.5}}, 'hi_bass': {'at': 38, 'pool': ['midbass', 'reese', 'moogbass'], 'p': {'cut': 700}}, 'keep_fx': ['tapestop'], 'glide808': 0.3, 'oct808': 0.06, 'repetition': 0.9}
 - **Sound brief** Slowed, pitched-down mix; deep 808 / bass; lazy kick and dragging snare; organ / strings / Rhodes loop; chops (a beat repeated); vinyl and tape
+
+### Trap metal (clipped 808s, drop-tuned guitars) (`trap_metal`)
+
+Trap metal: short, violent and loud - blown-out, clipping 808s and kicks, a half-time snare cracking on 3, hats and rolls, drop-tuned distorted guitar chugs and power chords locked to the 808 in a sinister phrygian-dominant key, a shrieking or eerie lead on the hook - mixed as loud as it gets, mono and slammed into the limiter
+
+- **Tempo** 100-112 BPM · **scales** phrygian_dominant, phrygian, harmonic_minor · swing 0.5 (unit 16) · humanise 0.0
+- **Progressions** {'phrygian_dominant': [[0, 0, 1, 0], [0, 1, 0, 6]], 'phrygian': [[0, 0, 1, 1], [0, 1, 0, 6]], 'harmonic_minor': [[0, 0, 5, 4], [0, 0, 1, 4]]} · chord_bars 1 · chord size 2
+- **Song form** `trap_metal`: intro 4 [chords, fx] (filter_in) -> verse 8 [bass, chords, kick, snare, top] (drop) -> hook 8 [bass, chords, kick, lead, snare, top] (drop) -> verse 8 [bass, chords, kick, snare, top] (alt) -> break 2 [chords] (level=0.8) -> hook 8 [bass, chords, kick, lead, snare, top] (drop) -> outro 2 [bass, chords] (cad) · form_scale 1
+- **Drums** **kick** `X..XX.XXX..XX..X` / `X..X..X.X..X....` / `X.XX..X.X..XX.X.`; **snare** `........X.......` / `........X.....x.`; **clap** `........X.......`; **ohat** `..x.......x.....`
+- **Drum kit** 808 · preset `808`
+- **Bass** `R.......R.......` · mode `808` · lowest note 26
+- **Chord rhythm** `x.x.x...x.x.x...` / `x..x..x.x..x..x.` / `x-x-x-x-x-x-x-x-`
+- **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.3}
+- **Lead rhythm** `x-------x-------` / `x---x---x---x---` / `x.x.x.x.x-x-x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `robotic` · melody `virtuosic` · bass `808_slide` · drop `long_build` · variation `low` · culture `street` · texture `club_punchy` · rhythm `half_time` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -10 dB
+  - snare (snare): `snare` -13 dB · rev=0.1
+  - clap (snare): `clap` -17 dB · rev=0.15
+  - chat (top): `chat` -24 dB · pan=0.1
+  - ohat (top): `ohat` -27 dB · pan=-0.1
+  - bass (bass): `808` -6 dB · sc=0.3
+  - bass_grit (bass): `808` -18 dB · sc=0.6
+  - chords (chords): `sf:distguitar` -15 dB · pan=-0.25 · rev=0.1 · alternatives ['sf:odguitar', 'guitar']
+  - chords_r (chords): `sf:distguitar` -16 dB · pan=0.25
+  - lead (lead): `phonkbell` -18 dB · rev=0.3 · dly=0.2 · alternatives ['screech', 'leadsaw', 'bell']
+- **Mix** {'lufs': -6.0, 'air': 0.0, 'low': 4.0, 'drive': 0.65, 'max_gr': 9.0, 'width': 0.5} · reverb 1.2 · sc_depth 0.25
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 50, 'punch': 200, 'decay': 10, 'drive': 4.5, 'click': 0.8, 'len': 0.22}, 'snare': {'bits': 9, 'drive': 3.5, 'snap': 1.7}, 'clap': {'bits': 9, 'drive': 2.5}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 50, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': '', 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'glide808': 0.25, 'oct808': 0.08, 'repetition': 0.9}
+- **Sound brief** Clipping, distorted 808 + kick; half-time snare; trap hats; drop-tuned distorted guitar chugs / power chords; eerie bell or screech lead; slammed, mono master
 
 ### Hard trap (brass & strings) (`hard_trap`)
 
