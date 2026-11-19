@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.64.0
+- **New synths:**
+  - **Vocal chops:** short sung syllables through vowel formants, the vowel moving with the note (ah, oh, eh, oo, ee), each one levelled, with a scoop in and a clean cut out. These are the pitched vocal-chop hooks of house, future bass, tropical house, garage and DnB.
+  - **Future-bass chord:** a bright supersaw with a vocal-ish formant, swelling up after each hit (the sidechain bloom) with a little scoop, and wobbling when held.
+  - **Lo-fi keys:** a soft electric piano on worn tape, with slow wow and flutter, a dark top, gentle saturation and a little hiss.
+  - Added to the house, garage, future bass, melodic dubstep, DnB, lo-fi, jazz-rap and beat-tape genres.
+- **Mix balance checked against the reference tracks** (frequency balance and stereo width of the busiest section):
+  - The club trance remix was much darker on top than the record, so it now has more air and louder hats.
+  - Emotive deep house's top end was too dark, so it gets more air and a louder shaker.
+  - Anthemic DnB was too bright and fizzy on top, so it has less air and quieter hats and bleeps.
+
 ## 1.63.0
 - **New genre - Emotive deep house (extended mix):** built from the reference tracks' measurements. 121-124 bpm with a deep, round kick and a long low tail. The bass rolls on the off-beat 16ths and pumps hard against the kick. Shakers, an airy off-beat hat and soft claps keep the groove. Woody plucks bounce through dotted-eighth delays over a lush pad that breathes with the sidechain, with soft piano or guitar chords and a breathy, vocal-like lead. The top end is dark and warm and the mids wide. The arrangement runs DJ intro → the groove stacking up → a first main section → a long emotional breakdown → build → full return → DJ exit.
 - **New genre - Club trance remix (2000s):** a tight 909 kick at 138 with a galloping off-beat rolling bass, driving 16th hats and a punchy, syncopated tech-trance synth riff through a dotted delay. Gated supersaw chords and a wide pad fill it out. The long club arrangement has a big breakdown where the pad, a breathy lead and the chords slowly filter open, then a snare-roll build and long full sections.

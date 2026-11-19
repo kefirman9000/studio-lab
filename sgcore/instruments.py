@@ -3358,3 +3358,80 @@ GM_PROGRAM.update({'bouncebass': 39, 'pianosaw': 1})
 ROLE_CHOICES['bass'].append('bouncebass')
 ROLE_CHOICES['chords'].append('pianosaw')
 ROLE_CHOICES['arp'].append('pianosaw')
+
+
+# ----------------------------------------------------------------------------- 1.64: vocal chops, future-bass chords, lo-fi keys
+_CHOP_VOWELS = {'a': (800, 1200, 2700), 'o': (500, 850, 2600), 'e': (450, 2000, 2700), 'u': (330, 800, 2400),
+                'i': (300, 2300, 3000)}
+
+
+def v_vocalchop(m, dur, p, glide=None, mod=None):
+    """Vocal chop: a short sung syllable cut from a 'vocal' - a breathy glottal tone through three vowel formants, the
+    vowel picked from the note (so a chopped phrase moves between 'ah', 'oh', 'eh', 'oo', 'ee'), a quick scoop and a
+    hard, clean cut at the end - the pitched vocal-chop hook of house, future bass, tropical house and DnB."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.6), 0.05) * SR)
+    env = _va.adsr(gate, 0.006, 0.12, 0.85, 0.02)
+    n = len(env)
+    t = np.arange(n) / SR
+    vow = p.get('vowel') or 'aoeui'[int(m) % 5]
+    fr = f * 2 ** (-40 * np.exp(-t / 0.03) / 1200) * 2 ** (6 * np.sin(2 * np.pi * 5.5 * t) / 1200)
+    ph = np.cumsum(fr) / SR
+    src = (2 * (ph % 1.0) - 1.0)
+    src = signal.lfilter([1.0], [1, -0.7], src) * 0.5 + _rng().standard_normal(n) * 0.06
+    y = 0
+    for (fc, g, bw) in zip(_CHOP_VOWELS[vow], (1.0, 0.6, 0.3), (90, 120, 180)):
+        b, a = signal.iirpeak(min(fc, SR * 0.45) / (SR / 2), fc / bw)
+        y = y + g * signal.lfilter(b, a, src)
+    y = hp(y, 180)
+    y = y / (np.sqrt(np.mean(y[:gate] ** 2)) + 1e-9) * 0.2 * env     # every vowel at the same level
+    return np.vstack([y, np.roll(y, 30)])
+
+
+def v_fbchord(m, dur, p, glide=None, mod=None):
+    """Future-bass chord: a bright supersaw with a vocal-ish formant on top, its volume swelling up after each hit (the
+    'sidechain' bloom) and a small pitch scoop into it - the wide, wobbling chord stabs of future bass and melodic
+    dubstep (an LFO on the volume when held: `mod` = beats per wobble)."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    env = _va.adsr(gate, 0.003, 0.4, 0.85, p.get('r', 0.2))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f * 2 ** (-60 * np.exp(-t / 0.04) / 1200)
+    x = _va.jp_supersaw(fr, n, 0.55, 0.75, 1.0)
+    x = x + 0.6 * _vb._bp(x, np.full(n, 1100.0), 3.0)
+    x = _va.vcf(x, p.get('cut', 6500), 0.12, 1.25)
+    swell = 0.35 + 0.65 * (1 - np.exp(-t / 0.09))
+    if isinstance(mod, (int, float)) and mod:
+        rate = 1.0 / (mod * p.get('spb', 0.43))
+        swell = swell * (0.55 + 0.45 * (0.5 - 0.5 * np.cos(2 * np.pi * rate * t)))
+    return _hpf(x, 170) * env * swell * 0.6
+
+
+def v_lofikeys(m, dur, p, glide=None, mod=None):
+    """Lo-fi keys: a soft FM electric piano recorded to worn tape - slow pitch wow and flutter, a dark top, gentle
+    saturation and a touch of hiss under the note - the dusty, wobbly chords of lo-fi hip hop and chillhop."""
+    y = np.asarray(_va.fm_epiano(m, dur, dict(p, decay=p.get('decay', 1.3)), None), float)
+    y = np.vstack([y, y]) if y.ndim == 1 else y
+    n = y.shape[1]
+    t = np.arange(n) / SR
+    ph0 = _rng().random() * 6.28
+    wow = 1 + 0.0035 * np.sin(2 * np.pi * 0.55 * t + ph0) + 0.0008 * np.sin(2 * np.pi * 7.3 * t)
+    pos = np.cumsum(wow) - wow[0]
+    idx = np.arange(n)
+    y = np.vstack([np.interp(pos, idx, y[c], right=0.0) for c in range(2)])
+    y = lp(np.tanh(y * 1.6) / 1.4, p.get('bright', 3200))
+    hiss = hp(_rng().standard_normal(n), 4000) * 0.006 * np.minimum(t / 0.05, 1) * np.exp(-t / max(dur, 0.2))
+    return (y + hiss[None, :]) * 0.9
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('vocalchop', v_vocalchop, 'Vocal chops (pitched syllables)', ('lead', 'arp'), 54),
+        ('fbchord', v_fbchord, 'Future-bass chord (bright, blooming)', ('chords', 'pad'), 81),
+        ('lofikeys', v_lofikeys, 'Lo-fi keys (worn-tape electric piano)', ('chords', 'arp', 'lead'), 4)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)

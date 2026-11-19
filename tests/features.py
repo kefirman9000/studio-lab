@@ -1075,6 +1075,11 @@ def test_va_synth():
     assert np.array_equal(auto_lp(nz, np.full(SR, 20000.0)), nz)
     from sgcore.styles import STYLES as _S3
     assert all(_S3[g].get('filter_arc') and _S3[g].get('sc_arc') for g in ('trance', 'techno', 'progressive_trance'))
+    for k in ('vocalchop', 'fbchord', 'lofikeys'):                                       # 1.64
+        a = np.asarray(INSTRUMENTS[k](64, 0.6, {'spb': 0.43}, None, None))
+        assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.3, (k, np.abs(a).max())
+    lv = [float(np.sqrt(np.mean(np.asarray(INSTRUMENTS['vocalchop'](mm, 0.3, {})) ** 2))) for mm in range(60, 70)]
+    assert max(lv) < min(lv) * 1.2                                                        # every vowel the same level
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars
