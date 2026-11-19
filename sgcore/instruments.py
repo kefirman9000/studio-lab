@@ -2627,3 +2627,104 @@ for _name, _fn in (('warmpad', v_warmpad), ('polysynth', v_polysynth), ('supersa
         if _name in _lst and _name + '_v1' not in _lst:
             _lst.append(_name + '_v1')
     GM_PROGRAM[_name + '_v1'] = GM_PROGRAM.get(_name, 0)
+
+
+# ----------------------------------------------------------------------------- 1.58: more of the analog synth
+def v_organ(m, dur, p, glide=None, mod=None):
+    """Tonewheel organ: drawbar registration, key click, decaying percussion, tube drive and a two-rotor rotary
+    speaker (see va.tonewheel). Old drawbar lists ('bars') still play the classic sound."""
+    if p.get('bars'):
+        return INSTRUMENTS['organ_v1'](m, dur, p, glide, mod)
+    return _va.tonewheel(m, dur, p)
+
+
+def v_synthbrass(m, dur, p, glide=None, mod=None):
+    """Synth brass (OB / Prophet): detuned saws + a sub, the filter swelling open on each note and settling - the
+    'brass' of 80s anthems and synthwave."""
+    top = p.get('cut', 3200)
+    return _va.voice(m, dur, dict(p, cut=top / 3.0), glide, saw_mix=1.0, sub=0.3, unison=3, detune=12, spread=0.6, res=0.18,
+                     fenv=1.6, fa=0.07, fd=0.5, fs=0.55, amp=(p.get('a', 0.05), 0.4, 0.8, 0.25), drive=1.35,
+                     keytrack=0.4, hp=90) * 0.45
+
+
+def v_synclead(m, dur, p, glide=None, mod=None):
+    """Hard-sync lead: a slave saw synced to the note, its pitch swept by an envelope - the tearing, vocal 80s / synthwave
+    lead - with a little unison, glide and delayed vibrato."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.004, 0.3, 0.85, p.get('r', 0.2))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = np.full(n, f)
+    if glide is not None:
+        fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.06)
+    fr = fr * 2 ** (np.clip((t - 0.3) / 0.35, 0, 1) * p.get('vib', 14) * np.sin(2 * np.pi * 5.3 * t) / 1200)
+    ratio = 1.0 + p.get('sweep', 2.6) * np.exp(-t / p.get('sweep_t', 0.35)) + 0.6
+    a = _va.sync_saw(fr, ratio, n)
+    b = _va.sync_saw(fr * 2 ** (8 / 1200), ratio * 1.01, n, 0.3)
+    y = _va.vcf(np.vstack([a + 0.4 * b, b + 0.4 * a]), p.get('cut', 6000), 0.15, 1.3)
+    return y * env * 0.4
+
+
+def v_mellotron(m, dur, p, glide=None, mod=None):
+    """Tape-replay keyboard (Mellotron strings / flute): a bowed or breathy tone recorded to tape - a soft swell in, the
+    tape's wow and flutter, a little hiss, a narrow, dusty band - and every note runs out after about 8 seconds."""
+    flute = p.get('voice', 'strings') == 'flute'
+    f = float(mtof(m))
+    d = min(max(dur, 0.05), 8.0)
+    gate = int(d * SR)
+    env = _va.adsr(gate, 0.09 if not flute else 0.06, 0.4, 0.9, 0.25)
+    n = len(env)
+    t = np.arange(n) / SR
+    wow = 2 ** ((6 * np.sin(2 * np.pi * 0.55 * t + _rng().random() * 6) + 2.5 * np.sin(2 * np.pi * 7.5 * t)) / 1200)
+    fr = f * wow
+    if flute:
+        x = np.sin(2 * np.pi * np.cumsum(fr) / SR) + 0.15 * np.sin(4 * np.pi * np.cumsum(fr) / SR)
+        x += 0.25 * bp(noise(n), f, min(f * 5, 12000)) * (0.5 + 0.5 * np.exp(-t * 6))
+    else:
+        x = sum(_va.saw(fr * 2 ** (c / 1200), n, _rng().random()) for c in (-7.0, 0.0, 6.0)) / 3
+        x = _va.formant(x, 'a', 3.0) * 2.2 + 0.25 * x
+    x = bp(x, 180 if not flute else 250, 6500) + 0.01 * noise(n)
+    y = x * env
+    return np.vstack([y, np.roll(y, 120)]) * (0.5 if flute else 0.6)
+
+
+def v_dxbell(m, dur, p, glide=None, mod=None):
+    """DX7 bell / tine: the bright, glassy FM bell of 80s ballads, city pop and synthpop."""
+    return _va.fm_bell(m, dur, dict(p, index=p.get('index', 3.0), ratio=p.get('ratio', 3.5)), glide)
+
+
+def v_vocalpad(m, dur, p, glide=None, mod=None):
+    """Synth choir 'aah' pad: soft detuned saws through vowel formants, a slow swell and a gentle vibrato - the wordless
+    vocal pad of chillwave, downtempo and 80s ballads."""
+    y = _va.voice(m, dur, dict(p, cut=p.get('cut', 4500)), glide, saw_mix=1.0, unison=4, detune=14, spread=0.8, res=0.0,
+                  vib=10, vib_rate=4.8, vib_delay=0.4, amp=(p.get('a', 0.5), 0.6, 0.9, p.get('r', 1.2)), drive=1.0,
+                  keytrack=0.0)
+    return _va.formant(y, p.get('vowel', 'a'), 5.0) * 1.3
+
+
+for _name, _fn, _info, _roles in (
+        ('organ', v_organ, None, None), ('synthbrass', v_synthbrass, None, None),
+        ('synclead', v_synclead, 'Sync lead (80s hard-sync synth)', ('lead',)),
+        ('mellotron', v_mellotron, 'Mellotron strings (tape keyboard)', ('chords', 'pad', 'lead')),
+        ('dxbell', v_dxbell, 'DX bell (FM)', ('arp', 'lead', 'chords')),
+        ('vocalpad', v_vocalpad, 'Synth choir "aah" pad', ('pad', 'chords'))):
+    if _name in INSTRUMENTS and _info is None:
+        INSTRUMENTS[_name + '_v1'] = INSTRUMENTS[_name]
+        INSTRUMENT_INFO[_name + '_v1'] = (INSTRUMENT_INFO.get(_name) or _name) + ' (classic sound, before 1.58)'
+        for _role, _lst in ROLE_CHOICES.items():
+            if _name in _lst and _name + '_v1' not in _lst:
+                _lst.append(_name + '_v1')
+        GM_PROGRAM[_name + '_v1'] = GM_PROGRAM.get(_name, 0)
+    INSTRUMENTS[_name] = _fn
+    if _info:
+        INSTRUMENT_INFO[_name] = _info
+        for _role in _roles:
+            if _name not in ROLE_CHOICES[_role]:
+                ROLE_CHOICES[_role].append(_name)
+GM_PROGRAM.update({'synclead': 81, 'mellotron': 49, 'dxbell': 14, 'vocalpad': 54})
+INSTRUMENTS['mellotron_flute'] = lambda m, dur, p, glide=None, mod=None: v_mellotron(m, dur, dict(p, voice='flute'), glide, mod)
+INSTRUMENT_INFO['mellotron_flute'] = 'Mellotron flute (tape keyboard)'
+ROLE_CHOICES['lead'].append('mellotron_flute')
+ROLE_CHOICES['arp'].append('mellotron_flute')
+GM_PROGRAM['mellotron_flute'] = 73

@@ -520,9 +520,9 @@ style('synthwave', 'Electronic', '80s synthwave/retrowave: gated-reverb snares, 
       master=dict(lufs=-9.5, air=2.0, low=1.0),
       pools=dict(bass=['sawbass', 'fmbass', 'moogbass', 'reese'],
                  chords=['supersaw', 'brass', 'stab', 'epiano', 'warmpad', 'polysynth', 'synthbrass'],
-                 pad=['warmpad', 'strings', 'choir', 'solina', 'polysynth', 'glasspad'],
+                 pad=['warmpad', 'strings', 'choir', 'solina', 'polysynth', 'glasspad', 'vocalpad'],
                  arp=['pluck_saw', 'chip', 'pluck', 'stab'],
-                 lead=['leadsaw', 'supersaw_lead', 'sax', 'softlead', 'brass', 'synthbrass', 'polysynth']),
+                 lead=['leadsaw', 'supersaw_lead', 'sax', 'softlead', 'brass', 'synthbrass', 'polysynth', 'synclead']),
       form='synthwave',
       solos=['solo_sax', 'solo_gtr'])
 
@@ -543,9 +543,9 @@ style('synthpop', 'Electronic', 'Synth-pop: punchy LinnDrum-style beats, bright 
       master=dict(lufs=-9.5, air=2.0, low=1.0),
       pools=dict(bass=['sawbass', 'fmbass', 'chipbass', 'moogbass'],
                  chords=['pluck_saw', 'stab', 'epiano', 'piano', 'brass', 'polysynth', 'synthbrass'],
-                 pad=['strings', 'warmpad', 'choir', 'solina', 'glasspad'],
-                 arp=['pluck_saw', 'chip', 'pluck', 'stab'],
-                 lead=['leadsaw', 'pluck', 'softlead', 'brass', 'synthbrass']),
+                 pad=['strings', 'warmpad', 'choir', 'solina', 'glasspad', 'vocalpad'],
+                 arp=['pluck_saw', 'chip', 'pluck', 'stab', 'dxbell'],
+                 lead=['leadsaw', 'pluck', 'softlead', 'brass', 'synthbrass', 'synclead']),
       label='Synth-pop')
 
 style('electro', 'Electronic', 'Electro: robotic 808 funk, FM bass grit, zappy leads',
@@ -1344,7 +1344,7 @@ style('city_pop', 'Classic', 'City pop: 80s Japanese pop - slap-style bass, lush
       pools=dict(bass=['fmbass', 'sf:slapbass', 'sf:fingerbass', 'moogbass'],
                  chords=['epiano', 'piano', 'guitar', 'brass', 'polysynth', 'wurli', 'synthbrass'],
                  pad=['strings', 'warmpad', 'solina', 'sf:slowstrings'],
-                 arp=['guitar', 'sf:cleanguitar', 'epiano', 'marimba', 'mutedgtr', 'vibes'],
+                 arp=['guitar', 'sf:cleanguitar', 'epiano', 'marimba', 'mutedgtr', 'vibes', 'dxbell'],
                  lead=['sax', 'sf:tenorsax', 'brass', 'leadsaw', 'epiano', 'flute', 'synthbrass', 'trumpet']),
       label='City Pop')
 
@@ -2524,7 +2524,7 @@ style('beat_tape_cinematic', 'Classic',
               T('lead', 'lead', 'brass', rev=0.45, db=-19),
               T('vinyl', 'fx', 'vinyl', db=-38)],
       master=dict(lufs=-11.0, air=-3.5, low=2.0, lofi=True, wobble=0.6, vintage_lp=6000),
-      pools=dict(bass=['sinebass', 'upright', 'ebass'], chords=['strings', 'sf:slowstrings', 'warmpad', 'organ'],
+      pools=dict(bass=['sinebass', 'upright', 'ebass'], chords=['strings', 'sf:slowstrings', 'warmpad', 'organ', 'mellotron'],
                  pad=['choir', 'strings', 'warmpad'], arp=['piano', 'harp', 'vibes', 'pizz'],
                  lead=['brass', 'trumpet', 'flute', 'strings']),
       label='Cinematic beat tape (instrumental hip hop)')
@@ -2660,7 +2660,7 @@ style('sunrise_chillwave', 'Electronic',
       master=dict(lufs=-11.0, air=-2.5, low=1.4, width=1.1, lofi=True, wobble=0.35, vintage_lp=9000),
       pools=dict(bass=['sf:pickbass', 'sf:fingerbass', 'moogbass', 'ebass'],
                  chords=['sf:cleanguitar', 'guitar', 'polysynth', 'epiano'],
-                 pad=['warmpad', 'solina', 'glasspad', 'choir'],
+                 pad=['warmpad', 'solina', 'glasspad', 'choir', 'vocalpad'],
                  arp=['pluck_saw', 'pluck', 'chip', 'sf:cleanguitar'],
                  lead=['softlead', 'polysynth', 'leadsaw', 'sf:cleanguitar']),
       label='Sunlit chillwave (live drums, chorus guitar, analog synths)')
@@ -2696,7 +2696,7 @@ style('hazy_downtempo', 'Electronic',
               T('texture', 'fx', 'texture', db=-34)],
       master=dict(lufs=-12.0, air=-3.0, low=1.6, width=1.7, lofi=True, wobble=0.5, vintage_lp=8000),
       pools=dict(bass=['moogbass', 'sinebass', 'sf:pickbass'], chords=['polysynth', 'warmpad', 'solina', 'epiano'],
-                 pad=['choir', 'glasspad', 'warmpad'], arp=['pluck', 'pluck_saw', 'epiano', 'sf:cleanguitar'],
+                 pad=['choir', 'glasspad', 'warmpad', 'vocalpad'], arp=['pluck', 'pluck_saw', 'epiano', 'sf:cleanguitar'],
                  lead=['sf:cleanguitar', 'softlead', 'polysynth', 'flute']),
       label='Hazy downtempo (pumping pads, dusty break, wide)')
 
@@ -2735,7 +2735,7 @@ style('analog_arp_drive', 'Electronic',
       master=dict(lufs=-10.0, air=-1.5, low=1.4, width=1.3, lofi=True, wobble=0.25, vintage_lp=10000),
       pools=dict(bass=['sf:pickbass', 'moogbass', 'sawbass'], arp=['pluck_saw', 'pluck', 'chip', 'acid'],
                  chords=['polysynth', 'supersaw', 'warmpad'], pad=['warmpad', 'solina', 'choir'],
-                 lead=['leadsaw', 'softlead', 'polysynth', 'sf:cleanguitar']),
+                 lead=['leadsaw', 'softlead', 'polysynth', 'sf:cleanguitar', 'synclead']),
       label='Analog arp drive (pulsing sequence, pumping pads)')
 
 # from the user's soft-pop instrumental reference (~105 BPM, backbeat, 92% of the energy below 250 Hz, nothing on top)
@@ -2837,7 +2837,7 @@ style('hauntology', 'Electronic', 'Hauntology: warped-tape analog synths, slow d
               T('lead', 'lead', 'softlead', rev=0.45, dly=0.3, db=-19), T('vinyl', 'fx', 'vinyl', db=-40)],
       master=dict(lufs=-12.5, air=-1.5, low=1.5, lofi=True, wobble=3.0),
       pools=dict(bass=['sinebass', 'moogbass', 'fmbass', '808'],
-                 chords=['polysynth', 'solina', 'wurli', 'epiano', 'warmpad'],
+                 chords=['polysynth', 'solina', 'wurli', 'epiano', 'warmpad', 'mellotron'],
                  pad=['solina', 'warmpad', 'glasspad', 'choir', 'strings'],
                  arp=['polysynth', 'vibes', 'bell', 'celesta'],
                  lead=['softlead', 'vox', 'polysynth', 'flute', 'vibes']),
@@ -2980,7 +2980,7 @@ style('soft_rock', 'Classic', '70s soft rock (California): steady groove, round 
               T('lead', 'lead', 'guitar', rev=0.35, dly=0.2, db=-18, p=dict(dist=3, bright=5000))],
       master=dict(lufs=-11.0, air=1.3, low=1.0),
       pools=dict(bass=['ebass', 'sf:fingerbass', 'moogbass', 'sf:pickbass'],
-                 chords=['acguitar', 'guitar', 'sf:steelguitar', 'sf:cleanguitar', 'epiano', 'piano', 'wurli'],
+                 chords=['acguitar', 'guitar', 'sf:steelguitar', 'sf:cleanguitar', 'epiano', 'piano', 'wurli', 'dxbell'],
                  pad=['organ', 'strings', 'solina', 'polysynth', 'pedalsteel'],
                  arp=['epiano', 'guitar', 'piano', 'pluck'],
                  lead=['guitar', 'sf:cleanguitar', 'epiano', 'pedalsteel', 'flute', 'sax']),
@@ -3472,8 +3472,8 @@ style('italo_disco', 'Electronic', 'Italo disco / Eurodisco (early-mid 80s): fou
       pools=dict(bass=['sawbass', 'fmbass', 'moogbass', 'reese'],
                  chords=['polysynth', 'synthbrass', 'epiano', 'm1piano'],
                  pad=['solina', 'strings', 'choir', 'warmpad'],
-                 arp=['pluck_saw', 'chip', 'pluck', 'stab'],
-                 lead=['leadsaw', 'synthbrass', 'polysynth', 'supersaw_lead']),
+                 arp=['pluck_saw', 'chip', 'pluck', 'stab', 'dxbell'],
+                 lead=['leadsaw', 'synthbrass', 'polysynth', 'supersaw_lead', 'synclead']),
       label='Italo Disco')
 
 style('new_beat', 'Electronic', 'New beat (late-80s Belgium): slow, heavy, stomping four-on-the-floor at ~100-115 BPM, industrial EBM '
@@ -4291,7 +4291,7 @@ style('hauntology_sunlit', 'Electronic', 'Hauntology II - sunlit tape: '
                  chords=['polysynth', 'solina', 'wurli', 'epiano'],
                  pad=['solina', 'warmpad', 'choir', 'strings'],
                  arp=['vibes', 'bell', 'celesta', 'polysynth'],
-                 lead=['polysynth', 'softlead', 'flute', 'vibes']),
+                 lead=['polysynth', 'softlead', 'flute', 'vibes', 'mellotron_flute']),
       label='Hauntology II (sunlit tape)')
 
 style('hauntology_dark', 'Electronic', 'Hauntology III - dark film haze: slower and eerier - long '
@@ -4313,7 +4313,7 @@ style('hauntology_dark', 'Electronic', 'Hauntology III - dark film haze: slower 
               T('vinyl', 'fx', 'vinyl', db=-39)],
       master=dict(lufs=-13.0, air=-2.5, low=1.5, lofi=True, wobble=4.0),
       pools=dict(bass=['sinebass', 'moogbass', '808', 'reese'],
-                 chords=['polysynth', 'solina', 'glasspad', 'warmpad'],
+                 chords=['polysynth', 'solina', 'glasspad', 'warmpad', 'mellotron'],
                  pad=['choir', 'solina', 'glasspad', 'strings'],
                  arp=['bell', 'celesta', 'vibes', 'pluck'],
                  lead=['softlead', 'polysynth', 'flute', 'vox']),
@@ -6777,7 +6777,7 @@ style('lofi_rock', 'Classic',
               T('lead', 'lead', 'guitar', rev=0.2, db=-19, p=dict(dist=1, bright=4200), amp=22)],
       master=dict(lufs=-10.0, air=-2.0, low=1.0, width=0.3, lofi=True, wobble=1.2),
       pools=dict(bass=['ebass', 'sf:pickbass', 'sf:fingerbass', 'moogbass'],
-                 chords=['guitar', 'sf:distguitar', 'sf:odguitar', 'mutedgtr'],
+                 chords=['guitar', 'sf:distguitar', 'sf:odguitar', 'mutedgtr', 'mellotron'],
                  lead=['guitar', 'sf:distguitar', 'sf:odguitar', 'organ']),
       label='Lo-fi bedroom rock')
 
@@ -6968,8 +6968,8 @@ style('sophisti_pop', 'Classic',
       master=dict(lufs=-10.5, air=1.6, low=1.2, width=1.0),
       pools=dict(bass=['fmbass', 'sf:slapbass', 'moogbass', 'sawbass'],
                  chords=['m1piano', 'epiano', 'polysynth', 'piano'],
-                 pad=['polysynth', 'strings', 'solina', 'warmpad'],
-                 arp=['synthbrass', 'epiano', 'brass', 'polysynth'],
+                 pad=['polysynth', 'strings', 'solina', 'warmpad', 'vocalpad'],
+                 arp=['synthbrass', 'epiano', 'brass', 'polysynth', 'dxbell'],
                  lead=['softlead', 'sax', 'synthbrass', 'flute']),
       label='80s sophisti-pop / jazz-funk pop')
 
@@ -7588,7 +7588,7 @@ style('psych_pop', 'Classic',
               T('lead', 'lead', 'softlead', rev=0.35, dly=0.3, db=-19)],
       master=dict(lufs=-9.0, air=1.0, low=1.8, width=1.1),
       pools=dict(bass=['ebass', 'moogbass', 'sf:fingerbass', 'sf:pickbass'],
-                 chords=['polysynth', 'epiano', 'synthbrass', 'stab'],
+                 chords=['polysynth', 'epiano', 'synthbrass', 'stab', 'mellotron'],
                  pad=['glasspad', 'solina', 'warmpad', 'vox'],
                  arp=['pluck_saw', 'pluck', 'stab', 'acid'],
                  lead=['softlead', 'guitar', 'polysynth', 'flute']),
@@ -8031,7 +8031,7 @@ style('dark_synthwave', 'Electronic', 'Dark synthwave (neon-noir): slower and mi
                  chords=['supersaw', 'polysynth', 'solina', 'warmpad'],
                  pad=['solina', 'warmpad', 'choir', 'glasspad'],
                  arp=['pluck_saw', 'pluck', 'bell', 'chip'],
-                 lead=['leadsaw', 'supersaw_lead', 'softlead', 'hoover']),
+                 lead=['leadsaw', 'supersaw_lead', 'softlead', 'hoover', 'synclead']),
       label='Dark Synthwave')
 
 # modern gospel: verse / chorus with a bridge, the choir carries the chorus (instrumental here - no lead vocal part)

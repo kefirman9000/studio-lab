@@ -996,6 +996,16 @@ def test_va_synth():
         assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.5, k
         assert k + '_v1' in INSTRUMENTS
     assert 'warmpad_v1' in ROLE_CHOICES['pad']
+    for k in ('organ', 'synthbrass', 'synclead', 'mellotron', 'mellotron_flute', 'dxbell', 'vocalpad'):      # 1.58
+        a = np.asarray(INSTRUMENTS[k](60, 0.8, {}, None, None))
+        assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.5, k
+    assert 'synclead' in ROLE_CHOICES['lead'] and 'vocalpad' in ROLE_CHOICES['pad'] and 'mellotron' in ROLE_CHOICES['chords']
+    dry = np.asarray(INSTRUMENTS['organ'](60, 0.5, {'leslie': 0.0}))
+    assert np.allclose(dry[0], dry[1])                                     # the track's own rotary effect takes over
+    s = va.sync_saw(220.0, np.linspace(1.5, 4.0, SR), SR)
+    sp2 = np.abs(np.fft.rfft(s[: SR // 4])) ** 2
+    f2 = np.fft.rfftfreq(SR // 4, 1 / SR)
+    assert sp2[f2 > 12000].sum() / sp2.sum() < 0.01                        # oversampled sync: no fizz
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars

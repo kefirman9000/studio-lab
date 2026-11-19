@@ -197,3 +197,81 @@ def fm_bell(m, dur, p, glide=None):
     k = min(n, int(0.05 * SR))
     y[-k:] *= np.linspace(1, 0, k)
     return np.vstack([y, np.roll(y, 60)]) * 0.55
+
+
+def sync_saw(f_master, ratio, n, ph0=0.0):
+    """Hard-sync saw: a slave saw at f_master * ratio (ratio may move per sample) restarted by every master cycle -
+    the tearing, vocal 80s sync-lead sound as the ratio sweeps. Oversampled 4x then low-passed to keep it clean."""
+    os_ = 4
+    N = n * os_
+    fm = np.repeat(np.broadcast_to(np.asarray(f_master, float), (n,)), os_) / (SR * os_)
+    rt = np.repeat(np.broadcast_to(np.asarray(ratio, float), (n,)), os_)
+    mph = ph0 + np.cumsum(fm)
+    cyc = np.floor(mph)
+    reset = np.concatenate([[0], np.diff(cyc) > 0]).astype(bool)
+    inc = fm * rt
+    acc = np.cumsum(inc)
+    idx = np.where(reset, np.arange(N), 0)
+    np.maximum.accumulate(idx, out=idx)
+    base = acc[idx] - inc[idx]
+    sph = (acc - base) % 1.0
+    y = 2.0 * sph - 1.0
+    b, a = signal.butter(8, 0.9 / os_, 'low')
+    y = signal.lfilter(b, a, y)
+    return y[::os_]
+
+
+FORMANTS = {'a': (800, 1150, 2900), 'o': (450, 800, 2830), 'u': (325, 700, 2530), 'e': (400, 1600, 2700),
+            'i': (300, 1900, 2950)}
+
+
+def formant(x, vowel='a', q=8.0):
+    """A choir-ish vowel: three band-passes at the vowel's formants, summed (parallel, so the level stays even)."""
+    out = np.zeros_like(x)
+    for k, fc in enumerate(FORMANTS.get(vowel, FORMANTS['a'])):
+        w = fc / (SR / 2)
+        b, a = signal.butter(2, [w / (1 + 0.5 / q), min(0.99, w * (1 + 0.5 / q))], 'band')
+        out += signal.lfilter(b, a, x, axis=-1) * (1.0, 0.6, 0.35)[k]
+    return out
+
+
+def tonewheel(m, dur, p):
+    """Tonewheel organ: nine drawbars (16', 5 1/3', 8', 4', 2 2/3', 2', 1 3/5', 1 1/3', 1') set by a registration string
+    like '888000000', a key click, the 2nd / 3rd-harmonic percussion that decays, a slight tube overdrive, and a
+    two-rotor rotary speaker (the horn fast, the drum slow, each with its Doppler wobble and its own stereo throw)."""
+    reg = str(p.get('reg', '888600000'))
+    ratios = (0.5, 1.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0)
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    n = gate + int(0.06 * SR)
+    t = np.arange(n) / SR
+    y = np.zeros(n)
+    for r, d in zip(ratios, reg.ljust(9, '0')[:9]):
+        lvl = int(d) / 8.0
+        if lvl and f * r < 12000:
+            y += lvl * np.sin(2 * np.pi * f * r * t + _RNG.random() * 6.28)
+    y /= 3.0
+    if p.get('perc', True):                                        # percussion: 2nd (or 3rd) harmonic, decaying
+        y += 0.5 * np.sin(2 * np.pi * f * (3.0 if p.get('perc3') else 2.0) * t) * np.exp(-t * 7)
+    ck = min(n, int(0.004 * SR))                                   # key click
+    y[:ck] += _RNG.standard_normal(ck) * 0.15 * np.linspace(1, 0, ck)
+    env = np.ones(n)
+    env[:int(0.004 * SR)] = np.linspace(0, 1, int(0.004 * SR))
+    env[gate:] = np.linspace(1, 0, n - gate)
+    y = np.tanh(y * env * p.get('drive', 1.6)) / np.tanh(p.get('drive', 1.6))
+    if p.get('leslie', 1) == 0:                                    # the track runs its own rotary effect (leslie_fx)
+        return np.vstack([y, y]) * 0.35
+    # rotary speaker: split at 800 Hz, horn ~6.7 Hz, drum ~5.8 Hz ('chorale' slow if p['slow'])
+    slow = p.get('slow', False)
+    bl, al = signal.butter(2, 800 / (SR / 2), 'low')
+    lo = signal.lfilter(bl, al, y)
+    hi = y - lo
+    out = np.zeros((2, n))
+    idx = np.arange(n)
+    for band, rate, dep, amp_m in ((hi, 0.8 if slow else 6.7, 0.00045, 0.35), (lo, 0.7 if slow else 5.8, 0.0003, 0.15)):
+        ph = 2 * np.pi * rate * t + _RNG.random() * 6.28
+        for c, sgn in ((0, 1.0), (1, -1.0)):
+            dl = (0.001 + dep * (1 + sgn * np.sin(ph))) * SR
+            v = np.interp(idx - dl, idx, band, left=0.0)
+            out[c] += v * (1 + amp_m * sgn * np.sin(ph + 0.6))
+    return out * 0.35

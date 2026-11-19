@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.58.0
+- **More of the built-in synth:**
+  - **Organ** is now a proper tonewheel organ: nine drawbars set by a registration, key click, the decaying percussion on the 2nd harmonic, a little tube drive and a two-rotor rotary speaker (fast horn, slower drum, each with its Doppler wobble). Parts that use their own rotary effect still get it.
+  - **Synth brass** (80s / synthwave): detuned saws and a sub through a filter that swells open on each note and settles.
+- **New sounds** (pick them in Parts; they're also mixed into the matching genres' sound choices):
+  - **Sync lead** - the tearing, vocal 80s hard-sync lead (synthwave, synthpop, italo, analog arp drive).
+  - **Mellotron strings** and **Mellotron flute** - the tape keyboard: a soft swell, wow and flutter, a dusty band, notes that run out after ~8 seconds (hauntology, psych pop, lo-fi rock, cinematic beat tape).
+  - **DX bell** - the glassy FM bell of 80s ballads, city pop and sophisti-pop.
+  - **Synth choir "aah" pad** - the wordless vocal pad of chillwave, downtempo and 80s pop.
+  - The previous organ and synth brass stay available as "(classic sound, before 1.58)".
+
+
 ## 1.57.1
 - **New genre: Trap metal (clipped 808s, drop-tuned guitars)**, from your reference instrumental: short, violent and loud - blown-out, clipping 808s and kicks, a half-time snare cracking on 3, hats and rolls, double-tracked drop-tuned guitar chugs and power chords locked to the 808 in a sinister phrygian-dominant key, an eerie lead on the hook, mixed as loud as it gets (~-6 LUFS), mono and slammed. Voice samples get chopped & screwed in it too.
 
