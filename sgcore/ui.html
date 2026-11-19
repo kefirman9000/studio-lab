@@ -273,6 +273,7 @@ body:not(.helptext) .hint.qhd{display:none !important}
 .f.inst.xparts{display:grid !important;grid-template-columns:minmax(120px,170px) minmax(170px,1fr) 92px 92px 26px;gap:6px 8px;align-items:center}
 .xparts .xh{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:6px}
 .xparts select{min-width:0}
+.snd .lev{display:flex;align-items:center;gap:6px;font-size:12px;margin-top:4px}.snd .lev input{flex:1;min-width:60px}.snd .lev b{min-width:44px;font-weight:600}
 </style>
 </head>
 <body>
@@ -1380,6 +1381,8 @@ function setupTimeline(el, r){
 }
 // ------------------------------------------------------------- song editor (any result, library song or dropped project)
 let EDSTYLE=null;
+function levHtml(id, v){ v=+(v||0);
+  return `<label class="lev" title="This sound's own level (layers like the layered kick included)">Level <b>${(v>0?'+':'')+v} dB</b><input type="range" min="-24" max="9" step="1" value="${v}" data-tlev="${esc(id)}"></label>`; }
 function soundSelect(tr, pick){
   if(tr.drum && tr.layer==='fx') return `<label><input type="checkbox" data-on="${esc(tr.id)}" ${pick==='off'?'':'checked'}> playing</label>`;
   if(tr.drum){ const ds=(META.drum_sounds||[]);
@@ -1395,13 +1398,14 @@ function openEditor(r){
   EDSTYLE=r.style;
   const ed=$('#editor'), box=$('#editorBox'); ed.style.display='block'; document.body.style.overflow='hidden';
   const picks=Object.assign({}, (r.options&&r.options.instruments)||{});
+  const tlev=Object.assign({}, (r.options&&r.options.track_levels)||{});
   const tracks=r.tracks||[];
   box.innerHTML=`<div class="ehead"><b>✏️ Song editor</b><span class="hint">${esc(styleName(r.style))} · ${esc(r.key||'')} · ${r.bpm||''} BPM · seed ${r.seed}</span><span style="margin-left:auto"></span><button class="mini" data-e="close">✕ Close</button></div>
     <div class="hint">Click a section on the timeline to re-roll, lengthen, move, duplicate or mute parts in it. Below: every sound playing in this song.</div>
     <div id="edCard"></div>
     <h4 style="margin:14px 0 4px">Every sound in this song</h4>
     <div class="f" style="max-width:420px"><label><b>Drum kit</b> <span class="hint">the whole kit at once</span></label><select id="edKit"></select></div>
-    ${tracks.length?`<div class="sounds">${tracks.map(tr=>`<div class="snd"><label><b>${esc(tr.part)}</b> ${tr.drum?'':octHtml(tr.id,(r.options&&r.options.octaves||{})[tr.id],'data-edoct')}</label><div class="s">${esc(tr.sound)} · ${tr.notes} notes</div>${soundSelect(tr, picks[tr.id])}</div>`).join('')}</div>`
+    ${tracks.length?`<div class="sounds">${tracks.map(tr=>`<div class="snd"><label><b>${esc(tr.part)}</b> ${tr.drum?'':octHtml(tr.id,(r.options&&r.options.octaves||{})[tr.id],'data-edoct')}</label><div class="s">${esc(tr.sound)} · ${tr.notes} notes</div>${soundSelect(tr, picks[tr.id])}${levHtml(tr.id, tlev[tr.id])}</div>`).join('')}</div>`
       :'<div class="hint">This song was made with an older version - press Preview below once to list its sounds.</div>'}
     <div class="rr"><button class="btn s" data-e="roll" style="padding:7px 12px" title="Same song, new sounds picked from the genre's suggestions">🎲 Re-roll sounds</button><button class="btn s" data-e="prev" style="padding:7px 12px">▶ Preview with these sounds</button><button class="btn g" data-e="full" style="padding:7px 12px">⬇ Full song with these sounds</button><span class="hint" style="margin-left:8px">Same song, same notes - only the sounds you change are different.</span></div>`;
   if(r.urls&&(r.urls.mp3||r.urls.wav)){ addResult(Object.assign({}, r, {id:(r.id||'ed')+'_ed'}), $('#edCard'));
@@ -1413,10 +1417,13 @@ function openEditor(r){
       ks.onchange=()=>{ kitPick=ks.value; }; } }
   box.querySelectorAll('[data-snd]').forEach(s=>s.onchange=()=>{ if(s.value) picks[s.dataset.snd]=s.value; else delete picks[s.dataset.snd]; });
   box.querySelectorAll('[data-on]').forEach(c=>c.onchange=()=>{ if(c.checked) delete picks[c.dataset.on]; else picks[c.dataset.on]='off'; });
+  box.querySelectorAll('[data-tlev]').forEach(e=>e.oninput=()=>{ const v=+e.value; const id=e.dataset.tlev; if(v) tlev[id]=v; else delete tlev[id];
+    const b=e.parentNode.querySelector('b'); if(b) b.textContent=(v>0?'+':'')+v+' dB'; });
   let kitPick=(r.options&&r.options.kit)||'';
   const edOct=Object.assign({}, (r.options&&r.options.octaves)||{});
   box.querySelectorAll('[data-edoct]').forEach(e=>e.onchange=()=>{ const v=+e.value; if(v) edOct[e.dataset.edoct]=v; else delete edOct[e.dataset.edoct]; });
   const opts=()=>{ const o=JSON.parse(JSON.stringify(r.options||{})); o.seed=r.seed; o.instruments=Object.assign({}, o.instruments||{}, picks); if(kitPick) o.kit=kitPick; else delete o.kit; if(Object.keys(edOct).length) o.octaves=Object.assign({}, edOct); else delete o.octaves;
+    if(Object.keys(tlev).length) o.track_levels=Object.assign({}, tlev); else delete o.track_levels;
     Object.keys(o.instruments).forEach(k=>{ if(!picks[k] && tracks.some(t=>t.id===k)) delete o.instruments[k]; }); return o; };
   box.querySelector('[data-e=close]').onclick=closeEditor;
   box.querySelector('[data-e=prev]').onclick=()=>run(true,1,opts(),null,res=>openEditor(res));

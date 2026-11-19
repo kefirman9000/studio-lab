@@ -162,6 +162,21 @@ def test_fdn_reverb():
     assert t60((5000, 9000)) < t60((200, 500))               # highs die away faster than lows
 
 
+def test_new_part_effects():
+    from sgcore.compose import Options, compose
+    from sgcore.render import Renderer
+    from sgcore import fx2, part_effects
+    r = Renderer(compose(Options(style='house', seed=3, length=0.5)), log=lambda *a: None)
+    x = (np.random.default_rng(0).standard_normal((2, r.length)) * 0.1).astype(np.float32)
+    for pid, (_, cfg) in part_effects.PRESETS.items():
+        if any(k in fx2.KEYS for k in cfg):
+            y = fx2.apply(x, dict(cfg), r)
+            assert y.shape == x.shape and np.isfinite(y).all(), pid
+            assert np.sqrt(np.mean((y - x) ** 2)) > 0.01 * np.sqrt(np.mean(x ** 2)), pid      # it does something
+            t = dict(cfg)
+            assert pid in part_effects.describe(t), (pid, part_effects.describe(t))
+
+
 if __name__ == '__main__':
     fails = 0
     for name, fn in sorted(globals().items()):

@@ -13,6 +13,7 @@ from .dsp import (SR, hp, lp, eq, soft, compressor, limiter, low_limit, lufs, ac
                   sweep_region, write_wav_float)
 from .instruments import INSTRUMENTS, DRUMS, fx_riser, fx_impact, fx_vinyl, fx_texture
 from . import va as _va
+from . import fx2 as _fx2
 
 SYNTH_TAKES = 3          # analog character: takes per (note, length, velocity layer)
 from .compose import SECTION_ENERGY, GROOVES
@@ -744,6 +745,8 @@ class Renderer:
             buf = self._rumble(buf, float(self.st['rumble']))
         if tcfg.get('leslie_fx') and np.any(buf):
             buf = leslie(buf, float(tcfg['leslie_fx']), float(tcfg.get('overdrive', 0.0)))
+        if any(tcfg.get(k) for k in _fx2.KEYS) and np.any(buf):    # 1.78 pedals (sgcore.fx2)
+            buf = _fx2.apply(buf, tcfg, self)
         return buf
 
     def _gate(self, buf, pattern):
@@ -997,6 +1000,10 @@ class Renderer:
             target = tcfg['db'] if tcfg['db'] is not None else ROLE_DB.get(tcfg['layer'], -22)
             try:                                          # your per-part level (Mix & master)
                 target += max(-24.0, min(9.0, float((getattr(opts, 'part_levels', None) or {}).get(tcfg['layer'], 0))))
+            except (TypeError, ValueError):
+                pass
+            try:                                          # ... and this one sound's own level (song editor)
+                target += max(-24.0, min(9.0, float((getattr(opts, 'track_levels', None) or {}).get(name, 0))))
             except (TypeError, ValueError):
                 pass
             cur = active_rms_db(buf)

@@ -49,6 +49,9 @@ SIGNATURE = {   # genre -> (part, instruments, label): the sound that defines it
     'darkpsy': ('bass', {'psyroll', 'psybass', 'fmbass'}, 'rolling psy bass'),
     'uplifting_trance': ('lead', {'supersaw_lead', 'leadsaw', 'pluck_saw', 'piano', 'vox', 'emolead', 'hypersaw'}, 'trance lead'),
 }
+for _g, (_part, _set, _lbl) in list(SIGNATURE.items()):      # the 808 variants (1.79) are 808s too
+    if '808' in _set:
+        SIGNATURE[_g] = (_part, set(_set) | {'808dist', '808long', '808punch'}, _lbl)
 
 
 def _base(inst):
@@ -122,7 +125,7 @@ def genre_fit(song):
     if name in SUB_BASS:
         add('clean sub under the bass', a['sub'])
     if name in SLIDING_808:
-        add('808 bass with slides', a['insts'].get('bass') == '808' and a['glides'] > 0)
+        add('808 bass with slides', str(a['insts'].get('bass')).startswith('808') and a['glides'] > 0)
     if name in SIGNATURE:
         part, ok, label = SIGNATURE[name]
         add(label, any(p == part and i in ok for p, i in a['all_insts']))

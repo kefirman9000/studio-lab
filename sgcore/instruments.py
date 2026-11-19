@@ -4827,3 +4827,435 @@ for _name, _fn, _info, _roles, _gm in (
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.79: instruments from around the world,
+# a few rare acoustic colours, and synth engines (wavetable, granular, formant chops, 808 variants, hollow pluck)
+
+def _st(y, d=25):
+    y = np.asarray(y, float)
+    return y if y.ndim == 2 else np.vstack([y, np.roll(y, d)])
+
+
+def _gate_tail(y, dur, tail=0.15):
+    g = int(max(dur, 0.03) * SR)
+    n = y.shape[-1]
+    if g < n:
+        y = y.copy()
+        y[..., g:] *= np.exp(-np.arange(n - g) / (tail * SR))
+    return y
+
+
+def _glide_freq(f, n, glide, tau):
+    t = np.arange(n) / SR
+    if glide is None:
+        return np.full(n, f)
+    f0 = float(mtof(glide))
+    return f + (f0 - f) * np.exp(-t / tau)
+
+
+def v_theremin(m, dur, p, glide=None, mod=None):
+    """Theremin: an almost pure tone (a little 2nd and 3rd harmonic from the heterodyne), slid continuously from the
+    last note (the player's hand never jumps), a slow swell and a wide, singing vibrato - the haunted 50s sci-fi
+    and spooky-surf lead."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    env = _va.adsr(gate, p.get('a', 0.09), 0.3, 0.9, p.get('r', 0.25))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = _glide_freq(f, n, glide, 0.11)
+    vib = np.clip((t - 0.12) / 0.3, 0, 1) * p.get('vib', 32) * np.sin(2 * np.pi * 6.1 * t)
+    ph = 2 * np.pi * np.cumsum(fr * 2 ** (vib / 1200)) / SR
+    y = (np.sin(ph) + 0.12 * np.sin(2 * ph) + 0.05 * np.sin(3 * ph)) * env
+    return _st(y, 40) * 0.5
+
+
+def v_handpan(m, dur, p, glide=None, mod=None):
+    """Handpan: a steel shell with tuned dimples struck by the fingertips - a soft-attack, round fundamental, its
+    octave and a fifth above that (the 'tuned harmonics' of each note field), a long shimmering ring and the faint
+    hum of the shell."""
+    f = float(mtof(m))
+    n = int(min(4.0, 1.8 + 300 / f) * SR)
+    t = np.arange(n) / SR
+    k = (f / 293.7) ** 0.4
+    y = _modes(f, n, [(1.0, 1.0, 0.9 * k), (2.0, 0.45, 1.5 * k), (3.0, 0.22, 2.4 * k), (4.02, 0.06, 5 * k)], p.get('hard', 0.7))
+    beat = 1 + 0.12 * np.sin(2 * np.pi * 2.3 * t)          # two nearly identical modes beating: the shimmer
+    y = y * beat * (1 - np.exp(-t / 0.004))
+    y += 0.03 * lp(_rng().standard_normal(n), 900) * np.exp(-t * 60)    # the finger on the steel
+    return _st(y, 35) * 0.45
+
+
+def v_duduk(m, dur, p, glide=None, mod=None):
+    """Duduk: an apricot-wood oboe with a huge, soft double reed - dark, velvety and mournful; a nasal formant body,
+    a lot of breath, notes scooped up into from below and a slow, narrow vibrato."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    env = _va.adsr(gate, p.get('a', 0.12), 0.4, 0.88, p.get('r', 0.3))
+    n = len(env)
+    t = np.arange(n) / SR
+    vib = np.clip((t - 0.35) / 0.5, 0, 1) * 9 * np.sin(2 * np.pi * 4.6 * t)
+    fr = _glide_freq(f, n, glide, 0.08) * 2 ** ((-45 * np.exp(-t / 0.07) + vib) / 1200)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    src = sum((0.9 ** k) / k * np.sin(k * ph) for k in range(1, 12) if f * k < 9000)
+    body = eq(eq(eq(src, 'peak', 520, 2.0, 7.0), 'peak', 1250, 2.5, 5.0), 'highshelf', 2500, 0.7, -9.0)
+    breath = _aspirate(bp(_rng().standard_normal(n), f, min(f * 5, 15000)), f, ph) * 0.18
+    y = (body * 0.6 + breath) * env
+    return _st(y, 30) * 0.5
+
+
+def v_erhu(m, dur, p, glide=None, mod=None):
+    """Erhu: two strings bowed between them, over a small python-skin drum - a nasal, singing, almost vocal tone,
+    sliding into notes from below, with a deep expressive vibrato made by the finger's pressure."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    env = _va.adsr(gate, p.get('a', 0.07), 0.3, 0.9, p.get('r', 0.2))
+    n = len(env)
+    t = np.arange(n) / SR
+    vib = np.clip((t - 0.15) / 0.35, 0, 1) * p.get('vib', 28) * np.sin(2 * np.pi * 5.4 * t)
+    fr = _glide_freq(f, n, glide, 0.07) * 2 ** ((-80 * np.exp(-t / 0.05) + vib) / 1200)
+    x = _va.saw(fr, n, _rng().random())
+    y = eq(eq(eq(x, 'peak', 850, 2.0, 7.0), 'peak', 1750, 2.5, 6.0), 'peak', 3000, 3.0, 3.0)
+    y = lp(hp(y, 250), 6000)
+    y += 0.05 * bp(_rng().standard_normal(n), 2000, 8000) * (0.4 + 0.6 * np.exp(-t / 0.08))     # the bow hair
+    return _st(y * env, 30) * 0.45
+
+
+def v_guzheng(m, dur, p, glide=None, mod=None):
+    """Guzheng: a long zither with 21 steel-nylon strings over movable bridges, plucked with finger picks - a bright,
+    ringing pluck, and on long notes the left hand pressing the string behind the bridge to make the pitch sway
+    (rou) or bend up a step (an)."""
+    f = float(mtof(m))
+    n = int((min(dur, 3.0) + 1.2) * SR)
+    t = np.arange(n) / SR
+    y = _pluck(f, n, 0.92, 0.9, 0.00015, 24, 0.22)
+    if dur > 0.6:                                        # rou: the pressing vibrato on long notes
+        dep = np.clip((t - 0.25) / 0.3, 0, 1) * 0.35 * np.sin(2 * np.pi * 4.5 * t)
+        idx = np.clip(np.cumsum(2 ** (dep / 12)), 0, n - 1)
+        y = np.interp(idx, np.arange(n), y)
+    y = eq(hp(y, 120), 'peak', 2400, 1.4, 3.5) + 0.12 * hp(_rng().standard_normal(n), 3500) * np.exp(-t * 400)
+    return _st(_gate_tail(y, dur + 0.8, 0.5), 60) * 0.45
+
+
+def v_pipa(m, dur, p, glide=None, mod=None):
+    """Pipa: a pear-shaped lute plucked with the fingernails - a bright, snappy, short-lived attack; long notes
+    are sustained by lunzhi, the rapid tremolo of the five fingers (about 12 plucks a second)."""
+    f = float(mtof(m))
+    n = int((min(dur, 2.5) + 0.4) * SR)
+    one = _pluck(f, int(0.6 * SR), 0.88, 4.5, 0.0003, 20, 0.35)
+    one = one + 0.18 * hp(_rng().standard_normal(len(one)), 3000) * np.exp(-np.arange(len(one)) / SR * 500)
+    y = np.zeros(n)
+    hits = [0.0] if dur < 0.45 else list(np.arange(0.0, dur, 1 / 12.0))
+    for k, h in enumerate(hits):
+        s0 = int(h * SR)
+        ln = min(len(one), n - s0)
+        if ln > 0:
+            y[s0:s0 + ln] += one[:ln] * (1.0 if k == 0 else 0.55 + 0.1 * _rng().random())
+    y = eq(hp(y, 180), 'peak', 1800, 1.5, 4.0)
+    return _st(y, 40) * 0.42
+
+
+def v_dizi(m, dur, p, glide=None, mod=None):
+    """Dizi: a bamboo flute with a membrane (dimo) glued over an extra hole - the membrane buzzes, giving the tone
+    its bright, reedy, slightly raspy edge over a breathy flute body."""
+    y = np.asarray(v_flute(m, dur, dict(p, a=p.get('a', 0.04))), float)
+    f = float(mtof(m))
+    buzz = np.tanh(bp(y.mean(axis=0), max(f * 2, 900), min(f * 8, 12000)) * 6.0) * 0.18
+    y = y + buzz[None, :]
+    return eq(y, 'peak', 3200, 1.5, 3.0)
+
+
+def v_kora(m, dur, p, glide=None, mod=None):
+    """Kora: a West African 21-string harp-lute over a big calabash gourd covered in cowhide - a clear, harp-like
+    pluck with a warm, woody bloom from the gourd and a faint buzz from the metal jingles."""
+    f = float(mtof(m))
+    n = int((min(dur, 2.5) + 0.9) * SR)
+    t = np.arange(n) / SR
+    y = _pluck(f, n, 0.85, 1.3, 0.0001, 18, 0.25)
+    y = eq(eq(y, 'peak', 190, 1.5, 6.0), 'peak', 2800, 2.0, 2.0)
+    env = np.abs(signal.lfilter([0.002], [1, -0.998], np.abs(y)))
+    y = y + 0.05 * np.tanh(bp(y, 2500, 6000) * 20) * (env / (env.max() + 1e-9))
+    return _st(hp(y, 90) * np.minimum(t / 0.001, 1), 45) * 0.5
+
+
+def v_balafon(m, dur, p, glide=None, mod=None):
+    """Balafon: wooden bars over calabash resonators, each gourd with a hole covered by a spider-egg membrane that
+    buzzes - a dry, woody knock with a rattly buzz in its bloom."""
+    f = float(mtof(m))
+    n = int(min(1.4, 0.4 + 200 / f) * SR)
+    t = np.arange(n) / SR
+    k = (f / 261.6) ** 0.5
+    y = _modes(f, n, [(1.0, 1.0, 5.5 * k), (3.9, 0.35, 16 * k), (9.6, 0.12, 40 * k)], p.get('hard', 1.1))
+    bloom = y * (1 - np.exp(-t / 0.015))
+    buzz = np.tanh(bp(bloom, 300, 3000) * 14) * 0.12 * np.exp(-t * 6)
+    y = y + buzz + 0.1 * lp(_rng().standard_normal(n), 2500) * np.exp(-t * 400)
+    return _st(y * np.minimum(t / 0.0008, 1), 20) * 0.45
+
+
+def v_hurdygurdy(m, dur, p, glide=None, mod=None):
+    """Hurdy-gurdy: a rosined wheel bows the strings while keys stop the melody string - a nasal, buzzy, continuous
+    tone over a drone a fifth and an octave below, the 'dog' bridge giving it its raspy edge."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    env = _va.adsr(gate, 0.03, 0.2, 0.92, 0.15)
+    n = len(env)
+    t = np.arange(n) / SR
+    mel = _va.saw(np.full(n, f), n, _rng().random()) + 0.6 * _va.saw(np.full(n, f * 2 ** (3 / 1200)), n, _rng().random())
+    drone = 0.35 * _va.saw(np.full(n, f / 2), n) + 0.25 * _va.saw(np.full(n, f * 2 / 3), n)
+    x = mel + drone
+    rasp = np.tanh(hp(x, 1500) * 3) * 0.2 * (1 + 0.5 * np.sin(2 * np.pi * 7 * t))
+    y = eq(eq(lp(x, 5000), 'peak', 1100, 1.5, 6.0), 'peak', 300, 1.0, -3.0) + rasp
+    return _st(hp(y, 100) * env, 30) * 0.32
+
+
+def v_cimbalom(m, dur, p, glide=None, mod=None):
+    """Cimbalom: a big hammered dulcimer - courses of three or four steel strings a few cents apart, struck with
+    cotton-tipped hammers: a bright, ringing, shimmering note that sustains (the damper pedal is usually up)."""
+    f = float(mtof(m))
+    n = int((min(dur, 2.5) + 1.5) * SR)
+    t = np.arange(n) / SR
+    y = np.zeros(n)
+    for c in (-4, 0, 3, 6):
+        y += _pluck(f * 2 ** (c / 1200), n, 0.9, 0.7, 0.0004, 22, 0.18)
+    y = eq(hp(y, 110), 'peak', 3500, 1.2, 3.0) * 0.4 + 0.1 * bp(_rng().standard_normal(n), 1500, 6000) * np.exp(-t * 500)
+    return _st(_gate_tail(y, dur + 1.0, 0.7), 50) * 0.42
+
+
+def v_glassharmonica(m, dur, p, glide=None, mod=None):
+    """Glass harmonica: wet fingers rubbing spinning glass bowls - an eerie, pure, floating tone that swells in
+    slowly, with a soft octave and the faint flutter of the rubbing (it was said to drive its players mad)."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.1) * SR)
+    env = _va.adsr(gate, p.get('a', 0.25), 0.4, 0.9, p.get('r', 1.2))
+    n = len(env)
+    t = np.arange(n) / SR
+    flutter = 1 + 0.06 * np.sin(2 * np.pi * 7.3 * t) + 0.03 * np.sin(2 * np.pi * 11.1 * t)
+    y = (np.sin(2 * np.pi * f * t) + 0.18 * np.sin(4 * np.pi * f * t + 0.5) + 0.04 * np.sin(6 * np.pi * f * t)) * flutter
+    y = y + 0.01 * bp(_rng().standard_normal(n), f * 3, min(f * 8, 15000))
+    return _st(y * env, 60) * 0.45
+
+
+def v_waterphone(m, dur, p, glide=None, mod=None):
+    """Waterphone: bronze rods around a steel bowl with water inside, bowed - inharmonic, metallic howls whose pitch
+    bends and wobbles as the water moves (the horror-film sound)."""
+    f = float(mtof(m))
+    n = int((min(dur, 4.0) + 1.5) * SR)
+    t = np.arange(n) / SR
+    rng = _rng()
+    y = np.zeros(n)
+    for r, a, d in ((1.0, 1.0, 0.7), (2.76, 0.5, 1.1), (5.40, 0.35, 1.6), (8.93, 0.2, 2.4)):
+        wob = 2 ** (40 * np.sin(2 * np.pi * (0.4 + rng.random() * 0.5) * t + rng.random() * 6) / 1200)
+        ph = 2 * np.pi * np.cumsum(f * r * wob) / SR
+        y += a * np.sin(ph) * np.exp(-t * d)
+    bow = np.minimum(t / 0.35, 1) * (1 + 0.15 * rng.standard_normal(n).cumsum() / np.sqrt(np.arange(1, n + 1)))
+    y = y * bow + 0.02 * hp(rng.standard_normal(n), 4000) * np.exp(-t * 2)
+    return _st(hp(y, 200), 70) * 0.35
+
+
+_WT_FRAMES = None
+
+
+def _wavetable():
+    """A 32-frame wavetable that morphs sine -> triangle-ish -> saw -> hollow (odd) -> a formant-like buzz; each
+    frame band-limited by the harmonic count (computed once, then read per note)."""
+    global _WT_FRAMES
+    if _WT_FRAMES is None:
+        L, H = 2048, 64
+        k = np.arange(1, H + 1)
+        ph = np.arange(L) / L * 2 * np.pi
+        frames = []
+        for i in range(32):
+            u = i / 31
+            saw_a = 1 / k
+            sine_a = (k == 1).astype(float)
+            odd_a = np.where(k % 2 == 1, 1 / k, 0.0)
+            form_a = np.exp(-((k - 7) / 2.5) ** 2) + 0.4 / k
+            if u < 0.33:
+                a = sine_a * (1 - u / 0.33) + saw_a * (u / 0.33)
+            elif u < 0.66:
+                v = (u - 0.33) / 0.33
+                a = saw_a * (1 - v) + odd_a * v
+            else:
+                v = (u - 0.66) / 0.34
+                a = odd_a * (1 - v) + form_a * v
+            w = np.sum(a[:, None] * np.sin(k[:, None] * ph[None, :]), axis=0)
+            frames.append(w / (np.max(np.abs(w)) + 1e-9))
+        _WT_FRAMES = np.array(frames)
+    return _WT_FRAMES
+
+
+def v_wavetable(m, dur, p, glide=None, mod=None):
+    """Wavetable synth: the oscillator scans through 32 frames (sine -> saw -> hollow -> vocal buzz) as the note
+    plays - an envelope sweeps the position up, a slow LFO keeps it moving - two detuned voices, through the ladder
+    filter. Modern bass-music and progressive leads / chords."""
+    W = _wavetable()
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, p.get('a', 0.005), p.get('d', 0.4), p.get('s', 0.75), p.get('r', 0.25))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = _glide_freq(f, n, glide, 0.06)
+    pos = np.clip(p.get('pos', 0.15) + 0.55 * (1 - np.exp(-t / p.get('scan', 0.6))) + 0.08 * np.sin(2 * np.pi * 0.3 * t), 0, 0.999)
+    fi = pos * 31
+    i0 = np.floor(fi).astype(int)
+    fr_ = fi - i0
+    i1 = np.minimum(i0 + 1, 31)
+    out = []
+    rng = _rng()
+    for c in (-7, 7):
+        ph = (rng.random() + np.cumsum(fr * 2 ** (c / 1200)) / SR) % 1.0
+        j = (ph * 2048).astype(int)
+        out.append(W[i0, j] * (1 - fr_) + W[i1, j] * fr_)
+    x = np.vstack(out)
+    y = _va.vcf(x, p.get('cut', 4500) * (0.5 + 0.5 * np.exp(-t / 0.3)) + 300, p.get('res', 0.2), 1.2)
+    return y * env * 0.5
+
+
+def v_granular(m, dur, p, glide=None, mod=None):
+    """Granular pad: hundreds of short grains (30-90 ms) taken from a rich, slowly moving source at the note's pitch,
+    each with its own position, a little pitch scatter and its own place in the stereo field - a shimmering,
+    breathing cloud rather than a held note. Ambient, cinematic, psy textures."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.2) * SR)
+    env = _va.adsr(gate, p.get('a', 0.6), 0.6, 0.85, p.get('r', 1.5))
+    n = len(env)
+    rng = _rng()
+    src_n = int(1.5 * SR)
+    src = _va.jp_supersaw(f, src_n, 0.3, 0.6, 0.5).mean(axis=0)
+    src = lp(src, min(8000, f * 12)) + 0.4 * np.sin(2 * np.pi * f * 2 * np.arange(src_n) / SR)
+    out = np.zeros((2, n))
+    density = p.get('density', 60)                         # grains per second
+    for s0 in np.sort(rng.uniform(0, n, int(density * n / SR))).astype(int):
+        gl = int(rng.uniform(0.03, 0.09) * SR)
+        if s0 + gl >= n:
+            continue
+        rate = 2 ** (rng.normal(0, 0.08) / 12 + (12 / 12 if rng.random() < 0.12 else 0))   # a few an octave up
+        pos = int(rng.uniform(0, src_n - gl * 2.2))
+        idx = pos + np.arange(gl) * rate
+        g = np.interp(idx, np.arange(src_n), src) * np.hanning(gl)
+        pan = rng.random()
+        out[0, s0:s0 + gl] += g * np.cos(pan * np.pi / 2)
+        out[1, s0:s0 + gl] += g * np.sin(pan * np.pi / 2)
+    return hp(out, 120) * env * (0.9 / np.sqrt(max(1.0, density / 30)))
+
+
+_FCHOP_VOWELS = ('a', 'o', 'e', 'i', 'u')
+
+
+def v_formantchop(m, dur, p, glide=None, mod=None):
+    """Formant vocal chop: a breathy glottal buzz shaped into a vowel - a different vowel on each note, gliding into
+    the next vowel as it ends ('ah-ee', 'oh-ay') - the pitched vocal-chop hook of future bass, house and garage,
+    without needing a sample."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.6), 0.05) * SR)
+    env = _va.adsr(gate, 0.004, 0.15, 0.6, 0.06)
+    n = len(env)
+    t = np.arange(n) / SR
+    rng = _rng()
+    fr = f * 2 ** ((-30 * np.exp(-t / 0.03)) / 1200)
+    x = _va.saw(fr, n, rng.random()) * 0.8 + 0.15 * rng.standard_normal(n)
+    v1, v2 = rng.choice(_FCHOP_VOWELS, 2, replace=False)
+    a = _va.formant(x, str(v1), 9.0)
+    b = _va.formant(x, str(v2), 9.0)
+    mix = np.clip((t - 0.6 * n / SR) / (0.4 * n / SR + 1e-9), 0, 1)
+    y = a * (1 - mix) + b * mix
+    return _st(hp(y, 200) * env, 18) * 0.9
+
+
+def v_808dist(m, dur, p, glide=None, mod=None):
+    """Distorted 808: the trap 808 driven hard into a clipper so its harmonics carry it on small speakers - gritty
+    and loud, the low end kept round underneath."""
+    y = np.asarray(i_808(m, dur, p, glide, mod), float)
+    lo_ = lp(y, 90)
+    hi_ = np.tanh((y - lo_ + lo_ * 0.6) * 5.0) * 0.5
+    return lo_ * 0.8 + hi_
+
+
+def v_808long(m, dur, p, glide=None, mod=None):
+    """Long-glide 808: the 808 with a slow, deep slide between notes and a longer tail - the drill / UK sliding 808."""
+    return i_808(m, dur, dict(p, slide=p.get('slide', 0.16)), glide, mod)
+
+
+def v_808punch(m, dur, p, glide=None, mod=None):
+    """Punchy 808: a short 808 with a fast pitch drop and a click on top - tight and bouncy, for faster patterns."""
+    f = float(mtof(m))
+    n = int(min(max(dur, 0.12), 0.7) * SR)
+    t = np.arange(n) / SR
+    fr = f * 2 ** (24 * np.exp(-t / 0.012) / 12)
+    y = np.sin(2 * np.pi * np.cumsum(fr) / SR) * np.exp(-t / 0.35)
+    y = np.tanh(y * 1.6) / np.tanh(1.6)
+    y[:int(0.003 * SR)] += hp(_rng().standard_normal(int(0.003 * SR)), 2000) * 0.4
+    return _st(fade_out(y, 0.02), 0) * 0.85
+
+
+def v_hollowpluck(m, dur, p, glide=None, mod=None):
+    """Hollow pluck: a waveguide string plucked in the middle (so the even harmonics cancel - hollow, clarinet-like)
+    with a short body - the woody, hollow pluck of melodic house and future garage."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.04) * SR)
+    n = gate + int(0.3 * SR)
+    exc = _bass_exc(f, 'finger', p.get('tone', 1.0))
+    y = _va.string(f, n, exc, t60=p.get('t60', 0.9), bright=0.55, gate=gate, mute_t60=0.15, pickup=0.5)
+    y = eq(hp(y, 150), 'peak', 900, 1.2, 3.0)
+    return _st(y, 22) * 0.6
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('theremin', v_theremin, 'Theremin (sliding, haunted)', ('lead',), 80),
+        ('handpan', v_handpan, 'Handpan (soft steel, shimmering)', ('arp', 'lead', 'chords'), 114),
+        ('duduk', v_duduk, 'Duduk (dark, mournful reed)', ('lead',), 68),
+        ('erhu', v_erhu, 'Erhu (Chinese two-string fiddle)', ('lead',), 110),
+        ('guzheng', v_guzheng, 'Guzheng (Chinese zither)', ('arp', 'lead', 'chords'), 107),
+        ('pipa', v_pipa, 'Pipa (Chinese lute, tremolo)', ('arp', 'lead'), 106),
+        ('dizi', v_dizi, 'Dizi (Chinese bamboo flute, buzzing)', ('lead', 'arp'), 77),
+        ('kora', v_kora, 'Kora (West African harp-lute)', ('arp', 'lead', 'chords'), 46),
+        ('balafon', v_balafon, 'Balafon (West African xylophone, buzzing)', ('arp', 'lead'), 13),
+        ('hurdygurdy', v_hurdygurdy, 'Hurdy-gurdy (wheel fiddle with drones)', ('lead', 'pad'), 109),
+        ('cimbalom', v_cimbalom, 'Cimbalom (hammered dulcimer)', ('arp', 'lead', 'chords'), 15),
+        ('glassharmonica', v_glassharmonica, 'Glass harmonica (eerie, floating)', ('pad', 'lead', 'chords'), 92),
+        ('waterphone', v_waterphone, 'Waterphone (horror howls)', ('pad', 'lead'), 99),
+        ('wavetable', v_wavetable, 'Wavetable synth (morphing)', ('lead', 'chords', 'arp', 'bass'), 81),
+        ('granular', v_granular, 'Granular pad (shimmering cloud)', ('pad', 'chords'), 95),
+        ('formantchop', v_formantchop, 'Formant vocal chop (synth, no sample)', ('lead', 'arp'), 54),
+        ('808dist', v_808dist, '808 distorted (gritty)', ('bass',), 38),
+        ('808long', v_808long, '808 long glide (sliding)', ('bass',), 38),
+        ('808punch', v_808punch, '808 punchy (short, bouncy)', ('bass',), 38),
+        ('hollowpluck', v_hollowpluck, 'Hollow pluck (woody, mid-plucked string)', ('arp', 'lead', 'chords'), 46)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+def v_chuggtr(m, dur, p, glide=None, mod=None):
+    """Down-tuned extended-range metal guitar (deathcore / grind / djent): a low, thick string through a tight boost,
+    two hard clipping stages and a steep cabinet, quad-tracked - two separately played takes hard left and right, so
+    the wall is wide and never phasey - and a noise gate that slams shut the moment the note stops (the 'chug' stops
+    dead, the silence between chugs is the groove). Palm mutes ('pm') give the deep, percussive chug."""
+    takes = []
+    for k in range(2):
+        y, pm = _eg_string(m + (0.02 if k else 0.0), dur, dict(p, tone=p.get('tone', 1.5) + 0.25 * k), mod, 4.0, 0.85 - 0.1 * k,
+                           0.1 + 0.08 * k)                # the second take: a few cents off, another pick position
+        if k:
+            y = np.concatenate([np.zeros(int(0.0015 * SR)), y])[:len(y)]   # ... and a few ms late, like a real double
+        y = hp(y, 90)
+        y = _vb.dist(eq(y, 'peak', 700, 0.9, 6.0) * p.get('gain', 26.0), 1.0, 'hard')    # tight boost: mids into the clip
+        y = _vb.dist(y * 2.5, 1.0)
+        y = eq(eq(eq(y, 'peak', 85, 1.0, 5.0 if pm else 3.0), 'peak', 500, 0.9, -6.0), 'peak', 2300, 1.2, 4.0)
+        b, a = signal.butter(4, 5200 / (SR / 2))
+        y = signal.lfilter(b, a, y)
+        g = int(max(dur, 0.03) * SR)
+        if g < len(y):                                   # the gate: shut within ~8 ms of the note's end
+            y[g:] *= np.exp(-np.arange(len(y) - g) / (0.008 * SR))
+        takes.append(y)
+    n = min(len(takes[0]), len(takes[1]))
+    return np.vstack([takes[0][:n], takes[1][:n]]) * 0.17
+
+
+INSTRUMENTS['chuggtr'] = v_chuggtr
+INSTRUMENT_INFO['chuggtr'] = 'Down-tuned metal guitar (quad-tracked, gated chugs)'
+GM_PROGRAM['chuggtr'] = 30
+for _role in ('chords', 'arp', 'lead', 'bass'):
+    if 'chuggtr' not in ROLE_CHOICES[_role]:
+        ROLE_CHOICES[_role].append('chuggtr')

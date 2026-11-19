@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.78.0
+- **12 new part effects** (Parts panel > **+ FX**). The genres also pick some of them now and then:
+  - **Auto-pan:** 1/2 note or slow over 2 bars, with the low end kept in the middle.
+  - **Stutter fills:** the last beat or two of a section repeats in 16ths and then 32nds into the next one.
+  - **Shimmer reverb:** a long hall whose tail rises an octave.
+  - **Tape echo:** dark, worn, wobbly dotted-1/8 repeats.
+  - **Ring mod** and **frequency shifter**, for metallic and swirling effects.
+  - **Transient punch** and **soften:** a snappier or rounder attack.
+  - **De-esser** for voices and choirs.
+  - **Volume shaper:** pumping drawn as a curve on every beat, even when no kick is playing.
+  - **Reverse swell:** a backwards reverb that rises into each new section.
+- **21 new instruments:**
+  - **World:** handpan, duduk, erhu, guzheng (with its pressing vibrato), pipa (with its fast tremolo on long notes), dizi (with the buzzing membrane), kora, balafon (buzzing gourds), hurdy-gurdy (with drones), cimbalom.
+  - **Rare colours:** theremin, glass harmonica, waterphone.
+  - **Synth engines:** a morphing **wavetable synth**, a **granular pad**, **formant vocal chops** (no sample needed), a **hollow pluck**, and three 808s (**distorted**, **long glide**, **punchy**).
+  - **Down-tuned metal guitar:** two separate takes hard left and right, and a gate that stops each chug dead.
+  - They're offered where they fit: handpan and granular pads in chill and ambient genres, the theremin in trip-hop and spooky surf, kora and balafon in Afro house, and so on.
+- **Every sound has its own level** (song editor > each sound's card > **Level**, -24 to +9 dB). This includes layers, extra parts and the layered kick; muting them was already possible.
+- **DnB layered kick:** it was too much.
+  - The layered kick now carries the low end with a rounder body and a softer click.
+  - The break's own kick sits underneath as a quiet ghost knock.
+  - These settings come from measuring kick level, length and knock on reference DnB tracks.
+- A song section can now bring its own drum pattern and riff (used by the metal genres that follow).
+
 ## 1.77.1
 - Installers: numba (the optional speed-up for the analog filter and reverb) is added only where a ready-made build exists. The Intel Mac installer build failed trying to compile it. Without numba, the app uses its fallback filter and reverb.
 - Smoke test: quiet solo genres (solo piano) may sit near -20 LUFS (the loudness meter is exact since 1.76).

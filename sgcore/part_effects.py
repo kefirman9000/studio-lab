@@ -34,22 +34,36 @@ PRESETS = {
     'echo_d8': ('Echo (dotted 1/8)', {'dly': 0.3, 'dly_time': 0.75}),
     'echo_q':  ('Echo (1/4)', {'dly': 0.28, 'dly_time': 1.0}),
     'sweep':   ('Filter sweep (slow, 16 bars)', {'sweep': (400.0, 7000.0, 16)}),
+    # 1.78 (sgcore.fx2)
+    'autopan': ('Auto-pan (1/2 note)', {'autopan': (2.0, 0.6)}),
+    'autopan_s': ('Auto-pan (slow, 2 bars)', {'autopan': (8.0, 0.7)}),
+    'stutter': ('Stutter fills (beat repeat into sections)', {'stutter': 0.6}),
+    'shimmer': ('Shimmer reverb (octave-up halo)', {'shimmer': 0.5}),
+    'tape':    ('Tape echo (dark, wobbly repeats)', {'tape': 0.5}),
+    'ring':    ('Ring mod (metallic)', {'ring': 0.35}),
+    'fshift':  ('Frequency shifter (swirl)', {'fshift': 4.0}),
+    'punch':   ('Transient punch (snappier attack)', {'punch': 0.6}),
+    'soften':  ('Transient soften (rounder attack)', {'punch': -0.6}),
+    'deess':   ('De-esser (tame the s sounds)', {'deess': 0.7}),
+    'vshape':  ('Volume shaper (pumping, every beat)', {'vshape': 0.55}),
+    'revswell': ('Reverse swell into sections', {'revswell': 0.8}),
 }
 # the settings that count as "an effect" (a part with any of these is already dressed by its genre)
-FX_KEYS = ('chorus', 'phaser', 'flanger', 'trem', 'wah', 'crush', 'ott', 'wide', 'drive', 'sweep', 'leslie_fx', 'gate')
+FX_KEYS = ('chorus', 'phaser', 'flanger', 'trem', 'wah', 'crush', 'ott', 'wide', 'drive', 'sweep', 'leslie_fx', 'gate',
+           'autopan', 'stutter', 'shimmer', 'tape', 'ring', 'fshift', 'punch', 'deess', 'vshape', 'revswell')
 
 # genre family -> part -> [(preset, weight)]
-_HOUSE = {'chords': [('chorus', 3), ('phaser', 2), ('wide', 1), ('echo_d8', 1)],
+_HOUSE = {'chords': [('chorus', 3), ('phaser', 2), ('wide', 1), ('echo_d8', 1), ('vshape', 1)],
           'lead': [('echo_d8', 3), ('chorus', 1), ('phaser', 1)],
-          'arp': [('echo_8', 2), ('phaser', 1), ('sweep', 1)],
-          'pad': [('wide', 2), ('chorus', 2), ('phaser', 1)],
+          'arp': [('echo_8', 2), ('phaser', 1), ('sweep', 1), ('autopan', 1)],
+          'pad': [('wide', 2), ('chorus', 2), ('phaser', 1), ('shimmer', 1)],
           'bass': [('drive_l', 1)]}
-_TECHNO = {'arp': [('echo_d8', 3), ('sweep', 2), ('crush_l', 1), ('phaser', 1)],
-           'chords': [('sweep', 2), ('trem16', 1), ('wide', 1), ('echo_d8', 1)],
-           'pad': [('wide', 3), ('phaser', 1), ('trem16', 1)],
+_TECHNO = {'arp': [('echo_d8', 3), ('sweep', 2), ('crush_l', 1), ('phaser', 1), ('tape', 1), ('autopan', 1)],
+           'chords': [('sweep', 2), ('trem16', 1), ('wide', 1), ('echo_d8', 1), ('tape', 1)],
+           'pad': [('wide', 3), ('phaser', 1), ('trem16', 1), ('shimmer', 1)],
            'lead': [('echo_d8', 3), ('wide', 1)],
            'bass': [('drive_l', 2)]}
-_BASS = {'bass': [('ott', 3), ('drive', 1)],
+_BASS = {'bass': [('ott', 3), ('drive', 1), ('ring', 1)],
          'chords': [('wide', 2), ('ott', 1), ('chorus', 1)],
          'pad': [('wide', 2), ('phaser', 1)],
          'lead': [('ott', 1), ('echo_d8', 2)],
@@ -67,8 +81,8 @@ _POP = {'chords': [('chorus', 2), ('wide', 1)],
         'pad': [('wide', 2), ('chorus', 1)],
         'lead': [('echo_d8', 2)],
         'arp': [('echo_8', 2)]}
-_CHILL = {'chords': [('chorus', 3), ('trem8', 1), ('phaser', 1)],
-          'pad': [('wide', 2), ('phaser', 1)],
+_CHILL = {'chords': [('chorus', 3), ('trem8', 1), ('phaser', 1), ('tape', 1)],
+          'pad': [('wide', 2), ('phaser', 1), ('shimmer', 2)],
           'lead': [('echo_d8', 2), ('echo_q', 1)],
           'arp': [('echo_8', 2), ('echo_d8', 1)]}
 _RETRO = {'chords': [('chorus', 3)],
@@ -106,6 +120,14 @@ def describe(t):
         out.append(min(('echo_8', 0.5), ('echo_d8', 0.75), ('echo_q', 1.0), key=lambda e: abs(e[1] - dt))[0])
     if t.get('sweep'):
         out.append('sweep')
+    if t.get('autopan'):
+        ap = t['autopan']
+        out.append('autopan_s' if isinstance(ap, (list, tuple)) and float(ap[0]) >= 4 else 'autopan')
+    if t.get('punch'):
+        out.append('punch' if float(t['punch']) > 0 else 'soften')
+    for k in ('stutter', 'shimmer', 'tape', 'ring', 'fshift', 'deess', 'vshape', 'revswell'):
+        if t.get(k):
+            out.append(k)
     if t.get('leslie_fx'):
         out.append('leslie')
     if t.get('gate'):

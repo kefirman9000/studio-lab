@@ -75,9 +75,22 @@ def _locked(g, role):
 # 1.77 club synths, offered right after each genre's own signature sound (index 1-2), so the electronic scenes pick
 # them often instead of only when the pool happens to have room: scene -> role -> sounds
 CLUB = {
-    'House & Disco': dict(chords=['housechord'], arp=['housechord', 'trancepluck'], lead=['analoglead']),
-    'Techno & Trance': dict(arp=['trancepluck'], lead=['analoglead']),
+    'House & Disco': dict(chords=['housechord'], arp=['housechord', 'trancepluck', 'hollowpluck'], lead=['analoglead']),
+    'Techno & Trance': dict(arp=['trancepluck'], lead=['analoglead', 'wavetable']),
+    # 1.79 sounds
+    'Chill, Lo-fi & Ambient': dict(arp=['handpan', 'hollowpluck'], pad=['granular', 'glassharmonica']),
+    'Dubstep, Garage & Bass': dict(lead=['formantchop', 'wavetable'], arp=['formantchop', 'hollowpluck']),
+    'Drum & Bass, Breaks & Hard': dict(lead=['wavetable']),
+    'Pop, R&B & Hopecore': dict(lead=['formantchop']),
 }
+# individual genres (inserted the same way; the genre's own sound stays first)
+WORLD = {'trip_hop': dict(lead=['theremin']), 'spooky_surf': dict(lead=['theremin']), 'monster_theme': dict(lead=['theremin']),
+         'tension': dict(pad=['glassharmonica', 'waterphone'], lead=['glassharmonica']), 'ambient': dict(pad=['granular', 'glassharmonica']),
+         'field_ambient': dict(pad=['granular'], arp=['handpan']), 'klezmer': dict(lead=['cimbalom'], arp=['cimbalom']),
+         'gypsy_jazz': dict(arp=['cimbalom']), 'celtic_jig': dict(lead=['hurdygurdy']), 'folk_jam': dict(lead=['hurdygurdy']),
+         'afro_house': dict(arp=['kora', 'balafon']), 'afrobeats': dict(arp=['balafon', 'kora']), 'afrobeat': dict(arp=['balafon']),
+         'organic_house': dict(arp=['handpan', 'kora'], lead=['duduk']), 'chillstep': dict(lead=['formantchop'])}
+VARIANTS_808 = ('808dist', '808long', '808punch')
 _TECHNO = dict(chords=['dubchord', 'housechord'], arp=['hypnoseq', 'bleep'], lead=['analoglead'])
 CLUB_GENRE = {g: _TECHNO for g in ('techno', 'minimal', 'melodic_techno', 'hard_techno', 'uk_tribal_techno',
                                    'berlin_school', 'acid_techno', 'industrial_techno', 'detroit_techno', 'hypnotic_techno')}
@@ -90,13 +103,20 @@ SPLIT_FROM = ('sawbass', 'techbass', 'organbass', 'rollbass', 'moogbass', 'deepb
 def _club(g, scene, pools, banned):
     adds = dict(CLUB.get(scene) or {})
     adds.update(CLUB_GENRE.get(g) or {})             # a genre's own list replaces the scene's for that part
+    for role, extra in (WORLD.get(g) or {}).items():
+        adds[role] = list(extra) + [x for x in adds.get(role, []) if x not in extra]
     for role, extra in adds.items():
         lst = pools.get(role)
         if lst is None or _locked(g, role):
             continue
-        for k, inst in enumerate([x for x in extra if x not in banned][:2]):
+        for k, inst in enumerate([x for x in extra if x not in banned][:3]):
             if inst not in lst:
                 lst.insert(min(len(lst), 1 + k), inst)
+    b = pools.get('bass')
+    if b and b[0] == '808' and not _locked(g, 'bass'):   # 808 genres: the 808 variants (not where the 808 is the signature)
+        for k, v in enumerate(VARIANTS_808):
+            if v not in b and v not in banned:
+                b.insert(min(len(b), 1 + k), v)
     b = pools.get('bass')
     if b and b[0] in SPLIT_FROM and 'splitbass' not in b and 'splitbass' not in banned and not _locked(g, 'bass'):
         b.insert(min(len(b), 2), 'splitbass')
@@ -113,7 +133,7 @@ def widen():
                 pools = POOLS.get(g)
                 if not pools or g not in STYLES:
                     continue
-                if scene in CLUB or g in CLUB_GENRE:
+                if scene in CLUB or g in CLUB_GENRE or g in WORLD or (pools.get('bass') or [''])[0] == '808':
                     _club(g, scene, pools, set(STYLES[g].get('no_sounds') or ()))
                 main = {t.get('layer'): t.get('inst') for t in STYLES[g]['tracks']}
                 for role, extra in add.items():

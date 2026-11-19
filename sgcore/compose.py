@@ -71,6 +71,7 @@ class Options:
     octaves: dict = None          # part (role like 'lead' or a track name) -> octaves up (+) / down (-)
     traits: dict = None           # genre-trait overrides {category: value} (see sgcore/traits.py); {'_surprise': True} = random
     part_levels: dict = field(default_factory=dict)   # layer -> dB offset (-12..+6), e.g. {'lead': -3}
+    track_levels: dict = field(default_factory=dict)  # one sound (track id: 'lkick', 'pad_sw2', 'x1' ...) -> dB offset (-24..+9)
     part_fx: dict = field(default_factory=dict)       # layer -> effect plugin name (e.g. {'lead': 'ValhallaSupermassive'})
     part_effects: dict = field(default_factory=dict)  # part -> built-in effect preset (sgcore.part_effects; 'none' = dry)
     drum_voices: dict = field(default_factory=dict)   # drum voice (kick / snare / clap / hats) -> drum machine id, locked
@@ -1343,7 +1344,8 @@ def compose(opts):
                              copy=int(ed.get('copy', 0)), index=si, edited=bool(ed.get('seeds') or ed.get('vary') or ed.get('mute') or ed.get('bars'))))
         if ed.get('vary') is not None:
             variations.append((sec_start, sec_start + nbars * 4, int(ed['vary'])))
-        pchoice = {name: rnd_d.choice(pats) for name, pats in st['drums'].items()}
+        sec_dr = opts_s.get('drums') or {}                # a section can bring its own beat (metal: blast / breakdown)
+        pchoice = {name: rnd_d.choice(sec_dr.get(name) or pats) for name, pats in st['drums'].items()}
         bass_pat = rnd_b.choice(st['bass'])
         chord_pat = opts_s.get('chord_rh') or rnd_c.choice(st['chord_rh'])     # a section can have its own (tango ending)
         riff_pat = None
@@ -1351,6 +1353,8 @@ def compose(opts):
             big = opts_s.get('drop') or sname in BIG_SECTIONS
             if not big or rnd_c.random() < st.get('riff_chorus', 0.3):
                 riff_pat = rnd_c.choice(st['riffs'])
+        if opts_s.get('riffs') and S < 0.6:                # a section's own riffs (a breakdown's chug pattern)
+            riff_pat = rnd_c.choice(opts_s['riffs'])
         prev_bass = None
         for b in range(nbars):
             bar = bar0 + b
@@ -1368,7 +1372,7 @@ def compose(opts):
                 pat = pchoice[dname]
                 if slices is not None:                      # a break: its 4-bar pattern, straight or chopped
                     pat = drumkits.bar_pattern(st, dname, slices) or pat
-                elif dname == kick_name and last_of_4 and len(pats) > 1 and rnd_d.random() < 0.2 + 0.3 * energy:
+                elif dname == kick_name and last_of_4 and len(pats) > 1 and not sec_dr and rnd_d.random() < 0.2 + 0.3 * energy:
                     pat = rnd_d.choice(pats)
                 hits = drummer.hat_hits(opts, dname, parse_rhythm(pat))
                 used = {s for s, l, c in hits}

@@ -270,17 +270,27 @@ def install_break(st, tracks_list):
         kp = KITS.get(layer, {})
         for t in tracks_list:
             if t['name'] == 'kick':
-                t.update(hp=170, db=(t.get('db') or -13) - 4)    # the break's kick: thump filtered out, knock kept
+                t.update(hp=170, db=(t.get('db') or -13) - 9)    # the break's kick: thump filtered out, a quiet ghost knock
             elif t['name'] == 'snare':
                 t.update(db=(t.get('db') or -16) - 3)
             if layer == 'neuro' and t['name'] in seq:            # neuro: the break squashed and driven hard
-                t['drive'] = 0.6
-        tracks_list += [dict(name='lkick', layer='kick', inst='kick', pan=0.0, rev=0.0, dly=0.0, sc=0.0, db=-11, hp=None,
-                             drive=None, p={}, synth=True),
+                t['drive'] = 0.6 if t['name'] != 'kick' else 0.25  # (its kick knock under the layered kick, not over it)
+        tracks_list += [dict(name='lkick', layer='kick', inst='kick', pan=0.0, rev=0.0, dly=0.0, sc=0.0, db=-13, hp=None,
+                             drive=None, p={}, synth=True),       # (1.79: 2 dB down, a softer click - it was too much)
                         dict(name='lsnare', layer='snare', inst='snare', pan=0.0, rev=0.1, dly=0.0, sc=0.0, db=-14, hp=None,
                              drive=None, p={}, synth=not (st.get('real_snare') and sl.installed('snares')))]
         st['drums'].update({k: list(v) for k, v in TWO_STEP.items()})
-        st['drum_voice'] = dict(st.get('drum_voice') or {}, lkick=dict(kp.get('kick', {})), lsnare=dict(kp.get('snare', {})))
+        # the layered kick carries the low end, the way it sits on DnB records (measured on reference tracks: the hit
+        # 9-14 dB out of the mix, its low end dying 12 dB in 40-75 ms, the knock 11-19 dB under the thump). The kits'
+        # own kicks were all click and snap (15 ms, little low end), stacked on the break's knock: too much.
+        lk = dict(kp.get('kick', {}))
+        lk['click'] = min(float(lk.get('click', 0.4)), 0.4)
+        lk['drive'] = min(float(lk.get('drive', 1.6)), 2.0)
+        lk['decay'] = min(float(lk.get('decay', 9)), 9.0)
+        lk['sweep'] = min(float(lk.get('sweep', 50)), 50.0)
+        lk['punch'] = min(float(lk.get('punch', 140)), 150.0)
+        lk['len'] = max(float(lk.get('len', 0.4)), 0.4)
+        st['drum_voice'] = dict(st.get('drum_voice') or {}, lkick=lk, lsnare=dict(kp.get('snare', {})))
         st['kick_track'] = 'lkick'
         st['snare_tracks'] = ['lsnare', 'snare']
 
