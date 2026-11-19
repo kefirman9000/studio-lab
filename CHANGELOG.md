@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.66.0
+I went through every genre and counted which instruments they lean on and which built-in sounds stand in for them. The most-used acoustic stand-ins were still simple first-generation sounds, so they are rebuilt. Each old sound is kept as "(classic sound, before 1.66)".
+- **String section** (used by ~210 genres): seven players a few cents apart, each with their own vibrato and slow drift, spread across the stage. The bow brightens as it bites in, with a whisper of bow noise, through the body resonances (warm 280 Hz, the 2.8 kHz singing formant, the nasal dip between).
+- **Acoustic piano** (~150 genres): stretched, inharmonic partials whose brightness follows the register. Each partial has the two-stage piano decay, the lower notes have the slow beating of their unison strings, plus a hammer knock, soundboard bloom and dampers. The level is even across the keyboard and notes spread low-left to high-right.
+- **Electric guitars** (~95 genres): picked waveguide strings on a magnetic pickup, muted by the hand at the end of each note, with palm mutes, every string at the same level, into three amps:
+  - **Clean:** tube compression and the scooped American-amp tone.
+  - **Crunch:** a cranked tube amp that cleans up as the note decays, with a mid hump and a 4x12 cabinet.
+  - **High gain:** a tight boost into two clipping stages, scooped metal mids and a steep cabinet roll-off. Palm mutes become the chug.
+  - Genres that asked the old guitar for "dist" now get the crunch or high-gain amp. When the sampled clean, overdriven and distorted guitars aren't installed, these models stand in for them.
+- **Saxophone** (~65 genres, tenor and soprano): every harmonic present, getting brighter the harder it's blown. It has the horn's formants, breath riding the tone, a scoop into each note, a delayed vibrato and an optional growl.
+- **Flute** (~110 genres): a near-sine air-jet tone that gains harmonics up high, breath tuned around the note, the attack "chiff", a soft start slightly flat, and a vibrato that moves pitch and loudness together.
+- **New effect pedals for any part:** phaser, flanger, beat-synced tremolo, auto-wah and bit-crusher. Some genres now use them:
+  - Wah on funk's clavinet and on the disco-funk, chicha and Thai-funk guitars.
+  - Phaser on disco strings and on psych and krautrock keys.
+  - Surf tremolo on the surf guitars.
+  - Flanger on shoegaze guitars.
+
 ## 1.65.0
 - **Rhodes electric piano:** a model of the tine-and-pickup piano. The pickup "barks" harder the louder the note (bright attack, mellow sustain), with a short tine ping and hammer thump, a fast-then-slow decay, felt dampers and the suitcase's stereo tremolo. It is now the main keys sound of neo-soul, R&B, lo-fi and deep house, and an option in jazz, gospel, soul, city pop, smooth jazz and Tokyo deep house. The DX-style FM piano is still there as "Electric piano".
 - **Modelled acoustic guitars:**

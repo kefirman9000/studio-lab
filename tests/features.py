@@ -533,6 +533,8 @@ def test_world_and_rock_genres_153():
         for sd in (1, 2):
             s = compose(Options(style=g, seed=sd))
             ins = {t['inst'] for t in s['st']['tracks']}
+            if ins & {'cleanguitar', 'odguitar', 'distguitar', 'sf:cleanguitar', 'sf:odguitar', 'sf:distguitar'}:
+                ins.add('guitar')                                          # (any electric guitar amp)
             used = {e.track for e in s['events']}
             assert insts <= ins, (g, ins)
             assert drums.get(g, set()) <= used, (g, used)
@@ -1085,6 +1087,18 @@ def test_va_synth():
         assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.3, (k, np.abs(a).max())
     from sgcore.soundfont import fallback_for as _fb
     assert _fb('nylon') == 'nylon' and _fb('steelguitar') == 'steelguitar' and 'acguitar_v1' in INSTRUMENTS
+    for k in ('strings', 'piano', 'guitar', 'cleanguitar', 'odguitar', 'distguitar', 'sax', 'sopsax', 'flute'):   # 1.66
+        for mm in (48, 64, 76):
+            a = np.asarray(INSTRUMENTS[k](mm, 0.6, {}, None, None))
+            assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.3, (k, mm, np.abs(a).max())
+        assert k + '_v1' in INSTRUMENTS or k in ('cleanguitar', 'odguitar', 'distguitar', 'sopsax')
+    pl = [float(np.sqrt(np.mean(np.asarray(INSTRUMENTS['piano'](mm, 1.0, {}))[:, :SR // 3] ** 2))) for mm in (36, 60, 84)]
+    assert max(pl) < 1.6 * min(pl)                                             # an even keyboard
+    from sgcore.render import track_fx
+    zz = np.random.default_rng(3).standard_normal((2, SR)) * 0.2
+    for fxk, fxv in (('phaser', 0.6), ('flanger', 0.5), ('trem', {'rate': 0.25, 'depth': 0.5}), ('wah', 0.6), ('crush', 0.5)):
+        yy = track_fx(zz, {fxk: fxv}, 0.5)
+        assert yy.shape == zz.shape and np.isfinite(yy).all() and not np.allclose(yy, zz), fxk
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars

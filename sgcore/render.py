@@ -48,6 +48,77 @@ def gated_reverb(x, hold=0.24):
 
 
 
+
+def track_fx(buf, tcfg, spb):
+    """Per-part effect pedals, applied to the whole part like a pedal on its channel:
+    phaser   - four all-pass stages swept by a slow LFO with feedback (funk clav / guitar, 70s strings, psych rock)
+    flanger  - a very short delay swept 1-6 ms, mixed back in (jet-plane sweeps)
+    trem     - amp tremolo synced to the beat: {'rate': beats per cycle, 'depth': 0..1} or a depth (16ths default)
+    wah      - an auto-wah: a resonant band-pass that follows the playing's loudness (funk guitar, clavinet)
+    crush    - a bit-crusher: fewer bits and a lower sample rate (lo-fi, chip, glitch)
+    Each value is the amount (0..1) unless noted."""
+    x = np.asarray(buf, np.float64)
+    n = x.shape[1]
+    t = np.arange(n) / SR
+    if tcfg.get('phaser'):
+        amt = float(tcfg['phaser'])
+        lfo = 0.5 - 0.5 * np.cos(2 * np.pi * 0.35 * t)
+        fc = 250 * (3200 / 250) ** lfo
+        fb = np.zeros(2)
+        blk = 64
+        z = np.zeros((4, 2))
+        out = np.empty_like(x)
+        for s0 in range(0, n, blk):
+            e = min(n, s0 + blk)
+            w = np.tan(np.pi * fc[s0] / SR)
+            a1 = (w - 1) / (w + 1)
+            seg = x[:, s0:e] + 0.5 * fb[:, None]
+            for st_ in range(4):
+                for c in range(2):
+                    seg[c], zz = signal.lfilter([a1, 1.0], [1.0, a1], seg[c], zi=[z[st_, c]])
+                    z[st_, c] = zz[0]
+            out[:, s0:e] = seg
+            fb = seg[:, -1]
+        y = x + amt * out
+        x = y / (1 + amt)
+    if tcfg.get('flanger'):
+        amt = float(tcfg['flanger'])
+        idx = np.arange(n, dtype=float)
+        d = (3.5 + 2.5 * np.sin(2 * np.pi * 0.2 * t)) * SR / 1000
+        x = np.vstack([x[c] + amt * np.interp(idx - d * (1 if c == 0 else 0.85), idx, x[c], left=0.0) for c in range(2)]) / (1 + amt * 0.6)
+    if tcfg.get('trem'):
+        tr = tcfg['trem'] if isinstance(tcfg['trem'], dict) else {'depth': float(tcfg['trem'])}
+        rate = 1.0 / (float(tr.get('rate', 0.5)) * spb)
+        dep = float(tr.get('depth', 0.5))
+        x = x * (1 - dep * (0.5 - 0.5 * np.cos(2 * np.pi * rate * t)))[None, :]
+    if tcfg.get('wah'):
+        amt = float(tcfg['wah'])
+        env = np.sqrt(signal.lfilter([0.003], [1, -0.997], (x.mean(axis=0)) ** 2) + 1e-12)
+        env = env / (np.percentile(env, 98) + 1e-9)
+        fc = 400 * (2600 / 400) ** np.clip(env, 0, 1)
+        out = np.empty_like(x)
+        blk = 64
+        for c in range(2):
+            zi = np.zeros(2)
+            for s0 in range(0, n, blk):
+                e = min(n, s0 + blk)
+                b, a = _bp_coeffs(float(fc[s0]), 4.0)
+                out[c, s0:e], zi = signal.lfilter(b, a, x[c, s0:e], zi=zi)
+        x = x * (1 - amt) + out * amt * 2.5
+    if tcfg.get('crush'):
+        amt = float(tcfg['crush'])
+        bits = 2 ** (12 - 7 * amt)
+        hold = max(1, int(1 + 5 * amt))
+        y = np.round(x * bits) / bits
+        x = np.repeat(y[:, ::hold], hold, axis=1)[:, :n]
+    return x
+
+
+def _bp_coeffs(fc, q):
+    w = 2 * np.pi * min(fc, SR * 0.45) / SR
+    al = np.sin(w) / (2 * q)
+    return np.array([al, 0, -al]) / (1 + al), np.array([1, -2 * np.cos(w) / (1 + al), (1 - al) / (1 + al)])
+
 def auto_lp(buf, cut, block=256):
     """A 12 dB low-pass whose cutoff follows `cut` (Hz per sample), in blocks with carried state; blocks where it is
     wide open are (a track that never closes is passed straight through)."""
@@ -400,6 +471,8 @@ class Renderer:
             buf = self._gate(buf, tcfg['gate'])
         if tcfg.get('chorus'):
             buf = chorus(buf, float(tcfg['chorus']))
+        if any(tcfg.get(k) for k in ('phaser', 'flanger', 'trem', 'wah', 'crush')) and np.any(buf):
+            buf = track_fx(buf, tcfg, self.spb).astype(np.float32)
         if tcfg.get('sweep') and np.any(buf):             # techno: a filter that opens and closes over 16-32 bars
             lo_hz, hi_hz, bars = tcfg['sweep']
             n = buf.shape[1]

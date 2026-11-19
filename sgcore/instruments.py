@@ -3533,3 +3533,203 @@ INSTRUMENT_INFO['acguitar_v1'] = 'Acoustic guitar (classic sound, before 1.65)'
 INSTRUMENTS['acguitar'] = v_acguitar
 INSTRUMENTS['steelguitar'] = v_acguitar                      # the sampled steel guitar's stand-in
 INSTRUMENT_INFO['steelguitar'] = 'Steel-string guitar (modelled)'
+
+
+# ----------------------------------------------------------------------------- 1.66: the acoustic workhorses rebuilt
+def v_strings(m, dur, p, glide=None, mod=None):
+    """String section: seven players a few cents apart, each with their own vibrato (rate, depth, when it starts) and
+    a slow drift, panned across the stage; the bow's brightness grows as it bites in, a whisper of bow noise, and the
+    wooden body's resonances (the warm 280 Hz, the 2.8 kHz 'singing' formant, the nasal dip between)."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    a_ = p.get('a', 0.35)
+    env = _va.adsr(gate, a_, 0.5, 0.9, p.get('r', 0.7))
+    n = len(env)
+    t = np.arange(n) / SR
+    rng = _rng()
+    L = np.zeros(n)
+    R = np.zeros(n)
+    for i in range(7):
+        c = (i / 6 - 0.5) * 2 * p.get('spread', 13) + rng.normal(0, 2)
+        dl = rng.uniform(0.12, 0.35)
+        dep = rng.uniform(5, 11) * np.clip((t - dl) / 0.4, 0, 1)
+        drift = 2.5 * np.sin(2 * np.pi * rng.uniform(0.08, 0.2) * t + rng.random() * 6.28)
+        fr = f * 2 ** ((c + drift + dep * np.sin(2 * np.pi * rng.uniform(4.6, 5.8) * t + rng.random() * 6.28)) / 1200)
+        s_ = _va.saw(fr, n, rng.random())
+        pan = i / 6
+        L += s_ * np.cos(pan * np.pi / 2)
+        R += s_ * np.sin(pan * np.pi / 2)
+    x = np.vstack([L, R]) * 0.4
+    cut = p.get('cut', 3200) * (0.5 + 0.5 * np.clip(t / max(0.05, a_ * 1.3), 0, 1))
+    y = _va.vcf(x, cut, 0.05, 1.0)
+    y = y + 0.03 * bp(rng.standard_normal((2, n)), 2000, 7000) * (env[None, :] ** 0.5)
+    for fc, q, g in ((280, 1.2, 3.0), (520, 1.5, 1.5), (1500, 1.4, -2.5), (2800, 1.6, 3.0)):
+        y = eq(y, 'peak', fc, q, g)
+    y = hp(y, min(160.0, f * 0.7))
+    return y * env * 0.43
+
+
+def v_piano(m, dur, p, glide=None, mod=None):
+    """Acoustic piano: stretched (inharmonic) partials whose number and brightness follow the register and the hammer,
+    each with the piano's two-stage decay (the quick 'prompt' sound and the long aftersound), the slow beating of the
+    two or three strings of a note, a hammer knock, a soundboard bloom, the dampers at the release, and the notes
+    spread low-left to high-right like sitting at the keyboard."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    ring = min(max(dur, 0.1) + 1.0, 4.0 if f < 300 else 2.8)
+    n = int(ring * SR)
+    t = np.arange(n) / SR
+    B = 0.00012 * (f / 261.6) ** 1.2 + 0.00003
+    kc = p.get('hammer', 1.0) * 9.0 * (261.6 / f) ** 0.35
+    reg = (f / 261.6) ** 0.45
+    y = np.zeros(n)
+    for k in range(1, 28):
+        fk = k * f * np.sqrt(1 + B * k * k)
+        if fk > 15000:
+            break
+        a = (1.0 / k) * np.exp(-(k - 1) / kc)
+        fast, slow = (1.6 + 0.9 * k) * reg, (0.25 + 0.12 * k) * reg
+        dec = 0.65 * np.exp(-t * fast) + 0.35 * np.exp(-t * slow)
+        ph = _rng().random() * 6.28
+        part = np.sin(2 * np.pi * fk * t + ph)
+        if k <= 6:                                                   # unison strings beating
+            part = part + 0.6 * np.sin(2 * np.pi * fk * 2 ** (0.9 / 1200) * t + ph * 1.7)
+        y += a * part * dec
+    y += 0.05 * lp(_rng().standard_normal(n), 2500) * np.exp(-t * 90)        # hammer knock
+    y = eq(eq(y, 'peak', 110, 1.0, 2.0), 'peak', 2600, 1.2, -1.0)            # soundboard
+    damp = np.ones(n)
+    if gate < n:
+        damp[gate:] = np.exp(-np.arange(n - gate) / (0.11 * SR))
+    w = min(n, int(0.3 * SR))
+    y = y / (np.sqrt(np.mean(y[:w] ** 2)) + 1e-9) * 0.13 * (f / 261.6) ** -0.08      # an even keyboard
+    y *= damp * np.minimum(t / 0.0012, 1)
+    pan = np.clip((m - 60) / 40, -0.6, 0.6)
+    return np.vstack([y * (1 - pan * 0.5), y * (1 + pan * 0.5)])
+
+
+def _eg_string(m, dur, p, mod, t60=5.0, bright=0.7, pickup=0.12):
+    """Electric guitar string: picked waveguide string read by a magnetic pickup; palm mutes (`mod='pm'`) damp it."""
+    f = float(mtof(m))
+    pm = mod == 'pm'
+    gate = int(max(dur, 0.04) * SR)
+    n = gate + int((0.04 if pm else 0.12) * SR)
+    y = _va.string(f, n, _bass_exc(f, 'pick', p.get('tone', 1.3)), t60=(0.18 if pm else t60) * (196.0 / max(f, 70)) ** 0.4,
+                   bright=0.3 if pm else bright, gate=gate, mute_t60=0.06, pickup=p.get('pickup', pickup))
+    y[gate:] *= np.exp(-np.arange(n - gate) / (0.02 * SR))
+    w = min(n, int(0.15 * SR))
+    y = y / (np.sqrt(np.mean(y[:w] ** 2)) + 1e-9) * 0.3                       # every string as loud
+    return hp(y, 70), pm
+
+
+def v_eguitar_clean(m, dur, p, glide=None, mod=None):
+    """Clean electric guitar: a picked string on a bridge-side pickup into a clean amp - a little tube compression,
+    the scooped American-amp tone (round lows, dipped mids, a sparkling top). A genre's `dist` setting (the old
+    guitar's drive amount) sends it to the crunch amp (up to 9) or the high-gain amp (10 and up)."""
+    d = float(p.get('dist') or 0)
+    if d >= 10:
+        return v_eguitar_dist(m, dur, dict(p, gain=d * 1.4), glide, mod)
+    if d >= 2:
+        return v_eguitar_crunch(m, dur, dict(p, gain=d * 1.2), glide, mod)
+    y, pm = _eg_string(m, dur, p, mod)
+    y = np.tanh(y * (1.6 + 2.0 * d)) / (1.3 + 1.2 * d)                  # (a little grit: the amp pushed)
+    y = eq(eq(eq(y, 'peak', 120, 0.9, 2.0), 'peak', 500, 1.0, -3.0), 'peak', 3200, 1.0, 3.0)
+    y = lp(y, 7500)
+    if pm:
+        y = eq(y, 'peak', 160, 1.0, 4.0)
+    return np.vstack([y, np.roll(y, 20)]) * 0.66
+
+
+def v_eguitar_crunch(m, dur, p, glide=None, mod=None):
+    """Overdriven electric guitar (crunch): the string into a cranked tube amp - asymmetric clipping that sags and
+    cleans up as the note decays, a mid hump, and a 4x12 cabinet's top roll-off and presence peak."""
+    y, pm = _eg_string(m, dur, p, mod, 4.0, 0.75)
+    y = hp(y, 120)
+    y = _vb.dist(y * p.get('gain', 6.0) + 0.15, 1.0) - np.tanh(0.15)
+    y = eq(eq(y, 'peak', 800, 0.9, 4.0), 'peak', 2200, 1.2, 3.0)
+    y = lp(lp(y, 5200), 6000)
+    if pm:
+        y = eq(y, 'peak', 140, 1.0, 5.0)
+    return np.vstack([y, np.roll(y, 30)]) * 0.22
+
+
+def v_eguitar_dist(m, dur, p, glide=None, mod=None):
+    """High-gain distorted guitar (rock / metal): a tight boost into two hard clipping stages, the scooped metal mids,
+    a thick low end and a steep cabinet roll-off - palm mutes turn it into the chug."""
+    y, pm = _eg_string(m, dur, p, mod, 4.0, 0.8)
+    y = hp(y, 180)
+    y = _vb.dist(y * p.get('gain', 18.0), 1.0, 'hard')
+    y = _vb.dist(eq(y, 'peak', 1000, 0.8, 4.0) * 3.0, 1.0)
+    y = eq(eq(eq(y, 'peak', 110, 0.9, 3.5), 'peak', 650, 0.9, -5.0), 'peak', 1700, 1.1, 3.0)
+    b, a = signal.butter(4, 4800 / (SR / 2))
+    y = signal.lfilter(b, a, y)
+    if pm:
+        y = eq(y, 'peak', 120, 1.0, 5.0)
+    return np.vstack([y, np.roll(y, 35)]) * 0.18
+
+
+def v_sax(m, dur, p, glide=None, mod=None):
+    """Tenor saxophone: a reed on a conical bore - every harmonic present, getting brighter the harder it's blown (the
+    tone opens up with the breath), the horn's formants, breath noise riding the tone, a scoop up into each note,
+    a delayed vibrato, and an optional growl."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, p.get('a', 0.035), 0.3, 0.82, p.get('r', 0.1))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.05) if glide is not None else f * 2 ** (-45 * np.exp(-t / 0.035) / 1200)
+    fr = np.broadcast_to(fr, (n,)) * 2 ** (np.clip((t - 0.25) / 0.4, 0, 1) * p.get('vib', 16) * np.sin(2 * np.pi * 5.4 * t) / 1200)
+    x = _va.saw(fr, n) * 0.8 + _va.pulse(fr, n, 0.0, 0.45) * 0.25
+    blow = np.concatenate([env[:n], np.zeros(0)])
+    cut = 700 + 4200 * blow ** 1.4 * (1 + 0.6 * np.exp(-t / 0.08))
+    y = _va.vcf(x, cut, 0.12, 1.4)
+    for fc, q, g in ((500, 1.3, 4.0), (1600, 1.4, 3.0), (2800, 1.8, 2.0)):
+        y = eq(y, 'peak', fc, q, g)
+    y = y + 0.07 * bp(_rng().standard_normal(n), 1200, 6000) * (0.3 + 0.7 * blow)
+    if p.get('growl'):
+        y = y * (1 + 0.25 * np.sin(2 * np.pi * 32 * t))
+    y = np.tanh(y * 1.5) * env
+    return np.vstack([y, np.roll(y, 25)]) * 0.4
+
+
+def v_flute(m, dur, p, glide=None, mod=None):
+    """Flute: an air jet across the embouchure - a near-sine tone with a little 2nd / 3rd harmonic that grows in the
+    upper register, breath noise tuned around the note, the 'chiff' of the attack, a soft start slightly flat and a
+    flute vibrato that moves the pitch and the loudness together."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, p.get('a', 0.06), 0.3, 0.85, p.get('r', 0.18))
+    n = len(env)
+    t = np.arange(n) / SR
+    vib = np.clip((t - 0.2) / 0.4, 0, 1) * np.sin(2 * np.pi * 5.0 * t)
+    fr = f * 2 ** ((-20 * np.exp(-t / 0.05) + 14 * vib) / 1200)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    over = 0.15 + 0.25 * min(1.0, max(0.0, (f - 500) / 1000))
+    y = np.sin(ph) + over * np.sin(2 * ph) + 0.06 * np.sin(3 * ph)
+    y = y * (1 + 0.08 * vib)
+    rng = _rng()
+    breath = bp(rng.standard_normal(n), f * 0.8, min(f * 4, 16000)) * 0.12
+    chiff = bp(rng.standard_normal(n), f * 1.5, min(f * 6, 16000)) * np.exp(-t / 0.025) * 0.5
+    y = (y + breath + chiff) * env
+    return np.vstack([y, np.roll(y, 30)]) * 0.45
+
+
+for _name, _fn in (('strings', v_strings), ('piano', v_piano), ('guitar', v_eguitar_clean), ('sax', v_sax), ('flute', v_flute)):
+    if _name + '_v1' not in INSTRUMENTS:
+        INSTRUMENTS[_name + '_v1'] = INSTRUMENTS[_name]
+        INSTRUMENT_INFO[_name + '_v1'] = (INSTRUMENT_INFO.get(_name) or _name) + ' (classic sound, before 1.66)'
+        for _role, _lst in ROLE_CHOICES.items():
+            if _name in _lst and _name + '_v1' not in _lst:
+                _lst.append(_name + '_v1')
+        GM_PROGRAM[_name + '_v1'] = GM_PROGRAM.get(_name, 0)
+    INSTRUMENTS[_name] = _fn
+INSTRUMENTS['sopsax'] = lambda m, dur, p, glide=None, mod=None: v_sax(m, dur, dict(p, vib=p.get('vib', 18)), glide, mod)
+for _name, _fn, _info, _gm in (('cleanguitar', v_eguitar_clean, 'Clean electric guitar (modelled)', 27),
+                               ('odguitar', v_eguitar_crunch, 'Overdriven guitar (crunch)', 29),
+                               ('distguitar', v_eguitar_dist, 'Distorted guitar (high gain)', 30)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in ('chords', 'lead', 'arp'):
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+INSTRUMENT_INFO['guitar'] = 'Electric guitar (clean, modelled)'
