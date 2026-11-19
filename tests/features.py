@@ -1056,6 +1056,16 @@ def test_va_synth():
     from sgcore.soundfont import fallback_for
     assert fallback_for('slapbass') == 'slapbass' and fallback_for('pickbass') == 'pickbass'
     _ = _mt
+    for k in ('dnbwob', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'rumble', 'dubstab', 'technoseq', 'darkpad', 'atmos',
+              'emolead'):                                                                           # 1.62
+        a = np.asarray(INSTRUMENTS[k](40 if k in ('dnbwob', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'rumble') else 62,
+                                      0.8, {'spb': 0.43}, None, 0.5 if 'wob' in k else None))
+        assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.6, (k, np.abs(a).max())
+    ju = compose(Options(style='jump_up', seed=1))
+    rates = {e.mod for e in ju['events'] if e.track == 'bass' and e.midi is not None}
+    assert ju['st']['tracks'] and min(r for r in rates if isinstance(r, (int, float))) <= 0.5   # DnB wobble: fast LFO
+    tf = compose(Options(style='trance', seed=1))
+    assert tf['st'].get('rev_hp') and tf['st'].get('rev_predelay')                 # trance hall: pre-delay, high-passed
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars

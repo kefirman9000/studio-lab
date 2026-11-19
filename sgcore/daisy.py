@@ -14,7 +14,7 @@ import time
 import numpy as np
 from scipy import signal
 
-from .dsp import SR, write_wav
+from .dsp import SR, write_wav, biquad as dsp_biquad
 from .instruments import INSTRUMENTS
 
 # ----------------------------------------------------------------------------- the song (C major, 3/4)
@@ -238,13 +238,23 @@ def _a_weight(x):
     return signal.lfilter(bz, az, x)
 
 
+def _k_weight(x):
+    """K-weighting (the loudness meters' curve, ITU BS.1770): a gentle high shelf and a low cut. Closer than A-weighting
+    to how loud a voice sounds at a normal playback level - A-weighting under-counts the 200-500 Hz body, so the rider
+    used to push low notes up until they boomed."""
+    b1, a1 = dsp_biquad('highshelf', 1681.97, 0.7071, 4.0)
+    y = signal.lfilter(b1, a1, x)
+    b2, a2 = signal.butter(2, 60.0 / (SR / 2), 'high')
+    return signal.lfilter(b2, a2, y)
+
+
 def ride(y, notes, win=0.035, floor_db=-24.0, max_boost=3.0, max_cut=0.33):
     """A vocal rider, like an engineer riding the fader through every word: loudness measured in short (35 ms)
     windows, A-weighted (as loud as the ear hears it), and the gain moved smoothly so every vowel - and every part of a vowel,
     and the joins between syllables - sits at the same level. Quiet bits (consonants, breaths, the gaps between
     notes) are below the gate and left alone, so nothing gets pumped up into hiss. Returns the gain curve."""
     n = len(y)
-    heard = _a_weight(y)
+    heard = _k_weight(y)
     w = max(16, int(win * SR))
     lvl = np.sqrt(np.convolve(heard ** 2, np.ones(w) / w, 'same')) + 1e-9
     sung = np.zeros(n, bool)
@@ -259,6 +269,40 @@ def ride(y, notes, win=0.035, floor_db=-24.0, max_boost=3.0, max_cut=0.33):
     g = signal.lfilter([1 - ka], [1, -ka], g, zi=[g[0] * ka])[0]
     g = signal.lfilter([1 - ka], [1, -ka], g[::-1], zi=[g[-1] * ka])[0][::-1]   # slow enough not to distort it
     return g
+
+
+def even_bands(y, notes, split=(700.0, 2400.0), rng_db=5.0, win=0.04):
+    """A dynamic EQ for the voice, before the rider: low notes used to come out boomy and high ones thin (a formant
+    resonance sits on a different harmonic of every pitch), and a diphthong's sweep (the 'ei' of 'Dai-') brightened and
+    darkened as it moved - so the word seemed to swell and dip even at an even overall level. The voice is split into
+    three bands and each is ridden towards its own typical level, at most `rng_db` either way, so every syllable keeps
+    its vowel but has the same balance of body and edge."""
+    n = len(y)
+    lo, hi = split
+    sos_l = signal.butter(4, lo / (SR / 2), 'low', output='sos')
+    sos_h = signal.butter(4, hi / (SR / 2), 'high', output='sos')
+    low = signal.sosfiltfilt(sos_l, y)
+    high = signal.sosfiltfilt(sos_h, y)
+    mid = y - low - high
+    sung = np.zeros(n, bool)
+    for start, dur, midi, ph in notes:
+        sung[int(start * SR):min(n, int((start + dur) * SR))] = True
+    if not sung.any():
+        return y
+    w = max(16, int(win * SR))
+    out = np.zeros(n)
+    lim = 10 ** (rng_db / 20)
+    ka = np.exp(-1 / (0.02 * SR))
+    for band in (low, mid, high):
+        lvl = np.sqrt(np.convolve(band ** 2, np.ones(w) / w, 'same')) + 1e-9
+        ref = float(np.median(lvl[sung]))
+        g = np.clip(ref / lvl, 1 / lim, lim)
+        g[~sung] = 1.0
+        g[lvl < ref * 0.06] = 1.0                           # consonants, gaps: leave alone
+        g = signal.lfilter([1 - ka], [1, -ka], g, zi=[g[0] * ka])[0]
+        g = signal.lfilter([1 - ka], [1, -ka], g[::-1], zi=[g[-1] * ka])[0][::-1]
+        out += band * g
+    return out
 
 
 def robotize(y, crush_hz=16000, bits=10):
@@ -371,6 +415,7 @@ def render(out_dir, bpm=None, log=print, wind_down=True, voice='machine'):
                     put('celesta', root + 12 + V.get('key', 0) + iv + dk, sk, (at(beat + k + 1)[0] - sk) * 0.6, 0.07, pan=-0.3 + 0.2 * iv / 10)
             put('organ', root + V.get('key', 0) + drop, s0, dur3 * 0.95, 0.025 if vname == 'machine' else 0.045, pan=0.2)
     m_ = min(len(voice), len(shadow))
+    voice, shadow = even_bands(voice[:m_], notes), even_bands(shadow[:m_], notes)
     g_ = ride(voice[:m_] + 0.3 * shadow[:m_], notes)          # one smooth vocal rider over voice + shadow together
     v = np.vstack([voice[:m_], voice[:m_]]) * g_
     sh = np.vstack([shadow[:m_], shadow[:m_]]) * g_

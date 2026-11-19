@@ -3160,3 +3160,52 @@ for _name, _fn, _info, _roles in (
                 ROLE_CHOICES[_role].append(_name)
     INSTRUMENTS[_name] = _fn
 GM_PROGRAM.update({'pickbass': 34, 'slapbass': 36, 'fretless': 35})
+
+
+# ----------------------------------------------------------------------------- 1.62: more wobbles + techno voices
+for _name, _fn, _info, _roles, _gm in (
+        ('dnbwob', _vb.dnb_wobble, 'DnB wobble (fast, rolling)', ('bass',), 39),
+        ('vowelwob', _vb.vowel_wobble, 'Vocal wobble (talking "yoy")', ('bass',), 39),
+        ('multiwob', _vb.multi_wobble, 'Multiband wobble (layered drop)', ('bass',), 39),
+        ('tablewob', _vb.table_wobble, 'Wavetable wobble (morphing)', ('bass',), 39),
+        ('chopwob', _vb.chop_wobble, 'Chop wobble (stuttering, crushed)', ('bass',), 39),
+        ('rumble', _vb.rumble, 'Techno rumble bass', ('bass',), 38),
+        ('dubstab', _vb.dub_stab, 'Dub-techno chord stab', ('chords', 'arp'), 81),
+        ('technoseq', _vb.techno_seq, 'Techno sequence (evolving blips)', ('arp', 'lead'), 81),
+        ('darkpad', _vb.dark_pad, 'Dark techno pad (evolving)', ('pad', 'chords'), 89),
+        ('atmos', _vb.atmosphere, 'Atmosphere / texture', ('pad',), 99)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+def v_emolead(m, dur, p, glide=None, mod=None):
+    """Emotional trance lead: the softer, singing variation of the supersaw lead - a gently detuned supersaw blended
+    with a round triangle, a small scoop up into each note, a vibrato that deepens as the note is held and a filter
+    that opens over the length of the note, so long notes bloom instead of hitting hard."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, p.get('a', 0.015), 0.5, 0.82, p.get('r', 0.45))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = np.full(n, f)
+    if glide is not None:
+        fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.07)
+    else:
+        fr = fr * 2 ** (-35 * np.exp(-t / 0.05) / 1200)           # the scoop
+    fr = fr * 2 ** (np.clip((t - 0.25) / 0.6, 0, 1) * p.get('vib', 16) * np.sin(2 * np.pi * 5.0 * t) / 1200)
+    body = _va.jp_supersaw(fr, n, 0.3, 0.55, 0.8)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    tri_ = (2 / np.pi * np.arcsin(np.sin(ph)))[None, :] * 0.5
+    cut = p.get('cut', 4500) * (0.45 + 0.55 * (1 - np.exp(-t / 0.5)))
+    x = _va.vcf(body + tri_, cut, 0.15, 1.1)
+    return _hpf(x, 200) * env * 0.42
+
+
+INSTRUMENTS['emolead'] = v_emolead
+INSTRUMENT_INFO['emolead'] = 'Emotional trance lead (soft supersaw, blooms)'
+ROLE_CHOICES['lead'].append('emolead')
+GM_PROGRAM['emolead'] = 81

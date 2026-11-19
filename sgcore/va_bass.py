@@ -247,3 +247,208 @@ def house_organ(m, dur, p, glide=None, mod=None):
     env[gate:] = np.exp(-np.arange(n - gate) / (0.04 * SR))
     y = dist(y * env * 0.4, 1.4)
     return np.vstack([y, np.roll(y, 30)]) * 0.5
+
+
+# ----------------------------------------------------------------------------- 1.62: more wobbles + techno voices
+_VOWELS = np.array([[400, 800, 2600], [700, 1150, 2800], [550, 1700, 2500], [300, 2250, 3000]], float)   # o a e i
+
+
+def _stack(fo, n, voices=4, cents=18, pulse=0.3):
+    """Unison saws spread left / right + a square an octave up for bite -> (2, n)."""
+    x = np.zeros((2, n))
+    for k in range(voices):
+        c = (k / max(1, voices - 1) - 0.5) * 2 * cents
+        x[k % 2] += va.saw(np.full(n, fo * 2 ** (c / 1200)), n, _RNG.random())
+    if pulse:
+        x += va.pulse(np.full(n, fo * 2), n, 0.1, 0.5) * pulse
+    return x * (1.6 / voices)
+
+
+def _vowel(x, pos):
+    """Talking filter: three formant band-passes gliding between the vowels o - a - e - i as `pos` goes 0 -> 1."""
+    k = np.clip(np.asarray(pos, float), 0, 1) * (len(_VOWELS) - 1)
+    i0 = np.minimum(k.astype(int), len(_VOWELS) - 2)
+    fr = k - i0
+    out = 0
+    for j, (q, g) in enumerate(((6.0, 1.0), (9.0, 0.7), (11.0, 0.3))):
+        fc = _VOWELS[i0, j] * (1 - fr) + _VOWELS[i0 + 1, j] * fr
+        out = out + g * _bp(x, fc, q)
+    return out
+
+
+def dnb_wobble(m, dur, p, glide=None, mod=None):
+    """DnB wobble: a reese-like pair of detuned saws (plus a little square) through a tighter resonant low-pass on a
+    fast synced LFO (16ths by default), cleaner drive and more mids - rolling and hypnotic under fast breaks - with a
+    clean mono sub."""
+    f = float(mtof(m))
+    env = _env(dur, 0.003, 0.1, 1.0, 0.03)
+    n = len(env)
+    fo = f if f > 55 else f * 2
+    x = _stack(fo, n, 2, 14, 0.25)
+    lfo = _lfo(n, _rate(mod, p, 0.25), p.get('shape', 'tri'))
+    cut = 220 * (p.get('cut', 1900) / 220) ** (0.25 + 0.75 * lfo)
+    y = va.vcf(x, cut, res=p.get('res', 0.45), drive=1.3)
+    y = dist(y, 1.6 + 0.6 * float(p.get('grit', 1.0)))
+    y = _split_hp(y, f) * 0.75 * (0.85 + 0.15 * lfo)
+    return (y + _sub(f, n, p.get('sub', 0.75))) * env * 0.6
+
+
+def vowel_wobble(m, dur, p, glide=None, mod=None):
+    """Vocal wobble ('yoy'): a fat saw stack through formant filters that slide o -> a -> i with the synced LFO, so the
+    bass talks, then clipped hard after the filter so the moving peaks scream - with a clean sub."""
+    f = float(mtof(m))
+    env = _env(dur)
+    n = len(env)
+    fo = f if f > 55 else f * 2
+    x = _stack(fo, n, 4, 16, 0.4)
+    lfo = _lfo(n, _rate(mod, p), p.get('shape', 'sine'))
+    y = _vowel(x, lfo) * 2.2 + 0.15 * va.vcf(x, 200 + 1200 * lfo, 0.3)
+    y = dist(y, 3.0 + float(p.get('grit', 1.0)), 'hard')
+    y = _split_hp(y, f) * 0.45
+    return (y + _sub(f, n, p.get('sub', 0.85))) * env * 0.55
+
+
+def multi_wobble(m, dur, p, glide=None, mod=None):
+    """Multiband wobble: the low-mids wobble on the beat's LFO through a resonant low-pass while the top band moves
+    on its own faster LFO (a band-pass sweeping and pumping), each driven separately - a complex, layered drop bass."""
+    f = float(mtof(m))
+    env = _env(dur)
+    n = len(env)
+    fo = f if f > 55 else f * 2
+    x = _stack(fo, n, 6, 20, 0.35)
+    r = _rate(mod, p)
+    lfo1 = _lfo(n, r, p.get('shape', 'sine'))
+    lfo2 = _lfo(n, r * p.get('ratio', 2.0), 'tri', 0.25)
+    low = va.vcf(x, 130 * (1400 / 130) ** lfo1, 0.5, 1.4)
+    low = dist(low, 2.4)
+    high = _bp(x, 1400 + 3200 * lfo2, 2.5) * (0.25 + 0.75 * lfo2)
+    high = dist(high * 2, 2.0)
+    y = np.asarray(low) + 0.7 * np.asarray(high)
+    y = _split_hp(y, f) * 0.55
+    return (y + _sub(f, n, p.get('sub', 0.85))) * env * 0.55
+
+
+def table_wobble(m, dur, p, glide=None, mod=None):
+    """Wavetable wobble: the oscillator morphs sine -> triangle -> saw -> square across the note on a slow LFO while
+    the filter wobbles on the synced one, wavefolded and driven - an evolving, modern drop bass."""
+    f = float(mtof(m))
+    env = _env(dur)
+    n = len(env)
+    fo = f if f > 55 else f * 2
+    t = np.arange(n) / SR
+    r = _rate(mod, p)
+    lfo = _lfo(n, r, p.get('shape', 'sine'))
+    pos = 3 * _lfo(n, r / 4, 'tri', _RNG.random())
+    out = np.zeros((2, n))
+    for side, c in ((0, -7), (1, 7)):
+        fr = fo * 2 ** (c / 1200)
+        ph = 2 * np.pi * fr * t + _RNG.random() * 6.28
+        sw = va.saw(np.full(n, fr), n, _RNG.random())
+        waves = (np.sin(ph), 2 / np.pi * np.arcsin(np.sin(ph)), sw, np.sign(np.sin(ph)) * 0.8)
+        for k, w in enumerate(waves):
+            out[side] += w * np.clip(1 - np.abs(pos - k), 0, 1)
+    out += va.pulse(np.full(n, fo * 2), n, 0.2, 0.5)[None, :] * 0.25
+    y = va.vcf(out, 160 * (p.get('cut', 3000) / 160) ** lfo, 0.55, 1.5)
+    y = dist(dist(y, 1.4, 'fold'), 2.2 + float(p.get('grit', 1.0)))
+    y = _split_hp(y, f) * 0.5
+    return (y + _sub(f, n, p.get('sub', 0.85))) * env * 0.55
+
+
+def chop_wobble(m, dur, p, glide=None, mod=None):
+    """Chop wobble: a falling saw-shaped LFO slams the filter open and lets it fall on every step ('wub - wub'), the
+    volume gated with it, then bit-crushed - the hard, stuttering riddim / brostep wub."""
+    f = float(mtof(m))
+    env = _env(dur, 0.002, 0.05, 1.0, 0.02)
+    n = len(env)
+    fo = f if f > 55 else f * 2
+    x = _stack(fo, n, 4, 12, 0.5)
+    lfo = _lfo(n, _rate(mod, p), p.get('shape', 'saw'))
+    y = va.vcf(x, 120 * (p.get('cut', 3200) / 120) ** lfo, 0.5, 1.8)
+    y = dist(y, 3.0 + float(p.get('grit', 1.0)), 'hard')
+    bits = 2 ** p.get('bits', 6)
+    hold = int(p.get('crush', 3))
+    y = np.round(y * bits) / bits
+    if hold > 1:
+        y = np.repeat(y[..., ::hold], hold, axis=-1)[..., :n]
+    gate = 0.25 + 0.75 * np.clip(lfo * 1.6, 0, 1)
+    y = _split_hp(y, f) * 0.5 * gate
+    return (y + _sub(f, n, p.get('sub', 0.85)) * (0.6 + 0.4 * gate)) * env * 0.55
+
+
+def rumble(m, dur, p, glide=None, mod=None):
+    """Techno rumble: the dark, distorted low-end 'roar' between the kicks - a sine at the note with a band of
+    low-passed noise around it, driven and filtered so only a growling sub-bass rumble remains (the track's sidechain
+    makes it breathe against the kick)."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    env = va.adsr(gate, 0.02, 0.4, 0.85, 0.12)
+    n = len(env)
+    t = np.arange(n) / SR
+    nz = _bp(_RNG.standard_normal(n), np.full(n, f * 1.5), 2.0) * 1.8
+    x = np.sin(2 * np.pi * f * t) + nz + 0.4 * np.sin(2 * np.pi * f * 2 * t)
+    y = dist(x, 3.0)
+    b, a = signal.butter(4, min(0.45, p.get('cut', 180) / (SR / 2)))
+    y = signal.lfilter(b, a, y)
+    return np.vstack([y, y]) * env * 0.5
+
+
+def dub_stab(m, dur, p, glide=None, mod=None):
+    """Dub-techno chord stab: detuned saws + a pulse through a band-limited, resonant filter that snaps shut in a
+    tenth of a second - meant to be thrown into a long delay and reverb."""
+    f = float(mtof(m))
+    gate = int(min(max(dur, 0.05), 0.25) * SR)
+    env = va.adsr(gate, 0.002, 0.12, 0.0, 0.08)
+    n = len(env)
+    t = np.arange(n) / SR
+    x = _stack(f, n, 3, 10, 0.5)
+    cut = 300 * (p.get('cut', 2600) / 300) ** np.exp(-t * 22)
+    y = va.vcf(x, cut, 0.35, 1.2)
+    b, a = signal.butter(2, [250 / (SR / 2), 3500 / (SR / 2)], 'band')
+    return signal.lfilter(b, a, y, axis=-1) * env * 0.85
+
+
+def techno_seq(m, dur, p, glide=None, mod=None):
+    """Techno sequence: a pulse / saw blip through a resonant filter whose cutoff and decay wander from note to note
+    (each step's filter is 'parameter-locked' a little differently), so a repeating line evolves hypnotically."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = va.adsr(gate, 0.002, p.get('d', 0.14), 0.15, 0.06)
+    n = len(env)
+    t = np.arange(n) / SR
+    x = va.pulse(np.full(n, f), n, 0.0, 0.3) * 0.7 + va.saw(np.full(n, f * 1.003), n) * 0.5
+    top = p.get('cut', 2400) * 2 ** _RNG.normal(0, 0.45)
+    cut = 180 * (top / 180) ** np.exp(-t * _RNG.uniform(9, 22))
+    y = va.vcf(x, cut, p.get('res', 0.55), 1.4)
+    y = y * env * 0.75
+    return np.vstack([y, y])
+
+
+def dark_pad(m, dur, p, glide=None, mod=None):
+    """Techno pad: dark and evolving - detuned saws and a breath of filtered noise under a low, resonant filter that a
+    very slow LFO keeps moving, so it drones and morphs instead of shining."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.1) * SR)
+    env = va.adsr(gate, p.get('a', 1.5), 2.0, 0.9, p.get('r', 2.0))
+    n = len(env)
+    t = np.arange(n) / SR
+    x = _stack(f, n, 4, 14, 0.0) + 0.15 * _bp(_RNG.standard_normal((2, n)), np.full(n, f * 4), 1.5)
+    cut = p.get('cut', 650) * 2 ** (1.2 * np.sin(2 * np.pi * 0.06 * t + _RNG.random() * 6.28))
+    y = va.vcf(x, cut, 0.35, 1.1)
+    return va.juno_chorus(y, 1, 0.3) * env * 1.2
+
+
+def atmosphere(m, dur, p, glide=None, mod=None):
+    """Texture / atmosphere: noise through resonant band-passes tuned to the note's harmonics, each slowly drifting,
+    plus a faint sine - a tonal, breathing haze for breakdowns and deep techno."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.1) * SR)
+    env = va.adsr(gate, p.get('a', 2.0), 2.0, 0.9, p.get('r', 2.5))
+    n = len(env)
+    t = np.arange(n) / SR
+    nz = _RNG.standard_normal((2, n))
+    y = np.zeros((2, n))
+    for h, g in ((1, 0.6), (2, 1.0), (3, 0.7), (5, 0.45), (8, 0.25)):
+        fc = f * h * 2 ** (0.08 * np.sin(2 * np.pi * (0.03 + 0.02 * h) * t + h))
+        y += _bp(nz, fc, 40.0) * g
+    y = y * 3.0 + 0.08 * np.sin(2 * np.pi * f * t)
+    return y * env * 1.5

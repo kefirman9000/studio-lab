@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.62.0
+- **Daisy easter egg: a steadier voice.** The first words still seemed to swell and dip: low notes came out boomy and high ones thin, and the "ei" of "Dai-" brightened and darkened as it moved. The voice now goes through a three-band dynamic EQ (each band ridden towards its usual level, at most 5 dB either way) before the vocal rider, and the rider measures loudness the way loudness meters do (K-weighting) instead of A-weighting, which used to push low notes up until they boomed.
+- **Different wobbles for dubstep and drum & bass:**
+  - **DnB wobble:** a reese-like pair of detuned saws through a tighter filter on a fast LFO (16ths by default), cleaner drive and more mids - rolling under fast breaks. Jump-up now uses it, and DnB / neurofunk can pick it.
+  - **Vocal wobble:** formant filters slide o - a - i with the LFO so the bass talks ("yoy"), clipped hard after the filter.
+  - **Multiband wobble:** the low-mids and the top band move on separate LFOs, each driven on its own.
+  - **Wavetable wobble:** the oscillator morphs sine - triangle - saw - square while the filter wobbles.
+  - **Chop wobble:** a falling saw LFO slams the filter on every step, volume-gated and bit-crushed - the stuttering riddim wub.
+  - All of them keep a clean mono sine sub under the moving mids. Dubstep, brostep, riddim, chillstep, midtempo and 140 genres can pick them.
+- **Techno voices:** a **rumble** bass (the driven, low-passed roar between the kicks), a **dub-techno chord stab**, a **techno sequence** synth whose filter changes a little on every step so a repeating line evolves, a **dark evolving pad** and an **atmosphere** texture (tuned noise that breathes). Added to techno, melodic, hard, dub and tribal techno; the atmosphere also to the trance genres.
+- **Trance:**
+  - New **emotional lead**: a softer supersaw with a round triangle, a small scoop into each note, a vibrato that deepens and a filter that blooms over long notes.
+  - The halls now have pre-delay and a high-passed return, so the low end stays tight.
+  - The arrangement follows the classic arc: DJ intro with the pad filtering in, groove with plucks and arps, a first main section with the lead, the long emotional breakdown, the build, then the full drop and a DJ outro.
+
 ## 1.61.0
 - **Leads sit an octave lower in many genres.** The melody register used to centre around E5-E6, which put a lot of synth and vocal-style leads an octave above where they'd normally be played. It now centres around G4-G5, still above the chords. Genres with their own lead register (riff leads, phonk cowbells, the G-funk whistle) keep theirs, though the whistle comes down a little.
 - The supersaw lead's octave-up "air" layer is quieter and higher, so it adds sparkle without making the lead sound an octave up.

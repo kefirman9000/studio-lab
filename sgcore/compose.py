@@ -1281,7 +1281,7 @@ def compose(opts):
                     mode = '808'
                 elif inst == 'acid' and mode == 'pattern':
                     mode = 'acid'
-                elif inst in ('wobble', 'riddim') and mode == 'pattern':
+                elif inst in ('wobble', 'riddim', 'dnbwob', 'vowelwob', 'multiwob', 'tablewob', 'chopwob') and mode == 'pattern':
                     mode = 'wobble'
                 if getattr(opts, 'bass_rhythm', None) == 'kick' and mode not in ('walk', '808'):
                     mode = 'kick'
@@ -1336,7 +1336,8 @@ def compose(opts):
                             pos += ln
                             continue
                         rates = (opts_s.get('alt') and st.get('wobble_rates_alt')) or st.get('wobble_rates') or \
-                            ([2, 1, 1, 0.5, 0.5, 1 / 3] if energy > 0.3 else [2, 1])   # half-bar / beat / 8th wubs; 16ths are a genre's own choice   # A / B drop switch-up
+                            (([0.25, 0.5, 0.25, 1 / 3, 1 / 6] if energy > 0.3 else [0.5, 0.25]) if inst == 'dnbwob' else
+                             [2, 1, 1, 0.5, 0.5, 1 / 3] if energy > 0.3 else [2, 1])   # half-bar / beat / 8th wubs; 16ths are a genre's own choice   # A / B drop switch-up
                         rate = rnd_b.choice(rates)
                         m = rnd_b.choice([root, root, root + 12] if st.get('pedal_sub') else
                                          [root, root, root + 12, fold(key.deg(chord + 4, 2), lo)])
@@ -1973,7 +1974,8 @@ def expression_curves(evs, tracks, sections, fx, total_bars):
 LAYER_ODDS = {'Electronic': 0.5, 'Classic': 0.3, 'Orchestral': 0.45}
 OCT_UP = {'bell', 'celesta', 'flute', 'sf:piccolo', 'pluck', 'chip', 'marimba', 'kalimba', 'harp', 'glock', 'steeldrum', 'pizz'}
 OCT_DOWN = {'cello', 'sf:contrabass', 'sf:bassoon', 'sf:trombone', 'sf:tuba', 'horn'}
-NO_LAYER = {'808', 'logdrum', 'wobble', 'acid', 'sinebass', 'chipbass', 'riddim', 'screech'}
+NO_LAYER = {'808', 'logdrum', 'wobble', 'acid', 'sinebass', 'chipbass', 'riddim', 'screech', 'dnbwob', 'vowelwob',
+            'multiwob', 'tablewob', 'chopwob', 'rumble'}
 
 
 def debell(st, opts):
@@ -2181,7 +2183,8 @@ def sync_drones(evs, tracks, bpm):
     evs[:] = out
 
 
-SUSTAINED_BASS = {'reese', 'growl', 'wobble', 'hoover', 'sinebass', 'moogbass', 'drone', 'tanpura'}
+SUSTAINED_BASS = {'reese', 'growl', 'wobble', 'hoover', 'sinebass', 'moogbass', 'drone', 'tanpura', 'dnbwob', 'vowelwob',
+                  'multiwob', 'tablewob', 'chopwob', 'rumble'}
 
 
 def legato_bass(evs, tracks):

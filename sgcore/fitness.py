@@ -39,11 +39,11 @@ SLIDING_808 = {'trap', 'phonk', 'brazilian_phonk', 'uk_drill', 'memphis_phonk', 
 SIGNATURE = {   # genre -> (part, instruments, label): the sound that defines it
     'phonk': ('lead', COWBELLS, 'cowbell melody'), 'house_phonk': ('lead', COWBELLS, 'cowbell melody'), 'brazilian_phonk': ('lead', COWBELLS, 'cowbell melody'),
     'memphis_phonk': ('lead', COWBELLS | {'bell', 'piano'}, 'eerie bell / cowbell loop'),
-    'acid_house': ('bass', {'acid'}, '303 acid bass'), 'dubstep': ('bass', {'wobble', 'growl', 'reese'}, 'modulated mid-bass'),
-    'brostep': ('bass', {'growl', 'wobble', 'fmbass', 'reese'}, 'aggressive mid-bass'),
-    'neurofunk': ('bass', {'growl', 'reese', 'fmbass', 'wobble'}, 'neuro / reese bass'),
+    'acid_house': ('bass', {'acid'}, '303 acid bass'), 'dubstep': ('bass', {'wobble', 'growl', 'reese', 'fmbass', 'riddim', 'neuro', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'dnbwob'}, 'modulated mid-bass'),
+    'brostep': ('bass', {'growl', 'wobble', 'fmbass', 'reese', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'dnbwob'}, 'aggressive mid-bass'),
+    'neurofunk': ('bass', {'growl', 'reese', 'fmbass', 'wobble', 'neuro', 'dnbwob'}, 'neuro / reese bass'),
     'amapiano': ('bass', {'logdrum'}, 'log drum'), 'trap': ('bass', {'808'}, '808'), 'uk_drill': ('bass', {'808'}, '808'),
-    'uplifting_trance': ('lead', {'supersaw_lead', 'leadsaw', 'pluck_saw', 'piano', 'vox'}, 'trance lead'),
+    'uplifting_trance': ('lead', {'supersaw_lead', 'leadsaw', 'pluck_saw', 'piano', 'vox', 'emolead', 'hypersaw'}, 'trance lead'),
 }
 
 

@@ -670,8 +670,10 @@ class Renderer:
         self.log('   reverb + delay returns')
         returns = np.zeros_like(mix)
         if np.any(rev_send):
-            ir = make_spring_ir(st['reverb']) if st.get('spring') else make_ir(st['reverb'])
+            ir = make_spring_ir(st['reverb']) if st.get('spring') else make_ir(st['reverb'], predelay=st.get('rev_predelay', 0.02))
             rv = eq(reverb(rev_send.astype(np.float64), ir), 'lowshelf', 300, 0.7, -4.0)
+            if st.get('rev_hp'):                         # a high-passed return keeps the low end tight (trance halls)
+                rv = hp(rv, st['rev_hp'])
             if st.get('fx_reverb'):                      # the genre's reverb plugin (Dragonfly), level-matched to the built-in
                 from . import fxrig
                 pv = fxrig.run_reverb(st, rev_send, self.log)
