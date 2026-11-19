@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.56.6
+- **New genre: Math rock** (Classic → Rock & Metal), from the Vasudeva album: a clean guitar tapping a looping two-hand figure of 5, 6, 7 or 8 notes that drifts against the bar line, a second clean guitar on the melody (panned the other way), a melodic fingered bass, a busy, precise drummer (ghost notes, ride, fills, accents hit together with the guitars), bright major / lydian keys with added 9ths - and **real odd time signatures**: bars of 7/8, 3/4 and 5/8 between the 4/4 ones (riffs that cycle 4/4-4/4-4/4-7/8, all-7/8 riffs, 3/4 + 7/8 ...). The odd bars are shorter, not squashed: every note keeps its length, and the MIDI export carries the tempo changes so it lines up in a DAW.
+- **Five more genres from your reference batch**: **Rolling atmospheric bass** (wonky swung beat, a deep rolling bassline, hazy wide pads, glitchy vocal chops), **Cinematic beat tape** (instrumental hip hop layered like a film score), **UK tribal techno-bass** (broken skipping kicks, tribal toms and congas, a huge rolling sub), **Steppy halftime / acid step** (140 half-time with a stepping kick, deep sub, often an acid line) and **Balearic chill** (sunset nylon guitar over a soft slow house groove).
+- Your other references are already covered: Original Sin → Jump-up / Dancefloor liquid DnB, Joy Orbison → UK bass 130, Cybotron → Electro, Nero → DnB / Neurofunk, Nora En Pure → Melodic house, Hebbe → Trap / Glitch future bass.
+
+
 ## 1.56.5
 - **New genre: IDM jungle - moody theme**, from your "Theme from Ernest Borgnine" reference: half a minute of warm, detuned pads and a melancholy synth theme alone, then frantic chopped jungle breaks crash in with no bass, then a nimble, melodic bass guitar; dark minor chords, a breakdown back to the synths, and a key change up for the last stretch (~160 BPM).
 - **New genre: Drill & bass - spacey**, from "Hasty Boom Alert": hyper-detailed breaks at 172-190 under bright, spacious jazz-fusion chords (Rhodes, vibes), a soft lead drifting in long delays, a very wide, airy mix and a busy bass guitar; it opens on the synths and drops the drums for a floating breakdown.

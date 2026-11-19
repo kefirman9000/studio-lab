@@ -939,6 +939,31 @@ def test_idm_drill():
     print('ok  IDM jungle theme / drill & bass: synth intro, resequenced breaks, calm melody, key change')
 
 
+def test_math_rock_meters():
+    """v1.56.6: math rock - bars of 7/8, 3/4 and 5/8 between the 4/4 ones (cut short and played faster, so each 16th
+    keeps its length), a tapping guitar looping 5-8 note cells across the bar lines; and the reference-batch genres."""
+    from sgcore.compose import Options, compose
+    from sgcore.windows import tempo_seconds
+    s = compose(Options(style='math_rock', seed=2))
+    m = s.get('meters') or {}
+    assert m and set(m.values()) <= {14, 12, 10} and 14 in m.values()
+    tm, bpm = s['tempo_map'], s['bpm']
+    b7 = next(b for b, n in m.items() if n == 14)
+    dur = tempo_seconds(tm, b7 * 4 + 4) - tempo_seconds(tm, b7 * 4)
+    assert abs(dur - 3.5 * 60 / bpm) < 0.01, dur                      # a 7/8 bar lasts 3.5 beats
+    b4 = next(b for b in range(s['total_bars']) if b not in m)
+    assert abs(tempo_seconds(tm, b4 * 4 + 4) - tempo_seconds(tm, b4 * 4) - 4 * 60 / bpm) < 0.01
+    for e in s['events']:
+        if int(e.beat // 4) in m:
+            assert e.beat < int(e.beat // 4) * 4 + 4
+    tap = sorted((e.beat, e.midi) for e in s['events'] if e.track == 'arp')
+    assert tap and max(n for _, n in tap) - min(n for _, n in tap) >= 19   # two hands, two octaves wide
+    for g in ('rolling_atmos_bass', 'beat_tape_cinematic', 'uk_tribal_techno', 'steppy_halftime', 'balearic_chill'):
+        x = compose(Options(style=g, seed=1))
+        assert x['events'] and x['st']['bpm'][0] <= x['bpm'] <= x['st']['bpm'][1] + 2
+    print('ok  math rock: real odd bars (7/8, 3/4, 5/8), tapped loops across the bar line; five reference-batch genres')
+
+
 def test_christmas_orchestral():
     """v1.45: Christmas film-score orchestra - joyful 3/4 carol with a last-chorus key change, mischief 4/4 chase."""
     from sgcore.compose import Options, compose
@@ -1133,6 +1158,7 @@ def main():
     test_voice_sample_chops()
     test_dj_effects()
     test_idm_drill()
+    test_math_rock_meters()
     test_v144_drums_layers_new_genres()
     test_bass_warp_trap()
     test_christmas_orchestral()

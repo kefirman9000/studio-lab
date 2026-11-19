@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 308 GENRES  (version 1.56.5)
+STUDIO LAB - ALL 314 GENRES  (version 1.56.5)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
 * = new in 1.56
 
 ========================================================================
-ELECTRONIC  (154)
+ELECTRONIC  (158)
 ========================================================================
 
 House & Disco  (28)
@@ -36,7 +36,7 @@ House & Disco  (28)
     Hi-NRG (80s)  [hi_nrg]
     Brazilian bass  [brazilian_bass]
 
-Techno & Trance  (13)
+Techno & Trance  (14)
     techno  [techno]
     minimal  [minimal]
     Melodic Techno  [melodic_techno]
@@ -48,10 +48,11 @@ Techno & Trance  (13)
     Late-90s trance-pop  [trance_pop_90s]
     Hard trance / hands-up  [hard_trance]
     UK bass / 130  [uk_bass_130]
+    UK tribal techno-bass (broken kicks, rolling percussion)  [uk_tribal_techno]  *
     Hard techno (150)  [hard_techno]
     Dub techno  [dub_techno]
 
-Dubstep, Garage & Bass  (20)
+Dubstep, Garage & Bass  (22)
     Dubstep (classic UK)  [dubstep]
     Brostep  [brostep]
     Riddim  [riddim]
@@ -61,6 +62,8 @@ Dubstep, Garage & Bass  (20)
     Deep Dubstep - sparse & eerie  [deep_dubstep_minimal]
     Deep dubstep - rollers (sub-weight)  [deep_dubstep_rollers]
     Deep dubstep - rolling percussion (140)  [deep_dubstep_rolling]
+    Steppy halftime / acid step (140)  [steppy_halftime]  *
+    Rolling atmospheric bass (wonky, wide)  [rolling_atmos_bass]  *
     Chipmunk 2-step (pitched vocal chops)  [chipmunk_2step]
     Glitch future bass (chopped vocals, 154)  [glitch_future_bass]
     Future Bass  [future_bass]
@@ -113,8 +116,8 @@ Hip-Hop, Trap & Phonk  (26)
     Bass-warp trap - fast (160)  [bass_warp_fast]
     Switch-up 808 (no two bars alike)  [switchup_808]
     Switch-up 808 - DJ edits (slowdowns, pitch warps)  [switchup_808_dj]
-    Switch-up 808 - hard (punchy kicks)  [switchup_808_hard]  *
-    Switch-up 808 - mallets (fast arpeggios)  [switchup_mallets]  *
+    Switch-up 808 - hard (punchy kicks)  [switchup_808_hard]
+    Switch-up 808 - mallets (fast arpeggios)  [switchup_mallets]
     Chopped & screwed (Houston slab)  [screwed_slab]
     Beat-switch trap  [switch_trap]
     Wonky / beat-scene bass  [wonky_beats]
@@ -145,9 +148,10 @@ Afro, Latin & Caribbean  (8)
     Funk 150 / mandelao  [funk_150]
     Gqom  [gqom]
 
-Chill, Lo-fi & Ambient  (10)
+Chill, Lo-fi & Ambient  (11)
     Lo-fi Hip Hop  [lofi]
     Downtempo  [downtempo]
+    Balearic chill (sunset guitar, slow house)  [balearic_chill]  *
     ambient  [ambient]
     Ambient beat (dark, sub-heavy)  [ambient_beat]
     Vaporwave  [vaporwave]
@@ -183,10 +187,10 @@ Hauntology  (7)
     Hauntology - cold dystopian synths  [hauntology_cold]
 
 ========================================================================
-CLASSIC  (124)
+CLASSIC  (126)
 ========================================================================
 
-Rock & Metal  (25)
+Rock & Metal  (26)
     rock  [rock]
     Indie Rock  [indie_rock]
     90s alt rock  [alt_rock_90s]
@@ -206,6 +210,7 @@ Rock & Metal  (25)
     Surf rock (60s)  [surf_rock]
     Shoegaze  [shoegaze]
     Post-rock  [post_rock]
+    Math rock (tapped guitars, odd meters)  [math_rock]  *
     Pop-punk / emo  [pop_punk]
     Doom / stoner metal  [doom_metal]
     Stoner rock - raga / psych (sitar, tabla)  [stoner_raga]
@@ -244,8 +249,9 @@ Soul, R&B & Gospel  (9)
     Quiet Storm  [quiet_storm]
     90s R&B Slow Jam  [slow_jam]
 
-Hip-Hop  (7)
+Hip-Hop  (8)
     Boom Bap  [boombap]
+    Cinematic beat tape (instrumental hip hop)  [beat_tape_cinematic]  *
     Jazz Rap  [jazz_rap]
     G-Funk (West Coast)  [g_funk]
     Mid-90s smooth rap  [smooth_90s_rap]

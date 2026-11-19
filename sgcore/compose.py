@@ -138,7 +138,7 @@ GENRE_COLORS = {'jazz_rap': ['9', '7', '9', '6'], 'cloud_rap': ['add9', 'sus2', 
                 'soul_ballad': ['triad', '7', '6'], 'waltz': ['triad'], 'celtic_jig': ['triad', 'sus2'], 'ska': ['triad', '7'],
                 'cumbia': ['triad'], 'dancehall': ['triad', '7'], 'hauntology': ['add9', '7', 'triad', 'sus2'],
                 'braindance': ['add9', 'sus2', '7', 'add9no3'], 'liquid_dnb': ['7', '9', 'add9'], 'neurofunk': ['triad', 'add9no3'],
-                'melodic_dubstep': ['triad', 'add9', 'sus2'], 'brostep': ['triad'], 'memphis_phonk': ['triad'], 'switchup_808': ['add9', 'add9', 'triad'], 'switchup_808_dj': ['add9', 'add9', 'triad'], 'switchup_808_hard': ['triad', 'add9'], 'idm_jungle_theme': ['add9', '7', 'triad'], 'drill_space': ['9', '7', 'add9'], 'switchup_mallets': ['add9', 'triad'], 'phonk': ['triad'], 'house_phonk': ['triad'], 'brazilian_phonk': ['triad'], 'jam_band': ['triad', '7', 'sus4'],
+                'melodic_dubstep': ['triad', 'add9', 'sus2'], 'brostep': ['triad'], 'memphis_phonk': ['triad'], 'switchup_808': ['add9', 'add9', 'triad'], 'switchup_808_dj': ['add9', 'add9', 'triad'], 'switchup_808_hard': ['triad', 'add9'], 'idm_jungle_theme': ['add9', '7', 'triad'], 'math_rock': ['add9', '7', 'add9', 'sus2'], 'drill_space': ['9', '7', 'add9'], 'switchup_mallets': ['add9', 'triad'], 'phonk': ['triad'], 'house_phonk': ['triad'], 'brazilian_phonk': ['triad'], 'jam_band': ['triad', '7', 'sus4'],
                 'soft_rock': ['triad', 'add9', '7', 'sus2'], 'teen_pop': ['triad', 'add9', '7'], 'luxury_rap': ['7', 'add9', '9', 'triad'],
                 'uplifting_trance': ['triad', 'add9', 'sus2'], 'melodic_house': ['add9', '7', 'triad', 'sus2'], 'punk': ['triad'], 'indie_rock': ['triad', 'add9', 'sus2']}
 
@@ -1482,6 +1482,10 @@ def compose(opts):
                         evs.append(Ev('arp', beat0 + step * u / 4, max(0.2, l * u / 4 * 0.85), m, vel))
                         if arp['mode'] == 'montuno':
                             evs.append(Ev('arp', beat0 + step * u / 4, max(0.2, l * u / 4 * 0.85), m - 12, vel * 0.85))
+                if arp['mode'] == 'tap':                         # math rock: tapped loops drifting over the bar line
+                    evs += tap_bar(key, tones, beat0, b, si, st.setdefault('_tap', {}), rnd_c,
+                                   0.85 if not (opts_s.get('drop') or sname in BIG_SECTIONS) else 1.0)
+                    continue
                 if arp['mode'] == 'mallet':                      # mallet figures (rolls, trills, hops, runs, rests)
                     big = bool(opts_s.get('drop') or sname in BIG_SECTIONS)
                     evs += mallet_bar(key, tones, beat0, b, sname, si, big, rate, arp.get('rest', 0.18),
@@ -1721,6 +1725,7 @@ def compose(opts):
         evs = [e for e in evs if e.track not in off]
     if muted:                                            # parts you switched off: everything else stays note-for-note
         evs = [e for e in evs if tracks.get(e.track, {}).get('layer') not in muted]
+    bar_steps = cut_meters(evs, fx, sections, st, random.Random(opts.seed * 101 + 7)) if st.get('cut_meters') else None
     sname ='+'.join([opts.style] + [b for b in (opts.blend or []) if b != opts.style])
     expr = expression_curves(evs, tracks, sections, fx, bar0)
     song = dict(style=sname, seed=opts.seed, bpm=bpm, key=key, events=evs, sections=sections, fx=fx, expr=expr,
@@ -1734,6 +1739,13 @@ def compose(opts):
             f = st['sec_tempo'].get(sec['name'], 1.0)
             tm += [(sec['bar'] * 4.0, bpm * f), ((sec['bar'] + sec['bars']) * 4.0 - 0.01, bpm * f)]
         song['tempo_map'] = tm
+    elif bar_steps:                                      # odd meters: a 7/8 bar is a 4/4 bar cut short and played faster
+        tm = []
+        for b in range(bar0):
+            f = 16.0 / bar_steps.get(b, 16)
+            tm += [(b * 4.0, bpm * f), (b * 4.0 + 3.999, bpm * f)]
+        song['tempo_map'] = tm
+        song['meters'] = {b: n for b, n in bar_steps.items() if n != 16}
     elif st.get('accel') and bar0 > 0:                     # kirtan: starts slow and speeds up chant by chant (a laya build)
         f0, f1 = st['accel']
         tm = [(sec['bar'] * 4.0, bpm * (f0 + (f1 - f0) * (sec['bar'] / bar0) ** 1.4)) for sec in sections]
@@ -1751,7 +1763,7 @@ COLOR_HARMONY = {
     'hybrid_trailer', 'orchestral_hiphop', 'teen_pop', 'soft_rock', 'luxury_rap', 'uplifting_trance', 'gospel', 'rnb', 'motown', 'swing', 'country', 'tango', 'salsa', 'kpop', 'ska',
     'indie_rock', 'bluegrass', 'christmas_joyful', 'christmas_mischief', 'christmas_magic'}
 # how often the bass steps into the next chord on the last beat (styles with a moving, song-like bass)
-BASS_PASS = {'idm_jungle_theme': 0.5, 'drill_space': 0.6, 'pop': 0.35, 'folk': 0.5, 'holiday': 0.5, 'western': 0.45, 'chamber_pop': 0.45, 'baroque': 0.6, 'chamber': 0.55,
+BASS_PASS = {'math_rock': 0.45, 'idm_jungle_theme': 0.5, 'drill_space': 0.6, 'pop': 0.35, 'folk': 0.5, 'holiday': 0.5, 'western': 0.45, 'chamber_pop': 0.45, 'baroque': 0.6, 'chamber': 0.55,
              'neoclassical': 0.3, 'orchestral': 0.4, 'film_piano': 0.3, 'fantasy_rpg': 0.4, 'adventure': 0.3, 'reggae': 0.3,
              'rock': 0.25, 'disco': 0.2, 'city_pop': 0.3, 'soul_ballad': 0.5, 'celtic_jig': 0.4, 'waltz': 0.45, 'bossa_nova': 0.35,
              'synthpop': 0.2, 'eurodance': 0.15, 'downtempo': 0.25, 'lofi': 0.25, 'boombap': 0.2, 'symphonic_metal': 0.2,
@@ -2905,6 +2917,91 @@ def granular_breaks(evs, tracks, sections, amount, rnd):
                 t0 = b0 + rnd.randrange(8) / 2
                 for i in range(rnd.choice([4, 6, 8])):
                     evs.append(Ev(h, t0 + i / 16, 0.05, None, 0.3 + 0.05 * i, None, None))
+
+
+METER_NAMES = {16: '4/4', 15: '15/16', 14: '7/8', 13: '13/16', 12: '3/4', 11: '11/16', 10: '5/8', 9: '9/16'}
+
+
+def cut_meters(evs, fx, sections, st, rnd):
+    """Odd time signatures (math rock): some bars are cut short - a 7/8 bar keeps the first 14 sixteenths of the bar,
+    a 3/4 (6/8) bar the first 12, a 5/8 bar the first 10 - and the bar is then played that much faster, so every 16th
+    keeps its length and the bar really is shorter. Each section cycles through a meter pattern (e.g. 4/4, 4/4, 4/4,
+    7/8 or 7/8 all the way, or 3/4 + 7/8), from its own 'meters' or picked from the genre's list. Intros, breaks and
+    outros mostly stay in 4/4, so the odd bars land in the riffs. Returns {bar: sixteenths} for the tempo map."""
+    cycles = st['cut_meters'] if isinstance(st['cut_meters'], (list, tuple)) else [[16, 16, 16, 14]]
+    steps = {}
+    for sec in sections:
+        cyc = sec['opts'].get('meters')
+        if cyc is None:
+            calm = sec['name'] in ('intro', 'outro') or sec['opts'].get('fade')
+            cyc = [16] if calm and rnd.random() < 0.7 else list(rnd.choice(cycles))
+        for b in range(sec['bars']):
+            steps[sec['bar'] + b] = int(cyc[b % len(cyc)])
+    cut = {b: n for b, n in steps.items() if n < 16}
+    if not cut:
+        return steps
+    keep = []
+    for e in evs:
+        b = int(e.beat // 4)
+        n = cut.get(b)
+        if n is None:
+            keep.append(e)
+            continue
+        b0 = b * 4
+        pos = (e.beat - b0) * 4                              # in sixteenths
+        if pos >= n - 1e-6:
+            continue                                         # the cut-off end of the bar
+        f = 16.0 / n
+        e.beat = b0 + pos * f / 4
+        e.dur = min(e.dur * f, b0 + 4 - e.beat) if e.beat + e.dur * f > b0 + 4 else e.dur * f
+        keep.append(e)
+    evs[:] = keep
+    out = []
+    for kind, b_, d in fx:
+        n = cut.get(int(b_ // 4))
+        if n is not None:
+            pos = (b_ - int(b_ // 4) * 4) * 4
+            if pos >= n:
+                pos = n - 1
+            b_ = int(b_ // 4) * 4 + pos * (16.0 / n) / 4
+        out.append((kind, b_, d))
+    fx[:] = out
+    return steps
+
+
+def tap_bar(key, tones, beat0, b, si, memo, rnd, vel=1.0):
+    """Math-rock two-hand tapping: a cell of 5, 6 or 7 sixteenths (fretting hand low - root and fifth - tapping hand high
+    - the 9th, the 3rd, the octave and above, two octaves wide) repeating straight through the bar lines, so it drifts
+    against the 4/4 (or odd) bar like an interlocking loop. A new cell every few bars; the chord under it re-voices it."""
+    from .theory import Ev
+    st_ = memo.setdefault(('tap', si), dict(cell=None, at=0, k=0))
+    if st_['cell'] is None or b % 4 == 0 and rnd.random() < 0.5:
+        L = rnd.choice([5, 6, 7, 6, 7, 8])
+        shape = rnd.choice(['updown', 'leap', 'pedal'])
+        st_['cell'] = (L, shape)
+    L, shape = st_['cell']
+    t = sorted(tones)
+    root = t[0] - 12
+    sc = sorted({(key.root + x) % 12 for x in key.scale})
+    nine = t[0] + 2 if (t[0] + 2) % 12 in sc else t[0] + 1
+    hi = [t[1] + 12, nine + 12, t[0] + 24, t[2] + 12 if len(t) > 2 else t[1] + 19]
+    lo = [root, root + 7, t[0]]
+    if shape == 'updown':
+        cell = lo[:2] + hi[:3] + hi[1:2] + lo[2:]
+    elif shape == 'leap':
+        cell = [lo[0], hi[0], lo[1], hi[2], hi[1], lo[2], hi[3]]
+    else:
+        cell = [lo[0], hi[1], hi[0], lo[0], hi[2], hi[1], hi[0], lo[1]]
+    cell = cell[:L] + [cell[k % len(cell)] for k in range(max(0, L - len(cell)))]
+    out = []
+    for q in range(16):
+        k = st_['k']
+        n = cell[k % L]
+        acc = k % L == 0
+        out.append(Ev('arp', beat0 + q / 4, 0.5 if n >= t[0] + 12 else 0.4, n,
+                      (1.0 if acc else 0.72 + 0.1 * (n < t[0])) * vel * rnd.uniform(0.94, 1.0)))
+        st_['k'] += 1
+    return out
 
 
 def screw_chops(evs, sections, amount, rnd):

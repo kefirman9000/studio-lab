@@ -1,8 +1,8 @@
-# Studio Lab genres (308)
+# Studio Lab genres (314)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (154)
+## Electronic (158)
 
 ### House & Disco (28)
 
@@ -37,7 +37,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Tropical house | `tropical_house` | 100-115 | Tropical house: a relaxed four-on-the-floor around 105, soft snaps and shakers, warm piano chords, marimba and steel-pan plucks, a pan-flute or sax hook - sunny, laid-back and summery |
 | UK bounce house (bassline, vocal chops) | `uk_bounce_house` | 122-126 | UK bounce house: a four-on-the-floor groove at 122-126 with busy, shuffling percussion and crisp claps, a rubbery, bouncing bassline doing most of the work, chopped vocal hooks answering it and short organ / piano stabs - radio-friendly, warm and made for dancing |
 
-### Techno & Trance (13)
+### Techno & Trance (14)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -53,9 +53,10 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Techno | `techno` | 128-134 | Peak-time techno: distorted kick, rolling 16th bass, dub stabs drowned in delay |
 | Trance | `trance` | 132-140 | Uplifting trance: gated supersaw chords, rolling offbeat bass, euphoric leads |
 | UK bass / 130 | `uk_bass_130` | 128-136 | UK bass / 130 (techno-dubstep crossover): a rolling, broken techno kick pattern with swung metallic hats and rimshots around 130, a heavy mono sub pinned to the root, dark stabs and sparse dubby chords, long DJ-friendly sections - hypnotic, physical and minimal |
+| UK tribal techno-bass (broken kicks, rolling percussion) | `uk_tribal_techno` | 128-134 | UK tribal techno-bass: a driving, broken groove around 128-134 - kicks that skip and swing instead of four on the floor, rolling tribal toms, congas and shakers, crisp 16th hats - over a huge, rolling sub, with dark, minimal stabs and a hypnotic, stripped-back feel |
 | Uplifting Trance | `uplifting_trance` | 134-140 | Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw leads and plucky arps, a long piano / pad breakdown that explodes into the drop |
 
-### Dubstep, Garage & Bass (20)
+### Dubstep, Garage & Bass (22)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -75,7 +76,9 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Melodic Dubstep | `melodic_dubstep` | 140-150 | Melodic dubstep: emotional chords and a big supersaw theme over half-time drums - the drop carries the melody, with piano, strings and vocal chops and a heavy but musical bass |
 | Midtempo bass | `midtempo_bass` | 98-110 | Midtempo bass: 100-110 BPM, dark and heavy - a punchy kick and huge snare on 2 and 4, growling, gritty bass riffs, cyberpunk synth stabs and a cold lead - menacing and slow-motion |
 | Riddim | `riddim` | 140-150 | Riddim: minimal and hypnotic - a hollow, hard-chopped triplet mid-bass repeating its 2-bar phrase, deep sub, sparse half-time drums, a creepy bell or stab and almost nothing else |
+| Rolling atmospheric bass (wonky, wide) | `rolling_atmos_bass` | 118-130 | Rolling atmospheric bass: a wonky, swung beat around 120-130 with a lazy, drunk snare on 2 and 4 and shuffled hats, a deep bassline that rolls and slides under everything, wide, hazy pads and smeared chords, glitchy, pitched vocal fragments and tape wobble - heavy at the bottom, dreamy and spacious on top |
 | Speed garage | `speed_garage` | 130-136 | Speed garage (late 90s UK): a fast, shuffled four-on-the-floor with garage snares and open hats, the huge warping, filtered bassline, organ stabs, ragga vocal chops and rewinds |
+| Steppy halftime / acid step (140) | `steppy_halftime` | 138-142 | Steppy halftime / acid step: deep, techy half-time at 140 - a steady stepping kick pulse, the snare on 3, tight shuffled percussion - with a heavy, clean sub carrying the track and, often, a squelching acid line twisting over it; minimal, dark, mono and pressured, almost nothing on top |
 | UK Garage | `ukgarage` | 130-134 | UK garage / 2-step: skippy shuffled drums, organ stabs, vocal chops, sub bass |
 | UK bassline (140) | `bassline_140` | 136-142 | UK bassline (Northern / speed-garage style): a bouncy four-on-the-floor around 138-142 with shuffled garage hats, a warbling, organ-like wobble bass that bounces in octaves and talks between the kicks, bright stabs and a chopped vocal-style hook - cheeky, fast and built for the rave |
 | UK funky | `uk_funky` | 126-132 | UK funky: London house at 130 with a soca and Afro swing - a house kick under syncopated snares, tribal toms and congas, a bouncy sub bass, warm keys and vocal hooks |
@@ -164,13 +167,14 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Moombahton | `moombahton` | 106-112 | Moombahton: dembow groove at 110 with big-room synths and heavy drops |
 | Reggaeton | `reggaeton` | 88-100 | Reggaeton: dembow rhythm, deep 808s, plucky synths, latin percussion |
 
-### Chill, Lo-fi & Ambient (10)
+### Chill, Lo-fi & Ambient (11)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | 90s new-age chill (chant) | `new_age_chant` | 92-100 | Early-90s new-age chill: a slow, heavy hip-hop funk break around 96 under monk-like chanted choir chords, a breathy bamboo-flute melody, deep pads and a single pedal bass note - mysterious, spacious and hypnotic |
 | Ambient | `ambient` | 66-80 | Ambient: slow evolving pads, glassy bells and a soft lead on tape loops of different lengths that drift against each other, huge reverbs, no drums |
 | Ambient beat (dark, sub-heavy) | `ambient_beat` | 140-150 | Ambient beat (dark, sub-heavy, airy): slow half-time drums tucked under washed-out pads, a long sustained 808 sub doing most of the work, soft ticking hats, reversed swells and distant bells - wide, dark and weightless |
+| Balearic chill (sunset guitar, slow house) | `balearic_chill` | 94-108 | Balearic chill: a sunset groove around 95-108 - a soft four-on-the-floor kick, shakers and congas, a warm round bass, a nylon-string guitar picking under warm pads and Rhodes, a gentle melody drifting in the delay - mellow, golden and soft, nothing sharp on top |
 | Berlin school (sequencer) | `berlin_school` | 100-128 | Berlin school (70s): long, hypnotic analog sequencer patterns - a pulsing 16th-note sequence that slowly shifts, string-machine and choir pads, a drifting lead, no drums - spacey and cosmic |
 | Chant downtempo - shakuhachi & monks | `chant_downtempo` | 92-100 | Chant downtempo (early 90s): it opens on a lone, breathy shakuhachi calling over a dark pad - then a monk choir chants slow minor chords, and a heavy, lazy hip-hop break around 96 drops in under it with a deep pedal sub; the shakuhachi answers the chant between the drums - mystical, sensual, cavernous |
 | Downtempo | `downtempo` | 85-100 | Downtempo / chillout: laid-back beats, Rhodes & piano, warm pads, glassy bells |
@@ -213,9 +217,9 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hauntology II (sunlit tape) | `hauntology_sunlit` | 82-96 | Hauntology II - sunlit tape: warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
 | Hauntology III (dark film haze) | `hauntology_dark` | 64-80 | Hauntology III - dark film haze: slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
 
-## Classic (124)
+## Classic (126)
 
-### Rock & Metal (25)
+### Rock & Metal (26)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -229,6 +233,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Jam Band | `jam_band` | 100-132 | Jam band / psychedelic Americana: noodling clean lead guitar, melodic wandering bass, organ, loose two-drummer groove, long improvised sections |
 | Jam-band rock (80s, upbeat) | `jam_rock_80s` | 108-126 | Jam-band rock (80s, upbeat sing-along): a bright, bouncing major-key groove from two drummers, chiming chorused rhythm guitar, a melodic bass that never sits still, 80s digital keys and organ, and a clean lead guitar that noodles around the tune - then stretches out in long solo jams |
 | Lo-fi bedroom rock | `lofi_rock` | 100-116 | Lo-fi bedroom rock: a raw, mono, home-recorded rock song - a fuzzy overdriven rhythm guitar playing a simple chord riff, a plain driving bass, a dry boxy kit, a wobbly lead guitar line, all a bit too loud for the tape; short, direct, sincere |
+| Math rock (tapped guitars, odd meters) | `math_rock` | 120-166 | Math rock: instrumental, intricate and bright - a clean guitar tapping a looping figure of 5, 6 or 7 notes that drifts against the bar line, a second clean guitar weaving a melody around it, a melodic bass, and a busy, precise drummer full of ghost notes, fills and accents hit together with the guitars - in sunny major and lydian keys with added 9ths, and bars of 7/8, 3/4 and 5/8 dropped between the 4/4 ones |
 | Metal | `metal` | 140-180 | Metal: palm-muted power chords, double-kick drums, shredding lead guitar |
 | Nu-metal | `nu_metal` | 94-106 | Nu-metal / alt-metal (late 90s - early 2000s): down-tuned, chugging power-chord riffs with lots of rests and syncopation around 95-105, a slapping, clanky bass, a groovy half-hip-hop beat with hard snares, scratchy turntable-ish noises and eerie clean guitar lines in the gaps |
 | Pop-punk / emo | `pop_punk` | 150-190 | Pop-punk / emo: fast and bright - a driving skate beat and off-beat snare, eighth-note power chords and root-note bass, a catchy lead guitar hook, big gang-vocal style choruses and crash-heavy fills |
@@ -285,11 +290,12 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | R&B / Neo-soul | `rnb` | 66-98 | R&B: lazy swung drums, Rhodes 9th chords, deep sub bass, finger snaps and clean guitar licks |
 | Soul Ballad (12/8) | `soul_ballad` | 48-66 | Soul / doo-wop ballad (12/8): triplet piano, slow backbeat, organ and strings, a big vocal-style lead |
 
-### Hip-Hop (7)
+### Hip-Hop (8)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Boom Bap | `boombap` | 84-96 | Boom bap hip hop: dusty swung drums, chopped piano loops, jazzy horn lines, deep bass doubled by upright |
+| Cinematic beat tape (instrumental hip hop) | `beat_tape_cinematic` | 84-96 | Cinematic beat tape: instrumental hip hop around 86-96 BPM built like a film score from dusty samples - a head-nodding boom-bap break, a warm, round bass, and layer after layer of sampled strings, horns, choir and piano piling up into a big, swirling climax; warm and muffled, nothing harsh on top |
 | Futuristic hip-hop bounce (early 2000s) | `futuristic_bounce` | 96-106 | Early-2000s futuristic hip-hop bounce: an off-kilter, stuttering beat around 100 with syncopated kicks, odd percussion (tabla, beatbox-like clicks and claps), a stabbing synth-bass, quirky synth riffs and reversed bits - minimal, playful and space-age |
 | G-Funk (West Coast) | `g_funk` | 88-100 | G-funk (West Coast, early 90s): laid-back swung 16ths, fat Moog bass, Rhodes and string-pad chords, and the whiny high portamento synth lead floating over everything |
 | Jazz Rap | `jazz_rap` | 84-96 | Jazz rap: a dusty swung break, upright bass walking under jazzy 9th-chord Rhodes and piano loops, vibraphone and muted-horn phrases - all crunched through an SP-1200 |

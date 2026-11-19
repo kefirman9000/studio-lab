@@ -373,7 +373,7 @@ GENRE_KIT.update({'dnb': 'dnb_rollers', 'liquid_dnb': 'liquid', 'neurofunk': 'ne
                   'jazz_rap': 'skull_snaps', 'phonk': 'phonk808', 'memphis_phonk': 'phonk808', 'brazilian_phonk': 'phonk808',
                   'acid_house': '606', 'pop': 'unruly', 'modern_country': 'unruly', 'soft_rock': 'dead70s'})
 CHOP.update({'jungle': 0.55, 'dnb': 0.15, 'neurofunk': 0.1, 'liquid_dnb': 0.08, 'idm_jungle_theme': 0.7, 'drill_space': 0.95})
-GENRE_KIT.update({'idm_jungle_theme': 'jungle_raw', 'drill_space': 'amen'})
+GENRE_KIT.update({'idm_jungle_theme': 'jungle_raw', 'drill_space': 'amen', 'math_rock': 'rusty'})
 GENRE_KIT.update({'hopecore_breaks': 'amen', 'hopecore': 'soft', 'alt_rock_90s': 'rock', 'bedroom_pop': '707',
                   'electro_funk': 'dmx', 'ps1_game': 'think', 'nineties_club_house': '909', 'pop_house_90s': '909', 'sunny_melodic_house': '909'})
 CHOP.update({'hopecore_breaks': 0.45, 'ps1_game': 0.12})
