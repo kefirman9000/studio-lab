@@ -2728,3 +2728,105 @@ INSTRUMENT_INFO['mellotron_flute'] = 'Mellotron flute (tape keyboard)'
 ROLE_CHOICES['lead'].append('mellotron_flute')
 ROLE_CHOICES['arp'].append('mellotron_flute')
 GM_PROGRAM['mellotron_flute'] = 73
+
+
+# ----------------------------------------------------------------------------- 1.59: trance + bass-music synths
+from . import va_bass as _vb  # noqa: E402
+
+
+def _hpf(y, fc, order=2):
+    b, a = signal.butter(order, fc / (SR / 2), 'high')
+    return signal.lfilter(b, a, y, axis=-1)
+
+
+def v2_supersaw(m, dur, p, glide=None, mod=None):
+    """JP-8000 supersaw chords: seven saws at the original's offsets and detune curve, wide, a soft filter, high-passed
+    so the chords leave the low end to the bass."""
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, p.get('a', 0.25), 0.6, 0.85, p.get('r', 0.6))
+    n = len(env)
+    x = _va.jp_supersaw(float(mtof(m)), n, p.get('detune', 0.5) * 0.9, 0.75)
+    y = _va.vcf(x, p.get('cut', 3000) * 1.8, 0.1, 1.1)
+    return _hpf(y, 160) * env * 0.6
+
+
+def v2_supersaw_lead(m, dur, p, glide=None, mod=None):
+    """The trance lead, layered the way producers stack it: a JP supersaw body, a second, wider supersaw for the mids, an
+    octave-up layer high-passed for the 'air', and a whisper of high-passed noise for sparkle - with glide, delayed
+    vibrato and a filter that opens on every note. Long hall + stereo delay come from the track."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.004, 0.25, 0.85, p.get('r', 0.3))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = np.full(n, f)
+    if glide is not None:
+        fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.05)
+    fr = fr * 2 ** (np.clip((t - 0.3) / 0.35, 0, 1) * p.get('vib', 12) * np.sin(2 * np.pi * 5.2 * t) / 1200)
+    body = _va.jp_supersaw(fr, n, 0.45, 0.65, 0.7)
+    mids = _va.jp_supersaw(fr * 1.0015, n, 0.7, 0.85, 1.0)
+    air = _hpf(_va.jp_supersaw(fr * 2, n, 0.55, 0.8, 1.0), 2500, 2) * 0.45
+    noise_ = _hpf(np.random.default_rng().standard_normal((2, n)), 7000, 2) * 0.04
+    fe = 0.6 + 0.4 * np.exp(-t * 5)
+    top = p.get('cut', 9000)
+    x = _va.vcf(body + 0.8 * mids, top * fe, 0.12, 1.15) + air + noise_
+    return _hpf(x, 180) * env * 0.5
+
+
+def v_trancepad(m, dur, p, glide=None, mod=None):
+    """Trance pad: a slow-attack JP supersaw bed with the filter breathing on a slow LFO, very wide - built to be
+    sidechained and trance-gated."""
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, p.get('a', 0.6), 1.0, 0.9, p.get('r', 1.5))
+    n = len(env)
+    t = np.arange(n) / SR
+    x = _va.jp_supersaw(float(mtof(m)), n, 0.6, 0.8, 1.0)
+    cut = p.get('cut', 2200) * (1 + 0.5 * np.sin(2 * np.pi * 0.12 * t - 1.5))
+    return _hpf(_va.vcf(x, cut, 0.15, 1.05), 150) * env * 0.55
+
+
+def v_rollbass(m, dur, p, glide=None, mod=None):
+    """Rolling trance bass: saw + square an octave apart with a short pluck envelope and a snappy filter - the 16th-note
+    offbeat bass that rolls between the kicks (sidechained to them by the track)."""
+    return _va.voice(m, dur, dict(p, cut=p.get('cut', 260)), glide, saw_mix=1.0, pulse_mix=0.5, sub=0.4, unison=1, res=0.3,
+                     fenv=2.6, fd=0.12, fs=0.15, amp=(0.002, 0.16, 0.35, 0.04), drive=1.6, keytrack=0.3, drift=0.5,
+                     stereo=False, hp=35) * 0.6
+
+
+def v_superpluck(m, dur, p, glide=None, mod=None):
+    """Supersaw pluck: the JP stack with the filter snapping shut - the trance / future-rave arp."""
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.002, 0.28, 0.1, 0.18)
+    n = len(env)
+    t = np.arange(n) / SR
+    x = _va.jp_supersaw(float(mtof(m)), n, 0.4, 0.7, 0.9)
+    cut = 350 * (p.get('cut', 7000) / 350) ** np.exp(-t * p.get('fdecay', 12))
+    return _hpf(_va.vcf(x, cut, 0.25, 1.15), 150) * env * 0.65
+
+
+for _name, _fn, _info, _roles in (
+        ('supersaw', v2_supersaw, None, None), ('supersaw_lead', v2_supersaw_lead, None, None),
+        ('wobble', _vb.wobble, None, None), ('growl', _vb.growl, None, None), ('reese', _vb.reese, None, None),
+        ('riddim', _vb.riddim, None, None), ('screech', _vb.screech, None, None), ('hoover', _vb.hoover, None, None),
+        ('trancepad', v_trancepad, 'Trance pad (supersaw, breathing filter)', ('pad', 'chords')),
+        ('rollbass', v_rollbass, 'Rolling trance bass (offbeat 16ths)', ('bass',)),
+        ('superpluck', v_superpluck, 'Supersaw pluck (trance arp)', ('arp', 'lead')),
+        ('neuro', _vb.neuro, 'Neuro bass (torn-up reese)', ('bass',)),
+        ('houseorgan', _vb.house_organ, 'House organ stab (M1-style)', ('chords', 'arp', 'lead'))):
+    if _info is None:
+        if _name + '_v1' not in INSTRUMENTS:
+            INSTRUMENTS[_name + '_v1'] = INSTRUMENTS[_name]
+            INSTRUMENT_INFO[_name + '_v1'] = (INSTRUMENT_INFO.get(_name) or _name) + ' (classic sound, before 1.59)'
+            for _role, _lst in ROLE_CHOICES.items():
+                if _name in _lst and _name + '_v1' not in _lst:
+                    _lst.append(_name + '_v1')
+            GM_PROGRAM[_name + '_v1'] = GM_PROGRAM.get(_name, 0)
+        else:                                                     # supersaw already moved to the analog voice in 1.57
+            INSTRUMENTS[_name + '_v2'] = INSTRUMENTS[_name]
+    else:
+        INSTRUMENT_INFO[_name] = _info
+        for _role in _roles:
+            if _name not in ROLE_CHOICES[_role]:
+                ROLE_CHOICES[_role].append(_name)
+    INSTRUMENTS[_name] = _fn
+GM_PROGRAM.update({'trancepad': 90, 'rollbass': 38, 'superpluck': 81, 'neuro': 39, 'houseorgan': 17})

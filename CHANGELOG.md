@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.59.0
+- **Trance synths, built the way the genre builds them:**
+  - **Supersaw** is now a JP-8000-style supersaw: seven saws at the original's relative offsets, its non-linear detune curve and its centre-vs-sides mix, spread across the stereo field.
+  - **Supersaw lead** is layered like producers stack it: a supersaw body, a second wider supersaw for the mids, an octave-up layer high-passed for the "air", and a whisper of high-passed noise for sparkle - with glide, delayed vibrato and a filter that opens on every note (long hall and stereo delay from the track).
+  - New **Trance pad** (slow-attack supersaw bed with a breathing filter, built for sidechain and the trance gate), **Rolling trance bass** (saw + square an octave apart, short pluck envelope, snappy filter - the offbeat 16ths between the kicks) and **Supersaw pluck** (the JP stack with the filter snapping shut, for arps). Trance, uplifting and progressive trance now use the rolling bass and trance pad; 90s trance-pop the rolling bass.
+- **Dubstep / drum & bass synths rebuilt** - every distortion now runs at 4x the sample rate (no aliasing fizz), with real resonant filters and band-passes moving in tempo, and a clean sine sub split off under each mid-bass:
+  - **Wobble** (unison saws + square through a resonant low-pass swept on an exponential curve, a vowel band-pass following it), **Growl** (FM pair, two moving vowel formants, wavefolder), **Reese** (four breathing saws, resonant filter, drive and a moving notch - the DnB "movement"), **Riddim**, **Screech** and **Hoover** (7-voice PWM saws scooping into the note).
+  - New **Neuro bass** - a torn-up reese with sweeping comb-like band-passes, a wavefolder and a hard clip (neurofunk, DnB, jump-up).
+- **House**: new **House organ stab** (the M1-style organ of 90s house) - house now plays it on the arp and bass house on the chords.
+- Every sound replaced keeps its previous version, marked "(classic sound, before 1.59)".
+
+
 ## 1.58.0
 - **More of the built-in synth:**
   - **Organ** is now a proper tonewheel organ: nine drawbars set by a registration, key click, the decaying percussion on the 2nd harmonic, a little tube drive and a two-rotor rotary speaker (fast horn, slower drum, each with its Doppler wobble). Parts that use their own rotary effect still get it.

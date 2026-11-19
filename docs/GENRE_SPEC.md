@@ -49,7 +49,7 @@ Classic / NYC house: four-on-the-floor 909, the bouncy M1 organ bass, offbeat pi
   - bass (bass): `organbass` -13 dB · sc=1.0 · alternatives ['sawbass', 'fmbass', 'moogbass']
   - chords (chords): `m1piano` -18 dB · rev=0.25 · dly=0.15 · sc=0.9 · alternatives ['organ', 'stab', 'epiano']
   - pad (pad): `warmpad` -21 dB · rev=0.35 · sc=1.0 · alternatives ['strings', 'solina', 'glasspad']
-  - arp (arp): `organ` -27 dB · pan=-0.25 · rev=0.25 · dly=0.3 · sc=0.8 · alternatives ['stab', 'piano']
+  - arp (arp): `houseorgan` -27 dB · pan=-0.25 · rev=0.25 · dly=0.3 · sc=0.8 · alternatives ['organ', 'stab', 'piano']
   - lead (lead): `m1piano`  dB · pan=0.1 · rev=0.3 · dly=0.3 · sc=0.5 · alternatives ['organ', 'stab', 'epiano']
   - conga (top): `conga` -29 dB · pan=-0.3
 - **Mix** {'lufs': -9.0, 'air': 2.0, 'low': 1.0} · reverb 1.8 · sc_depth 0.55
@@ -107,7 +107,7 @@ Tech house: rolling, rubbery filtered bassline, 909 groove with congas, rims and
   - conga (top): `conga` -27 dB · pan=-0.3
   - rim (top): `rim` -30 dB · pan=0.2
   - bass (bass): `sawbass`  dB · sc=1.0 · alternatives ['fmbass', 'organbass', 'sinebass']
-  - chords (chords): `organ` -24 dB · rev=0.3 · dly=0.3 · sc=0.8 · alternatives ['stab', 'epiano', 'piano']
+  - chords (chords): `organ` -24 dB · rev=0.3 · dly=0.3 · sc=0.8 · alternatives ['stab', 'epiano', 'piano', 'houseorgan']
   - arp (arp): `pluck_saw` -29 dB · pan=0.25 · dly=0.35 · sc=0.6 · alternatives ['pluck', 'stab', 'acid']
   - lead (lead): `stab`  dB · rev=0.3 · dly=0.35 · sc=0.5 · alternatives ['organ', 'pluck_saw', 'acid']
   - bongo (top): `conga` -29 dB · pan=0.4
@@ -440,7 +440,7 @@ Sunny melodic deep house: warm 122-124 four-on-the-floor with shakers, congas an
   - tamb (top): `tamb` -28 dB · pan=0.3
   - rim (top): `rim` -30 dB · pan=-0.3
   - bass (bass): `sinebass` -12 dB · sc=0.8 · alternatives ['moogbass', 'organbass', '808']
-  - chords (chords): `stab` -21 dB · rev=0.3 · dly=0.25 · sc=0.6 · alternatives ['warmpad', 'organ', 'm1piano']
+  - chords (chords): `stab` -21 dB · rev=0.3 · dly=0.25 · sc=0.6 · alternatives ['warmpad', 'organ', 'm1piano', 'houseorgan']
   - pad (pad): `warmpad` -29 dB · rev=0.4 · sc=0.8 · alternatives ['strings', 'glasspad', 'solina']
   - arp (arp): `organ` -28 dB · pan=0.25 · rev=0.25 · dly=0.3 · sc=0.6 · alternatives ['stab', 'm1piano', 'twang']
   - lead (lead): `organ` -24 dB · rev=0.3 · dly=0.3 · sc=0.4 · alternatives ['stab', 'epiano']
@@ -470,7 +470,7 @@ Bass house / UK bass: a punchy four-on-the-floor around 126 with shuffled hats, 
   - chat (top): `chat` -27 dB · pan=0.15
   - ohat (top): `ohat` -28 dB · pan=-0.15
   - bass (bass): `wobble` -11 dB · sc=0.8 · alternatives ['fmbass', 'growl', 'reese']
-  - chords (chords): `organ` -22 dB · rev=0.25 · sc=0.6 · alternatives ['stab', 'm1piano', 'epiano']
+  - chords (chords): `houseorgan` -22 dB · rev=0.25 · sc=0.6 · alternatives ['organ', 'stab', 'm1piano', 'epiano']
   - pad (pad): `warmpad` -30 dB · rev=0.4 · alternatives ['strings', 'glasspad', 'solina']
   - arp (arp): `stab` -28 dB · dly=0.25 · alternatives ['pluck', 'pluck_saw', 'organ']
   - lead (lead): `stab` -20 dB · rev=0.25 · dly=0.25 · alternatives ['pluck', 'pluck_saw', 'organ']
@@ -592,7 +592,7 @@ Garage-house pop (2010s UK): a 2-step garage beat at house tempo (~122) with shu
   - shaker (top): `shaker` -31 dB · pan=-0.3
   - rim (top): `rim` -29 dB
   - bass (bass): `organbass` -12 dB · sc=0.6 · alternatives ['sinebass', 'fmbass', 'moogbass']
-  - chords (chords): `stab` -22 dB · rev=0.3 · sc=0.5 · alternatives ['organ', 'epiano', 'piano']
+  - chords (chords): `stab` -22 dB · rev=0.3 · sc=0.5 · alternatives ['organ', 'epiano', 'piano', 'houseorgan']
   - pad (pad): `warmpad` -28 dB · rev=0.45 · alternatives ['strings', 'glasspad', 'solina']
   - arp (arp): `epiano` -28 dB · dly=0.3 · alternatives ['pluck', 'piano', 'vibes']
   - lead (lead): `softlead` -19 dB · rev=0.3 · dly=0.3 · alternatives ['epiano', 'flute']
@@ -622,7 +622,7 @@ Late-80s / early-90s Italo piano house: a clunky drum-machine four-on-the-floor 
   - ohat (top): `ohat` -27 dB · pan=-0.2
   - tamb (top): `tamb` -30 dB · pan=0.3
   - bass (bass): `sawbass` -13 dB · sc=0.3 · alternatives ['moogbass', 'organbass', 'fmbass']
-  - chords (chords): `m1piano` -18 dB · rev=0.25 · alternatives ['piano', 'organ', 'epiano']
+  - chords (chords): `m1piano` -18 dB · rev=0.25 · alternatives ['piano', 'organ', 'epiano', 'houseorgan']
   - pad (pad): `strings` -27 dB · rev=0.4 · alternatives ['solina', 'warmpad', 'sf:slowstrings']
   - arp (arp): `stab` -28 dB · dly=0.2 · alternatives ['pluck', 'pluck_saw', 'organ']
   - lead (lead): `piano` -19 dB · rev=0.3 · dly=0.2 · alternatives ['softlead', 'epiano', 'vibes']
@@ -892,10 +892,10 @@ Uplifting trance: gated supersaw chords, rolling offbeat bass, euphoric leads
   - ohat (top): `ohat` -26 dB
   - chat (top): `chat` -30 dB · pan=-0.2
   - ride (top): `ride` -31 dB · pan=0.25
-  - bass (bass): `sawbass`  dB · sc=1.0 · alternatives ['fmbass', 'moogbass', 'reese']
+  - bass (bass): `rollbass`  dB · sc=1.0 · alternatives ['sawbass', 'fmbass', 'moogbass', 'reese']
   - chords (chords): `supersaw`  dB · rev=0.35 · dly=0.15 · sc=0.9 · alternatives ['stab', 'pluck_saw', 'polysynth']
-  - pad (pad): `warmpad`  dB · rev=0.6 · sc=0.8 · alternatives ['strings', 'choir', 'supersaw', 'glasspad']
-  - arp (arp): `pluck_saw` -26 dB · pan=0.25 · rev=0.35 · dly=0.4 · sc=0.8 · alternatives ['pluck', 'acid', 'stab']
+  - pad (pad): `trancepad`  dB · rev=0.6 · sc=0.8 · alternatives ['warmpad', 'strings', 'choir', 'supersaw', 'glasspad']
+  - arp (arp): `pluck_saw` -26 dB · pan=0.25 · rev=0.35 · dly=0.4 · sc=0.8 · alternatives ['pluck', 'acid', 'stab', 'superpluck']
   - lead (lead): `supersaw_lead`  dB · rev=0.55 · dly=0.35 · sc=0.5 · alternatives ['leadsaw', 'pluck_saw', 'polysynth']
 - **Mix** {'lufs': -8.5, 'air': 2.5, 'low': 1.0} · reverb 3.0 · sc_depth 0.7
 - **Other rules** {'sc_release': 0.4, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.55, 'chord_center': 66, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
@@ -920,7 +920,7 @@ Psytrance: relentless kick-bass rolls, acid squelches, hypnotic phrygian riffs
   - clap (snare): `clap` -22 dB · rev=0.35
   - ohat (top): `ohat` -27 dB
   - chat (top): `chat` -30 dB · pan=0.2
-  - bass (bass): `sawbass`  dB · alternatives ['fmbass', 'acid', 'moogbass']
+  - bass (bass): `sawbass`  dB · alternatives ['fmbass', 'acid', 'moogbass', 'rollbass']
   - chords (chords): `stab` -26 dB · rev=0.4 · dly=0.5 · alternatives ['warmpad', 'organ', 'polysynth']
   - pad (pad): `warmpad` -27 dB · rev=0.6 · alternatives ['choir', 'supersaw', 'glasspad']
   - arp (arp): `acid` -25 dB · pan=-0.2 · rev=0.35 · dly=0.4 · alternatives ['pluck_saw', 'pluck', 'stab']
@@ -1066,10 +1066,10 @@ Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw l
   - ohat (top): `ohat` -26 dB
   - chat (top): `chat` -29 dB
   - ride (top): `ride` -32 dB
-  - bass (bass): `sawbass` -15 dB · sc=0.7 · alternatives ['fmbass', 'moogbass', 'reese']
+  - bass (bass): `rollbass` -15 dB · sc=0.7 · alternatives ['sawbass', 'fmbass', 'moogbass', 'reese']
   - chords (chords): `supersaw` -22 dB · rev=0.4 · sc=0.8 · alternatives ['stab', 'pluck_saw', 'piano', 'polysynth']
-  - pad (pad): `warmpad` -26 dB · rev=0.6 · sc=0.6 · alternatives ['strings', 'choir', 'glasspad', 'supersaw']
-  - arp (arp): `pluck_saw` -24 dB · rev=0.35 · dly=0.4 · sc=0.5 · alternatives ['pluck', 'piano', 'stab']
+  - pad (pad): `trancepad` -26 dB · rev=0.6 · sc=0.6 · alternatives ['warmpad', 'strings', 'choir', 'glasspad', 'supersaw']
+  - arp (arp): `pluck_saw` -24 dB · rev=0.35 · dly=0.4 · sc=0.5 · alternatives ['pluck', 'piano', 'stab', 'superpluck']
   - lead (lead): `supersaw_lead` -18 dB · rev=0.55 · dly=0.35 · sc=0.4 · alternatives ['leadsaw', 'pluck_saw']
 - **Mix** {'lufs': -8.5, 'air': 2.0, 'low': 1.0} · reverb 3.0 · sc_depth 0.55
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.6, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
@@ -1096,10 +1096,10 @@ Emotional progressive trance / melodic progressive house: simple emotive chords,
   - ohat (top): `ohat` -28 dB · pan=0.15
   - chat (top): `chat` -31 dB · pan=-0.2
   - ride (top): `ride` -31 dB · pan=0.3
-  - bass (bass): `sawbass`  dB · sc=1.0 · alternatives ['moogbass', 'fmbass', 'reese']
+  - bass (bass): `rollbass`  dB · sc=1.0 · alternatives ['sawbass', 'moogbass', 'fmbass', 'reese']
   - chords (chords): `supersaw` -25 dB · rev=0.4 · sc=0.9 · alternatives ['piano', 'pluck_saw', 'polysynth', 'stab']
-  - pad (pad): `warmpad` -27 dB · rev=0.6 · sc=0.6 · alternatives ['strings', 'glasspad', 'choir', 'supersaw']
-  - arp (arp): `pluck_saw` -27 dB · pan=-0.2 · rev=0.35 · dly=0.4 · sc=0.7 · alternatives ['pluck', 'piano', 'stab']
+  - pad (pad): `trancepad` -27 dB · rev=0.6 · sc=0.6 · alternatives ['warmpad', 'strings', 'glasspad', 'choir', 'supersaw']
+  - arp (arp): `pluck_saw` -27 dB · pan=-0.2 · rev=0.35 · dly=0.4 · sc=0.7 · alternatives ['pluck', 'piano', 'stab', 'superpluck']
   - lead (lead): `supersaw_lead` -19 dB · rev=0.55 · dly=0.35 · sc=0.4 · alternatives ['pluck_saw', 'leadsaw']
 - **Mix** {'lufs': -8.5, 'air': 2.0, 'low': 1.0} · reverb 3.0 · sc_depth 0.45
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.6, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'slow_chords': 0.35, 'repetition': 0.8, 'simplicity': 0.35}
@@ -1184,10 +1184,10 @@ Late-90s vocal trance-pop / UK dance: a pumping four-on-the-floor around 134 wit
   - clap (snare): `clap` -16 dB · rev=0.3
   - chat (top): `chat` -28 dB · pan=0.2
   - ohat (top): `ohat` -27 dB · pan=-0.2
-  - bass (bass): `sawbass` -14 dB · sc=0.6 · alternatives ['moogbass', 'fmbass', 'reese']
+  - bass (bass): `rollbass` -14 dB · sc=0.6 · alternatives ['sawbass', 'moogbass', 'fmbass', 'reese']
   - chords (chords): `supersaw` -21 dB · rev=0.3 · sc=0.6 · alternatives ['polysynth', 'piano', 'stab']
   - pad (pad): `solina` -26 dB · rev=0.45 · alternatives ['strings', 'warmpad', 'glasspad']
-  - arp (arp): `pluck_saw` -27 dB · dly=0.3 · alternatives ['pluck', 'stab', 'acid']
+  - arp (arp): `pluck_saw` -27 dB · dly=0.3 · alternatives ['pluck', 'stab', 'acid', 'superpluck']
   - lead (lead): `supersaw_lead` -18 dB · rev=0.35 · dly=0.3 · alternatives ['softlead', 'leadsaw', 'polysynth']
 - **Mix** {'lufs': -9.0, 'air': 1.6, 'low': 1.4, 'width': 1.1} · reverb 2.6 · sc_depth 0.5
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.5, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
@@ -1217,7 +1217,7 @@ Hard trance / hands-up (2000s): a pounding 909 kick around 140 with offbeat open
   - bass (bass): `sawbass` -12 dB · sc=0.8 · alternatives ['fmbass', 'moogbass', 'reese']
   - chords (chords): `supersaw` -19 dB · rev=0.3 · sc=0.7 · alternatives ['stab', 'polysynth', 'synthbrass']
   - pad (pad): `warmpad` -27 dB · rev=0.5 · alternatives ['strings', 'glasspad', 'solina']
-  - arp (arp): `acid` -25 dB · pan=0.2 · dly=0.2 · alternatives ['pluck_saw', 'pluck', 'stab']
+  - arp (arp): `acid` -25 dB · pan=0.2 · dly=0.2 · alternatives ['pluck_saw', 'pluck', 'stab', 'superpluck']
   - lead (lead): `hoover` -18 dB · rev=0.3 · dly=0.2 · alternatives ['supersaw_lead', 'leadsaw', 'acid']
 - **Mix** {'lufs': -8.0, 'air': 1.6, 'low': 1.6, 'width': 0.9} · reverb 2.4 · sc_depth 0.6
 - **Other rules** {'sc_release': 0.2, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 52, 'punch': 160, 'decay': 10, 'drive': 2.4, 'click': 0.7}}, 'snare_tracks': ['clap', 'snare'], 'bass_gate': 0.5, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pedal_sub': True}
@@ -2077,7 +2077,7 @@ Drum & bass: two-step breaks at 174, growling reese bass, wide pads
   - snare (snare): `snare` -16 dB · rev=0.2
   - chat (top): `chat` -26 dB · pan=0.2
   - ride (top): `ride` -31 dB · pan=-0.25
-  - bass (bass): `reese` -11 dB · sc=1.0 · alternatives ['sawbass', 'sinebass', 'fmbass']
+  - bass (bass): `reese` -11 dB · sc=1.0 · alternatives ['sawbass', 'sinebass', 'fmbass', 'neuro']
   - chords (chords): `epiano` -24 dB · rev=0.3 · sc=0.6 · alternatives ['warmpad', 'piano', 'strings', 'stab', 'wurli']
   - pad (pad): `supersaw`  dB · rev=0.4 · sc=0.8 · alternatives ['warmpad', 'strings', 'choir', 'glasspad']
   - arp (arp): `stab` -28 dB · pan=0.25 · rev=0.3 · dly=0.3 · sc=0.6 · alternatives ['pluck_saw', 'epiano', 'pluck']
@@ -2282,7 +2282,7 @@ Neurofunk: tight, technical two-step at 174, dark and mechanical - growls, reese
   - snare (snare): `snare` -14 dB · rev=0.15
   - chat (top): `chat` -26 dB · pan=0.2
   - rim (top): `rim` -28 dB · pan=-0.2
-  - bass (bass): `growl` -13 dB · sc=0.8 · alternatives ['reese', 'fmbass', 'wobble']
+  - bass (bass): `growl` -13 dB · sc=0.8 · alternatives ['reese', 'fmbass', 'wobble', 'neuro']
   - chords (chords): `stab` -25 dB · rev=0.3 · sc=0.5 · alternatives ['warmpad', 'organ', 'polysynth']
   - pad (pad): `warmpad` -29 dB · rev=0.5 · sc=0.5 · alternatives ['glasspad', 'choir', 'strings']
   - arp (arp): `stab` -29 dB · rev=0.3 · dly=0.3 · alternatives ['chip', 'pluck_saw', 'pluck']
@@ -2395,7 +2395,7 @@ Jump-up drum & bass: bouncy party two-step at 174 - a rubbery, talking mid-bass 
   - kick (kick): `kick` -11 dB
   - snare (snare): `snare` -14 dB · rev=0.2
   - chat (top): `chat` -26 dB · pan=0.2
-  - bass (bass): `wobble` -11 dB · sc=0.7 · alternatives ['growl', 'reese', 'fmbass']
+  - bass (bass): `wobble` -11 dB · sc=0.7 · alternatives ['growl', 'reese', 'fmbass', 'neuro']
   - chords (chords): `stab` -24 dB · rev=0.3 · sc=0.5 · alternatives ['organ', 'supersaw', 'synthbrass']
   - pad (pad): `warmpad` -29 dB · rev=0.45 · alternatives ['glasspad', 'strings']
   - arp (arp): `pluck_saw` -27 dB · pan=0.25 · rev=0.3 · dly=0.3 · alternatives ['stab', 'chip', 'pluck']
@@ -2424,7 +2424,7 @@ Neurofunk, lighter and more melodic: the tight 174 two-step and a dark reese, bu
   - kick (kick): `kick` -11 dB
   - snare (snare): `snare` -14 dB · rev=0.2
   - chat (top): `chat` -26 dB · pan=0.2
-  - bass (bass): `reese` -12 dB · sc=0.75 · alternatives ['fmbass', 'growl', 'wobble']
+  - bass (bass): `reese` -12 dB · sc=0.75 · alternatives ['fmbass', 'growl', 'wobble', 'neuro']
   - chords (chords): `stab` -24 dB · rev=0.3 · sc=0.5 · alternatives ['polysynth', 'organ', 'supersaw']
   - pad (pad): `warmpad` -27 dB · rev=0.45 · sc=0.5 · alternatives ['glasspad', 'strings', 'choir']
   - arp (arp): `pluck_saw` -27 dB · pan=0.2 · rev=0.3 · dly=0.3 · alternatives ['pluck', 'stab', 'bell']

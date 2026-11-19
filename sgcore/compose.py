@@ -893,8 +893,8 @@ def hold_slow_chords(evs, tracks, st, bpm=120):
     beat it starts on until it changes, as a keyboard player would on a pad patch."""
     spb = 60.0 / max(40.0, float(bpm or 120))
     for name, t in tracks.items():
-        if t.get('layer') not in ('chords', 'pad') or attack_of(t) < 0.3:
-            continue
+        if t.get('layer') not in ('chords', 'pad') or attack_of(t) < 0.3 or t.get('double_of'):
+            continue                                             # (a layer keeps exactly the notes of the part it doubles)
         mine = sorted((e for e in evs if e.track == name and e.midi is not None), key=lambda e: e.beat)
         if not mine or sum(e.dur for e in mine) / len(mine) * spb >= attack_of(t) * 1.5:
             continue                                             # already long notes: nothing to do
@@ -932,7 +932,7 @@ def hold_slow_chords(evs, tracks, st, bpm=120):
                     e.dur = max(0.25, min(e.dur, start - e.beat - 0.02))
             prev = (start, notes)
     evs[:] = [e for e in evs if not (e.midi is None and tracks.get(e.track, {}).get('layer') in ('chords', 'pad')
-                                       and attack_of(tracks[e.track]) >= 0.3)]
+                                       and attack_of(tracks[e.track]) >= 0.3 and not tracks[e.track].get('double_of'))]
 
 
 def compose(opts):
@@ -1719,7 +1719,13 @@ def compose(opts):
             t['inst'], t['user_pick'] = pick, True
         elif t['layer'] in MELODIC_ROLES and isinstance(pick, str) and (pick in INSTRUMENTS or pick.startswith(('user:', 'vst:', 'sf:', 'real:'))):
             t['fallback'], t['inst'], t['user_pick'] = t['inst'], pick, True
+    before = {n: sum(1 for e in evs if e.track == n) for n in tracks}
     hold_slow_chords(evs, tracks, st, bpm)               # again: switched / re-picked parts may now be on a pad sound
+    held = {n for n in tracks if sum(1 for e in evs if e.track == n) != before[n]}
+    relayer = {n for n, t in tracks.items() if t.get('double_of') in held}
+    if relayer:                                          # a held part's layers follow it again
+        evs[:] = [e for e in evs if e.track not in relayer]
+        evs += [e for e in double_layers(evs, {n: tracks[n] for n in relayer})]
     off = {n for n, t in tracks.items() if t.get('off')} if not st.get('composer') else set()
     if off:                                              # extra parts switched off in the Sound panel
         evs = [e for e in evs if e.track not in off]

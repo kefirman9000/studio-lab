@@ -1000,6 +1000,23 @@ def test_va_synth():
         a = np.asarray(INSTRUMENTS[k](60, 0.8, {}, None, None))
         assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.5, k
     assert 'synclead' in ROLE_CHOICES['lead'] and 'vocalpad' in ROLE_CHOICES['pad'] and 'mellotron' in ROLE_CHOICES['chords']
+    for k in ('trancepad', 'rollbass', 'superpluck', 'neuro', 'houseorgan', 'wobble', 'growl', 'reese', 'riddim',
+              'screech', 'hoover', 'supersaw_lead'):                                                  # 1.59
+        a = np.asarray(INSTRUMENTS[k](40 if k in ('rollbass', 'neuro', 'wobble', 'growl', 'reese', 'riddim') else 64, 0.8,
+                                      {'spb': 0.43}, None, 0.5 if k in ('wobble', 'growl', 'neuro', 'riddim', 'screech') else None))
+        assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.6, (k, np.abs(a).max())
+    from sgcore.va_bass import dist
+    xx = np.sin(2 * np.pi * 3000 * np.arange(SR) / SR)
+    yy = dist(xx, 8.0)
+    sp3 = np.abs(np.fft.rfft(yy)) ** 2
+    f3 = np.fft.rfftfreq(SR, 1 / SR)
+    harm3 = np.abs(f3 / 3000.0 - np.round(f3 / 3000.0)) * 3000.0 < 3
+    assert sp3[~harm3].sum() / sp3.sum() < 1e-3                             # oversampled drive: no aliased fizz
+    jp = va.jp_supersaw(440.0, SR // 2)
+    assert jp.shape == (2, SR // 2) and np.abs(jp[0] - jp[1]).mean() > 0.05   # seven saws spread wide
+    from sgcore.styles import STYLES as _S2
+    tr = {t['name']: t['inst'] for t in _S2['trance']['tracks']}
+    assert tr['bass'] == 'rollbass' and tr['pad'] == 'trancepad'
     dry = np.asarray(INSTRUMENTS['organ'](60, 0.5, {'leslie': 0.0}))
     assert np.allclose(dry[0], dry[1])                                     # the track's own rotary effect takes over
     s = va.sync_saw(220.0, np.linspace(1.5, 4.0, SR), SR)

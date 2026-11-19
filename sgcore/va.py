@@ -275,3 +275,33 @@ def tonewheel(m, dur, p):
             v = np.interp(idx - dl, idx, band, left=0.0)
             out[c] += v * (1 + amp_m * sgn * np.sin(ph + 0.6))
     return out * 0.35
+
+
+# JP-8000 supersaw (after Adam Szabo's analysis of the original): seven saws at fixed relative offsets, a non-linear
+# detune knob, and a mix that trades the centre saw against the six side saws
+_JP_OFF = np.array([-0.11002313, -0.06288439, -0.01952356, 0.0, 0.01991221, 0.06216538, 0.10745242])
+
+
+def _jp_detune(x):
+    x = float(np.clip(x, 0, 1))
+    return (10028.7312891634 * x ** 11 - 50818.8652045924 * x ** 10 + 111363.4808729368 * x ** 9
+            - 138150.6761080548 * x ** 8 + 106649.6679158292 * x ** 7 - 53046.9642751875 * x ** 6
+            + 17019.9518580080 * x ** 5 - 3425.0836591318 * x ** 4 + 404.2703938388 * x ** 3
+            - 24.1878824391 * x ** 2 + 0.6717417634 * x + 0.0030115596)
+
+
+def jp_supersaw(fr, n, detune=0.5, mix=0.7, spread=1.0):
+    """Seven saws, JP-8000 style -> stereo (2, n). fr: Hz (number or per-sample array)."""
+    d = _jp_detune(detune)
+    side = -0.73764 * mix ** 2 + 1.2841 * mix + 0.044372
+    centre = -0.55366 * mix + 0.99785
+    fr = np.broadcast_to(np.asarray(fr, float), (n,))
+    L = np.zeros(n)
+    R = np.zeros(n)
+    for k, off in enumerate(_JP_OFF):
+        s = saw(fr * (1 + off * d), n, _RNG.random())
+        g = centre if k == 3 else side
+        pan = 0.5 + 0.5 * spread * (k - 3) / 3
+        L += s * g * np.cos(pan * np.pi / 2)
+        R += s * g * np.sin(pan * np.pi / 2)
+    return np.vstack([L, R]) * 0.45
