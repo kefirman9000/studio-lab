@@ -5,6 +5,7 @@ import random
 import time
 
 import numpy as np
+from scipy import signal
 from scipy.ndimage import uniform_filter1d
 
 from .dsp import (SR, hp, lp, eq, soft, compressor, limiter, lufs, active_rms_db, make_ir, reverb, pingpong,
@@ -45,6 +46,24 @@ def gated_reverb(x, hold=0.24):
     y = y / (np.max(np.abs(y)) + 1e-9) * g
     return y
 
+
+
+def auto_lp(buf, cut, block=256):
+    """A 12 dB low-pass whose cutoff follows `cut` (Hz per sample), in blocks with carried state; blocks where it is
+    wide open are (a track that never closes is passed straight through)."""
+    from .dsp import biquad
+    x = np.asarray(buf, np.float64)
+    out = x.copy()
+    n = x.shape[1]
+    if float(np.min(cut[:n])) >= 17500:
+        return out
+    zi = np.zeros((2, 2))
+    for s0 in range(0, n, block):
+        e = min(n, s0 + block)
+        b, a = biquad('lowpass', float(min(cut[s0], SR * 0.45)), 0.707)
+        for c in range(2):
+            out[c, s0:e], zi[c] = signal.lfilter(b, a, x[c, s0:e], zi=zi[c])
+    return out
 
 class Renderer:
     def __init__(self, song, log=print):
@@ -485,6 +504,34 @@ class Renderer:
         kn = self.st.get('kick_track', 'kick')
         return sorted(self.t_of(e.beat, human=False) for e in self.song['events'] if e.track == kn)
 
+    ARC_CUT = {'intro': (2500, 5000), 'verse': (5500, 5500), 'break': (2200, 8000), 'breakdown': (2200, 8000),
+               'build': (3000, 18000), 'outro': (18000, 3000)}
+    ARC_SC = {'drop': (1.25, 1.25), 'chorus': (1.2, 1.2), 'climax': (1.25, 1.25), 'break': (0.5, 0.5),
+              'breakdown': (0.5, 0.5), 'build': (0.6, 1.2), 'intro': (0.8, 0.8), 'outro': (0.8, 0.8)}
+
+    def filter_arc(self, song, b2s, L):
+        """Filter automation across the arrangement (trance / techno): the synths' low-pass is part-closed in the intro
+        and groove, darker in the breakdown and slowly opening, swept open through the build and wide open in the drop -
+        tension by closing, release by opening. -> cutoff per sample (Hz)."""
+        cut = np.full(L, 20000.0)
+        for sec in song['sections']:
+            a, b = b2s(sec['bar'] * 4), min(L, b2s((sec['bar'] + sec['bars']) * 4))
+            rng = self.ARC_CUT.get(sec['name'])
+            if b <= a or rng is None or (sec['name'] == 'intro' and sec['opts'].get('filter_in')):
+                continue
+            cut[a:b] = np.geomspace(rng[0], rng[1], b - a)
+        return np.exp(uniform_filter1d(np.log(cut), int(0.4 * SR)))
+
+    def sc_arc(self, song, b2s, L):
+        """How hard the kick ducks the music, section by section: deepest in the drops, gentle in the breakdown."""
+        g = np.ones(L)
+        for sec in song['sections']:
+            a, b = b2s(sec['bar'] * 4), min(L, b2s((sec['bar'] + sec['bars']) * 4))
+            r = self.ARC_SC.get(sec['name'])
+            if b > a and r:
+                g[a:b] = np.linspace(r[0], r[1], b - a)
+        return uniform_filter1d(g, int(0.4 * SR))
+
     def sidechain_curve(self, release_beats):
         duck = np.zeros(self.length, dtype=np.float32)
         rel = release_beats * self.spb
@@ -540,6 +587,8 @@ class Renderer:
                 env[s0:s1] *= np.linspace(1, 0, s1 - s0) ** 1.6
                 env[s1:] = 0
         env32 = env.astype(np.float32)
+        arc_cut = self.filter_arc(song, b2s, L) if st.get('filter_arc') else None
+        sc_mult = self.sc_arc(song, b2s, L) if st.get('sc_arc') and duck is not None else None
         fade_end = next((min(L, b2s(b + d) + int(3.5 * SR)) for kind, b, d in song['fx'] if kind == 'fade'), None)
         stems = []
         n_tracks = len(st['tracks'])
@@ -577,6 +626,8 @@ class Renderer:
             if tcfg.get('presence'):                          # amp-style tone: scoop the boxy 400 Hz, push the 2.5 kHz bite
                 pr = float(tcfg['presence'])
                 buf = eq(eq(buf, 'peak', 400, 0.9, -0.6 * pr), 'peak', 2500, 0.8, pr).astype(np.float32)
+            if arc_cut is not None and tcfg['layer'] in ('chords', 'pad', 'arp', 'lead'):
+                buf = auto_lp(buf, arc_cut).astype(np.float32)
             if tcfg['layer'] in ('chords', 'pad', 'arp'):
                 for s0, s1 in lpsweeps:
                     sweep_region(buf, s0, s1, 'lp', 250, 18000)
@@ -598,7 +649,10 @@ class Renderer:
                 buf[0] *= np.float32(np.cos(th) * np.sqrt(2))
                 buf[1] *= np.float32(np.sin(th) * np.sqrt(2))
             if duck is not None and tcfg['sc']:
-                buf *= (1 - duck * np.float32(min(1.0, sc_depth * tcfg['sc'])))[None, :]
+                if sc_mult is not None:                   # the pumping deepens in the drops, eases in the breakdown
+                    buf *= (1 - duck * np.minimum(1.0, sc_depth * tcfg['sc'] * sc_mult).astype(np.float32))[None, :]
+                else:
+                    buf *= (1 - duck * np.float32(min(1.0, sc_depth * tcfg['sc'])))[None, :]
             for s0, s1 in tapestops:
                 if tcfg['layer'] != 'fx':
                     tape_stop(buf, s0, s1)

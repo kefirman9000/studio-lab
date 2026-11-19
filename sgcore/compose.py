@@ -368,7 +368,9 @@ def apply_variety(st, opts, rnd):
         rr = part_rng[role]
         free = role not in (opts.instruments or {}) and not t.get('user_pick') and not chip_locked and not t.get('double_of') \
             and (t['name'] == role or st.get('composer') or t.get('switch_of'))     # a genre's named extra parts keep their sound
-        keep_sig = owner in SIGNATURE_STRICT                  # rap / R&B: the genre's own sound is the usual one
+        keep_sig = owner in SIGNATURE_STRICT and role in SIGNATURE_ROLES.get(owner, ('bass', 'lead'))
+        # (rap / R&B / trance ...: the genre's defining part - its bass, its lead - usually keeps its own sound, but the
+        # supporting parts (arps, pads, chords) vary freely, so the arp before every drop isn't the same pluck)
         if free and pool and rr.random() < ((0.2 + 0.3 * v) if keep_sig else (0.55 + 0.4 * v)):
             # the genre's own pool: its signature sound a little likelier, every other one an authentic alternative;
             # instruments your last songs in this genre used are picked less often, so the next one sounds fresh
@@ -887,6 +889,40 @@ def attack_of(t):
     return SLOW_ATTACK.get(inst, 0.0)
 
 
+ARP_FIGURES = ('up', 'down', 'updown', 'converge', 'pinky', 'octaves', 'motif', 'random')
+ARP_GATES = ('xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxx.xx', 'xx.xx.xx.xx.x.x.', 'x.x.xx.xx.x.xx.x', 'xxx.xxx.xxx.xx.x',
+             'x.xx.x.xx.xx.x.x', 'xx.x.xx.xx.x.xx.')
+
+
+def vary_arp(arp, rnd, electronic=True):
+    """Each song gets its own arpeggio instead of the genre's one figure every time: the genre's own figure stays the
+    most likely, but the order of the notes (up, down, up-down, outside-in, a pedal note, octaves, a little fixed motif,
+    random), the range (one or two octaves), the speed (one step faster or slower) and, on 16ths, a gate rhythm with
+    rests are all picked per song (bands and orchestras: only the note order). Written figures (montuno, Alberti, rolls, mallets, taps, beat-locked) are left alone."""
+    a = dict(arp)
+    if a.get('rh') or a.get('beat_lock') or a.get('mode') not in ('up', 'down', 'updown', 'random'):
+        return a
+    if rnd.random() < 0.7:
+        a['mode'] = rnd.choice([m for m in ARP_FIGURES if m != arp['mode']])
+        if a['mode'] == 'motif':
+            ln = rnd.choice([3, 4, 5, 6])                          # 3 or 5 over 16ths: a figure that drifts over the beat
+            a['motif'] = tuple(rnd.randrange(4) for _ in range(ln))
+        if a['mode'] == 'pinky':
+            a['pedal'] = rnd.choice(['low', 'low', 'high'])
+    if rnd.random() < 0.3 and a['mode'] not in ('octaves',):
+        a['span'] = 2
+    if not electronic:                                     # band / orchestral parts: the order of notes only
+        return a
+    r = rnd.random()
+    if r < 0.2:
+        a['rate'] = max(0.5, a['rate'] / 2)
+    elif r < 0.4:
+        a['rate'] = min(4, a['rate'] * 2)
+    if a['rate'] <= 1 and rnd.random() < 0.55:
+        a['gate_rh'] = rnd.choice(ARP_GATES[1:])
+    return a
+
+
 def hold_slow_chords(evs, tracks, st, bpm=120):
     """A slow-attack pad (warm pad, string section, choir) can't play short chord stabs: the notes never reach full
     volume, then ring out after the beat as a smear of late, off-beat notes. On such a sound the chord is held from the
@@ -1126,7 +1162,8 @@ def compose(opts):
         arp['rate'] = max(0.5, arp['rate'] / 2)
     elif cx < 0.22:
         arp['rate'] = min(4, arp['rate'] * 2)
-    arp_base = arp
+    arp_base = arp if grid_of(st) != 16 else \
+        vary_arp(arp, random.Random(f"{opts.seed}-{st.get('name')}-arp-figure"), st.get('category') == 'Electronic')   # every song its own figure
     base_form = []
     if getattr(opts, 'skip_intro', False) and len(form) > 2:   # start straight on the groove: no intro section(s)
         while len(form) > 2 and form[0][0] in INTRO_NAMES:
@@ -1172,6 +1209,12 @@ def compose(opts):
             layers |= {'arp'}
         if energy < 0.25:
             layers -= {'arp'} if sname not in ('drop', 'chorus', 'hook', 'climax') else set()
+        if opts_s.get('build') and 'arp' in layers and not ed.get('keep_layers'):
+            rb_ = random.Random(f'{opts.seed}-{sname}-{si}-build-parts')   # builds aren't all "the arp, rising":
+            if rb_.random() < 0.45 and layers & {'chords', 'pad', 'lead'}:   # some ride the chords / pad / a lead
+                layers = layers - {'arp'}                                    # teaser instead
+                if rb_.random() < 0.4 and 'lead' in tracks:
+                    layers = layers | {'lead'}
         is_verse = sname in ('verse', 'A', 'rise', 'head') and not opts_s.get('drop')
         prog = prog_alt if opts_s.get('alt') else (prog_verse if is_verse else prog_main)
         mel, ph = (mel_alt, ph_alt) if opts_s.get('alt') else ((mel_verse, ph_verse) if is_verse else (mel_main, ph_bars))
@@ -1456,8 +1499,27 @@ def compose(opts):
                 acol = bar_col if bar_col in ('sus2', 'sus4', 'add9no3') else None   # arps follow a sus chord
                 tones = voice_chord(key, chord, 3, 12 * (arp['oct'] + 1) + 4, 'close', acol)
                 seq = tones + [tones[0] + 12]
+                if arp.get('span') == 2:                         # over two octaves
+                    seq = tones + [x + 12 for x in tones] + [tones[0] + 24]
                 if arp['mode'] == 'updown':
                     seq = seq + seq[-2:0:-1]
+                elif arp['mode'] == 'down':
+                    seq = seq[::-1]
+                elif arp['mode'] == 'converge':                  # outside in: low, high, next low, next high ...
+                    lo_i, hi_i, cv = 0, len(seq) - 1, []
+                    while lo_i <= hi_i:
+                        cv.append(seq[lo_i])
+                        if hi_i != lo_i:
+                            cv.append(seq[hi_i])
+                        lo_i, hi_i = lo_i + 1, hi_i - 1
+                    seq = cv
+                elif arp['mode'] == 'pinky':                     # a pedal note under (or over) each chord tone in turn
+                    ped = seq[0] if arp.get('pedal', 'low') == 'low' else seq[-1]
+                    seq = [x for t_ in seq if t_ != ped for x in (ped, t_)] or seq
+                elif arp['mode'] == 'octaves':                   # each chord tone and its octave
+                    seq = [x for t_ in tones for x in (t_, t_ + 12)]
+                elif arp['mode'] == 'motif':                     # a fixed little order of the chord tones, repeated:
+                    seq = [seq[i % len(seq)] for i in arp.get('motif') or (0, 2, 1, 3)]   # hypnotic, its own per song
                 elif arp['mode'] == 'roll':                      # Scruggs banjo roll: thumb-index-middle with the high drone string
                     drone = 12 * (arp['oct'] + 1) + 7 + ((key.root - 7) % 12)
                     if drone <= tones[-1]:
@@ -1502,6 +1564,9 @@ def compose(opts):
                         evs.append(Ev('arp', beat0 + k * rate * u / 4, rate * u / 4 * 0.8, m, vel * rnd_c.uniform(0.96, 1.0)))
                         continue                                 # downbeat accented, the off-beat half a step down
                     if arp.get('prob') and rnd_c.random() > arp['prob']:
+                        continue
+                    gmask = arp.get('gate_rh')
+                    if gmask and gmask[int(round(k * rate * u)) % len(gmask)] == '.':   # the song's own gate rhythm
                         continue
                     m = rnd_c.choice(seq) if arp['mode'] == 'random' else seq[k % len(seq)]
                     evs.append(Ev('arp', beat0 + k * rate * u / 4, rate * u / 4 * 0.8, m,
@@ -2338,6 +2403,9 @@ def section_group(sec):
 
 # genres whose lead sound is the genre - rotation only uses their own pool
 # rap, hip-hop and R&B genres: their signature sounds are swapped for alternatives far less often
+SIGNATURE_ROLES = {'house': ('bass', 'chords'), 'deep_house': ('bass', 'chords'), 'tech_house': ('bass',), 'techno': ('bass',),
+                   'melodic_techno': ('bass',), 'acid_house': ('bass',), 'psytrance': ('bass',), 'smooth_jazz': ('lead', 'chords'),
+                   'lofi': ('chords',), 'boombap': ('bass', 'chords')}
 SIGNATURE_STRICT = {'trap', 'boombap', 'rnb', 'lofi', 'uk_drill', 'luxury_rap', 'g_funk', 'neo_soul', 'new_jack_swing', 'alt_rnb',
                     'rage', 'plugg', 'hauntology_sunlit', 'hauntology_dark', 'memphis_phonk', 'orchestral_hiphop', 'jersey_club',
                     'country', 'modern_country', 'country_waltz', 'outlaw_country', 'western_swing', 'bluegrass',

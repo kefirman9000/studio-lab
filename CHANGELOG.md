@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.63.0
+- **New genre - Emotive deep house (extended mix):** built from the reference tracks' measurements. 121-124 bpm with a deep, round kick and a long low tail. The bass rolls on the off-beat 16ths and pumps hard against the kick. Shakers, an airy off-beat hat and soft claps keep the groove. Woody plucks bounce through dotted-eighth delays over a lush pad that breathes with the sidechain, with soft piano or guitar chords and a breathy, vocal-like lead. The top end is dark and warm and the mids wide. The arrangement runs DJ intro → the groove stacking up → a first main section → a long emotional breakdown → build → full return → DJ exit.
+- **New genre - Club trance remix (2000s):** a tight 909 kick at 138 with a galloping off-beat rolling bass, driving 16th hats and a punchy, syncopated tech-trance synth riff through a dotted delay. Gated supersaw chords and a wide pad fill it out. The long club arrangement has a big breakdown where the pad, a breathy lead and the chords slowly filter open, then a snare-roll build and long full sections.
+- **New house synths:**
+  - **Deep rolling bass:** a clean sine sub under two soft saws, a low filter with a small "bow" on each note, warm saturation.
+  - **Melodic-house pluck:** warm and woody, with the filter falling from warm to dark, plus a gentle chorus. It isn't the glassy trance pluck.
+  - **Lush pad:** a soft supersaw and string ensemble swelling together, with a filter that opens as the chord is held.
+  - **Breathy lead:** a flute-like triangle / sine tone with breath, a scoop and a late vibrato.
+  - Melodic, sunny, organic, deep, progressive, afro and Tokyo deep house can pick them.
+- **New tech-trance riff synth** (two saws + a square an octave down, a resonant filter that snaps shut, driven).
+- **New genre - Drum & bass, anthemic:** a crisp, punchy 174 two-step with ghost snares and a 16th shaker. A round, bouncing mid-bass kicks its filter open on every note over a clean sub. Big bright chords come from a piano doubled by a wide supersaw, with lush strings, a singing vocal-like lead and bleepy arps. The arrangement runs keys-and-vocal intro → two 64-bar drops that switch up halfway → a long breakdown where the chords filter down and open again.
+- **New synths for it:** **Bouncing DnB mid-bass** (saw + square through a filter that kicks open and settles, over a mono sub) and **Anthem keys** (piano doubled by a soft, wide supersaw that swells in under it).
+- **Every song gets its own arpeggio.** House, techno and trance songs kept playing the same arpeggio into the drop: one note order per genre (up / up-down), one speed, and the same pluck. Now each song picks its own figure:
+  - **Note order:** up, down, up-down, outside-in, a pedal note under or over each chord tone, octaves, a small fixed motif (3- and 5-note ones drift across the beat) or random.
+  - **Range, speed and gate:** one or two octaves, a step faster or slower, and on 16ths often a gate rhythm with rests.
+  - The genre's own figure stays the most likely. Written figures (montuno, Alberti, banjo rolls, mallets, tapping, beat-locked arps) are untouched.
+- **Supporting parts vary more.** Genres whose sound is strongly defined (trance, techno, house, rap, R&B, country...) used to keep every part's sound almost every time. Now only the defining part holds (trance's lead, techno's bass, house's bass and chords...). The arps, pads and other supporting parts are picked from the genre's own pool like everywhere else.
+- **Builds aren't always "the arp, rising":** about half of them now ride the chords and pad, sometimes with a teaser of the lead, and leave the arp out.
+- **Filter automation across the arrangement** (trance genres, progressive house, techno, melodic techno, and the two new genres). The synths' low-pass is part-closed in the intro and groove, darker in the breakdown and slowly opening, swept open in the build and wide open in the drop.
+- **Sidechain that follows the energy** in the same genres: deepest in the drops, gentle in the breakdown, growing through the build.
+- **Instrument check:**
+  - Every genre's sounds were rendered across their part's range: no errors, silent or clipping sounds, or wrong octaves.
+  - Fix: the screech sound played everything an octave up, so as a lead (footwork, hard techno, midtempo bass) it sounded an octave too high. It now only jumps up from the bass register.
+  - Dub techno's chords now use the dub-techno chord stab.
+  - Every sound a genre plays in a part is now offered for that part in the Sound panel's menus. Guitar leads, organ arps, brass pads, timpani bass lines and more used to be missing from them.
+
 ## 1.62.0
 - **Daisy easter egg: a steadier voice.** The first words still seemed to swell and dip: low notes came out boomy and high ones thin, and the "ei" of "Dai-" brightened and darkened as it moved. The voice now goes through a three-band dynamic EQ (each band ridden towards its usual level, at most 5 dB either way) before the vocal rider, and the rider measures loudness the way loudness meters do (K-weighting) instead of A-weighting, which used to push low notes up until they boomed.
 - **Different wobbles for dubstep and drum & bass:**
@@ -773,7 +799,7 @@ Genres checked against the electronic and multi-genre production bibles (tempo, 
 ## 1.14.0
 - **Four new genres:**
   - *Dubstep (classic UK / Tempa)* - half-time 140, a heavy clean sub as the main voice, sparse shuffled 2-step drums, dub delays and reverb, dark minor/phrygian moods and lots of space. Soundsystem dubstep, not brostep.
-  - *Progressive Trance (emotional)* - Above & Beyond-style: simple emotive chords, a big singable supersaw or pluck lead, long builds, a piano breakdown and a clean, wide drop.
+  - *Progressive Trance (emotional)*: simple emotive chords, a big singable supersaw or pluck lead, long builds, a piano breakdown and a clean, wide drop.
   - *Organic Melodic House*: warm four-on-the-floor with shakers and congas, piano, flute, harp and soft strings; hypnotic and spacious, no big drops.
   - *Disco Funk (70s)* - KC & the Sunshine Band-style: dry punchy four-on-the-floor, a syncopated bass hook, chicken-scratch guitar, horn riffs, claps, congas and tambourine.
   - The melodic genres default to simpler, more repetitive melodies (until you move the Simplicity / Repetition knobs yourself).

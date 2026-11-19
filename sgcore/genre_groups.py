@@ -7,13 +7,13 @@ lands in 'More' at the bottom of its tab until it is filed here.
 GROUPS = {
     'Electronic': [
         ('House & Disco', ['house', 'deep_house', 'tech_house', 'progressive_house', 'acid_house', 'afro_house', 'melodic_house',
-                           'organic_house', 'sunny_melodic_house', 'nineties_club_house', 'pop_house_90s', 'italo_disco', 'future_funk',
+                           'organic_house', 'sunny_melodic_house', 'emotive_deep_house', 'nineties_club_house', 'pop_house_90s', 'italo_disco', 'future_funk',
                            'eurodance', 'bigroom', 'bass_house', 'nu_disco', 'tokyo_deep_house', 'piano_house_90s', 'uk_bounce_house', 'outsider_house', 'garage_house', 'mallet_house', 'french_house', 'electro_swing', 'tropical_house', 'hi_nrg', 'brazilian_bass']),
         ('Techno & Trance', ['techno', 'minimal', 'melodic_techno', 'new_beat', 'trance', 'uplifting_trance',
-                             'progressive_trance', 'psytrance', 'trance_pop_90s', 'hard_trance', 'uk_bass_130', 'uk_tribal_techno', 'hard_techno', 'dub_techno']),
+                             'progressive_trance', 'club_trance_2000s', 'psytrance', 'trance_pop_90s', 'hard_trance', 'uk_bass_130', 'uk_tribal_techno', 'hard_techno', 'dub_techno']),
         ('Dubstep, Garage & Bass', ['dubstep', 'brostep', 'riddim', 'melodic_dubstep', 'chillstep', 'deep_dubstep', 'deep_dubstep_minimal',
                                     'deep_dubstep_rollers', 'deep_dubstep_rolling', 'steppy_halftime', 'sub_pressure_140', 'emotive_2step', 'rolling_atmos_bass', 'chipmunk_2step', 'glitch_future_bass', 'future_bass', 'ukgarage', 'future_garage', 'early_dubstep', 'bassline_140', 'grime', 'uk_funky', 'speed_garage', 'midtempo_bass']),
-        ('Drum & Bass, Breaks & Hard', ['dnb', 'liquid_dnb', 'liquid_euphoric', 'liquid_dancefloor', 'neurofunk', 'neurofunk_lite', 'jump_up', 'jungle', 'breakcore', 'braindance', 'idm_jungle_theme', 'drill_space', 'rave_hardcore',
+        ('Drum & Bass, Breaks & Hard', ['dnb', 'liquid_dnb', 'liquid_euphoric', 'liquid_dancefloor', 'anthem_dnb', 'neurofunk', 'neurofunk_lite', 'jump_up', 'jungle', 'breakcore', 'braindance', 'idm_jungle_theme', 'drill_space', 'rave_hardcore',
                                         'hardstyle', 'gabber', 'electro', 'funky_breaks', 'big_beat', 'uk_hardcore']),
         ('Hip-Hop, Trap & Phonk', ['trap', 'uk_drill', 'uk_road_rap', 'rage', 'plugg', 'cloud_rap', 'luxury_rap', 'orchestral_hiphop',
                                    'jersey_club', 'phonk', 'memphis_phonk', 'house_phonk', 'brazilian_phonk', 'hard_trap', 'trap_metal', 'bass_warp_trap', 'bass_warp_fast', 'switchup_808', 'switchup_808_dj', 'switchup_808_hard', 'switchup_mallets', 'screwed_slab', 'switch_trap', 'wonky_beats', 'baltimore_club', 'witch_house', 'latin_trap']),

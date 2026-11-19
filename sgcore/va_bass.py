@@ -192,7 +192,7 @@ def riddim(m, dur, p, glide=None, mod=None):
 
 def screech(m, dur, p, glide=None, mod=None):
     """Brostep screech: a high FM tone with a sweeping resonant band and a whine up into the note, oversampled."""
-    f = float(mtof(m)) * 2 ** p.get('octave', 1)
+    f = float(mtof(m)) * 2 ** p.get('octave', 1 if m < 55 else 0)     # an octave up only from the bass register
     env = _env(dur, 0.003, 0.08, 0.95, 0.03)
     n = len(env)
     t = np.arange(n) / SR

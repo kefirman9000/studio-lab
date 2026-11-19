@@ -123,7 +123,7 @@ MENU = {k[0]: k for k in KIT_MENU}
 
 # the kit each genre plays by default (genres not listed keep their own synthesized kit)
 GENRE_KIT = {
-    'jungle': 'amen', 'breakcore': 'amen', 'dnb': 'amen', 'liquid_dnb': 'think', 'liquid_euphoric': 'think', 'liquid_dancefloor': 'think',
+    'jungle': 'amen', 'breakcore': 'amen', 'dnb': 'amen', 'liquid_dnb': 'think', 'liquid_euphoric': 'think', 'liquid_dancefloor': 'think', 'anthem_dnb': 'dnb_rollers',
     'boombap': 'funky_drummer', 'downtempo': 'back_to_life', 'hauntology': 'vintage', 'vaporwave': 'vintage', 'lofi': 'vintage',
     'hauntology_sunlit': 'vintage', 'hauntology_dark': 'vintage', 'neo_soul': 'funky_drummer', 'g_funk': '808', 'new_jack_swing': 'linn',
     'alt_rnb': '808', 'rage': '808', 'plugg': '808', 'jazz_rap': 'funky_drummer', 'cloud_rap': '808', 'slow_jam': '808',
@@ -375,7 +375,7 @@ GENRE_KIT.update({'dnb': 'dnb_rollers', 'liquid_dnb': 'liquid', 'neurofunk': 'ne
 CHOP.update({'jungle': 0.55, 'dnb': 0.15, 'neurofunk': 0.1, 'liquid_dnb': 0.08, 'idm_jungle_theme': 0.7, 'drill_space': 0.95})
 GENRE_KIT.update({'idm_jungle_theme': 'jungle_raw', 'drill_space': 'amen', 'math_rock': 'rusty', 'sunrise_chillwave': 'rusty', 'analog_arp_drive': 'rusty'})
 GENRE_KIT.update({'hopecore_breaks': 'amen', 'hopecore': 'soft', 'alt_rock_90s': 'rock', 'bedroom_pop': '707',
-                  'electro_funk': 'dmx', 'ps1_game': 'think', 'nineties_club_house': '909', 'pop_house_90s': '909', 'sunny_melodic_house': '909'})
+                  'electro_funk': 'dmx', 'ps1_game': 'think', 'nineties_club_house': '909', 'pop_house_90s': '909', 'sunny_melodic_house': '909', 'emotive_deep_house': '909', 'club_trance_2000s': '909'})
 CHOP.update({'hopecore_breaks': 0.45, 'ps1_game': 0.12})
 GENRE_KIT.update({'swing_tomtom': 'studio', 'big_band_50s': 'studio'})
 GENRE_KIT.update({k: 'vintage' for k in ('hauntology_melody', 'hauntology_campfire', 'hauntology_cold')})

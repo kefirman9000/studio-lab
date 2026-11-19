@@ -1,10 +1,10 @@
-# Studio Lab genres (321)
+# Studio Lab genres (324)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (164)
+## Electronic (167)
 
-### House & Disco (28)
+### House & Disco (29)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -18,6 +18,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Brazilian bass | `brazilian_bass` | 120-126 | Brazilian bass: deep, bouncy house at 124 - four-on-the-floor with a tight clap, and the signature metallic, rubbery bass jumping between root and octave on the off-beats, short stabs and vocal chops |
 | Deep House | `deep_house` | 118-123 | Deep house: warm organ & Rhodes 7th chords, round sub, shuffled shakers |
 | Electro swing | `electro_swing` | 118-130 | Electro swing: 1930s-40s swing on a house beat - a swung four-on-the-floor, walking upright bass, punchy brass section and clarinet hooks, stride piano and crackle, all sidechained to the kick |
+| Emotive deep house (extended, plucks & pads) | `emotive_deep_house` | 121-124 | Emotive melodic deep house (extended mix): a deep, round 122 bpm kick with a long low tail, a warm rolling bass on the off-beat 16ths that pumps against it, shakers and an airy off-beat hat, soft claps; woody synth plucks bouncing through dotted-eighth delays, a lush supersaw-and-strings pad breathing with the sidechain, soft piano or guitar chords and a breathy, vocal-like lead; a dark, warm top end, wide mids and filters that close through the long emotional breakdown and open into the return |
 | Eurodance | `eurodance` | 128-142 | 90s eurodance: driving four-on-the-floor, offbeat bass, piano stabs, big anthemic leads |
 | French house / filter house | `french_house` | 120-126 | French house / filter house: a looped disco sample swept through a filter, four-on-the-floor with heavy sidechain pumping, octave disco bass, chopped strings and horns, a vocoder / talk-box hook - funky, repetitive and euphoric |
 | Future Funk | `future_funk` | 115-126 | Future funk: pitched-up, chopped 70s/80s disco and city-pop flavour over a swung four-on-the-floor with heavy sidechain pumping - funky bass, filter sweeps, vocal chops; bright and nostalgic |
@@ -37,10 +38,11 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Tropical house | `tropical_house` | 100-115 | Tropical house: a relaxed four-on-the-floor around 105, soft snaps and shakers, warm piano chords, marimba and steel-pan plucks, a pan-flute or sax hook - sunny, laid-back and summery |
 | UK bounce house (bassline, vocal chops) | `uk_bounce_house` | 122-126 | UK bounce house: a four-on-the-floor groove at 122-126 with busy, shuffling percussion and crisp claps, a rubbery, bouncing bassline doing most of the work, chopped vocal hooks answering it and short organ / piano stabs - radio-friendly, warm and made for dancing |
 
-### Techno & Trance (14)
+### Techno & Trance (15)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
+| Club trance remix (2000s, riff & breakdown) | `club_trance_2000s` | 136-140 | Club trance remix (early-2000s, vocal-trance style): a tight 909 kick at 138 with a galloping off-beat rolling bass, open hats and driving 16th hats, a punchy syncopated tech-trance synth riff through a dotted delay, gated supersaw chords and a wide pad; long DJ intro and groove, a big breakdown where the pad, a breathy vocal-like lead and the chords slowly filter open, a snare-roll build and long full sections - dark, dense and hypnotic |
 | Dub techno | `dub_techno` | 118-126 | Dub techno: a soft four-on-the-floor under a single deep chord stab that echoes and fades through long, filtered delays and reverb, a round sub, hiss and crackle - hypnotic, misty and slowly shifting |
 | Hard techno (150) | `hard_techno` | 145-160 | Hard techno (2020s): 145-160 BPM, a distorted, saturated kick with a rumbling sub tail, driving 16th hats, off-beat open hats, sparse industrial stabs and a screaming acid or rave lead - relentless and loud |
 | Hard trance / hands-up | `hard_trance` | 136-144 | Hard trance / hands-up (2000s): a pounding 909 kick around 140 with offbeat open hats, a driving 16th-note rolling bass pinned to the root, hard supersaw and hoover-style riffs, acid squelches and a catchy synth hook - short, punchy breakdowns with a classic snare roll and long, relentless main sections |
@@ -85,7 +87,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | UK bassline (140) | `bassline_140` | 136-142 | UK bassline (Northern / speed-garage style): a bouncy four-on-the-floor around 138-142 with shuffled garage hats, a warbling, organ-like wobble bass that bounces in octaves and talks between the kicks, bright stabs and a chopped vocal-style hook - cheeky, fast and built for the rave |
 | UK funky | `uk_funky` | 126-132 | UK funky: London house at 130 with a soca and Afro swing - a house kick under syncopated snares, tribal toms and congas, a bouncy sub bass, warm keys and vocal hooks |
 
-### Drum & Bass, Breaks & Hard (19)
+### Drum & Bass, Breaks & Hard (20)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -95,6 +97,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Breakcore | `breakcore` | 170-190 | Breakcore: frantic chopped breaks at 180+, reese bass, melancholic pads and chiptune |
 | Drill & bass - spacey (intricate breaks, jazz colours) | `drill_space` | 172-190 | Drill & bass - spacey: hyper-detailed breakbeats at 172-190 that never sit still (32nd-note ratchets, ghost notes, snare rushes, reversed hits, half-bar edits) under bright, spacious jazz-fusion harmony - floating Rhodes and vibes, a soft, singing lead drifting through long delays and reverb, a wide, airy mix - and a busy, melodic bass guitar; it opens on the synths alone and drops the drums out for a floating breakdown |
 | Drum & Bass | `dnb` | 170-176 | Drum & bass: two-step breaks at 174, growling reese bass, wide pads |
+| Drum & bass - anthemic (big chords, bouncing bass) | `anthem_dnb` | 172-176 | Anthemic dancefloor drum & bass: a crisp, punchy 174 two-step with ghost snares and a 16th shaker, a round, bouncing mid-bass that kicks its filter open on every note over a clean sub, big bright chords of piano doubled by a wide supersaw, lush strings, a singing (vocal-like) lead and bleepy arps; a keys-and-vocal intro, two 64-bar drops that switch up halfway, a long emotional breakdown where the chords filter down and open again |
 | Electro | `electro` | 125-132 | Electro: robotic 808 funk, FM bass grit, zappy leads |
 | Funky breaks / glitch electro | `funky_breaks` | 122-132 | Funky breaks / glitch electro (late-90s big beat & nu-skool breaks): a chopped, swung funk break around 125-130 BPM with stuttered edits, snare rushes and reversed hits, a fat rubbery bass that bends and slides, a warped, gliding synth lead, crunchy palm-muted guitar riffs doubled by the bass, Rhodes stabs - loud, bass-heavy and mono-tight |
 | Hardcore / Gabber | `gabber` | 170-195 | Hardcore / gabber (90s Rotterdam): 170-200 BPM four-on-the-floor of heavily distorted, pitched "gabber" kicks, screeching leads, hoovers and raw, confrontational energy |

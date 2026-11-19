@@ -1664,9 +1664,9 @@ GM_PROGRAM['organbass'] = 16
 
 
 def i_screech(m, dur, p, glide=None, mod=None):
-    """Brostep screech (Skrillex "Scary Monsters" style): a high, harsh FM tone with a sweeping notch / formant and a
-    pitch bend that whines up at the start - played an octave or two above the growls."""
-    f = float(mtof(m)) * 2 ** p.get('octave', 1)
+    """Brostep screech: a high, harsh FM tone with a sweeping notch / formant and a pitch bend that whines up at the
+    start - played an octave above the growls (only when the note is in the bass register)."""
+    f = float(mtof(m)) * 2 ** p.get('octave', 1 if m < 55 else 0)
     env = adsr(dur * SR, 0.003, 0.08, 0.95, 0.03)
     n = len(env)
     t = np.arange(n) / SR
@@ -3209,3 +3209,152 @@ INSTRUMENTS['emolead'] = v_emolead
 INSTRUMENT_INFO['emolead'] = 'Emotional trance lead (soft supersaw, blooms)'
 ROLE_CHOICES['lead'].append('emolead')
 GM_PROGRAM['emolead'] = 81
+
+
+# ----------------------------------------------------------------------------- 1.63: melodic / deep house voices
+def v_deepbass(m, dur, p, glide=None, mod=None):
+    """Deep rolling house bass: a clean sine sub under two softly detuned saws through a low, gently resonant filter
+    with a small 'bow' on each note, a little tape-warm saturation - round and warm, never buzzy, built for the
+    off-beat 16ths that roll between the kicks (the track's sidechain pumps it)."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.004, p.get('d', 0.35), p.get('s', 0.75), p.get('r', 0.07))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.04) if glide is not None else np.full(n, f)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    sub = np.sin(ph)
+    mid = (_va.saw(fr * 2 ** (-6 / 1200), n) + _va.saw(fr * 2 ** (6 / 1200), n, 0.4)) * 0.5
+    cut = p.get('cut', 420) * (1 + 1.2 * np.exp(-t / 0.09))
+    mid = _va.vcf(mid, cut, 0.22, 1.3)
+    y = np.tanh((sub * 0.9 + mid * p.get('body', 0.7)) * 1.4) / 1.25
+    return hp(y, 28) * env * 0.62
+
+
+def v_mhpluck(m, dur, p, glide=None, mod=None):
+    """Melodic-house pluck: saw + square a few cents apart, softened by a low-pass that falls from warm to dark over a
+    quarter of a second, a gentle chorus - the round, woody pluck that carries the melody and the delayed arps (not the
+    bright, glassy trance pluck)."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.002, p.get('d', 0.45), 0.08, p.get('r', 0.25))
+    n = len(env)
+    t = np.arange(n) / SR
+    x = _va.saw(np.full(n, f * 2 ** (-4 / 1200)), n) * 0.7 + _va.pulse(np.full(n, f * 2 ** (4 / 1200)), n, 0.3, 0.45) * 0.5
+    cut = 260 * (p.get('cut', 3200) / 260) ** np.exp(-t / p.get('fdecay', 0.16))
+    y = _va.vcf(x, cut, 0.18, 1.1)
+    return _va.juno_chorus(hp(y, 120), 1, 0.35) * env * 0.62
+
+
+def v_lushpad(m, dur, p, glide=None, mod=None):
+    """Lush house pad: a soft supersaw bed and a warm string-ensemble layer swelling in together, a dark filter that
+    opens slowly as the chord is held, wide chorus - the emotional bed under breakdowns, made to breathe with the kick."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.1) * SR)
+    env = _va.adsr(gate, p.get('a', 0.9), 1.5, 0.9, p.get('r', 1.6))
+    n = len(env)
+    t = np.arange(n) / SR
+    ss = _va.jp_supersaw(f, n, 0.35, 0.6, 0.8)
+    strings = _va.voice(m, max(dur, 0.1), dict(cut=1800), None, saw_mix=1.0, pulse_mix=0.3, pwm=0.6, unison=3, detune=10,
+                        spread=0.9, res=0.1, amp=(0.01, 1.0, 1.0, 0.5), drive=1.0, keytrack=0.3, hp=90)[:, :n]
+    if strings.shape[1] < n:
+        strings = np.pad(strings, ((0, 0), (0, n - strings.shape[1])))
+    cut = p.get('cut', 2400) * (0.35 + 0.65 * (1 - np.exp(-t / 1.6)))
+    y = _va.vcf(ss * 0.8 + strings * 0.6, cut, 0.12, 1.05)
+    return _va.juno_chorus(_hpf(y, 110), 1, 0.3) * env * 0.5
+
+
+def v_breathlead(m, dur, p, glide=None, mod=None):
+    """Breathy lead: a round triangle / sine tone with breath noise shaped like the note, a soft scoop into each note and
+    a slow, late vibrato - the airy, flute-like synth melody of melodic and organic house."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, p.get('a', 0.035), 0.4, 0.8, p.get('r', 0.3))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.06) if glide is not None else f * 2 ** (-25 * np.exp(-t / 0.04) / 1200)
+    fr = np.broadcast_to(fr, (n,)) * 2 ** (np.clip((t - 0.35) / 0.5, 0, 1) * p.get('vib', 14) * np.sin(2 * np.pi * 4.8 * t) / 1200)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    tone = 2 / np.pi * np.arcsin(np.sin(ph)) * 0.7 + np.sin(ph) * 0.4 + 0.12 * np.sin(2 * ph)
+    breath = bp(_rng().standard_normal(n), f * 1.5, min(9000.0, f * 8)) * (0.25 + 0.5 * np.exp(-t / 0.08))
+    y = lp(tone + breath * p.get('breath', 0.5), 5000)
+    return np.vstack([y, np.roll(y, 40)]) * env * 0.5
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('deepbass', v_deepbass, 'Deep rolling house bass', ('bass',), 38),
+        ('mhpluck', v_mhpluck, 'Melodic house pluck (warm, woody)', ('arp', 'lead', 'chords'), 84),
+        ('lushpad', v_lushpad, 'Lush house pad (supersaw + strings swell)', ('pad', 'chords'), 89),
+        ('breathlead', v_breathlead, 'Breathy flute-like synth lead', ('lead',), 75)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+def v_techstab(m, dur, p, glide=None, mod=None):
+    """Tech-trance riff synth: two saws a little apart plus a square an octave down, through a resonant filter that
+    snaps from bright to dark in under a tenth of a second, driven - the punchy, syncopated synth riff of 2000s club
+    trance remixes (it rides the trance gate and a dotted delay)."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.002, p.get('d', 0.18), p.get('s', 0.35), p.get('r', 0.08))
+    n = len(env)
+    t = np.arange(n) / SR
+    x = np.vstack([_va.saw(np.full(n, f * 2 ** (-12 / 1200)), n), _va.saw(np.full(n, f * 2 ** (12 / 1200)), n, 0.3)])
+    x = x + _va.pulse(np.full(n, f / 2), n, 0.1, 0.5)[None, :] * 0.45
+    cut = 320 * (p.get('cut', 6500) / 320) ** np.exp(-t / p.get('fdecay', 0.07))
+    y = _va.vcf(x, cut, p.get('res', 0.35), 1.6)
+    return _hpf(y, 150) * env * 0.5
+
+
+INSTRUMENTS['techstab'] = v_techstab
+INSTRUMENT_INFO['techstab'] = 'Tech-trance riff synth (punchy, gated)'
+GM_PROGRAM['techstab'] = 81
+for _role in ('lead', 'arp', 'chords'):
+    ROLE_CHOICES[_role].append('techstab')
+
+
+def v_bouncebass(m, dur, p, glide=None, mod=None):
+    """Bouncing liquid / dancefloor DnB mid-bass: saw + square an octave apart through a resonant filter that kicks open
+    on every note and settles ('bwow'), a touch of drive, with a mono sine sub underneath - round, musical and
+    bouncy, for the big-chord, piano-and-vocal side of drum & bass."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.003, p.get('d', 0.3), p.get('s', 0.7), p.get('r', 0.06))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = f + (float(mtof(glide)) - f) * np.exp(-t / 0.05) if glide is not None else np.full(n, f)
+    fo = fr * (1 if f > 55 else 2)
+    x = _va.saw(fo * 2 ** (-5 / 1200), n) * 0.6 + _va.saw(fo * 2 ** (5 / 1200), n, 0.5) * 0.6 + _va.pulse(fo * 2, n, 0.2, 0.4) * 0.3
+    cut = p.get('cut', 700) * (1 + 3.0 * np.exp(-t / p.get('fdecay', 0.12)))
+    mid = _vb.dist(_va.vcf(x, cut, 0.4, 1.4), 1.8)
+    mid = _vb._split_hp(mid, f)
+    sub = np.sin(2 * np.pi * np.cumsum(fr * (1 if f < 70 else 0.5)) / SR)
+    y = mid * p.get('mid', 0.7) + sub * 0.8
+    return np.vstack([y, y]) * env * 0.55
+
+
+def v_pianosaw(m, dur, p, glide=None, mod=None):
+    """Anthem keys: a bright piano doubled by a soft, wide supersaw that swells in under it - the big chord sound of
+    euphoric drum & bass and pop-dance drops (the piano's attack, the supersaw's size)."""
+    pn = np.asarray(INSTRUMENTS['piano'](m, dur, p, None, None), float)
+    pn = np.vstack([pn, pn]) if pn.ndim == 1 else pn
+    n = pn.shape[1]
+    t = np.arange(n) / SR
+    ss = _va.jp_supersaw(float(mtof(m)), n, 0.45, 0.65, 1.0)
+    sw = (1 - np.exp(-t / 0.08)) * np.exp(-np.maximum(t - dur, 0) / 0.25)
+    ss = _hpf(_va.vcf(ss, p.get('cut', 3800), 0.1, 1.05), 160) * sw
+    return pn * 0.85 + ss * 0.32
+
+
+INSTRUMENTS['bouncebass'] = v_bouncebass
+INSTRUMENT_INFO['bouncebass'] = 'Bouncing DnB mid-bass (+ sub)'
+INSTRUMENTS['pianosaw'] = v_pianosaw
+INSTRUMENT_INFO['pianosaw'] = 'Anthem keys (piano + supersaw)'
+GM_PROGRAM.update({'bouncebass': 39, 'pianosaw': 1})
+ROLE_CHOICES['bass'].append('bouncebass')
+ROLE_CHOICES['chords'].append('pianosaw')
+ROLE_CHOICES['arp'].append('pianosaw')

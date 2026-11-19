@@ -1,12 +1,12 @@
-STUDIO LAB - ALL 321 GENRES  (version 1.57.1)
+STUDIO LAB - ALL 324 GENRES  (version 1.63.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 1.57
+* = new in 1.63
 
 ========================================================================
-ELECTRONIC  (164)
+ELECTRONIC  (167)
 ========================================================================
 
-House & Disco  (28)
+House & Disco  (29)
     house  [house]
     Deep House  [deep_house]
     Tech House  [tech_house]
@@ -16,6 +16,7 @@ House & Disco  (28)
     Melodic Deep House  [melodic_house]
     Organic Melodic House  [organic_house]
     Melodic deep house (sunny, piano & strings)  [sunny_melodic_house]
+    Emotive deep house (extended, plucks & pads)  [emotive_deep_house]  *
     90s club house (New York)  [nineties_club_house]
     90s pop house / dance-pop  [pop_house_90s]
     Italo Disco  [italo_disco]
@@ -36,7 +37,7 @@ House & Disco  (28)
     Hi-NRG (80s)  [hi_nrg]
     Brazilian bass  [brazilian_bass]
 
-Techno & Trance  (14)
+Techno & Trance  (15)
     techno  [techno]
     minimal  [minimal]
     Melodic Techno  [melodic_techno]
@@ -44,6 +45,7 @@ Techno & Trance  (14)
     trance  [trance]
     Uplifting Trance  [uplifting_trance]
     Progressive Trance (emotional)  [progressive_trance]
+    Club trance remix (2000s, riff & breakdown)  [club_trance_2000s]  *
     Psytrance  [psytrance]
     Late-90s trance-pop  [trance_pop_90s]
     Hard trance / hands-up  [hard_trance]
@@ -78,11 +80,12 @@ Dubstep, Garage & Bass  (24)
     Speed garage  [speed_garage]
     Midtempo bass  [midtempo_bass]
 
-Drum & Bass, Breaks & Hard  (19)
+Drum & Bass, Breaks & Hard  (20)
     Drum & Bass  [dnb]
     Liquid DnB  [liquid_dnb]
     Liquid DnB - euphoric (piano & bleeps)  [liquid_euphoric]
     Liquid DnB - dancefloor roller  [liquid_dancefloor]
+    Drum & bass - anthemic (big chords, bouncing bass)  [anthem_dnb]  *
     Neurofunk  [neurofunk]
     Neurofunk (lighter)  [neurofunk_lite]
     Jump-up DnB  [jump_up]
@@ -114,7 +117,7 @@ Hip-Hop, Trap & Phonk  (27)
     House Phonk  [house_phonk]
     Brazilian Phonk  [brazilian_phonk]
     Hard trap (brass & strings)  [hard_trap]
-    Trap metal (clipped 808s, drop-tuned guitars)  [trap_metal]  *
+    Trap metal (clipped 808s, drop-tuned guitars)  [trap_metal]
     Bass-warp trap (808 switch-ups)  [bass_warp_trap]
     Bass-warp trap - fast (160)  [bass_warp_fast]
     Switch-up 808 (no two bars alike)  [switchup_808]

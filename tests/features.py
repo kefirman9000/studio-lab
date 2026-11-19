@@ -1066,6 +1066,15 @@ def test_va_synth():
     assert ju['st']['tracks'] and min(r for r in rates if isinstance(r, (int, float))) <= 0.5   # DnB wobble: fast LFO
     tf = compose(Options(style='trance', seed=1))
     assert tf['st'].get('rev_hp') and tf['st'].get('rev_predelay')                 # trance hall: pre-delay, high-passed
+    from sgcore.render import auto_lp                                                   # 1.63: filter arc
+    nz = np.random.default_rng(2).standard_normal((2, SR))
+    cutc = np.geomspace(500, 20000, SR)
+    fl = auto_lp(nz, cutc)
+    hi1 = lambda z: float(np.mean(np.abs(np.diff(z[0]))))
+    assert hi1(fl[:, :SR // 4]) < 0.3 * hi1(nz[:, :SR // 4]) and hi1(fl[:, -SR // 8:]) > 0.5 * hi1(nz[:, -SR // 8:])
+    assert np.array_equal(auto_lp(nz, np.full(SR, 20000.0)), nz)
+    from sgcore.styles import STYLES as _S3
+    assert all(_S3[g].get('filter_arc') and _S3[g].get('sc_arc') for g in ('trance', 'techno', 'progressive_trance'))
     tm = compose(Options(style='trap_metal', seed=1))
     assert tm['st']['master']['lufs'] >= -7 and tm['st']['voicing'] == 'power' and tm['key'].scale_name in ('phrygian_dominant', 'phrygian', 'harmonic_minor')
     assert any(e.track == 'chords_r' for e in tm['events'])                 # double-tracked guitars
