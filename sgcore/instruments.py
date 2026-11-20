@@ -5958,34 +5958,37 @@ for _name, _fn, _info, _roles, _gm in (
 def _moog_core(m, dur, p, glide, pluck):
     f = float(mtof(m))
     vel = float(p.get('vel', 0.85))
-    rel = p.get('r', 0.06)
-    env, n, t = _env_n(dur, p.get('a', 0.003), p.get('d', 0.32 if not pluck else 0.28), p.get('s', 0.9 if not pluck else 0.45), rel)
+    env, n, t = _env_n(dur, p.get('a', 0.004), p.get('d', 0.4 if not pluck else 0.3), p.get('s', 0.92 if not pluck else 0.5),
+                       p.get('r', 0.07))
     fr = _glide_freq(f, n, glide, 0.06)
-    x = _va.saw(fr, n, 0.0) + 0.75 * _va.saw(fr * 2 ** (2.5 / 1200), n, 0.0) + 0.6 * _va.pulse(fr / 2, n, 0.0, 0.5)
-    base = p.get('cut', 420) * (f / 55.0) ** 0.5                # key tracking: high notes stay as bright as low ones
-    amt = (3.0 + 4.0 * vel) * p.get('bite', 1.0)
-    settle = 0.55 if pluck else 1.35                            # where the filter rests after the attack
-    cut = np.clip(base * (settle + amt * np.exp(-t / p.get('fd', 0.09 if pluck else 0.16))), 40, 12000)
-    y = _va.vcf(x * 0.42, cut, p.get('res', 0.32), 1.5)
+    low = fr / 2 if f >= 50 else fr                                     # (the octave-down square: never sub-audible rumble)
+    x = _va.saw(fr, n, 0.0) + 0.55 * _va.pulse(fr * 2 ** (2 / 1200), n, 0.0, 0.5) + 0.5 * _va.pulse(low, n, 0.0, 0.5)
+    # the genre's filter value is the most the filter ever opens (on a hard hit); it settles well below, never far
+    # above the low harmonics - a round, dark, warm bass that sits under the mix instead of buzzing over it
+    peak = min(float(p.get('cut', 700)), 1800.0) * (0.75 + 0.25 * vel) * (f / 55.0) ** 0.25
+    rest = max(peak * (0.3 if pluck else 0.62), f * 2.5)
+    cut = rest + (peak - rest) * np.exp(-t / p.get('fd', 0.07 if pluck else 0.12))
+    y = _va.vcf(x * 0.4, cut, p.get('res', 0.25), 1.2)
+    y = lp(y, 2600)                                                      # no fizz on top, whatever the filter does
     ph = 2 * np.pi * np.cumsum(fr) / SR
-    y = y + 0.35 * np.sin(ph) * (0.85 if pluck else 1.0)       # the fundamental, whatever the filter does
-    y = np.tanh(y * 1.6) / np.tanh(1.6)
+    y = y + 0.3 * np.sin(ph)                                             # the fundamental stays solid
+    y = np.tanh(y * 1.25) / np.tanh(1.25)
     y = hp(y * env, 28)
-    return np.vstack([y, y]) * (0.6 if pluck else 0.55)
+    return np.vstack([y, y]) * (0.62 if pluck else 0.58)
 
 
 def v_moogbass3(m, dur, p, glide=None, mod=None):
-    """Moog-style bass: three oscillators (two saws and a square an octave down) restarting on every note, a key-tracked
-    ladder filter that bites on the attack and settles open, a solid sine fundamental and warm drive - fat, punchy and
-    steady on every note."""
+    """Moog-style bass: a saw, a square and a square an octave down, restarting on every note, through a dark ladder
+    filter that opens a little on the attack and settles low, a solid sine fundamental and gentle warmth - round, fat
+    and steady, sitting under the mix."""
     if p.get('pluck'):
         return v_moogpluck3(m, dur, p, glide, mod)
     return _moog_core(m, dur, p, glide, False)
 
 
 def v_moogpluck3(m, dur, p, glide=None, mod=None):
-    """Plucked Moog-style bass (funk / boogie / G-funk): the same three oscillators, the filter snapping shut after a
-    bright, rubbery attack."""
+    """Plucked Moog-style bass (funk / boogie / G-funk): the same oscillators, the filter closing quickly after a
+    rubbery attack."""
     return _moog_core(m, dur, p, glide, True)
 
 

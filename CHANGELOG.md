@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.84.1
+- **Moog-style basses re-voiced: dark, round and warm.** The 1.84 version was far too bright: genres pass a filter setting tuned for the old bass, and the new one multiplied it up to seven times on every note, opening the filter past 6-10 kHz.
+  - The genre's setting is now the most the filter ever opens, on a hard hit, and it settles well below that.
+  - A gentle top roll-off keeps the fizz out.
+  - A saw, a square and a square an octave down (moved up on the lowest notes so it never turns into rumble), over a solid sine fundamental.
+  - Level stays even from note to note.
+
 ## 1.84.0
 - **35 new synths for house, techno, drum & bass, dubstep, trance and festival music:**
   - House: a French-house filtered disco chord, disco strings (with the upward swoop), a bouncy UK garage organ bass, a warm Detroit chord pad, a house vocal stab made from scratch, and a deep house organ chord.
