@@ -53,6 +53,13 @@ for _g, (_part, _set, _lbl) in list(SIGNATURE.items()):      # the 808 variants 
     if '808' in _set:
         SIGNATURE[_g] = (_part, set(_set) | {'808dist', '808long', '808punch'}, _lbl)
 
+try:                                                          # (1.92) a variation of a signature sound still counts
+    from .instruments import VARIANT_OF as _VO
+    for _g, (_part, _set, _lbl) in list(SIGNATURE.items()):
+        SIGNATURE[_g] = (_part, set(_set) | {v for v, b in _VO.items() if b in _set}, _lbl)
+except ImportError:
+    pass
+
 
 def _base(inst):
     return inst[3:] if isinstance(inst, str) and inst.startswith('sf:') else inst

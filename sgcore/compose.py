@@ -169,7 +169,7 @@ GENRE_VOICING = {'bebop': 'rootless', 'soul_jazz': 'rootless', 'modal_jazz': 'op
 GENRE_COLORS_HOUSE = {'deep_house': ['9', 'm11', '9', '7'], 'tech_house': ['m11', '7', 'triad'], 'tokyo_deep_house': ['9', 'm11', '7'],
                       'garage_house': ['9', '7'], 'house': ['7', '9', 'triad', 'triad'], 'uk_funky': ['m11', '9'],
                       'outsider_house': ['m11', '9', '7'], 'dub_techno': ['m11', '7', 'triad']}
-GENRE_COLORS = {'festive_cinematic': ['7', 'add9', '7', 'triad'], 'jazz_rap': ['9', '7', '9', '6'], 'cloud_rap': ['add9', 'sus2', 'triad'], 'slow_jam': ['9', '7', 'add9'], 'smooth_jazz': ['add9', '9', '7', 'sus2'], 'smooth_funk': ['9', '7'], 'quiet_storm': ['9', '7', 'add9'], 'modern_country': ['triad', 'add9', 'sus2'], 'country_waltz': ['triad'], 'outlaw_country': ['triad', '7'], 'western_swing': ['6', '7', '9', '6'], 'g_funk': ['7', '9', 'triad'], 'neo_soul': ['9', '7', '9', 'add9'], 'new_jack_swing': ['7', '9', 'triad'], 'alt_rnb': ['7', 'add9', '9'], 'rage': ['triad'], 'plugg': ['add9', 'triad', '7'], 'hauntology_sunlit': ['add9', 'triad', 'sus2', '7'], 'hauntology_dark': ['triad', 'sus2', 'add9'], 'epic_orchestral': ['triad', 'sus4'], 'epic_battle': ['triad'], 'epic_choir': ['triad'], 'heroic_anthem': ['triad', 'sus4', 'add9'], 'symphonic_finale': ['triad', '7'], 'bebop': ['9', '7', '6'], 'modal_jazz': ['9', 'sus4', '7'], 'soul_jazz': ['7', '9'], 'fusion': ['9', 'add9', '7'], 'future_funk': ['7', '9'], 'italo_disco': ['triad', 'add9'], 'new_beat': ['triad'], 'gabber': ['triad'], 'rave_hardcore': ['triad', '7'], 'classical_period': ['triad'], 'romantic': ['7', 'triad', 'add9'], 'impressionism': ['add9', '9', 'sus2'], 'minimalism': ['triad', 'add9'], 'deep_dubstep': ['triad'], 'deep_dubstep_minimal': ['triad'], 'progressive_trance': ['triad', 'sus2', 'add9'], 'organic_house': ['add9', 'triad', 'sus2'], 'disco_funk': ['7', '9', 'triad'], 'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
+GENRE_COLORS = {'dream_synthscape': ['9', '7', '9', 'add9'], 'festive_cinematic': ['7', 'add9', '7', 'triad'], 'jazz_rap': ['9', '7', '9', '6'], 'cloud_rap': ['add9', 'sus2', 'triad'], 'slow_jam': ['9', '7', 'add9'], 'smooth_jazz': ['add9', '9', '7', 'sus2'], 'smooth_funk': ['9', '7'], 'quiet_storm': ['9', '7', 'add9'], 'modern_country': ['triad', 'add9', 'sus2'], 'country_waltz': ['triad'], 'outlaw_country': ['triad', '7'], 'western_swing': ['6', '7', '9', '6'], 'g_funk': ['7', '9', 'triad'], 'neo_soul': ['9', '7', '9', 'add9'], 'new_jack_swing': ['7', '9', 'triad'], 'alt_rnb': ['7', 'add9', '9'], 'rage': ['triad'], 'plugg': ['add9', 'triad', '7'], 'hauntology_sunlit': ['add9', 'triad', 'sus2', '7'], 'hauntology_dark': ['triad', 'sus2', 'add9'], 'epic_orchestral': ['triad', 'sus4'], 'epic_battle': ['triad'], 'epic_choir': ['triad'], 'heroic_anthem': ['triad', 'sus4', 'add9'], 'symphonic_finale': ['triad', '7'], 'bebop': ['9', '7', '6'], 'modal_jazz': ['9', 'sus4', '7'], 'soul_jazz': ['7', '9'], 'fusion': ['9', 'add9', '7'], 'future_funk': ['7', '9'], 'italo_disco': ['triad', 'add9'], 'new_beat': ['triad'], 'gabber': ['triad'], 'rave_hardcore': ['triad', '7'], 'classical_period': ['triad'], 'romantic': ['7', 'triad', 'add9'], 'impressionism': ['add9', '9', 'sus2'], 'minimalism': ['triad', 'add9'], 'deep_dubstep': ['triad'], 'deep_dubstep_minimal': ['triad'], 'progressive_trance': ['triad', 'sus2', 'add9'], 'organic_house': ['add9', 'triad', 'sus2'], 'disco_funk': ['7', '9', 'triad'], 'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
                 'city_pop': ['7', '9', 'add9'], 'deep_house': ['7', '9', 'add9'], 'ukgarage': ['7', '9'], 'funk': ['7', '9'],
                 'blues': ['7'], 'downtempo': ['7', 'add9', '9'], 'neoclassical': ['triad', 'add9', 'add9', 'sus2'],
                 'baroque': ['triad'], 'chamber': ['triad', 'triad', '7'], 'holiday': ['triad', '6', '7', 'add9'],
@@ -1300,12 +1300,18 @@ def compose(opts):
     muted = set(opts.muted or [])
     # ---- form
     if st.get('forms') and isinstance(st['form'], str) and getattr(opts, 'structure', 'auto') in (None, '', 'auto'):
-        st['form'] = random.Random(opts.seed * 31 + 7).choice(st['forms'])     # classical genres: one of their forms
+        _ch = random.Random(opts.seed * 31 + 7).choice(st['forms'])        # classical genres: one of their forms
+        if not (st.get('forms_variants') and _ch == st['forms'][0]):          # (1.91) club genres: one of their layouts
+            st['form'] = _ch
+    from .styles import ABS_FORMS, CLUB_FORM
+    if opts.structure == 'club' and CLUB_FORM.get(st.get('name') or opts.style):      # (1.91) Extended / club: the
+        st['form'] = CLUB_FORM[st.get('name') or opts.style]                          # record-shaped layout
+    form_abs = isinstance(st['form'], str) and st['form'] in ABS_FORMS
     form = list(FORMS[st['form']]) if isinstance(st['form'], str) else list(st['form'])
     form = _traits.shape_form(form, opts, opts.style)
     if opts.structure == 'loop':
         form = [('loop', 16, set(l for l in ['kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead', 'fx']), {})]
-    elif opts.structure == 'club':
+    elif opts.structure == 'club' and not form_abs:
         form = [(n, b * 2 if n in ('intro', 'outro') else b, l, o) for (n, b, l, o) in form]
     elif opts.structure == 'radio':
         seen_break = False
@@ -1317,7 +1323,7 @@ def compose(opts):
             else:
                 f2.append((n, b, l, o))
         form = f2
-    scale_len = float(opts.length) * st.get('form_scale', 1)
+    scale_len = float(opts.length) * (1 if form_abs else st.get('form_scale', 1))
     if opts.structure == 'radio':
         scale_len *= 0.8
 
@@ -1629,6 +1635,8 @@ def compose(opts):
             if b % cb == 0 and chord_color not in ('sus2', 'sus4', 'add9no3') and rnd_c.random() < 0.15 * (1 - S) \
                     and not (opts_s.get('drop') or sname in BIG_SECTIONS):
                 bar_col = rnd_c.choice(['sus4', 'sus2', chord_color])   # a sus colour now and then (chords + pad agree)
+            if chord in (st.get('sus_degrees') or ()) and color_fits(key, chord, 'sus4'):
+                bar_col = 'sus4'                              # (1.91) the genre voices this chord suspended (V sus4)
             if 'chords' in layers and 'chords' in tracks and riff:
                 for step, l, m, c in riff:
                     if c == 'p':                                  # palm-muted chug: root + fifth, choked short
@@ -1639,7 +1647,7 @@ def compose(opts):
                             evs.append(Ev('chords', beat0 + step / 4, l / 4 * 0.95, n_, 0.95 if c != 'x' else 0.85,
                                           strum=i * 0.008))
             elif 'chords' in layers and 'chords' in tracks and chord_pat and (b % cb == 0):
-                col = bar_col if st.get('voicing', 'close') != 'power' and chord_size <= 4 else None
+                col = bar_col if st.get('voicing', 'close') != 'power' and (chord_size <= 4 or (bar_col == 'sus4' and st.get('sus_degrees'))) else None
                 notes = voice_chord(key, chord, chord_size, st.get('chord_center', 62), st.get('voicing', 'close'), col)
                 if st.get('voicing', 'close') in ('close', 'open'):
                     notes = lead_voicing(notes, vl_prev.get('chords'), st.get('chord_center', 62),
@@ -1910,8 +1918,13 @@ def compose(opts):
         tracks['answer'] = _ans
         st['tracks'].append(_ans)
     st['bar_variations'] = _ev.bar_variation(evs, sections, st, opts)
+    st['extra_arps'] = _ev.extra_arps(evs, sections, st, opts, tracks)   # (1.91) background arpeggio layers
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
+    _sw = _ev.structure_moves(evs, sections, st, opts, tracks, POOLS_.get(opts.style, {}).get('bass') or [], fx)
+    if _sw:                                               # (1.91) layered intros / outros, switch-up drops
+        tracks[_sw['name']] = _sw
+        st['tracks'].append(_sw)
     st['dyn_moves'] = _ev.section_dynamics(evs, sections, st, opts, tracks)   # (1.90) real section dynamics
     st['fills'] = _ev.genre_fills(evs, fx, sections, st, opts, tracks, opts.seed)   # (1.90) rewinds / stops / rolls
     if not st.get('composer'):

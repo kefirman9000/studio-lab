@@ -3110,6 +3110,90 @@ TRANCE_FORM = [   # DJ intro, groove + plucks, a first main section, the long em
 ]
 FORMS['trance'] = TRANCE_FORM
 
+# (1.91) more layouts for the core club genres - each song picks one (Structure: auto). Section options:
+#   layer_in: the parts come in one after another (the club-track intro), switch: a switch-up drop (a different bass),
+#   fake: a false start - the build cuts to a stripped beat for a few bars, then builds again into the real drop.
+DRUMS_ = {'kick', 'snare', 'top'}
+FORMS['house_dj'] = [      # the DJ tool: a long layered intro, groove, a breakdown, a long main section, a mix-out
+    ('intro', 16, {'kick', 'top', 'snare', 'bass'}, {'layer_in': True}),
+    ('verse', 16, {'kick', 'top', 'snare', 'bass', 'chords'}, {'crash': True}),
+    ('break', 16, {'top', 'pad', 'chords', 'arp', 'lead'}, {'alt': True, 'crash': True}),
+    ('build', 8, {'chords', 'arp', 'top', 'pad'}, {'build': True}),
+    ('drop', 32, ALL, {'drop': True}),
+    ('break', 8, {'top', 'bass', 'chords'}, {}),
+    ('drop', 16, ALL, {'drop': True}),
+    ('outro', 16, {'kick', 'top', 'bass'}, {'layer_out': True}),
+]
+FORMS['house_song'] = [    # the song edit: shorter intro, two hooks with a breakdown between
+    ('intro', 8, {'kick', 'top', 'chords'}, {'filter_in': True}),
+    ('verse', 16, {'kick', 'top', 'snare', 'bass', 'chords'}, {}),
+    ('build', 4, {'chords', 'top', 'pad', 'arp'}, {'build': True}),
+    ('drop', 16, ALL, {'drop': True}),
+    ('verse', 8, {'kick', 'top', 'snare', 'bass', 'chords', 'arp'}, {}),
+    ('break', 16, {'pad', 'chords', 'lead'}, {'alt': True, 'crash': True}),
+    ('build', 8, {'chords', 'arp', 'top', 'lead'}, {'build': True, 'alt': True}),
+    ('drop', 16, ALL, {'drop': True}),
+    ('outro', 8, {'kick', 'top', 'chords'}, {'fade': True}),
+]
+FORMS['trance_double'] = [  # a short first breakdown into the first drop, then the long one into the big drop
+    ('intro', 16, {'kick', 'top', 'bass', 'pad'}, {'layer_in': True}),
+    ('verse', 16, {'kick', 'top', 'snare', 'bass', 'chords', 'arp'}, {'crash': True}),
+    ('break', 8, {'pad', 'chords', 'arp'}, {'crash': True}),
+    ('build', 8, {'chords', 'arp', 'top', 'pad'}, {'build': True}),
+    ('drop', 16, ALL, {'drop': True}),
+    ('break', 24, {'pad', 'chords', 'lead', 'arp', 'fx'}, {'alt': True, 'crash': True}),
+    ('build', 8, {'chords', 'arp', 'top', 'pad', 'lead'}, {'build': True}),
+    ('drop', 32, ALL, {'drop': True}),
+    ('outro', 16, {'kick', 'top', 'bass'}, {'layer_out': True}),
+]
+FORMS['trance_prog'] = [    # progressive: one long journey - a long layered groove, one big breakdown, one long drop
+    ('intro', 24, {'kick', 'top', 'bass', 'arp', 'pad'}, {'layer_in': True}),
+    ('verse', 24, {'kick', 'top', 'snare', 'bass', 'chords', 'arp'}, {'crash': True}),
+    ('break', 24, {'pad', 'chords', 'lead', 'arp', 'fx'}, {'alt': True, 'crash': True}),
+    ('build', 16, {'chords', 'arp', 'top', 'pad', 'lead'}, {'build': True}),
+    ('drop', 32, ALL, {'drop': True}),
+    ('outro', 16, {'kick', 'top', 'bass', 'arp'}, {'layer_out': True}),
+]
+FORMS['dubstep_vip'] = [    # the second drop is a switch-up (VIP): a different bass takes over
+    ('intro', 8, {'chords', 'pad', 'top'}, {'filter_in': True}),
+    ('build', 8, {'chords', 'pad', 'arp', 'top'}, {'build': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad'}, {'drop': True}),
+    ('break', 8, {'pad', 'chords', 'lead', 'arp'}, {'alt': True}),
+    ('build', 8, {'chords', 'arp', 'top', 'lead'}, {'build': True, 'alt': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad', 'arp'}, {'drop': True, 'switch': True}),
+    ('outro', 8, {'chords', 'pad', 'top'}, {'fade': True}),
+]
+FORMS['dubstep_fake'] = [   # the fake-out: the first build stops on a stripped beat, builds again, then the real drop
+    ('intro', 8, {'chords', 'pad', 'top'}, {'filter_in': True}),
+    ('build', 8, {'chords', 'pad', 'arp', 'top'}, {'build': True}),
+    ('fake', 4, {'kick', 'snare', 'top', 'pad'}, {'fake': True}),
+    ('build', 4, {'chords', 'arp', 'top'}, {'build': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad'}, {'drop': True}),
+    ('break', 8, {'pad', 'chords', 'lead', 'arp'}, {'alt': True}),
+    ('build', 8, {'chords', 'arp', 'top', 'lead'}, {'build': True, 'alt': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad', 'arp'}, {'drop': True, 'switch': True}),
+    ('outro', 8, {'chords', 'pad'}, {'fade': True}),
+]
+FORMS['dnb_dj'] = [         # DJ-friendly: drums-first intro for mixing in, a switch-up second drop, a drums-and-bass outro
+    ('intro', 8, {'kick', 'snare', 'top', 'pad'}, {'layer_in': True}),
+    ('build', 8, {'top', 'snare', 'pad', 'chords', 'arp'}, {'build': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad'}, {'drop': True}),
+    ('break', 8, {'pad', 'chords', 'lead', 'top'}, {'alt': True, 'crash': True}),
+    ('build', 8, {'top', 'snare', 'chords', 'arp'}, {'build': True, 'alt': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'drop': True, 'switch': True}),
+    ('outro', 8, {'kick', 'snare', 'top', 'bass'}, {'layer_out': True}),
+]
+FORMS['dnb_roller'] = [     # the roller: the drop just keeps going, then switches up, before the break
+    ('intro', 8, {'top', 'pad', 'chords'}, {'filter_in': True}),
+    ('build', 8, {'top', 'snare', 'pad', 'chords', 'arp'}, {'build': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad'}, {'drop': True}),
+    ('drop', 8, {'kick', 'snare', 'top', 'bass', 'pad'}, {'drop': True, 'switch': True}),
+    ('break', 8, {'pad', 'chords', 'lead', 'top'}, {'alt': True, 'crash': True}),
+    ('build', 8, {'top', 'snare', 'chords', 'arp'}, {'build': True, 'alt': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'drop': True}),
+    ('outro', 8, {'kick', 'snare', 'top', 'bass'}, {'fade': True}),
+]
+
 style('brostep', 'Electronic', 'Brostep: festival dubstep - snarling growls, wobbles and FM stabs trading bars in the drop over a '
       'clean sub, aggressive half-time drums, pitch dives, risers and hard stops',
       bpm=(140, 150), scales=['minor', 'phrygian', 'harmonic_minor'], progs=dict(minor=[[0, 0, 5, 6], [0, 6, 5, 6]],
@@ -10983,3 +11067,190 @@ _offer_genre_sounds()
 # (1.87: tone targets of hauntology, early / deep dubstep, brostep, nu-disco, smooth jazz horns, DnB and cybergrind
 #  measured on reference records; tone targets: the band balance of the loudest 20 s of the reference records each genre was modelled on, dB per
 #  band 20-60 / 60-120 / 120-250 / 250-500 / 500-1k / 1-2k / 2-4k / 4-8k / 8-11k Hz, loudest band = 0)
+
+
+# (1.91) club layouts measured from real records (bar counts as heard - not stretched by the genre's form_scale):
+# classic / deep dubstep: a 16-32 bar intro that rolls straight into a 64-bar drop (no riser build), a 16-bar break,
+# a second long drop, a short end - with a one-bar breath at the phrase ends inside the drops; melodic drum & bass:
+# a long intro the parts come into, 64-bar drops, a 32-bar break that rises through its second half.
+ABS_FORMS = {'dubstep_club', 'dubstep_deep_club', 'dnb_club', 'trance_club'}
+FORMS['trance_club'] = [   # progressive / trance records: a groove that grows, a 32-bar breakdown, a long build, a long drop
+    ('intro', 16, {'kick', 'top', 'bass', 'pad', 'arp'}, {'layer_in': True}),
+    ('verse', 32, {'kick', 'top', 'snare', 'bass', 'chords', 'arp'}, {'crash': True}),
+    ('drop', 32, ALL, {'drop': True, 'breaths': True}),
+    ('break', 32, {'pad', 'chords', 'lead', 'arp', 'fx'}, {'alt': True, 'crash': True}),
+    ('build', 16, {'chords', 'arp', 'top', 'pad', 'lead', 'snare'}, {'build': True}),
+    ('drop', 48, ALL, {'drop': True, 'breaths': True}),
+    ('outro', 16, {'kick', 'top', 'bass', 'arp'}, {'layer_out': True}),
+]
+FORMS['dubstep_club'] = [
+    ('intro', 32, {'chords', 'pad', 'top', 'kick', 'snare', 'arp'}, {'layer_in': True}),
+    ('drop', 64, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad'}, {'drop': True, 'breaths': True}),
+    ('break', 16, {'pad', 'chords', 'lead', 'arp', 'top'}, {'alt': True, 'crash': True}),
+    ('drop', 64, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad', 'arp'}, {'drop': True, 'breaths': True}),
+    ('outro', 8, {'pad', 'chords', 'top'}, {'fade': True}),
+]
+FORMS['dubstep_deep_club'] = [
+    ('intro', 32, {'pad', 'top', 'kick', 'snare', 'chords'}, {'layer_in': True}),
+    ('drop', 64, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead'}, {'drop': True, 'breaths': True}),
+    ('break', 16, {'pad', 'top', 'chords'}, {'crash': True}),
+    ('drop', 48, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead', 'arp'}, {'drop': True, 'breaths': True}),
+    ('outro', 8, {'pad', 'top'}, {'fade': True}),
+]
+FORMS['dnb_club'] = [
+    ('intro', 32, {'pad', 'chords', 'arp', 'top', 'kick', 'snare'}, {'layer_in': True}),
+    ('build', 8, {'top', 'snare', 'pad', 'chords', 'arp'}, {'build': True}),
+    ('drop', 64, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'pad'}, {'drop': True, 'breaths': True}),
+    ('break', 24, {'pad', 'chords', 'lead', 'arp'}, {'alt': True, 'crash': True}),
+    ('build', 8, {'top', 'snare', 'chords', 'arp', 'lead'}, {'build': True, 'alt': True}),
+    ('drop', 64, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp', 'pad'}, {'drop': True, 'breaths': True}),
+    ('outro', 16, {'kick', 'snare', 'top', 'bass'}, {'layer_out': True}),
+]
+CLUB_FORM = {}          # genre -> its record-shaped layout, used for Extended / club (and in the auto rotation)
+
+# (1.91) the core club genres pick one of several layouts per song
+for _g, _fs in {'house': ['edm', 'house_dj', 'house_song'], 'tech_house': ['groove', 'house_dj'], 'deep_house': ['groove', 'house_dj', 'house_song'],
+                'trance': ['trance', 'trance_double', 'trance_prog'], 'uplifting_trance': ['trance', 'trance_double'],
+                'progressive_trance': ['trance', 'trance_prog'], 'classic_vocal_trance': ['trance', 'trance_double'],
+                'dubstep': ['halftime', 'dubstep_vip', 'dubstep_fake'], 'brostep': ['halftime', 'dubstep_vip', 'dubstep_fake'],
+                'riddim': ['halftime', 'dubstep_vip'], 'melodic_dubstep': ['halftime', 'dubstep_vip'],
+                'dnb': ['dnb', 'dnb_dj', 'dnb_roller'], 'neurofunk': ['dnb', 'dnb_dj', 'dnb_roller'], 'neurofunk_lite': ['dnb', 'dnb_dj'],
+                'jungle': ['dnb', 'dnb_roller']}.items():
+    _club = 'dnb_club' if _g in ('dnb', 'neurofunk', 'neurofunk_lite', 'jungle') else ('dubstep_club' if _g in ('dubstep', 'brostep', 'riddim') else
+                                                                                     ('trance_club' if 'trance' in _g else None))
+    if _club:
+        _fs = _fs + [_club]
+        CLUB_FORM[_g] = _club
+    if _g in STYLES and isinstance(STYLES[_g].get('form'), str) and not STYLES[_g].get('forms'):
+        STYLES[_g]['forms'] = [STYLES[_g]['form']] + [f for f in _fs if f != STYLES[_g]['form']]
+        STYLES[_g]['forms_variants'] = True               # (the genre's own layout keeps its usual small variants)
+
+for _g, _f in {'dark_dubstep_classic': 'dubstep_deep_club', 'deep_dubstep_rollers': 'dubstep_deep_club',
+               'liquid_dnb': 'dnb_club', 'liquid_dancefloor': 'dnb_club', 'anthem_dnb': 'dnb_club', 'liquid_euphoric': 'dnb_club'}.items():
+    if _g in STYLES and isinstance(STYLES[_g].get('form'), str):
+        CLUB_FORM[_g] = _f
+        if not STYLES[_g].get('forms'):
+            STYLES[_g]['forms'] = [STYLES[_g]['form'], _f]
+            STYLES[_g]['forms_variants'] = True
+
+
+# ============================== DREAMY SYNTHSCAPE (v1.91) ===================================================
+# Modelled on a chill synth piece the user sent: one long swell (quiet, fuller in the middle, quiet again), almost
+# no drums (a muffled heartbeat kick the pads breathe against), warm mid-range synths with nearly nothing above
+# 2 kHz and no sub, wide but coherent, washed in reverb. The harmony sits in a major key on rich 7th / 9th chords and
+# hardly moves - a vamp on the home chord's maj7 / maj9 with a suspended V and the vi7 now and then (in A-flat:
+# Abmaj9, Abmaj7, Eb sus4, Fm7), the voices keeping their shared notes - over a high bass that
+# lands on the phrase starts. Pulsing chord tones in quarter notes are the heart of it; tiny chimes sparkle high above
+# in the fuller parts, a gliding sine line drifts through, and once the music stops dead (a tape stop) and comes back.
+FORMS['synthscape'] = [
+    ('intro', 8, {'pad', 'chords', 'fx'}, {'filter_in': True}),
+    ('A', 16, {'kick', 'pad', 'chords', 'arp', 'fx'}, {}),
+    ('B', 16, {'kick', 'bass', 'pad', 'chords', 'arp', 'lead', 'fx'}, {}),
+    ('calm', 8, {'pad', 'chords', 'fx'}, {'level': 0.6, 'stop_end': True}),
+    ('B', 16, {'kick', 'bass', 'pad', 'chords', 'arp', 'lead', 'fx'}, {'alt': True, 'level': 0.85}),
+    ('outro', 8, {'pad', 'chords', 'arp', 'fx'}, {'fade': True}),
+]
+style('dream_synthscape', 'Electronic',
+      'Dreamy synthscape: a chill, effects-washed synth space - warm pulsing chords breathing against a muffled '
+      'heartbeat kick, a soft pad cloud, a high bass on the phrase starts, tiny chimes sparkling far above, a gliding '
+      'sine line drifting through; slow ii - IV - I movement on rich 7th and 9th chords, dark and warm (no sub, no '
+      'bright top), wide and deep in reverb, one long swell that rises and fades, and a moment where it all stops',
+      bpm=(104, 112), scales=['major', 'major', 'minor'], swing=0.5, human=0.006, form='synthscape', chord_size=5, chord_bars=1,
+      own_progs=True, progs={'major': [[0, 0, 4, 4], [5, 0, 4, 0], [5, 0, 4, 4], [0, 5, 4, 0]],
+                             'minor': [[0, 5, 2, 6], [0, 5, 2, 4], [0, 5, 2, 3]]}, sus_degrees=[4],
+      voicing='open', chord_center=60, kick_shape=dict(pitch=50, punch=22, sweep=30, decay=9, click=0.0, drive=1.0, len=0.4), sc_depth=0.45, sc_release=0.5, reverb=3.6, delay_beats=0.75, kit='soft',
+      gentle=True, exact_pools=True, lead_glide=True, no_layers=True,
+      arps2=[dict(track='arp', step=1 / 3, mode='updown', center=56, span=4, vel=0.8, prob=1.0),          # the triplet pulse
+             dict(track='arp_mid', step=2 / 3, mode='updown', center=74, vel=0.5, prob=0.85),
+             dict(track='arp_hi', step=1 / 3, mode='down', center=88, vel=0.7, prob=0.9, fade=0.6, phrase=8)], no_rotation=True, transition_moves=['tapestop', 'none', 'swell', 'none'], build_family=['swell'],
+      drums={'kick': ['x...x...x...x...']}, snare_tracks=[],
+      bass=['R-----..........', '................', 'R-------........', '................'], bass_lo=44,
+      chord_rh=['x---------------'],
+      arp=dict(rate=4, mode='updown', oct=3, prob=1e-6),     # (the pulse is written by arps2, in triplets)
+      lead_rh=['x---x-x---x-----', 'x-----x-x---x---', 'x---x---x-x-x---', '........x---x---'], lead_oct=5, repetition=0.8,
+      gm_hint='A muffled soft kick in quarters; warm round poly synth pulsing chord tones (sidechained); a soft wide pad; '
+              'a sine / triangle bass in the low-mid register; tiny bell glints with long reverb and delay; a gliding '
+              'sine lead; tape hiss; everything low-passed (~3 kHz) and washed in a long hall',
+      tracks=[T('kick', 'kick', 'kick', db=-28, hp=60, lp=220),
+              T('bass', 'bass', 'roundbass', db=-19, sc=0.3, hp=60),
+              T('chords', 'chords', 'sinepad', rev=0.55, sc=0.5, db=-20),
+              T('pad', 'pad', 'dreampad', rev=0.7, sc=0.8, db=-28, p=dict(cut=1600)),
+              T('arp', 'arp', 'sinepulse', rev=0.5, dly=0.2, sc=0.45, db=-18, p=dict(r=0.4)),
+              T('lead', 'lead', 'whistlelead', rev=0.5, dly=0.3, db=-18),
+              T('arp_mid', 'arp', 'sinepluck', rev=0.7, dly=0.45, pan=-0.3, db=-34),
+              T('arp_hi', 'arp', 'glintchime', rev=0.85, dly=0.55, pan=0.3, db=-31),
+              T('texture', 'fx', 'texture', db=-46)],
+      master=dict(tone=[-32.0, -9.0, 0.0, -4.5, -14.5, -21.5, -33.0, -45.0, -55.0], lufs=-14.0, air=-5.0, low=-1.5, sub_cut=70,
+                  width=1.15, lofi=True, wobble=0.6, vintage_lp=3600),
+      pools=dict(bass=['roundbass'],
+                 chords=['sinepad', 'humchoir', 'glasskeys', 'dustpiano'],
+                 pad=['dreampad', 'sinepad', 'humchoir', 'shimmerpad', 'warblepad', 'dreampad_dark'],
+                 arp=['sinepulse', 'warmpulse', 'tapebell', 'glasskeys'],
+                 lead=['whistlelead', 'bloomlead', 'tapeflute', 'glidetone', 'sinelead_tape']),
+      label='Dreamy synthscape (chill synth space)')
+
+
+# ============================== 1.92: more sounds for every genre ============================================
+# New sounds filed with the genres that use them, and slight variations of each genre's own sounds (darker,
+# brighter, softer, a chorus double, an octave layer, a tape wobble - all in tune) so songs in one genre don't
+# always sound alike. Only sounds that fit the genre's era and mood are added.
+_NEW_SOUNDS = {
+    ('chords',): {'chordmemory': ['deep_house', 'house', 'garage_house', 'ukgarage', 'speed_garage', 'tech_house', 'nineties_club_house',
+                                  'uk_bounce_house', 'emotive_2step', 'chipmunk_2step', 'future_garage'],
+                  'discofilter': ['french_house', 'nu_disco', 'house', 'disco_funk', 'future_funk', 'italo_disco'],
+                  'pingchord': ['dub_techno', 'minimal', 'techno', 'deep_dubstep_minimal', 'melodic_techno'],
+                  'choirstab': ['trap', 'uk_drill', 'dark_drill', 'hard_trap', 'orchestral_hiphop', 'phonk', 'witch_house'],
+                  'dxepiano': ['synthwave', 'dark_synthwave', 'city_pop', 'sophisti_pop', 'freestyle', 'italo_disco', 'new_jack_swing'],
+                  'glasskeys': ['lofi', 'downtempo', 'alt_rnb', 'rnb', 'neo_soul', 'chillstep', 'liquid_dnb', 'hazy_downtempo', 'balearic_chill'],
+                  'dustpiano': ['lofi', 'boombap', 'jazz_rap', 'beat_tape_cinematic', 'soul_sample_rap'],
+                  'tapeorgan': ['hauntology', 'hauntology_sunlit', 'hauntology_dark', 'hauntology_melody', 'hauntology_lullaby',
+                                'hauntology_campfire', 'hauntology_cold', 'lofi_rock']},
+    ('pad',): {'humchoir': ['ambient', 'chillstep', 'downtempo', 'hauntology_lullaby', 'liquid_euphoric', 'new_age_chant', 'melodic_dubstep'],
+               'atmosbell': ['liquid_dnb', 'liquid_euphoric', 'liquid_dancefloor', 'dnb', 'jungle', 'rolling_atmos_bass']},
+    ('arp',): {'fmbleep': ['techno', 'minimal', 'melodic_techno', 'electro', 'braindance', 'tech_house', 'new_beat'],
+               'afropluck': ['afro_house', 'amapiano', 'afrobeats', 'organic_house', 'tropical_house', 'gqom'],
+               'arpsquare': ['synthwave', 'italo_disco', 'ps1_game', 'dark_synthwave', 'chiptune', 'hi_nrg', 'eurodance'],
+               'atmosbell': ['liquid_dnb', 'liquid_euphoric', 'liquid_dancefloor', 'anthem_dnb'],
+               'tapebell': ['lofi', 'downtempo', 'hazy_downtempo', 'ambient_beat', 'chillstep', 'hauntology_lullaby']},
+    ('lead',): {'darkbell': ['trap', 'uk_drill', 'dark_drill', 'plugg', 'cloud_rap', 'memphis_phonk', 'witch_house', 'latin_trap'],
+                'pluckvox': ['club_pop', 'kpop', 'future_bass', 'afro_house', 'tropical_house', 'melodic_house', 'hopecore'],
+                'dembowlead': ['reggaeton', 'moombahton', 'dancehall', 'latin_trap', 'baile_funk'],
+                'tapeflute': ['lofi', 'downtempo', 'hazy_downtempo', 'balearic_chill', 'hauntology_campfire', 'chillstep'],
+                'bloomlead': ['ambient', 'chillstep', 'melodic_dubstep', 'liquid_euphoric', 'ambient_beat'],
+                'shortwave': ['hauntology', 'hauntology_dark', 'hauntology_cold', 'hauntology_melody', 'spooky_tv_theme']},
+    ('bass',): {'deepfmbass': ['deep_house', 'tech_house', 'minimal', 'melodic_house', 'emotive_deep_house', 'tokyo_deep_house', 'afro_house'],
+                'junglesub': ['jungle', 'dnb', 'liquid_dnb', 'liquid_euphoric']},
+}
+for _roles, _m in _NEW_SOUNDS.items():
+    for _inst, _gs in _m.items():
+        for _g in _gs:
+            if _g in POOLS:
+                for _r in _roles:
+                    _pl = POOLS[_g].get(_r)
+                    if _pl and _inst not in _pl:
+                        _pl.append(_inst)
+
+
+def _add_variants():
+    """Each genre gets up to two variations of its own sounds per part (picked by the genre's name, so it's stable)."""
+    import zlib as _z
+    from .instruments import VARIANT_OF
+    by_base = {}
+    for _v, _b in VARIANT_OF.items():
+        by_base.setdefault(_b, []).append(_v)
+    for _g, _pools in POOLS.items():
+        if STYLES.get(_g, {}).get('category') != 'Electronic' or STYLES.get(_g, {}).get('exact_pools'):
+            continue                                 # (band / acoustic genres and exact-sound genres keep their instruments)
+        for _r, _pl in _pools.items():
+            if len(_pl) <= 1:
+                continue                                 # a part with one sound on purpose (trap's 808) keeps it
+            cands = [v for b in _pl for v in by_base.get(b, []) if v not in _pl]
+            if not cands:
+                continue
+            h = _z.crc32(f'{_g}-{_r}'.encode())
+            pick = [cands[(h + k * 7) % len(cands)] for k in range(min(2, len(cands)))]
+            for v in dict.fromkeys(pick):
+                _pl.append(v)
+
+
+_add_variants()

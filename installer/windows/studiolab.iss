@@ -43,11 +43,13 @@ Source: "{#Src}\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ign
 Source: "studio-lab.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\Studio Lab"; Filename: "{app}\runtime\python\pythonw.exe"; Parameters: """{app}\studiolab.py"""; WorkingDir: "{app}"; IconFilename: "{app}\studio-lab.ico"; Comment: "Make music with Studio Lab"
-Name: "{autodesktop}\Studio Lab"; Filename: "{app}\runtime\python\pythonw.exe"; Parameters: """{app}\studiolab.py"""; WorkingDir: "{app}"; IconFilename: "{app}\studio-lab.ico"; Tasks: desktopicon
+; StudioLab.exe (the launcher, with the app icon) - right-click either shortcut or the running app > "Pin to taskbar".
+; The shared AppUserModelID keeps the pinned icon and the app window on one taskbar button.
+Name: "{autoprograms}\Studio Lab"; Filename: "{app}\StudioLab.exe"; WorkingDir: "{app}"; IconFilename: "{app}\studio-lab.ico"; Comment: "Make music with Studio Lab"; AppUserModelID: "StudioLab.App"
+Name: "{autodesktop}\Studio Lab"; Filename: "{app}\StudioLab.exe"; WorkingDir: "{app}"; IconFilename: "{app}\studio-lab.ico"; Tasks: desktopicon; AppUserModelID: "StudioLab.App"
 
 [Run]
-Filename: "{app}\runtime\python\pythonw.exe"; Parameters: """{app}\studiolab.py"""; WorkingDir: "{app}"; Description: "Open Studio Lab now"; Flags: postinstall nowait skipifsilent
+Filename: "{app}\StudioLab.exe"; WorkingDir: "{app}"; Description: "Open Studio Lab now"; Flags: postinstall nowait skipifsilent
 
 [UninstallDelete]
 ; program files (including ones added by in-app updates). Your songs, presets, settings and sounds are left alone.

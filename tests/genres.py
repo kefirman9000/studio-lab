@@ -233,6 +233,25 @@ def main():
             b0 = sec['bar'] * 4
             assert any(e.track in lay and b0 <= e.beat < b0 + 16 for e in song['events'])
     assert not any(t.get('double_of') for t in compose(Options(style='trance', seed=2, layering='off'))['st']['tracks'])
+    # (1.91) club layouts from real records: 64-bar drops, parts entering one after another, switch-up drops
+    for g in ('dubstep', 'dnb', 'uplifting_trance', 'dark_dubstep_classic'):
+        song = compose(Options(style=g, seed=2, structure='club'))
+        drops = [x['bars'] for x in song['sections'] if x['opts'].get('drop')]
+        assert max(drops) >= 48 and song['st']['form'].endswith('club'), (g, drops)
+        intro = song['sections'][0]
+        if intro['opts'].get('layer_in'):
+            tr = {t['name']: t['layer'] for t in song['st']['tracks']}
+            first = {}
+            for e in song['events']:
+                if e.beat < intro['bars'] * 4:
+                    r = tr.get(e.track)
+                    first[r] = min(first.get(r, 1e9), e.beat)
+            assert len({int(v // 16) for v in first.values()}) >= 3, (g, first)          # parts come in on different lines
+    forms = {compose(Options(style='dnb', seed=k))['st']['form'] for k in range(1, 9)}
+    assert len(forms) >= 3, forms                                                       # several layouts per genre
+    vip = next(compose(Options(style='dubstep', seed=k)) for k in range(1, 30)
+               if (lambda f: isinstance(f, str) and f in ('dubstep_vip', 'dubstep_fake'))(compose(Options(style='dubstep', seed=k))['st']['form']))
+    assert any(e.track == 'bass_vip' for e in vip['events']) and vip['st']['switch_bass']
     song = compose(Options(style='orchestral', seed=6, counter='on'))
     assert any(e.track == 'counter' for e in song['events']) and song['expr'] and all(0 <= v <= 127 for c in song['expr'].values() for _, v in c)
     info = describe(song)

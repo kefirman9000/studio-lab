@@ -59,7 +59,19 @@ def _check_deps():
               'Install them with:   python -m pip install ' + ' '.join(missing))
 
 
+def _taskbar_identity():
+    """Windows: the app window shows under the same taskbar button as the pinned StudioLab.exe / its shortcuts
+    (they carry the same AppUserModelID), instead of as a separate 'Python' button."""
+    if os.name == 'nt':
+        try:
+            import ctypes
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('StudioLab.App')
+        except Exception:
+            pass
+
+
 if __name__ == '__main__':
+    _taskbar_identity()
     _check_python()
     _check_deps()
     if len(sys.argv) > 1 and sys.argv[1] in ('generate', 'gen', 'cli'):

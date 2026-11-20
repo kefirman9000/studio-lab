@@ -1310,7 +1310,9 @@ def i_braam(m, dur, p, glide=None, mod=None):
     t = np.arange(n) / SR
     growl = 1 + 0.004 * np.sin(2 * np.pi * 31 * t)
     x = sum(saw(f * growl * 2 ** (c / 1200), n, _rng().random()) for c in (-18, -7, 0, 7, 18)) / 5
-    x += 0.6 * saw(f * 0.5, n) + 0.4 * saw(f * 1.5 * 2 ** (3 / 1200), n)
+    x += 0.6 * saw(f * 0.5, n)
+    if in_key_interval(m, p, (7,)) is not None:                  # (1.92) the power-chord fifth only when it is in key
+        x += 0.4 * saw(f * 1.5 * 2 ** (3 / 1200), n)
     fe = np.clip(t / 0.5, 0, 1) * (0.6 + 0.4 * np.exp(-t * 1.5))
     y = filt_env(x, 120, p.get('cut', 1800), fe)
     y = soft(eq(y, 'peak', 250, 0.9, 5) * 2.0, 2.5)
@@ -2074,7 +2076,8 @@ def i_tanpura(m, dur, p, glide=None, mod=None):
     one = isinstance(mod, str) and mod.startswith('str:')   # the arranger plucks one string per beat, on the grid
     n = int(max(dur + 1.5, 3.05 if one else 0) * SR)
     out = np.zeros(n)
-    cyc = (1.5, 2.0, 2.0, 1.0)
+    first = 1.5 if in_key_interval(m, p, (7,)) is not None else 4 / 3       # (1.92) Pa, or Ma when Pa is out of key
+    cyc = (first, 2.0, 2.0, 1.0)
     gains = (0.9, 1.0, 1.0, 0.45)                     # the low Sa string stays soft: a drone, not a bass line
     step = float(p.get('step', 0.9))
     k = int(mod[4:]) if one else 0
@@ -5698,7 +5701,7 @@ def v_industrialstab(m, dur, p, glide=None, mod=None):
     f = float(mtof(m))
     env, n, t = _env_n(dur, 0.001, 0.12, 0.15, 0.06, 0.4)
     x = _va.saw(np.full(n, f), n, 0.1) + _va.saw(np.full(n, f * 1.01), n, 0.5)
-    x = x * np.sin(2 * np.pi * f * 1.5 * t)
+    x = x * np.sin(2 * np.pi * f * 2.0 * t)      # (1.92) ring-mod on the octave: harmonic sidebands, always in key
     y = np.tanh(_va.vcf(x, 600 + 6000 * np.exp(-t / 0.04), 0.4, 2.0) * 3.0)
     y = bp(y, 250, 6000) * env
     return _ms_stereo(y, 20, 0.35) * 0.45
@@ -6623,8 +6626,8 @@ def v_tapekeys(m, dur, p, glide=None, mod=None):
     n = y.shape[1]
     t = np.arange(n) / SR
     rng = _rng()
-    wow = 0.0025 * np.sin(2 * np.pi * 0.7 * t + rng.random() * 6) + 0.0006 * np.sin(2 * np.pi * 7 * t)
-    idx = np.clip(np.arange(n) + wow * SR * 4, 0, n - 1)
+    wow = 0.0008 * np.sin(2 * np.pi * 0.7 * t + rng.random() * 6) + 0.00003 * np.sin(2 * np.pi * 7 * t)   # (1.92) ~+/-6 cents
+    idx = np.clip(np.arange(n) + wow * SR, 0, n - 1)                       # (it swung ~75 cents: audibly out of tune)
     y = np.vstack([np.interp(idx, np.arange(n), y[0]), np.interp(idx, np.arange(n), y[1])])
     y = lp(y, 4200) + 0.004 * hp(rng.standard_normal((2, n)), 4000)
     return y * 0.95
@@ -6954,9 +6957,10 @@ def v_colorbass(m, dur, p, glide=None, mod=None):
     env, n, t = _env_n(dur, 0.003, 0.3, 0.9, 0.06)
     rng = _rng()
     lfo = _sync_lfo(t, p, (2.0, 4.0), mod)
-    third = 3 if p.get('minor', True) else 4
+    third = in_key_interval(m, p, (3, 4) if p.get('minor', True) else (4, 3))       # (1.92) the key's own third
+    fifth = in_key_interval(m, p, (7, 6, 8))                                           # ... and fifth
     top = np.zeros((2, n))
-    for semis in (12, 19, 24 + third):
+    for semis in [12] + ([12 + fifth] if fifth is not None else []) + ([24 + third] if third is not None else []):
         top += _stack_saw(np.full(n, f * 2 ** (semis / 12)), n, (-10, 10), rng, 0.8)
     top = _va.vcf(top * 0.6, 400 + 4000 * lfo, 0.3, 1.5)
     sub = lp(np.sin(2 * np.pi * f * t), 100)
@@ -7002,3 +7006,591 @@ for _name, _fn, _info, _roles, _gm in (
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.91: synthscape bank
+def v_warmpulse(m, dur, p, glide=None, mod=None):
+    """Warm pulse: a round, felt-soft synth tone (triangle over two gently detuned saws, low-passed around 1 kHz with
+    a slight bloom) with a little cassette wow - played as pulsing chord notes it becomes the breathing heart of a
+    dreamy synthscape."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.025), 0.35, 0.8, p.get('r', 0.45))
+    rng = _rng()
+    wow = 2 ** (6 * np.sin(2 * np.pi * 0.55 * t + rng.random() * 6) / 1200)
+    fr = f * wow
+    ph = np.cumsum(fr) / SR
+    tri = 2 * np.abs(2 * ((ph + rng.random()) % 1) - 1) - 1
+    x = np.zeros((2, n))
+    x += 0.7 * tri[None, :]
+    for k, c in enumerate((-6, 6)):
+        x[k] += _va.saw(fr * 2 ** (c / 1200), n, rng.random()) * 0.28
+    cut = float(p.get('cut', 1100)) * (1 + 0.5 * np.exp(-t / 0.18))
+    y = _va.vcf(x, cut, 0.12, 1.0)
+    return _hpf(_va.juno_chorus(y, 1, 0.3), 110) * env * 0.55
+
+
+def v_glintchime(m, dur, p, glide=None, mod=None):
+    """Glint chime: a tiny, soft bell glint (a sine with a quiet inharmonic partial and a fast decay), each note
+    thrown to a slightly different place in the stereo field - the sparkles that drift high above a synthscape,
+    meant to be drowned in reverb and echo."""
+    f = float(mtof(m))
+    n = int((min(dur, 1.2) + 1.0) * SR)
+    t = np.arange(n) / SR
+    rng = _rng()
+    y = np.sin(2 * np.pi * f * t) * np.exp(-t / 0.45) + 0.25 * np.sin(2 * np.pi * f * 3 * t) * np.exp(-t / 0.12)
+    y += 0.12 * np.sin(2 * np.pi * f * 4 * t) * np.exp(-t / 0.05)                 # harmonic partials only: always in key
+    y *= np.minimum(1, t / 0.004)
+    pan = rng.uniform(-0.6, 0.6)
+    out = np.vstack([y * (1 - pan), y * (1 + pan)])
+    return lp(out, 6000) * 0.35
+
+
+def v_glidetone(m, dur, p, glide=None, mod=None):
+    """Glide tone: a soft sine-and-triangle voice that slides into every note from a few semitones away and sings with
+    a slow vibrato and tape wow - the drifting, bending lines that float through a synthscape."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.08), 0.5, 0.9, p.get('r', 0.9))
+    rng = _rng()
+    start = (glide - m) if glide is not None else rng.choice([-5, -3, -2, 2, 3])   # (glide: the note it slides from)
+    bend = start * np.exp(-t / 0.16)                                    # the slide into the note
+    vib = 18 * np.clip((t - 0.3) / 0.5, 0, 1) * np.sin(2 * np.pi * 4.6 * t)
+    wow = 7 * np.sin(2 * np.pi * 0.6 * t + rng.random() * 6)
+    fr = f * 2 ** ((bend * 100 + vib + wow) / 1200)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    tri = 2 / np.pi * np.arcsin(np.sin(ph))
+    y = 0.75 * np.sin(ph) + 0.3 * tri
+    y = lp(y, 2200)
+    return _ms_stereo(y * env, 240) * 0.5
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('warmpulse', v_warmpulse, 'Warm pulse (round, felt-soft, breathing chords)', ('chords', 'pad', 'arp'), 89),
+        ('glintchime', v_glintchime, 'Glint chime (tiny sparkles for reverb)', ('arp', 'lead'), 9),
+        ('glidetone', v_glidetone, 'Glide tone (sliding, singing sine)', ('lead',), 80)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.91: sine bank (measured from a
+# chill synth record whose every layer is a near-pure sine: two copies ~1.2 Hz apart beating slowly, a hint of 2nd
+# and 3rd harmonic, ~7 cents of slow tape wobble, nothing bright)
+def _beating_sine(f, n, t, rng, beat=1.2, wob=7.0, h2=0.06, h3=0.03):
+    """Two sines `beat` Hz apart (one per side, so the beating also moves across the stereo field), a little 2nd / 3rd
+    harmonic and a slow wobble (cents)."""
+    w = 2 ** (wob * 1.4 * np.sin(2 * np.pi * 0.55 * t + rng.random() * 6) / 1200)
+    out = np.zeros((2, n))
+    for ch, d in enumerate((-beat / 2, beat / 2)):
+        ph = 2 * np.pi * np.cumsum((f + d) * w) / SR + rng.random() * 6
+        out[ch] = np.sin(ph) + h2 * np.sin(2 * ph) + h3 * np.sin(3 * ph)
+    return out
+
+
+def v_sinepad(m, dur, p, glide=None, mod=None):
+    """Sine pad: soft, pure chord tones that bloom in slowly and beat gently against a twin a hair out of tune, with
+    a slow tape wobble - the glassy-warm drone of a chill synth piece (no saw buzz at all)."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.35), 1.0, 1.0, p.get('r', 1.4))
+    y = _beating_sine(f, n, t, _rng(), float(p.get('beat', 1.2)), 7.0, 0.05, 0.02)
+    return y * env * 0.32
+
+
+def v_sinepulse(m, dur, p, glide=None, mod=None):
+    """Sine pulse: a soft sine note that speaks quickly, settles about 6 dB lower within 150 ms and holds - played in
+    quarter notes on the chord tones, the gently pulsing heart of a synthscape."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.012), 0.15, 0.5, p.get('r', 0.35))
+    y = _beating_sine(f, n, t, _rng(), 1.1, 6.0, 0.1, 0.04)
+    y = y * (0.5 + 0.5 * np.exp(-t / 0.12))[None, :]                     # the quick settle after the attack
+    return y * env * 0.5
+
+
+def v_roundbass(m, dur, p, glide=None, mod=None):
+    """Round bass: a near-pure sine in the low-mid register (it lives around 100 Hz, not in the sub), a soft attack
+    and a touch of 2nd harmonic so it is heard on small speakers - the bass of a dark, warm, sub-less mix."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.04), 0.4, 0.9, p.get('r', 0.5))
+    rng = _rng()
+    w = 2 ** (4 * np.sin(2 * np.pi * 0.5 * t + rng.random() * 6) / 1200)
+    ph = 2 * np.pi * np.cumsum(f * w) / SR
+    y = np.sin(ph) + 0.12 * np.sin(2 * ph) + 0.03 * np.sin(3 * ph)
+    return np.vstack([y, y]) * env * 0.6
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('sinepad', v_sinepad, 'Sine pad (pure, slowly beating drone)', ('pad', 'chords'), 89),
+        ('sinepulse', v_sinepulse, 'Sine pulse (soft pulsing chord tones)', ('arp', 'chords'), 80),
+        ('roundbass', v_roundbass, 'Round bass (pure low-mid sine, no sub)', ('bass',), 38)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+def v_whistlelead(m, dur, p, glide=None, mod=None):
+    """Whistle lead: a smooth, near-pure sine that never sits still - it slides from the last note (a slow portamento),
+    wavers with a lazy vibrato and a slower, uneven drift (about +/-40 cents in all, like a whistle or a theremin played
+    gently) and breathes in softly. The singing, gliding top line of a chill synthscape."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.07), 0.5, 0.92, p.get('r', 0.7))
+    rng = _rng()
+    fr = _glide_freq(f, n, glide, p.get('glide_t', 0.11))
+    vib = 22 * np.clip((t - 0.15) / 0.4, 0, 1) * np.sin(2 * np.pi * (3.6 + 0.4 * rng.random()) * t + rng.random() * 6)
+    drift = 14 * np.sin(2 * np.pi * 0.7 * t + rng.random() * 6) + 6 * np.sin(2 * np.pi * 1.9 * t + rng.random() * 6)
+    fr = fr * 2 ** ((vib + drift) / 1200)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    y = np.sin(ph) + 0.07 * np.sin(2 * ph) + 0.02 * np.sin(3 * ph)
+    y = y + 0.012 * lp(hp(rng.standard_normal(n), 900), 3000) * np.exp(-t / 0.2)    # a little breath at the start
+    return _ms_stereo(y * env, 200) * 0.45
+
+
+def v_sinepluck(m, dur, p, glide=None, mod=None):
+    """Sine pluck: a soft, round sine note that rings briefly (with the same slow beating as the sine pads) - the
+    gentle background arpeggios of a synthscape, meant for long reverb and echo."""
+    f = float(mtof(m))
+    n = int((min(dur, 1.0) + 0.6) * SR)
+    t = np.arange(n) / SR
+    y = _beating_sine(f, n, t, _rng(), 1.3, 5.0, 0.08, 0.03)
+    env = np.minimum(1, t / 0.006) * np.exp(-t / float(p.get('decay', 0.32)))
+    return y * env[None, :] * 0.5
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('whistlelead', v_whistlelead, 'Whistle lead (smooth sine, slides and wavers)', ('lead',), 79),
+        ('sinepluck', v_sinepluck, 'Sine pluck (soft round arpeggio note)', ('arp',), 9)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.92: new sounds across the genres
+# Every one is built from harmonic partials (whole-number ratios, octaves and fifths) with only a few cents of
+# detune or drift, so they always sit in key and in tune with the chords.
+def in_key_interval(m, p, choices):
+    """(1.92) The first of `choices` (semitones above note m) that lands in the song's key (p['key_pcs'], passed by the
+    renderer), or the first choice when the key is unknown - for sounds that stack intervals on one note."""
+    pcs = p.get('key_pcs') if isinstance(p, dict) else None
+    if not pcs:
+        return choices[0]
+    for c in choices:
+        if (int(round(m)) + c) % 12 in pcs:
+            return c
+    return None
+
+
+def _sine_stack(fr, n, amps, rng, ph=None):
+    """Harmonic additive tone: amps[k] for harmonic k+1 at frequency curve fr (array)."""
+    base = 2 * np.pi * np.cumsum(fr) / SR + (rng.random() * 6 if ph is None else ph)
+    return sum(a * np.sin((k + 1) * base) for k, a in enumerate(amps) if a)
+
+
+def _wow(t, rng, cents=5.0, rate=0.6):
+    return 2 ** (cents * np.sin(2 * np.pi * rate * t + rng.random() * 6) / 1200)
+
+
+# --- synthscape / chill
+def v_tapeflute(m, dur, p, glide=None, mod=None):
+    """Tape flute: a breathy, soft flute tone (sine with a little 2nd / 3rd harmonic and filtered breath) played back
+    from a slightly wobbly tape, sliding from the last note - a gentle lead for chill synthscapes and lo-fi."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.09, 0.4, 0.9, 0.5)
+    rng = _rng()
+    fr = _glide_freq(f, n, glide, 0.09) * _wow(t, rng, 6) * 2 ** (10 * np.clip((t - 0.3) / 0.4, 0, 1) * np.sin(2 * np.pi * 4.8 * t) / 1200)
+    y = _sine_stack(fr, n, (1.0, 0.12, 0.05), rng)
+    y += 0.05 * lp(hp(rng.standard_normal(n), 1200), 4000) * (0.4 + 0.6 * np.exp(-t / 0.15))
+    return _ms_stereo(lp(y, 3500) * env, 180) * 0.5
+
+
+def v_glasskeys(m, dur, p, glide=None, mod=None):
+    """Glass keys: a soft sine electric piano (a 1:1 FM tine that mellows as it rings, a hint of 2:1 bark), chorused -
+    the mellow keys of chillhop, synthscapes and R&B."""
+    f = float(mtof(m))
+    n = int((min(dur, 3.0) + 1.2) * SR)
+    t = np.arange(n) / SR
+    idx = 1.4 * np.exp(-t / 0.35) + 0.15
+    ph = 2 * np.pi * f * t
+    y = np.sin(ph + idx * np.sin(ph)) + 0.08 * np.sin(2 * ph + 0.6 * np.exp(-t / 0.08) * np.sin(2 * ph))
+    env = np.minimum(1, t / 0.004) * np.exp(-t / (1.6 if m < 72 else 1.0))
+    off = np.clip((t - dur) / 0.25, 0, 1)
+    y = y * env * (1 - off)
+    return _va.juno_chorus(np.vstack([y, y]) * 0.4, 1, 0.3)
+
+
+def v_humchoir(m, dur, p, glide=None, mod=None):
+    """Hum choir: a soft 'ooh' sung on closed lips - harmonics shaped like the vowel u (strong fundamental, a gentle
+    hump near 300 Hz) with three voices a few cents apart and a slow swell."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.45, 1.0, 1.0, 1.0)
+    rng = _rng()
+    amps = [1.0 / (1 + ((k + 1) * f / 330.0 - 1) ** 2 * 2) for k in range(8)]
+    out = np.zeros((2, n))
+    for i, c in enumerate((-7, 0, 6)):
+        fr = f * 2 ** (c / 1200) * _wow(t, rng, 4, 0.4 + 0.2 * i)
+        out[i % 2] += _sine_stack(fr, n, amps, rng) * (0.7 if c else 0.5)
+    out[1] += out[0] * 0.3
+    return lp(out, 2500) * env * 0.22
+
+
+def v_dustpiano(m, dur, p, glide=None, mod=None):
+    """Dust piano: a felt piano heard from an old cassette - the top rolled off, a slow wow, a little hiss - the
+    sampled-keys sound of lo-fi and chill beats."""
+    y = np.asarray(INSTRUMENTS['piano'](m, dur, p, glide, mod), float)
+    y = y if y.ndim == 2 else np.vstack([y, y])
+    n = y.shape[1]
+    t = np.arange(n) / SR
+    rng = _rng()
+    idx = np.clip(np.arange(n) + 0.0009 * SR * np.sin(2 * np.pi * 0.5 * t + rng.random() * 6), 0, n - 1)   # wow of ~+/-5 cents
+    y = np.vstack([np.interp(idx, np.arange(n), y[0]), np.interp(idx, np.arange(n), y[1])])
+    return lp(y, 2600) * 1.1 + 0.002 * hp(rng.standard_normal((2, n)), 3000)
+
+
+def v_bloomlead(m, dur, p, glide=None, mod=None):
+    """Bloom lead: a sine voice that swells in slowly, with an octave-up halo fading in behind it and a slide from the
+    last note - a soft, glowing top line."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.22, 0.5, 1.0, 0.9)
+    rng = _rng()
+    fr = _glide_freq(f, n, glide, 0.14) * _wow(t, rng, 8, 0.5)
+    halo = np.clip(t / 1.2, 0, 1) * 0.22
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    y = np.sin(ph) + 0.06 * np.sin(2 * ph) + halo * np.sin(2 * ph + 0.3)
+    return _ms_stereo(y * env, 300) * 0.45
+
+
+def v_tapebell(m, dur, p, glide=None, mod=None):
+    """Tape bell: a round sine bell (fundamental, octave and twelfth only - always in key) with a gentle tape wobble
+    and a long, soft ring."""
+    f = float(mtof(m))
+    n = int((min(dur, 1.5) + 1.5) * SR)
+    t = np.arange(n) / SR
+    rng = _rng()
+    fr = f * _wow(t, rng, 5, 0.7)
+    y = _sine_stack(fr, n, (1.0, 0.3, 0.12), rng)
+    y = y * np.minimum(1, t / 0.003) * np.exp(-t / 0.9)
+    return _ms_stereo(y, 260) * 0.35
+
+
+# --- house / techno
+def v_chordmemory(m, dur, p, glide=None, mod=None):
+    """Chord-memory stab: a saw-and-square poly stab stacked in octaves (the song's own chord voicing supplies the
+    harmony, so it stays in key on every note) with a snappy filter - the deep-house / garage stab sound."""
+    f = float(mtof(m))
+    env, n, t = _env_n(min(dur, 0.6), 0.003, 0.25, 0.25, 0.25)
+    rng = _rng()
+    x = np.zeros((2, n))
+    for k, r in enumerate((1.0, 2.0, 1.0)):
+        x[k % 2] += _va.saw(f * r * 2 ** ((k - 1) * 5 / 1200), n, rng.random()) * 0.4
+        x[(k + 1) % 2] += _va.pulse(f * r, n, rng.random(), 0.4) * 0.2
+    cut = 600 + 3800 * np.exp(-t / 0.09)
+    return _hpf(_va.vcf(x, cut, 0.3, 1.1), 150) * env * 0.5
+
+
+def v_deepfmbass(m, dur, p, glide=None, mod=None):
+    """Deep FM bass: a round, plucky 1:1 FM bass whose brightness falls fast - the bouncing low end of deep and
+    tech house (sine body, no buzz)."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.004, 0.3, 0.55, 0.12)
+    ph = 2 * np.pi * f * t
+    y = np.sin(ph + 2.2 * np.exp(-t / 0.06) * np.sin(ph)) + 0.15 * np.sin(2 * ph)
+    return np.vstack([y, y]) * env * 0.6
+
+
+def v_discofilter(m, dur, p, glide=None, mod=None):
+    """Filtered disco chord: a string-machine chord tone pushed through a slowly sweeping low-pass and a phaser - the
+    filtered-disco sound of French house and nu-disco."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.04, 0.3, 0.9, 0.35)
+    rng = _rng()
+    x = _stack_saw(np.full(n, f), n, (-7, 0, 7), rng, 0.6)
+    cut = 900 + 1800 * (0.5 + 0.5 * np.sin(2 * np.pi * 0.25 * t + rng.random() * 6))
+    y = _va.vcf(x, cut, 0.35, 1.1)
+    ph = 0.5 + 0.5 * np.sin(2 * np.pi * 0.3 * t)
+    d = (10 + 30 * ph).astype(int)
+    idx = np.clip(np.arange(n) - d, 0, n - 1)
+    y = 0.65 * y + 0.35 * y[:, idx]
+    return _hpf(y, 180) * env * 0.42
+
+
+def v_fmbleep(m, dur, p, glide=None, mod=None):
+    """FM bleep: a short, clean 2:1 FM blip - the bleeps of techno, minimal and electro sequences."""
+    f = float(mtof(m))
+    n = int((min(dur, 0.25) + 0.08) * SR)
+    t = np.arange(n) / SR
+    ph = 2 * np.pi * f * t
+    y = np.sin(ph + 1.5 * np.exp(-t / 0.03) * np.sin(2 * ph)) * np.exp(-t / 0.07) * np.minimum(1, t / 0.002)
+    return np.vstack([y, y]) * 0.45
+
+
+def v_pingchord(m, dur, p, glide=None, mod=None):
+    """Ping chord: a short, resonant filtered hit (root and octaves - the chord comes from the voicing) with a fast-closing filter - the dub-
+    techno / minimal ping, made to be fed into a long echo."""
+    f = float(mtof(m))
+    env, n, t = _env_n(min(dur, 0.3), 0.002, 0.15, 0.0, 0.2)
+    rng = _rng()
+    x = sum(_va.saw(f * r, n, rng.random()) for r in (1.0, 2.0, 4.0)) / 3
+    y = _va.vcf(np.vstack([x, x]), 400 + 2200 * np.exp(-t / 0.05), 0.3, 1.0)
+    return _hpf(y, 200) * env * 0.6
+
+
+# --- drum & bass / jungle
+def v_junglesub(m, dur, p, glide=None, mod=None):
+    """Jungle sub: a pure sine sub that drops a little in pitch at the start of each note (in tune once it settles) -
+    the rolling sub of jungle and liquid."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.005, 0.3, 0.9, 0.08)
+    fr = f * 2 ** (3 * np.exp(-t / 0.03) / 12)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    y = np.sin(ph) + 0.05 * np.sin(2 * ph)
+    return np.vstack([y, y]) * env * 0.7
+
+
+def v_atmosbell(m, dur, p, glide=None, mod=None):
+    """Atmos bell: a soft harmonic bell with a long shimmering tail (octave halo) - the floating bells of liquid
+    drum & bass and atmospheric jungle."""
+    f = float(mtof(m))
+    n = int((min(dur, 2.0) + 2.5) * SR)
+    t = np.arange(n) / SR
+    rng = _rng()
+    y = _sine_stack(np.full(n, f), n, (1.0, 0.35, 0.0, 0.15), rng) * np.exp(-t / 1.4)
+    y += 0.25 * np.sin(4 * np.pi * f * t + 1) * np.clip(t / 0.8, 0, 1) * np.exp(-t / 2.2)
+    y *= np.minimum(1, t / 0.004)
+    return _ms_stereo(y, 340) * 0.32
+
+
+# --- hip-hop / trap / drill
+def v_choirstab(m, dur, p, glide=None, mod=None):
+    """Choir stab: a dark, dramatic 'ah' choir hit - harmonics shaped like the vowel a, a few voices, a quick swell and
+    a cut-off tail - the choir stabs of drill and dark trap."""
+    f = float(mtof(m))
+    env, n, t = _env_n(min(dur, 1.2), 0.02, 0.3, 0.7, 0.3)
+    rng = _rng()
+    amps = [1.0 / (1 + ((k + 1) * f / 750.0 - 1) ** 2 * 3) + (0.5 if k == 0 else 0) for k in range(14)]
+    out = np.zeros((2, n))
+    for i, c in enumerate((-9, -3, 4, 10)):
+        out[i % 2] += _sine_stack(f * 2 ** (c / 1200) * np.ones(n), n, amps, rng) * 0.35
+    return _hpf(lp(out, 4000), 150) * env * 0.3
+
+
+def v_darkbell(m, dur, p, glide=None, mod=None):
+    """Dark bell: a low, round bell (fundamental and octave, a soft twelfth) with a quick attack and a medium ring -
+    the haunting melodies of trap and drill (in tune on every note)."""
+    f = float(mtof(m))
+    n = int((min(dur, 1.2) + 1.0) * SR)
+    t = np.arange(n) / SR
+    y = _sine_stack(np.full(n, f), n, (1.0, 0.45, 0.18), _rng()) * np.exp(-t / 0.7) * np.minimum(1, t / 0.002)
+    return _ms_stereo(lp(y, 3000), 200) * 0.4
+
+
+# --- pop / r&b / afro / latin
+def v_pluckvox(m, dur, p, glide=None, mod=None):
+    """Vocal pluck: a short sung 'ah' cut into a pluck - the vocal-chop leads of pop, future bass and afro house."""
+    f = float(mtof(m))
+    env, n, t = _env_n(min(dur, 0.4), 0.004, 0.18, 0.2, 0.15)
+    rng = _rng()
+    x = _stack_saw(np.full(n, f), n, (-6, 6), rng, 0.6)
+    y = np.vstack([_va.formant(x[i], 'a', 7.0) for i in range(2)])
+    return _hpf(y, 200) * env * 0.9
+
+
+def v_afropluck(m, dur, p, glide=None, mod=None):
+    """Wood pluck: a short, woody harmonic pluck (fundamental, octave, a soft click) - the marimba-like synth plucks
+    of afro house, amapiano and afrobeats."""
+    f = float(mtof(m))
+    n = int((min(dur, 0.6) + 0.3) * SR)
+    t = np.arange(n) / SR
+    rng = _rng()
+    y = _sine_stack(np.full(n, f), n, (1.0, 0.4, 0.1, 0.12), rng) * np.exp(-t / 0.18)
+    y += 0.2 * lp(rng.standard_normal(n), 3000) * np.exp(-t / 0.004)
+    return _ms_stereo(y * np.minimum(1, t / 0.001), 120) * 0.45
+
+
+def v_dembowlead(m, dur, p, glide=None, mod=None):
+    """Dembow lead: a bright, plucky square-and-saw lead with a quick slide from the last note - the catchy synth
+    hooks of reggaeton and latin trap."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.004, 0.2, 0.6, 0.15)
+    rng = _rng()
+    fr = _glide_freq(f, n, glide, 0.04)
+    x = _va.pulse(fr, n, rng.random(), 0.45) * 0.5 + _va.saw(fr * 2 ** (6 / 1200), n, rng.random()) * 0.4
+    y = _va.vcf(np.vstack([x, x]), 1500 + 3000 * np.exp(-t / 0.12), 0.2, 1.2)
+    return _hpf(_va.juno_chorus(y, 1, 0.3), 180) * env * 0.4
+
+
+# --- retro / synthwave / hauntology
+def v_dxepiano(m, dur, p, glide=None, mod=None):
+    """DX electric piano: the glassy 80s FM electric piano - a 1:1 body with a bright 14:1 tine on the attack (both
+    harmonic), chorused - the ballad keys of synthwave, 80s pop and city pop."""
+    f = float(mtof(m))
+    n = int((min(dur, 3.0) + 1.0) * SR)
+    t = np.arange(n) / SR
+    ph = 2 * np.pi * f * t
+    body = np.sin(ph + 0.9 * np.exp(-t / 0.6) * np.sin(ph))
+    tine = 0.25 * np.sin(14 * ph) * np.exp(-t / 0.02)
+    y = (body + tine) * np.minimum(1, t / 0.002) * np.exp(-t / 1.4) * (1 - np.clip((t - dur) / 0.2, 0, 1))
+    return _va.juno_chorus(np.vstack([y, y]) * 0.4, 2, 0.4)
+
+
+def v_arpsquare(m, dur, p, glide=None, mod=None):
+    """Square arp: a hollow pulse-wave arp note with a little PWM and a quick filter blip - the bouncing arpeggios of
+    synthwave, italo and retro games."""
+    f = float(mtof(m))
+    env, n, t = _env_n(min(dur, 0.35), 0.002, 0.12, 0.3, 0.1)
+    rng = _rng()
+    pw = 0.35 + 0.1 * np.sin(2 * np.pi * 3 * t)
+    x = _va.pulse(f, n, rng.random(), float(np.mean(pw)))
+    y = _va.vcf(np.vstack([x, x]), 1200 + 3500 * np.exp(-t / 0.05), 0.25, 1.1)
+    return _hpf(y, 150) * env * 0.4
+
+
+def v_shortwave(m, dur, p, glide=None, mod=None):
+    """Shortwave tone: a pure tone heard over an old radio - band-limited, wavering slightly (but centred on the note),
+    with faint static - the eerie broadcast melodies of hauntology."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.06, 0.4, 0.9, 0.4)
+    rng = _rng()
+    fr = f * _wow(t, rng, 9, 0.9)
+    y = _sine_stack(fr, n, (1.0, 0.25, 0.12), rng)
+    y = lp(hp(y, 300), 2800) + 0.02 * lp(hp(rng.standard_normal(n), 1500), 4000)
+    return np.vstack([y, y]) * env * 0.45
+
+
+def v_tapeorgan(m, dur, p, glide=None, mod=None):
+    """Tape organ: a soft combo organ (drawbar-style harmonics 1, 2, 3, 4) on a wobbly old tape - warm, slightly sad
+    chords for hauntology and lo-fi."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.02, 0.2, 1.0, 0.15)
+    rng = _rng()
+    fr = f * _wow(t, rng, 7, 0.55)
+    y = _sine_stack(fr, n, (1.0, 0.6, 0.35, 0.25, 0.0, 0.12), rng)
+    return _ms_stereo(lp(y, 3000) * env, 220) * 0.3
+
+
+NEW_192 = (
+    ('tapeflute', v_tapeflute, 'Tape flute (breathy, wobbly, sliding)', ('lead',), 73),
+    ('glasskeys', v_glasskeys, 'Glass keys (soft sine electric piano)', ('chords', 'arp'), 4),
+    ('humchoir', v_humchoir, 'Hum choir (soft closed-lip ooh)', ('pad', 'chords'), 52),
+    ('dustpiano', v_dustpiano, 'Dust piano (felt piano on cassette)', ('chords', 'arp'), 0),
+    ('bloomlead', v_bloomlead, 'Bloom lead (swelling sine with octave halo)', ('lead',), 80),
+    ('tapebell', v_tapebell, 'Tape bell (round sine bell, wobbly)', ('arp', 'lead'), 14),
+    ('chordmemory', v_chordmemory, 'Chord-memory stab (deep house / garage, octaves)', ('chords',), 81),
+    ('deepfmbass', v_deepfmbass, 'Deep FM bass (round pluck)', ('bass',), 38),
+    ('discofilter', v_discofilter, 'Filtered disco chord (sweeping, phased)', ('chords', 'pad'), 50),
+    ('fmbleep', v_fmbleep, 'FM bleep (techno blip)', ('arp', 'lead'), 80),
+    ('pingchord', v_pingchord, 'Ping chord (dub techno, for echoes)', ('chords',), 81),
+    ('junglesub', v_junglesub, 'Jungle sub (sine with a pitch drop)', ('bass',), 38),
+    ('atmosbell', v_atmosbell, 'Atmos bell (liquid DnB, long shimmer)', ('arp', 'pad', 'lead'), 14),
+    ('choirstab', v_choirstab, 'Choir stab (dark ah hit)', ('chords', 'lead'), 52),
+    ('darkbell', v_darkbell, 'Dark bell (trap / drill melody)', ('lead', 'arp'), 14),
+    ('pluckvox', v_pluckvox, 'Vocal pluck (short sung ah)', ('lead', 'arp'), 54),
+    ('afropluck', v_afropluck, 'Wood pluck (afro house / amapiano)', ('arp', 'lead'), 12),
+    ('dembowlead', v_dembowlead, 'Dembow lead (reggaeton hook)', ('lead',), 80),
+    ('dxepiano', v_dxepiano, 'DX electric piano (80s FM keys)', ('chords', 'arp'), 5),
+    ('arpsquare', v_arpsquare, 'Square arp (bouncing pulse wave)', ('arp',), 80),
+    ('shortwave', v_shortwave, 'Shortwave tone (radio melody)', ('lead',), 79),
+    ('tapeorgan', v_tapeorgan, 'Tape organ (wobbly combo organ)', ('chords', 'pad'), 16),
+)
+for _name, _fn, _info, _roles, _gm in NEW_192:
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.92: variations of popular sounds
+# Slight variations of the sounds genres use most, built only from changes that keep a note in tune: a darker or
+# brighter filter, a softer attack, a chorus double a few cents either side, an octave layer, a gentle tape wobble
+# (+/- 5 cents), a little drive. Each keeps its base sound's roles.
+def _fit(y, n):
+    y = np.asarray(y, float)
+    y = y if y.ndim == 2 else np.vstack([y, y])
+    return y[:, :n] if y.shape[1] >= n else np.pad(y, ((0, 0), (0, n - y.shape[1])))
+
+
+def _variant(base, kind):
+    fn = INSTRUMENTS[base]
+
+    def v(m, dur, p, glide=None, mod=None):
+        y = np.asarray(fn(m, dur, p, glide, mod), float)
+        y = y if y.ndim == 2 else np.vstack([y, y])
+        n = y.shape[1]
+        if kind == 'dark':
+            return lp(y, 2200) * 1.2
+        if kind == 'bright':
+            return y + 0.35 * hp(y, 3500)
+        if kind == 'soft':
+            a = min(n, int(0.05 * SR))
+            y = y.copy()
+            y[:, :a] *= np.linspace(0, 1, a) ** 1.5
+            return lp(y, 5000)
+        if kind == 'wide':                               # a chorus double 6 cents either side, one per side
+            g = None if glide is None else glide + 0.06
+            up = _fit(fn(m + 0.06, dur, p, g, mod), n)
+            g = None if glide is None else glide - 0.06
+            dn = _fit(fn(m - 0.06, dur, p, g, mod), n)
+            return np.vstack([0.6 * y[0] + 0.55 * up[0], 0.6 * y[1] + 0.55 * dn[1]])
+        if kind == 'octave':                             # an octave above, quieter
+            hi = _fit(fn(m + 12, dur, p, None if glide is None else glide + 12, mod), n)
+            return y + 0.35 * hi
+        if kind == 'suboct':                             # an octave below, for weight
+            lo = _fit(fn(m - 12, dur, p, None if glide is None else glide - 12, mod), n)
+            return y + 0.45 * lp(lo, 900)
+        if kind == 'tape':                               # +/- 5 cents of slow wow, softened top
+            t = np.arange(n) / SR
+            idx = np.clip(np.arange(n) + 0.0009 * SR * np.sin(2 * np.pi * 0.55 * t + 1.3), 0, n - 1)
+            y = np.vstack([np.interp(idx, np.arange(n), y[0]), np.interp(idx, np.arange(n), y[1])])
+            return lp(y, 6500)
+        if kind == 'driven':
+            return np.tanh(y * 2.2) / np.tanh(2.2) * 0.8
+        return y
+    return v
+
+
+VARIANT_NAMES = {'dark': 'darker', 'bright': 'brighter', 'soft': 'soft attack', 'wide': 'wide chorus',
+                 'octave': 'with octave', 'suboct': 'with sub-octave', 'tape': 'tape wobble', 'driven': 'driven'}
+POPULAR_VARIANTS = {
+    # pads / chords
+    'supersaw': ('dark', 'wide', 'octave'), 'warmpad': ('wide', 'tape'), 'junopad': ('dark', 'wide'),
+    'jupiterpad': ('dark', 'tape'), 'polysynth': ('soft', 'wide', 'tape'), 'strings': ('dark', 'wide'),
+    'solina': ('wide', 'tape'), 'glasspad': ('dark', 'wide'), 'lushpad': ('dark', 'tape'), 'dreampad': ('dark', 'octave'),
+    'trancepad': ('dark', 'wide'), 'vocalpad': ('dark', 'wide'), 'choir': ('dark', 'wide'), 'darkpad': ('wide', 'tape'),
+    # keys / plucks
+    'epiano': ('tape', 'bright', 'dark'), 'rhodes': ('tape', 'dark', 'wide'), 'wurli': ('tape', 'dark'),
+    'piano': ('dark', 'tape'), 'organ': ('dark', 'driven'), 'pluck': ('dark', 'wide', 'octave'),
+    'pluck_saw': ('dark', 'wide'), 'trancepluck': ('dark', 'wide', 'octave'), 'superpluck': ('dark', 'wide'),
+    'mhpluck': ('wide', 'tape'), 'marimba': ('tape', 'octave'), 'kalimba': ('tape', 'octave'), 'bell': ('dark', 'tape'),
+    'lofikeys': ('dark', 'wide'), 'm1piano': ('dark', 'wide'), 'stab': ('dark', 'wide'), 'housechord': ('dark', 'wide'),
+    # leads
+    'leadsaw': ('soft', 'octave', 'wide'), 'supersaw_lead': ('dark', 'octave'), 'softlead': ('octave', 'wide'),
+    'analoglead': ('soft', 'octave'), 'moog_lead': ('soft', 'octave'), 'synthwavelead': ('soft', 'wide'),
+    'sh101': ('dark', 'driven'), 'acid': ('dark', 'driven'), 'hoover': ('dark',), 'sinelead': ('octave', 'tape'),
+    'trancebell': ('dark', 'octave'), 'brass': ('dark', 'wide'), 'synthbrass': ('dark', 'wide'), 'flute': ('tape', 'soft'),
+    # basses
+    'reese': ('dark', 'driven'), 'sawbass': ('dark', 'driven'), 'sinebass': ('driven', 'suboct'),
+    'moogbass': ('dark', 'driven'), 'deepbass': ('dark', 'driven'), 'wobble': ('dark', 'driven'), 'growl': ('dark',),
+    'fmbass': ('dark', 'driven'), 'junobass': ('dark', 'driven'), 'ebass': ('dark', 'driven'), '808': ('driven', 'dark'),
+}
+VARIANT_OF = {}
+for _base, _kinds in POPULAR_VARIANTS.items():
+    if _base not in INSTRUMENTS:
+        continue
+    for _k in _kinds:
+        _name = f'{_base}_{_k}'
+        if _name in INSTRUMENTS:
+            continue
+        INSTRUMENTS[_name] = _variant(_base, _k)
+        INSTRUMENT_INFO[_name] = f"{INSTRUMENT_INFO.get(_base, _base)} - {VARIANT_NAMES[_k]}"
+        GM_PROGRAM[_name] = GM_PROGRAM.get(_base, 80)
+        VARIANT_OF[_name] = _base
+        for _role, _lst in ROLE_CHOICES.items():
+            if _base in _lst and _name not in _lst:
+                _lst.append(_name)

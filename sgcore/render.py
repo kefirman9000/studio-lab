@@ -448,6 +448,9 @@ class Renderer:
     def _params(self, tcfg):
         p = dict(tcfg['p'])
         p['spb'] = self.spb
+        k_ = self.song.get('key') if isinstance(self.song, dict) else None
+        if k_ is not None and hasattr(k_, 'scale'):     # (1.92) sounds that stack intervals keep them in the key
+            p.setdefault('key_pcs', tuple(sorted({(k_.root + s_) % 12 for s_ in k_.scale})))
         if self.bright != 1.0:
             for k in CUT_KEYS:
                 if k in p:
@@ -2012,6 +2015,8 @@ def master(x, cfg, log=print):
     master.last_dyn_eq = {}
     log('   mastering: EQ > dynamic EQ > glue comp > stereo image > saturation > limiter')
     x = hp(x, 28)
+    if cfg.get('sub_cut'):                                # (1.91) genres with no sub at all (a synthscape): a steep cut
+        x = hp(x, float(cfg['sub_cut']), 4).astype(x.dtype)
     l0 = lufs(x)
     x *= 10 ** ((-18 - l0) / 20)
     x = eq(x, 'lowshelf', 90, 0.7, cfg.get('low', 1.0))

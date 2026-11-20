@@ -1,5 +1,66 @@
 # Changelog
 
+## 1.92.0
+**More sounds in every genre, and everything kept in key**
+- **22 new sounds**, each filed with the genres that use them:
+  - **Chill / synthscape:** tape flute, glass keys (a soft sine electric piano), hum choir, dust piano (felt piano on cassette), bloom lead, tape bell.
+  - **House / garage / disco:** chord-memory stab, deep FM bass, filtered disco chord.
+  - **Techno:** FM bleep, ping chord (dub techno).
+  - **Drum & bass:** jungle sub, atmos bell.
+  - **Trap / drill:** choir stab, dark bell.
+  - **Pop / afro / latin:** vocal pluck, wood pluck (afro house, amapiano), dembow lead (reggaeton).
+  - **Retro:** DX electric piano, square arp.
+  - **Hauntology:** shortwave tone, tape organ.
+- **118 slight variations of the most-used sounds.** Each has a darker or brighter filter, a softer attack, a chorus double a few cents either side, an octave or sub-octave layer, a gentle tape wobble, or a little drive. Every genre now picks up to two variations of its own sounds per part, so songs in one genre don't all sound alike. A genre's signature sound accepts its own variations.
+- **Nothing off key.**
+  - The new sounds use only whole-number (harmonic) overtones.
+  - The renderer now tells every sound which notes are in the song's key. Sounds that stack intervals on one note use the key's own intervals:
+    - the colour bass's third and fifth;
+    - the tanpura drones on the fourth when the fifth isn't in the key, as players do;
+    - the trailer braam drops its fifth when it isn't in the key;
+    - the industrial stab ring-modulates on the octave.
+  - Fixed: the **tape keys** sound wobbled about 75 cents, audibly out of tune. It's now about ±6 cents.
+  - Fixed: the **glint chime** had off-key bell partials. It now uses harmonic ones.
+  - All 385 melodic sounds and the 118 variations were pitch-checked at three octaves. The only sounds that read off pitch are intentional: detuned stacks such as supersaws and hoovers (their normal chorus spread), the organ's octave stops, pitch sweeps and drops, and the gamelan's own tuning.
+
+**Dreamy synthscape**
+- **The lead was too quiet.** The whistle lead is up about 8 dB and now sits on top.
+- **It felt slow.** The tempo was right (about 107 BPM), but the original moves in triplets, three notes per beat, and ours pulsed once per beat. The pulse and the glitter arpeggios now run in triplets. The pulse rocks between two or three nearby chord tones, like the original. The rhythm now measures the same as the original (pulses at 3x and 1.5x the beat).
+- **More sounds to choose from:** bloom lead, tape flute, hum choir, glass keys, dust piano and tape bell join its pools.
+- **Harmony:** a vamp on the home chord's maj9 with a suspended V and the vi7 now and then (in A-flat: Abmaj9, Ebsus4, Fm7). Some songs instead loop on the relative minor (C minor: i – VI – III – VII), using the same notes.
+
+**Song structure: several layouts per genre, plus club layouts measured from real records**
+- **House, trance, dubstep and drum & bass now choose between several layouts**, a different one per song:
+  - **House:** a DJ layout (a long intro the parts come into, a long main section, a mix-out) and a song edit (two hooks with a breakdown between).
+  - **Trance:** a double-breakdown layout (a short break into the first drop, then the long one into the big drop) and a progressive layout (one long journey: a long groove, one big breakdown, one long drop).
+  - **Dubstep:** a VIP layout, where the second drop switches to a different bass, and a fake-out layout, where the first build stops on a stripped beat for a few bars, builds again, and then the real drop hits.
+  - **Drum & bass:** a DJ layout (a drums-first intro for mixing in, a switch-up second drop, a drums-and-bass outro) and a roller (the drop keeps going and switches up before the break).
+- **Club layouts from real records.** Section lengths in 16 dubstep, drum & bass and trance records were measured (an intro rolling straight into the drop, 64-bar drops, 16- or 32-bar breaks), and each genre got a layout in that shape. Pick **Extended / club** to get it. The genres also use it now and then on their own. These songs run about 5 minutes. Before, drops were about half that long.
+- **Parts come in one after another** in club intros (kick, hats, bass, snare, pads, arp, lead, each on its own 4-bar line). In club outros they leave in reverse.
+- **Long drops take a breath.** At some 16-bar phrase ends, the kick and bass drop out for two beats or a bar, or everything stops for a beat, then a crash brings it back.
+- Those records were also added to the "sounds closest to" matcher.
+
+**Windows: a real StudioLab.exe to pin to the taskbar**
+- The installer now puts a **StudioLab.exe** with the app icon in the program folder, and the Start menu and desktop shortcuts point to it. Right-click either one, or the running app, and choose **Pin to taskbar**.
+- The app window now uses the same taskbar identity as the pinned icon, so they share one taskbar button instead of the window showing up as a separate "Python" or Edge button.
+- The installer also includes the built-in app window (pywebview). If it's missing, the app falls back to an Edge app window as before.
+- Installs that update themselves inside the app don't get the launcher. Run the new Setup.exe once to get it.
+
+**New genre: Dreamy synthscape** (Chill, Lo-fi & Ambient)
+- Modelled on a chill synth piece, measured layer by layer. Almost every layer is a near-pure sine: two copies a hair out of tune beating slowly (about 1.2 Hz), a slow tape wobble (about 7 cents), nothing bright and no sub. There are no real drums; percussion is a quarter of a percent of the energy.
+- Six new sounds, built to match:
+  - **sine pad**: the slowly beating chord drone;
+  - **sine pulse**: soft chord tones that speak, settle about 6 dB and hold, played in quarter notes against a muffled heartbeat kick;
+  - **round bass**: a pure sine around 100 Hz, in the fuller parts only;
+  - **whistle lead**: a smooth sine that slides from note to note and wavers about ±40 cents, like a gently played whistle or theremin;
+  - **sine pluck** and **glint chime**: the background arpeggios. One is faint, around C5. The other glitters in octave 6, walking down the chord and fading through each 8-bar phrase.
+  - Also **warm pulse** and **glide tone** as alternatives.
+- **Harmony:** a near-static vamp on the home chord's maj7 / maj9 with a **suspended V** and the vi7 now and then (in A-flat: Abmaj9, Abmaj7, Ebsus4, Fm7). The voices keep the notes the chords share.
+  - Any genre can now name chords to voice as sus4 (`sus_degrees`).
+  - Any genre can add extra arpeggio layers that walk the chords at their own rate, direction and register (`arps2`).
+- **Form and mix:** one long swell (quiet, fuller, a hushed middle that ends in a dead tape stop, back in, fade). A steep cut below the bass (`sub_cut`) and a tone target taken from the original keep the mix within a few dB of it from the bass to 4 kHz.
+- Gentle genres skip the drop-evolving and call-and-response moves.
+
 ## 1.90.1
 - **Call and response at even volumes.** When a second sound answers the lead in the hooks, the answer is now matched to the lead by how loud it sounds to the ear, not by its raw level. The lead's doubled layer is counted too. Before, the answer could come in noticeably louder or quieter than the lead, depending on the two sounds: up to about 8 dB apart in the songs checked. It now sits just a touch under the lead.
 

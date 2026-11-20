@@ -43,7 +43,14 @@ jobs:
           "$PY" -m pip install --disable-pip-version-check --no-warn-script-location -q -r requirements.txt $EXTRA_PKGS
           "$PY" -m pip install --disable-pip-version-check --no-warn-script-location -q --only-binary=:all: numba || echo "numba not available here - the app uses its fallback filter / reverb"
           "$PY" -c "import numpy, scipy, pedalboard, soundfile, lameenc; print('bundled python ok')"
+          "$PY" -m pip install --disable-pip-version-check --no-warn-script-location -q pywebview || echo "pywebview not available - the app opens in an Edge app window instead"
           cp installer/windows/studio-lab.ico build/win/app/
+      - name: Build StudioLab.exe (the launcher you pin to the taskbar)
+        shell: pwsh
+        run: |
+          $csc = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
+          & $csc /nologo /target:winexe /optimize+ /win32icon:installer\windows\studio-lab.ico /out:build\win\app\StudioLab.exe installer\windows\launcher.cs
+          if ($LASTEXITCODE -ne 0 -or -not (Test-Path build\win\app\StudioLab.exe)) { throw 'launcher build failed' }
       - name: Build Setup.exe
         shell: pwsh
         run: |
@@ -58,6 +65,7 @@ jobs:
           Start-Process $setup.FullName -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/CURRENTUSER','/TASKS=desktopicon' -Wait
           $app = "$env:LOCALAPPDATA\Programs\Studio Lab"
           if (-not (Test-Path "$app\runtime\python\pythonw.exe")) { throw 'not installed' }
+          if (-not (Test-Path "$app\StudioLab.exe")) { throw 'no StudioLab.exe launcher' }
           if (-not (Test-Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Studio Lab.lnk")) { throw 'no Start menu shortcut' }
           $env:STUDIOLAB_NO_FFMPEG = '1'
           & "$app\runtime\python\python.exe" "$app\studiolab.py" generate --style house --length 0.3 --formats mp3 --out "$env:RUNNER_TEMP\out"

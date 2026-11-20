@@ -67,7 +67,7 @@ def _in(e, a, b):
 
 def evolve_drops(evs, sections, st, opts, tracks):
     """Second and later drops: one or two changes each, seeded by the song. Returns [(section index, change)]."""
-    if st.get('category') != 'Electronic' or getattr(opts, 'evolve', 'auto') == 'off':
+    if st.get('category') != 'Electronic' or getattr(opts, 'evolve', 'auto') == 'off' or st.get('gentle'):
         return []
     drops = [i for i, x in enumerate(sections) if (x.get('opts') or {}).get('drop')]
     done = []
@@ -137,7 +137,7 @@ def evolve_drops(evs, sections, st, opts, tracks):
 def call_response(evs, sections, st, opts, tracks, pool):
     """In the hook sections, every other two bars the lead rests and a second sound answers with the lead's phrase
     (an octave up or down, a little varied). Returns the answer track or None."""
-    if getattr(opts, 'call_response', 'auto') == 'off' or st.get('composer') or 'lead' not in tracks:
+    if getattr(opts, 'call_response', 'auto') == 'off' or st.get('composer') or 'lead' not in tracks or st.get('gentle'):
         return None
     if st.get('category') not in ('Electronic',) and st.get('name') not in ('pop', 'kpop', 'teen_pop', 'synthpop', 'dance_pop'):
         return None
@@ -285,6 +285,12 @@ def genre_fills(evs, fx, sections, st, opts, tracks, seed=0):
     g = st.get('name') or opts.style
     rnd = _r.Random(f'{seed}-{g}-fills')
     done = []
+    for i, sec in enumerate(sections):                               # a section written to end in a dead stop
+        if sec['opts'].get('stop_end'):
+            e1 = (sec['bar'] + sec['bars']) * 4
+            fx.append(('tapestop', e1 - 2, 1.5))
+            fx.append(('gap', e1 - 0.5, 0.5))
+            done.append(('tape stop', i))
     drops = [i for i, s in enumerate(sections) if s['opts'].get('drop')]
     snares = [s for s in st.get('snare_tracks', []) if s in tracks]
     if g in REWIND_GENRES and len(drops) >= 2:
@@ -332,3 +338,144 @@ def genre_fills(evs, fx, sections, st, opts, tracks, seed=0):
                 fx.append(('lpsweep', b0, b1 - b0))
             done.append(('snare roll rise', i))
     return done
+
+
+# ----------------------------------------------------------------------------- (1.91) structure moves
+LAYER_ORDER = ('kick', 'top', 'bass', 'snare', 'pad', 'chords', 'arp', 'lead')
+
+
+def _role(t):
+    return t.get('layer')
+
+
+def structure_moves(evs, sections, st, opts, tracks, bass_pool, fx=None):
+    """Section options from the club layouts:
+    - layer_in: the parts come in one after another, on 4-bar lines (kick, hats, bass, snare, pads, arp, lead) -
+      the way a club track's intro is built for a DJ to mix in;
+    - layer_out: the reverse at the end - the melodic parts leave first, the kick and hats last;
+    - switch: a switch-up drop (VIP) - the bass line moves to a different bass sound from the genre.
+    Returns the switch-up bass track to add, or None."""
+    if st.get('composer'):
+        return None
+    for sec in sections:
+        o = sec['opts']
+        if not (o.get('layer_in') or o.get('layer_out')):
+            continue
+        b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+        inside = [e for e in evs if b0 <= e.beat < b1]
+        roles = [r for r in LAYER_ORDER if any(_role(tracks.get(e.track, {})) == r for e in inside)]
+        if len(roles) < 2:
+            continue
+        if o.get('layer_out'):
+            roles = roles[::-1]                                # first to leave: the last to have come in
+        bars = sec['bars']
+        at = {r: int(round(i * bars / len(roles) / 4)) * 4 for i, r in enumerate(roles)}
+        drop_ids = set()
+        n_ = len(roles)
+        for e in inside:
+            r = _role(tracks.get(e.track, {}))
+            if r not in at:
+                continue
+            i = roles.index(r)
+            if o.get('layer_in') and e.beat < b0 + 4 * at[r]:          # not in yet
+                drop_ids.add(id(e))
+            gone = (n_ - 1 - i) * bars // n_ // 4 * 4                   # layer_out: roles[0] leaves first, the last stays
+            if o.get('layer_out') and gone and e.beat >= b1 - 4 * gone:
+                drop_ids.add(id(e))
+        evs[:] = [e for e in evs if id(e) not in drop_ids]
+    import random as _rb
+    rb = _rb.Random(f'{opts.seed}-{st.get("name")}-breaths')
+    for sec in sections:                                       # breaths: long drops take a breath at phrase ends
+        if not sec['opts'].get('breaths'):
+            continue
+        b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+        for ph in range(int(b0) + 64, int(b1) - 1, 64):         # every 16 bars, not at the end of the drop
+            big = (ph - b0) % 128 == 0
+            if not big and rb.random() < 0.55:
+                continue
+            kind = rb.choice(['beats', 'bar', 'stop'] if big else ['beats', 'beats', 'stop'])
+            cut = 2.0 if kind == 'beats' else (4.0 if kind == 'bar' else 1.0)
+            low = {'kick', 'bass'} | ({'snare'} if kind != 'beats' else set())
+            evs[:] = [e for e in evs if not (ph - cut <= e.beat < ph and (tracks.get(e.track, {}).get('layer') in low))]
+            for e in evs:                                       # notes ringing into the breath are cut at its start
+                if tracks.get(e.track, {}).get('layer') in ('bass',) and e.beat < ph - cut < e.beat + e.dur:
+                    e.dur = max(0.1, ph - cut - e.beat)
+            if fx is not None:
+                if kind == 'stop':
+                    fx.append(('gap', ph - cut, cut))
+                fx.append(('crash', ph, 0))
+    sw = [s for s in sections if s['opts'].get('switch')]
+    bass = tracks.get('bass')
+    if not sw or not bass or bass.get('user_pick'):
+        return None
+    import random as _r
+    rnd = _r.Random(f'{opts.seed}-{st.get("name")}-vip')
+    cands = [b for b in bass_pool if b != bass.get('inst') and not str(b).startswith('808')]
+    if not cands:
+        return None
+    t = dict(bass)
+    t.update(name='bass_vip', inst=rnd.choice(cands), p={}, pooled=True)
+    t.pop('user_pick', None)
+    t.pop('double_of', None)
+    moved = 0
+    for s in sw:
+        b0, b1 = s['bar'] * 4, (s['bar'] + s['bars']) * 4
+        for e in evs:
+            if e.track == 'bass' and b0 <= e.beat < b1:
+                e.track = 'bass_vip'
+                moved += 1
+    st['switch_bass'] = t['inst'] if moved else None
+    return t if moved else None
+
+
+# ----------------------------------------------------------------------------- (1.91) background arpeggios
+def extra_arps(evs, sections, st, opts, tracks):
+    """More arpeggio layers behind the main parts (styles with 'arps2'): each walks the current chord's tones at its
+    own rate, direction and register - e.g. a faint 8th-note line around C5 and a glittery one in octave 6 that starts
+    each phrase brightly and fades into the reverb. They play where the section has its arp. Returns the note count."""
+    specs = st.get('arps2') or []
+    if not specs or st.get('composer'):
+        return 0
+    import random as _r
+    chords = {}
+    for e in evs:
+        if e.track == 'chords' and e.midi is not None:
+            chords.setdefault(round(e.beat, 3), []).append(e.midi)
+    starts = sorted(chords)
+    if not starts:
+        return 0
+    made = 0
+    for spec in specs:
+        name = spec['track']
+        if name not in tracks or tracks[name].get('off'):
+            continue
+        rnd = _r.Random(f'{opts.seed}-{name}-arps2')
+        step, center, mode = float(spec.get('step', 0.5)), int(spec.get('center', 76)), spec.get('mode', 'down')
+        for sec in sections:
+            if 'arp' not in (sec.get('layers') or []) or sec['opts'].get('build'):
+                continue
+            b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+            k = 0
+            beat = float(b0)
+            while beat < b1 - 1e-6:
+                c0 = max([s for s in starts if s <= beat + 1e-6] or [starts[0]])
+                pcs = sorted({m % 12 for m in chords[c0]})
+                sp = int(spec.get('span', 7))                         # how far from its centre it may reach
+                notes = sorted(n for n in range(center - sp, center + sp + 1) if n % 12 in pcs)
+                if notes and rnd.random() < spec.get('prob', 0.9):
+                    if mode == 'down':
+                        m = notes[::-1][k % len(notes)]
+                    elif mode == 'up':
+                        m = notes[k % len(notes)]
+                    elif mode == 'updown':
+                        cyc = notes + notes[-2:0:-1]
+                        m = cyc[k % len(cyc)]
+                    else:
+                        m = rnd.choice(notes)
+                    ph = ((beat - b0) % (4 * spec.get('phrase', 8))) / (4 * spec.get('phrase', 8))
+                    vel = spec.get('vel', 0.6) * (1 - spec.get('fade', 0.0) * ph)        # bright at the phrase start
+                    evs.append(type(evs[0])(name, beat, step * 0.9, m, vel))
+                    made += 1
+                k += 1
+                beat += step
+    return made
