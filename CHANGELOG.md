@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.92.1
+- **Dreamy synthscape: the bass no longer feels off the beat.** The bass and kick notes always landed together, but the mix made them feel apart:
+  - **The bass was ducked by the kick** (sidechain, plus the kick / bass dodge). It dipped on every beat and swelled back in between, so the low end pumped on the off-beats. It now holds steady and peaks right on the kick.
+  - **The pulse was ducked on straight quarter notes** while it plays in triplets, so the ducking fought its rhythm. It's now ducked only slightly, and the pads breathe less.
+  - **The round bass spoke slowly.** Its attack went from 40 ms to 12 ms, so it lands with the kick.
+
 ## 1.92.0
 **More sounds in every genre, and everything kept in key**
 - **22 new sounds**, each filed with the genres that use them:
