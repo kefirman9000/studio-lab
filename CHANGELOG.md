@@ -1,5 +1,52 @@
 # Changelog
 
+## 1.85.0
+**Songs that develop instead of looping**
+- **Melody check:** each song writes four candidate hooks and keeps the strongest. Hooks are scored on:
+  - range and steps with a few leaps;
+  - a clear shape;
+  - phrases that repeat with a change;
+  - a high point late in the phrase;
+  - an ending that lands on a chord tone.
+  The rest of the song is unchanged.
+- **Later drops evolve.** In electronic genres, the second and later drops each change something:
+  - the lead climbs an octave halfway through;
+  - the bass adds off-beat pushes;
+  - the last bar stutters into the next section;
+  - the last two bars go half-time;
+  - the arp doubles the lead an octave up.
+  The final drop gets two changes.
+- **Call and response:** in about half of electronic and pop songs, a second sound answers the lead every other two bars in the hooks. It plays the lead's phrase, often an octave apart. It shows up in the editor as its own part, "answer".
+- **4th / 8th-bar variation:** small changes at phrase ends so loops don't repeat bit for bit:
+  - a dropped hat;
+  - a ghost snare;
+  - an arp note moved within the chord.
+  Locked parts stay note-for-note.
+- **Basslines step into the next chord** in house, funk, DnB, trance, pop and chill genres, not only the acoustic ones. 808s, acid lines and riff basses keep their written line.
+
+**Transitions**
+- New **risers tuned to the song's key**, one per genre family:
+  - a supersaw that climbs two octaves with the filter opening and a stutter at the end (house, trance, big room);
+  - an FM siren whose wobble speeds up (dubstep, bass music);
+  - a noise sweep over a saw (DnB, breaks).
+- **Impacts** are now a sub drop on the song's root note, with a noise burst and a short tail.
+- **Downlifters** now fall in pitch and filter.
+- All three widen as they move. Classic synth mode keeps the old ones.
+
+**Production**
+- **Sidechain shape per genre family:**
+  - "pump" holds the dip, then swings back: big room, house, electro;
+  - "breathe" is shallow and smooth: trance, deep and melodic house;
+  - "tight" ducks only the kick's attack: DnB, breaks, dubstep.
+- **Masters are never squashed flat:** the whole song keeps at least ~8 dB between its peaks and its loudness. Big room and dubstep masters had only ~7 dB left.
+- **Reverb and delay step back while the lead plays** and bloom in its gaps.
+- **Delay throws:** the lead's phrase-ending notes are thrown into the delay.
+- **The production pass is now on by default.** After mastering, the mix check runs; anything it finds (tone far from the genre's references, too wide, squashed, harsh) is fixed and the song is mastered again. The better version is kept. It can correct tone by up to 5 dB per band, up from 3.
+- **Reference matching by section:** a reference song's quiet part (its breakdown) is measured too. Your song's quiet sections are matched to it, and its loud sections to the reference's loud parts.
+
+**Fixed**
+- The plucked moog bass now closes its filter properly after the attack, so it is clearly darker than the sustained one.
+
 ## 1.84.1
 - **Moog-style basses re-voiced: dark, round and warm.** The 1.84 version was far too bright: genres pass a filter setting tuned for the old bass, and the new one multiplied it up to seven times on every note, opening the filter past 6-10 kHz.
   - The genre's setting is now the most the filter ever opens, on a hard hit, and it settles well below that.

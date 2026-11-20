@@ -5966,7 +5966,7 @@ def _moog_core(m, dur, p, glide, pluck):
     # the genre's filter value is the most the filter ever opens (on a hard hit); it settles well below, never far
     # above the low harmonics - a round, dark, warm bass that sits under the mix instead of buzzing over it
     peak = min(float(p.get('cut', 700)), 1800.0) * (0.75 + 0.25 * vel) * (f / 55.0) ** 0.25
-    rest = max(peak * (0.3 if pluck else 0.62), f * 2.5)
+    rest = max(peak * (0.18 if pluck else 0.62), f * (1.4 if pluck else 2.5))   # (the pluck closes right down)
     cut = rest + (peak - rest) * np.exp(-t / p.get('fd', 0.07 if pluck else 0.12))
     y = _va.vcf(x * 0.4, cut, p.get('res', 0.25), 1.2)
     y = lp(y, 2600)                                                      # no fizz on top, whatever the filter does

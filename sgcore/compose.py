@@ -59,6 +59,10 @@ class Options:
     blend: list = field(default_factory=list)          # extra styles to fuse with the main style
     blend_parts: dict = field(default_factory=dict)    # part -> style  (groove, bass, harmony, melody, form, mix)
     part_seeds: dict = field(default_factory=dict)     # re-roll one part: harmony, melody, drums, bass, chords
+    melody_check: str = 'auto'    # (1.85) write a few hooks, keep the strongest | off
+    evolve: str = 'auto'          # (1.85) later drops develop (octave climb, bass pushes, stutters, half-time) | off
+    call_response: str = 'auto'   # (1.85) a second sound answers the lead in the hooks: auto | on | off
+    bar_variation: str = 'auto'   # (1.85) small changes in the 4th / 8th bar of phrases | off
     variety: float = 0.5          # 0..1 how adventurous each song's sound palette, grooves and arrangement get
     user_drums: bool = False      # use the drum samples you loaded instead of the built-in kit
     sections: list = None         # section editor: [{src, copy, bars, seeds{part:int}, vary:int, mute:[layers]}]
@@ -73,7 +77,8 @@ class Options:
     part_levels: dict = field(default_factory=dict)   # layer -> dB offset (-12..+6), e.g. {'lead': -3}
     master_preset: str = None     # None = genre | streaming | radio | club | vinyl (vinyl-safe) | film (stem, no squeeze)
     ref_tone: list = None         # tonal balance of a reference song (9 bands, dB) - the master is steered toward it
-    production_pass: bool = False # after the master: read the mix check, fix what it finds, master again
+    ref_tone_quiet: list = None   # (1.86) ... and of its quiet part (breakdown), for the song's quiet sections
+    production_pass: bool = True  # after the master: read the mix check, fix what it finds, master again (on by default 1.86)
     sound_seed: int = None        # 🎲 Re-roll sounds: re-picks every sound (layers, section sounds, drum voices), same notes
     automation: dict = field(default_factory=dict)    # song editor volume lines: track id -> [[beat, dB], ...] (dB <= -60 = silent)
     note_edits: dict = None       # song editor note edits: {'del': [[track, beat, midi]], 'add': [[track, beat, dur, midi, vel]]}
@@ -705,6 +710,9 @@ def resolve_style(opts, rnd=None, mood=None):
     rt = getattr(opts, 'ref_tone', None)
     if isinstance(rt, (list, tuple)) and len(rt) == 9:     # match a reference song's tonal balance
         m['tone'] = [float(v) for v in rt]
+        rq = getattr(opts, 'ref_tone_quiet', None)
+        if isinstance(rq, (list, tuple)) and len(rq) == 9:
+            m['tone_quiet'] = [float(v) for v in rq]
     m['genre_width'] = float(st['master'].get('width', 1.0))     # the genre's own width (it used to be overwritten)
     m['width'] = opts.width
     m['drive'] = opts.drive
@@ -1251,7 +1259,26 @@ def compose(opts):
     from .theory import MAQAM_QUARTER
     theme = {} if (getattr(opts, 'motif', 'song') or 'song') != 'free' and key.scale_name not in MAQAM_QUARTER else None
     # (one tune for the whole song; maqam melodies stay free - modal, taqsim-like lines that keep finding the half-flat notes)
-    mel_main, ph_bars = gen_melody(key, prog_main, cb, st, rnd_m, cx, theme, 'main')
+    if (getattr(opts, 'melody_check', 'auto') or 'auto') != 'off' and not st.get('composer'):
+        # (1.85) the melody check: a few hooks are written and the strongest kept; the rest of the song is unchanged
+        import copy as _copy
+        from .evolve import score_hook
+        th0 = _copy.deepcopy(theme)
+        mel_main, ph_bars = gen_melody(key, prog_main, cb, st, rnd_m, cx, theme, 'main')
+        after = rnd_m.getstate()
+        best = (score_hook(mel_main, key, 4 * ph_bars if ph_bars else 8), mel_main, ph_bars, theme)
+        for k_ in range(1, 4):
+            th_ = _copy.deepcopy(th0)
+            msd = ps.get('melody') if ps.get('melody') is not None else opts.seed * 1009 + 2
+            cand = gen_melody(key, prog_main, cb, st, random.Random(f'{msd}-hook{k_}'), cx, th_, 'main')
+            sc = score_hook(cand[0], key, 4 * cand[1] if cand[1] else 8)
+            if sc > best[0] + 0.04:
+                best = (sc, cand[0], cand[1], th_)
+        _, mel_main, ph_bars, theme = best
+        rnd_m.setstate(after)
+        st['hook_score'] = round(best[0], 3)
+    else:
+        mel_main, ph_bars = gen_melody(key, prog_main, cb, st, rnd_m, cx, theme, 'main')
     mel_alt, ph_alt = gen_melody(key, prog_alt, cb, st, rnd_m, cx, theme, 'alt')
     mel_verse, ph_verse = gen_melody(key, prog_verse, cb, st, rnd_m, cx, theme, 'verse')
     st['_motif'] = theme
@@ -1569,7 +1596,7 @@ def compose(opts):
                         else:
                             m = root
                         evs.append(Ev('bass', beat0 + step / 4, l / 4 * gate, m, rnd_b.uniform(0.85, 1.0)))
-                    pp = BASS_PASS.get(sname_style, 0.0)
+                    pp = bass_pass(sname_style, st)
                     if pp and nxt != chord and b % cb == cb - 1 and rnd_bp.random() < pp:
                         tgt = fold(key.deg(nxt, 2), lo)        # a scale step leading into the next chord's root
                         side = -1 if tgt >= root else 1
@@ -1865,6 +1892,15 @@ def compose(opts):
         chop_samples(evs, tracks, random.Random(opts.seed * 53 + 1))
     if st.get('switchups'):                              # switch-up 808: no two bars of the 808 alike
         bar_switchups(evs, tracks, sections, st, random.Random(opts.seed * 67 + 5))
+    from . import evolve as _ev                          # (1.85) songs that develop instead of looping (before the
+    from .styles import POOLS as POOLS_                  # layers copy the notes, so a doubled lead climbs with it)
+    st['evolved'] = _ev.evolve_drops(evs, sections, st, opts, tracks)
+    _ans = _ev.call_response(evs, sections, st, opts, tracks,
+                             [x for r_ in ('lead', 'arp') for x in (POOLS_.get(opts.style, {}).get(r_) or [])])
+    if _ans:
+        tracks['answer'] = _ans
+        st['tracks'].append(_ans)
+    st['bar_variations'] = _ev.bar_variation(evs, sections, st, opts)
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     if not st.get('composer'):
@@ -1996,6 +2032,21 @@ BASS_PASS = {'math_rock': 0.45, 'idm_jungle_theme': 0.5, 'drill_space': 0.6, 'po
              'synthpop': 0.2, 'eurodance': 0.15, 'downtempo': 0.25, 'lofi': 0.25, 'boombap': 0.2, 'symphonic_metal': 0.2,
              'country': 0.5, 'bluegrass': 0.6, 'motown': 0.4, 'gospel': 0.4, 'ska': 0.3, 'tango': 0.3, 'indie_rock': 0.3,
              'cumbia': 0.25, 'kpop': 0.2, 'jam_band': 0.5, 'soft_rock': 0.4, 'teen_pop': 0.2}
+BASS_PASS_GROUP = {'House & Disco': 0.25, 'Funk, Soul & Disco': 0.4, 'Drum & Bass, Breaks & Hard': 0.15,
+                   'Techno & Trance': 0.08, 'Pop, R&B & Hopecore': 0.2, 'Chill, Lo-fi & Ambient': 0.2}
+
+
+def bass_pass(style, st):
+    """(1.85) How often the bass steps into the next chord's root: the genre's own value, else its family's (808s,
+    acid lines and riff basses keep their written line)."""
+    if style in BASS_PASS:
+        return BASS_PASS[style]
+    if is_808(next((t['inst'] for t in st.get('tracks', []) if t['name'] == 'bass'), '')) or st.get('riff_locked'):
+        return 0.0
+    from .genre_groups import group_of
+    return BASS_PASS_GROUP.get(group_of(style), 0.0)
+
+
 # genres that get a counter-melody (when the genre decides): the instruments that play it, likeliest first
 COUNTER_STYLES = {
     'festive_cinematic': ['horn', 'cello', 'clarinet'],

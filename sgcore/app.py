@@ -710,7 +710,12 @@ class Handler(BaseHTTPRequestHandler):
                         xm = np.asarray(pcm, dtype=np.float64)
                         if sr_ != 44100:
                             xm = resample_poly(xm, 44100, sr_, axis=-1)
-                        res['tone'] = [round(float(v), 1) for v in band_balance(xm if xm.ndim == 2 else np.vstack([xm, xm]))]
+                        xs = xm if xm.ndim == 2 else np.vstack([xm, xm])
+                        res['tone'] = [round(float(v), 1) for v in band_balance(xs)]
+                        from .render import band_balance_quiet
+                        tq = band_balance_quiet(xs)
+                        if tq is not None:                # (1.86) its breakdown's balance too
+                            res['tone_quiet'] = [round(float(v), 1) for v in tq]
                     except Exception:                     # noqa: BLE001 - a bonus
                         pass
                     try:                                  # the genres this sounds closest to (tempo, key, drum feel, sound)

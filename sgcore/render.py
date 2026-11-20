@@ -219,6 +219,40 @@ def band_balance(x):
     return db - db.max()
 
 
+def band_balance_quiet(x):
+    """(1.86) The tonal balance of a mix's quiet-but-playing part (its breakdown): the quietest 15 s whose level is
+    within 18 dB of the loudest. None when the song has no clear quiet part."""
+    m = np.asarray(x, np.float64).mean(axis=0)
+    hop = SR // 4
+    e = uniform_filter1d(m ** 2, SR)[::hop]
+    w = 60                                                    # 15 s in quarter-second steps
+    if len(e) < w * 3:
+        return None
+    win = np.convolve(e, np.ones(w) / w, 'valid')
+    db = 10 * np.log10(win + 1e-12)
+    ok = np.where(db > db.max() - 18)[0]
+    if not len(ok):
+        return None
+    i = ok[np.argmin(db[ok])]
+    if db.max() - db[i] < 3:                                  # nothing quieter than the loud part: no quiet section
+        return None
+    seg = m[i * hop:i * hop + 15 * SR]
+    f, P = signal.welch(seg, SR, nperseg=8192)
+    out = np.array([10 * np.log10(P[(f >= a) & (f < b)].sum() + 1e-12) for a, b in TONE_BANDS])
+    return out - out.max()
+
+
+def loud_mask(x, span_db=8.0):
+    """0..1 per sample: 1 in the song's loud parts, 0 in its quiet parts (2 s smoothing), from the short-term level."""
+    m = np.asarray(x, np.float64).mean(axis=0)
+    hop = SR // 10
+    e = uniform_filter1d(m ** 2, 2 * SR)[::hop]
+    db = 10 * np.log10(e + 1e-12)
+    top = np.percentile(db, 95)
+    k = np.clip((db - (top - span_db)) / (span_db * 0.6), 0, 1)
+    return np.interp(np.arange(len(m)), np.arange(len(k)) * hop, k)
+
+
 def tone_match(x, target, log=print, amount=0.6, limit=3.0):
     """Gentle reference matching: compare the mix's band balance with the genre's reference records and nudge each
     band part of the way there (at most +-3 dB), with broad peaking EQs - the sub with a low shelf, the air with a high
@@ -908,12 +942,84 @@ class Renderer:
                 g[a:b] = np.linspace(r[0], r[1], b - a)
         return uniform_filter1d(g, int(0.4 * SR))
 
+    def return_duck(self):
+        """0..1 envelope of the dry lead (10 ms attack, 300 ms release), for ducking the reverb / delay returns."""
+        k = self._lead_key
+        if not np.any(k):
+            return None
+        hop = 220
+        m = len(k) // hop
+        e = k[:m * hop].reshape(m, hop).max(axis=1)
+        out = np.empty_like(e)
+        y, rel = 0.0, np.exp(-hop / (0.3 * SR))
+        for i, v in enumerate(e):
+            y = v if v > y else v + (y - v) * rel
+            out[i] = y
+        ref = float(np.percentile(out[out > 0], 90)) if np.any(out > 0) else 1.0
+        out = np.clip(out / (ref + 1e-9), 0, 1)
+        full = np.interp(np.arange(len(k)), np.arange(m) * hop + hop / 2, out).astype(np.float32)
+        return full
+
+    def throw_notes(self, evs):
+        """(1.86) A mask that is 1 on the lead's phrase-ending notes (a note followed by at least a beat of rest) and 0
+        elsewhere: those notes get thrown into the delay, the way an engineer rides the echo send at a phrase's end."""
+        ns = sorted((e for e in evs if e.midi is not None), key=lambda e: e.beat)
+        if len(ns) < 4:
+            return None
+        mask = np.zeros(self.length, dtype=np.float32)
+        hit = False
+        for a, b in zip(ns, ns[1:] + [None]):
+            gap = (b.beat - (a.beat + a.dur)) if b is not None else 4.0
+            if gap >= 1.0:
+                s0 = int(self.t_of(a.beat, human=False) * SR)
+                s1 = min(self.length, int(self.t_of(a.beat + a.dur, human=False) * SR) + int(0.05 * SR))
+                if s1 > s0:
+                    mask[s0:s1] = 1.0
+                    hit = True
+        if not hit:
+            return None
+        return np.convolve(mask, np.ones(441) / 441, 'same').astype(np.float32)
+
+    def sc_shape(self):
+        """(1.85) The sidechain's shape for this genre family: 'pump' (holds the dip, then swings back - big room,
+        French / club house), 'breathe' (shallow and smooth - dreamy trance, deep / melodic house), 'tight' (only the
+        kick's attack - DnB, breaks, dubstep), or 'classic' (the old curve)."""
+        st = self.st
+        if st.get('sc_shape'):
+            return st['sc_shape']
+        if not _va.analog():
+            return 'classic'
+        name = st.get('name') or getattr(self.opts, 'style', '')
+        if name in SC_SHAPE_GENRE:
+            return SC_SHAPE_GENRE[name]
+        from .genre_groups import group_of
+        g = group_of(name)
+        if any(w in name for w in ('deep', 'melodic', 'organic', 'progressive', 'dream', 'balearic', 'chill', 'sunny')):
+            return 'breathe'
+        return SC_SHAPE_GROUP.get(g, 'classic')
+
     def sidechain_curve(self, release_beats):
         duck = np.zeros(self.length, dtype=np.float32)
+        kind = self.sc_shape()
+        if kind == 'tight':
+            release_beats = min(release_beats, 0.3)
+        elif kind == 'breathe':
+            release_beats = max(release_beats, 0.6)
         rel = release_beats * self.spb
         n = int(rel * SR)
         t = np.arange(n) / SR
-        shape = ((1 - np.clip(t / rel, 0, 1)) ** 2 * np.minimum(t / 0.004, 1)).astype(np.float32)
+        x = np.clip(t / rel, 0, 1)
+        if kind == 'pump':                               # holds the dip for a moment, then swings back up (S-curve)
+            hold = 0.18
+            y = np.clip((x - hold) / (1 - hold), 0, 1)
+            body = 1 - (3 * y ** 2 - 2 * y ** 3)
+        elif kind == 'breathe':                          # a smooth cosine dip, shallower (depth x 0.75)
+            body = 0.75 * (0.5 + 0.5 * np.cos(np.pi * x))
+        elif kind == 'tight':
+            body = (1 - x) ** 3
+        else:
+            body = (1 - x) ** 2
+        shape = (body * np.minimum(t / 0.004, 1)).astype(np.float32)
         for kt in self.kick_times():
             s = int(kt * SR)
             if s >= self.length:
@@ -939,6 +1045,8 @@ class Renderer:
         self.low_env = {}                                   # layer -> 10 ms peak envelope below 100 Hz (kick, bass)
         drums = np.zeros((2, L), dtype=np.float32)
         rev_send = np.zeros((2, L), dtype=np.float32)
+        self._duck_on = _va.analog() and st.get('category') != 'Orchestral' and getattr(opts, 'send_duck', 'auto') != 'off'
+        self._lead_key = np.zeros(L, dtype=np.float32)
         dly_send = np.zeros((2, L), dtype=np.float32)
         b2s = lambda b: int(self.t_of(b, human=False) * SR)
         dub_send, throw = None, None
@@ -1067,6 +1175,12 @@ class Renderer:
                 e_ = lo_e[:m_ * hop].reshape(m_, hop).max(axis=1)
                 prev_ = self.low_env.get(tcfg['layer'])
                 self.low_env[tcfg['layer']] = e_ if prev_ is None else np.maximum(prev_[:m_], e_[:len(prev_)])
+            if tcfg['layer'] == 'lead' and np.any(buf) and self._duck_on:
+                self._lead_key += np.abs(buf.mean(axis=0))          # (1.86) the dry lead ducks the echo / reverb returns
+                if not st.get('dub'):                               # ... and its phrase endings are thrown into the delay
+                    tm = self.throw_notes(evs)
+                    if tm is not None:
+                        dly_send += buf * tm[None, :] * np.float32(max(0.12, tcfg['dly']) * 1.6 * max(0.4, opts.delay))
             if tcfg['rev']:
                 rev_send += buf * np.float32(tcfg['rev'] * opts.reverb)
             if tcfg['dly'] and tcfg.get('dly_time'):         # this part's own echo time (a 1/8 pluck under a dotted-8th lead)
@@ -1101,14 +1215,23 @@ class Renderer:
         # ---- one-shot FX
         fxbuf = np.zeros((2, L), dtype=np.float32)
         if 'fx' not in (opts.muted or []):
+            new_fx = _va.analog()                               # (classic synth character keeps the old FX)
+            root_hz = 440.0 * 2 ** (((song['key'].root % 12) + 48 - 69) / 12) if song.get('key') is not None else 65.4
+            from .genre_groups import group_of
+            rstyle = st.get('riser_style') or RISER_FAMILY.get(group_of(st.get('name') or opts.style), 'noise')
             for kind, b, d in song['fx']:
                 s = b2s(b)
                 if kind == 'crash':
                     self._add(fxbuf, self._drum('crash') * 0.5, s)
                 elif kind == 'impact':
-                    self._add(fxbuf, fx_impact().astype(np.float32) * 0.8, s)
+                    self._add(fxbuf, fx_impact2(root_hz, seed=int(b)) if new_fx else fx_impact().astype(np.float32) * 0.8, s)
+                elif kind == 'riser' and d > 0 and new_fx:
+                    sec = max(0.5, self._bt(b + d) - self._bt(b))
+                    self._add(fxbuf, fx_riser2(sec, root_hz, rstyle, self.spb, seed=int(b)) * 0.75, s)
                 elif kind == 'riser' and d > 0:
                     self._add(fxbuf, fx_riser(d * self.spb).astype(np.float32) * 0.6, s)
+                elif kind == 'downlift' and d > 0 and new_fx:
+                    self._add(fxbuf, fx_downlift2(max(0.5, self._bt(b + d) - self._bt(b)), root_hz, seed=int(b)), s)
                 elif kind == 'cymroll' and d > 0:             # suspended cymbal roll (soft mallets), swelling to the edge
                     self._add(fxbuf, fx_cymroll(max(0.5, self._bt(b + d) - self._bt(b))), s)
                 elif kind == 'wash' and d > 0:                # a filtered noise wash opening up (no synth tone)
@@ -1151,6 +1274,7 @@ class Renderer:
         # ---- returns
         self.log('   reverb + delay returns')
         returns = np.zeros_like(mix)
+        rduck = self.return_duck() if self._duck_on else None
         if np.any(rev_send):
             ir = make_spring_ir(st['reverb']) if st.get('spring') else room_ir(st['reverb'], st.get('rev_predelay', 0.02),
                                                                                  st.get('category'))
@@ -1168,12 +1292,16 @@ class Renderer:
                     rv = eq(pv * (a / b), 'lowshelf', 300, 0.7, -3.0)
             if duck is not None:
                 rv *= (1 - duck * sc_depth * 0.7)[None, :]
+            if rduck is not None:
+                rv *= (1 - 0.35 * rduck)[None, :]
             returns += rv * 0.55
         for k_, snd in self._dly_extra.items():
             if np.any(snd):
                 returns += hp(pingpong(snd.astype(np.float64), k_ * self.spb, fb=0.4), 250) * 0.45
         if np.any(dly_send):
             dl = hp(pingpong(dly_send.astype(np.float64), st['delay_beats'] * self.spb, fb=0.42), 250)
+            if rduck is not None:                        # the echoes step back while the lead plays, bloom in its gaps
+                dl *= (1 - 0.6 * rduck)[None, :]
             returns += dl * 0.45
             if np.any(rev_send):
                 returns += reverb(dl * 0.3, ir) * 0.3
@@ -1768,7 +1896,16 @@ def master(x, cfg, log=print):
     x = eq(x, 'peak', 3000, 0.8, 0.5)
     x = eq(x, 'highshelf', 9000, 0.7, cfg.get('air', 1.5))
     if cfg.get('tone'):                # steer the tonal balance toward the genre's reference records
-        x = tone_match(x, cfg['tone'], log, amount=float(cfg.get('tone_amount', 0.6)))
+        x0 = x
+        x = tone_match(x, cfg['tone'], log, amount=float(cfg.get('tone_amount', 0.6)), limit=float(cfg.get('tone_limit', 3.0)))
+        if cfg.get('tone_quiet') and x.shape[1] > 30 * SR:
+            # (1.86) a reference song's quiet parts have their own balance (a breakdown is thinner, darker or airier
+            # than the drop): the song's loud parts are matched to the reference's loud parts, its quiet parts to the
+            # reference's quiet parts, crossfaded by the song's own loudness
+            xq = tone_match(x0, cfg['tone_quiet'], lambda *a: None, amount=float(cfg.get('tone_amount', 0.6)), limit=3.0)
+            m = loud_mask(x0)
+            x = xq * (1 - m)[None, :] + x * m[None, :]
+            log('   tone match: quiet sections matched to the reference\'s quiet sections')
     if cfg.get('vintage_lp'):        # a 60s tape / tube top end: rolls off above this (Hz) - dark, warm, bass-forward
         x = lp(x, float(cfg['vintage_lp']))
     if cfg.get('lofi'):
@@ -1822,6 +1959,17 @@ def master(x, cfg, log=print):
         if abs(err) < 0.1 or (err > 0 and g_db >= g_cap - 1e-6):
             break
         g_db += err
+    # (1.85) never squashed flat: the whole song keeps at least ~7.8 dB between its peaks and its loudness (big room
+    # and dubstep masters used to reach -7.9 LUFS with 6.9 dB left - loud, but the kick and drops lost their punch)
+    min_plr = float(cfg.get('min_plr', 8.0))
+    if min_plr > 0:
+        short = min_plr - (-1.0 - lufs(y))
+        if short > 0.15:
+            g_db -= short
+            y = peak_round(x * 10 ** (g_db / 20))
+            if clip_amt > 0:
+                y = clip_stage(y, out_db=0.8 * clip_amt)
+            y = limiter(low_limit(y, 10 ** (-1.0 / 20) * 0.78), ceiling_db=-1.0, hold=0.025)
     # true peak: the peaks between the samples (4x oversampled) kept under -1 dBTP, so the file never clips when
     # it's converted to MP3 / AAC or played through a DAC that reconstructs the waveform
     ceil_ = 10 ** (-1.0 / 20)
@@ -1833,3 +1981,103 @@ def master(x, cfg, log=print):
         if tp > ceil_:
             y = y * (ceil_ / tp)
     return y
+
+
+# ----------------------------------------------------------------------------- 1.85: transition FX, tuned to the key
+# Each genre family has its own riser: a supersaw that climbs two octaves with the filter opening and a stutter at the
+# end (house / trance / big room), an FM siren whose wobble speeds up (dubstep / bass), a noise sweep with a saw
+# underneath (DnB / breaks), a plain noise sweep elsewhere. Impacts are a sub drop on the song's root note with a noise
+# burst and a short tail; downlifters fall in pitch and filter. All in stereo, widening as they rise.
+SC_SHAPE_GROUP = {'House & Disco': 'pump', 'Techno & Trance': 'classic', 'Drum & Bass, Breaks & Hard': 'tight',
+                  'Dubstep, Garage & Bass': 'tight', 'Pop, R&B & Hopecore': 'classic'}
+SC_SHAPE_GENRE = {'bigroom': 'pump', 'electro': 'pump', 'trance': 'breathe', 'uplifting_trance': 'breathe',
+                  'vocal_trance_remix': 'breathe', 'hardstyle': 'tight', 'french_house': 'pump', 'techno': 'classic',
+                  'hard_techno': 'tight', 'eurodance': 'pump', 'electro_prog_trance': 'pump'}
+RISER_FAMILY = {'House & Disco': 'saw', 'Techno & Trance': 'saw', 'Dubstep, Garage & Bass': 'siren',
+                'Drum & Bass, Breaks & Hard': 'noisesaw', 'Retro & Video Game': 'saw', 'Pop, R&B & Hopecore': 'noise'}
+
+
+def _bands_sweep(x, w, up=True):
+    """Noise whose brightness follows w (0..1): crossfades a ladder of band-passes from low to high."""
+    edges = [150, 400, 1000, 2500, 6000, 14000]
+    out = np.zeros_like(x)
+    pos = w * (len(edges) - 2) if up else (1 - w) * (len(edges) - 2)
+    for i in range(len(edges) - 1):
+        band = signal.sosfilt(signal.butter(2, [edges[i] / (SR / 2), min(edges[i + 1], 18000) / (SR / 2)], 'band', output='sos'), x, axis=-1)
+        out += band * np.clip(1 - np.abs(pos - i), 0, 1)
+    return out
+
+
+def fx_riser2(sec, root_hz, style='saw', spb=0.47, seed=5):
+    n = max(int(sec * SR), 64)
+    t = np.arange(n) / SR
+    w = t / sec
+    rng = np.random.default_rng(seed)
+    x = rng.standard_normal((2, n))
+    noise = _bands_sweep(x, w) * (0.35 if style != 'noise' else 0.7)
+    tone = np.zeros((2, n))
+    base = root_hz
+    while base < 110:
+        base *= 2
+    if style in ('saw', 'noisesaw'):
+        fr = base * 2 ** (2 * w ** 1.4)                          # two octaves up
+        for k, c in enumerate((-18, -7, 0, 7, 18)):
+            tone[k % 2] += _va.saw(fr * 2 ** (c / 1200), n, rng.random()) * 0.3
+        tone = _va.vcf(tone, 300 + 11000 * w ** 1.6, 0.35, 1.2)
+        tone = np.tanh(tone * (1 + 3 * w)) * (0.7 if style == 'saw' else 0.35)
+        if style == 'saw':                                       # the last quarter stutters, faster and faster
+            g_rate = np.where(w > 0.75, np.where(w > 0.9, 8.0, 4.0), 0.0) / spb
+            ph = np.cumsum(g_rate) / SR
+            gate = np.where(g_rate > 0, (ph % 1) < 0.55, 1.0).astype(float)
+            tone *= np.convolve(gate, np.ones(64) / 64, 'same')[None, :]
+    elif style == 'siren':
+        fr = base * 2 * 2 ** (1.5 * w ** 1.3)
+        rate = (1 + 7 * w ** 2) / spb                            # the wobble speeds up into the drop
+        lfo = 0.5 - 0.5 * np.cos(2 * np.pi * np.cumsum(rate) / SR)
+        ph = 2 * np.pi * np.cumsum(fr) / SR
+        y = np.tanh(np.sin(ph + (1 + 5 * lfo) * np.sin(2 * ph)) * (1.5 + 2 * w))
+        y = signal.sosfilt(signal.butter(2, 150 / (SR / 2), 'high', output='sos'), y)
+        tone = np.vstack([y, np.roll(y, 40)]) * 0.5
+    y = noise + tone
+    mid, side = (y[0] + y[1]) / 2, (y[0] - y[1]) / 2
+    side = side * (0.3 + 0.9 * w)                                # widening as it rises
+    y = np.vstack([mid + side, mid - side]) * (w ** 2.0)
+    k = min(n, int(0.012 * SR))
+    y[:, -k:] *= np.linspace(1, 0, k)                            # a hair of silence before the drop lands
+    return (hp(y, 120) * 0.6).astype(np.float32)
+
+
+def fx_impact2(root_hz, seed=7):
+    n = int(2.4 * SR)
+    t = np.arange(n) / SR
+    sub = root_hz
+    while sub > 62:
+        sub /= 2
+    while sub < 38:
+        sub *= 2
+    f = sub * (1 + 1.5 * np.exp(-t / 0.05))
+    boom = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.7)
+    rng = np.random.default_rng(seed)
+    burst = rng.standard_normal((2, n)) * np.exp(-t / 0.08)
+    burst = signal.sosfilt(signal.butter(2, [200 / (SR / 2), 9000 / (SR / 2)], 'band', output='sos'), burst, axis=-1)
+    tail = rng.standard_normal((2, n)) * np.exp(-t / 0.6) * 0.25
+    tail = signal.sosfilt(signal.butter(2, [300 / (SR / 2), 5000 / (SR / 2)], 'band', output='sos'), tail, axis=-1)
+    y = np.tanh((boom[None, :] * 1.2 + burst * 0.6 + tail) * 1.4)
+    from .dsp import fade_out
+    return fade_out(y, 0.3).astype(np.float32) * 0.8
+
+
+def fx_downlift2(sec, root_hz, seed=9):
+    n = max(int(sec * SR), 64)
+    t = np.arange(n) / SR
+    w = t / sec
+    rng = np.random.default_rng(seed)
+    noise = _bands_sweep(rng.standard_normal((2, n)), w, up=False) * 0.5
+    base = root_hz
+    while base < 220:
+        base *= 2
+    fr = base * 2 ** (-2 * w)
+    tone = np.vstack([_va.saw(fr * 2 ** (-6 / 1200), n, 0.1), _va.saw(fr * 2 ** (6 / 1200), n, 0.6)]) * 0.25
+    tone = _va.vcf(tone, 9000 * (1 - w) ** 2 + 200, 0.3, 1.1)
+    y = (noise + tone) * (1 - w) ** 1.5
+    return (hp(y, 120) * 0.6).astype(np.float32)

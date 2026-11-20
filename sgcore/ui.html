@@ -433,7 +433,7 @@ body:not(.helptext) .hint.qhd{display:none !important}
         <div class="mpre" title="Mastering targets"><button class="mini" data-lp="-14" title="Streaming: -14 LUFS - most dynamic; Spotify / YouTube turn louder songs down to this anyway">Streaming</button><button class="mini" data-lp="-10" title="Balanced: -10 LUFS - loud but still punchy">Balanced</button><button class="mini" data-lp="-8" title="Club: -8 LUFS - dense and loud for DJ sets and big systems (less punch)">Club</button></div></div>
       <div class="f"><label>Tape / vinyl</label><div class="seg" id="lofi"></div></div>
       <div class="f"><label title="Mastering character laid over the genre's own master">Master for</label><select id="masterPreset"><option value="">Genre default</option><option value="radio">Radio (dense, even, small speakers)</option><option value="vinyl">Vinyl cut (mono-safe lows, gentle highs, dynamic)</option><option value="film">Film / picture stem (-18 LUFS, no squeeze)</option></select></div>
-      <div class="f"><label title="After mastering, Studio Lab reads its own mix check (stereo, punch, tone against the genre's reference records, harshness), fixes what it finds and masters again - keeping whichever version checks better"><input type="checkbox" id="prodPass"> Production pass <span class="hint">check &amp; fix the master</span></label></div>
+      <div class="f"><label title="After mastering, Studio Lab reads its own mix check (stereo, punch, tone against the genre's reference records, harshness), fixes what it finds and masters again - keeping whichever version checks better"><input type="checkbox" id="prodPass" checked> Production pass <span class="hint">check &amp; fix the master</span></label></div>
       <div class="f wide"><div class="hint">Each part's volume is in <b>Parts</b>, next to its sound and mute.</div></div>
     </div></details>
 
@@ -875,7 +875,7 @@ function options(){
   if(Object.keys(LOCKS).length) o.part_seeds=Object.fromEntries(Object.entries(LOCKS).map(([p,l])=>[p,l.seed]));
   if($('#melStyle').value) o.melody_style=$('#melStyle').value;
   if($('#groove').value) o.groove=$('#groove').value;
-  if($('#chordSpeed').value) o.chord_speed=$('#chordSpeed').value; o.motif=$('#motif').value||'song'; if($('#masterPreset').value) o.master_preset=$('#masterPreset').value; if($('#prodPass').checked) o.production_pass=true; if(state.ref_tone) o.ref_tone=state.ref_tone; if(state.sound_seed) o.sound_seed=state.sound_seed;
+  if($('#chordSpeed').value) o.chord_speed=$('#chordSpeed').value; o.motif=$('#motif').value||'song'; if($('#masterPreset').value) o.master_preset=$('#masterPreset').value; o.production_pass=$('#prodPass').checked; if(state.ref_tone) o.ref_tone=state.ref_tone; if(state.ref_tone_quiet) o.ref_tone_quiet=state.ref_tone_quiet; if(state.sound_seed) o.sound_seed=state.sound_seed;
   if($('#rotation').value!=='auto') o.rotation=$('#rotation').value;
   if($('#leadStyle').value) o.lead_style=$('#leadStyle').value;
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
@@ -907,7 +907,7 @@ function applyOptions(o){
   state.style=o.style; state.blend=o.blend||[]; state.blend_parts=o.blend_parts||{}; state.mood=o.mood||null;
   state.part_fx=Object.assign({},o.part_fx||{}); state.part_effects=JSON.parse(JSON.stringify(o.part_effects||{})); state.drum_voices=Object.assign({},o.drum_voices||{}); state.extra_parts=JSON.parse(JSON.stringify(o.extra_parts||[])); if(typeof renderDrumVoices==='function') renderDrumVoices();
   state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.locked={}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
-  $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#masterPreset').value=o.master_preset||''; $('#prodPass').checked=!!o.production_pass; $('#motif').value=o.motif||'song'; $('#rotation').value=o.rotation||'auto';
+  $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#masterPreset').value=o.master_preset||''; $('#prodPass').checked=o.production_pass!==false; $('#motif').value=o.motif||'song'; $('#rotation').value=o.rotation||'auto';
   $('#songName').value=o.title||''; $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
   $('#brightness').value=(o.brightness||0)*100; $('#synthChar').value=o.synth_character||'analog'; $('#reverb').value=(o.reverb??1)*100; $('#delay').value=(o.delay??1)*100; $('#width').value=(o.width??1)*100;
   $('#bass').value=o.bass_boost||0; $('#drive').value=(o.drive||0)*100;
@@ -1631,7 +1631,7 @@ async function onReference(file){
         if(c) state.cat=c[0]; state.style=id; state.blend=[]; genreSounds(); state.blend_parts={}; renderTabs(); refresh(); $('#refApply').click();
         $('#status').textContent='Picked '+styleName(id)+' with the reference\'s tempo and key - press Preview.'; });
       $('#refHalf').onclick=()=>{a.bpm=Math.max(40,Math.round(a.bpm/2));show()}; $('#refDbl').onclick=()=>{a.bpm=Math.min(200,a.bpm*2);show()};
-      $('#refApply').onclick=()=>{ state.ref_tone=(a.tone&&$('#refTone')&&$('#refTone').checked)?a.tone:null; $('#bpmAuto').checked=false; $('#bpm').value=a.bpm; $('#key').value=a.key;
+      $('#refApply').onclick=()=>{ state.ref_tone=(a.tone&&$('#refTone')&&$('#refTone').checked)?a.tone:null; state.ref_tone_quiet=state.ref_tone&&a.tone_quiet?a.tone_quiet:null; $('#bpmAuto').checked=false; $('#bpm').value=a.bpm; $('#key').value=a.key;
         if(a.scale && [...$('#scale').options].some(o=>o.value===a.scale)) $('#scale').value=a.scale;
         if(a.progression) $('#prog').value=a.progression;
         if(a.swing){ $('#swingAuto').checked=false; $('#swing').value=Math.round(a.swing*100); }
