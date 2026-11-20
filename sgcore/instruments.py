@@ -6412,3 +6412,338 @@ for _name, _fn, _info, _roles, _gm in (
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.88: another broad synth bank
+# retro / synthwave, future bass & pop, lo-fi & R&B, ambient & cinematic, chip, funk and acid
+def _stack_saw(fr, n, cents, rng, spread=0.7):
+    x = np.zeros((2, n))
+    for k, c in enumerate(cents):
+        s_ = _va.saw(fr * 2 ** (c / 1200), n, rng.random())
+        pan = (k / max(1, len(cents) - 1)) * 2 - 1
+        x[0] += s_ * (1 - spread * pan) / len(cents)
+        x[1] += s_ * (1 + spread * pan) / len(cents)
+    return x
+
+
+def v_cs80brass(m, dur, p, glide=None, mod=None):
+    """Swelling poly brass: two detuned saws per voice whose filter and pitch rise slowly as the note is held (the
+    'aftertouch' swell of the big 70s polysynths), with a slow chorus - the soaring brass of retro film and synthwave."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.12), 0.8, 0.95, p.get('r', 0.6))
+    rng = _rng()
+    swell = np.clip(t / max(0.4, dur * 0.7), 0, 1)
+    fr = f * 2 ** ((-12 * np.exp(-t / 0.08) + 8 * swell * np.sin(2 * np.pi * 5.5 * t)) / 1200)
+    x = _stack_saw(fr, n, (-9, 9), rng, 0.6)
+    y = _va.vcf(x, 500 + p.get('cut', 3500) * (0.25 + 0.75 * swell), 0.2, 1.3)
+    return _hpf(_va.juno_chorus(y, 1, 0.3), 150) * env * 0.5
+
+
+def v_outrunbass(m, dur, p, glide=None, mod=None):
+    """Outrun bass: a punchy saw-and-square bass with a fast filter snap and a short tail - built for the driving
+    16th-note and octave-bouncing basslines of synthwave."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.002, 0.14, 0.35, 0.04)
+    x = _va.saw(np.full(n, f), n, 0.0) * 0.6 + _va.pulse(np.full(n, f * 1.004), n, 0.2, 0.5) * 0.5
+    y = np.tanh(_va.vcf(x, 220 + 3200 * np.exp(-t / 0.045), 0.4, 1.6) * 1.4) * env
+    return np.vstack([y, y]) * 0.55
+
+
+def v_ppgwave(m, dur, p, glide=None, mod=None):
+    """Digital wavetable bell-pad: an early-80s style wavetable that steps through bright, glassy, slightly aliased
+    waveforms as the note sustains, with a bell attack - the shimmering digital pads of 80s pop and synthwave."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.005, 1.2, 0.7, p.get('r', 0.8))
+    ph = 2 * np.pi * f * t
+    pos = np.clip(t / max(0.5, dur), 0, 1)
+    y = np.zeros(n)
+    for h, a in ((1, 1.0), (2, 0.5), (3, 0.6), (5, 0.4), (7, 0.3), (9, 0.25)):
+        y += a * np.sin(h * ph) * (1 - pos if h > 4 else 0.5 + 0.5 * pos)
+    y = np.round(y * 48) / 48                                  # (8-bit-ish wavetable steps)
+    y += 0.4 * np.sin(ph * 3.5) * np.exp(-t / 0.15)           # the bell attack
+    y = lp(y, 7000) * env
+    return _ms_stereo(y, 28, 0.45) * 0.35
+
+
+def v_futurechord(m, dur, p, glide=None, mod=None):
+    """Future bass chord: a wide detuned supersaw chord with a pitch 'wobble' bend and a volume LFO in time with the
+    beat (the wavy, sidechained chords of future bass and melodic dubstep)."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.004, 0.4, 0.9, 0.15)
+    rng = _rng()
+    lfo = _sync_lfo(t, p, (2.0, 4.0), mod)
+    fr = f * 2 ** ((-35 * np.exp(-t / 0.05) + 12 * np.sin(2 * np.pi * 0.5 / float(p.get('spb', 0.45)) * t)) / 1200)
+    x = _stack_saw(fr, n, (-24, -12, -4, 4, 12, 24), rng, 0.9)
+    y = _va.vcf(x, 1500 + 5000 * lfo, 0.15, 1.2)
+    y = y * (0.4 + 0.6 * lfo)
+    return _hpf(y, 180) * env * 0.55
+
+
+def v_kawaiipluck(m, dur, p, glide=None, mod=None):
+    """Kawaii pluck: a bright square pluck with an octave blip on the attack and a touch of pitch bend - the bouncy,
+    candy-coloured lead plucks of future bass, kawaii and hyperpop."""
+    f = float(mtof(m))
+    n = int((min(dur, 0.5) + 0.25) * SR)
+    t = np.arange(n) / SR
+    fr = f * np.where(t < 0.018, 2.0, 1.0) * 2 ** (20 * np.exp(-t / 0.04) / 1200)
+    y = _va.pulse(fr, n, 0.0, 0.3 + 0.2 * np.exp(-t / 0.1))
+    y = lp(y, 6500) * np.minimum(1, t / 0.002) * np.exp(-t / p.get('decay', 0.18))
+    return _ms_stereo(y, 20, 0.4) * 0.38
+
+
+def v_tropicalpluck(m, dur, p, glide=None, mod=None):
+    """Tropical pluck: a soft, woody, marimba-like pluck with a breathy pan-flute edge - the sunny lead of tropical
+    house and chilled pop."""
+    f = float(mtof(m))
+    n = int((min(dur, 0.8) + 0.3) * SR)
+    t = np.arange(n) / SR
+    ph = 2 * np.pi * f * t
+    y = np.sin(ph) * np.exp(-t / 0.22) + 0.35 * np.sin(4 * ph) * np.exp(-t / 0.03) + 0.2 * np.sin(2 * ph) * np.exp(-t / 0.1)
+    air = bp(_rng().standard_normal(n), f * 1.5, f * 4) * 0.08 * np.exp(-t / 0.08)
+    y = (y + air) * np.minimum(1, t / 0.003)
+    return _ms_stereo(y, 22, 0.35) * 0.45
+
+
+def v_vocalead(m, dur, p, glide=None, mod=None):
+    """Vowel lead: a sung 'ooh' moving to 'aah' (and back on long notes) from a saw through formant filters, with
+    vibrato and glide - a wordless synth-voice lead for pop, trance and ambient."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.04, 0.4, 0.9, 0.25)
+    vib = 2 ** (18 * np.clip((t - 0.2) / 0.3, 0, 1) * np.sin(2 * np.pi * 5.2 * t) / 1200)
+    fr = _glide_freq(f, n, glide, 0.09) * vib
+    src = _va.saw(fr, n, 0.0) * 0.8 + 0.06 * _rng().standard_normal(n)
+    u = np.sin(np.pi * np.clip(t / max(0.3, dur), 0, 1)) ** 2
+    y = _va.formant(src, 'u', 8.0) * (1 - u) + _va.formant(src, 'a', 8.0) * u
+    return _ms_stereo(hp(y * env, 180), 25, 0.3) * 0.9
+
+
+def v_chiparp(m, dur, p, glide=None, mod=None):
+    """Chip lead: an 8-bit pulse whose duty cycle sweeps (12.5% -> 50%) with a fast, delayed vibrato and a crushed top
+    - the expressive melody voice of chiptune and video-game music."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.002, 0.1, 0.8, 0.03)
+    vib = 2 ** (30 * np.clip((t - 0.12) / 0.1, 0, 1) * np.sin(2 * np.pi * 7 * t) / 1200)
+    fr = _glide_freq(f, n, glide, 0.04) * vib
+    duty = 0.125 + 0.375 * np.clip(t / 0.25, 0, 1)
+    y = _va.pulse(fr, n, 0.0, duty)
+    y = np.round(y * 8) / 8 * env
+    return np.vstack([y, y]) * 0.3
+
+
+def v_shimmerpad(m, dur, p, glide=None, mod=None):
+    """Shimmer pad: a soft pad with an octave-up and a fifth-up halo blooming in slowly, as if through a shimmer
+    reverb - glowing, heavenly, for ambient, post-rock and cinematic music."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.8), 1.0, 1.0, p.get('r', 2.5))
+    rng = _rng()
+    base = _stack_saw(np.full(n, f), n, (-6, 6), rng, 0.5)
+    base = _va.vcf(base, 1600, 0.1, 1.0)
+    halo = np.zeros((2, n))
+    for r, a in ((2.0, 0.5), (3.0, 0.25), (4.0, 0.2)):
+        for ch in range(2):
+            halo[ch] += np.sin(2 * np.pi * f * r * t * (1 + 0.0015 * (ch - 0.5)) + rng.random() * 6) * a
+    bloom = np.clip(t / max(1.0, dur * 0.8), 0, 1) ** 1.5
+    y = base * 0.7 + halo * bloom[None, :] * 0.5
+    return _hpf(y, 150) * env * 0.42
+
+
+def v_reverseswell(m, dur, p, glide=None, mod=None):
+    """Reverse swell: a bright pluck-pad played backwards - it swells up out of nothing and cuts off at the end of the
+    note, sucking into the next beat; for transitions, builds and lo-fi / ambient textures."""
+    f = float(mtof(m))
+    n = max(int(dur * SR), 256)
+    t = np.arange(n) / SR
+    rng = _rng()
+    x = _stack_saw(np.full(n, f), n, (-10, 0, 10), rng, 0.7)
+    fwd = _va.vcf(x, 400 + 6000 * np.exp(-t / 0.25), 0.2, 1.1) * np.exp(-t / max(0.2, dur / 3))
+    y = fwd[:, ::-1]
+    k = min(n, int(0.01 * SR))
+    y[:, -k:] *= np.linspace(1, 0, k)
+    return _hpf(y, 150) * 0.5
+
+
+def v_icebell(m, dur, p, glide=None, mod=None):
+    """Ice bell: a glassy, crystalline FM bell (inharmonic 1 : 3.5 and 1 : 7.1 ratios) with a long, shimmering decay
+    and a slight beating between the ears - for ambient, Christmas, music-box and dreamy pop."""
+    f = float(mtof(m))
+    n = int(3.0 * SR)
+    t = np.arange(n) / SR
+    out = np.zeros((2, n))
+    for ch, det in ((0, 1.0), (1, 1.0015)):
+        ph = 2 * np.pi * f * det * t
+        y = np.sin(ph + 2.2 * np.exp(-t / 0.6) * np.sin(3.5 * ph)) * np.exp(-t / 1.2)
+        y += 0.3 * np.sin(7.1 * ph) * np.exp(-t / 0.25)
+        out[ch] = y
+    return hp(out, 200) * np.minimum(1, t / 0.002)[None, :] * 0.3
+
+
+def v_bowedpad(m, dur, p, glide=None, mod=None):
+    """Bowed glass: the sound of a bow on glass or metal - a sine-rich tone with a rough, noisy bow texture that
+    swells and wavers, eerie and beautiful, for ambient, horror and cinematic beds."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.6), 1.0, 1.0, p.get('r', 1.5))
+    rng = _rng()
+    bow = lp(np.abs(rng.standard_normal(n)), 30)
+    bow = bow / (bow.max() + 1e-9)
+    ph = 2 * np.pi * f * t * (1 + 0.002 * np.sin(2 * np.pi * 0.3 * t))
+    tone = np.sin(ph) + 0.3 * np.sin(2.01 * ph) + 0.15 * np.sin(3.98 * ph)
+    rough = bp(rng.standard_normal(n), f * 0.8, f * 5) * 0.15
+    y = (tone * (0.7 + 0.3 * bow) + rough * bow) * env
+    return _ms_stereo(y, 40, 0.5) * 0.35
+
+
+def v_ebowguitar(m, dur, p, glide=None, mod=None):
+    """Swelling guitar: an infinitely sustaining, bowed-sounding guitar tone (as with a magnetic sustainer) that fades
+    in with no pick attack and holds with a soft, singing overdrive - for ambient, post-rock and shoegaze."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.35), 1.0, 1.0, 0.6)
+    ph = 2 * np.pi * np.cumsum(_glide_freq(f, n, glide, 0.12) * (1 + 0.003 * np.sin(2 * np.pi * 5 * t))) / SR
+    y = np.sin(ph) + 0.5 * np.sin(2 * ph) + 0.3 * np.sin(3 * ph) + 0.15 * np.sin(4 * ph)
+    y = np.tanh(y * 1.8) / np.tanh(1.8)
+    y = eq(lp(y, 3500), 'peak', 1200, 1.0, 3.0) * env
+    return _ms_stereo(y, 35, 0.45) * 0.35
+
+
+def v_bitpiano(m, dur, p, glide=None, mod=None):
+    """Crushed piano: the piano through a bit-crusher and a low sample rate - gritty, nostalgic, video-game-memory
+    keys for lo-fi, hyperpop and glitch."""
+    y = np.asarray(INSTRUMENTS['piano'](m, dur, p, glide, mod), float)
+    y = y if y.ndim == 2 else np.vstack([y, y])
+    step = int(p.get('down', 4))
+    y = np.repeat(y[:, ::step], step, axis=1)[:, :y.shape[1]]
+    y = np.round(y * 32) / 32
+    return lp(y, 7000) * 0.9
+
+
+def v_tapekeys(m, dur, p, glide=None, mod=None):
+    """Tape keys: an electric piano played back from a worn cassette - wow and flutter, a soft, rolled-off top and a
+    little hiss - the warm, wobbly chords of lo-fi hip-hop."""
+    y = np.asarray(INSTRUMENTS['epiano'](m, dur, p, glide, mod), float)
+    y = y if y.ndim == 2 else np.vstack([y, y])
+    n = y.shape[1]
+    t = np.arange(n) / SR
+    rng = _rng()
+    wow = 0.0025 * np.sin(2 * np.pi * 0.7 * t + rng.random() * 6) + 0.0006 * np.sin(2 * np.pi * 7 * t)
+    idx = np.clip(np.arange(n) + wow * SR * 4, 0, n - 1)
+    y = np.vstack([np.interp(idx, np.arange(n), y[0]), np.interp(idx, np.arange(n), y[1])])
+    y = lp(y, 4200) + 0.004 * hp(rng.standard_normal((2, n)), 4000)
+    return y * 0.95
+
+
+def v_rnbpad(m, dur, p, glide=None, mod=None):
+    """R&B pad: a dark, silky pad - a filtered, chorused saw-and-triangle with a slow filter swell and a long release -
+    the moody background of modern R&B and slow jams."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.3), 1.0, 0.95, p.get('r', 1.2))
+    rng = _rng()
+    x = _stack_saw(np.full(n, f), n, (-7, 7), rng, 0.6)
+    tri = 2 * np.abs(2 * ((f * t) % 1) - 1) - 1
+    x = x + 0.4 * tri[None, :]
+    y = _va.vcf(x, 500 + 900 * np.clip(t / 1.5, 0, 1), 0.2, 1.05)
+    return _hpf(_va.juno_chorus(y, 2, 0.35), 120) * env * 0.45
+
+
+def v_pluckbell(m, dur, p, glide=None, mod=None):
+    """Trap bell pluck: a bright, short, glassy bell-pluck (FM with a quick index fall) that cuts through 808s - the
+    catchy little melody of trap, plugg and pop rap."""
+    f = float(mtof(m))
+    n = int(0.9 * SR)
+    t = np.arange(n) / SR
+    ph = 2 * np.pi * f * t
+    y = np.sin(ph + 1.8 * np.exp(-t / 0.06) * np.sin(2 * ph)) * np.exp(-t / 0.28) + 0.25 * np.sin(4 * ph) * np.exp(-t / 0.05)
+    return _ms_stereo(hp(y, 250) * np.minimum(1, t / 0.001), 18, 0.35) * 0.4
+
+
+def v_acidsquare(m, dur, p, glide=None, mod=None):
+    """Acid square: the 303's square-wave voice - hollow and rubbery, squelching through a resonant filter with accents
+    and slides - a deeper, rounder acid line than the saw."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.002, 0.2, 0.6, 0.03)
+    acc = bool(mod) if not isinstance(mod, float) else mod > 0
+    fr = _glide_freq(f, n, glide, 0.06)
+    x = _va.pulse(fr, n, 0.0, 0.5)
+    cut = 250 + p.get('cut', 1800) * (1.6 if acc else 1.0) * np.exp(-t / (0.12 if acc else 0.08))
+    y = np.tanh(_va.vcf(x, cut, 0.75, 1.8) * (2.0 if acc else 1.4)) * env
+    return np.vstack([y, y]) * 0.5
+
+
+def v_synthwavelead(m, dur, p, glide=None, mod=None):
+    """Synthwave lead: a bright detuned saw-and-square lead with portamento and a slow vibrato, slightly wide - the
+    singing, nostalgic hook of synthwave and 80s-inspired pop (give it delay and reverb)."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.006, 0.4, 0.85, 0.3)
+    rng = _rng()
+    vib = 2 ** (12 * np.clip((t - 0.25) / 0.3, 0, 1) * np.sin(2 * np.pi * 5.0 * t) / 1200)
+    fr = _glide_freq(f, n, glide, 0.08) * vib
+    x = _stack_saw(fr, n, (-8, 8), rng, 0.5) * 0.8
+    x += 0.3 * _va.pulse(fr, n, rng.random(), 0.5)[None, :]
+    y = _va.vcf(x, 2600 + 4000 * np.exp(-t / 0.2), 0.2, 1.3)
+    return _hpf(y, 200) * env * 0.5
+
+
+def v_slapsynth(m, dur, p, glide=None, mod=None):
+    """Synth slap bass: an FM bass with a hard, metallic 'pop' on the attack (the 80s digital slap) and a round body -
+    for synthpop, funk, city pop and new jack swing."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.001, 0.25, 0.5, 0.05)
+    ph = 2 * np.pi * np.cumsum(_glide_freq(f, n, glide, 0.04)) / SR
+    y = np.sin(ph + 3.5 * np.exp(-t / 0.025) * np.sin(ph * 1.0) + 1.2 * np.exp(-t / 0.15) * np.sin(2 * ph))
+    y = (y + 0.3 * np.sin(ph)) * env
+    return np.vstack([y, y]) * 0.5
+
+
+def v_sinelead(m, dur, p, glide=None, mod=None):
+    """Sine lead: a pure, round sine with long portamento and a gentle vibrato - the sliding, almost-sub lead of trap
+    and plugg melodies (and the classic 'G-funk whistle' an octave down)."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.01, 0.3, 0.9, 0.15)
+    vib = 2 ** (15 * np.clip((t - 0.2) / 0.3, 0, 1) * np.sin(2 * np.pi * 5.5 * t) / 1200)
+    ph = 2 * np.pi * np.cumsum(_glide_freq(f, n, glide, 0.15) * vib) / SR
+    y = (np.sin(ph) + 0.08 * np.sin(2 * ph)) * env
+    return _ms_stereo(y, 20, 0.2) * 0.45
+
+
+def v_windpad(m, dur, p, glide=None, mod=None):
+    """Wind pad: filtered noise tuned faintly to the note through two resonant band-passes that drift - an airy,
+    breathing texture-pad for ambient, cinematic and lo-fi intros."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 1.0), 1.0, 1.0, p.get('r', 2.0))
+    rng = _rng()
+    x = rng.standard_normal((2, n))
+    a = bp(x, f * 0.9, f * 1.12)
+    b = bp(x, f * 1.9, f * 2.2)
+    sway = 0.5 + 0.5 * np.sin(2 * np.pi * 0.15 * t + rng.random() * 6)
+    y = (a * sway + b * (1 - sway) * 0.6)
+    y = y / (np.abs(y).max() + 1e-9)
+    return y * env * 0.4
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('cs80brass', v_cs80brass, 'Swelling poly brass (retro film, synthwave)', ('chords', 'lead', 'pad'), 62),
+        ('outrunbass', v_outrunbass, 'Outrun bass (punchy, synthwave 16ths)', ('bass',), 38),
+        ('ppgwave', v_ppgwave, 'Digital wavetable bell-pad (80s)', ('pad', 'chords', 'arp'), 88),
+        ('futurechord', v_futurechord, 'Future bass chord (wavy, wide)', ('chords', 'pad'), 81),
+        ('kawaiipluck', v_kawaiipluck, 'Kawaii pluck (bright square, octave blip)', ('arp', 'lead'), 80),
+        ('tropicalpluck', v_tropicalpluck, 'Tropical pluck (woody, breathy)', ('arp', 'lead'), 12),
+        ('vocalead', v_vocalead, 'Vowel lead (sung ooh-aah)', ('lead',), 54),
+        ('chiparp', v_chiparp, 'Chip lead (duty sweep, vibrato)', ('lead', 'arp'), 80),
+        ('shimmerpad', v_shimmerpad, 'Shimmer pad (octave halo)', ('pad', 'chords'), 91),
+        ('reverseswell', v_reverseswell, 'Reverse swell (sucks into the beat)', ('pad', 'chords', 'arp'), 89),
+        ('icebell', v_icebell, 'Ice bell (glassy FM, long)', ('arp', 'lead'), 14),
+        ('bowedpad', v_bowedpad, 'Bowed glass (eerie bowed metal)', ('pad',), 92),
+        ('ebowguitar', v_ebowguitar, 'Swelling guitar (bowed sustain)', ('lead', 'pad'), 30),
+        ('bitpiano', v_bitpiano, 'Crushed piano (lo-fi, bit-crushed)', ('chords', 'arp', 'lead'), 0),
+        ('tapekeys', v_tapekeys, 'Tape keys (wobbly cassette e-piano)', ('chords', 'arp'), 4),
+        ('rnbpad', v_rnbpad, 'R&B pad (dark, silky)', ('pad', 'chords'), 89),
+        ('pluckbell', v_pluckbell, 'Trap bell pluck (bright, short)', ('arp', 'lead'), 14),
+        ('acidsquare', v_acidsquare, 'Acid square (303 square wave)', ('bass', 'arp'), 38),
+        ('synthwavelead', v_synthwavelead, 'Synthwave lead (bright, gliding)', ('lead',), 81),
+        ('slapsynth', v_slapsynth, 'Synth slap bass (80s digital)', ('bass',), 37),
+        ('sinelead', v_sinelead, 'Sine lead (round, sliding)', ('lead',), 80),
+        ('windpad', v_windpad, 'Wind pad (airy, breathing noise)', ('pad',), 95)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)

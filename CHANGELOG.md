@@ -1,5 +1,40 @@
 # Changelog
 
+## 1.88.0
+**22 more synths, filed with the genres they were made for**
+- **Retro / synthwave:**
+  - **swelling poly brass**, whose filter and pitch rise as the note is held;
+  - **outrun bass**, punchy, for driving 16ths;
+  - an 80s **digital wavetable bell-pad**;
+  - a gliding **synthwave lead**;
+  - an 80s **synth slap bass** (also in city pop, new jack swing and electro funk).
+- **Future bass / pop:**
+  - a wavy, wide **future bass chord**;
+  - a **kawaii pluck**: a bright square with an octave blip;
+  - a woody **tropical pluck**;
+  - a sung "ooh-aah" **vowel lead**.
+- **Lo-fi / R&B / trap:**
+  - **tape keys**: a wobbly cassette e-piano;
+  - a bit-crushed **crushed piano**;
+  - a dark, silky **R&B pad**;
+  - a bright **trap bell pluck**;
+  - a round, sliding **sine lead**.
+- **Ambient / cinematic:**
+  - a **shimmer pad** with an octave halo;
+  - a **reverse swell** that sucks into the beat;
+  - a glassy **ice bell**;
+  - **bowed glass**;
+  - a **swelling guitar** with bowed sustain;
+  - an airy **wind pad**.
+- **Chip and acid:**
+  - a **chip lead** with a duty-cycle sweep and vibrato;
+  - an **acid square**: the 303's square-wave voice. Acid house's protected acid bass accepts it.
+- Each is added to the genres it suits, about 40 of them, including ambient, film, post-rock, shoegaze and chiptune genres that hadn't been getting new sounds.
+
+**Fixed**
+- **Mid-song instrument rotation** works for the newer synths again. Sounds added since 1.57 belonged to no instrument family, so a song led by one of them could never swap it for a related sound in its verses and breaks. Every built-in sound now gets a family from its description (pad, keys, mallets, synth, bass).
+- Genres whose scene has no shared sound list now get the sounds made for them as well.
+
 ## 1.87.0
 **Tuned on seven more sets of reference records**
 - **Tone targets measured on the records** for ten genres: the band balance of their loud parts, used by the master and the production pass. The genres:

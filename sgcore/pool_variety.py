@@ -94,6 +94,49 @@ WORLD = {'trip_hop': dict(lead=['theremin']), 'spooky_surf': dict(lead=['theremi
          'gypsy_jazz': dict(arp=['cimbalom']), 'celtic_jig': dict(lead=['hurdygurdy']), 'folk_jam': dict(lead=['hurdygurdy']),
          'afro_house': dict(arp=['kora', 'balafon']), 'afrobeats': dict(arp=['balafon', 'kora']), 'afrobeat': dict(arp=['balafon']),
          'organic_house': dict(arp=['handpan', 'kora'], lead=['duduk']), 'chillstep': dict(lead=['formantchop'])}
+# (1.88) the new synth bank, filed with the genres it was made for
+_NEW_188 = {
+    'synthwave': dict(lead=['synthwavelead', 'cs80brass'], chords=['cs80brass', 'ppgwave'], pad=['ppgwave', 'cs80brass'], bass=['outrunbass']),
+    'dark_synthwave': dict(lead=['synthwavelead'], pad=['ppgwave', 'bowedpad'], bass=['outrunbass']),
+    'synthpop': dict(lead=['synthwavelead', 'vocalead'], chords=['ppgwave'], bass=['slapsynth', 'outrunbass']),
+    'city_pop': dict(bass=['slapsynth'], chords=['ppgwave'], pad=['ppgwave']),
+    'new_jack_swing': dict(bass=['slapsynth'], chords=['ppgwave']),
+    'electro_funk': dict(bass=['slapsynth'], lead=['synthwavelead']),
+    'future_bass': dict(chords=['futurechord'], arp=['kawaiipluck'], lead=['kawaiipluck', 'vocalead']),
+    'melodic_dubstep': dict(chords=['futurechord'], lead=['vocalead']),
+    'hyperpop': dict(arp=['kawaiipluck', 'bitpiano'], lead=['kawaiipluck'], chords=['futurechord', 'bitpiano']),
+    'glitch_pop': dict(arp=['kawaiipluck', 'bitpiano'], chords=['bitpiano']),
+    'kpop': dict(arp=['kawaiipluck'], chords=['futurechord'], lead=['vocalead']),
+    'hopecore': dict(arp=['kawaiipluck', 'icebell'], chords=['futurechord'], pad=['shimmerpad']),
+    'tropical_house': dict(arp=['tropicalpluck'], lead=['tropicalpluck']),
+    'balearic_chill': dict(arp=['tropicalpluck'], pad=['windpad']),
+    'lofi': dict(chords=['tapekeys', 'bitpiano'], arp=['tapekeys'], pad=['windpad']),
+    'beat_tape_cinematic': dict(chords=['tapekeys']),
+    'jazz_rap': dict(chords=['tapekeys']),
+    'downtempo': dict(chords=['tapekeys'], pad=['windpad', 'reverseswell']),
+    'hazy_downtempo': dict(chords=['tapekeys'], pad=['reverseswell', 'windpad']),
+    'sunrise_chillwave': dict(lead=['synthwavelead'], pad=['ppgwave', 'reverseswell']),
+    'alt_rnb': dict(pad=['rnbpad'], arp=['pluckbell'], lead=['sinelead']),
+    'rnb': dict(pad=['rnbpad']),
+    'slow_jam': dict(pad=['rnbpad']),
+    'trap': dict(arp=['pluckbell'], lead=['pluckbell', 'sinelead']),
+    'plugg': dict(arp=['pluckbell'], lead=['sinelead', 'pluckbell']),
+    'cloud_rap': dict(pad=['rnbpad', 'reverseswell'], lead=['sinelead']),
+    'g_funk': dict(lead=['sinelead']),
+    'chiptune': dict(lead=['chiparp'], arp=['chiparp']),
+    'ps1_game': dict(lead=['chiparp'], pad=['ppgwave']),
+    'cybergrind': dict(lead=['chiparp'], arp=['chiparp']),
+    'field_ambient': dict(pad=['shimmerpad', 'bowedpad', 'windpad'], arp=['icebell'], lead=['ebowguitar']),
+    'fourth_world': dict(pad=['windpad', 'shimmerpad'], lead=['ebowguitar']),
+    'cinematic': dict(pad=['shimmerpad', 'bowedpad'], chords=['cs80brass']),
+    'tension': dict(pad=['bowedpad', 'windpad'], arp=['icebell']),
+    'post_rock': dict(lead=['ebowguitar'], pad=['shimmerpad']),
+    'shoegaze': dict(lead=['ebowguitar'], pad=['shimmerpad', 'reverseswell']),
+    'christmas_magic': dict(arp=['icebell'], lead=['icebell']),
+    'acid_house': dict(bass=['acidsquare']),
+    'trance': dict(lead=['vocalead']),
+    'uplifting_trance': dict(pad=['shimmerpad']),
+}
 VARIANTS_808 = ('808dist', '808long', '808punch')
 _TECHNO = dict(chords=['dubchord', 'industrialstab', 'ravestab2', 'detroitchord'], arp=['hypnoseq', 'berlinseq', 'metalperc', 'bleep'],
                lead=['peaklead', 'analoglead', 'ravestab2'], pad=['hypnopad', 'detroitchord'])
@@ -151,8 +194,17 @@ def _club(g, scene, pools, banned):
         banned = set(banned) | {'tearout', 'yoi', 'squareriddim', 'talkgrowl2', 'fmscreech', 'industrialstab', 'ravestab2',
                                 'peaklead'}
     adds.update(CLUB_GENRE.get(g) or {})             # a genre's own list replaces the scene's for that part
-    for role, extra in (WORLD.get(g) or {}).items():
+    for role, extra in list((WORLD.get(g) or {}).items()) + list((_NEW_188.get(g) or {}).items()):
         adds[role] = list(extra) + [x for x in adds.get(role, []) if x not in extra]
+    nb = [x for x in ((_NEW_188.get(g) or {}).get('bass') or []) if x not in banned]
+    if nb and _locked(g, 'bass'):                    # a protected bass takes only what its own check accepts
+        from .fitness import SIGNATURE
+        nb = [x for x in nb if x in SIGNATURE[g][1]]
+    b0 = pools.get('bass')
+    if nb and b0 and b0[0] not in ('808', 'drill808'):
+        for k, x in enumerate(nb):                       # a new bass that plays this genre's kind of line
+            if x not in b0:
+                b0.insert(min(len(b0), 1 + k), x)
     for role, extra in adds.items():
         lst = pools.get(role)
         if lst is None or role == 'bass':
@@ -196,14 +248,14 @@ def widen():
     from .instruments import INSTRUMENTS
     for tab in GROUPS.values():
         for scene, genres in tab:
-            add = SCENES.get(scene)
-            if not add:
-                continue
+            add = SCENES.get(scene) or {}
             for g in genres:
+                if not add and g not in CLUB_GENRE and g not in WORLD and g not in _NEW_188:
+                    continue
                 pools = POOLS.get(g)
                 if not pools or g not in STYLES or STYLES[g].get('exact_pools'):
                     continue                           # (genres modelled on reference records keep their own lists)
-                if scene in CLUB or g in CLUB_GENRE or g in WORLD or (pools.get('bass') or [''])[0] == '808':
+                if scene in CLUB or g in CLUB_GENRE or g in WORLD or g in _NEW_188 or (pools.get('bass') or [''])[0] == '808':
                     _club(g, scene, pools, set(STYLES[g].get('no_sounds') or ()))
                 main = {t.get('layer'): t.get('inst') for t in STYLES[g]['tracks']}
                 for role, extra in add.items():

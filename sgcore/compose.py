@@ -4,7 +4,7 @@ import random
 from dataclasses import dataclass, field, asdict, replace
 
 from .styles import STYLES, FORMS, FORM_VARIANTS
-from .instruments import KITS, INSTRUMENTS, PALETTES, DRUMS
+from .instruments import KITS, INSTRUMENTS, PALETTES, DRUMS, INSTRUMENT_INFO, ROLE_CHOICES
 from .theory import (Key, parse_progression, parse_key, color_fits, declutter, voice_chord, VOICINGS, fold, parse_rhythm,
                      grid_of, grid_steps, lead_voicing, Ev, chord_tones_deg, COLORS)
 from . import drummer
@@ -2888,7 +2888,28 @@ def inst_family(inst):
     for fam, names in INST_FAMILIES.items():          # e.g. 'cowbell_808' -> no; 'piano_soft' -> keys
         if any(base.startswith(n) for n in names if len(n) > 3):
             return fam
-    return base
+    return _auto_family(base)
+
+
+def _auto_family(base):
+    """(1.88) A built-in sound without a listed family gets one from its description, so the synths added over time
+    (pads, plucks, stabs, bells, keys) rotate with their kin mid-song instead of each being a family of one. Sampled /
+    recorded / plugin sounds and anything unknown stay their own family."""
+    if base not in INSTRUMENTS or base in DRUMS:
+        return base
+    info = (INSTRUMENT_INFO.get(base) or '').lower()
+    roles = {r for r, lst in ROLE_CHOICES.items() if base in lst}
+    if roles == {'bass'} or ('bass' in roles and 'bass' in info.split('(')[0]):
+        return 'bass'
+    if 'pad' in base or ' pad' in ' ' + info.split('(')[0]:
+        return 'pad'
+    if any(w in info for w in ('bell', 'music box', 'glock', 'kalimba', 'marimba', 'mallet', 'vibraphone')):
+        return 'mallets'
+    if any(w in info for w in ('piano', 'e-piano', 'keys', 'organ', 'clav', 'rhodes', 'wurli')):
+        return 'keys'
+    if any(w in info for w in ('guitar', 'sitar', 'koto', 'banjo', 'harp ', 'oud', 'lute')):
+        return base                                  # (acoustic-like plucked strings keep their own character)
+    return 'synth'
 
 
 def add_section_switch_tracks(st, opts, rnd):
