@@ -11142,12 +11142,12 @@ for _g, _f in {'dark_dubstep_classic': 'dubstep_deep_club', 'deep_dubstep_roller
 # Abmaj9, Abmaj7, Eb sus4, Fm7), the voices keeping their shared notes - over a high bass that
 # lands on the phrase starts. Pulsing chord tones in quarter notes are the heart of it; tiny chimes sparkle high above
 # in the fuller parts, a gliding sine line drifts through, and once the music stops dead (a tape stop) and comes back.
-FORMS['synthscape'] = [
+FORMS['synthscape'] = [      # (1.92.2) no kick: the original has none - the pulse is the heartbeat
     ('intro', 8, {'pad', 'chords', 'fx'}, {'filter_in': True}),
-    ('A', 16, {'kick', 'pad', 'chords', 'arp', 'fx'}, {}),
-    ('B', 16, {'kick', 'bass', 'pad', 'chords', 'arp', 'lead', 'fx'}, {}),
+    ('A', 16, {'pad', 'chords', 'arp', 'fx'}, {}),
+    ('B', 16, {'bass', 'pad', 'chords', 'arp', 'lead', 'fx'}, {}),
     ('calm', 8, {'pad', 'chords', 'fx'}, {'level': 0.6, 'stop_end': True}),
-    ('B', 16, {'kick', 'bass', 'pad', 'chords', 'arp', 'lead', 'fx'}, {'alt': True, 'level': 0.85}),
+    ('B', 16, {'bass', 'pad', 'chords', 'arp', 'lead', 'fx'}, {'alt': True, 'level': 0.85}),
     ('outro', 8, {'pad', 'chords', 'arp', 'fx'}, {'fade': True}),
 ]
 style('dream_synthscape', 'Electronic',
@@ -11159,12 +11159,12 @@ style('dream_synthscape', 'Electronic',
       own_progs=True, progs={'major': [[0, 0, 4, 4], [5, 0, 4, 0], [5, 0, 4, 4], [0, 5, 4, 0]],
                              'minor': [[0, 5, 2, 6], [0, 5, 2, 4], [0, 5, 2, 3]]}, sus_degrees=[4],
       voicing='open', chord_center=60, kick_shape=dict(pitch=50, punch=22, sweep=30, decay=9, click=0.0, drive=1.0, len=0.4), sc_depth=0.35, sc_release=0.35, reverb=3.6, delay_beats=0.75, kit='soft',
-      gentle=True, exact_pools=True, lead_glide=True, no_layers=True, no_dodge=True,
+      gentle=True, exact_pools=True, lead_glide=True, no_layers=True, no_dodge=True, bass_stutter=True,
       arps2=[dict(track='arp', step=1 / 3, mode='updown', center=56, span=4, vel=0.8, prob=1.0),          # the triplet pulse
              dict(track='arp_mid', step=2 / 3, mode='updown', center=74, vel=0.5, prob=0.85),
              dict(track='arp_hi', step=1 / 3, mode='down', center=88, vel=0.7, prob=0.9, fade=0.6, phrase=8)], no_rotation=True, transition_moves=['tapestop', 'none', 'swell', 'none'], build_family=['swell'],
       drums={'kick': ['x...x...x...x...']}, snare_tracks=[],
-      bass=['R-----..........', '................', 'R-------........', '................'], bass_lo=44,
+      bass=['R---------------'], bass_lo=40,
       chord_rh=['x---------------'],
       arp=dict(rate=4, mode='updown', oct=3, prob=1e-6),     # (the pulse is written by arps2, in triplets)
       lead_rh=['x---x-x---x-----', 'x-----x-x---x---', 'x---x---x-x-x---', '........x---x---'], lead_oct=5, repetition=0.8,
@@ -11172,7 +11172,7 @@ style('dream_synthscape', 'Electronic',
               'a sine / triangle bass in the low-mid register; tiny bell glints with long reverb and delay; a gliding '
               'sine lead; tape hiss; everything low-passed (~3 kHz) and washed in a long hall',
       tracks=[T('kick', 'kick', 'kick', db=-28, hp=60, lp=220),
-              T('bass', 'bass', 'roundbass', db=-19, sc=0.0, hp=60, p=dict(a=0.012)),
+              T('bass', 'bass', 'roundbass', db=-15, sc=0.0, hp=55, p=dict(a=0.012)),
               T('chords', 'chords', 'sinepad', rev=0.55, sc=0.3, db=-20),
               T('pad', 'pad', 'dreampad', rev=0.7, sc=0.8, db=-28, p=dict(cut=1600)),
               T('arp', 'arp', 'sinepulse', rev=0.5, dly=0.2, sc=0.12, db=-18, p=dict(r=0.4)),

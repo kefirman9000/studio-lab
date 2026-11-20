@@ -479,3 +479,34 @@ def extra_arps(evs, sections, st, opts, tracks):
                 k += 1
                 beat += step
     return made
+
+
+def bass_stutter(evs, st):
+    """(1.92.2) Styles with 'bass_stutter': the bass comes in once every two bars on the chord root - struck three
+    times in triplets, then held for about two and a half beats, then space (the way the bass enters in a chill synth
+    piece, about every six seconds). Returns the number of entrances."""
+    if not st.get('bass_stutter'):
+        return 0
+    bass = sorted((e for e in evs if e.track == 'bass' and e.midi is not None), key=lambda e: e.beat)
+    keep, drop = [], set()
+    for e in bass:                                       # merge a repeated root into one long note
+        if keep and keep[-1].midi == e.midi and abs(keep[-1].beat + keep[-1].dur - e.beat) < 0.3:
+            keep[-1].dur = e.beat + e.dur - keep[-1].beat
+            drop.add(id(e))
+        else:
+            keep.append(e)
+    for e in keep:                                       # one entrance every two bars, held ~2.5 beats, then space
+        if int(e.beat // 4) % 2:
+            drop.add(id(e))
+        else:
+            e.dur = min(e.dur, 3.5)
+    evs[:] = [e for e in evs if id(e) not in drop]
+    keep = [e for e in keep if id(e) not in drop]
+    out = []
+    for e in keep:
+        if e.dur >= 2.0:
+            for k in range(3):
+                out.append(e.copy(beat=e.beat + k / 3, dur=0.28, vel=e.vel * (1.0 - 0.08 * k)))
+            e.beat, e.dur = e.beat + 1.0, e.dur - 1.0
+    evs.extend(out)
+    return len(out) // 3

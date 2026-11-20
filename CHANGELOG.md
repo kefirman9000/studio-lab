@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.92.2
+- **Dreamy synthscape: no more kick.** The original track has no real kick: its only regular low thumps sit about 40 dB below the music, and the pulse itself is the heartbeat. Our audible straight kick under the triplet pulse is what sounded off, so it's gone.
+- **The bass now comes in the way the original's does:** about every two bars (every 4–6 seconds), struck three times in a quick triplet stutter, held for about two and a half beats, then space. It also sits lower, around 100 Hz like the original, and a little louder. The low end matches the original within a few dB.
+
 ## 1.92.1
 - **Dreamy synthscape: the bass no longer feels off the beat.** The bass and kick notes always landed together, but the mix made them feel apart:
   - **The bass was ducked by the kick** (sidechain, plus the kick / bass dodge). It dipped on every beat and swelled back in between, so the low end pumped on the off-beats. It now holds steady and peaks right on the kick.

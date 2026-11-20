@@ -1919,6 +1919,7 @@ def compose(opts):
         st['tracks'].append(_ans)
     st['bar_variations'] = _ev.bar_variation(evs, sections, st, opts)
     st['extra_arps'] = _ev.extra_arps(evs, sections, st, opts, tracks)   # (1.91) background arpeggio layers
+    st['bass_stutters'] = _ev.bass_stutter(evs, st)      # (1.92.2) long bass notes enter with a triplet stutter
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     _sw = _ev.structure_moves(evs, sections, st, opts, tracks, POOLS_.get(opts.style, {}).get('bass') or [], fx)
