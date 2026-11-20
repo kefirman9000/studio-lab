@@ -10836,6 +10836,135 @@ style('dark_drill', 'Electronic',
       label='Dark drill (sliding 808s, wobble switch-ups)')
 
 
+
+# ----------------------------------------------------------------------------- 1.86: three genres from reference sets
+# Dark sub-weight dubstep (measured on 4 records): 140-144 BPM, minor, half-time (snare on 3), syncopated kicks, a huge
+# mono sub at 42-52 Hz that is the loudest thing in the mix, a dark growling mid-bass, very mono (L/R correlation
+# 0.94-0.98), dark on top (centroid ~1-2 kHz), -9 LUFS with ~9.5 dB peak-to-loudness; 16-32 bar intros, long drops.
+FORMS['dark_dubstep_classic'] = [
+    ('intro', 16, {'top', 'pad', 'chords', 'fx'}, {'filter_in': True}),
+    ('build', 8, {'kick', 'top', 'pad', 'chords', 'fx'}, {'level': 0.8}),
+    ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True, 'crash': True}),
+    ('break', 16, {'top', 'pad', 'chords', 'lead', 'fx'}, {'alt': True}),
+    ('build', 8, {'kick', 'snare', 'top', 'pad', 'fx'}, {'level': 0.85}),
+    ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'drop': True, 'alt': True, 'crash': True}),
+    ('outro', 16, {'top', 'pad', 'bass', 'fx'}, {'fade': True}),
+]
+style('dark_dubstep_classic', 'Electronic',
+      'Dark dubstep (sub-weight, 2009-12): half-time 140-144 with the snare on beat 3 and syncopated kicks, a huge mono sine '
+      'sub that is the loudest thing in the mix, a dark slow-growling wobble in the low mids, cold grime squares, '
+      'dissonant horror stabs and a soundsystem siren thrown into the echo; very mono and dark on top, long drops',
+      bpm=(140, 144), scales=['minor', 'phrygian', 'harmonic_minor'], swing=0.54, swing_unit=16, human=0.004, kit='punchy',
+      form='dark_dubstep_classic', chord_size=3, sc_depth=0.2, sc_release=0.25, reverb=2.4, delay_beats=0.75, dub=0.35,
+      dub_beats=0.75, own_progs=True, chord_bars=2,
+      progs={'minor': [[0, 0, 5, 6], [0, 0, 0, 5], [0, 6, 5, 6]], 'phrygian': [[0, 0, 1, 0], [0, 1, 0, 6]],
+             'harmonic_minor': [[0, 0, 5, 4], [0, 0, 1, 0]]},
+      kit_override={'kick': {'drive': 1.8, 'decay': 9, 'pitch': 50, 'punch': 130}, 'snare': {'snap': 1.5, 'decay': 10, 'tone': 200}},
+      drums={'kick': ['X.........X.....', 'X......X..X.....', 'X.........X..X..', 'X..X......X.....', 'X.......X.X.....'],
+             'snare': ['........X.......', '........X......o', '........X.....x.'],
+             'chat': ['x.x.x.x.x.x.x.x.', 'x..x..x.x..x..x.', '..x...x...x...x.'],
+             'rim': ['...x......x.....', '......x.....x...'],
+             'ohat': ['......x.......x.', '................']},
+      snare_tracks=['snare'], ghosts=False, fill=False,
+      build_family=['pause', 'drumless', 'none'], transition_moves=['gap', 'none', 'crash'], plain_drops=True,
+      bass=['R---------------', 'R-------R-------', 'R-----R-R-------'], bass_mode='wobble',
+      wobble_rates=[2, 1, 2, 4, 1], wobble_rates_alt=[4, 2, 8, 4, 2], wobble_lens=[16, 16, 8, 8, 4], bass_lo=28,
+      chord_rh=['x-------........', '....x.......x...', 'x...............'], chord_center=57,
+      arp=dict(rate=4, mode='random', oct=5, prob=0.3), lead_oct=5,
+      lead_rh=['x.x.x...x.......', 'x---....x.x.....', '....x.x.x---....', 'x.......x.x.x...'],
+      repetition=0.85,
+      gm_hint='Half-time 140: kick on 1 with syncopated extras, snare on 3; huge mono sine sub (loudest element) under a dark '
+              'slow LFO wobble (low-passed, never bright); grime square riff; horror stabs; dub siren into a tape echo; very '
+              'mono, dark top end',
+      tracks=[T('kick', 'kick', 'kick', db=-11), T('snare', 'snare', 'snare', rev=0.35, db=-15, throw=0.6),
+              T('chat', 'top', 'chat', pan=0.15, db=-30), T('rim', 'top', 'rim', pan=-0.25, rev=0.3, db=-28, throw=0.7),
+              T('ohat', 'top', 'ohat', pan=0.2, db=-32),
+              T('bass', 'bass', 'dreadwob', sc=0.2, db=-8, p=dict(cut=800)),
+              T('chords', 'chords', 'horrorstab', rev=0.5, dly=0.3, db=-22),
+              T('pad', 'pad', 'darkpad', rev=0.6, db=-30),
+              T('arp', 'arp', 'grimesquare', dly=0.35, rev=0.3, db=-27),
+              T('lead', 'lead', 'grimesquare', rev=0.35, dly=0.3, db=-22, throw=0.5),
+              T('texture', 'fx', 'texture', db=-36)],
+      master=dict(tone=[0.0, -9.3, -12.8, -13.2, -13.8, -12.6, -17.5, -20.3, -23.4], lufs=-9.0, air=-2.5, low=3.0,
+                  drive=0.15, max_gr=4.0, width=0.6),
+      pools=dict(bass=['dreadwob', 'wobble', 'darkwob', 'subwob', 'dubsub', 'growl'],
+                 chords=['horrorstab', 'stab', 'darkpad', 'eeriepad'],
+                 pad=['darkpad', 'eeriepad', 'choir', 'dreamair'],
+                 arp=['grimesquare', 'bell', 'chip', 'horrorstab'],
+                 lead=['grimesquare', 'dubsiren', 'horrorstab', 'stab', 'screech']),
+      exact_pools=True, label='Dark dubstep (sub-weight, 2009-12)')
+
+# Classic vocal trance (measured on 3 records): 130-140 BPM, minor (A minor in all three), 7-8 minute arrangements with a
+# long quiet breakdown in the middle, an off-beat rolling bass that ducks 11-19 dB under every kick, constant 16th hats,
+# wide (correlation 0.82-0.9), -8 to -10 LUFS with ~10 dB peak-to-loudness; the breakdown is mids and highs (pads, piano,
+# voice) with almost no low end.
+style('classic_vocal_trance', 'Electronic',
+      'Classic vocal trance (2004-09): 136-140 BPM in a minor key, a rolling off-beat bass ducking hard under the kick, '
+      'constant 16th hats, a bright singing lead with glide, gated supersaw chords, airy pads and a piano-led breakdown in '
+      'the middle that rises into the last, biggest drop; long, wide and emotional',
+      bpm=(136, 140), scales=['minor'], kit='trance', form='trance', sc_depth=0.75, sc_release=0.45, chord_size=4,
+      progs=[[5, 3, 0, 4], [0, 5, 3, 4], [0, 3, 5, 4], [5, 6, 0, 4], [0, 6, 5, 6]],
+      drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'chat': ['xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxx.xx'],
+             'ride': ['x.x.x.x.x.x.x.x.']},
+      snare_tracks=['clap'], bass=['..RR..RR..RR..RR', '.RRR.RRR.RRR.RRR', '..R...R...R...R.'], bass_lo=31, bass_gate=0.55,
+      fill=True, chord_rh=['x---------------', 'x-x-x-x-x-x-x-x-'], chord_center=64, arp=dict(rate=1, mode='updown', oct=5),
+      lead_rh=['x---x-x-x---x---', 'x-------x-x-x---', 'x---x---x-x-x-x-', 'x-----x-----x---'],
+      gm_hint='Rolling off-beat bass ducked under the kick; 16th hats; bright singing lead with glide and vibrato; gated '
+              'supersaw chords; airy pads; piano breakdown; vocal',
+      filter_arc=True, sc_arc=True,
+      tracks=[T('kick', 'kick', 'kick', db=-12), T('clap', 'snare', 'clap', rev=0.35, db=-19),
+              T('ohat', 'top', 'ohat', db=-26), T('chat', 'top', 'chat', pan=0.15, db=-31), T('ride', 'top', 'ride', db=-33),
+              T('bass', 'bass', 'rollbass', sc=0.85, db=-14, p=dict(cut=1000, d=0.1, s=0.3)),
+              T('chords', 'chords', 'gatepad', rev=0.45, sc=0.7, db=-23),
+              T('pad', 'pad', 'dreampad', wide=0.4, rev=0.6, sc=0.5, db=-26),
+              T('arp', 'arp', 'piano', rev=0.5, dly=0.35, sc=0.3, db=-24),
+              T('lead', 'lead', 'classiclead', rev=0.5, dly=0.35, sc=0.4, db=-18),
+              T('texture', 'fx', 'texture', db=-36)],
+      master=dict(tone=[0.0, -1.9, -7.5, -10.4, -12.3, -13.9, -14.3, -13.7, -16.8], lufs=-9.0, air=1.5, low=1.0, width=1.4),
+      reverb=3.2, rev_predelay=0.045, rev_hp=220, form_scale=1.5,
+      pools=dict(bass=['rollbass', 'dreambass', 'fmroll', 'sawbass'],
+                 chords=['gatepad', 'supersaw', 'upstab', 'dreampad', 'pluck_saw'],
+                 pad=['dreampad', 'trancepad', 'vocalpad', 'dreamair', 'trancestrings', 'strings'],
+                 arp=['piano', 'dreampluck', 'sylpluck', 'pluck_saw', 'trancebell'],
+                 lead=['classiclead', 'supersaw_lead', 'dreamlead', 'emolead', 'leadsaw']),
+      exact_pools=True, label='Classic vocal trance (2004-09)')
+
+# Festival techno / big-room trance (measured on 6 records): 134-142 BPM, very wide leads (correlation 0.48-0.62, the
+# widest of any reference set), the bass on the 16ths right after each kick, ducking 9-20 dB under it, -8 to -9 LUFS,
+# ~9 dB peak-to-loudness; short builds and big 16-bar drops around a breakdown.
+style('festival_techno', 'Electronic',
+      'Festival techno (big-room trance, 2011-14): 134-138 BPM, a punchy four-on-the-floor with the bass on the 16ths '
+      'right after each kick, a huge, very wide supersaw stab and a tearing hard-sync hook, a rising build pad and a '
+      'pumping sidechain; bold, rhythmic and larger than life',
+      bpm=(134, 138), scales=['minor', 'phrygian', 'major'], kit='techno', form='edm', sc_depth=0.85, sc_release=0.4,
+      chord_size=3, progs=[[0, 5, 3, 4], [0, 0, 5, 6], [0, 3, 4, 4], [0, 6, 5, 4]],
+      drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'chat': ['x.xxx.xxx.xxx.xx', '..x...x...x...x.'],
+             'ride': ['x.x.x.x.x.x.x.x.']},
+      snare_tracks=['clap'], bass=['..RR..RR..RR..RR', '.RR..RR..RR..RR.', '..RR..RR..RR..RF'], bass_lo=31, bass_gate=0.5,
+      fill=True, chord_rh=['x--.x--.x-x-.x--', 'x..x..x.x..x..x.', 'x-x-x-x-x-x-x-x-'], chord_center=62,
+      arp=dict(rate=1, mode='up', oct=5),
+      lead_rh=['x.x.x..x.x.x..x.', 'x..x..x.x..x..x.', 'x.xxx.x.x.xxx.x.'],
+      gm_hint='Punchy 909 kick, bass on the 16ths after the kick (ducked hard); very wide supersaw stab; hard-sync hook; '
+              'build pad; riser and impact into each drop',
+      filter_arc=True, sc_arc=True,
+      tracks=[T('kick', 'kick', 'kick', db=-11), T('clap', 'snare', 'clap', rev=0.3, db=-18),
+              T('ohat', 'top', 'ohat', db=-26), T('chat', 'top', 'chat', pan=0.15, db=-30), T('ride', 'top', 'ride', db=-33),
+              T('bass', 'bass', 'hardbass', sc=0.9, db=-13),
+              T('chords', 'chords', 'megastab', wide=0.6, rev=0.35, sc=0.85, db=-21),
+              T('pad', 'pad', 'buildpad', wide=0.5, rev=0.5, sc=0.6, db=-27),
+              T('arp', 'arp', 'festpluck', rev=0.3, dly=0.3, sc=0.6, db=-25),
+              T('lead', 'lead', 'syncstab', wide=0.5, rev=0.3, dly=0.25, sc=0.6, db=-19),
+              T('texture', 'fx', 'texture', db=-36)],
+      master=dict(tone=[-0.2, 0.0, -3.7, -6.4, -11.1, -9.3, -10.2, -10.9, -14.7], lufs=-8.5, air=1.0, low=1.5, width=2.2,
+                  drive=0.2, min_corr=0.5),
+      reverb=2.2, rev_hp=250,
+      pools=dict(bass=['hardbass', 'electrobass', 'rollbass', 'fmbass'],
+                 chords=['megastab', 'anthemlead', 'festpluck', 'supersaw', 'stab'],
+                 pad=['buildpad', 'supersaw', 'trancepad', 'warmpad'],
+                 arp=['festpluck', 'syncstab', 'pluck_saw', 'laserpluck'],
+                 lead=['syncstab', 'anthemlead', 'megastab', 'hoover', 'festpluck', 'peaklead']),
+      exact_pools=True, label='Festival techno (big-room trance, 2011-14)')
+
 def _offer_genre_sounds():
     """Every sound a genre plays in a part is also offered for that part in the Sound panel's menu (a guitar lead, an
     organ arp, a timpani bass line ...), so the menus never hide what the genres actually use."""

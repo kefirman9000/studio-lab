@@ -750,9 +750,9 @@ class Handler(BaseHTTPRequestHandler):
         if p == '/api/audition':                          # hear one sound / drum hit before rendering a song
             try:
                 from .api import audition
-                from .instruments import INSTRUMENTS
+                from .instruments import INSTRUMENTS, DRUMS
                 inst, kit, voice = body.get('inst'), body.get('kit'), body.get('voice')
-                if inst and not (inst in INSTRUMENTS or str(inst).startswith(('sf:', 'real:', 'user:'))):
+                if inst and not (inst in INSTRUMENTS or inst in DRUMS or str(inst).startswith(('sf:', 'real:', 'user:'))):
                     raise ValueError('unknown sound')
                 if voice and voice not in ('kick', 'snare', 'clap', 'hats'):
                     raise ValueError('unknown drum voice')

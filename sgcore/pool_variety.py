@@ -201,8 +201,8 @@ def widen():
                 continue
             for g in genres:
                 pools = POOLS.get(g)
-                if not pools or g not in STYLES:
-                    continue
+                if not pools or g not in STYLES or STYLES[g].get('exact_pools'):
+                    continue                           # (genres modelled on reference records keep their own lists)
                 if scene in CLUB or g in CLUB_GENRE or g in WORLD or (pools.get('bass') or [''])[0] == '808':
                     _club(g, scene, pools, set(STYLES[g].get('no_sounds') or ()))
                 main = {t.get('layer'): t.get('inst') for t in STYLES[g]['tracks']}

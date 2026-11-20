@@ -326,7 +326,8 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     r.premaster_peak = float(np.max(np.abs(mix)))
     mcfg = dict(song['st']['master'])
     out = master(mix, mcfg, log=log)
-    if getattr(opts, 'production_pass', False) and not loop:
+    pp_ = getattr(opts, 'production_pass', 'auto')
+    if (pp_ is True or (pp_ == 'auto' and not preview)) and not loop:     # ('auto': full songs; previews stay quick)
         out, info['production_pass'] = production_pass(mix, mcfg, out, log=log)
     if loop:
         out = wrap_loop(out, r._bt(song['total_bars'] * 4))
@@ -455,7 +456,8 @@ def production_pass(mix, cfg, out, log=print):
     rep = mix_report(out, tone=cfg.get('tone'))
     c = dict(cfg)
     changes = []
-    if rep['correlation'] < 0.3 or rep['mono_drop'] > 1.5:
+    wide = float(cfg.get('genre_width', 1.0)) >= 1.5                 # (a genre meant to be very wide: festival leads)
+    if rep['correlation'] < max(0.3, float(cfg.get('min_corr', 0.2)) - 0.1) or rep['mono_drop'] > (3.0 if wide else 1.5):
         c['width'] = float(c.get('width', 1.0)) * 0.8
         c['min_corr'] = 0.45                              # (the width guard's target: the wide parts stop cancelling)
         changes.append('narrower stereo (it lost level in mono)')
@@ -503,6 +505,9 @@ def audition(inst=None, role='lead', kit=None, voice=None, bpm=124):
     from .dsp import write_wav, SR
     from . import drumkits
     from .instruments import KITS
+    from .instruments import DRUMS
+    if inst in DRUMS:                                   # (1.86) one drum sound (a rim, a shaker, a ride ...)
+        voice, kit = '_one', '909'
     song = dict(st={'kitparams': {}, 'tracks': []}, opts=Options(), bpm=bpm, total_bars=2, seed=1)
     out = np.zeros((2, int(SR * 4.2)))
     if voice:
@@ -512,8 +517,9 @@ def audition(inst=None, role='lead', kit=None, voice=None, bpm=124):
         if m[4] and not m[5]:
             song['st']['real_kit'] = m[4]
         r = Renderer(song, log=lambda *a: None)
-        names = drumkits.VOICES.get(voice, (voice,))
-        hits = {'kick': [0, 1, 2, 2.75], 'snare': [1, 3], 'clap': [1, 3], 'hats': [i * 0.5 for i in range(8)]}.get(voice, [0, 1, 2, 3])
+        names = (inst,) if voice == '_one' else drumkits.VOICES.get(voice, (voice,))
+        hits = {'kick': [0, 1, 2, 2.75], 'snare': [1, 3], 'clap': [1, 3], 'hats': [i * 0.5 for i in range(8)],
+                '_one': [0, 0.75, 1.5, 2, 3]}.get(voice, [0, 1, 2, 3])
         for i, b in enumerate(hits):
             nm = names[1] if voice == 'hats' and i == len(hits) - 1 and len(names) > 1 else names[0]
             ev = Ev(nm, b, 0.25, None, 0.95 if b == int(b) else 0.75)

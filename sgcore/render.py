@@ -1,8 +1,11 @@
 """Rendering: events -> tracks -> mix (sidechain, sends, buses) -> master."""
+import hashlib
+import json
 import math
 import os
 import random
 import time
+import zlib
 
 import numpy as np
 from scipy import signal
@@ -901,6 +904,35 @@ class Renderer:
         g = np.where(db <= -60, 0.0, 10 ** (db / 20)).astype(np.float32)
         return uniform_filter1d(g, 64)                    # no clicks at the corners
 
+    def track_key(self, tcfg, evs):
+        """A fingerprint of everything a part's raw render depends on (its settings, notes, tempo, length, the song's
+        style data, the synth character ...), or None when the part shouldn't be cached (full songs, plugins, samples
+        you loaded)."""
+        if self.length > 75 * SR or str(tcfg.get('inst', '')).startswith(('vst:', 'user:')) or tcfg.get('vst'):
+            return None
+        try:
+            st = {k: v for k, v in self.st.items() if k != 'tracks'}
+            o = self.opts
+            blob = json.dumps([tcfg, [(e.beat, e.dur, e.midi, round(float(e.vel), 4), e.glide, e.mod, getattr(e, 'strum', 0),
+                                       getattr(e, 'slide', 0), getattr(e, 'bend', None)) for e in evs],
+                               self.song['bpm'], self.length, self.song.get('preview_of'), self.song.get('tempo_map'), st,
+                               [getattr(o, k, None) for k in ('seed', 'humanize', 'brightness', 'synth_character', 'user_drums',
+                                                               'style', 'sound_seed')], RENDER_VERSION],
+                              sort_keys=True, default=str)
+        except Exception:                                 # noqa: BLE001 - anything odd: just don't cache
+            return None
+        return hashlib.sha1(blob.encode()).hexdigest()
+
+    def lane_curve(self, points, n, default):
+        """An editor lane (filter / reverb / pan) -> a value per sample: straight lines between the points, held
+        before the first and after the last."""
+        off = float((self.song.get('preview_of') or (0, 0))[0]) * 4
+        pts = sorted((float(b) - off, float(v)) for b, v in (points or []) if b is not None and v is not None)
+        if not pts:
+            return np.full(n, default, dtype=np.float32)
+        xs = np.array([self.t_of(b, human=False) * SR for b, _ in pts])
+        return uniform_filter1d(np.interp(np.arange(n), xs, [v for _, v in pts]).astype(np.float32), 256)
+
     def knob_ride(self, tcfg, L):
         """A producer riding the cutoff knob (analog character, electronic genres): the chords' and arp's low-pass
         drifts slowly open and closed over 8 or 16 bars, each part on its own cycle - so a loop that repeats for
@@ -1090,7 +1122,21 @@ class Renderer:
             if tcfg['layer'] == 'fx' and 'fx' in (opts.muted or []):
                 continue
             t0 = time.time()
-            buf = self.render_track(tcfg, evs)
+            ck = self.track_key(tcfg, evs)
+            hitc = TRACK_CACHE.get(ck) if ck else None
+            if hitc is not None:                          # (1.87) unchanged since the last preview: reuse it
+                TRACK_CACHE.move_to_end(ck)
+                buf = hitc.copy()
+            else:
+                seed_ = (int(getattr(opts, 'seed', 0) or 0) * 7919 + 57 + zlib.crc32(name.encode())) % (2 ** 32)
+                _va._RNG = np.random.default_rng(seed_)   # each part its own random stream: the same part renders the
+                from . import dsp as _dsp                 # same whatever else changed (and can be cached)
+                _dsp.RNG = np.random.default_rng(seed_ + 1)
+                buf = self.render_track(tcfg, evs)
+                if ck:
+                    TRACK_CACHE[ck] = buf.copy()
+                    while len(TRACK_CACHE) > 40:
+                        TRACK_CACHE.popitem(last=False)
             fxname = (getattr(opts, 'part_fx', None) or {}).get(tcfg['layer'])
             if fxname and tcfg['layer'] != 'fx' and np.any(buf):
                 try:                                      # your effect plugin on this part (own process)
@@ -1168,6 +1214,20 @@ class Renderer:
             auto = (getattr(opts, 'automation', None) or {}).get(name)
             if auto and np.any(buf):                       # your volume line from the song editor
                 buf *= self.automation_curve(auto, buf.shape[1])[None, :]
+            lanes = getattr(opts, 'lanes', None) or {}            # (1.87) the editor's filter / reverb / pan lanes
+            fl = (lanes.get('filter') or {}).get(name)
+            if fl and np.any(buf):                                 # 0 = closed (200 Hz), 1 = open
+                v = self.lane_curve(fl, buf.shape[1], 1.0)
+                if float(v.min()) < 0.995:
+                    buf = auto_lp(buf, 200 * (18000 / 200) ** v).astype(np.float32)
+            pl = (lanes.get('pan') or {}).get(name)
+            if pl and np.any(buf):                                 # -1 left ... +1 right (constant power)
+                v = self.lane_curve(pl, buf.shape[1], 0.0)
+                a = (np.clip(v, -1, 1) + 1) * np.pi / 4
+                m_ = buf.mean(axis=0)
+                buf = np.vstack([m_ * np.cos(a) * 1.414, m_ * np.sin(a) * 1.414]).astype(np.float32)
+            rl = (lanes.get('reverb') or {}).get(name)
+            rev_curve = self.lane_curve(rl, buf.shape[1], 1.0) * 2.0 if rl else None   # 0 dry ... 1 = twice the send
             if tcfg['layer'] in ('kick', 'bass') and np.any(buf):   # low-band envelopes for the kick / bass overlap check
                 lo_e = np.abs(lp(buf.mean(axis=0), 100, 2))
                 hop = 441
@@ -1181,7 +1241,9 @@ class Renderer:
                     tm = self.throw_notes(evs)
                     if tm is not None:
                         dly_send += buf * tm[None, :] * np.float32(max(0.12, tcfg['dly']) * 1.6 * max(0.4, opts.delay))
-            if tcfg['rev']:
+            if rev_curve is not None:
+                rev_send += buf * (rev_curve[None, :] * np.float32(max(tcfg['rev'], 0.15) * opts.reverb)).astype(np.float32)
+            elif tcfg['rev']:
                 rev_send += buf * np.float32(tcfg['rev'] * opts.reverb)
             if tcfg['dly'] and tcfg.get('dly_time'):         # this part's own echo time (a 1/8 pluck under a dotted-8th lead)
                 k_ = float(tcfg['dly_time'])
@@ -1212,6 +1274,11 @@ class Renderer:
             self.log(f'   rendered {name:<11} {len(evs):5d} notes  {time.time() - t0:5.1f}s')
             if progress:
                 progress((ti + 1) / (n_tracks + 3))
+        # (1.87) after the parts, the random streams start from a fixed point again (cached or not, same result)
+        _post = (int(getattr(opts, 'seed', 0) or 0) * 7919 + 9001) % (2 ** 32)
+        _va._RNG = np.random.default_rng(_post)
+        from . import dsp as _dsp
+        _dsp.RNG = np.random.default_rng(_post + 1)
         # ---- one-shot FX
         fxbuf = np.zeros((2, L), dtype=np.float32)
         if 'fx' not in (opts.muted or []):
@@ -1988,11 +2055,14 @@ def master(x, cfg, log=print):
 # end (house / trance / big room), an FM siren whose wobble speeds up (dubstep / bass), a noise sweep with a saw
 # underneath (DnB / breaks), a plain noise sweep elsewhere. Impacts are a sub drop on the song's root note with a noise
 # burst and a short tail; downlifters fall in pitch and filter. All in stereo, widening as they rise.
+TRACK_CACHE = __import__('collections').OrderedDict()   # (1.87) rendered parts, reused by the next preview
+RENDER_VERSION = '1.87'
 SC_SHAPE_GROUP = {'House & Disco': 'pump', 'Techno & Trance': 'classic', 'Drum & Bass, Breaks & Hard': 'tight',
                   'Dubstep, Garage & Bass': 'tight', 'Pop, R&B & Hopecore': 'classic'}
 SC_SHAPE_GENRE = {'bigroom': 'pump', 'electro': 'pump', 'trance': 'breathe', 'uplifting_trance': 'breathe',
                   'vocal_trance_remix': 'breathe', 'hardstyle': 'tight', 'french_house': 'pump', 'techno': 'classic',
-                  'hard_techno': 'tight', 'eurodance': 'pump', 'electro_prog_trance': 'pump'}
+                  'hard_techno': 'tight', 'eurodance': 'pump', 'electro_prog_trance': 'pump',
+                  'festival_techno': 'pump', 'classic_vocal_trance': 'pump', 'dark_dubstep_classic': 'tight'}
 RISER_FAMILY = {'House & Disco': 'saw', 'Techno & Trance': 'saw', 'Dubstep, Garage & Bass': 'siren',
                 'Drum & Bass, Breaks & Hard': 'noisesaw', 'Retro & Video Game': 'saw', 'Pop, R&B & Hopecore': 'noise'}
 

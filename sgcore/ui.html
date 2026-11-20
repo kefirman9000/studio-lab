@@ -287,7 +287,15 @@ body:not(.helptext) .hint.qhd{display:none !important}
 .sndgrp{font-size:11px;text-transform:uppercase;letter-spacing:.06em;opacity:.55;padding:8px 8px 3px}
 .sndrow{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 8px;border-radius:6px;cursor:pointer}
 .sndrow:hover,.sndrow.act{background:var(--acc-soft,rgba(124,92,255,.22))}.sndrow.cur{font-weight:600}
-.sndrowplay{border:0;background:transparent;color:inherit;opacity:.45;cursor:pointer;padding:0 4px}.sndrow:hover .sndrowplay,.sndrowplay:focus{opacity:1}
+.sndrowplay,.sndfav{border:0;background:transparent;color:inherit;opacity:.45;cursor:pointer;padding:0 4px}.sndfav.on{opacity:1;color:var(--warn,#f5b041)}.sndrb{display:flex;gap:2px}
+.sndrow:hover .sndfav{opacity:.9}.sndrow:hover .sndrowplay,.sndrowplay:focus{opacity:1}
+.brlist{max-height:56vh;overflow:auto;display:flex;flex-direction:column;gap:2px}
+.brrow{display:grid;grid-template-columns:28px 28px 1fr auto 120px;gap:6px;align-items:center;padding:4px 6px;border-radius:6px}.brrow:hover{background:var(--chip)}
+.brname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xsub{margin-left:18px;border-left:2px solid var(--line);padding-left:10px}.xtag{opacity:.55;margin-right:2px}
+.drumgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(560px,1fr));gap:6px 18px;margin-top:6px}
+.drow{display:grid;grid-template-columns:130px auto auto minmax(200px,1fr);gap:10px;align-items:center}.drow b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drow .sndwrap{min-width:0}
 </style>
 </head>
 <body>
@@ -468,6 +476,7 @@ body:not(.helptext) .hint.qhd{display:none !important}
   <div class="tpt"><b id="tpTitle">Nothing playing</b><span id="tpSub">Make a preview to start</span></div>
   <span class="tm" id="tpTime">0:00</span><canvas id="tpWave" title="Click to jump"></canvas><span class="tm" id="tpDur">0:00</span>
   <span class="tpl" id="tpLoud"></span>
+  <button class="mini" id="tpAB" title="Compare your last two results: flips between them at the same spot, loudness matched (key: B)">⇄ A/B last two</button>
   <label class="tpv" title="Volume"><span id="tpVolIc"></span><input type="range" id="tpVol" min="0" max="1" step="0.01" value="1"></label>
 </footer>
 </div>
@@ -711,40 +720,63 @@ function renderSelected(){
       if(state.locked) delete state.locked[r]; state.instruments[r]=pick; renderSelected(); };
     if(w.querySelector('.fxsel')) w.querySelector('.fxsel').onchange=e=>{ if(e.target.value) state.part_fx[r]=e.target.value; else delete state.part_fx[r]; };
     if(!jParts&&(META.part_effects||[]).length&&role!=='drums') fxRow(w, r);
+    w.dataset.grp=role;
     $('#soundBody').appendChild(w);
   });
-  // the genre's extra parts (horn stabs, a second guitar, solo instruments ...) - every sound in the song can be changed
+  // (1.86) every other sound - the genre's extra parts, layers, section switches, build-up drums - sits in its own
+  // part's group (an extra pad under Pad, a layered lead under Lead) and drums in the Drums section, each with the same
+  // controls as the main parts: a searchable sound menu with ▶, mute, volume, octave and effects.
   const extras=(!jParts&&!state.blend.length)?((META.style_extras||{})[state.style]||[]):[];
-  if(extras.length){ const h=document.createElement('div'); h.className='f wide inst';
-    h.innerHTML='<div class="hint">Extra parts in this genre - change their sound or switch them off.</div>'; $('#soundBody').appendChild(h); }
-  extras.forEach(x=>{
-    const w=document.createElement('div'); w.className='f inst xrow';
-    const groups={}; (META.roles[x.layer]||[]).forEach(i=>{(groups[i.group||'Built-in']=groups[i.group||'Built-in']||[]).push(i)});
-    const opts=Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${state.instruments[x.id]===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('');
-    const dn=((META.roles[x.layer]||[]).find(i=>i.id===x.inst)||{name:x.inst}).name;
-    w.innerHTML=`<label>${esc(x.name)}</label><select data-sndrole="${esc(x.layer)}" data-snddef="${esc(x.inst)}"><option value="">Style default (${esc(dn)})</option><option value="off" ${state.instruments[x.id]==='off'?'selected':''}>🔇 Off (silent)</option>${opts}</select>`;
-    w.querySelector(':scope > select').onchange=e=>{ if(e.target.value) state.instruments[x.id]=e.target.value; else delete state.instruments[x.id]; };
-    $('#soundBody').appendChild(w);
-  });
+  const shown=new Set(ROLES.map(([r])=>r));
+  const DRUMLAY=['kick','snare','top'];
+  const xs=[]; const seen=new Set();
+  extras.forEach(x=>{ if(shown.has(x.id)||seen.has(x.id)) return; seen.add(x.id);
+    xs.push({id:x.id, part:x.name, sound:soundName(x.inst), layer:x.layer, inst:x.inst, drum:DRUMLAY.includes(x.layer)}); });
+  ((!jParts&&!state.blend.length&&state.lastTracks)?state.lastTracks:[]).forEach(tr=>{
+    if(shown.has(tr.id)||seen.has(tr.id)||/^extra\d+$/.test(tr.id)) return; seen.add(tr.id); xs.push(Object.assign({}, tr, {drum:tr.drum||DRUMLAY.includes(tr.layer)})); });
+  if(!jParts) placeExtras(xs.filter(x=>!x.drum));
+  if(!jParts) renderDrumRows(xs.filter(x=>x.drum));
   if(!jParts) extraRows();
-  // every other sound the last song of this genre used (section switches, layers, build-up drums ...)
-  const shown=new Set([...ROLES.map(([r])=>r), ...extras.map(x=>x.id)]);
-  const more=(!jParts&&!state.blend.length&&state.lastTracks)?state.lastTracks.filter(tr=>!shown.has(tr.id)&&!/^extra\d+$/.test(tr.id)):[];
-  if(more.length){ const h=document.createElement('div'); h.className='f wide inst';
-    h.innerHTML='<div class="hint">Also playing in your last song - change or switch off any of them.</div>'; $('#soundBody').appendChild(h);
-    more.forEach(tr=>{ const w=document.createElement('div'); w.className='f inst xrow';
-      EDSTYLE=state.style; w.innerHTML=`<label>${esc(tr.part)} <span class="hint">${esc(tr.sound)}</span></label>`+soundSelect(tr, state.instruments[tr.id]);
-      const s=w.querySelector('[data-snd]'); if(s) s.onchange=()=>{ if(s.value) state.instruments[tr.id]=s.value; else delete state.instruments[tr.id]; };
-      const c=w.querySelector('[data-on]'); if(c) c.onchange=()=>{ if(c.checked) delete state.instruments[tr.id]; else state.instruments[tr.id]='off'; };
-      $('#soundBody').appendChild(w); }); }
   // the sounds come first in the Sound panel, then drums & tone
   const sb=$('#soundBody'), head=$('#drumsHead'); $$('#soundBody .inst').forEach(e=>sb.insertBefore(e, head));
   if($('#drumVol')) $('#drumVol').innerHTML=volHtml('drums');
   bindMutes();
-  bindLevels();
+  bindLevels(); bindTLevels();
   bindOctaves(); tidyHints($('#soundBody'));
   if(typeof applyPartsView==='function') applyPartsView();
 }
+function tvolHtml(id){ const v=(state.tlevels||{})[id]||0;
+  return `<span class="vol" title="Volume of this sound (dB)"><input type="range" data-tlv="${esc(id)}" min="-24" max="9" step="1" value="${v}"><b data-tlvv="${esc(id)}">${v>0?'+':''}${v} dB</b></span>`; }
+function bindTLevels(){ state.tlevels=state.tlevels||{};
+  $$('[data-tlv]').forEach(e=>{ const k=e.dataset.tlv; e.value=state.tlevels[k]||0;
+    const show=()=>{ $$(`[data-tlvv="${CSS.escape(k)}"]`).forEach(b=>b.textContent=(+e.value>0?'+':'')+e.value+' dB'); };
+    show(); e.oninput=()=>{ state.tlevels[k]=+e.value; if(!+e.value) delete state.tlevels[k]; show(); }; }); }
+function insertInGroup(w, grp){ const sb=$('#soundBody'); const anchors=[...sb.querySelectorAll(`[data-grp="${grp}"]`)];
+  w.dataset.grp=grp; if(anchors.length) anchors[anchors.length-1].after(w); else sb.insertBefore(w, $('#drumsHead')); }
+function xSoundRow(tr){                                  // one extra sound: the same controls as a main part
+  const w=document.createElement('div'); w.className='f inst xsub'; EDSTYLE=state.style;
+  const off=state.instruments[tr.id]==='off';
+  w.innerHTML=`<label><span class="xtag">↳</span> ${esc(tr.part)} <span class="auto" title="Switch this sound off"><input type="checkbox" data-xoff="${esc(tr.id)}" ${off?'checked':''}>mute</span> ${tvolHtml(tr.id)} ${octHtml(tr.id,(state.octaves||{})[tr.id])}</label>`+soundSelect(tr, off?'':state.instruments[tr.id]);
+  const sl=w.querySelector('[data-snd]'); if(sl) sl.onchange=()=>{ if(sl.value) state.instruments[tr.id]=sl.value; else delete state.instruments[tr.id];
+    const c=w.querySelector('[data-xoff]'); if(c) c.checked=sl.value==='off'; };
+  const c=w.querySelector('[data-xoff]'); if(c) c.onchange=()=>{ if(c.checked) state.instruments[tr.id]='off'; else delete state.instruments[tr.id]; if(sl) sl.value=c.checked?'off':(state.instruments[tr.id]||''); if(sl&&sl._sndbtn) syncSndBtn(sl); };
+  if((META.part_effects||[]).length) fxRow(w, tr.id);
+  return w; }
+function placeExtras(list){ list.forEach(tr=>insertInGroup(xSoundRow(tr), ({counter:'lead', answer:'lead'})[tr.layer]||tr.layer)); }
+function renderDrumRows(extraDrums){                     // every drum sound of the last song: sound, volume, mute, ▶
+  let box=$('#drumRows'); if(!box){ box=document.createElement('div'); box.id='drumRows'; box.className='f wide'; $('#drumsHead').after(box); }
+  const main=(state.lastTracks||[]).filter(t=>t.drum||['kick','snare','top'].includes(t.layer));
+  const ids=new Set(); const all=[...main, ...extraDrums].filter(t=>!ids.has(t.id)&&ids.add(t.id));
+  if(!all.length){ box.innerHTML='<div class="hint">Make a preview to see and set each drum sound here (volume, sound, mute).</div>'; return; }
+  EDSTYLE=state.style;
+  box.innerHTML='<div class="drumgrid">'+all.map(tr=>{ const off=state.instruments[tr.id]==='off';
+    return `<div class="drow"><b title="${esc(tr.sound||'')}">${esc(tr.part)}</b>${tvolHtml(tr.id)}<span class="auto" title="Switch this drum off"><input type="checkbox" data-xoff="${esc(tr.id)}" ${off?'checked':''}>mute</span>${soundSelect(Object.assign({}, tr, {drum:true}), off?'':state.instruments[tr.id])}</div>`; }).join('')+'</div>';
+  box.querySelectorAll('.drow').forEach((row,i)=>{ const tr=all[i]; const sl=row.querySelector('[data-snd]');
+    if(sl){ sl.dataset.snddrum='1'; sl.dataset.snddef=tr.inst||''; sl.onchange=()=>{ if(sl.value) state.instruments[tr.id]=sl.value; else delete state.instruments[tr.id]; }; }
+    const c=row.querySelector('[data-xoff]'); if(c) c.onchange=()=>{ if(c.checked) state.instruments[tr.id]='off'; else delete state.instruments[tr.id]; }; });
+  box.querySelectorAll('[data-snd]').forEach(sel=>{ sel.setAttribute('data-sndrole','drum'); });
+}
+
 // built-in effects on a part: the genre's picks (dashed, from your last song) or your own chain (+ FX adds more)
 function fxLabel(id){ const m=(META.part_effects||[]).find(x=>x[0]===id); return m?m[1]:({leslie:'Rotary speaker',gate:'Trance gate'})[id]||id; }
 function fxRow(w, r){
@@ -875,7 +907,7 @@ function options(){
   if(Object.keys(LOCKS).length) o.part_seeds=Object.fromEntries(Object.entries(LOCKS).map(([p,l])=>[p,l.seed]));
   if($('#melStyle').value) o.melody_style=$('#melStyle').value;
   if($('#groove').value) o.groove=$('#groove').value;
-  if($('#chordSpeed').value) o.chord_speed=$('#chordSpeed').value; o.motif=$('#motif').value||'song'; if($('#masterPreset').value) o.master_preset=$('#masterPreset').value; o.production_pass=$('#prodPass').checked; if(state.ref_tone) o.ref_tone=state.ref_tone; if(state.ref_tone_quiet) o.ref_tone_quiet=state.ref_tone_quiet; if(state.sound_seed) o.sound_seed=state.sound_seed;
+  if($('#chordSpeed').value) o.chord_speed=$('#chordSpeed').value; o.motif=$('#motif').value||'song'; if($('#masterPreset').value) o.master_preset=$('#masterPreset').value; o.production_pass=$('#prodPass').checked?'auto':false; if(FAVS.length) o.favorites=FAVS.slice(0,200); if(Object.keys(state.tlevels||{}).length) o.track_levels=Object.assign({}, state.tlevels); if(state.ref_tone) o.ref_tone=state.ref_tone; if(state.midi_parts) o.midi_parts=state.midi_parts; if(state.ref_tone_quiet) o.ref_tone_quiet=state.ref_tone_quiet; if(state.sound_seed) o.sound_seed=state.sound_seed;
   if($('#rotation').value!=='auto') o.rotation=$('#rotation').value;
   if($('#leadStyle').value) o.lead_style=$('#leadStyle').value;
   if($('#buildStyle').value) o.build_style=$('#buildStyle').value;
@@ -905,7 +937,7 @@ function options(){
 }
 function applyOptions(o){
   state.style=o.style; state.blend=o.blend||[]; state.blend_parts=o.blend_parts||{}; state.mood=o.mood||null;
-  state.part_fx=Object.assign({},o.part_fx||{}); state.part_effects=JSON.parse(JSON.stringify(o.part_effects||{})); state.drum_voices=Object.assign({},o.drum_voices||{}); state.extra_parts=JSON.parse(JSON.stringify(o.extra_parts||[])); if(typeof renderDrumVoices==='function') renderDrumVoices();
+  state.part_fx=Object.assign({},o.part_fx||{}); state.part_effects=JSON.parse(JSON.stringify(o.part_effects||{})); state.drum_voices=Object.assign({},o.drum_voices||{}); state.midi_parts=o.midi_parts||null; state.tlevels=Object.assign({}, o.track_levels||{}); state.extra_parts=JSON.parse(JSON.stringify(o.extra_parts||[])); if(typeof renderDrumVoices==='function') renderDrumVoices();
   state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.locked={}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
   $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#masterPreset').value=o.master_preset||''; $('#prodPass').checked=o.production_pass!==false; $('#motif').value=o.motif||'song'; $('#rotation').value=o.rotation||'auto';
   $('#songName').value=o.title||''; $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
@@ -1266,6 +1298,17 @@ function renderLocks(){
   $$('.res [data-lk]').forEach(b=>{ const l=LOCKS[b.dataset.lk]; b.classList.toggle('on', !!l && l.from===b.closest('.res').dataset.rid); });
 }
 let AB=[];
+function abLastTwo(){                                    // (1.87) one click: the two newest results, then flip between them
+  const els=[...document.querySelectorAll('#session .res')].filter(e=>e._r).slice(0,2);
+  if(els.length<2){ $('#status').textContent='Make two previews first, then A/B flips between them.'; return; }
+  const want=els.map(e=>e._r.id);
+  if(AB.length===2&&AB.every(x=>want.includes(x.r.id))){ const bs=[...document.querySelectorAll('#abBar [data-ab]')].filter(b=>b.dataset.ab!=='x');
+    const cur=bs.findIndex(b=>b.classList.contains('p')); (bs[cur===0?1:0]||bs[0]).click(); return; }
+  AB.slice().forEach(x=>abPick(x.r,x.el)); AB=[]; abPick(els[1]._r, els[1]); abPick(els[0]._r, els[0]);
+  const b0=document.querySelector('#abBar [data-ab="0"]'); if(b0) b0.click();
+}
+document.addEventListener('keydown',e=>{ if((e.key==='b'||e.key==='B')&&!e.ctrlKey&&!e.metaKey&&!/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||''))){ e.preventDefault(); abLastTwo(); } });
+setTimeout(()=>{ const b=document.getElementById('tpAB'); if(b) b.onclick=abLastTwo; },0);
 function abPick(r, el){
   if(AB.find(x=>x.r.id===r.id)){ AB=AB.filter(x=>x.r.id!==r.id); } else { AB.push({r,el}); if(AB.length>2) AB.shift(); }
   $$('.res').forEach(x=>x.classList.toggle('ab', !!AB.find(a=>a.el===x)));
@@ -1424,14 +1467,24 @@ function soundSelect(tr, pick){
 function notesTab(host, r, ED){
   host.innerHTML=`<div class="nt-bar"><label class="hint">Sound</label><select id="ntTrack"></select>
       <label class="hint" style="margin-left:8px">Zoom</label><input type="range" id="ntZoom" min="4" max="48" value="12" style="width:120px">
-      <button class="mini" id="ntReset" title="Back to the programmed volume line for this sound">↺ Volume line</button>
+      <label class="hint" style="margin-left:8px">Lane</label><select id="ntLane"><option value="vol">Volume</option><option value="vel">Velocity</option><option value="filter">Filter</option><option value="reverb">Reverb</option><option value="pan">Pan</option></select>
+      <button class="mini" id="ntUndo" title="Undo (Ctrl+Z)">↶</button><button class="mini" id="ntRedo" title="Redo (Ctrl+Shift+Z)">↷</button>
+      <button class="mini" id="ntReset" title="Back to the programmed line for this sound and lane">↺ Line</button>
       <button class="mini" id="ntUndoNotes" title="Undo every note edit on this sound">↺ Notes</button>
       <span class="hint" id="ntInfo" style="margin-left:auto"></span></div>
     <div class="nt-scroll" id="ntScroll"><canvas id="ntCv"></canvas></div>
-    <div class="hint" style="margin-top:6px">Click a note to select it · drag to move · Delete removes it · double-click empty space to add a note.
-      Volume line: drag a point · double-click to add one · right-click removes it · the bottom of the lane is silent.</div>`;
+    <div class="hint" style="margin-top:6px">Click a note to select it · drag to move · drag its right edge to change its length · Delete removes it · double-click empty space to add a note · Ctrl+Z / Ctrl+Shift+Z undo / redo.
+      Lane: Volume, Filter (bottom = closed), Reverb (bottom = dry) and Pan (bottom = left, top = right): drag a point · double-click to add one · right-click removes it. Velocity: drag a note's bar up or down.</div>`;
   const cv=host.querySelector('#ntCv'), sc=host.querySelector('#ntScroll'), sel=host.querySelector('#ntTrack');
-  let D=null, cur=null, sel_=null, drag=null, zoom=12;
+  let D=null, cur=null, sel_=null, drag=null, zoom=12, mode='vol';
+  ED.lanes=ED.lanes||{};
+  const UNDO=[], REDO=[];
+  const snapS=()=>JSON.stringify({e:ED.edits, a:ED.auto, l:ED.lanes});
+  function push(){ UNDO.push(snapS()); if(UNDO.length>200) UNDO.shift(); REDO.length=0; }
+  function restore(js){ const o=JSON.parse(js); ED.edits=o.e; ED.auto=o.a; ED.lanes=o.l; sel_=null; draw(); }
+  function undo(){ if(!UNDO.length) return; REDO.push(snapS()); restore(UNDO.pop()); }
+  function redo(){ if(!REDO.length) return; UNDO.push(snapS()); restore(REDO.pop()); }
+  const LANES={filter:[0,1,1], reverb:[0,1,0.5], pan:[-1,1,0]};     // [min, max, default]
   const ROLL=300, SEC=18, LANE=120, GAP=6, H=SEC+ROLL+GAP+LANE;
   const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888';
   const key=(t,b,m)=>t+'|'+(+b).toFixed(3)+'|'+(m==null?'d':m);
@@ -1440,8 +1493,12 @@ function notesTab(host, r, ED){
   function notesOf(t){ const base=(D.notes[t]||[]).filter(n=>!isDel(t,n)).map(n=>({n, orig:true}));
     const add=ED.edits.add.filter(a=>a[0]===t).map(a=>({n:[a[1],a[2],a[3],a[4]], orig:false, ref:a}));
     return base.concat(add); }
-  function line(t){ return ED.auto[t] ? ED.auto[t] : (D.programmed[t]||[[0,0]]).map(p=>p.slice()); }
-  function setLine(t,pts){ ED.auto[t]=pts.sort((a,b)=>a[0]-b[0]); }
+  function line(t, m){ m=m||mode; if(m==='vol'||m==='vel') return ED.auto[t] ? ED.auto[t] : (D.programmed[t]||[[0,0]]).map(p=>p.slice());
+    const L=(ED.lanes[m]||{})[t]; return L ? L : [[0, LANES[m][2]]]; }
+  function setLine(t,pts){ pts.sort((a,b)=>a[0]-b[0]); if(mode==='vol'||mode==='vel') ED.auto[t]=pts; else { ED.lanes[mode]=ED.lanes[mode]||{}; ED.lanes[mode][t]=pts; } }
+  const vY=v=>{ if(mode==='vol'||mode==='vel') return dbY(v); const [a,b]=LANES[mode]; return SEC+ROLL+GAP+LANE-6-(Math.max(a,Math.min(b,v))-a)/(b-a)*(LANE-12); };
+  const yV=y=>{ if(mode==='vol'||mode==='vel') return yDb(y); const [a,b]=LANES[mode]; const v=a+(SEC+ROLL+GAP+LANE-6-y)/(LANE-12)*(b-a); return Math.round(Math.max(a,Math.min(b,v))*100)/100; };
+  const velY=v=>SEC+ROLL+GAP+LANE-6-Math.max(0,Math.min(1,v))*(LANE-12);
   const dbY=db=>SEC+ROLL+GAP+LANE-6-(Math.max(-60,Math.min(6,db))+60)/66*(LANE-12);
   const yDb=y=>{ const v=(SEC+ROLL+GAP+LANE-6-y)/(LANE-12)*66-60; return v<-57?-60:Math.min(6,Math.round(v*2)/2); };
   function range(){ const ns=notesOf(cur).map(o=>o.n[2]).filter(m=>m!=null);
@@ -1464,13 +1521,20 @@ function notesTab(host, r, ED){
       g.fillRect(x(n[0]), ny(n[2]==null?lo:n[2])+1, Math.max(2,n[1]*zoom-1), Math.max(2,rowH-2)); });
     g.globalAlpha=1;
     const top=SEC+ROLL+GAP; g.fillStyle=css('--panel2'); g.fillRect(0,top,W,LANE);
-    g.strokeStyle=css('--line'); [0,-12,-24].forEach(db=>{ g.beginPath(); g.moveTo(0,dbY(db)+.5); g.lineTo(W,dbY(db)+.5); g.stroke(); g.fillStyle=css('--muted'); g.fillText((db?db:'0')+' dB',W-40>0?sc.scrollLeft+4:4,dbY(db)-2); });
-    D.tracks.forEach(t=>{ if(t.id===cur) return; const pts=line(t.id); g.strokeStyle='rgba(160,170,200,.18)'; g.beginPath();
-      pts.forEach((p,i)=>{ const X=x(p[0]),Y=dbY(p[1]); i?g.lineTo(X,Y):g.moveTo(X,Y); }); g.stroke(); });
-    const pts=line(cur); g.strokeStyle=css('--acc2'); g.lineWidth=2; g.beginPath();
-    pts.forEach((p,i)=>{ const X=x(p[0]),Y=dbY(p[1]); i?g.lineTo(X,Y):g.moveTo(X,Y); }); g.stroke(); g.lineWidth=1;
-    pts.forEach(p=>{ g.fillStyle=css('--acc2'); g.beginPath(); g.arc(x(p[0]),dbY(p[1]),4,0,7); g.fill(); });
-    const tr=D.tracks.find(t=>t.id===cur)||{}; host.querySelector('#ntInfo').textContent=`${tr.part||cur} · ${notesOf(cur).length} notes · ${ED.edits.del.filter(d=>d[0]===cur).length+ED.edits.add.filter(a=>a[0]===cur).length} note edits${ED.auto[cur]?' · custom volume line':''}`;
+    if(mode==='vel'){                                   // one bar per note: its velocity
+      notesOf(cur).forEach(o=>{ const n=o.n; g.fillStyle=(sel_&&sel_.n===n)?css('--acc2'):css('--acc'); const Y=velY(n[3]??0.8);
+        g.fillRect(x(n[0]), Y, Math.max(3, Math.min(8, n[1]*zoom-1)), top+LANE-6-Y); });
+      g.fillStyle=css('--muted'); g.fillText('velocity', sc.scrollLeft+4, top+12);
+    } else {
+      const grid=mode==='vol'?[[0,'0 dB'],[-12,'-12'],[-24,'-24']]:mode==='pan'?[[-1,'L'],[0,'C'],[1,'R']]:[[0,mode==='filter'?'closed':'dry'],[0.5,''],[1,mode==='filter'?'open':'wet']];
+      g.strokeStyle=css('--line'); grid.forEach(([v,l])=>{ g.beginPath(); g.moveTo(0,vY(v)+.5); g.lineTo(W,vY(v)+.5); g.stroke(); g.fillStyle=css('--muted'); g.fillText(l, sc.scrollLeft+4, vY(v)-2); });
+      D.tracks.forEach(t=>{ if(t.id===cur) return; const pts=line(t.id); g.strokeStyle='rgba(160,170,200,.18)'; g.beginPath();
+        pts.forEach((p,i)=>{ const X=x(p[0]),Y=vY(p[1]); i?g.lineTo(X,Y):g.moveTo(X,Y); }); g.stroke(); });
+      const pts=line(cur); g.strokeStyle=css('--acc2'); g.lineWidth=2; g.beginPath();
+      pts.forEach((p,i)=>{ const X=x(p[0]),Y=vY(p[1]); i?g.lineTo(X,Y):g.moveTo(X,Y); }); if(pts.length===1) g.lineTo(W,vY(pts[0][1])); g.stroke(); g.lineWidth=1;
+      pts.forEach(p=>{ g.fillStyle=css('--acc2'); g.beginPath(); g.arc(x(p[0]),vY(p[1]),4,0,7); g.fill(); });
+    }
+    const tr=D.tracks.find(t=>t.id===cur)||{}; host.querySelector('#ntInfo').textContent=`${tr.part||cur} · ${notesOf(cur).length} notes · ${ED.edits.del.filter(d=>d[0]===cur).length+ED.edits.add.filter(a=>a[0]===cur).length} note edits${ED.auto[cur]?' · custom volume line':''}${['filter','reverb','pan'].filter(m=>(ED.lanes[m]||{})[cur]).map(m=>' · '+m+' lane').join('')}`;
   }
   function hit(ev){ const rc=cv.getBoundingClientRect(); const X=ev.clientX-rc.left, Y=ev.clientY-rc.top; const b=(X-10)/zoom;
     const [lo,hi,drum]=range(); const rowH=drum?ROLL/3:ROLL/(hi-lo+1);
@@ -1478,15 +1542,22 @@ function notesTab(host, r, ED){
   }
   function findNote(h){ const [lo,hi,drum]=range(); const rowH=drum?ROLL/3:ROLL/(hi-lo+1);
     return notesOf(cur).reverse().find(o=>{ const n=o.n; const y0=drum?SEC+ROLL/3:SEC+(hi-n[2])*rowH; return h.b>=n[0]&&h.b<=n[0]+Math.max(n[1],2/zoom)&&h.Y>=y0&&h.Y<=y0+rowH; }); }
-  function findPt(h){ const pts=line(cur); return pts.findIndex(p=>Math.abs(10+p[0]*zoom-h.X)<7&&Math.abs(dbY(p[1])-h.Y)<7); }
+  function findPt(h){ const pts=line(cur); return pts.findIndex(p=>Math.abs(10+p[0]*zoom-h.X)<7&&Math.abs(vY(p[1])-h.Y)<7); }
+  function replaceNote(o, n){ removeNote(o); const a=[cur,n[0],n[1],n[2],n[3]]; ED.edits.add.push(a); return {n:[n[0],n[1],n[2],n[3]],orig:false,ref:a}; }
   const snap=b=>Math.max(0,Math.round(b*4)/4);
   function removeNote(o){ if(o.orig) ED.edits.del.push([cur,o.n[0],o.n[2]]); else ED.edits.add=ED.edits.add.filter(a=>a!==o.ref); }
   cv.onmousedown=ev=>{ const h=hit(ev); ev.preventDefault();
-    if(h.lane){ const i=findPt(h); if(ev.button===2){ if(i>=0){ const pts=line(cur); pts.splice(i,1); setLine(cur,pts.length?pts:[[0,0]]); draw(); } return; }
-      if(i>=0){ drag={pt:i, pts:line(cur)}; setLine(cur,drag.pts); } return; }
-    if(h.roll){ const o=findNote(h); sel_=o||null; if(o) drag={note:o, b0:h.b, m0:h.m, moved:false}; draw(); } };
-  cv.onmousemove=ev=>{ if(!drag) return; const h=hit(ev);
-    if(drag.pt!=null){ const p=drag.pts[drag.pt]; p[0]=Math.max(0,Math.min(D.beats,Math.round(h.b*4)/4)); p[1]=yDb(h.Y); setLine(cur,drag.pts); draw(); return; }
+    if(h.lane && mode==='vel'){ const o=notesOf(cur).find(o=>h.b>=o.n[0]-2/zoom&&h.b<=o.n[0]+Math.max(o.n[1],6/zoom)); if(o){ push(); sel_=o; drag={vel:o}; } return; }
+    if(h.lane){ const i=findPt(h); if(ev.button===2){ if(i>=0){ push(); const pts=line(cur); pts.splice(i,1); setLine(cur,pts.length?pts:[[0,mode==='vol'?0:LANES[mode][2]]]); draw(); } return; }
+      if(i>=0){ push(); drag={pt:i, pts:line(cur)}; setLine(cur,drag.pts); } return; }
+    if(h.roll){ const o=findNote(h); sel_=o||null;
+      if(o){ push(); const endX=10+(o.n[0]+o.n[1])*zoom; drag=Math.abs(h.X-endX)<6&&o.n[1]*zoom>8?{len:o}:{note:o, b0:h.b, m0:h.m, moved:false}; }
+      draw(); } };
+  cv.onmousemove=ev=>{ const h=hit(ev);
+    if(!drag){ const o=h.roll&&findNote(h); cv.style.cursor=o&&Math.abs(h.X-(10+(o.n[0]+o.n[1])*zoom))<6&&o.n[1]*zoom>8?'ew-resize':'default'; return; }
+    if(drag.vel){ const v=Math.round(Math.max(0.05,Math.min(1,(SEC+ROLL+GAP+LANE-6-h.Y)/(LANE-12)))*100)/100; const n=drag.vel.n.slice(); n[3]=v; drag.vel=replaceNote(drag.vel,n); sel_=drag.vel; draw(); return; }
+    if(drag.len){ const n=drag.len.n.slice(); n[1]=Math.max(0.125, Math.round((h.b-n[0])*8)/8); if(n[1]!==drag.len.n[1]){ drag.len=replaceNote(drag.len,n); sel_=drag.len; draw(); } return; }
+    if(drag.pt!=null){ const p=drag.pts[drag.pt]; p[0]=Math.max(0,Math.min(D.beats,Math.round(h.b*4)/4)); p[1]=yV(h.Y); setLine(cur,drag.pts); draw(); return; }
     if(drag.note){ const db=snap(h.b-drag.b0+drag.note.n[0])-drag.note.n[0]; const dm=(h.m!=null&&drag.m0!=null)?h.m-drag.m0:0;
       if(db||dm){ const o=drag.note, n=o.n.slice(); n[0]=Math.max(0,n[0]+db); if(n[2]!=null) n[2]=Math.max(0,Math.min(127,n[2]+dm));
         removeNote(o); const a=[cur,n[0],n[1],n[2],n[3]]; ED.edits.add.push(a); drag.note={n:[n[0],n[1],n[2],n[3]],orig:false,ref:a};
@@ -1494,15 +1565,21 @@ function notesTab(host, r, ED){
   window.addEventListener('mouseup',()=>{ drag=null; });
   cv.oncontextmenu=ev=>ev.preventDefault();
   cv.ondblclick=ev=>{ const h=hit(ev);
-    if(h.lane){ const pts=line(cur); pts.push([Math.round(h.b*4)/4, yDb(h.Y)]); setLine(cur,pts); draw(); return; }
-    if(h.roll && !findNote(h)){ const [lo,hi,drum]=range(); const a=[cur, snap(h.b), drum?0.25:0.5, drum?null:h.m, 0.85]; ED.edits.add.push(a);
+    if(h.lane && mode==='vel') return;
+    if(h.lane){ push(); const pts=line(cur).map(p=>p.slice()); pts.push([Math.round(h.b*4)/4, yV(h.Y)]); setLine(cur,pts); draw(); return; }
+    if(h.roll && !findNote(h)){ push(); const [lo,hi,drum]=range(); const a=[cur, snap(h.b), drum?0.25:0.5, drum?null:h.m, 0.85]; ED.edits.add.push(a);
       sel_={n:[a[1],a[2],a[3],a[4]],orig:false,ref:a}; draw(); } };
   const onKey=ev=>{ if(!host.isConnected){ document.removeEventListener('keydown',onKey); return; }
-    if((ev.key==='Delete'||ev.key==='Backspace') && sel_ && host.offsetParent){ ev.preventDefault(); removeNote(sel_); sel_=null; draw(); } };
+    if(!host.offsetParent || /INPUT|SELECT|TEXTAREA/.test((document.activeElement||{}).tagName||'')) return;
+    if((ev.ctrlKey||ev.metaKey) && ev.key.toLowerCase()==='z'){ ev.preventDefault(); ev.shiftKey?redo():undo(); return; }
+    if((ev.ctrlKey||ev.metaKey) && ev.key.toLowerCase()==='y'){ ev.preventDefault(); redo(); return; }
+    if((ev.key==='Delete'||ev.key==='Backspace') && sel_){ ev.preventDefault(); push(); removeNote(sel_); sel_=null; draw(); } };
   document.addEventListener('keydown',onKey);
   host.querySelector('#ntZoom').oninput=e=>{ zoom=+e.target.value; draw(); };
-  host.querySelector('#ntReset').onclick=()=>{ delete ED.auto[cur]; draw(); };
-  host.querySelector('#ntUndoNotes').onclick=()=>{ ED.edits.del=ED.edits.del.filter(d=>d[0]!==cur); ED.edits.add=ED.edits.add.filter(a=>a[0]!==cur); sel_=null; draw(); };
+  host.querySelector('#ntReset').onclick=()=>{ push(); if(mode==='vol'||mode==='vel') delete ED.auto[cur]; else if(ED.lanes[mode]) delete ED.lanes[mode][cur]; draw(); };
+  host.querySelector('#ntUndoNotes').onclick=()=>{ push(); ED.edits.del=ED.edits.del.filter(d=>d[0]!==cur); ED.edits.add=ED.edits.add.filter(a=>a[0]!==cur); sel_=null; draw(); };
+  host.querySelector('#ntUndo').onclick=undo; host.querySelector('#ntRedo').onclick=redo;
+  host.querySelector('#ntLane').onchange=e=>{ mode=e.target.value; draw(); };
   const jump=()=>{ const ns=notesOf(cur); if(ns.length){ sc.scrollLeft=Math.max(0, 10+Math.min(...ns.map(o=>o.n[0]))*zoom-40); } };
   sc.onscroll=()=>{ if(D) draw(); };
   sel.onchange=()=>{ cur=sel.value; sel_=null; draw(); jump(); };
@@ -1542,7 +1619,8 @@ function openEditor(r){
   let kitPick=(r.options&&r.options.kit)||'';
   const edOct=Object.assign({}, (r.options&&r.options.octaves)||{});
   box.querySelectorAll('[data-edoct]').forEach(e=>e.onchange=()=>{ const v=+e.value; if(v) edOct[e.dataset.edoct]=v; else delete edOct[e.dataset.edoct]; });
-  const ED={auto:Object.assign({}, (r.options&&r.options.automation)||{}), edits:JSON.parse(JSON.stringify((r.options&&r.options.note_edits)||{del:[],add:[]}))};
+  const ED={auto:Object.assign({}, (r.options&&r.options.automation)||{}), edits:JSON.parse(JSON.stringify((r.options&&r.options.note_edits)||{del:[],add:[]})),
+    lanes:JSON.parse(JSON.stringify((r.options&&r.options.lanes)||{}))};
   ED.edits.del=ED.edits.del||[]; ED.edits.add=ED.edits.add||[];
   { const head=box.querySelector('.ehead'); const tabs=document.createElement('div'); tabs.className='tabs etabs';
     tabs.innerHTML='<button class="on" data-et="a">Sections &amp; sounds</button><button data-et="b">Notes &amp; volume</button>';
@@ -1555,6 +1633,7 @@ function openEditor(r){
       if(nb && !B.dataset.ready){ B.dataset.ready='1'; notesTab(B, r, ED); } }); }
   const opts=()=>{ const o=JSON.parse(JSON.stringify(r.options||{})); o.seed=r.seed;
     if(Object.keys(ED.auto).length) o.automation=JSON.parse(JSON.stringify(ED.auto)); else delete o.automation;
+    const ln={}; Object.entries(ED.lanes||{}).forEach(([m,v])=>{ if(v&&Object.keys(v).length) ln[m]=v; }); if(Object.keys(ln).length) o.lanes=JSON.parse(JSON.stringify(ln)); else delete o.lanes;
     if(ED.edits.del.length||ED.edits.add.length) o.note_edits=JSON.parse(JSON.stringify(ED.edits)); else delete o.note_edits; o.instruments=Object.assign({}, o.instruments||{}, picks); if(kitPick) o.kit=kitPick; else delete o.kit; if(Object.keys(edOct).length) o.octaves=Object.assign({}, edOct); else delete o.octaves;
     if(Object.keys(tlev).length) o.track_levels=Object.assign({}, tlev); else delete o.track_levels;
     Object.keys(o.instruments).forEach(k=>{ if(!picks[k] && tracks.some(t=>t.id===k)) delete o.instruments[k]; }); return o; };
@@ -1625,13 +1704,17 @@ async function onReference(file){
       if(a.brightness!=null) bits.push(`brightness ${a.brightness>0?'+':''}${a.brightness}`);
       const gs=(a.genres||[]).map((g,i)=>`<button class="mini ${i===0?'acc':''}" data-rg="${esc(g.id)}" title="${esc((g.why||[]).join(' · '))}">${esc(g.name)} <span class="hint">${g.match}%</span></button>`).join(' ');
       if(a.tone) bits.push(`<label class="auto" title="Steer the master toward this song's tonal balance (lows, mids, highs)"><input type="checkbox" id="refTone" checked>match its tone</label>`);
+      if(a.parts) bits.push('<span class="hint">play its notes:</span> '+[['lead','melody'],['chords','chords'],['bass','bass']].filter(([k])=>a.parts[k]).map(([k,l])=>
+        `<label class="auto" title="The song plays this file's ${l} (moved to the song's key, repeated through each section) on the genre's own sounds"><input type="checkbox" data-mp="${k}">${l}</label>`).join(' '));
       $('#refRes').innerHTML=bits.join(' · ')+' <button class="mini acc" id="refApply">Apply</button>'+
         (gs?`<div style="margin-top:6px"><span class="hint">Sounds closest to:</span> ${gs} <span class="hint">- click one to pick that genre and apply the tempo & key</span></div>`:'');
       $$('#refRes [data-rg]').forEach(b=>b.onclick=()=>{ const id=b.dataset.rg; const c=Object.entries(META.categories).find(([k,l])=>l.some(x=>x.id===id));
         if(c) state.cat=c[0]; state.style=id; state.blend=[]; genreSounds(); state.blend_parts={}; renderTabs(); refresh(); $('#refApply').click();
         $('#status').textContent='Picked '+styleName(id)+' with the reference\'s tempo and key - press Preview.'; });
       $('#refHalf').onclick=()=>{a.bpm=Math.max(40,Math.round(a.bpm/2));show()}; $('#refDbl').onclick=()=>{a.bpm=Math.min(200,a.bpm*2);show()};
-      $('#refApply').onclick=()=>{ state.ref_tone=(a.tone&&$('#refTone')&&$('#refTone').checked)?a.tone:null; state.ref_tone_quiet=state.ref_tone&&a.tone_quiet?a.tone_quiet:null; $('#bpmAuto').checked=false; $('#bpm').value=a.bpm; $('#key').value=a.key;
+      $('#refApply').onclick=()=>{ const mp={}; $$('#refRes [data-mp]').forEach(c=>{ if(c.checked) mp[c.dataset.mp]=a.parts[c.dataset.mp]; });
+        state.midi_parts=Object.keys(mp).length?Object.assign(mp,{root:a.parts_root}):null;
+        state.ref_tone=(a.tone&&$('#refTone')&&$('#refTone').checked)?a.tone:null; state.ref_tone_quiet=state.ref_tone&&a.tone_quiet?a.tone_quiet:null; $('#bpmAuto').checked=false; $('#bpm').value=a.bpm; $('#key').value=a.key;
         if(a.scale && [...$('#scale').options].some(o=>o.value===a.scale)) $('#scale').value=a.scale;
         if(a.progression) $('#prog').value=a.progression;
         if(a.swing){ $('#swingAuto').checked=false; $('#swing').value=Math.round(a.swing*100); }
@@ -1960,12 +2043,50 @@ async function plugModal(data){
     await plugModal(r); $('#pscanres').innerHTML=`Scanned ${r.scan.dirs.length} folder(s): found <b>${r.scan.found}</b> known plugins, ${r.scan.other} others listed below.`; };
   $('#modal').classList.add('on');
 }
+// ------------------------------------------------------------- 1.87: sound browser - every built-in sound in one list
+// Filter by part, by genre (the sounds that genre uses), by character or by name; ▶ hears it, ☆ makes it a favourite,
+// "Use" puts it on that part of your next song.
+const CHARACTER={dark:['dark','deep','sub','dread','horror','eerie','drone','grim'], bright:['bright','glass','bell','air','shimmer','supersaw','sparkl','laser'],
+  soft:['soft','warm','dream','liquid','smooth','gentle','mellow','lush','float'], aggressive:['aggress','brutal','scream','tearout','growl','distort','hard','industrial','neuro','screech','harsh','metal']};
+function browseModal(){
+  const roles=Object.keys(META.roles||{}); const all={};
+  roles.forEach(r=>(META.roles[r]||[]).forEach(i=>{ if(/_v\d+$/.test(i.id)) return; (all[i.id]=all[i.id]||{id:i.id,name:i.name,group:i.group,roles:[]}).roles.push(r); }));
+  const genres=Object.keys(META.style_pools||{}).sort((a,b)=>styleName(a).localeCompare(styleName(b)));
+  $('#modalBox').className='box wide';
+  $('#modalBox').innerHTML=`<h3 style="margin-top:0">🔎 Sound browser</h3>
+    <div class="row" style="gap:6px;flex-wrap:wrap;align-items:center">
+      <input type="search" id="brQ" placeholder="🔍 Search sounds…" style="flex:1;min-width:180px">
+      <select id="brRole"><option value="">Any part</option>${roles.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('')}</select>
+      <select id="brGenre"><option value="">Any genre</option>${genres.map(g=>`<option value="${esc(g)}">${esc(styleName(g))}</option>`).join('')}</select>
+      <select id="brChar"><option value="">Any character</option>${Object.keys(CHARACTER).map(c=>`<option>${c}</option>`).join('')}</select>
+      <label class="auto"><input type="checkbox" id="brFav">★ only</label></div>
+    <div class="hint" id="brCount" style="margin:6px 0"></div><div id="brList" class="brlist"></div>
+    <div style="text-align:right;margin-top:10px"><button class="btn p" onclick="closeModal()">Close</button></div>`;
+  $('#modal').classList.add('on');
+  const draw=()=>{ const q=$('#brQ').value.trim().toLowerCase(), role=$('#brRole').value, g=$('#brGenre').value, ch=$('#brChar').value, fav=$('#brFav').checked;
+    const inGenre=g?new Set(Object.values(META.style_pools[g]||{}).flat()):null;
+    const rows=Object.values(all).filter(x=>(!q||x.name.toLowerCase().includes(q)||x.id.includes(q))&&(!role||x.roles.includes(role))&&(!inGenre||inGenre.has(x.id))
+      &&(!ch||CHARACTER[ch].some(w=>(x.name+' '+x.id).toLowerCase().includes(w)))&&(!fav||FAVS.includes(x.id)));
+    $('#brCount').textContent=`${rows.length} sounds`;
+    $('#brList').innerHTML=rows.slice(0,400).map(x=>`<div class="brrow"><button class="ico" data-bp="${esc(x.id)}" title="Hear it">▶</button>
+      <button class="ico sndfav${FAVS.includes(x.id)?' on':''}" data-bf="${esc(x.id)}" title="Favourite">${FAVS.includes(x.id)?'★':'☆'}</button>
+      <span class="brname">${esc(x.name)}</span><span class="hint">${esc(x.roles.join(' · '))}</span>
+      <select data-bu="${esc(x.id)}" title="Put this sound on a part of your next song"><option value="">Use for…</option>${x.roles.map(r=>`<option>${esc(r)}</option>`).join('')}</select></div>`).join('');
+    $$('#brList [data-bp]').forEach(b=>b.onclick=()=>{ const x=all[b.dataset.bp]; audition({inst:x.id, role:(role&&x.roles.includes(role))?role:x.roles[0]}, b); });
+    $$('#brList [data-bf]').forEach(b=>b.onclick=()=>{ toggleFav(b.dataset.bf); draw(); });
+    $$('#brList [data-bu]').forEach(sl=>sl.onchange=()=>{ if(!sl.value) return; state.instruments=state.instruments||{}; state.instruments[sl.value]=sl.dataset.bu;
+      if(state.locked) delete state.locked[sl.value]; renderSelected(); $('#status').textContent=`${all[sl.dataset.bu].name} is now the ${sl.value} - press Preview to hear it in a song.`; sl.value=''; });
+  };
+  ['brQ','brRole','brGenre','brChar','brFav'].forEach(id=>{ const el=$('#'+id); el.oninput=draw; el.onchange=draw; });
+  draw(); $('#brQ').focus();
+}
+
 // ------------------------------------------------------------- Sounds & instruments hub: every sound source in one window
 // Each tab is one of the windows above; the tab bar sits on top of whichever is open, so links between them stay in the hub.
-const HUB=[['overview','Overview'],['real','🎻 Real instruments'],['orch','🎻 Orchestra plugin'],['vst','🎹 VST instruments'],
+const HUB=[['overview','Overview'],['browse','🔎 Sound browser'],['real','🎻 Real instruments'],['orch','🎻 Orchestra plugin'],['vst','🎹 VST instruments'],
   ['rigs','🎚 Genre VSTs'],['samples','🎛 My samples'],['plugins','🔌 Plugins & DAWs']];
 function hubOpenTab(id){ try{ localStorage.setItem('sl_hub', id) }catch(e){}
-  return ({overview:hubOverview, real:()=>libModal(), vst:()=>vstModal(), rigs:()=>rigModal(), samples:()=>soundsModal(), plugins:()=>plugModal(),
+  return ({overview:hubOverview, browse:()=>{ browseModal(); hubTabs('browse'); }, real:()=>libModal(), vst:()=>vstModal(), rigs:()=>rigModal(), samples:()=>soundsModal(), plugins:()=>plugModal(),
     orch:async()=>{ const V=await api('/api/vst',{}); if(!V.available){ vstModal(); return } orchModal(V); }})[id](); }
 // The hub always opens: it shows straight away (loading), and if the tab it reopens can't load - a plugin scan that
 // hangs, a library check that fails - it falls back to the overview instead of silently never appearing.
@@ -2291,6 +2412,8 @@ function tidyOld(sel){
   const g=document.createElement('optgroup'); g.label='Older versions of sounds'; olds.forEach(o=>g.appendChild(o)); sel.appendChild(g);
   sel.querySelectorAll('optgroup').forEach(og=>{ if(!og.children.length) og.remove(); });
 }
+let FAVS=(()=>{ try{ return JSON.parse(localStorage.getItem('sl_favs')||'[]'); }catch(_){ return []; } })();
+function toggleFav(id){ FAVS=FAVS.includes(id)?FAVS.filter(x=>x!==id):FAVS.concat([id]); try{ localStorage.setItem('sl_favs', JSON.stringify(FAVS)); }catch(_){} }
 function sndPlayBody(sel, v){ return sel.dataset.sndvoice?{kit:v, voice:sel.dataset.sndvoice}:{inst:v, role:sel.dataset.sndrole||'lead'}; }
 let SNDPOP=null;
 function closeSndPop(){ if(SNDPOP){ SNDPOP.remove(); SNDPOP=null; document.removeEventListener('mousedown', sndOutside, true); } }
@@ -2306,22 +2429,26 @@ function openSndPop(sel, btn){
   if(up){ pop.style.bottom=(window.innerHeight-r.top+4)+'px'; } else pop.style.top=(r.bottom+4)+'px';
   const list=pop.querySelector('.sndlist'); list.style.maxHeight=(up?Math.min(420,r.top-60):h-48)+'px';
   const q=pop.querySelector('.sndq'); let rows=[], act=-1;
+  const row=(o,i)=>{ const play=o.value&&o.value!=='off'?`<button type="button" class="sndrowplay" data-i="${i}" title="Hear it">▶</button>`:'';
+      const fav=o.value&&o.value!=='off'&&!sel.dataset.sndvoice?`<button type="button" class="sndfav${FAVS.includes(o.value)?' on':''}" data-f="${i}" title="Favourite: listed first, and picked more often by the genre">${FAVS.includes(o.value)?'★':'☆'}</button>`:'';
+      return `<div class="sndrow${o.value===sel.value?' cur':''}" data-i="${i}"><span>${esc(o.textContent)}</span><span class="sndrb">${fav}${play}</span></div>`; };
   const draw=()=>{ const t=q.value.trim().toLowerCase(); const parts=[]; rows=[];
+    const favs=[...sel.options].filter(o=>FAVS.includes(o.value)&&(!t||o.textContent.toLowerCase().includes(t)));
+    if(favs.length){ parts.push('<div class="sndgrp">★ Favourites</div>'); favs.forEach(o=>{ const i=rows.length; rows.push(o); parts.push(row(o,i)); }); }
     [...sel.children].forEach(ch=>{
       const opts=ch.tagName==='OPTGROUP'?[...ch.children]:[ch];
       const vis=opts.filter(o=>!t||o.textContent.toLowerCase().includes(t)||o.value.toLowerCase().includes(t));
       if(!vis.length) return;
       if(ch.tagName==='OPTGROUP') parts.push(`<div class="sndgrp">${esc(ch.label)}</div>`);
-      vis.forEach(o=>{ const i=rows.length; rows.push(o);
-        const play=o.value&&o.value!=='off'?`<button type="button" class="sndrowplay" data-i="${i}" title="Hear it">▶</button>`:'';
-        parts.push(`<div class="sndrow${o.value===sel.value?' cur':''}" data-i="${i}"><span>${esc(o.textContent)}</span>${play}</div>`); });
+      vis.forEach(o=>{ const i=rows.length; rows.push(o); parts.push(row(o,i)); });
     });
     list.innerHTML=parts.join('')||'<div class="sndgrp">No match</div>';
     act=t?(rows.length?0:-1):rows.findIndex(o=>o.value===sel.value); mark(); };
   const mark=()=>{ list.querySelectorAll('.sndrow').forEach(el=>el.classList.toggle('act', +el.dataset.i===act));
     const el=list.querySelector('.sndrow.act'); if(el) el.scrollIntoView({block:'nearest'}); };
   const pick=i=>{ const o=rows[i]; if(!o) return; sel.value=o.value; sel.dispatchEvent(new Event('change',{bubbles:true})); syncSndBtn(sel); closeSndPop(); };
-  list.onclick=e=>{ const pb=e.target.closest('.sndrowplay'); if(pb){ e.stopPropagation(); act=+pb.dataset.i; mark(); audition(sndPlayBody(sel, rows[act].value), pb); q.focus(); return; }
+  list.onclick=e=>{ const fb=e.target.closest('.sndfav'); if(fb){ e.stopPropagation(); toggleFav(rows[+fb.dataset.f].value); const st_=list.scrollTop; draw(); list.scrollTop=st_; q.focus(); return; }
+    const pb=e.target.closest('.sndrowplay'); if(pb){ e.stopPropagation(); act=+pb.dataset.i; mark(); audition(sndPlayBody(sel, rows[act].value), pb); q.focus(); return; }
     const row=e.target.closest('.sndrow'); if(row) pick(+row.dataset.i); };
   q.oninput=draw;
   q.onkeydown=e=>{ if(e.key==='ArrowDown'){ e.preventDefault(); act=Math.min(rows.length-1, act+1); mark(); }
@@ -2360,24 +2487,33 @@ const XFOLLOW=[['lead','Doubles the melody'],['counter','Counter-melody'],['chor
 function allInstruments(){ const seen=new Set(), out=[]; Object.entries(META.roles||{}).forEach(([r,l])=>(l||[]).forEach(i=>{ if(!seen.has(i.id)){ seen.add(i.id); out.push(i); } }));
   const g={}; out.forEach(i=>{ (g[i.group||'Built-in']=g[i.group||'Built-in']||[]).push(i); }); return g; }
 function extraRows(){
+  // your own added instruments: each one sits under the part it follows, with the same controls as the other sounds
   state.extra_parts=state.extra_parts||[];
-  const w=document.createElement('div'); w.className='f inst wide xparts';
   const groups=allInstruments();
   const instOpts=cur=>Object.entries(groups).map(([g,items])=>`<optgroup label="${esc(g)}">`+items.map(i=>`<option value="${esc(i.id)}" ${cur===i.id?'selected':''}>${esc(i.name)}</option>`).join('')+'</optgroup>').join('');
-  w.innerHTML=`<div class="xh">Extra instruments <span class="qh" data-tip="Thicken the arrangement like an orchestrator: e.g. celesta + glockenspiel doubling the melody an octave or two up, horns on a counter-melody, a choir on the chords, pizzicato on the bass. Each extra plays the notes of the part it follows.">i</span>
-      <button class="mini" id="xAdd" style="margin-left:auto">+ Add instrument</button></div>`+
-    state.extra_parts.map((x,i)=>`<select data-xf="${i}" title="What it plays">${XFOLLOW.map(([k,l])=>`<option value="${k}" ${x.follows===k?'selected':''}>${l}</option>`).join('')}</select>`+
-      `<select data-xi="${i}" title="Instrument" data-sndrole="${({counter:'lead'})[x.follows]||x.follows||'lead'}">${instOpts(x.inst)}</select>`+
-      `<select data-xo="${i}" title="Octave">${[-12,0,12,24].map(o=>`<option value="${o}" ${(+x.octave||0)===o?'selected':''}>${o>0?'+':''}${o/12} oct</option>`).join('')}</select>`+
-      `<select data-xd="${i}" title="Level against the part it follows">${[-12,-8,-4,0,3].map(d=>`<option value="${d}" ${(x.db??-4)===d?'selected':''}>${d>0?'+':''}${d} dB</option>`).join('')}</select>`+
-      `<button class="ico" data-xx="${i}" title="Remove">✕</button>`).join('');
-  $('#soundBody').appendChild(w);
+  const grpOf=f=>({counter:'lead'})[f]||f;
+  state.extra_parts.forEach((x,i)=>{ const id=x.follows==='counter'?'counter':`extra${i+1}`;
+    const w=document.createElement('div'); w.className='f inst xsub xmine';
+    w.innerHTML=`<label><span class="xtag">+</span> Your extra <select data-xf="${i}" title="What it plays">${XFOLLOW.map(([k,l])=>`<option value="${k}" ${x.follows===k?'selected':''}>${l}</option>`).join('')}</select>
+        <span class="vol" title="Level against the part it follows (dB)"><input type="range" data-xd="${i}" min="-12" max="6" step="1" value="${x.db??-4}"><b>${(x.db??-4)>0?'+':''}${x.db??-4} dB</b></span>
+        <select class="octsel" data-xo="${i}" title="Octave">${[-12,0,12,24].map(o=>`<option value="${o}" ${(+x.octave||0)===o?'selected':''}>${o>0?'+':''}${o/12} oct</option>`).join('')}</select>
+        <button class="ico" data-xx="${i}" title="Remove">✕</button></label>
+      <select data-xi="${i}" title="Instrument" data-sndrole="${({counter:'lead'})[x.follows]||x.follows||'lead'}">${instOpts(x.inst)}</select>`;
+    if((META.part_effects||[]).length) fxRow(w, id);
+    insertInGroup(w, grpOf(x.follows));
+    w.querySelector('[data-xf]').onchange=e=>{ x.follows=e.target.value; renderSelected(); };
+    w.querySelector('[data-xi]').onchange=e=>{ x.inst=e.target.value; };
+    w.querySelector('[data-xo]').onchange=e=>{ x.octave=+e.target.value; };
+    const d=w.querySelector('[data-xd]'); d.oninput=()=>{ x.db=+d.value; d.nextElementSibling.textContent=(x.db>0?'+':'')+x.db+' dB'; };
+    w.querySelector('[data-xx]').onclick=e=>{ e.preventDefault(); state.extra_parts.splice(i,1); renderSelected(); };
+  });
+  const w=document.createElement('div'); w.className='f inst wide xparts';
+  w.innerHTML=`<div class="xh">Add an instrument <span class="qh" data-tip="Thicken the arrangement like an orchestrator: e.g. celesta + glockenspiel doubling the melody an octave or two up, horns on a counter-melody, a choir on the chords, pizzicato on the bass. Each one plays the notes of the part it follows and appears under that part.">i</span>
+      <button class="mini" id="xAdd" style="margin-left:auto">+ Add instrument</button></div>`;
+  $('#soundBody').appendChild(w);                       // (after every part; the panel moves the parts above the drums)
   w.querySelector('#xAdd').onclick=e=>{ e.preventDefault(); const sug=[['celesta','lead',12],['glock','lead',24],['horn','counter',0],['choir','chords',0],['pizz','bass',12],['flute','lead',12]];
     const used=new Set(state.extra_parts.map(x=>x.inst)); const s=sug.find(([i])=>!used.has(i))||sug[0];
     state.extra_parts.push({inst:s[0],follows:s[1],octave:s[2],db:-4}); renderSelected(); };
-  const upd=(sel,key,num)=>w.querySelectorAll(`[data-${sel}]`).forEach(el=>el.onchange=()=>{ const x=state.extra_parts[+el.dataset[sel]]; x[key]=num?+el.value:el.value; });
-  upd('xf','follows'); upd('xi','inst'); upd('xo','octave',1); upd('xd','db',1);
-  w.querySelectorAll('[data-xx]').forEach(b=>b.onclick=e=>{ e.preventDefault(); state.extra_parts.splice(+b.dataset.xx,1); renderSelected(); });
 }
 </script>
 </body>

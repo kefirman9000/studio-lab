@@ -1,5 +1,52 @@
 # Changelog
 
+## 1.86.0
+**Three new genres, each built from a set of reference records**
+- **Dark dubstep (sub-weight, 2009-12):**
+  - Half-time 140-144 with the snare on beat 3 and syncopated kicks.
+  - A huge mono sine sub that is the loudest thing in the mix, under a new **dread wobble**: a dark, slow, low-passed growl.
+  - New **grime square** riffs, **horror stabs** (dissonant metallic hits) and a **dub siren** thrown into the echo.
+  - Very mono and dark on top, like the references (L/R correlation 0.94-0.98).
+- **Classic vocal trance (2004-09):**
+  - 136-140 in a minor key, with an off-beat rolling bass ducking hard under the kick and constant 16th hats.
+  - A new **classic trance lead**: bright, singing, with glide and a delayed vibrato.
+  - Gated supersaw chords, dreamy pads and a piano breakdown.
+  - Long arrangements with a big quiet break in the middle.
+- **Festival techno (big-room trance, 2011-14):**
+  - 134-138, with the bass on the 16ths right after each kick.
+  - A new **mega stab** (a very wide nine-saw supersaw) and a new **sync stab** (a tearing hard-sync hook).
+  - Build pads, a pumping sidechain and very wide leads, like the references.
+- These genres keep their own sound lists: shared scene sounds don't leak into them.
+- The production pass no longer narrows a genre that is meant to be very wide.
+
+**Parts panel reorganised**
+- Every extra sound now sits under the part it belongs to: the genre's extra parts, layers, section switches, the call-and-response "answer" and instruments you added (an extra pad under Pad, a layered lead under Lead). Each has the same controls as the main parts: a searchable sound menu with ▶, mute, volume, octave and its own effects chain.
+- **Drums:** every drum sound of your last song (kick, clap, hats, shaker, congas, build-up ride ...) has its own row in the Drums section, with a **volume knob**, mute, a searchable sound menu and ▶.
+- Effects can now be set on one sound (one layer or extra part) instead of only on a whole part.
+
+**Song editor**
+- **Undo / redo:** ↶ ↷ buttons, Ctrl+Z, Ctrl+Shift+Z or Ctrl+Y.
+- **Velocity:** a velocity lane; drag a note's bar up or down.
+- **Note length:** drag a note's right edge.
+- **Filter, reverb and pan lanes** next to the volume line, with points you draw for each sound.
+
+**More**
+- **MIDI import:** a MIDI file loaded as a reference can now give the song its **melody, chords or bass**. The notes are moved to the song's key and repeated through each section on the genre's own sounds.
+- **Favourite sounds ☆:**
+  - every row in a sound menu has a star;
+  - favourites are listed first;
+  - favourites are picked more often when a genre chooses sounds.
+- **Sound browser** (Sounds & instruments → 🔎 Sound browser):
+  - every built-in sound, filtered by part, by genre, by character (dark, bright, soft, aggressive) or by name;
+  - ▶ to hear a sound, ☆ to make it a favourite;
+  - "Use for…" puts it on a part.
+- **⇄ A/B last two** button in the player bar (or the **B** key): flips between your two newest results at the same spot, loudness matched.
+- **Faster previews:** unchanged parts are reused from the last preview, about 1.6-1.9x faster when you change one thing. A reused part is note-for-note and bit-for-bit what a fresh render gives.
+- The production pass now runs on full songs and exports; previews stay quick.
+- **Installers:**
+  - all three installers are now built and self-tested every Monday;
+  - a GitHub upload timeout can no longer stop a release (1.84.1 lost its Apple Silicon download that way).
+
 ## 1.85.0
 **Songs that develop instead of looping**
 - **Melody check:** each song writes four candidate hooks and keeps the strongest. Hooks are scored on:

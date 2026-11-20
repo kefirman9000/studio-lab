@@ -6211,3 +6211,123 @@ for _name, _fn, _info, _roles, _gm in (
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.86: from three sets of references
+# dark sub-weight dubstep (2009-12), classic vocal trance (2004-09), festival techno / big-room trance (2011-14)
+def v_dreadwob(m, dur, p, glide=None, mod=None):
+    """Dread wobble: a dark, slow wobble - a detuned square / saw pair whose low-pass swings between ~100 Hz and ~900 Hz
+    on a half- or quarter-note LFO, never bright - over a heavy mono sine sub. The sub carries the weight; the wobble
+    is a growl in the low mids (the deep, sub-weight dubstep sound)."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.006, 0.4, 0.95, 0.08)
+    lfo = _sync_lfo(t, p, (0.5, 1.0, 2.0))
+    x = _va.pulse(np.full(n, f), n, 0.0, 0.5) * 0.6 + _va.saw(np.full(n, f * 1.006), n, 0.4) * 0.5
+    top = _va.vcf(x, 100 + p.get('cut', 800) * lfo, 0.5, 1.8)
+    top = np.tanh(top * 2.2)
+    sub = np.sin(2 * np.pi * (f if f < 70 else f / 2) * t)
+    y = (hp(top, 90) * 0.5 + sub * 0.85) * env
+    return np.vstack([y, y]) * 0.55
+
+
+def v_grimesquare(m, dur, p, glide=None, mod=None):
+    """Grime square: a hollow square-wave lead / bleep with a quick pitch drop on the attack, a short decay and a little
+    bit-crush - the cold, playful square riffs of grime and early dark dubstep."""
+    f = float(mtof(m))
+    n = int((min(dur, 0.8) + 0.12) * SR)
+    t = np.arange(n) / SR
+    fr = f * 2 ** (1.5 * np.exp(-t / 0.012) / 12)
+    y = _va.pulse(fr, n, 0.0, 0.5)
+    y = np.round(y * 12) / 12
+    y = lp(y, 5000) * np.minimum(1, t / 0.002) * np.exp(-t / p.get('decay', 0.25))
+    return _ms_stereo(y, 18, 0.25) * 0.32
+
+
+def v_horrorstab(m, dur, p, glide=None, mod=None):
+    """Horror stab: a dissonant, metallic hit - the note with its minor second and tritone, FM-roughened, with a fast
+    pitch fall and a band-passed ring - the eerie one-shot stab of dark dubstep."""
+    f = float(mtof(m))
+    n = int(1.4 * SR)
+    t = np.arange(n) / SR
+    y = np.zeros(n)
+    for k, r in enumerate((1.0, 2 ** (1 / 12), 2 ** (6 / 12))):
+        fr = f * r * 2 ** (-0.6 * (1 - np.exp(-t / 0.3)) / 12)
+        ph = 2 * np.pi * np.cumsum(fr) / SR
+        y += np.sin(ph + 2.5 * np.exp(-t / 0.08) * np.sin(3.5 * ph)) * (1.0 if k == 0 else 0.6)
+    y = bp(np.tanh(y * 1.5), 250, 6000) * np.minimum(1, t / 0.002) * np.exp(-t / 0.35)
+    return _ms_stereo(y, 30, 0.45) * 0.35
+
+
+def v_dubsiren(m, dur, p, glide=None, mod=None):
+    """Dub siren: a square tone swept up and down by a fast LFO (the soundsystem siren), slightly crushed - a call
+    over the drop in dubstep, reggae and jungle; give it echo."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.01, 0.2, 0.9, 0.15)
+    rate = p.get('rate', 6.0)
+    fr = f * 2 ** (0.5 * np.sin(2 * np.pi * rate * t) + 0.3 * np.clip(t / max(dur, 0.1), 0, 1))
+    y = _va.pulse(fr, n, 0.0, 0.5)
+    y = lp(np.round(y * 16) / 16, 4500) * env
+    return _ms_stereo(y, 22, 0.3) * 0.28
+
+
+def v_classiclead(m, dur, p, glide=None, mod=None):
+    """Classic trance lead: a bright detuned saw pair over a pulse, with portamento, a short bright 'pluck' on the
+    attack and a slow, delayed vibrato - the singing, cutting lead of mid-2000s vocal and uplifting trance."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.004, 0.35, 0.85, p.get('r', 0.25))
+    rng = _rng()
+    vib = 2 ** (10 * np.clip((t - 0.3) / 0.3, 0, 1) * np.sin(2 * np.pi * 5.5 * t) / 1200)
+    fr = _glide_freq(f, n, glide, 0.07) * vib
+    x = np.vstack([_va.saw(fr * 2 ** (-11 / 1200), n, rng.random()) + 0.35 * _va.pulse(fr, n, rng.random(), 0.35),
+                   _va.saw(fr * 2 ** (11 / 1200), n, rng.random()) + 0.35 * _va.pulse(fr, n, rng.random(), 0.65)]) * 0.5
+    cut = 2400 + 6500 * np.exp(-t / 0.09)
+    y = _va.vcf(x, cut, 0.25, 1.3)
+    return _hpf(y, 200) * env * 0.42
+
+
+def v_megastab(m, dur, p, glide=None, mod=None):
+    """Mega stab: an extremely wide supersaw chord stab - nine saws spread hard left and right with a short Haas offset
+    (the very wide leads of festival techno), a punchy filter snap and saturation; keep the low end out (it is
+    high-passed) so it stays mono-safe where it matters."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.002, 0.25, 0.7, 0.12, 1.2)
+    rng = _rng()
+    x = np.zeros((2, n))
+    for k, c in enumerate((-40, -28, -17, -8, 0, 8, 17, 28, 40)):
+        s_ = _va.saw(f * 2 ** (c / 1200), n, rng.random()) * 0.25
+        side = (k - 4) / 4.0
+        x[0] += s_ * (1 - 0.9 * side)
+        x[1] += s_ * (1 + 0.9 * side)
+    x[1] = np.roll(x[1], int(0.008 * SR))
+    cut = 1800 + 9000 * np.exp(-t / 0.12)
+    y = np.tanh(_va.vcf(x * 0.5, cut, 0.35, 1.3) * 1.6)
+    return _hpf(y, 300) * env * 0.4
+
+
+def v_syncstab(m, dur, p, glide=None, mod=None):
+    """Sync stab: a hard-synced saw whose slave pitch sweeps down on every hit (the 'tearing' sync sound) with a pulse
+    underneath - a punchy, aggressive hook stab for festival techno and electro."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.002, 0.2, 0.5, 0.08, 0.8)
+    ratio = 1.5 + 3.0 * np.exp(-t / p.get('sweep', 0.08))
+    ph = (f * t) % 1.0                                     # master phase
+    y = 2 * ((ph * ratio) % 1.0) - 1                         # slave restarts with the master: hard sync
+    y = y * 0.6 + 0.35 * _va.pulse(np.full(n, f), n, 0.0, 0.5)
+    y = np.tanh(lp(y, 9000) * 1.6) * env
+    return _ms_stereo(hp(y, 180), 20, 0.4) * 0.42
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('dreadwob', v_dreadwob, 'Dread wobble (dark, slow, sub-heavy)', ('bass',), 38),
+        ('grimesquare', v_grimesquare, 'Grime square (hollow, crushed bleep)', ('lead', 'arp'), 80),
+        ('horrorstab', v_horrorstab, 'Horror stab (dissonant metallic hit)', ('chords', 'lead', 'arp'), 55),
+        ('dubsiren', v_dubsiren, 'Dub siren (soundsystem call)', ('lead',), 80),
+        ('classiclead', v_classiclead, 'Classic trance lead (bright, singing, glide)', ('lead', 'arp'), 81),
+        ('megastab', v_megastab, 'Mega stab (very wide supersaw)', ('chords', 'lead', 'arp'), 81),
+        ('syncstab', v_syncstab, 'Sync stab (tearing hard-sync hook)', ('lead', 'arp', 'chords'), 81)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)

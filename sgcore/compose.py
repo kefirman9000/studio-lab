@@ -59,6 +59,9 @@ class Options:
     blend: list = field(default_factory=list)          # extra styles to fuse with the main style
     blend_parts: dict = field(default_factory=dict)    # part -> style  (groove, bass, harmony, melody, form, mix)
     part_seeds: dict = field(default_factory=dict)     # re-roll one part: harmony, melody, drums, bass, chords
+    midi_parts: dict = None       # (1.87) parts imported from a MIDI file {'lead'|'chords'|'bass': [[beat, len, midi, vel]], 'root': pc}
+    favorites: list = None        # (1.87) your favourite sounds: picked more often when a genre chooses sounds
+    lanes: dict = None            # (1.87) editor lanes {'filter'|'reverb'|'pan': {track: [[beat, value], ...]}}
     melody_check: str = 'auto'    # (1.85) write a few hooks, keep the strongest | off
     evolve: str = 'auto'          # (1.85) later drops develop (octave climb, bass pushes, stutters, half-time) | off
     call_response: str = 'auto'   # (1.85) a second sound answers the lead in the hooks: auto | on | off
@@ -78,7 +81,7 @@ class Options:
     master_preset: str = None     # None = genre | streaming | radio | club | vinyl (vinyl-safe) | film (stem, no squeeze)
     ref_tone: list = None         # tonal balance of a reference song (9 bands, dB) - the master is steered toward it
     ref_tone_quiet: list = None   # (1.86) ... and of its quiet part (breakdown), for the song's quiet sections
-    production_pass: bool = True  # after the master: read the mix check, fix what it finds, master again (on by default 1.86)
+    production_pass: object = 'auto'  # after the master: read the mix check, fix what it finds, master again: auto (full songs) | True | False
     sound_seed: int = None        # 🎲 Re-roll sounds: re-picks every sound (layers, section sounds, drum voices), same notes
     automation: dict = field(default_factory=dict)    # song editor volume lines: track id -> [[beat, dB], ...] (dB <= -60 = silent)
     note_edits: dict = None       # song editor note edits: {'del': [[track, beat, midi]], 'add': [[track, beat, dur, midi, vel]]}
@@ -435,7 +438,9 @@ def apply_variety(st, opts, rnd):
             # the genre's own pool: its signature sound a little likelier, every other one an authentic alternative;
             # instruments your last songs in this genre used are picked less often, so the next one sounds fresh
             recent = set((getattr(opts, 'avoid', None) or {}).get(role, []))
-            w = [(1.4 if i == 0 and not club else 1.0) * (0.25 if x in recent else 1.0) for i, x in enumerate(pool)]
+            favs = set(getattr(opts, 'favorites', None) or ())
+            w = [(1.4 if i == 0 and not club else 1.0) * (0.25 if x in recent else 1.0) * (2.5 if x in favs else 1.0)
+                 for i, x in enumerate(pool)]
             choice = rr.choices(pool, w)[0]
             if choice != t['inst']:                   # (the genre's level for this part stays: every part is levelled to it)
                 t.update(inst=choice, p={}, pooled=True)
@@ -1892,6 +1897,8 @@ def compose(opts):
         chop_samples(evs, tracks, random.Random(opts.seed * 53 + 1))
     if st.get('switchups'):                              # switch-up 808: no two bars of the 808 alike
         bar_switchups(evs, tracks, sections, st, random.Random(opts.seed * 67 + 5))
+    if getattr(opts, 'midi_parts', None):               # (1.87) your MIDI file's melody / chords / bass, in this song
+        import_midi_parts(evs, sections, st, opts, key, tracks)
     from . import evolve as _ev                          # (1.85) songs that develop instead of looping (before the
     from .styles import POOLS as POOLS_                  # layers copy the notes, so a doubled lead climbs with it)
     st['evolved'] = _ev.evolve_drops(evs, sections, st, opts, tracks)
@@ -2032,6 +2039,40 @@ BASS_PASS = {'math_rock': 0.45, 'idm_jungle_theme': 0.5, 'drill_space': 0.6, 'po
              'synthpop': 0.2, 'eurodance': 0.15, 'downtempo': 0.25, 'lofi': 0.25, 'boombap': 0.2, 'symphonic_metal': 0.2,
              'country': 0.5, 'bluegrass': 0.6, 'motown': 0.4, 'gospel': 0.4, 'ska': 0.3, 'tango': 0.3, 'indie_rock': 0.3,
              'cumbia': 0.25, 'kpop': 0.2, 'jam_band': 0.5, 'soft_rock': 0.4, 'teen_pop': 0.2}
+def import_midi_parts(evs, sections, st, opts, key, tracks):
+    """Replace a part's notes with the ones imported from a MIDI file, wherever the part plays: the imported phrase is
+    repeated through each section, moved into the song's key (by the nearest interval) and, for the bass, into the
+    genre's bass register."""
+    mp = opts.midi_parts or {}
+    shift = ((key.root - int(mp.get('root', key.root))) + 6) % 12 - 6
+    for role in ('lead', 'chords', 'bass'):
+        notes = mp.get(role)
+        if not notes or role not in tracks:
+            continue
+        end = max(float(n[0]) + float(n[1]) for n in notes)
+        P = max(4.0, math.ceil(end / 4 - 1e-6) * 4.0)          # whole bars
+        lo = st.get('bass_lo', 28)
+        for x in sections:
+            a, b = x['bar'] * 4, (x['bar'] + x['bars']) * 4
+            mine = [e for e in evs if e.track == role and a <= e.beat < b]
+            if not mine:
+                continue
+            for e in mine:
+                evs.remove(e)
+            t = a
+            while t < b:
+                for nb, nl, nm, nv in notes:
+                    if t + nb < b:
+                        m = int(nm) + shift
+                        if role == 'bass':
+                            while m < lo:
+                                m += 12
+                            while m > lo + 19:
+                                m -= 12
+                        evs.append(Ev(role, t + float(nb), min(float(nl), b - (t + float(nb))), m, float(nv)))
+                t += P
+
+
 BASS_PASS_GROUP = {'House & Disco': 0.25, 'Funk, Soul & Disco': 0.4, 'Drum & Bass, Breaks & Hard': 0.15,
                    'Techno & Trance': 0.08, 'Pop, R&B & Hopecore': 0.2, 'Chill, Lo-fi & Ambient': 0.2}
 

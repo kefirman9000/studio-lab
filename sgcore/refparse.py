@@ -293,6 +293,42 @@ def analyze_notes(parsed):
     sw = _swing(notes)
     if sw:
         out['swing'] = sw
+    parts = import_parts(pitched, bpb)
+    if parts:
+        out['parts'] = parts
+        out['parts_root'] = root
+    return out
+
+
+def import_parts(pitched, bpb=4.0, max_bars=32):
+    """(1.87) A MIDI file's notes split into parts a song can play: the melody (the top voice), the bass (the bottom
+    voice, when it sits low) and the chords (everything in between). Each: [[beat, length, midi, velocity], ...],
+    starting at the first bar that has notes, at most `max_bars` long."""
+    if not pitched:
+        return {}
+    start = (min(b for b, l, m, v, d in pitched) // bpb) * bpb
+    ns = [(b - start, l, m, v) for b, l, m, v, d in pitched if b - start < max_bars * bpb]
+    by_on = {}
+    for b, l, m, v in ns:
+        by_on.setdefault(round(b * 4) / 4, []).append((b, l, m, v))
+    lead, bass, chords = [], [], []
+    for on, grp in sorted(by_on.items()):
+        grp.sort(key=lambda n: n[2])
+        top = grp[-1]
+        if len(grp) == 1:
+            (bass if top[2] < 48 else lead).append(top)
+            continue
+        lead.append(top)
+        if grp[0][2] < 52:
+            bass.append(grp[0])
+            mid = grp[1:-1]
+        else:
+            mid = grp[:-1]
+        chords.extend(mid)
+    out = {}
+    for k, lst in (('lead', lead), ('bass', bass), ('chords', chords)):
+        if len(lst) >= 4:
+            out[k] = [[round(b, 3), round(l, 3), int(m), round(float(v), 2)] for b, l, m, v in lst]
     return out
 
 

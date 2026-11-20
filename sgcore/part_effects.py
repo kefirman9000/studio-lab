@@ -175,10 +175,21 @@ def apply(st, tracks, opts, sname):
                 if k == 'dly' and (t.get('dly') or 0) >= v:
                     continue
                 t[k] = v
+    for name, t in tracks.items():                       # (1.86) one sound's own chain (an extra pad, a layer ...)
+        if name in mine and name not in MELODIC and t.get('layer') in MELODIC:
+            chain = mine[name]
+            chain = [chain] if isinstance(chain, str) else list(chain or [])
+            _clear(t)
+            for pid in chain:
+                if pid in PRESETS:
+                    t.update(PRESETS[pid][1])
     for role in MELODIC:
         main = tracks.get(role) or next((t for t in tracks.values() if t.get('layer') == role), None)
         if main:
             picked[role] = describe(main)
+    for name, t in tracks.items():
+        if name not in MELODIC and t.get('layer') in MELODIC:
+            picked[name] = describe(t)
     return picked
 
 
