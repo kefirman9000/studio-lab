@@ -340,6 +340,7 @@ body:not(.helptext) .hint.qhd{display:none !important}
         <button class="btn p" id="prevBtn">▶ Preview</button>
         <button class="btn s" id="varBtn" title="Four previews with different seeds">⧉ 4 Variations</button>
         <button class="btn g" id="fullBtn">⬇ Full song</button>
+        <button class="btn s" id="batchBtn" title="Make many full songs at once - one or more genres, each song different">🎲 Batch</button>
         <button class="btn s" id="queueBtn" title="Add this full song (with the settings as they are now) to the render queue. Keep changing settings and queue more; they render one after another.">＋ Queue</button>
         <button class="btn s" id="surpriseBtn" title="Random style, fusion and mood">✦ Surprise me</button>
       </div>
@@ -498,7 +499,7 @@ const LEVELS=[['drums','Drums',['kick','snare','top']],['bass','Bass',['bass']],
 let META=null, state={closed:(()=>{try{return JSON.parse(localStorage.getItem('sl_closed')||'{}')}catch(_){return {}}})(), orch_plugin:(()=>{try{return !!localStorage.getItem('sl_orch_plugin')}catch(_){return false}})(), style:'house', part_fx:{}, part_effects:{}, lastFx:{}, drum_voices:{}, lastDrums:{}, extra_parts:[], levels:{}, octaves:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
   muted:[], instruments:{}, blend_parts:{}, outputs:(()=>{ try{ const v=JSON.parse(localStorage.getItem('sl_outs')||'null'); if(Array.isArray(v)&&v.length) return v; }catch(e){} return ['mp3','midi','lmms']; })()};
 const LAYERS=[['kick','Kick'],['snare','Snare/Clap'],['top','Hats & Perc'],['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead'],['fx','FX']];
-const OUTS=[['mp3','MP3'],['wav','WAV'],['wav24','WAV 24-bit'],['flac','FLAC'],['midi','MIDI'],['stems','Stems'],['daw','DAW pack (Ableton, FL, Logic, Reaper)'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack']];
+const OUTS=[['mp3','MP3'],['wav','WAV'],['wav24','WAV 24-bit'],['flac','FLAC'],['midi','MIDI'],['stems','Stems'],['daw','DAW pack (Ableton, FL, Logic, Reaper)'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack'],['final_only','🧹 Keep only final files']];
 const ROLES=[['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead']];
 let audio=new Audio(), playingId=null;
 // ------------------------------------------------------------- the levels visualizer in the top bar
@@ -834,6 +835,7 @@ function renderMoods(){
 function renderLayers(){ bindMutes(); }       // parts are muted with the small 'mute' boxes in Sound
 // exports that write every part as its own audio file - big (often 200-500 MB a song), so they're off unless you tick them
 const BIG_OUTS={stems:'Every part as its own WAV file - big (often 200-500 MB per song)', waveform:'A Tracktion Waveform project with every part as audio - big (often 200-500 MB per song)',
+  final_only:'After each full song is exported, delete the stems, per-part MIDI, DAW / LMMS / Waveform projects, sample pack and plugin guide - only the song itself (MP3 / WAV / FLAC, and its MIDI if chosen) is kept, plus a tiny settings file so it still opens in the editor. Saves hundreds of MB per song.',
   daw:'Projects for Ableton, FL, Logic and Reaper with every part as audio - big (often 200-500 MB per song)', pack:'A sample pack: loops and one-shots cut from the song as audio files - bigger than the song itself'};
 function renderOuts(){
   const o=$('#outs');o.innerHTML='<span class="hint" style="align-self:center">Full song exports:</span>';
@@ -1044,18 +1046,97 @@ async function run(preview, count, opts, section, onResult, varyPart, extra){
 // (1.90) render queue: full songs, each with the settings it had when you queued it, rendered one after another
 const QUEUE=[]; let qRunning=null, qDone=0;
 function queueAdd(fresh){ if(fresh) fresh(false); const o=JSON.parse(JSON.stringify(options()));
-  QUEUE.push({o, label:(o.title?'“'+o.title+'” · ':'')+styleName(o.style)+' · seed '+o.seed}); drawQueue(); queueNext(); }
-function queueNext(){ if(busy||!QUEUE.length){ if(!busy) qRunning=null; drawQueue(); return; }
-  const it=QUEUE.shift(); qRunning=it; drawQueue(); run(false,1,it.o,null,null,null,null).then(()=>{}); qDone++; }
+  QUEUE.push({o, label:(o.title?'“'+o.title+'” · ':'')+styleName(o.style)+' · seed '+o.seed}); queueSave(); drawQueue(); queueNext(); }
+let qPaused=false;
+function queueSave(){ try{ localStorage.setItem('sl_queue', JSON.stringify(QUEUE.slice(0,500))); }catch(e){} }
+function queueNext(){ if(busy||!QUEUE.length||qPaused){ if(!busy) qRunning=null; drawQueue(); queueSave(); return; }
+  const it=QUEUE.shift(); qRunning=it; queueSave(); drawQueue(); run(false,1,it.o,null,null,null,it.outputs?{outputs:it.outputs}:null).then(()=>{}); qDone++; }
 function drawQueue(){ const b=$('#queueBox'); if(!b) return; const any=QUEUE.length||qRunning;
   b.style.display=any?'block':'none'; if(!any) return;
   b.innerHTML=`<div class="hint">Render queue${qDone?` · ${qDone} started`:''}</div>`+
     (qRunning&&busy?`<div class="qi on">⏳ ${esc(qRunning.label)}</div>`:'')+
     QUEUE.map((q,i)=>`<div class="qi"><span>${i+1}. ${esc(q.label)}</span><button class="mini" data-qup="${i}" title="Earlier"${i?'':' disabled'}>↑</button><button class="mini" data-qx="${i}" title="Remove from the queue">✕</button></div>`).join('')+
+    (!busy&&QUEUE.length?`<button class="mini" id="qGo">▶ ${qPaused?'Resume':'Start'} the queue</button> `:'')+
+    (busy&&QUEUE.length?`<button class="mini" id="qPause">⏸ Pause after this song</button> `:'')+
     (QUEUE.length>1?`<button class="mini" id="qClear">Clear the queue</button>`:'');
-  $$('#queueBox [data-qx]').forEach(e=>e.onclick=()=>{ QUEUE.splice(+e.dataset.qx,1); drawQueue(); });
-  $$('#queueBox [data-qup]').forEach(e=>e.onclick=()=>{ const i=+e.dataset.qup; if(i){ const [x]=QUEUE.splice(i,1); QUEUE.splice(i-1,0,x); drawQueue(); } });
-  const c=$('#qClear'); if(c) c.onclick=()=>{ QUEUE.length=0; drawQueue(); }; }
+  $$('#queueBox [data-qx]').forEach(e=>e.onclick=()=>{ QUEUE.splice(+e.dataset.qx,1); queueSave(); drawQueue(); });
+  $$('#queueBox [data-qup]').forEach(e=>e.onclick=()=>{ const i=+e.dataset.qup; if(i){ const [x]=QUEUE.splice(i,1); QUEUE.splice(i-1,0,x); queueSave(); drawQueue(); } });
+  const c=$('#qClear'); if(c) c.onclick=()=>{ QUEUE.length=0; queueSave(); drawQueue(); };
+  const g=$('#qGo'); if(g) g.onclick=()=>{ qPaused=false; queueNext(); };
+  const pz=$('#qPause'); if(pz) pz.onclick=()=>{ qPaused=true; drawQueue(); }; }
+// (1.93) the queue survives a restart: songs left in it come back (paused) the next time the app opens
+(()=>{ try{ const q=JSON.parse(localStorage.getItem('sl_queue')||'[]'); if(Array.isArray(q)&&q.length){ QUEUE.push(...q); qPaused=true; setTimeout(drawQueue,1500); } }catch(e){} })();
+
+// ------------------------------------------------------------- (1.93) batch generator
+// N full songs in one or more genres, each different: random, or an even (calculated) spread of tempo, key, energy,
+// complexity, sounds, length, layout and mood across the batch. They go into the render queue.
+function batchModal(fresh){
+  const all=Object.values(META.categories).flat(), byId=id=>all.find(x=>x.id===id);
+  let sel=[state.style,...(state.blend||[])].filter((v,i,a)=>v&&a.indexOf(v)===i);
+  $('#modalBox').className='box wide';
+  const dims=[['tempo','Tempo','within each genre\'s range',1],['key','Key','',1],['energy','Energy','',1],['complexity','Complexity','',1],
+    ['sounds','Sounds','each song its own sound picks',1],['length','Length','shorter / normal / longer',0],['layout','Layout','auto / club / radio edit',0],['mood','Mood','',0]];
+  $('#modalBox').innerHTML=`<h3>🎲 Batch generator</h3>
+    <div class="hint" style="margin:-4px 0 10px">Make many full songs in one go. They go into the render queue and render one after another (you can keep using the app).</div>
+    <div class="row" style="gap:14px;flex-wrap:wrap">
+      <label>How many songs <input type="number" id="bN" min="1" max="500" value="10" style="width:70px"></label>
+      <label>Genres <select id="bOrder"><option value="cycle">take turns</option><option value="random">random</option></select></label>
+      <label>Variation <select id="bMode"><option value="spread">even spread (calculated)</option><option value="random">random</option></select></label>
+      <label>How far apart <input type="range" id="bAmt" min="0" max="100" value="60" style="width:120px"></label>
+    </div>
+    <div style="margin:10px 0 4px"><b>Genres</b> <span class="hint">(click to remove, search to add)</span></div>
+    <div class="chips" id="bSel"></div>
+    <input class="search" id="bQ" placeholder="Add a genre…" autocomplete="off" style="margin-top:6px"><div class="chips" id="bHits"></div>
+    <div style="margin:10px 0 4px"><b>What changes from song to song</b> <span class="hint">(every song always gets its own seed)</span></div>
+    <div class="row" style="gap:12px;flex-wrap:wrap">${dims.map(([k,n,h,on])=>`<label title="${h}"><input type="checkbox" data-bd="${k}"${on?' checked':''}> ${n}</label>`).join('')}</div>
+    <label style="display:block;margin-top:10px"><input type="checkbox" id="bFinal"${state.outputs.includes('final_only')?' checked':''}> 🧹 Keep only the final files (delete stems, projects and per-part MIDI after each song)</label>
+    <div class="hint" id="bInfo" style="margin-top:8px"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px"><button class="btn s" onclick="closeModal()">Cancel</button><button class="btn g" id="bGo">Add to the render queue</button></div>`;
+  const drawSel=()=>{ $('#bSel').innerHTML=sel.map(id=>`<span class="chip on" data-rm="${esc(id)}">${esc(styleName(id))} ✕</span>`).join('')||'<span class="hint">No genre yet - search below</span>';
+    $$('#bSel [data-rm]').forEach(c=>c.onclick=()=>{ sel=sel.filter(x=>x!==c.dataset.rm); drawSel(); }); info(); };
+  const info=()=>{ const n=Math.max(1,Math.min(500,+$('#bN').value||1)); $('#bInfo').textContent=`${n} song${n>1?'s':''} · ${sel.length} genre${sel.length!==1?'s':''} · exports: ${state.outputs.filter(x=>x!=='final_only').join(', ')||'wav'}${$('#bFinal').checked?' · only the final files are kept':''}`; };
+  $('#bQ').oninput=e=>{ const q=e.target.value.trim().toLowerCase(); if(!q){ $('#bHits').innerHTML=''; return; }
+    const hits=all.filter(x=>(x.name+' '+x.id.replace(/_/g,' ')).toLowerCase().includes(q)&&!sel.includes(x.id)).slice(0,12);
+    $('#bHits').innerHTML=hits.map(x=>`<span class="chip" data-add="${esc(x.id)}">${esc(x.name)}</span>`).join('');
+    $$('#bHits [data-add]').forEach(c=>c.onclick=()=>{ sel.push(c.dataset.add); $('#bQ').value=''; $('#bHits').innerHTML=''; drawSel(); }); };
+  ['bN','bFinal'].forEach(k=>$('#'+k).oninput=info);
+  $('#bGo').onclick=()=>{
+    if(!sel.length){ alert('Pick at least one genre.'); return; }
+    const n=Math.max(1,Math.min(500,+$('#bN').value||1)), mode=$('#bMode').value, order=$('#bOrder').value, A=(+$('#bAmt').value)/100;
+    const on={}; $$('#modalBox [data-bd]').forEach(c=>on[c.dataset.bd]=c.checked);
+    if(fresh) fresh(false);
+    const base=JSON.parse(JSON.stringify(options()));
+    const keys=[...$('#key').options].map(o=>o.value).filter(Boolean);
+    const moods=(META.moods||[]);
+    const PHI=[0.6180339887,0.7548776662,0.5698402910,0.4142135624,0.7320508076,0.2360679775,0.3166247904,0.6457513111];
+    const val=(i,d)=>mode==='spread'?((0.5+(i+1)*PHI[d%PHI.length])%1):Math.random();       // low-discrepancy: even coverage
+    const outs=state.outputs.filter(x=>x!=='final_only').concat($('#bFinal').checked?['final_only']:[]);
+    const stamp=Date.now()%100000;
+    const gen=[...Array(n)].map((_,k)=>order==='cycle'?sel[k%sel.length]:sel[Math.floor(Math.random()*sel.length)]);
+    const seen={};
+    for(let k=0;k<n;k++){
+      const g=gen[k];
+      const i=(seen[g]=(seen[g]??-1)+1);                // spread within each genre, so every genre gets the full range
+      const o=JSON.parse(JSON.stringify(base));
+      if(g!==base.style){ o.instruments={}; o.blend_parts={}; o.part_effects={}; o.drum_voices={}; }
+      o.style=g; o.blend=[]; o.seed=1+Math.floor(Math.random()*999999);
+      const s_=byId(g)||{bpm:[100,128]};
+      if(on.tempo){ const lo=s_.bpm[0], hi=s_.bpm[1], mid=(lo+hi)/2, span=(hi-lo)/2*Math.max(0.2,A); o.bpm=Math.round(mid-span+2*span*val(i,0)); } else delete o.bpm;
+      if(on.key&&keys.length) o.key=keys[Math.floor(val(i,1)*keys.length)%keys.length];
+      const nudge=(v,d)=>Math.max(0,Math.min(1,(v??0.5)+(val(i,d)-0.5)*A));
+      if(on.energy) o.energy=nudge(base.energy,2);
+      if(on.complexity) o.complexity=nudge(base.complexity,3);
+      if(on.sounds){ o.sound_seed=1+Math.floor(Math.random()*999999); o.variety=Math.max(o.variety??0.5, 0.35+0.5*A); }
+      if(on.length) o.length=[0.8,1.0,1.0,1.25][Math.floor(val(i,4)*4)%4];
+      if(on.layout) o.structure=['auto','auto','club','radio'][Math.floor(val(i,5)*4)%4];
+      if(on.mood&&moods.length) o.mood=[null,...moods][Math.floor(val(i,6)*(moods.length+1))%(moods.length+1)];
+      o.title='';
+      QUEUE.push({o, outputs:outs, label:`Batch ${stamp}·${k+1}/${n} · ${styleName(g)}${o.bpm?' · '+o.bpm+' BPM':''}${o.key?' · '+o.key:''}`});
+    }
+    qPaused=false; queueSave(); closeModal(); drawQueue(); queueNext();
+  };
+  drawSel(); $('#modal').classList.add('on');
+}
 function setBusy(b){['#prevBtn','#varBtn','#fullBtn','#surpriseBtn'].forEach(s=>$(s).disabled=b);$('#progBar').style.display=b?'block':'none';if(!b)$('#progBar>i').style.width='0'}
 
 function mixTag(r){ const m=r.mix_report; if(!m) return '';
@@ -2329,6 +2410,7 @@ async function init(){
   $('#varBtn').onclick=()=>{ freshSeed(true); run(true,4); if(!$('#seedLock').checked) lastRun.seed=(+$('#seed').value||1); };
   $('#fullBtn').onclick=()=>{ freshSeed(false); run(false,1); };
   $('#queueBtn').onclick=()=>queueAdd(freshSeed);
+  $('#batchBtn').onclick=()=>batchModal(freshSeed);
   $('#surpriseBtn').onclick=()=>{
     const all=Object.values(META.categories).flat().map(s=>s.id), pick=a=>a[Math.floor(Math.random()*a.length)];
     const wpick=(a,w)=>{const ws=a.map(x=>Math.max(0.2,1+(w&&w[x]||0)));let t=Math.random()*ws.reduce((p,c)=>p+c,0);for(let i=0;i<a.length;i++){t-=ws[i];if(t<=0)return a[i]}return a[a.length-1]};

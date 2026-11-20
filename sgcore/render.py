@@ -4,6 +4,7 @@ import json
 import math
 import os
 import random
+import sys
 import time
 import zlib
 
@@ -378,6 +379,48 @@ def auto_lp(buf, cut, block=256):
         for c in range(2):
             out[c, s0:e], zi[c] = signal.lfilter(b, a, x[c, s0:e], zi=zi[c])
     return out
+
+# ----------------------------------------------------------------------------- (1.92.4) parallel part rendering
+# Full songs render their parts on several CPU cores: worker processes each hold a copy of the song and render whole
+# parts (with the same per-part random seed as the main process, so the result is identical); the main process mixes
+# them in the usual order, asking for at most a few parts ahead so memory stays bounded. Parts that use plugins, your
+# own samples, sampled instruments or real drum kits always render in the main process.
+_WORKER = {}
+
+
+def _pool_init(song_blob, character):
+    import pickle
+    song = pickle.loads(song_blob) if song_blob is not None else _WORKER.get('song')
+    _WORKER['r'] = Renderer(song, log=lambda *a: None)
+    _va.CHARACTER = character
+
+
+def _pool_render(name, seed_):
+    from . import dsp as _dsp
+    r = _WORKER['r']
+    tcfg = next(t for t in r.st['tracks'] if t['name'] == name)
+    evs = [e for e in r.song['events'] if e.track == name]
+    _va._RNG = np.random.default_rng(seed_)
+    _dsp.RNG = np.random.default_rng(seed_ + 1)
+    buf = np.asarray(r.render_track(tcfg, evs), dtype=np.float32)
+    r.cache.clear()
+    _trim()
+    return buf
+
+
+def render_workers(length_samples):
+    """How many worker processes a render uses: none for short renders (starting them costs more than it saves),
+    else up to 3 (one core is left for the app), or STUDIOLAB_WORKERS."""
+    env = os.environ.get('STUDIOLAB_WORKERS')
+    if env is not None:
+        try:
+            return max(0, int(env))
+        except ValueError:
+            pass
+    if length_samples < 60 * SR:
+        return 0
+    return max(0, min(3, (os.cpu_count() or 1) - 1))
+
 
 class Renderer:
     def __init__(self, song, log=print):
@@ -1129,6 +1172,49 @@ class Renderer:
                 if any(b0 <= x < b1 for x in ab):
                     hook_mask[b2s(b0):min(L, b2s(b1))] = True
             call_sum = np.zeros(int(hook_mask.sum()), dtype=np.float32)
+        # (1.92.4) the parts that may render in worker processes, in mix order
+        pool, futs, par = None, {}, []
+        nw = render_workers(L)
+        if nw > 0:
+            from .instruments import INSTRUMENTS as _I, DRUMS as _D
+            for tcfg in st['tracks']:
+                n_, inst_ = tcfg['name'], str(tcfg.get('inst', ''))
+                if not by_track.get(n_) or tcfg.get('vst') or tcfg['layer'] == 'fx' or (opts.muted and tcfg['layer'] in opts.muted):
+                    continue
+                if not (inst_ in _I or inst_ in _D) or inst_.startswith(('vst:', 'user:', 'sf:', 'real:')):
+                    continue
+                if tcfg['layer'] in ('kick', 'snare', 'top') and (st.get('real_kit') or st.get('real_perc') or st.get('voice_real')):
+                    continue
+                ck_ = self.track_key(tcfg, by_track[n_])
+                if ck_ and TRACK_CACHE.get(ck_) is not None:
+                    continue
+                par.append(n_)
+        if len(par) >= 2:
+            try:
+                import pickle
+                import multiprocessing as _mp
+                from concurrent.futures import ProcessPoolExecutor
+                ctx = _mp.get_context('fork' if sys.platform.startswith('linux') else 'spawn')
+                blob = None
+                if ctx.get_start_method() == 'fork':
+                    _WORKER['song'] = song                # (forked workers see it directly)
+                else:
+                    blob = pickle.dumps(song)
+                pool = ProcessPoolExecutor(max_workers=min(nw, len(par)), mp_context=ctx, initializer=_pool_init,
+                                           initargs=(blob, _va.CHARACTER))
+                self.log(f'   rendering {len(par)} parts on {min(nw, len(par))} extra cores')
+            except Exception as e:                        # noqa: BLE001 - no workers: render one by one as before
+                pool = None
+                self.log(f'   (parallel rendering unavailable: {e})')
+        ahead = (min(nw, len(par)) + 1) if pool else 0
+
+        def _submit_upto(i):
+            for n_ in par[:i]:
+                if n_ not in futs:
+                    sd = (int(getattr(opts, 'seed', 0) or 0) * 7919 + 57 + zlib.crc32(n_.encode())) % (2 ** 32)
+                    futs[n_] = pool.submit(_pool_render, n_, sd)
+        if pool:
+            _submit_upto(ahead)
         for ti, tcfg in enumerate(st['tracks']):
             name = tcfg['name']
             evs = by_track.get(name, [])
@@ -1139,9 +1225,23 @@ class Renderer:
             t0 = time.time()
             ck = self.track_key(tcfg, evs)
             hitc = TRACK_CACHE.get(ck) if ck else None
+            if pool and name in par:
+                _submit_upto(par.index(name) + 1 + ahead)
+                try:
+                    hitc = futs.pop(name).result()
+                    ck_new = ck
+                except Exception as e:                    # noqa: BLE001 - a worker failed: render this part here
+                    self.log(f'   {name}: worker failed ({e}) - rendering it here')
+                    hitc, ck_new = None, None
+                if hitc is not None and ck_new:
+                    TRACK_CACHE[ck_new] = hitc.copy()
+                    while len(TRACK_CACHE) > 40:
+                        TRACK_CACHE.popitem(last=False)
+            from_worker = pool is not None and name in par
             if hitc is not None:                          # (1.87) unchanged since the last preview: reuse it
-                TRACK_CACHE.move_to_end(ck)
-                buf = hitc.copy()
+                if ck and ck in TRACK_CACHE:              # (1.92.4) ... or rendered by a worker process
+                    TRACK_CACHE.move_to_end(ck)
+                buf = hitc if from_worker else hitc.copy()
             else:
                 seed_ = (int(getattr(opts, 'seed', 0) or 0) * 7919 + 57 + zlib.crc32(name.encode())) % (2 ** 32)
                 _va._RNG = np.random.default_rng(seed_)   # each part its own random stream: the same part renders the
@@ -1312,6 +1412,9 @@ class Renderer:
         for _v in ('buf', 'lo_e', 'e_'):                  # (1.90) the last part's buffers aren't needed any more
             locals().pop(_v, None)
         buf = lo_e = e_ = None
+        if pool:
+            pool.shutdown(wait=True, cancel_futures=True)
+            _WORKER.pop('song', None)
         # (1.87) after the parts, the random streams start from a fixed point again (cached or not, same result)
         _post = (int(getattr(opts, 'seed', 0) or 0) * 7919 + 9001) % (2 ** 32)
         _va._RNG = np.random.default_rng(_post)
@@ -2077,18 +2180,58 @@ def master(x, cfg, log=print):
     lp999 = float(np.percentile(np.abs(lo), 99.9)) + 1e-9
     g_cap = min(g_cap, 1.5 + 20 * np.log10(0.8 * 10 ** (-1.0 / 20) / lp999))
     clip_amt = float(cfg.get('clip', 0.0 if gentle else 1.0))
-    y = x
-    for _ in range(8):
-        g_db = min(g_db, g_cap)
-        y = peak_round(x * 10 ** (g_db / 20))
+
+    def chain(v, g):                                       # gain > clipper > bass-safe limiter > limiter
+        v = peak_round(v * 10 ** (g / 20))
         if clip_amt > 0:
-            y = clip_stage(y, out_db=0.8 * clip_amt)
-        y = limiter(low_limit(y, 10 ** (-1.0 / 20) * 0.78), ceiling_db=-1.0, hold=0.025)   # (held for a whole 40 Hz cycle:
-        #                                                         the gain never wobbles inside one bass wave - 1.80)
-        err = target - meas(y)
-        if abs(err) < 0.1 or (err > 0 and g_db >= g_cap - 1e-6):
-            break
-        g_db += err
+            v = clip_stage(v, out_db=0.8 * clip_amt)
+        return limiter(low_limit(v, 10 ** (-1.0 / 20) * 0.78), ceiling_db=-1.0, hold=0.025)   # (held for a whole 40 Hz
+        #                                                         cycle: the gain never wobbles inside one bass wave - 1.80)
+    # (1.92.4) find the gain on an excerpt of the loud windows the loudness is measured on (up to 12 of them, each
+    # with a short lead-in so the limiter has settled), then master the whole song once - the same result, several
+    # times faster than limiting the full song up to eight times
+    ex = None
+    nwin = int(3.0 * SR)
+    if meas is loud_part_lufs and x.shape[-1] >= nwin * 6:
+        starts = list(range(0, x.shape[-1] - nwin, nwin))
+        vals = np.array([lufs(x[:, i:i + nwin]) for i in starts])
+        ok = vals > -50
+        if ok.sum() >= 6:
+            thr = np.percentile(vals[ok], 65)
+            loud = [st_ for st_, v in zip(starts, vals) if v >= thr and v > -50]
+            if len(loud) > 12:
+                loud = [loud[int(k)] for k in np.linspace(0, len(loud) - 1, 12)]
+            pre = int(0.5 * SR)
+            segs = [(max(0, i - pre), i) for i in loud]
+            ex = (np.concatenate([x[:, a:b + nwin] for a, b in segs], axis=1), [(b - a, nwin) for a, b in segs])
+
+    def meas_ex(v):                                        # loudness of the excerpt's measured parts (pre-rolls left out)
+        e, pos = [], 0
+        for p0, n0 in ex[1]:
+            e.append(10 ** (lufs(v[:, pos + p0:pos + p0 + n0]) / 10))
+            pos += p0 + n0
+        return float(10 * np.log10(np.mean(e) + 1e-12))
+    y = x
+    if ex is not None:
+        for _ in range(8):
+            g_db = min(g_db, g_cap)
+            err = target - meas_ex(chain(ex[0], g_db))
+            if abs(err) < 0.1 or (err > 0 and g_db >= g_cap - 1e-6):
+                break
+            g_db += err
+        y = chain(x, g_db)
+        err = target - meas(y)                             # one check on the whole song (and a nudge if needed)
+        if abs(err) >= 0.25 and not (err > 0 and g_db >= g_cap - 1e-6):
+            g_db = min(g_cap, g_db + err)
+            y = chain(x, g_db)
+    else:
+        for _ in range(8):
+            g_db = min(g_db, g_cap)
+            y = chain(x, g_db)
+            err = target - meas(y)
+            if abs(err) < 0.1 or (err > 0 and g_db >= g_cap - 1e-6):
+                break
+            g_db += err
     # (1.85) never squashed flat: the whole song keeps at least ~7.8 dB between its peaks and its loudness (big room
     # and dubstep masters used to reach -7.9 LUFS with 6.9 dB left - loud, but the kick and drops lost their punch)
     min_plr = float(cfg.get('min_plr', 8.0))
@@ -2096,10 +2239,7 @@ def master(x, cfg, log=print):
         short = min_plr - (-1.0 - lufs(y))
         if short > 0.15:
             g_db -= short
-            y = peak_round(x * 10 ** (g_db / 20))
-            if clip_amt > 0:
-                y = clip_stage(y, out_db=0.8 * clip_amt)
-            y = limiter(low_limit(y, 10 ** (-1.0 / 20) * 0.78), ceiling_db=-1.0, hold=0.025)
+            y = chain(x, g_db)
     # true peak: the peaks between the samples (4x oversampled) kept under -1 dBTP, so the file never clips when
     # it's converted to MP3 / AAC or played through a DAC that reconstructs the waveform
     ceil_ = 10 ** (-1.0 / 20)

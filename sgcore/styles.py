@@ -11309,3 +11309,25 @@ def _add_variants():
 
 
 _add_variants()
+
+
+# ============================== 1.93: house / trance / techno sounds, polymeter ===============================
+for _role, _inst, _gs in (
+        ('bass', 'rubberbass', ['tech_house', 'minimal', 'house', 'bass_house', 'uk_tribal_techno', 'deep_house']),
+        ('chords', 'rhodestrem', ['deep_house', 'emotive_deep_house', 'tokyo_deep_house', 'melodic_house', 'organic_house', 'nu_disco', 'garage_house']),
+        ('chords', 'discohorn', ['nu_disco', 'french_house', 'house', 'garage_house', 'electro_swing', 'future_funk', 'disco_funk', 'piano_house_90s']),
+        ('lead', 'vocalbounce', ['house', 'tech_house', 'bass_house', 'uk_bounce_house', 'garage_house', 'speed_garage', 'pop_house_90s', 'nineties_club_house']),
+        ('pad', 'vowelpad', ['trance', 'uplifting_trance', 'classic_vocal_trance', 'progressive_trance', 'vocal_trance_remix', 'club_trance_2000s', 'trance_pop_90s']),
+        ('arp', 'sawharp', ['trance', 'uplifting_trance', 'classic_vocal_trance', 'progressive_trance', 'progressive_trance_2010s', 'club_trance_2000s']),
+        ('lead', 'risinglead', ['uplifting_trance', 'trance', 'classic_vocal_trance', 'club_trance_2000s', 'hard_trance', 'electro_prog_trance']),
+        ('chords', 'warehousestab', ['techno', 'hard_techno', 'minimal', 'festival_techno', 'uk_tribal_techno', 'melodic_techno']),
+        ('arp', 'fmacid', ['acid_house', 'techno', 'hard_techno', 'hard_trance', 'darkpsy']),
+        ('bass', 'tonalbass', ['techno', 'hard_techno', 'festival_techno', 'uk_tribal_techno', 'minimal'])):
+    for _g in _gs:
+        _pl = POOLS.get(_g, {}).get(_role)
+        if _pl and _inst not in _pl:
+            _pl.append(_inst)
+for _g, _ch in {'techno': 0.6, 'minimal': 0.6, 'melodic_techno': 0.45, 'hard_techno': 0.5, 'dub_techno': 0.5,
+                'uk_tribal_techno': 0.5, 'festival_techno': 0.35, 'tech_house': 0.35, 'acid_house': 0.4}.items():
+    if _g in STYLES:
+        STYLES[_g]['polymeter'] = _ch

@@ -546,3 +546,51 @@ def song_variations(st, opts):
             st.update({k: v for k, v in ch.items() if k != 'name'})
     st['song_var'] = picked
     return picked
+
+
+# ----------------------------------------------------------------------------- (1.93) polymeter sequences
+def polymeter(evs, sections, st, opts, tracks):
+    """Techno's polymeter trick (styles with 'polymeter': the chance per song): the sequence (arp part) becomes a
+    pattern 3, 5, 6 or 7 sixteenths long that keeps looping across the bar lines, so against the 4/4 kick it lands
+    somewhere new every bar and only lines up again after several bars. Its notes are the chord tones the part was
+    already playing (so it stays in key). Returns the loop length, or 0."""
+    chance = float(st.get('polymeter') or 0)
+    if not chance or st.get('composer') or getattr(opts, 'polymeter', 'auto') == 'off' or 'arp' not in tracks:
+        return 0
+    import random as _r
+    rnd = _r.Random(f'{opts.seed}-{st.get("name")}-polymeter')
+    if getattr(opts, 'polymeter', 'auto') != 'on' and rnd.random() > chance:
+        return 0
+    L = rnd.choice([3, 5, 5, 6, 7])
+    hits = [0] + sorted(rnd.sample(range(1, L), max(1, (L + 1) // 2 - 1)))
+    order = [rnd.randrange(4) for _ in range(L)]
+    made = 0
+    for sec in sections:
+        if 'arp' not in (sec.get('layers') or []) or sec['opts'].get('build'):
+            continue
+        b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+        old = [e for e in evs if e.track == 'arp' and b0 <= e.beat < b1 and e.midi is not None]
+        if not old:
+            continue
+        by_bar = {}
+        for e in old:
+            by_bar.setdefault(int(e.beat // 4), set()).add(e.midi)
+        ids = {id(e) for e in old}
+        evs[:] = [e for e in evs if id(e) not in ids]
+        tones = sorted(by_bar.get(int(b0 // 4)) or next(iter(by_bar.values())))
+        proto = old[0]
+        i = 0
+        step = int(b0 * 4)
+        while step < int(b1 * 4):
+            bar = step // 16
+            if bar in by_bar:
+                tones = sorted(by_bar[bar])
+            k = i % L
+            if k in hits and tones:
+                m = tones[order[k] % len(tones)]
+                evs.append(proto.copy(beat=step / 4, dur=0.22, midi=m, vel=0.95 if k == 0 else 0.68, glide=None))
+                made += 1
+            i += 1
+            step += 1
+    st['polymeter_len'] = L if made else 0
+    return st['polymeter_len']

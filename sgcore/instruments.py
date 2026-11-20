@@ -7594,3 +7594,152 @@ for _base, _kinds in POPULAR_VARIANTS.items():
         for _role, _lst in ROLE_CHOICES.items():
             if _base in _lst and _name not in _lst:
                 _lst.append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.93: house / trance / techno bank
+# (harmonic partials, octave-only stacks and pitch moves that settle on the note: always in key)
+def v_rubberbass(m, dur, p, glide=None, mod=None):
+    """Rubber bass: a bouncy, elastic FM bass - each note starts a little sharp and dips onto the pitch in 40 ms, with
+    a quick 'boing' of brightness - the rubbery low end of tech house."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.003, 0.18, 0.6, 0.08)
+    fr = f * 2 ** (2.5 * np.exp(-t / 0.04) / 12)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    y = np.sin(ph + 1.8 * np.exp(-t / 0.05) * np.sin(ph)) + 0.12 * np.sin(2 * ph)
+    return np.vstack([y, y]) * env * 0.62
+
+
+def v_rhodestrem(m, dur, p, glide=None, mod=None):
+    """Tremolo keys: an electric piano with the stereo tremolo on - the sound pulsing between the speakers in time with
+    the beat (an 8th-note tremolo) - deep-house chords."""
+    y = np.asarray(INSTRUMENTS['rhodes'](m, dur, p, glide, mod), float)
+    y = y if y.ndim == 2 else np.vstack([y, y])
+    n = y.shape[1]
+    t = np.arange(n) / SR
+    rate = 2.0 / float(p.get('spb', 0.48))
+    lfo = 0.5 + 0.5 * np.sin(2 * np.pi * rate * t)
+    return np.vstack([y[0] * (0.55 + 0.45 * lfo), y[1] * (0.55 + 0.45 * (1 - lfo))]) * 1.05
+
+
+def v_discohorn(m, dur, p, glide=None, mod=None):
+    """Disco horn stab: a punchy brass-section hit - bright saws with a quick 'blat' of filter, a small scoop up into
+    the note (settling on pitch) and a short fall-off - for funky and disco house."""
+    f = float(mtof(m))
+    env, n, t = _env_n(min(dur, 0.5), 0.008, 0.15, 0.55, 0.12)
+    rng = _rng()
+    fr = f * 2 ** (-0.6 * np.exp(-t / 0.03) / 12)
+    x = _stack_saw(fr, n, (-8, 0, 7), rng, 0.6)
+    y = _va.vcf(x, 900 + 4200 * np.exp(-t / 0.07), 0.2, 1.4)
+    return _hpf(y, 160) * env * 0.5
+
+
+def v_vocalbounce(m, dur, p, glide=None, mod=None):
+    """Vocal bounce: a short sung 'oh-ah' whose vowel opens with the note - the bouncing filtered vocal chops of
+    house."""
+    f = float(mtof(m))
+    env, n, t = _env_n(min(dur, 0.45), 0.006, 0.2, 0.35, 0.1)
+    rng = _rng()
+    x = _stack_saw(np.full(n, f), n, (-5, 5), rng, 0.5)
+    a = np.vstack([_va.formant(x[i], 'o', 7.0) for i in range(2)])
+    b = np.vstack([_va.formant(x[i], 'a', 7.0) for i in range(2)])
+    k = np.clip(t / 0.12, 0, 1)[None, :]
+    return _hpf(a * (1 - k) + b * k, 220) * env * 0.85
+
+
+def v_vowelpad(m, dur, p, glide=None, mod=None):
+    """Vowel-morph pad: a choir pad that slowly moves from 'aah' to 'ooh' (over about eight seconds) - the breathing
+    vocal pads of trance breakdowns."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.6, 1.0, 1.0, 1.6)
+    rng = _rng()
+    x = _stack_saw(np.full(n, f), n, (-9, -3, 4, 10), rng, 0.8)
+    a = np.vstack([_va.formant(x[i], 'a', 6.0) for i in range(2)])
+    u = np.vstack([_va.formant(x[i], 'u', 6.0) for i in range(2)])
+    k = (0.5 - 0.5 * np.cos(np.pi * np.clip(t / 8.0, 0, 1)))[None, :]
+    return _hpf(a * (1 - k) + u * k * 1.2, 150) * env * 0.5
+
+
+def v_sawharp(m, dur, p, glide=None, mod=None):
+    """Saw harp: a bright plucked saw that rings out like a harp string (the filter closing slowly) - the shimmering
+    arpeggios of trance breakdowns."""
+    f = float(mtof(m))
+    n = int((min(dur, 1.5) + 1.2) * SR)
+    t = np.arange(n) / SR
+    rng = _rng()
+    x = _stack_saw(np.full(n, f), n, (-6, 6), rng, 0.6)
+    y = _va.vcf(x, 500 + 5500 * np.exp(-t / 0.35), 0.15, 1.1)
+    return _hpf(y, 180) * (np.minimum(1, t / 0.002) * np.exp(-t / 0.9))[None, :] * 0.45
+
+
+def v_risinglead(m, dur, p, glide=None, mod=None):
+    """Rising unison lead: a big supersaw lead whose detune and brightness swell while the note is held - the uplifting
+    trance 'lift' on long notes."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.01, 0.3, 0.95, 0.4)
+    rng = _rng()
+    sw = np.clip(t / max(0.4, min(dur, 3.0)), 0, 1)
+    fr = _glide_freq(f, n, glide, 0.06)
+    x = np.zeros((2, n))
+    for k, c in enumerate((-14, -8, -3, 0, 3, 8, 14)):
+        x[k % 2] += _va.saw(fr * 2 ** (c * (0.4 + 0.6 * sw) / 1200), n, rng.random()) * 0.3
+    y = _va.vcf(x, 1800 + 6000 * sw, 0.15, 1.15)
+    return _hpf(y, 200) * env * 0.42
+
+
+def v_warehousestab(m, dur, p, glide=None, mod=None):
+    """Warehouse stab: a dark, resonant hit (root and octave) thrown into a big concrete room - a short stab with a
+    long, gritty reverb tail - for techno."""
+    f = float(mtof(m))
+    n = int((min(dur, 0.3) + 2.2) * SR)
+    t = np.arange(n) / SR
+    rng = _rng()
+    x = (_va.saw(f, n, rng.random()) + 0.6 * _va.saw(2 * f, n, rng.random())) * np.exp(-t / 0.09)
+    y = _va.vcf(np.vstack([x, x]), 500 + 2000 * np.exp(-t / 0.05), 0.2, 1.4)
+    from .dsp import make_ir, reverb
+    y = y * 0.7 + reverb(y.astype(np.float32), make_ir(2.0, 0.02, 0.6)) * 0.5
+    return _hpf(y, 140) * 0.55
+
+
+def v_fmacid(m, dur, p, glide=None, mod=None):
+    """FM acid: a 303-style line with an FM growl in it - the resonant squelch plus a 2:1 FM bite that opens on
+    accents - harder than the classic acid."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.002, 0.15, 0.6, 0.05)
+    rng = _rng()
+    fr = _glide_freq(f, n, glide, 0.04)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    acc = 1.5 if mod == 'acc' else 1.0
+    x = _va.saw(fr, n, rng.random()) * 0.7 + 0.5 * np.sin(ph + acc * 1.6 * np.exp(-t / 0.08) * np.sin(2 * ph))
+    y = _va.vcf(np.vstack([x, x]), 300 + 2600 * acc * np.exp(-t / 0.1), 0.72, 1.5)
+    return _hpf(np.tanh(y * 1.6), 60) * env * 0.4
+
+
+def v_tonalbass(m, dur, p, glide=None, mod=None):
+    """Tonal kick-bass: a deep, rumbling sine bass with a soft saturated edge, tuned to the note - the pitched low end
+    that hard and Berlin-style techno run under the kick."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.004, 0.25, 0.75, 0.1)
+    ph = 2 * np.pi * f * t
+    y = np.tanh((np.sin(ph) + 0.25 * np.sin(2 * ph)) * 1.8) * 0.8
+    return np.vstack([y, y]) * env * 0.65
+
+
+NEW_193 = (
+    ('rubberbass', v_rubberbass, 'Rubber bass (bouncy tech-house FM)', ('bass',), 38),
+    ('rhodestrem', v_rhodestrem, 'Tremolo keys (pulsing electric piano)', ('chords', 'arp'), 4),
+    ('discohorn', v_discohorn, 'Disco horn stab (punchy brass hit)', ('chords', 'lead'), 61),
+    ('vocalbounce', v_vocalbounce, 'Vocal bounce (oh-ah house chop)', ('lead', 'arp'), 54),
+    ('vowelpad', v_vowelpad, 'Vowel-morph pad (aah to ooh)', ('pad', 'chords'), 52),
+    ('sawharp', v_sawharp, 'Saw harp (ringing plucked saw)', ('arp', 'lead'), 46),
+    ('risinglead', v_risinglead, 'Rising unison lead (swells as it holds)', ('lead',), 81),
+    ('warehousestab', v_warehousestab, 'Warehouse stab (dark hit, big room)', ('chords', 'arp'), 81),
+    ('fmacid', v_fmacid, 'FM acid (303 squelch with FM bite)', ('bass', 'arp', 'lead'), 87),
+    ('tonalbass', v_tonalbass, 'Tonal kick-bass (rumbling techno low end)', ('bass',), 38),
+)
+for _name, _fn, _info, _roles, _gm in NEW_193:
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)

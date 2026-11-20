@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.93.0
+**Batch generator**
+- **🎲 Batch** (next to Full song) makes many full songs in one go: from 1 to 500, in one genre or several.
+  - **Genre order:** genres take turns, or each song picks one at random.
+  - **What changes from song to song:** tempo (within each genre's range), key, energy, complexity, sounds, length, layout and mood. Tick the ones you want.
+  - **How songs vary:** an **even spread** (calculated so the batch covers the whole range evenly, within each genre) or **random**. A **How far apart** slider sets how wide the range is. Every song always gets its own seed.
+  - The batch goes into the render queue, so the songs render one after another while you keep using the app.
+- **The render queue now survives a restart.** Songs left in it come back paused the next time the app opens. There are new **Start / Resume** and **Pause after this song** buttons.
+
+**Keep only the final files**
+- A new export option, **🧹 Keep only final files**, for single songs, the queue and batches. After each full song is exported, it deletes the stems, per-part MIDI, DAW / LMMS / Waveform projects, sample pack and plugin guide. Only the song itself stays (MP3 / WAV / FLAC, plus its MIDI if you chose MIDI), along with a tiny settings file so it still opens in the editor. On a test song with stems, that freed 534 MB.
+
+**Faster renders**
+- **Parts render on several CPU cores at once** on full songs (up to 3 extra cores, one left free for the app). The parts come back identical: tested to the sample against the one-at-a-time render. Parts that use plugins, your own samples, sampled instruments or real drum kits still render one by one. Set `STUDIOLAB_WORKERS` to change the number (0 turns it off).
+- **Mastering is about a third faster** (42 s → 27 s on a 4½-minute song) with the same result: the same loudness within 0.03 dB and the same peak.
+  - The loudness search now runs on the song's loud parts instead of re-limiting the whole song up to eight times.
+  - The true-peak meter skips stretches too quiet to matter.
+
+**10 new synths** (all in key)
+- **House:** rubber bass (bouncy tech-house FM), tremolo keys (electric piano pulsing between the speakers), disco horn stab, vocal bounce (an "oh-ah" chop that opens with the note).
+- **Trance:** vowel-morph pad (a choir moving from "aah" to "ooh" through the breakdown), saw harp (a ringing plucked-saw arpeggio), rising unison lead (its detune and brightness swell as the note holds).
+- **Techno:** warehouse stab (a dark hit in a big room), FM acid (303 squelch with an FM bite), tonal kick-bass (the rumbling pitched low end).
+- **Polymeter sequences in techno.** In about half of techno, minimal, dub techno and tribal techno songs (fewer in tech house, acid house and festival techno), the sequence loops in 3, 5, 6 or 7 sixteenths against the 4/4 kick, so it lands somewhere new every bar. It uses the chord tones the part was already playing (`polymeter`: auto / on / off).
+
 ## 1.92.3
 - **Dreamy synthscape songs no longer all sound the same.** Each song now picks, from its seed, one option from each of these lists. The genre keeps its character, but 12 test songs gave 12 different combinations.
   - **Sound palette:** sine, glass (glass keys, tape bell pulse, bloom lead), tape (dust piano, warm pulse, tape flute), choir (hum choir, sine pluck, glide tone) or warm (R&B pad, warm pulse, tape-wobble sine lead).

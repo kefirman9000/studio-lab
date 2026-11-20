@@ -68,6 +68,7 @@ class Options:
     bar_variation: str = 'auto'   # (1.85) small changes in the 4th / 8th bar of phrases | off
     section_dynamics: str = 'auto'   # (1.90) layers saved for the drops, bare breakdowns, harder first downbeats | off
     genre_fills: str = 'auto'     # (1.90) DnB rewinds, dubstep drop stops with a shout, trance pitch-rising rolls | off
+    polymeter: str = 'auto'       # (1.93) techno sequences looping in 3 / 5 / 6 / 7 steps against 4/4 | on | off
     variety: float = 0.5          # 0..1 how adventurous each song's sound palette, grooves and arrangement get
     user_drums: bool = False      # use the drum samples you loaded instead of the built-in kit
     sections: list = None         # section editor: [{src, copy, bars, seeds{part:int}, vary:int, mute:[layers]}]
@@ -1922,6 +1923,7 @@ def compose(opts):
     st['bar_variations'] = _ev.bar_variation(evs, sections, st, opts)
     st['extra_arps'] = _ev.extra_arps(evs, sections, st, opts, tracks)   # (1.91) background arpeggio layers
     st['bass_stutters'] = _ev.bass_stutter(evs, st)      # (1.92.2) long bass notes enter with a triplet stutter
+    st['polymeter_len'] = _ev.polymeter(evs, sections, st, opts, tracks)   # (1.93) techno: 3 / 5 / 7-step loops against 4/4
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     _sw = _ev.structure_moves(evs, sections, st, opts, tracks, POOLS_.get(opts.style, {}).get('bass') or [], fx)

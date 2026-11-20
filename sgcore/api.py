@@ -11,7 +11,7 @@ from .compose import Options, compose
 from .windows import preview_window, section_window, section_loop
 from .render import Renderer, master
 
-OUTPUTS = ('wav', 'mp3', 'midi', 'stems', 'lmms', 'waveform', 'pack', 'daw')
+OUTPUTS = ('wav', 'mp3', 'midi', 'stems', 'lmms', 'waveform', 'pack', 'daw', 'final_only')
 
 
 def have_ffmpeg():
@@ -405,6 +405,21 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     if 'wav' not in outputs and 'mp3' in files and not preview:
         os.remove(wav)
         files.pop('wav')
+    if 'final_only' in outputs and not preview:          # (1.93) keep only the finished song: its audio files (and the
+        freed = 0                                        # main MIDI file if you asked for MIDI) - stems, per-part MIDI,
+        for suffix, key in (('_stems', 'stems'), ('_parts', None), ('_samplepack', 'pack'), ('_waveform', 'waveform'),   # projects,
+                            ('_DAW', 'daw'), ('.mmp', 'lmms'), ('_PLUGIN_GUIDE.txt', 'guide')):          # guide removed
+            pth = os.path.join(outdir, title + suffix)
+            if os.path.isdir(pth):
+                freed += sum(os.path.getsize(os.path.join(a, f)) for a, _, fs in os.walk(pth) for f in fs)
+                shutil.rmtree(pth, ignore_errors=True)
+            elif os.path.isfile(pth):
+                freed += os.path.getsize(pth)
+                os.remove(pth)
+            if key:
+                files.pop(key, None)
+        info['cleaned_mb'] = round(freed / 1e6, 1)
+        log(f'   kept only the final files ({freed / 1e6:.0f} MB of stems / projects removed)')
     if not preview and song.get('plugin_recs'):
         info['plugins'] = {k: v['picks'] for k, v in song['plugin_recs'].items()}
     if getattr(r, 'vst_failures', None):

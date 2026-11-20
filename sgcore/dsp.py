@@ -331,31 +331,52 @@ def chunked(fn, x, chunk=CHUNK, pad=_PAD, extra=None):
     return out
 
 
-def true_peak_env(x, os=4, chunk=CHUNK, pad=_PAD):
-    """Per-sample peak of the waveform between the samples (os x oversampled, both channels), computed block by block."""
+def true_peak_env(x, os=4, chunk=CHUNK, pad=_PAD, floor=None):
+    """Per-sample peak of the waveform between the samples (os x oversampled, both channels), computed block by block.
+    floor: (1.93) skip the oversampling wherever the sample peaks stay more than 6 dB below it (between-sample peaks
+    there can't reach it) - most of a song, so the limiter and the meter run several times faster."""
     a = np.max(np.abs(x), axis=0) if x.ndim == 2 else np.abs(x)
     n = a.shape[-1]
-    out = np.empty(n)
-    for s0 in range(0, n, chunk):
-        s1 = min(n, s0 + chunk)
-        lo, hi = max(0, s0 - pad), min(n, s1 + pad)
-        up = signal.resample_poly(x[..., lo:hi], os, 1, axis=-1)
+    out = a.astype(np.float64, copy=True)
+    B = 2048
+    nb = (n + B - 1) // B
+    if floor is not None:
+        bm = np.pad(a, (0, nb * B - n)).reshape(nb, B).max(axis=1)
+        hot = bm > float(floor) * 0.5
+    else:
+        hot = np.ones(nb, dtype=bool)
+    i = 0
+    P = 64
+    while i < nb:                                          # runs of blocks that need the oversampled look
+        if not hot[i]:
+            i += 1
+            continue
+        j = i
+        while j < nb and hot[j] and (j - i) * B < chunk:
+            j += 1
+        s0, s1 = i * B, min(n, j * B)
+        lo, hi = max(0, s0 - P), min(n, s1 + P)
+        up = signal.resample_poly(x[..., lo:hi], os, 1, axis=-1)   # (scipy's full-length filter: exact on full-band material)
         up = np.max(np.abs(up), axis=0) if up.ndim == 2 else np.abs(up)
         m = up[:(hi - lo) * os].reshape(-1, os).max(axis=1)
-        out[s0:s1] = m[s0 - lo:s0 - lo + (s1 - s0)]
-    return np.maximum(out, a)
+        out[s0:s1] = np.maximum(out[s0:s1], m[s0 - lo:s0 - lo + (s1 - s0)])
+        i = j
+    return out
 
 
 def true_peak(x, os=4):
     """The highest inter-sample peak (linear), without upsampling the whole song at once."""
-    return float(np.max(true_peak_env(x, os))) if x.size else 0.0
+    if not x.size:
+        return 0.0
+    sp = float(np.max(np.abs(x)))
+    return float(np.max(true_peak_env(x, os, floor=sp)))
 
 
 def limiter(x, ceiling_db=-1.0, lookahead=0.005, release=0.08, hold=0.012, os=4):
     c = 10 ** (ceiling_db / 20)
     a = np.max(np.abs(x), axis=0)
     if x.shape[-1] > 64 and os > 1:                      # true-peak detection: the waveform between the samples (4x
-        a = np.maximum(a, true_peak_env(x, os))          # oversampled) can swing ~1-2 dB above the sample peaks on
+        a = np.maximum(a, true_peak_env(x, os, floor=c))   # oversampled) can swing ~1-2 dB above the sample peaks on
                                                          # bright, dense masters - the limiter sees those peaks too
     W = int(lookahead * SR) | 1
     pk = maximum_filter1d(a, size=max(2 * W + 1, int(hold * SR) | 1))   # held over ~half a bass cycle: no audio-rate gain
