@@ -197,9 +197,11 @@ def _svf_lp_kernel(x, g, k):
 
 def svf_lp(x, cut, sr, q=0.707):
     """A smooth, per-sample moving 12 dB low-pass (for filter rides / arcs) on (n,) or (2, n) input."""
-    x = np.asarray(x, np.float64)
     n = x.shape[-1]
     g = np.tan(np.pi * np.clip(np.broadcast_to(np.asarray(cut, np.float64), (n,)), 20.0, sr * 0.45) / sr)
     if x.ndim == 1:
-        return _svf_lp_kernel(x, g, 1.0 / q)
-    return np.vstack([_svf_lp_kernel(np.ascontiguousarray(x[c]), g, 1.0 / q) for c in range(x.shape[0])])
+        return _svf_lp_kernel(np.ascontiguousarray(x, np.float64), g, 1.0 / q)
+    out = np.empty(x.shape, dtype=np.float32)            # (1.90: one channel at a time, 32-bit result)
+    for c in range(x.shape[0]):
+        out[c] = _svf_lp_kernel(np.ascontiguousarray(x[c], np.float64), g, 1.0 / q)
+    return out

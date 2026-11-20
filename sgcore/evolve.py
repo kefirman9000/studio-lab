@@ -220,3 +220,115 @@ def bar_variation(evs, sections, st, opts):
                     e.midi = others[i + 1] if i + 1 < len(others) else others[i - 1]
                     n += 1
     return n
+
+
+# ----------------------------------------------------------------------------- (1.90) section dynamics
+LIFT_SECTIONS = {'drop', 'chorus', 'climax', 'hook', 'B', 'loop'}
+
+
+def section_dynamics(evs, sections, st, opts, tracks):
+    """Real dynamics between sections (electronic genres): the doubled layers (the second lead / chord / bass sound)
+    are saved for the drops, so a drop adds weight instead of only getting louder; a breakdown starts bare (one sound
+    per part) and its layers come back for its second half; and each drop hits harder on its first downbeat.
+    Returns the number of notes moved / removed (0 when off)."""
+    if st.get('category') != 'Electronic' or st.get('composer') or getattr(opts, 'section_dynamics', 'auto') == 'off':
+        return 0
+    layers = {n for n, t in tracks.items() if t.get('double_of')}
+    hit = {n for n, t in tracks.items() if t.get('layer') in ('kick', 'bass', 'lead') and not t.get('double_of')}
+    if not any(s['opts'].get('drop') or s['name'] in LIFT_SECTIONS for s in sections):
+        return 0
+    drop_out = []
+    n = 0
+    for sec in sections:
+        b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+        big = sec['opts'].get('drop') or sec['name'] in LIFT_SECTIONS
+        if big:
+            first = [e for e in evs if e.track in hit and b0 <= e.beat < b0 + 0.05]
+            for e in first:                                   # the first downbeat of the drop lands harder
+                e.vel = min(1.0, e.vel * 1.15)
+            n += len(first)
+        elif sec['opts'].get('build'):
+            continue                                          # builds keep what they have: they are rising already
+        elif sec['name'] in ('break', 'breakdown', 'C', 'calm', 'bridge'):
+            drop_out.append((b0, b0 + 4 * max(2, sec['bars'] // 2)))   # bare first half, layers back for the lift
+        elif sec['name'] in ('intro', 'verse', 'A', 'rise'):
+            drop_out.append((b0, b1))
+    if layers and drop_out:
+        keep = [e for e in evs if not (e.track in layers and any(a <= e.beat < b for a, b in drop_out))]
+        n += len(evs) - len(keep)
+        evs[:] = keep
+    return n
+
+
+# ----------------------------------------------------------------------------- (1.90) genre fills / transitions
+REWIND_GENRES = {'dnb', 'jungle', 'jump_up', 'neurofunk', 'neurofunk_lite', 'anthem_dnb', 'liquid_dancefloor',
+                 'ukgarage', 'speed_garage', 'grime', 'bassline_140', 'uk_hardcore', 'idm_jungle_theme'}
+SHOUT_GENRES = {'dubstep': ('oi', 'yeah'), 'brostep': ('oi', 'yeah', 'go'), 'riddim': ('oi', 'go'),
+                'midtempo_bass': ('hey', 'oi'), 'dark_dubstep_classic': ('oi', 'whoa'), 'bass_house': ('hey', 'go'),
+                'trap_metal': ('yeah', 'go'), 'hard_trap': ('yeah', 'hey'), 'hardstyle': ('hey', 'yeah')}
+TRANCE_ROLL_GENRES = {'trance', 'uplifting_trance', 'progressive_trance', 'club_trance_2000s', 'progressive_trance_2010s',
+                      'electro_prog_trance', 'trance_pop_90s', 'hard_trance', 'vocal_trance_remix', 'classic_vocal_trance',
+                      'goa_trance', 'festival_psy'}
+
+
+def genre_fills(evs, fx, sections, st, opts, tracks, seed=0):
+    """Transitions the way each scene does them:
+    - drum & bass / jungle / garage / grime: the REWIND - a few bars into the second drop the DJ pulls it back (the
+      record spins backwards) and the drop starts again from the top;
+    - dubstep / brostep / riddim (and a few loud cousins): the DROP STOP - everything cuts out for a beat before the
+      drop, and a hype-man shout fills the hole;
+    - trance: the SNARE ROLL climbs in pitch through the build while the pads' filter opens (on top of the high-pass).
+    Returns a list of what was added."""
+    import random as _r
+    if getattr(opts, 'genre_fills', 'auto') == 'off' or st.get('composer') or getattr(opts, 'transition_fx', 'auto') == 'off':
+        return []
+    g = st.get('name') or opts.style
+    rnd = _r.Random(f'{seed}-{g}-fills')
+    done = []
+    drops = [i for i, s in enumerate(sections) if s['opts'].get('drop')]
+    snares = [s for s in st.get('snare_tracks', []) if s in tracks]
+    if g in REWIND_GENRES and len(drops) >= 2:
+        sec = sections[drops[1]]
+        d0 = sec['bar'] * 4
+        if sec['bars'] >= 16:
+            span = 16 if sec['bars'] >= 24 else 8                    # rewind after 4 (or 2) bars of the drop
+            r = d0 + span
+            fx.append(('rewind', r - 2, 2))
+            fx.append(('gap', r - 0.25, 0.25))
+            head = [e for e in evs if d0 <= e.beat < r - 2]
+            evs[:] = [e for e in evs if not (r - 2 <= e.beat < r + span)]
+            evs += [e.copy(beat=e.beat + span) for e in head]           # ... and it starts again from the top
+            fx[:] = [f for f in fx if not (r - 2 <= f[1] < r + span and f[0] != 'rewind' and f[0] != 'gap')]
+            fx += [(k, b + span, d) for k, b, d in list(fx) if d0 <= b < r - 2 and k in ('crash', 'impact')]
+            if rnd.random() < 0.5:
+                fx.append(('shout:' + rnd.choice(('oi', 'hey')), r - 0.75, 0))
+            done.append(('rewind', drops[1]))
+    if g in SHOUT_GENRES:
+        words = SHOUT_GENRES[g]
+        for k, i in enumerate(drops):
+            if k > 0 and rnd.random() < 0.4:
+                continue
+            d0 = sections[i]['bar'] * 4
+            stop = 1.0 if rnd.random() < 0.7 else 1.5
+            fx[:] = [f for f in fx if not (f[0] == 'gap' and d0 - 2 <= f[1] < d0)]
+            fx.append(('gap', d0 - stop, stop))
+            fx.append(('shout:' + words[k % len(words)], d0 - stop + 0.02, 0))
+            done.append(('drop stop', i))
+    if g in TRANCE_ROLL_GENRES:
+        for i, sec in enumerate(sections):
+            if not sec['opts'].get('build'):
+                continue
+            b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+            roll = [e for e in evs if e.track in snares and b0 <= e.beat < b1]
+            if 0 < len(roll) < 8 and snares and not getattr(opts, 'build_style', None):   # a few hits, no roll: 16ths in the last 2 bars
+                st_ = max(b0, b1 - 8)
+                roll = [type(evs[0])(snares[0], st_ + k / 4, 0.2, None, 0.35 + 0.6 * k / 32) for k in range(30)] if evs else []
+                evs += roll
+            for e in roll:                                            # the roll climbs a fifth (an octave on the last one)
+                top = 12 if i == max((j for j, s in enumerate(sections) if s['opts'].get('build')), default=-1) else 7
+                if not e.mod:
+                    e.mod = f'pt:{round(top * ((e.beat - b0) / max(1, b1 - b0)) ** 1.5, 2)}'
+            if not any(f[0] == 'lpsweep' and b0 <= f[1] < b1 for f in fx):
+                fx.append(('lpsweep', b0, b1 - b0))
+            done.append(('snare roll rise', i))
+    return done

@@ -183,7 +183,7 @@ def make_ir(decay, predelay=0.02, bright=1.0):
 def reverb(x, ir):
     out = np.empty_like(x)
     for c in range(2):
-        out[c] = signal.oaconvolve(x[c], ir[c])[:x.shape[1]]
+        out[c] = signal.oaconvolve(x[c], np.asarray(ir[c], dtype=x.dtype))[:x.shape[1]]
     return out
 
 
@@ -257,23 +257,38 @@ def _smooth_gr(gr_db, attack, release, block=32):
 
 
 def compressor(x, thresh=-18.0, ratio=3.0, attack=0.01, release=0.15, knee=6.0, win=0.005):
-    pw = uniform_filter1d(np.mean(x ** 2, axis=0), size=max(1, int(win * SR)))
+    if x.ndim == 2:                                   # (1.90: channel by channel - no stereo-sized temporaries)
+        pw = np.zeros(x.shape[1])
+        for c in range(x.shape[0]):
+            pw += x[c] * x[c]
+        pw /= x.shape[0]
+    else:
+        pw = x * x
+    pw = uniform_filter1d(pw, size=max(1, int(win * SR)))
     ldb = 10 * np.log10(pw + 1e-12) + 3.0  # +3 so a sine's rms reads near its peak
     over = ldb - thresh
     slope = 1 - 1 / ratio
     gr = np.where(over <= -knee / 2, 0.0,
                   np.where(over >= knee / 2, over * slope, slope * (over + knee / 2) ** 2 / (2 * knee)))
     g = _smooth_gr(gr, attack, release)
-    return x * 10 ** (-g / 20)
+    del gr, over, ldb, pw
+    g = np.power(10.0, -g / 20)
+    return x * g
 
 
 def low_limit(x, ceiling=0.72, split=120.0, hold=0.03, release=0.18):
     """Bass-safe pre-limiter: the band below `split` gets its own slow limiter - its gain is held over a whole cycle of
     the lowest notes (30 ms) and released slowly - so a loud sub / 808 never drives the final brick-wall limiter, whose
     fast gain changes would ride the bass waveform itself and distort it ('clipping' on the low notes)."""
-    lo = signal.sosfiltfilt(signal.butter(2, split / (SR / 2), output='sos'), x, axis=-1)
-    hi = x - lo
-    a = np.max(np.abs(lo), axis=0)
+    sos = signal.butter(2, split / (SR / 2), output='sos')
+    if x.ndim == 2:                                   # (1.90: one channel at a time)
+        lo = np.empty(x.shape, dtype=np.float64)
+        for c in range(x.shape[0]):
+            lo[c] = signal.sosfiltfilt(sos, x[c])
+        a = np.max(np.abs(lo), axis=0)
+    else:
+        lo = signal.sosfiltfilt(sos, x)
+        a = np.abs(lo)
     pk = maximum_filter1d(a, size=int(hold * SR) | 1)
     g = np.minimum(1.0, ceiling / np.maximum(pk, 1e-9))
     B = 64
@@ -288,16 +303,60 @@ def low_limit(x, ceiling=0.72, split=120.0, hold=0.03, release=0.18):
         y = v if v < y else v + (y - v) * cr
         out[i] = y
     gs = uniform_filter1d(np.repeat(out, B)[:n], size=int(hold * SR) | 1)
-    return hi + lo * gs
+    del pk, g, a
+    gs -= 1.0                                         # x - lo + lo * gs = x + lo * (gs - 1): no separate 'hi' copy
+    lo *= gs
+    lo += x
+    return lo
+
+
+CHUNK = 1 << 19          # (1.90) ~12 s per block for the oversampled stages: a whole song is never upsampled at once
+_PAD = 512
+
+
+def chunked(fn, x, chunk=CHUNK, pad=_PAD, extra=None):
+    """Apply a sample-local stage (oversampled saturation / clipping) block by block, each block with `pad` samples of
+    context on both sides that are trimmed off again - the same result as one pass over the whole song, at a small
+    fraction of the memory. `extra`: a per-sample array sliced alongside (e.g. a clip limit per sample)."""
+    n = x.shape[-1]
+    if n <= chunk + 2 * pad:
+        return fn(x) if extra is None else fn(x, extra)
+    out = np.empty_like(x)
+    for s0 in range(0, n, chunk):
+        s1 = min(n, s0 + chunk)
+        a, b = max(0, s0 - pad), min(n, s1 + pad)
+        seg = x[..., a:b]
+        y = fn(seg) if extra is None else fn(seg, extra[a:b])
+        out[..., s0:s1] = y[..., s0 - a:s0 - a + (s1 - s0)]
+    return out
+
+
+def true_peak_env(x, os=4, chunk=CHUNK, pad=_PAD):
+    """Per-sample peak of the waveform between the samples (os x oversampled, both channels), computed block by block."""
+    a = np.max(np.abs(x), axis=0) if x.ndim == 2 else np.abs(x)
+    n = a.shape[-1]
+    out = np.empty(n)
+    for s0 in range(0, n, chunk):
+        s1 = min(n, s0 + chunk)
+        lo, hi = max(0, s0 - pad), min(n, s1 + pad)
+        up = signal.resample_poly(x[..., lo:hi], os, 1, axis=-1)
+        up = np.max(np.abs(up), axis=0) if up.ndim == 2 else np.abs(up)
+        m = up[:(hi - lo) * os].reshape(-1, os).max(axis=1)
+        out[s0:s1] = m[s0 - lo:s0 - lo + (s1 - s0)]
+    return np.maximum(out, a)
+
+
+def true_peak(x, os=4):
+    """The highest inter-sample peak (linear), without upsampling the whole song at once."""
+    return float(np.max(true_peak_env(x, os))) if x.size else 0.0
 
 
 def limiter(x, ceiling_db=-1.0, lookahead=0.005, release=0.08, hold=0.012, os=4):
     c = 10 ** (ceiling_db / 20)
     a = np.max(np.abs(x), axis=0)
     if x.shape[-1] > 64 and os > 1:                      # true-peak detection: the waveform between the samples (4x
-        from scipy.signal import resample_poly           # oversampled) can swing ~1-2 dB above the sample peaks on
-        up = np.max(np.abs(resample_poly(x, os, 1, axis=-1)), axis=0)    # bright, dense masters - the limiter now
-        a = np.maximum(a, up[:len(a) * os].reshape(-1, os).max(axis=1)[:len(a)])   # sees those peaks too
+        a = np.maximum(a, true_peak_env(x, os))          # oversampled) can swing ~1-2 dB above the sample peaks on
+                                                         # bright, dense masters - the limiter sees those peaks too
     W = int(lookahead * SR) | 1
     pk = maximum_filter1d(a, size=max(2 * W + 1, int(hold * SR) | 1))   # held over ~half a bass cycle: no audio-rate gain
     g = np.minimum(1.0, c / np.maximum(pk, 1e-9))
@@ -313,8 +372,9 @@ def limiter(x, ceiling_db=-1.0, lookahead=0.005, release=0.08, hold=0.012, os=4)
         y = v if v < y else v + (y - v) * cr
         out[i] = y
     gs = uniform_filter1d(np.repeat(out, B)[:n], size=W)
+    del pk, g, a
     y = x * gs
-    return np.clip(y, -c, c)
+    return np.clip(y, -c, c, out=y)
 
 
 def k_weight(x):
@@ -337,10 +397,19 @@ def k_weight(x):
 
 def lufs(x):
     """Integrated loudness, ITU-R BS.1770 (K-weighting + gating)."""
-    y = k_weight(x)
+    if x.ndim == 2:                                   # (1.90: channel by channel - same result, a fraction of the memory)
+        e = np.zeros(x.shape[1])
+        for c in range(x.shape[0]):
+            yc = k_weight(x[c])
+            e += yc * yc
+        del yc
+    else:
+        e = k_weight(x) ** 2
+    n_ = e.shape[0]
     blk, hop = int(0.4 * SR), int(0.1 * SR)
-    cs = np.concatenate([[0.0], np.cumsum(np.sum(y ** 2, axis=0))])
-    starts = np.arange(0, y.shape[1] - blk, hop)
+    cs = np.concatenate([[0.0], np.cumsum(e)])
+    del e
+    starts = np.arange(0, n_ - blk, hop)
     if len(starts) == 0:
         return -70.0
     z = (cs[starts + blk] - cs[starts]) / blk

@@ -325,10 +325,14 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     mix = r.render(stems_dir, progress=progress)
     r.premaster_peak = float(np.max(np.abs(mix)))
     mcfg = dict(song['st']['master'])
+    from .render import _trim
+    _trim()
     out = master(mix, mcfg, log=log)
     pp_ = getattr(opts, 'production_pass', 'auto')
     if (pp_ is True or (pp_ == 'auto' and not preview)) and not loop:     # ('auto': full songs; previews stay quick)
         out, info['production_pass'] = production_pass(mix, mcfg, out, log=log)
+    elif pp_ == 'auto' and preview and not loop:
+        out, info['production_pass'] = preview_tone_fix(out, mcfg, log=log)
     if loop:
         out = wrap_loop(out, r._bt(song['total_bars'] * 4))
         info['loop_seconds'] = round(out.shape[-1] / dsp.SR, 3)
@@ -445,6 +449,23 @@ def song_notes(opts):
     return dict(tracks=tracks, notes=notes, sections=secs, beats=song['total_bars'] * 4, bpm=song['bpm'],
                 programmed=prog, automation=dict(getattr(opts, 'automation', None) or {}),
                 note_edits=getattr(opts, 'note_edits', None) or {})
+
+
+def preview_tone_fix(out, cfg, log=print):
+    """(1.90) The quick version of the production pass for previews: the tone part of it (the one a listener hears
+    first), applied after the master instead of mastering again - so a preview sounds like the full song will.
+    -> (master, [changes])."""
+    from .render import mix_report, tone_match
+    if not cfg.get('tone'):
+        return out, []
+    rep = mix_report(out, tone=cfg.get('tone'))
+    dev = rep.get('tone_dev') or []
+    if not dev or max(abs(d) for d in dev[:8]) <= 4.5:
+        return out, []
+    y = tone_match(out, cfg['tone'], lambda *a: None, amount=0.6, limit=4.0)
+    y = dsp.limiter(y, ceiling_db=-1.0)
+    log('   preview: tone matched to the genre references (what the full song\'s production pass does)')
+    return y, ['tone match to the genre references (quick preview version)']
 
 
 def production_pass(mix, cfg, out, log=print):

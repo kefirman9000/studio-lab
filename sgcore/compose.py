@@ -66,6 +66,8 @@ class Options:
     evolve: str = 'auto'          # (1.85) later drops develop (octave climb, bass pushes, stutters, half-time) | off
     call_response: str = 'auto'   # (1.85) a second sound answers the lead in the hooks: auto | on | off
     bar_variation: str = 'auto'   # (1.85) small changes in the 4th / 8th bar of phrases | off
+    section_dynamics: str = 'auto'   # (1.90) layers saved for the drops, bare breakdowns, harder first downbeats | off
+    genre_fills: str = 'auto'     # (1.90) DnB rewinds, dubstep drop stops with a shout, trance pitch-rising rolls | off
     variety: float = 0.5          # 0..1 how adventurous each song's sound palette, grooves and arrangement get
     user_drums: bool = False      # use the drum samples you loaded instead of the built-in kit
     sections: list = None         # section editor: [{src, copy, bars, seeds{part:int}, vary:int, mute:[layers]}]
@@ -1910,6 +1912,8 @@ def compose(opts):
     st['bar_variations'] = _ev.bar_variation(evs, sections, st, opts)
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
+    st['dyn_moves'] = _ev.section_dynamics(evs, sections, st, opts, tracks)   # (1.90) real section dynamics
+    st['fills'] = _ev.genre_fills(evs, fx, sections, st, opts, tracks, opts.seed)   # (1.90) rewinds / stops / rolls
     if not st.get('composer'):
         fit_registers(evs, tracks)                        # each part in its instrument's sweet spot
     apply_octaves(evs, tracks, getattr(opts, 'octaves', None))

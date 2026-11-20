@@ -266,9 +266,74 @@ def suggest(features, styles, labels=None, top=6):
                     why.append('same hi-hat feel')
         if mode_ok:
             why.append('major key' if not minor else 'minor-type key')
-        out.append(dict(id=sid, name=(labels or {}).get(sid) or st.get('label') or sid, score=round(score, 3), why=why))
+        cands = [float(bpm) * r for r in (1.0, 2.0, 0.5, 1.5, 2 / 3, 3.0, 4 / 3, 0.75)]   # the reading in this genre's range
+        b_fit = min(cands, key=lambda b: (max(0.0, lo - b, b - hi), abs(b - bpm)))
+        out.append(dict(id=sid, name=(labels or {}).get(sid) or st.get('label') or sid, score=round(score, 3), why=why,
+                        bpm=int(round(b_fit))))     # (1.90) the tempo reading that fits this genre (half / double / x1.5)
     out.sort(key=lambda r: -r['score'])
     best = out[0]['score'] if out else 1.0
     for r in out:
         r['match'] = int(round(100 * r['score'] / max(best, 1e-9)))
     return out[:top]
+
+
+_MAP = None
+
+
+def genre_map(styles, labels=None, k=6):
+    """(1.90) The genre map: for every genre, the ones that sound closest to it (drum feel and tonal balance from the
+    rendered fingerprints, plus tempo), each with a short reason. {id: {name, group, bpm, near: [{id, d, why}]}}."""
+    global _MAP
+    if _MAP is not None:
+        return _MAP
+    import json
+    import os
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'genre_map.json')
+    try:                                                   # built by tools/genre_map.py (it takes ~20 s to work out)
+        with open(path) as f:
+            saved = json.load(f)
+        if all(g in saved for g in styles if g in fingerprints()):
+            _MAP = {g: v for g, v in saved.items() if g in styles}
+            return _MAP
+    except Exception:
+        pass
+    from .genre_groups import group_of
+    fps = {g: [x for x in lst if x.get('src') != 'record'] or lst for g, lst in fingerprints().items() if g in styles}
+    ids = [g for g in styles if g in fps and fps[g]]
+    mid = {g: sum(styles[g].get('bpm', (100, 120))) / 2 for g in ids}
+    out = {}
+    for g in ids:
+        st = styles[g]
+        near = []
+        for h in ids:
+            if h == g:
+                continue
+            d = min(_fp_distance(a, b) for a in fps[g][:2] for b in fps[h][:2])
+            r = max(mid[g], mid[h]) / max(1.0, min(mid[g], mid[h]))
+            r = min(r, abs(r - 2) + 1.0)                                  # half / double time counts as close
+            d += 2.0 * abs(np.log(r))
+            if st.get('category') != styles[h].get('category'):
+                d += 0.35
+            if group_of(h) == group_of(g):
+                d -= 0.4
+            near.append((d, h))
+        near.sort()
+        items = []
+        for d, h in near[:k]:
+            why = []
+            if group_of(h) == group_of(g):
+                why.append('same family')
+            if abs(mid[h] - mid[g]) < 8:
+                why.append('same tempo')
+            elif abs(mid[h] - 2 * mid[g]) < 12 or abs(2 * mid[h] - mid[g]) < 12:
+                why.append('half / double time')
+            a, b = fps[g][0], fps[h][0]
+            if a.get('four', 0) > 0.5 and b.get('four', 0) > 0.5:
+                why.append('four-to-the-floor')
+            elif a.get('halftime', 0) > 0.5 and b.get('halftime', 0) > 0.5:
+                why.append('half-time drums')
+            items.append(dict(id=h, d=round(float(d), 2), why=why or ['similar sound']))
+        out[g] = dict(name=(labels or {}).get(g) or st.get('label') or g, group=group_of(g), cat=st.get('category'),
+                      bpm=[int(v) for v in st.get('bpm', (0, 0))], near=items)
+    _MAP = out
+    return out

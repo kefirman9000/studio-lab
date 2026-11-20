@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.90.0
+**Songs with real ups and downs**
+- **Section dynamics** (electronic genres): the second, doubled sound on the lead, chords or bass is now saved for the drops. Verses and intros play one sound per part. Breakdowns start bare and get their layers back halfway through, so a drop adds weight instead of only getting louder. The first downbeat of every drop also lands harder.
+- **Genre fills and transitions:**
+  - **Drum & bass, jungle, garage and grime: the rewind.** A few bars into the second drop, the record spins backwards and the drop starts again from the top (sometimes with a shout).
+  - **Dubstep, brostep, riddim and a few loud cousins: the drop stop.** Everything cuts out for a beat before the drop, and a hype-man shout ("oi", "yeah", "go"…) fills the hole. The shout is synthesized inside the app, so there's no sample to clear.
+  - **Trance: the snare roll climbs in pitch** through the build (an octave on the last one), while the pads' filter opens on top of the high-pass sweep.
+  - Switch either feature off with `section_dynamics` / `genre_fills`. Turning transition effects off also turns off the fills.
+
+**App**
+- **Undo and redo for the whole app.** Ctrl+Z / Ctrl+Shift+Z (or Ctrl+Y), or the new ↶ ↷ buttons in the top bar, step back through changes to the main settings: a sound pick, the genre, a slider, the part levels or the mixer. Section edits on a finished song aren't included. While the notes editor is open, Ctrl+Z still undoes notes.
+- **Genre map** (🗺 next to Styles). Find a genre and see the genres that sound closest to it around it, each with a reason (same family, same tempo, half or double time, four-to-the-floor, half-time drums). Click a circle to move there, or use the genre you land on.
+- **Render queue** (＋ Queue next to Full song). Queue full songs with their settings as they are now, keep changing things, and queue more. They render one after another. You can reorder the queue or remove songs from it.
+- **Favourite sounds and favourite genres no longer get mixed up.** They used to share one saved list, so starring a genre could go through the sound list. Your sound favourites move to their own list automatically. Both lists, along with the other app settings, are kept in the app's settings file, which now holds bigger lists.
+- **"Sounds closest to" (reference matching)** now reports tempo on the scale each genre uses. A song read at half or double speed, or at a 3:2 ratio, is matched to the right genre and given that genre's tempo when you use it. New ÷1.5 / ×1.5 buttons sit next to ÷2 / ×2. On the 72 reference records, when the right genre is suggested its tempo is now right 42 times out of 49 (up from 21).
+
+**Sound and mixing**
+- **Previews sound like the full song.** The tone part of the production pass, which the full song already got, now runs on previews too (quickly, after the master).
+- **Era check on genre sound lists.** When a genre borrows sounds from related genres, it no longer picks up ones from the wrong era or the wrong mood. That means no modern festival plucks, hypersaws or vocal chops in 90s, synthwave, chiptune or jungle genres, and no brutal bass-music sounds in deep or gentle ones. 24 borrowed sounds were dropped from 13 genres. `tools/pool_audit.py` lists them.
+- **Less memory.** A full render uses about half the memory it did (a 5½-minute trance song went from 6.0 to 3.2 GB, a 3½-minute dubstep song from 4.0 to 2.0 GB), with the same sound. The changes:
+  - the mix stays in 32-bit;
+  - true-peak limiting and clipping run in chunks;
+  - the compressor and loudness meter work one channel at a time;
+  - each part's notes are freed as soon as the part is rendered.
+
 ## 1.89.0
 **8 more trance synths**
 - A **gated choir**: an "aah" pad chopped in a 16th trance-gate rhythm.

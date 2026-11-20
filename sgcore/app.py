@@ -646,6 +646,10 @@ class Handler(BaseHTTPRequestHandler):
             return
         if p == '/api/meta':
             return self._json(meta())
+        if p == '/api/genremap':                         # (1.90) which genres sound closest to which
+            from .genrematch import genre_map
+            from . import styles as _sty
+            return self._json(genre_map(_sty.STYLES, _sty.LABELS))
         if p.startswith('/api/job/'):
             j = JOBS.get(p.rsplit('/', 1)[1])
             if not j:
@@ -1007,6 +1011,10 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({'ok': True})
         if p == '/api/meta':
             return self._json(meta())
+        if p == '/api/genremap':                         # (1.90) which genres sound closest to which
+            from .genrematch import genre_map
+            from . import styles as _sty
+            return self._json(genre_map(_sty.STYLES, _sty.LABELS))
         if p == '/api/plugins':
             upd = {k: body[k] for k in ('daws', 'os') if k in body}
             save_settings(upd)
@@ -1030,7 +1038,7 @@ class Handler(BaseHTTPRequestHandler):
         if p == '/api/uiprefs':                          # the app's own settings (theme, visualizer, window size ...)
             prefs = body.get('prefs')                    # kept in settings.json, so they survive a new port / profile
             if isinstance(prefs, dict):
-                clean = {str(k)[:40]: str(v)[:4000] for k, v in list(prefs.items())[:60] if str(k).startswith('sl_')}
+                clean = {str(k)[:40]: str(v)[:20000] for k, v in list(prefs.items())[:100] if str(k).startswith('sl_')}
                 win = body.get('window')
                 upd = {'ui_prefs': clean}
                 if isinstance(win, dict):

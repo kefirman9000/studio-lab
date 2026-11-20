@@ -66,9 +66,9 @@ def track_fx(buf, tcfg, spb):
     ott      - a three-band upward / downward squash (dense, forward EDM synths)
     wide     - mid / side widening above 200 Hz with a little Haas, the bass kept mono (pads, supersaws)
     Each value is the amount (0..1) unless noted."""
-    x = np.asarray(buf, np.float64)
+    x = np.asarray(buf, np.float32)                      # (1.90: 32-bit - half the memory of the old 64-bit chain)
     n = x.shape[1]
-    t = np.arange(n) / SR
+    t = (np.arange(n, dtype=np.float64) / SR)
     if tcfg.get('phaser'):
         amt = float(tcfg['phaser'])
         lfo = 0.5 - 0.5 * np.cos(2 * np.pi * 0.35 * t)
@@ -310,7 +310,8 @@ def mix_report(y, song=None, spb=None, tone=None, low_env=None, dyn_eq=None):
     from .dsp import lufs as _lufs
     y = np.asarray(y, np.float64)
     L = float(_lufs(y))
-    tp = 20 * np.log10(float(np.max(np.abs(signal.resample_poly(y, 4, 1, axis=-1)))) + 1e-12)
+    from .dsp import true_peak as _tp
+    tp = 20 * np.log10(_tp(y) + 1e-12)
     st_win = int(3 * SR)
     sl = [float(_lufs(y[:, i:i + st_win])) for i in range(0, max(1, y.shape[1] - st_win), st_win)] if y.shape[1] > st_win * 2 else [L]
     plr = tp - L
@@ -363,13 +364,13 @@ def auto_lp(buf, cut, block=256):
     wide open are (a track that never closes is passed straight through)."""
     from .dsp import biquad
     from . import fastdsp
+    n = buf.shape[1]
+    if float(np.min(cut[:n])) >= 17500:
+        return buf
+    if fastdsp.HAVE_NUMBA:                               # (1.82) per sample, one compiled pass: smoother and ~10x faster
+        return fastdsp.svf_lp(buf, cut[:n], SR)
     x = np.asarray(buf, np.float64)
     out = x.copy()
-    n = x.shape[1]
-    if float(np.min(cut[:n])) >= 17500:
-        return out
-    if fastdsp.HAVE_NUMBA:                               # (1.82) per sample, one compiled pass: smoother and ~10x faster
-        return fastdsp.svf_lp(x, cut[:n], SR)
     zi = np.zeros((2, 2))
     for s0 in range(0, n, block):
         e = min(n, s0 + block)
@@ -949,7 +950,7 @@ class Renderer:
         depth = r.uniform(0.6, 1.3)                       # octaves
         ph = r.random() * 2 * np.pi
         lfo = 0.5 - 0.5 * np.cos(2 * np.pi * t / period + ph)   # 0 = most closed, 1 = open
-        return (2.0 ** (-depth * (1 - lfo))).astype(np.float64)
+        return (2.0 ** (-depth * (1 - lfo))).astype(np.float32)
 
     def filter_arc(self, song, b2s, L):
         """Filter automation across the arrangement (trance / techno): the synths' low-pass is part-closed in the intro
@@ -962,7 +963,7 @@ class Renderer:
             if b <= a or rng is None or (sec['name'] == 'intro' and sec['opts'].get('filter_in')):
                 continue
             cut[a:b] = np.geomspace(rng[0], rng[1], b - a)
-        return np.exp(uniform_filter1d(np.log(cut), int(0.4 * SR)))
+        return np.exp(uniform_filter1d(np.log(cut), int(0.4 * SR))).astype(np.float32)
 
     def sc_arc(self, song, b2s, L):
         """How hard the kick ducks the music, section by section: deepest in the drops, gentle in the breakdown."""
@@ -1090,6 +1091,7 @@ class Renderer:
         hpsweeps = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'hpsweep']
         tapestops = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'tapestop']
         djslows = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'djslow']
+        rewinds = [(b2s(b), b2s(b + d)) for k, b, d in song['fx'] if k == 'rewind']
         # ---- energy contour + fades
         env = np.ones(L)
         for sec in song['sections']:
@@ -1133,6 +1135,10 @@ class Renderer:
                 from . import dsp as _dsp                 # same whatever else changed (and can be cached)
                 _dsp.RNG = np.random.default_rng(seed_ + 1)
                 buf = self.render_track(tcfg, evs)
+                _trim()
+                if not is_drum_layer(tcfg):              # (1.90) this part's notes are done: free them (drum hits are
+                    for k_ in [k_ for k_ in self.cache if isinstance(k_, tuple) and k_ and k_[0] == name]:   # reused)
+                        del self.cache[k_]
                 if ck:
                     TRACK_CACHE[ck] = buf.copy()
                     while len(TRACK_CACHE) > 40:
@@ -1207,6 +1213,9 @@ class Renderer:
             for s0, s1 in djslows:
                 if tcfg['layer'] != 'fx':
                     dj_slow(buf, s0, s1)
+            for s0, s1 in rewinds:
+                if tcfg['layer'] != 'fx':
+                    rewind(buf, s0, s1)
             for s0, s1 in gaps:
                 if tcfg['layer'] != 'fx':
                     buf[:, s0:s1] = 0
@@ -1274,6 +1283,9 @@ class Renderer:
             self.log(f'   rendered {name:<11} {len(evs):5d} notes  {time.time() - t0:5.1f}s')
             if progress:
                 progress((ti + 1) / (n_tracks + 3))
+        for _v in ('buf', 'lo_e', 'e_'):                  # (1.90) the last part's buffers aren't needed any more
+            locals().pop(_v, None)
+        buf = lo_e = e_ = None
         # (1.87) after the parts, the random streams start from a fixed point again (cached or not, same result)
         _post = (int(getattr(opts, 'seed', 0) or 0) * 7919 + 9001) % (2 ** 32)
         _va._RNG = np.random.default_rng(_post)
@@ -1299,6 +1311,9 @@ class Renderer:
                     self._add(fxbuf, fx_riser(d * self.spb).astype(np.float32) * 0.6, s)
                 elif kind == 'downlift' and d > 0 and new_fx:
                     self._add(fxbuf, fx_downlift2(max(0.5, self._bt(b + d) - self._bt(b)), root_hz, seed=int(b)), s)
+                elif isinstance(kind, str) and kind.startswith('shout'):    # (1.90) 'shout:oi' - the hype man
+                    self._add(fxbuf, fx_shout(kind.split(':')[1] if ':' in kind else 'oi', seed=int(b) + 3,
+                                              spb=self.spb) * 0.9, s)
                 elif kind == 'cymroll' and d > 0:             # suspended cymbal roll (soft mallets), swelling to the edge
                     self._add(fxbuf, fx_cymroll(max(0.5, self._bt(b + d) - self._bt(b))), s)
                 elif kind == 'wash' and d > 0:                # a filtered noise wash opening up (no synth tone)
@@ -1337,15 +1352,17 @@ class Renderer:
             path = os.path.join(stems_dir, '00_drum_bus.wav')
             write_wav_float(path, drums)
             stems.insert(0, dict(name='drum_bus', layer='drums', inst='drums', path=path, bus=True))
-        mix = mix.astype(np.float64) + drums
+        mix += drums.astype(np.float32, copy=False)        # (1.90: the mix stays 32-bit until the master)
+        del drums
         # ---- returns
+        _trim()
         self.log('   reverb + delay returns')
         returns = np.zeros_like(mix)
         rduck = self.return_duck() if self._duck_on else None
         if np.any(rev_send):
             ir = make_spring_ir(st['reverb']) if st.get('spring') else room_ir(st['reverb'], st.get('rev_predelay', 0.02),
                                                                                  st.get('category'))
-            rv = eq(reverb(rev_send.astype(np.float64), ir), 'lowshelf', 300, 0.7, -4.0)
+            rv = eq(reverb(rev_send, ir), 'lowshelf', 300, 0.7, -4.0)          # (32-bit convolution: half the memory)
             if st.get('rev_hp'):                         # a high-passed return keeps the low end tight (trance halls)
                 rv = hp(rv, st['rev_hp'])
             if st.get('fx_reverb'):                      # the genre's reverb plugin (Dragonfly), level-matched to the built-in
@@ -1412,12 +1429,19 @@ class Renderer:
                 w[a:b] = k
         if np.allclose(w, 1.0):
             return mix
-        w = uniform_filter1d(w, max(1, int(4 * self.spb * SR)))
-        x = mix.astype(np.float64)
-        mid, side = (x[0] + x[1]) / 2, (x[0] - x[1]) / 2
-        lo = signal.sosfiltfilt(signal.butter(2, 150 / (SR / 2), output='sos'), side)
-        side = lo + (side - lo) * w
-        return np.vstack([mid + side, mid - side]).astype(mix.dtype)
+        w = uniform_filter1d(w, max(1, int(4 * self.spb * SR))).astype(np.float32)
+        # (1.90: in place, 32-bit - this used to make a full 64-bit stereo copy of the whole mix)
+        side = (mix[0] - mix[1]) * np.float32(0.5)
+        mid = (mix[0] + mix[1]) * np.float32(0.5)
+        lo = signal.sosfiltfilt(signal.butter(2, 150 / (SR / 2), output='sos'), side).astype(np.float32)
+        side -= lo
+        side *= w
+        side += lo
+        del lo, w
+        out = mix if mix.dtype == np.float32 else mix.astype(np.float32)
+        np.add(mid, side, out=out[0])
+        np.subtract(mid, side, out=out[1])
+        return out if mix.dtype == np.float32 else out.astype(mix.dtype)
 
 
 _IR_CACHE = {}
@@ -1463,6 +1487,11 @@ def clip_stage(x, ceiling_db=-1.0, knee_db=-0.5, out_db=0.8, split=150.0):
 
 def _soft_clip_to(h, room, knee=0.944):
     """Soft-clip (2x oversampled) each sample of h to its own limit `room` (an array), starting at knee * room."""
+    from .dsp import chunked
+    return chunked(lambda seg, rm_: _soft_clip_seg(seg, rm_, knee), h, extra=room)
+
+
+def _soft_clip_seg(h, room, knee):
     up = signal.resample_poly(h, 2, 1, axis=-1)
     rm = np.repeat(room, 2)[:up.shape[-1]]
     k = rm * knee
@@ -1483,11 +1512,15 @@ def _clip_full(x, ceiling_db=-1.0, knee_db=-0.5, out_db=0.8):
     top = c * 10 ** (out_db / 20)
     if float(np.max(np.abs(x))) <= k:
         return x
-    u = signal.resample_poly(x, 2, 1, axis=-1)
-    a = np.abs(u)
-    w = top - k
-    u = np.where(a > k, np.sign(u) * (k + w * np.tanh((a - k) / w)), u)
-    return signal.resample_poly(u, 1, 2, axis=-1)[..., :x.shape[-1]].astype(x.dtype)
+    from .dsp import chunked
+
+    def seg(v):
+        u = signal.resample_poly(v, 2, 1, axis=-1)
+        a = np.abs(u)
+        w = top - k
+        u = np.where(a > k, np.sign(u) * (k + w * np.tanh((a - k) / w)), u)
+        return signal.resample_poly(u, 1, 2, axis=-1)[..., :v.shape[-1]].astype(v.dtype)
+    return chunked(seg, x)
 
 
 def peak_round(x, ceiling_db=-1.0, above_db=2.5):
@@ -1517,8 +1550,10 @@ def drum_bus(drums, drive=0.25):
     ref = active_rms_db(y)
     y = compressor(y, thresh=ref + 5.0, ratio=2.0, attack=0.012, release=0.12)
     k = 1.0 + max(0.0, drive)
-    y = np.tanh(y * k) / k
-    return y / g
+    y *= k
+    np.tanh(y, out=y)
+    y /= (k * g)
+    return y.astype(np.float32)
 
 
 # the engineer's EQ on a kit's raw close mics (the Unruly kick is a huge, boomy 20" with little beater click)
@@ -1874,8 +1909,8 @@ def oversampled(fn, x, factor=2):
     the audio band are filtered off instead of folding back down as harsh, out-of-key aliasing."""
     if x.shape[-1] < 64:
         return fn(x)
-    u = signal.resample_poly(x, factor, 1, axis=-1)
-    return signal.resample_poly(fn(u), 1, factor, axis=-1)[..., :x.shape[-1]]
+    from .dsp import chunked
+    return chunked(lambda v: signal.resample_poly(fn(signal.resample_poly(v, factor, 1, axis=-1)), 1, factor, axis=-1)[..., :v.shape[-1]], x)
 
 
 # dynamic EQ bands on the master: (centre Hz, Q, max cut dB, how far above the song's own average the band must
@@ -2040,11 +2075,12 @@ def master(x, cfg, log=print):
     # true peak: the peaks between the samples (4x oversampled) kept under -1 dBTP, so the file never clips when
     # it's converted to MP3 / AAC or played through a DAC that reconstructs the waveform
     ceil_ = 10 ** (-1.0 / 20)
-    tp = float(np.max(np.abs(signal.resample_poly(y, 4, 1, axis=-1)))) if y.size else 0.0
+    from .dsp import true_peak as _tp
+    tp = _tp(y)
     if tp > ceil_:                          # a last overshoot: limit just those peaks a little harder (turning the whole
         over_db = 20 * np.log10(tp / ceil_)    # song down for one peak used to land it under its loudness target)
         y = limiter(y, ceiling_db=-1.0 - over_db - 0.05)
-        tp = float(np.max(np.abs(signal.resample_poly(y, 4, 1, axis=-1))))
+        tp = _tp(y)
         if tp > ceil_:
             y = y * (ceil_ / tp)
     return y
@@ -2055,6 +2091,28 @@ def master(x, cfg, log=print):
 # end (house / trance / big room), an FM siren whose wobble speeds up (dubstep / bass), a noise sweep with a saw
 # underneath (DnB / breaks), a plain noise sweep elsewhere. Impacts are a sub drop on the song's root note with a noise
 # burst and a short tail; downlifters fall in pitch and filter. All in stereo, widening as they rise.
+def _trim():
+    """Hand freed memory back to the system (Linux / glibc): between parts the allocator otherwise keeps the freed
+    blocks of the last part's temporaries, and the next part's peak lands on top of them."""
+    global _LIBC
+    try:
+        if _LIBC is None:
+            import ctypes
+            import ctypes.util
+            _LIBC = ctypes.CDLL(ctypes.util.find_library('c') or 'libc.so.6')
+        if hasattr(_LIBC, 'malloc_trim'):
+            _LIBC.malloc_trim(0)
+    except Exception:                                     # noqa: BLE001 - macOS / Windows: their allocators do this themselves
+        _LIBC = False
+
+
+_LIBC = None
+
+
+def is_drum_layer(tcfg):
+    return tcfg.get('layer') in ('kick', 'snare', 'top')
+
+
 TRACK_CACHE = __import__('collections').OrderedDict()   # (1.87) rendered parts, reused by the next preview
 RENDER_VERSION = '1.87'
 SC_SHAPE_GROUP = {'House & Disco': 'pump', 'Techno & Trance': 'classic', 'Drum & Bass, Breaks & Hard': 'tight',
@@ -2135,6 +2193,73 @@ def fx_impact2(root_hz, seed=7):
     y = np.tanh((boom[None, :] * 1.2 + burst * 0.6 + tail) * 1.4)
     from .dsp import fade_out
     return fade_out(y, 0.3).astype(np.float32) * 0.8
+
+
+SHOUT_WORDS = {'oi': ('o', 'i'), 'hey': ('e', 'i'), 'yeah': ('i', 'a'), 'whoa': ('u', 'o'), 'go': ('o', 'u')}
+
+
+def fx_shout(word='oi', seed=11, low=True, spb=0.47):
+    """(1.90) A hype-man shout for the moment the music stops before a drop: a synthesized voice (a sawtooth throat,
+    breath noise, three moving formants from one vowel to the next), an octave-down 'monster' double, a gritty
+    megaphone band and a short echo tail. Synthesized here, so there is no sample to clear."""
+    v0, v1 = SHOUT_WORDS.get(word, SHOUT_WORDS['oi'])
+    rng = np.random.default_rng(seed)
+    dur = 0.42 + 0.1 * rng.random()
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    w = t / dur
+    f0 = (205 + 30 * rng.random()) * (1 + 0.12 * np.sin(np.pi * np.minimum(1, w * 1.6)) - 0.18 * w ** 2)
+    f0 = f0 * (1 + 0.012 * rng.standard_normal(n).cumsum() / np.sqrt(np.arange(1, n + 1)))      # a rough, unsteady voice
+    ph = np.cumsum(f0) / SR
+    src = 2 * (ph % 1.0) - 1
+    if low:
+        src = src * 0.55 + (2 * ((ph / 2) % 1.0) - 1) * 0.75                                     # the octave-down double
+    src = src + rng.standard_normal(n) * (0.18 + 0.5 * np.exp(-t / 0.035))                       # breath, and the 'h' onset
+    k = np.clip((w - 0.25) / 0.45, 0, 1)                                                          # the vowel moves after a beat
+    out = np.zeros(n)
+    fa, fb = _va.FORMANTS[v0], _va.FORMANTS[v1]
+    hop = 512
+    zi = [None, None, None]
+    for i0 in range(0, n, hop):                                                                   # formants, frame by frame
+        kk = float(k[min(n - 1, i0)])
+        seg = src[i0:i0 + hop]
+        for j in range(3):
+            fc = fa[j] * (1 - kk) + fb[j] * kk
+            sos = signal.butter(2, [fc * 0.85 / (SR / 2), min(0.99, fc * 1.15 / (SR / 2))], 'band', output='sos')
+            if zi[j] is None:
+                zi[j] = np.zeros((sos.shape[0], 2))
+            y, zi[j] = signal.sosfilt(sos, seg, zi=zi[j])
+            out[i0:i0 + hop] += y * (1.0, 0.7, 0.4)[j]
+    env = np.minimum(1, t / 0.02) * np.minimum(1, (dur - t) / 0.09).clip(0)
+    out = np.tanh(out * env * 6.0)                                                                # shouted, a bit torn
+    out = signal.sosfilt(signal.butter(2, [320 / (SR / 2), 4200 / (SR / 2)], 'band', output='sos'), out)
+    tail = int(1.6 * SR)
+    y = np.zeros((2, n + tail))
+    y[:, :n] = out[None, :]
+    d = max(1, int(spb * 0.75 * SR))                                                              # a dotted-8th echo, left / right
+    for r in range(1, 5):
+        if d * r < y.shape[1]:
+            y[r % 2, d * r:] += y[0, :y.shape[1] - d * r] * (0.42 ** r) * (r <= 1 or True)
+    y = y + reverb(y.astype(np.float32), make_ir(1.4, 0.015, 0.8)) * 0.22
+    pk = float(np.max(np.abs(y))) or 1.0
+    return (y / pk * 0.85).astype(np.float32)
+
+
+def rewind(buf, s0, s1):
+    """(1.90) The DJ's rewind ('pull up'): the hand grabs the record, which stops and spins backwards, faster and faster,
+    over s0..s1 - the music rushing back the way it came - then silence until the tune starts again."""
+    n = min(s1, buf.shape[1]) - s0
+    if n <= 4:
+        return
+    u = np.linspace(0, 1, n)
+    speed = np.where(u < 0.12, 1 - u / 0.12, -5.5 * (np.clip(u - 0.12, 0, None) / 0.88) ** 1.3)                  # grab, stop, spin back
+    pos = np.clip(s0 + np.cumsum(speed), 0, buf.shape[1] - 2)
+    i0 = pos.astype(np.int64)
+    fr = (pos - i0).astype(np.float32)
+    seg = buf[:, i0] * (1 - fr) + buf[:, i0 + 1] * fr
+    g = np.ones(n, dtype=np.float32)
+    g[-int(0.18 * n):] = np.linspace(1, 0, int(0.18 * n), dtype=np.float32) ** 1.5
+    buf[:, s0:s0 + n] = seg * g[None, :]
 
 
 def fx_downlift2(sec, root_hz, seed=9):

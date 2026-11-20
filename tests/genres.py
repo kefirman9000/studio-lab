@@ -211,7 +211,7 @@ def main():
             assert all(i in INSTRUMENTS or (i.startswith('sf:') and i[3:] in sfm.SAMPLED) for i in pool), (s, layer)
     n_layers = 0
     for k in range(1, 9):
-        song = compose(Options(style='trance', seed=k))
+        song = compose(Options(style='trance', seed=k, section_dynamics='off'))
         tr = {t['name']: t for t in song['st']['tracks']}
         for name, t in tr.items():
             if t.get('double_of'):
@@ -221,6 +221,17 @@ def main():
                 dup = [(e.beat, e.midi - t['octave']) for e in song['events'] if e.track == name]
                 assert len(src) == len(dup) and t['inst'] != tr[t['double_of']]['inst']          # same notes, other sound
     assert n_layers >= 4
+    song = compose(Options(style='trance', seed=3))                     # (1.90) section dynamics: layers saved for the drops
+    tr = {t['name']: t for t in song['st']['tracks']}
+    lay = {n for n, t in tr.items() if t.get('double_of')}
+    assert song['st']['dyn_moves'] > 0 and lay
+    for sec in song['sections']:
+        if sec['name'] in ('intro', 'verse'):
+            b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+            assert not any(e.track in lay and b0 <= e.beat < b1 for e in song['events']), sec['name']
+        if sec['opts'].get('drop'):
+            b0 = sec['bar'] * 4
+            assert any(e.track in lay and b0 <= e.beat < b0 + 16 for e in song['events'])
     assert not any(t.get('double_of') for t in compose(Options(style='trance', seed=2, layering='off'))['st']['tracks'])
     song = compose(Options(style='orchestral', seed=6, counter='on'))
     assert any(e.track == 'counter' for e in song['events']) and song['expr'] and all(0 <= v <= 127 for c in song['expr'].values() for _, v in c)

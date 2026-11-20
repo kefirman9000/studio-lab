@@ -249,7 +249,58 @@ def _club(g, scene, pools, banned):
         b.insert(min(len(b), 2), 'splitbass')
 
 
+# (1.90) era / character check: sounds the shared scene lists added to a genre are dropped when they clash with it
+# (a genre's own chosen sounds are never touched). tools/pool_audit.py lists what was dropped.
+BRUTAL = {'tearout', 'yoi', 'squareriddim', 'talkgrowl2', 'fmscreech', 'laserwob', 'robotbass', 'creakbass', 'stabwob',
+          'divebass', 'dubhorn', 'rawlead', 'industrialstab', 'peaklead', 'screech', 'riddim', 'metalbass', 'techneuro',
+          'electrosaw', 'neuroformant', 'jumpup', 'chopwob', 'multiwob', 'tablewob', 'fmgrowl', 'electrobass', 'hardlead'}
+MODERN_EDM = {'futurechord', 'colorbass', 'mdsawlead', 'kawaiipluck', 'wavetable', 'formantchop', 'anthemlead', 'megastab',
+              'festpluck', 'syncstab', 'hypersaw', 'laserpluck', 'superpluck', 'supersaw_lead', 'vocalchop', 'yoi',
+              'buildpad', 'electrosaw', 'dancestab'}
+GENTLE_WORDS = ('deep', 'chill', 'ambient', 'lofi', 'hauntology', 'jazz', 'soul', 'smooth', 'bossa', 'lounge', 'downtempo',
+                'balearic', 'organic', 'minimal', 'dub_techno', 'liquid', 'lullaby', 'campfire', 'dream', 'sunrise', 'hazy',
+                'field', 'new_age', 'chant', 'piano', 'acoustic', 'folk', 'trip_hop', 'beat_tape')
+OLD_WORDS = ('70s', '80s', '90s', '00s', 'early_', 'classic', 'retro', 'disco', 'motown', 'hauntology', 'synthwave', 'city_pop',
+             'new_jack', 'g_funk', 'boombap', 'jungle', 'old_school', 'chiptune', 'ps1', 'italo', 'hi_nrg', 'eurodance', 'krautrock')
+
+
+def era_clash(g, inst):
+    """Why `inst` doesn't belong in genre g (or None): brutal bass-music sounds in a gentle genre, modern EDM sounds
+    in a pre-2005 / acoustic genre."""
+    st = STYLES.get(g) or {}
+    name = g.lower()
+    if inst in BRUTAL and any(w in name for w in GENTLE_WORDS):
+        return 'too brutal for a gentle genre'
+    if inst in MODERN_EDM and (any(w in name for w in OLD_WORDS) or st.get('category') in ('Classic', 'Orchestral')):
+        return 'a modern EDM sound in an older / acoustic genre'
+    return None
+
+
+ERA_DROPPED = {}
+
+
+def _era_filter(original):
+    for g, pools in POOLS.items():
+        own = {t.get('inst') for t in (STYLES.get(g) or {}).get('tracks', [])}
+        for role, lst in pools.items():
+            keep = []
+            for x in lst:
+                why = era_clash(g, x) if (x not in (original.get(g, {}).get(role) or []) and x not in own) else None
+                if why:
+                    ERA_DROPPED.setdefault(g, []).append((role, x, why))
+                else:
+                    keep.append(x)
+            lst[:] = keep
+
+
 def widen():
+    import copy as _copy
+    original = _copy.deepcopy(POOLS)
+    _widen(original)
+    _era_filter(original)
+
+
+def _widen(original):
     from .instruments import INSTRUMENTS
     for tab in GROUPS.values():
         for scene, genres in tab:
