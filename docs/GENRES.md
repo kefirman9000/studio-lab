@@ -1,8 +1,8 @@
-# Studio Lab genres (336)
+# Studio Lab genres (337)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (176)
+## Electronic (177)
 
 ### House & Disco (29)
 
@@ -119,7 +119,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Neurofunk (lighter) | `neurofunk_lite` | 172-176 | Neurofunk, lighter and more melodic: the tight 174 two-step and a dark reese, but with clearer chords, a pad underneath and a lead you can hum - less extreme sound design than full neurofunk |
 | UK hardcore / happy hardcore | `uk_hardcore` | 168-178 | UK hardcore / happy hardcore: 170+ BPM four-on-the-floor, bouncing off-beat octave bass, rolling piano chords, euphoric supersaw leads and big builds into massive major-key drops |
 
-### Hip-Hop, Trap & Phonk (28)
+### Hip-Hop, Trap & Phonk (29)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -130,6 +130,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Brazilian Phonk | `brazilian_phonk` | 130-150 | Brazilian phonk: baile-funk bounce under phonk grit - syncopated tamborzao drums, a distorted pitched cowbell riff, heavy distorted sub, chopped vocal shouts; gritty and danceable |
 | Chopped & screwed (Houston slab) | `screwed_slab` | 60-72 | Chopped & screwed (Houston slab): a slowed-down, syrupy hip-hop beat at 60-72 BPM - deep 808 and bass, a lazy kick and dragging snare, a slow organ / string / Rhodes loop, everything dark, heavy and pitched-down - cut up by the DJ: beats caught twice and stuttered, fake vinyl slowdowns into the drops, hats and lead notes sinking and rising in pitch, the 808 switching up from bar to bar, dead stops and tape stops |
 | Cloud Rap | `cloud_rap` | 60-76 | Cloud rap: dreamy, washed-out and ethereal - huge reverb pads and choir-like haze, a soft melody drowned in echo, slow half-time drums and a deep, gentle 808 |
+| Dark drill (sliding 808s, wobble switch-ups) | `dark_drill` | 140-146 | Dark drill (Brooklyn-style, UK drill production): ~143 BPM, a deep, distorted 808 that slides between notes and changes its pattern from section to section, a short hard kick, an off-kilter cracking snare, sparse skippy hats with triplet rolls, a dark, eerie, lo-fi sample-like loop as the bed, a bell or choir in the hooks - and a few bars where the bass switches into a beat-synced wobble; extremely bass-heavy, dark on top and mono |
 | Drift Phonk | `phonk` | 145-165 | Drift phonk: a heavily distorted pitched 808 cowbell riff on loop, clipped growling 808s, rolling hats, dark minor / phrygian mood, chopped vocals and tape grit - made at 3 a.m., played too loud in a car |
 | Hard trap (brass & strings) | `hard_trap` | 136-156 | Hard trap (brass & strings, early 2010s - late 2010s): a menacing horn / string / choir loop in a minor key, huge distorted 808s pinned to the root, machine-gun hi-hat rolls, claps on the half-time backbeat, and the beat cutting out for 4 bars at a time so the 808 can slam back in |
 | House Phonk | `house_phonk` | 128-142 | House phonk: four-on-the-floor phonk - distorted detuned cowbell hooks, punchy 808 bass on the offbeat, hard claps and Memphis vocal chops at club tempo |
@@ -249,7 +250,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Doom / stoner metal | `doom_metal` | 55-80 | Doom / stoner metal: crushingly slow and heavy - huge, fuzzed-out down-tuned riffs, a lumbering half-time beat with massive crashes, a bass locked to the guitar and a wailing, bluesy lead |
 | Garage rock (60s, fuzz & organ) | `garage_rock` | 128-160 | Garage rock (60s): raw, loud and simple - fuzz guitars bashing three chords, a cheap combo organ riffing, a driving bass, tambourine on every beat and a slightly sloppy, pounding beat |
 | Indie Rock | `indie_rock` | 108-140 | Indie rock: jangly clean guitars in 8ths, melodic bass, straight-ahead drums, a hooky guitar lead |
-| Jam Band | `jam_band` | 100-132 | Jam band / psychedelic Americana: noodling clean lead guitar, melodic wandering bass, organ, loose two-drummer groove, long improvised sections |
+| Jam Band (70s psychedelic jams) | `jam_band` | 100-128 | Jam band / 70s psychedelic jam rock: a composed head, then long modal jams on a two-chord vamp - a singing, sustained lead guitar weaving melodic lines, an envelope-filter rhythm guitar chopping chords, honky-tonk piano and Leslie organ, a busy melodic lead-bass that wanders like a third guitar, two drummers spread left and right with extra percussion, a spacey free section in the middle; loose, warm and live |
 | Jam-band rock (80s, upbeat) | `jam_rock_80s` | 108-126 | Jam-band rock (80s, upbeat sing-along): a bright, bouncing major-key groove from two drummers, chiming chorused rhythm guitar, a melodic bass that never sits still, 80s digital keys and organ, and a clean lead guitar that noodles around the tune - then stretches out in long solo jams |
 | Lo-fi bedroom rock | `lofi_rock` | 100-116 | Lo-fi bedroom rock: a raw, mono, home-recorded rock song - a fuzzy overdriven rhythm guitar playing a simple chord riff, a plain driving bass, a dry boxy kit, a wobbly lead guitar line, all a bit too loud for the tape; short, direct, sincere |
 | Math rock (tapped guitars, odd meters) | `math_rock` | 120-166 | Math rock: instrumental, intricate and bright - a clean guitar tapping a looping figure of 5, 6 or 7 notes that drifts against the bar line, a second clean guitar weaving a melody around it, a melodic bass, and a busy, precise drummer full of ghost notes, fills and accents hit together with the guitars - in sunny major and lydian keys with added 9ths, and bars of 7/8, 3/4 and 5/8 dropped between the 4/4 ones |

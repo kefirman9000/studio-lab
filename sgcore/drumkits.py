@@ -409,7 +409,7 @@ GENRE_KIT.update({'holiday': 'brushes', 'western': 'vintage', 'chamber_pop': 'st
 GENRE_KIT.update({'funk_150': '808'})
 GENRE_KIT.setdefault('new_jack_swing', 'linn')
 GENRE_KIT.update({'spooky_tv_theme': 'linn', 'uk_rnb_swing': 'linn', 'vocal_trance_remix': '909', 'cybergrind': 'hard',
-                  'switchup_deathcore': '808'})       # SP-1200 / drum-machine era, gated snare
+                  'switchup_deathcore': '808', 'dark_drill': '808'})       # SP-1200 / drum-machine era, gated snare
 GENRE_KIT.update({'jump_up': 'dnb_amen', 'dark_synthwave': 'linn'})
 
 

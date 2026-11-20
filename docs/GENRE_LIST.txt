@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 336 GENRES  (version 1.78.0)
+STUDIO LAB - ALL 337 GENRES  (version 1.82.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 1.78
+* = new in 1.82
 
 ========================================================================
-ELECTRONIC  (176)
+ELECTRONIC  (177)
 ========================================================================
 
 House & Disco  (29)
@@ -109,7 +109,7 @@ Drum & Bass, Breaks & Hard  (20)
     Big beat  [big_beat]
     UK hardcore / happy hardcore  [uk_hardcore]
 
-Hip-Hop, Trap & Phonk  (28)
+Hip-Hop, Trap & Phonk  (29)
     Trap  [trap]
     UK Drill  [uk_drill]
     UK road rap  [uk_road_rap]
@@ -131,6 +131,7 @@ Hip-Hop, Trap & Phonk  (28)
     Switch-up 808 - DJ edits (slowdowns, pitch warps)  [switchup_808_dj]
     Switch-up 808 - hard (punchy kicks)  [switchup_808_hard]
     Switch-up deathcore (808 switch-ups + breakdowns)  [switchup_deathcore]
+    Dark drill (sliding 808s, wobble switch-ups)  [dark_drill]
     Switch-up 808 - mallets (fast arpeggios)  [switchup_mallets]
     Chopped & screwed (Houston slab)  [screwed_slab]
     Beat-switch trap  [switch_trap]
@@ -214,7 +215,7 @@ Rock & Metal  (27)
     90s alt rock  [alt_rock_90s]
     Punk  [punk]
     70s Soft Rock  [soft_rock]
-    Jam Band  [jam_band]
+    Jam Band (70s psychedelic jams)  [jam_band]
     Jam-band rock (80s, upbeat)  [jam_rock_80s]
     metal  [metal]
     Symphonic Metal  [symphonic_metal]

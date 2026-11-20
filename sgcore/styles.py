@@ -2965,32 +2965,59 @@ style('melodic_house', 'Electronic', 'Melodic deep house: warm rolling bassline,
                  lead=['piano', 'pluck', 'guitar', 'sf:nylon', 'violin', 'flute', 'breathlead', 'vocalchop']),
       label='Melodic Deep House')
 
-style('jam_band', 'Classic', 'Jam band / psychedelic Americana: noodling clean lead guitar, melodic wandering bass, organ, '
-      'loose two-drummer groove, long improvised sections',
-      bpm=(100, 132), scales=['mixolydian', 'major', 'dorian'], swing=0.54, human=0.012, kit='acoustic', form='jazz', form_scale=1.5,
-      progs={'mixolydian': [[0, 6, 3, 0], [0, 3, 0, 6], [0, 6, 0, 3], [0, 6, 0, 6], [6, 3, 6, 3]], 'major': [[0, 4, 3, 0], [0, 3, 4, 3], [0, 5, 3, 4], [0, 3, 1, 4], [0, 3, 0, 3]],
+FORMS['jam_band'] = [   # (1.83) a 70s psychedelic jam: the song's head, then a long modal jam, a spacey free section, back
+    ('intro', 4, {'chords', 'pad', 'lead', 'top'}, {'level': 0.75}),
+    ('head', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'crash': True}),
+    ('bridge', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp'}, {'alt': True}),
+    ('head', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {}),
+    ('jam', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead'}, {'alt': True, 'crash': True}),
+    ('space', 8, {'pad', 'lead', 'arp', 'fx'}, {'level': 0.6}),
+    ('jam', 24, ALL, {'alt': True, 'drop': True, 'crash': True}),
+    ('head', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'crash': True}),
+    ('outro', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead'}, {'fade': True}),
+]
+
+style('jam_band', 'Classic', 'Jam band / 70s psychedelic jam rock: a composed head, then long modal jams on a two-chord vamp - '
+      'a singing, sustained lead guitar weaving melodic lines, an envelope-filter rhythm guitar chopping chords, honky-tonk '
+      'piano and Leslie organ, a busy melodic lead-bass that wanders like a third guitar, two drummers spread left and right '
+      'with extra percussion, a spacey free section in the middle; loose, warm and live',
+      bpm=(100, 128), scales=['mixolydian', 'dorian', 'major'], swing=0.53, human=0.014, kit='acoustic', form='jam_band',
+      form_scale=1.0, own_progs=True, chord_size=4,
+      progs={'mixolydian': [[0, 6, 3, 0], [0, 3, 0, 6], [0, 6, 0, 3], [6, 3, 0, 0]], 'major': [[0, 4, 3, 0], [0, 3, 4, 3], [0, 3, 1, 4]],
              'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]},
-      drums={'kick': ['X.......X.x.....', 'X...X.....X.X...', 'X............X..'], 'snare': [BACKBEAT], 'ride': ['x.x.x.x.x.x.x.x.'],
-             'chat': ['x.x.x.x.x.x.x.x.'], 'tom': ['.............x.x', '................']}, snare_tracks=['snare'], ghosts=True, fill=True,
-      bass=['R.R.F.A.R..RF.A.', 'R...F.R.A..RF...', 'R.FA.R..F.A.R.F.', 'R.R.R..RR.R.F.A.', 'R....R..R....F..', 'R..RR..RR..RR..R', 'R.....R.....F...', 'R.......R.R.F.A.'], bass_lo=28,
-      chord_rh=['x.x.x.x.x.x.x.x.', 'x---x---x---x---', '..x...x...x...x.'], chord_center=60,
-      arp=dict(rate=2, mode='random', oct=5, prob=0.4),
-      lead_rh=['x.x.x.x.x-x-x---', 'x.xx.x.xx.x.x...', 'x-x-x.x.x.x-x---', '..x.x-x.x.x.x.x.'],
-      gm_hint='Clean electric guitars (lead + rhythm); Bass guitar (melodic); Hammond organ; Piano; two drummers',
-      tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.3, db=-18),
-              T('ride', 'top', 'ride', pan=0.25, db=-26), T('chat', 'top', 'chat', pan=-0.25, db=-29),
-              T('tom', 'top', 'tom', rev=0.3, db=-24), T('bass', 'bass', 'ebass', db=-15),
-              T('chords', 'chords', 'guitar', pan=-0.25, rev=0.3, db=-22, p=dict(bright=5500)),
-              T('pad', 'pad', 'organ', phaser=0.3, pan=0.25, rev=0.3, db=-26, p=dict(leslie=0.0), leslie_fx=6.0, overdrive=0.3),
-              T('arp', 'arp', 'piano', rev=0.3, db=-27),
-              T('lead', 'lead', 'guitar', rev=0.35, dly=0.2, db=-18, p=dict(dist=4, bright=5000))],
-      master=dict(lufs=-12.0, air=1.2, low=0.9),
-      pools=dict(bass=['ebass', 'sf:fingerbass', 'upright', 'sf:pickbass'],
-                 chords=['guitar', 'sf:cleanguitar', 'piano', 'organ'],
-                 pad=['organ', 'wurli', 'pedalsteel', 'strings'],
-                 arp=['piano', 'guitar', 'wurli', 'epiano'],
-                 lead=['guitar', 'sf:cleanguitar', 'organ', 'pedalsteel', 'harmonica', 'piano']),
-      label='Jam Band')
+      section_progs=dict(main=[0, 6, 3, 0], verse=[0, 6, 3, 0], alt=[0, 3, 0, 3]),
+      drums={'kick': ['X.......X.x.....', 'X...X.....X.X...', 'X.....X...X.....', 'X.......X...X.x.'],
+             'snare': [BACKBEAT, '....X..x....X...', '....X.......X..x', '..x.X.......X.x.'],
+             'ride': ['x.x.x.x.x.x.x.x.', 'x..xx.x.x..xx.x.', 'x.xxx.x.x.xxx.x.'],
+             'ride2': ['x.x.x.x.x.x.x.x.', '..x...x...x...x.', 'x.x.xxx.x.x.xxx.'],
+             'chat': ['x.x.x.x.x.x.x.x.', '..x...x...x...x.'],
+             'tom': ['.............x.x', '................', '..........x.x.xx'],
+             'conga': ['..x..x.x..x..x.x', 'x..x..x...x.x...'], 'tamb': ['....x.......x...', '..x...x...x...x.']},
+      snare_tracks=['snare'], ghosts=True, fill=True,
+      bass=['R.F.A.R.x.F.A.R.', 'R..xF.A.R.x.F..A', 'R.x.F.A.x.R.F.x.', 'R.R.F.A.R..RF.A.', 'R.FA.R..F.A.R.F.',
+            'R..xR.F.A.x.R.F.', 'R.x.R.x.F.A.R.x.', 'R.....R.F.A.x.R.'], bass_lo=28,
+      chord_rh=['x.x..x.x..x.x.x.', '..x...x...x...x.', 'x..x..x.x..x..x.', 'x---x---x---x---'], chord_center=60,
+      arp=dict(rate=2, mode='random', oct=5, prob=0.55),
+      lead_rh=['x.x.x.x.x-x-x---', 'x.xx.x.xx.x.x...', 'x-x-x.x.x.x-x---', '..x.x-x.x.x.x.x.', 'xxxx.x.x.x-x----',
+               'x---x.x.xxxx.x..'], repetition=0.3, simplicity=0.0,
+      gm_hint='Sustained singing lead guitar (clean-crunch valve amp); envelope-filter rhythm guitar; honky-tonk piano; '
+              'Leslie organ; busy melodic bass guitar; two drummers (ride / hats left and right, toms, congas, tambourine)',
+      tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.35, db=-18),
+              T('ride', 'top', 'ride', pan=-0.45, db=-26), T('ride2', 'top', 'ride', pan=0.45, db=-28),
+              T('chat', 'top', 'chat', pan=-0.3, db=-30), T('tom', 'top', 'tom', rev=0.35, pan=0.2, db=-24),
+              T('conga', 'top', 'conga', pan=0.55, rev=0.25, db=-29), T('tamb', 'top', 'tamb', pan=-0.55, db=-31),
+              T('bass', 'bass', 'ebass', db=-14),
+              T('chords', 'chords', 'envguitar', pan=-0.35, rev=0.3, db=-21),
+              T('pad', 'pad', 'organ', pan=0.3, rev=0.35, db=-26, p=dict(leslie=0.0), leslie_fx=6.0, overdrive=0.25),
+              T('arp', 'arp', 'piano', pan=0.25, rev=0.3, db=-25),
+              T('lead', 'lead', 'jamlead', pan=0.15, rev=0.4, dly=0.25, db=-17)],
+      master=dict(lufs=-13.0, air=0.4, low=0.8, width=1.2, vintage_lp=11000),
+      pools=dict(bass=['ebass', 'sf:fingerbass', 'sf:pickbass', 'upright'],
+                 chords=['envguitar', 'guitar', 'sf:cleanguitar', 'piano', 'organ'],
+                 pad=['organ', 'wurli', 'rhodes', 'pedalsteel', 'strings'],
+                 arp=['piano', 'jamlead', 'guitar', 'wurli', 'rhodes'],
+                 lead=['jamlead', 'guitar', 'sf:cleanguitar', 'organ', 'pedalsteel', 'harmonica']),
+      label='Jam Band (70s psychedelic jams)')
 
 style('teen_pop', 'Electronic', "Late-90s teen pop: punchy dance-pop drums, dramatic minor chords, muted-guitar and synth-pluck "
       'riffs, string stabs, call-and-response hooks and a last-chorus key change',
@@ -10740,6 +10767,73 @@ style('switchup_deathcore', 'Electronic',
                  lead=['screech', 'phonkbell', 'bell', 'chuggtr']),
       label='Switch-up deathcore (808 switch-ups + breakdowns)')
 
+
+
+# ----------------------------------------------------------------------------- 1.83: dark drill (Brooklyn-style)
+# measured on a reference: ~143 BPM, D, extremely bass-heavy and dark (almost nothing above 4 kHz), mono; a quiet
+# sample-only intro, the 808 and sparse hats creeping in, then hooks and verses at full weight where the 808 pattern
+# keeps changing; a short drop-out mid-song. The wobble section is the 'dubstep in some parts' twist.
+_DR_HATS = ['.x...x...x......', '.x...x...x...x..', 'x..x..x.x..x..x.', '.x...x...x.xxx..']
+FORMS['dark_drill'] = [
+    ('intro', 4, {'chords', 'fx'}, {'filter_in': True}),
+    ('pre', 8, {'chords', 'top', 'bass'}, {'level': 0.8, 'moves': ('plain', 'roll', 'gap')}),
+    ('hook', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True, 'crash': True,
+                                                                      'moves': ('leap', 'roll', 'plain', 'grind', 'dive')}),
+    ('verse', 16, {'kick', 'snare', 'top', 'bass', 'chords'}, {'moves': ('plain', 'roll', 'gap', 'leap', 'chop')}),
+    ('hook', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'drop': True,
+                                                                             'moves': ('leap', 'roll', 'grind', 'dive', 'plain')}),
+    ('wobble', 8, {'kick', 'snare', 'top', 'bass', 'pad'}, {'alt': True, 'bass_up': 40, 'moves': ('wob', 'wob', 'grind', 'roll')}),
+    ('drop', 4, {'chords', 'fx'}, {'level': 0.7}),
+    ('verse', 16, {'kick', 'snare', 'top', 'bass', 'chords'}, {'var': 1, 'moves': ('plain', 'roll', 'gap', 'leap', 'chop')}),
+    ('hook', 16, ALL, {'drop': True, 'moves': ('leap', 'roll', 'grind', 'dive', 'wob')}),
+    ('outro', 4, {'chords', 'bass', 'fx'}, {'fade': True}),
+]
+
+style('dark_drill', 'Electronic',
+      'Dark drill (Brooklyn-style, UK drill production): ~143 BPM, a deep, distorted 808 that slides between notes and '
+      'changes its pattern from section to section, a short hard kick, an off-kilter cracking snare, sparse skippy hats '
+      'with triplet rolls, a dark, eerie, lo-fi sample-like loop as the bed, a bell or choir in the hooks - and a few '
+      'bars where the bass switches into a beat-synced wobble; extremely bass-heavy, dark on top and mono',
+      bpm=(140, 146), scales=['minor', 'harmonic_minor', 'phrygian'], swing=0.5, human=0.0, form='dark_drill', kit='808',
+      trap_hats=True, pitch_rolls=True, chord_size=3, sc_depth=0.35, sc_release=0.12, reverb=2.8, own_progs=True,
+      no_rotation=True, no_layers=True,
+      progs={'minor': [[0, 0, 5, 5], [0, 0, 3, 4], [0, 5, 6, 4]], 'harmonic_minor': [[0, 0, 5, 4], [0, 0, 1, 1]],
+             'phrygian': [[0, 0, 1, 1], [0, 1, 0, 6]]},
+      kit_override=dict(kick=dict(pitch=56, punch=150, decay=22, drive=2.0, len=0.15, click=0.7),
+                        snare=dict(crack=0.7, tone=210, drive=1.5), chat=dict(bits=10)),
+      drums={'kick': ['X.........X.....', 'X......X..X.....', 'X.........X..X..', 'X..X......X.....'],
+             'snare': ['........X.......', '........X.....x.', '........X..x....', '........X.......'],
+             'chat': _DR_HATS, 'ohat': ['......x.........', '................'],
+             'rim': ['...x.......x....', '................']},
+      snare_tracks=['snare'], build_family=['pause', 'stutter', 'none'], transition_moves=['gap', 'gap', 'tapestop', 'none'],
+      keep_fx=['tapestop'], plain_drops=True, bass_mode='808', bass_lo=30, warp_808=0.2, oct808=0.08, fifth808=0.06,
+      glide808=0.7, hi_bass=dict(at=38, pool=['wob808'], p={'cut': 1600}, db=-15, only_marked=True),
+      switchups=dict(weights={'leap': 1.2, 'roll': 1.0, 'plain': 1.2, 'grind': 0.6}), dj_fx=0.3,
+      chord_rh=['x-------x-------', 'x---------------', 'x-----x-----x---'], chord_center=62,
+      arp=dict(rate=2, mode='random', oct=5, prob=0.35),
+      lead_rh=['x-------........', 'x---....x---....', '........x-------', 'x.......x.x.....'], repetition=0.85,
+      gm_hint='Deep distorted 808 with long slides, changing pattern every section; short hard drill kick; cracking snare '
+              'on 3 with off-kilter extras; sparse skippy hats + triplet rolls; dark eerie lo-fi sample loop; bell / choir '
+              'in hooks; a wobble-bass section',
+      tracks=[T('kick', 'kick', 'kick', db=-13), T('snare', 'snare', 'snare', rev=0.25, db=-16),
+              T('chat', 'top', 'chat', pan=0.1, db=-29), T('ohat', 'top', 'ohat', pan=-0.1, db=-31),
+              T('rim', 'top', 'rim', pan=0.2, db=-30),
+              T('bass', 'bass', 'drill808', db=-7, sc=0.35, p=dict(drive=2.2, decay=0.9, slide=0.12)),
+              T('bass_grit', 'bass', 'drill808', double_of='bass', octave=0, keep_inst=True, hp=200, presence=3, sc=0.9, db=-19,
+                p=dict(drive=6.0, decay=0.9, slide=0.12)),
+              T('chords', 'chords', 'darksample', rev=0.5, db=-19, p=dict(cut=3000)),
+              T('pad', 'pad', 'choir', rev=0.7, db=-29),
+              T('arp', 'arp', 'bell', rev=0.6, dly=0.4, pan=0.2, db=-29),
+              T('lead', 'lead', 'darkpiano', rev=0.55, dly=0.3, db=-22),
+              T('texture', 'fx', 'texture', db=-37)],
+      master=dict(tone=[-1.1, 0.0, -6.8, -9.9, -13.0, -16.5, -19.5, -15.7, -18.8], lufs=-9.5, air=-3.0, low=4.0,
+                  drive=0.1, max_gr=5.0, width=0.9),
+      pools=dict(bass=['drill808', '808', '808long', '808dist'],
+                 chords=['darksample', 'eeriepad', 'glasspad', 'darkpiano', 'choir'],
+                 pad=['choir', 'darksample', 'eeriepad', 'darkpad'],
+                 arp=['bell', 'musicbox', 'phonkbell', 'celesta', 'darksample'],
+                 lead=['darkpiano', 'bell', 'darksample', 'phonkbell', 'strings']),
+      label='Dark drill (sliding 808s, wobble switch-ups)')
 
 
 def _offer_genre_sounds():

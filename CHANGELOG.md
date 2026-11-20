@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.83.0
+- **New genre: Dark drill (sliding 808s, wobble switch-ups),** measured on a reference record:
+  - ~143 BPM; very dark on top, bass-heavy and mono.
+  - A deep, distorted **drill 808** that slides between notes and changes its pattern from section to section, with a distorted grit copy of the 808 for presence on small speakers.
+  - A short hard kick, an off-kilter snare on 3, and sparse skippy hats with triplet rolls.
+  - An eerie lo-fi **dark sample bed** standing in for the chopped sample loop, plus bells and choir in the hooks.
+  - A **wobble section** where the bass hands over to a new **wobble 808** (an 808 sub under a beat-synced wobble).
+  - The arrangement follows the reference: sample-only intro, 808 and hats creeping in, hooks and verses, a short drop-out.
+- **Jam band reworked into 70s psychedelic jam rock:**
+  - The song goes head, then long modal jams on a two-chord vamp, a spacey drumless section in the middle, and back to the head.
+  - A new **singing, sustained lead guitar** and a new **envelope-filter rhythm guitar** (the funky "quack").
+  - Honky-tonk piano and Leslie organ, and a busier melodic lead-bass.
+  - Two drummers spread left and right, with congas, tambourine and toms.
+  - Pentatonic lead lines, a warm tape-era mix.
+- **Fixed: hi-hats vanishing in the DJ-effect genres** (the 808 switch-ups, bass-warp trap and others). The "hat roll" DJ edit is meant to replace the last beat of one bar, but it deleted every hat from there to the end of the song.
+- **Fixed: high 808 notes handing over to the second bass outside the sections meant for it.** Genres can now limit the hand-over to marked sections.
+
 ## 1.82.0
 - **Mono-safe stereo on 69 instruments:**
   - Many voices made their stereo by copying the note into the right channel 1-2 ms late. Played back in mono (phones, club PAs, radio) that copy cancels part of the sound and hollows the note out.

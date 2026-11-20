@@ -5488,3 +5488,105 @@ for _name, _fn, _info, _roles, _gm in (
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.83: drill + jam-band voices
+def v_drill808(m, dur, p, glide=None, mod=None):
+    """Drill 808: a long, deep 808 driven into saturation so its harmonics carry it on phones and car speakers, with
+    the heavy, slow slides between notes that drill is built on (the glide is part of the line, not an effect)."""
+    y = np.asarray(i_808(m, dur, dict(p, slide=p.get('slide', 0.12), decay=p.get('decay', 0.9), drive=p.get('drive', 2.2)),
+                         glide, mod), float)
+    lo_ = lp(y, 100)
+    grit = np.tanh((y - lo_) * 3.0 + lo_ * 1.4) * 0.35
+    return lo_ * 0.85 + hp(grit, 90)
+
+
+def v_darksample(m, dur, p, glide=None, mod=None):
+    """Dark sample bed (stands in for the chopped, filtered loop of a drill / dark trap beat): a shimmering, eerie
+    bell-choir tone - a soft FM bell, an airy vowel and a detuned sine pair - crushed slightly, filtered dark, with a
+    slow tape wobble, so it sounds like an old record sampled and pitched rather than a synth."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.1) * SR)
+    env = _va.adsr(gate, p.get('a', 0.03), 0.6, 0.75, p.get('r', 0.5))
+    n = len(env)
+    t = np.arange(n) / SR
+    wob = 2 ** ((9 * np.sin(2 * np.pi * 0.45 * t) + 4 * np.sin(2 * np.pi * 3.1 * t)) / 1200)
+    ph = 2 * np.pi * np.cumsum(f * wob) / SR
+    bell = np.sin(ph + 1.4 * np.exp(-t / 0.4) * np.sin(3.01 * ph)) * (0.55 + 0.45 * np.exp(-t / 0.8))
+    pair = 0.5 * np.sin(ph * 1.003) + 0.3 * np.sin(2 * ph * 0.998)
+    air = _va.formant(_rng().standard_normal(n) * 0.25 + _va.saw(f * wob, n, 0.2) * 0.3, 'o', 7.0) * 0.6
+    y = bell * 0.5 + pair * 0.4 + air
+    bits = 2 ** 10                                         # a little sampler crunch
+    y = np.round(y * bits) / bits
+    y = lp(hp(y, 220), p.get('cut', 3200))
+    return _ms_stereo(y * env, 60, 0.45) * 0.55
+
+
+def v_wob808(m, dur, p, glide=None, mod=None):
+    """Wobble 808: an 808 sub underneath, and on top a distorted saw through a resonant filter swept by an LFO locked
+    to the beat (1/8, 1/8 triplet or 1/16, picked per note) - the dubstep-style wobble a dark trap / drill beat
+    switches into for a few bars."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    n = gate + int(0.05 * SR)
+    t = np.arange(n) / SR
+    spb = float(p.get('spb', 0.42))
+    rate = _rng().choice([2.0, 3.0, 4.0]) / spb             # wobbles per second: 1/8, 1/8 triplet, 1/16
+    sub = np.sin(2 * np.pi * np.cumsum(_glide_freq(f, n, glide, 0.08)) / SR) * 0.8
+    sub = lp(sub, 90)
+    saw = _vb._stack(f * 2, n, 3, 14, 0.5)
+    saw = saw.mean(axis=0) if np.ndim(saw) == 2 else saw
+    lfo = 0.5 - 0.5 * np.cos(2 * np.pi * rate * t)
+    top = _va.vcf(np.tanh(saw * 2.0), 180 * (3500 / 180) ** lfo, 0.6, 1.8)
+    env = np.minimum(1.0, t / 0.004) * np.where(np.arange(n) < gate, 1.0, np.exp(-(np.arange(n) - gate) / (0.03 * SR)))
+    y = (sub + hp(top, 110) * 0.55) * env
+    return np.vstack([y, y]) * 0.6
+
+
+def v_jamlead(m, dur, p, glide=None, mod=None):
+    """Jam-band lead guitar: a clean-to-slightly-crunchy single-coil tone through a big clean valve amp - compressed so
+    long notes sing and sustain, a little edge when picked hard, a gentle chorus-y shimmer - the long, melodic,
+    meandering solos of a 70s psychedelic jam band."""
+    y, pm = _eg_string(m, dur, dict(p, tone=p.get('tone', 1.1)), mod, 9.0, 0.75, 0.15)
+    y = hp(y, 110)
+    env = np.abs(signal.lfilter([0.01], [1, -0.99], np.abs(y))) + 1e-4
+    y = y / (env ** 0.45) * 0.08                            # sustain: the compressor holds the note up as it decays
+    y = np.tanh(y * p.get('gain', 2.2)) / np.tanh(p.get('gain', 2.2))
+    y = eq(eq(eq(y, 'peak', 180, 1.0, 2.0), 'peak', 800, 1.0, -2.0), 'peak', 2600, 1.0, 3.0)
+    y = lp(y, 7000)
+    return _ms_stereo(y, 45, 0.3) * 0.32
+
+
+def v_envguitar(m, dur, p, glide=None, mod=None):
+    """Envelope-filter guitar: a clean, funky chord-chop guitar through an envelope filter (the 'quack' that opens with
+    every pick attack and closes as the note decays) - the bouncy late-70s jam-band rhythm guitar."""
+    y, pm = _eg_string(m, dur, p, mod, 4.0, 0.8, 0.12)
+    n = len(y)
+    t = np.arange(n) / SR
+    env = np.exp(-t / p.get('sweep', 0.18))
+    out = np.zeros(n)
+    blk = 128
+    zi = np.zeros(2)
+    for s0 in range(0, n, blk):                            # a resonant band-pass swept by the note's own envelope
+        fc = 350 * (2800 / 350) ** env[s0]
+        w = 2 * np.pi * fc / SR
+        al = np.sin(w) / (2 * 4.0)
+        b = np.array([al, 0, -al]) / (1 + al)
+        a = np.array([1, -2 * np.cos(w) / (1 + al), (1 - al) / (1 + al)])
+        out[s0:s0 + blk], zi = signal.lfilter(b, a, y[s0:s0 + blk], zi=zi)
+    y = out * 3.0 + y * 0.3
+    return _ms_stereo(hp(y, 120), 30, 0.3) * 0.45
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('drill808', v_drill808, 'Drill 808 (deep, saturated, heavy slides)', ('bass',), 38),
+        ('darksample', v_darksample, 'Dark sample bed (eerie, lo-fi, sampled-loop feel)', ('chords', 'pad', 'arp', 'lead'), 89),
+        ('wob808', v_wob808, 'Wobble 808 (sub + beat-synced wobble)', ('bass',), 38),
+        ('jamlead', v_jamlead, 'Jam-band lead guitar (singing, sustained)', ('lead', 'arp'), 27),
+        ('envguitar', v_envguitar, 'Envelope-filter guitar (funky quack)', ('chords', 'arp', 'lead'), 28)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)

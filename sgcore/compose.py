@@ -131,7 +131,7 @@ GENRE_MELODY = {'smooth_jazz_horns': 'pentatonic', 'shakuhachi_pop': 'pentatonic
                 'gospel': 'blues', 'rnb': 'pentatonic', 'motown': 'pentatonic', 'country': 'pentatonic', 'bluegrass': 'pentatonic',
                 'swing': 'bebop', 'punk': 'pentatonic', 'indie_rock': 'pentatonic', 'kpop': 'pentatonic', 'soul_ballad': 'pentatonic',
                 'dancehall': 'pentatonic', 'afro_house': 'pentatonic', 'jersey_club': 'pentatonic', 'baile_funk': 'pentatonic',
-                'hauntology': 'pentatonic', 'braindance': 'diatonic', 'liquid_dnb': 'pentatonic', 'melodic_dubstep': 'diatonic', 'jam_band': 'blues', 'soft_rock': 'pentatonic',
+                'hauntology': 'pentatonic', 'braindance': 'diatonic', 'liquid_dnb': 'pentatonic', 'melodic_dubstep': 'diatonic', 'jam_band': 'pentatonic', 'soft_rock': 'pentatonic',
                 'teen_pop': 'pentatonic', 'luxury_rap': 'diatonic', 'uplifting_trance': 'diatonic', 'melodic_house': 'pentatonic',
                 'celtic_jig': 'diatonic', 'waltz': 'diatonic', 'tango': 'diatonic', 'salsa': 'diatonic', 'cumbia': 'diatonic'}
 # house / techno keyboard voicings, one picked per song (deep house's minor 9 / 11 chords in drop-2, the quartal
@@ -1865,6 +1865,7 @@ def compose(opts):
         up = int(sec['opts'].get('bass_up') or 0)              # target MIDI note (e.g. 40 = E2)
         if up:
             b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+            st.setdefault('_up_ranges', []).append((b0, b1))
             ins = [e for e in evs if b0 <= e.beat < b1 and tracks.get(e.track, {}).get('layer') == 'bass' and e.midi is not None]
             k0 = 12 * max(0, -((min(e.midi for e in ins) - up) // 12)) if ins and st.get('switchups') else None
             for e in ins:                                    # (switch-up genres move the whole section, so leaps stay leaps)
@@ -2909,7 +2910,8 @@ def dj_effects(evs, fx, tracks, sections, amount, rnd, slow=None):
                 mv = rnd.choice(['climb', 'dive', 'swoop', 'octave', 'roll'])
                 if mv == 'roll':                            # a pitched 16th / 32nd roll into the next bar, diving or climbing
                     name = next(iter(sorted(hats)))
-                    evs[:] = [e for e in evs if not (e.track in hats and e.beat >= b0 + 3)]
+                    evs[:] = [e for e in evs if not (e.track in hats and b0 + 3 <= e.beat < b0 + 4)]   # (1.83: only this
+                    #                         bar's last beat - it used to delete every hat to the end of the song)
                     step = rnd.choice([0.25, 0.125])
                     k_n = int(1 / step)
                     d = rnd.choice([-1, 1])
@@ -3096,6 +3098,9 @@ def hand_up_bass(evs, tracks, st, opts):
         return
     doubles = {n for n, t in tracks.items() if t.get('double_of') == 'bass'}
     hi = [e for e in evs if e.track == 'bass' and e.midi is not None and e.midi >= at]
+    if cfg.get('only_marked'):                           # (1.83) only in the sections that ask for it (drill's wobble)
+        rng_ = st.get('_up_ranges') or []
+        hi = [e for e in hi if any(a <= e.beat < b for a, b in rng_)]
     if not hi:
         return
     pool = cfg.get('pool') or ['midbass', 'reese']
