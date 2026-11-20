@@ -486,12 +486,14 @@ class Renderer:
             self.cache[key] = sig
         return sig
 
-    def _real_drum(self, inst, ev, idx):
-        """Real kit / percussion hit with a velocity layer and a different take each time (None: not available)."""
+    def _real_drum(self, inst, ev, idx, kit=None):
+        """Real kit / percussion hit with a velocity layer and a different take each time (None: not available).
+        `kit`: this hit comes from another real kit than the song's (a kick you picked from a different kit)."""
         from . import samplelibs as sl
-        kit, perc = self.st.get('real_kit'), self.st.get('real_perc')
+        perc = self.st.get('real_perc')
+        rs = None if kit else self.st.get('real_snare')
+        kit = kit or self.st.get('real_kit')
         name = None
-        rs = self.st.get('real_snare')
         if kit and inst == 'snare' and rs and sl.has(rs + ':snare', 'hit'):
             name = rs + ':snare'                           # a kit with a different snare (e.g. a crisp piccolo for DnB)
         elif kit and inst in sl.KIT_PARTS and inst != 'clap':
@@ -690,7 +692,11 @@ class Renderer:
             t_ = float(tcfg['touch'])
             evs = [e.copy(vel=max(0.05, min(1.0, e.vel * t_))) for e in evs]
         kick = self.st.get('kick_track', 'kick')
-        real_drums = is_drum and (self.st.get('real_kit') or self.st.get('real_perc')) and not tcfg.get('synth')
+        from .drumkits import voice_of
+        vce = voice_of(tcfg['name'], tcfg['inst']) if is_drum else None
+        vreal = (self.st.get('voice_real') or {}).get(vce)       # (1.84) this voice comes from another (real) kit
+        real_drums = is_drum and (self.st.get('real_kit') or self.st.get('real_perc') or vreal) and not tcfg.get('synth') \
+            and vce not in (self.st.get('voice_synth') or ())
         brk = self.st.get('break_seq') or {}
         # kicks are never humanised (a layered kick would flam), and a break plays as one tight unit
         tight = tcfg['name'] == kick or tcfg['layer'] == 'kick' or tcfg['name'] in brk or tcfg['name'] in ('lkick', 'lsnare')
@@ -699,7 +705,7 @@ class Renderer:
                      + getattr(ev, 'strum', 0.0) * self.spb) * SR)
             sig = None
             if real_drums:
-                sig = self._real_drum(tcfg.get('real') or tcfg['inst'], ev, i)
+                sig = self._real_drum(tcfg.get('real') or tcfg['inst'], ev, i, kit=vreal)
             if sig is None:
                 sig = self._drum(tcfg['name'], tcfg['inst'], var=(int(round(ev.beat * 4)) * 5 + int(ev.vel * 7)) % 3) \
                     if is_drum else self._note(tcfg, ev, p)

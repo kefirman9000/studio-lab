@@ -39,7 +39,7 @@ SLIDING_808 = {'trap', 'phonk', 'brazilian_phonk', 'uk_drill', 'memphis_phonk', 
 SIGNATURE = {   # genre -> (part, instruments, label): the sound that defines it
     'phonk': ('lead', COWBELLS, 'cowbell melody'), 'house_phonk': ('lead', COWBELLS, 'cowbell melody'), 'brazilian_phonk': ('lead', COWBELLS, 'cowbell melody'),
     'memphis_phonk': ('lead', COWBELLS | {'bell', 'piano'}, 'eerie bell / cowbell loop'),
-    'acid_house': ('bass', {'acid'}, '303 acid bass'), 'dubstep': ('bass', {'wobble', 'growl', 'reese', 'fmbass', 'riddim', 'neuro', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'dnbwob'}, 'modulated mid-bass'),
+    'acid_house': ('bass', {'acid'}, '303 acid bass'), 'dubstep': ('bass', {'wobble', 'growl', 'reese', 'fmbass', 'riddim', 'neuro', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'dnbwob', 'yoi', 'talkgrowl2', 'tearout', 'squareriddim'}, 'modulated mid-bass'),
     'brostep': ('bass', {'growl', 'wobble', 'fmbass', 'reese', 'fmgrowl', 'talkgrowl', 'metalbass', 'darkwob', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'dnbwob'}, 'aggressive mid-bass'),
     'neurofunk': ('bass', {'growl', 'reese', 'fmbass', 'wobble', 'neuro', 'dnbwob', 'metalbass', 'fmgrowl', 'talkgrowl'}, 'neuro / reese bass'),
     'amapiano': ('bass', {'logdrum'}, 'log drum'), 'trap': ('bass', {'808'}, '808'), 'uk_drill': ('bass', {'808'}, '808'),
@@ -47,7 +47,7 @@ SIGNATURE = {   # genre -> (part, instruments, label): the sound that defines it
     'progressive_psy': ('bass', {'psyroll', 'psybass', 'rollbass'}, 'rolling psy bass'),
     'goa_trance': ('bass', {'psyroll', 'psybass', 'sawbass', 'rollbass'}, 'rolling psy bass'),
     'darkpsy': ('bass', {'psyroll', 'psybass', 'fmbass'}, 'rolling psy bass'),
-    'uplifting_trance': ('lead', {'supersaw_lead', 'leadsaw', 'pluck_saw', 'piano', 'vox', 'emolead', 'hypersaw', 'screamlead'}, 'trance lead'),
+    'uplifting_trance': ('lead', {'supersaw_lead', 'leadsaw', 'pluck_saw', 'piano', 'vox', 'emolead', 'hypersaw', 'screamlead', 'dreamlead', 'anthemlead'}, 'trance lead'),
 }
 for _g, (_part, _set, _lbl) in list(SIGNATURE.items()):      # the 808 variants (1.79) are 808s too
     if '808' in _set:

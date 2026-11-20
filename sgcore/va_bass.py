@@ -132,8 +132,8 @@ def growl(m, dur, p, glide=None, mod=None):
     return (y + _sub(f, n, p.get('sub', 0.8))) * env * 0.6
 
 
-def reese(m, dur, p, glide=None, mod=None):
-    """Reese / neuro bass: four saws a few cents apart whose detune slowly breathes, a resonant low-pass, an
+def reese_v2(m, dur, p, glide=None, mod=None):
+    """(1.59-1.83 reese, kept as "reese_v2") Reese / neuro bass: four saws a few cents apart whose detune slowly breathes, a resonant low-pass, an
     oversampled drive and a moving notch (the phaser-like 'movement' of DnB basslines), over a steady sine sub."""
     f = float(mtof(m))
     env = _env(dur, 0.01, 0.3, 0.9, 0.1)
@@ -157,11 +157,37 @@ def reese(m, dur, p, glide=None, mod=None):
     return (y + _sub(f, n, 1.3) * 0.75) * env * 0.6
 
 
+
+def reese(m, dur, p, glide=None, mod=None):
+    """Reese bass (1.84): four saws a few cents apart whose detune slowly breathes. The saws are high-passed above the
+    note BEFORE they are driven, so the drive only thickens the growl instead of the low fundamental modulating it (that
+    intermodulation was the crackly 'clipping' sound of the old reese); a resonant low-pass, a moving notch for the
+    phaser-like movement, and a steady sine sub at a level that leaves the master headroom."""
+    f = float(mtof(m))
+    env = _env(dur, 0.012, 0.3, 0.92, 0.1)
+    n = len(env)
+    t = np.arange(n) / SR
+    mv = p.get('move', 1.0)
+    breathe = 1 + mv * 0.5 * np.sin(2 * np.pi * 0.21 * t + _RNG.random() * 6)
+    x = np.zeros((2, n))
+    for k, c in enumerate((-14, -5, 5, 14)):
+        s_ = va.saw(f * 2 ** (c * breathe / 1200), n, _RNG.random())
+        x[0] += s_ * (0.8 if k < 2 else 0.5)
+        x[1] += s_ * (0.5 if k < 2 else 0.8)
+    x = _split_hp(x * 0.4, f)                                              # mids only into the drive
+    cut = p.get('cut', 900) * (1.0 + 0.6 * _lfo(n, 0.6 * mv + 0.05, 'sine'))
+    y = va.vcf(x, np.maximum(cut, f * 2.2), res=p.get('res', 0.22), drive=1.2)
+    y = dist(y * 1.4, p.get('drive', 1.7))
+    notch_c = 500 + 1500 * _lfo(n, 0.33 * mv + 0.05, 'tri')
+    y = y - 0.6 * _bp(y, notch_c, 2.5)
+    y = _split_hp(y, f) * 0.8
+    return (y + _sub(f, n, 0.72)) * env * 0.6
+
 def neuro(m, dur, p, glide=None, mod=None):
     """Neuro bass: a reese core torn up - comb-like resonant band-passes sweeping on a synced LFO, a wavefolder and a
     hard clip, so every note snarls and shifts (neurofunk, tech DnB, jump-up)."""
     f = float(mtof(m))
-    base = reese(m, dur, dict(p, drive=3.0, sub=0.0), glide, mod)
+    base = reese_v2(m, dur, dict(p, drive=3.0, sub=0.0), glide, mod)
     n = base.shape[1]
     lfo = _lfo(n, _rate(mod, p, 0.25), p.get('shape', 'saw'))
     y = base - _sub(f, n, 1.3) * 0.75 * _env(dur, 0.01, 0.3, 0.9, 0.1)[:n]

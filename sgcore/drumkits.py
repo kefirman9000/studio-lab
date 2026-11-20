@@ -469,8 +469,23 @@ def pick_voices(st, opts, kit_id, preset, style):
     from .instruments import KITS
     from .genre_groups import group_of
     mine = dict(getattr(opts, 'drum_voices', None) or {})
-    if not is_machine(kit_id, preset) or st.get('no_drum_swap'):
-        return {}
+    # (1.84) a voice you picked can come from ANY kit - a real kit's kick under a 909's hats, an 808 clap on a real kit
+    real = {v: k for v, k in mine.items() if v in VOICES and (MENU.get(k) or (None,) * 6)[4] and not MENU[k][5]}
+    if real:
+        st['voice_real'] = {v: MENU[k][4] for v, k in real.items()}
+        mine = {v: k for v, k in mine.items() if v not in real}
+    if not is_machine(kit_id, preset):
+        mine = {v: k for v, k in mine.items() if k in KITS}
+        if mine:                                        # a machine hit on a real-kit / break song: that voice is synthesized
+            st['voice_synth'] = sorted(mine)
+            kit = st['kitparams']
+            for v, k in mine.items():
+                for d in VOICES[v]:
+                    if KITS[k].get(d) is not None:
+                        kit[d] = dict(KITS[k][d])
+        return dict(mine, **real)
+    if st.get('no_drum_swap'):
+        return dict(real)
     fam = FAMILY_VOICES.get(group_of(st.get('name') or style)) if st.get('category') == 'Electronic' else None
     if not fam and not mine:
         return {}
@@ -500,9 +515,20 @@ def pick_voices(st, opts, kit_id, preset, style):
                             new[keep] = kit['kick'][keep]
                 kit[k] = new
         picks[v] = pick
+    picks.update(real)
     return picks
 
 
 def voice_menu():
-    """[(kit id, label)] - the drum machines a voice can take."""
-    return [(k, MENU[k][2]) for k in MACHINES if k in MENU] + [(k, k) for k in MACHINES if k not in MENU]
+    """[(kit id, label, group)] - every kit a voice can come from: the drum machines and (1.84) the real kits."""
+    out = [(k, MENU[k][2], 'Drum machines') for k in MACHINES if k in MENU] + [(k, k, 'Drum machines') for k in MACHINES if k not in MENU]
+    out += [(e[0], e[2], 'Real kits') for e in KIT_MENU if e[4] and not e[5] and len(e) < 7]
+    return out
+
+
+def voice_of(name, inst):
+    """The voice (kick / snare / clap / hats) a drum track plays, or None."""
+    for v, keys in VOICES.items():
+        if inst in keys or name in keys:
+            return v
+    return None

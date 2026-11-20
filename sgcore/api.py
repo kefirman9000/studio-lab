@@ -480,3 +480,71 @@ def production_pass(mix, cfg, out, log=print):
     log('   production pass: tried ' + '; '.join(changes) + ' - the first master was better, kept it')
     return out, []
 
+
+
+# ----------------------------------------------------------------------------- 1.84: audition one sound
+AUDITION_FIG = {   # role -> [(beat, dur, semitones above the root)] - a tiny figure that shows what the sound does
+    'bass': [(0, 0.75, 0), (1, 0.5, 0), (1.5, 0.5, 7), (2, 1.5, 3)],
+    'lead': [(0, 0.5, 12), (0.5, 0.5, 15), (1, 0.5, 19), (1.5, 1.5, 17)],
+    'arp': [(i * 0.25, 0.25, (0, 7, 12, 15, 19, 15, 12, 7)[i % 8]) for i in range(12)],
+    'chords': [(0, 1.5, x) for x in (0, 3, 7, 10)] + [(2, 1.5, x) for x in (-4, 0, 3, 7)],
+    'pad': [(0, 3.0, x) for x in (0, 3, 7, 14)],
+}
+ROOT = {'bass': 33, 'lead': 60, 'arp': 60, 'chords': 57, 'pad': 57}
+
+
+def audition(inst=None, role='lead', kit=None, voice=None, bpm=124):
+    """A short WAV (bytes) of one sound: an instrument playing a little figure for its role, or one drum voice (kick /
+    snare / clap / hats) from any kit hit a few times - so a sound can be heard before rendering a song."""
+    import tempfile
+    from .compose import TONE_DEFAULTS
+    from .theory import Ev
+    from .dsp import write_wav, SR
+    from . import drumkits
+    from .instruments import KITS
+    song = dict(st={'kitparams': {}, 'tracks': []}, opts=Options(), bpm=bpm, total_bars=2, seed=1)
+    out = np.zeros((2, int(SR * 4.2)))
+    if voice:
+        m = drumkits.MENU.get(kit) or (kit, '', '', kit, None, None)
+        preset = m[3] if m[3] in KITS else '909'
+        song['st']['kitparams'] = {d: dict(v) for d, v in KITS[preset].items()}
+        if m[4] and not m[5]:
+            song['st']['real_kit'] = m[4]
+        r = Renderer(song, log=lambda *a: None)
+        names = drumkits.VOICES.get(voice, (voice,))
+        hits = {'kick': [0, 1, 2, 2.75], 'snare': [1, 3], 'clap': [1, 3], 'hats': [i * 0.5 for i in range(8)]}.get(voice, [0, 1, 2, 3])
+        for i, b in enumerate(hits):
+            nm = names[1] if voice == 'hats' and i == len(hits) - 1 and len(names) > 1 else names[0]
+            ev = Ev(nm, b, 0.25, None, 0.95 if b == int(b) else 0.75)
+            sig = r._real_drum(nm, ev, i) if song['st'].get('real_kit') else None
+            if sig is None:
+                sig = r._drum(nm, nm, var=i % 3)
+            sig = np.asarray(sig, float)
+            sig = sig if sig.ndim == 2 else np.vstack([sig, sig])
+            s = int(b * 60 / bpm * SR)
+            k = min(sig.shape[1], out.shape[1] - s)
+            out[:, s:s + k] += sig[:, :k]
+    else:
+        role = role if role in AUDITION_FIG else 'lead'
+        tcfg = dict(name='audition', inst=inst, layer=role, p=dict(TONE_DEFAULTS.get(inst, {})))
+        r = Renderer(song, log=lambda *a: None)
+        p = r._params(tcfg)
+        for i, (b, d, iv) in enumerate(AUDITION_FIG[role]):
+            ev = Ev('audition', b, d, ROOT[role] + iv, 0.85 if i % 2 == 0 else 0.72)
+            sig = np.asarray(r._note(tcfg, ev, p), float)
+            sig = sig if sig.ndim == 2 else np.vstack([sig, sig])
+            s = int(b * 60 / bpm * SR)
+            k = min(sig.shape[1], out.shape[1] - s)
+            out[:, s:s + k] += sig[:, :k] * (0.6 if role in ('chords', 'pad') else 1.0)
+    pk = float(np.max(np.abs(out))) or 1.0
+    out = out / pk * 0.7
+    nz = np.nonzero(np.max(np.abs(out), axis=0) > 1e-4)[0]
+    out = out[:, :min(out.shape[1], (nz[-1] + int(0.05 * SR)) if len(nz) else out.shape[1])]
+    with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as f:
+        path = f.name
+    try:
+        write_wav(path, out)
+        with open(path, 'rb') as fh:
+            return fh.read()
+    finally:
+        os.remove(path)

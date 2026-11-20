@@ -226,6 +226,12 @@ PHRASE_PLANS = [[0, 1, 0, 1, 0, 1, 2, 3], [0, 1, 0, 2, 0, 1, 0, 3], [0, 0, 1, 1,
                 [0, 1, 0, 1, 2, 3, 2, 3], [0, 1, 2, 1, 0, 1, 2, 3]]
 
 
+
+def is_808(inst):
+    """An 808 of any flavour (808, its distorted / long / punchy variants, drill 808, wobble 808)."""
+    inst = str(inst or '')
+    return inst.startswith('808') or inst in ('drill808', 'wob808')
+
 def apply_mood(opts):
     """Return a copy of the options with the mood's adjustments folded in."""
     if not opts.mood or opts.mood not in MOODS:
@@ -411,11 +417,20 @@ def apply_variety(st, opts, rnd):
         keep_sig = owner in SIGNATURE_STRICT and role in SIGNATURE_ROLES.get(owner, ('bass', 'lead'))
         # (rap / R&B / trance ...: the genre's defining part - its bass, its lead - usually keeps its own sound, but the
         # supporting parts (arps, pads, chords) vary freely, so the arp before every drop isn't the same pluck)
-        if free and pool and rr.random() < ((0.2 + 0.3 * v) if keep_sig else (0.55 + 0.4 * v)):
+        club = st.get('category') == 'Electronic' and not chip_locked
+        # (electronic genres' pools hold only genre-proper synths, so their songs rotate through all of them - the
+        # defining bass / lead still keeps its sound more often than the supporting parts)
+        p_pool = ((0.5 + 0.35 * v) if club else (0.2 + 0.3 * v)) if keep_sig else ((0.75 + 0.25 * v) if club else (0.55 + 0.4 * v))
+        if keep_sig and pool:                         # the defining part rotates only among sounds its own check accepts
+            from .fitness import SIGNATURE as _SIG
+            sg = _SIG.get(owner)
+            if sg and sg[0] == role:
+                pool = [x for x in pool if x in sg[1]] or pool
+        if free and pool and rr.random() < p_pool:
             # the genre's own pool: its signature sound a little likelier, every other one an authentic alternative;
             # instruments your last songs in this genre used are picked less often, so the next one sounds fresh
             recent = set((getattr(opts, 'avoid', None) or {}).get(role, []))
-            w = [(1.4 if i == 0 else 1.0) * (0.25 if x in recent else 1.0) for i, x in enumerate(pool)]
+            w = [(1.4 if i == 0 and not club else 1.0) * (0.25 if x in recent else 1.0) for i, x in enumerate(pool)]
             choice = rr.choices(pool, w)[0]
             if choice != t['inst']:                   # (the genre's level for this part stays: every part is levelled to it)
                 t.update(inst=choice, p={}, pooled=True)
@@ -1447,7 +1462,7 @@ def compose(opts):
                 root = fold(key.deg(chord, 2), lo)
                 mode = st['bass_mode']
                 inst = tracks['bass']['inst']
-                if inst == '808' and mode == 'pattern':
+                if is_808(inst) and mode == 'pattern':
                     mode = '808'
                 elif inst == 'acid' and mode == 'pattern':
                     mode = 'acid'
@@ -1478,7 +1493,7 @@ def compose(opts):
                         glide = prev_bass if (prev_bass is not None and prev_bass != m and rnd_b.random() < st.get('glide808', 0.45)) else None
                         warp = None
                         wp = float(st.get('warp_808') or 0)
-                        if wp and (e - s) >= st.get('warp_min', 4) and str(tracks.get('bass', {}).get('inst', '')).endswith('808') and rnd_b.random() < wp:     # held notes get warped: dives, rises, wobbles, growls
+                        if wp and (e - s) >= st.get('warp_min', 4) and is_808(tracks.get('bass', {}).get('inst', '')) and rnd_b.random() < wp:     # held notes get warped: dives, rises, wobbles, growls
                             warp = rnd_b.choice(['dive', 'dive', 'rise', f'wob:{rnd_b.choice([3, 4, 5, 6, 8])}',
                                                  f'wob:{rnd_b.choice([3, 4, 5, 6, 8])}', 'growl'])
                         evs.append(Ev('bass', beat0 + s / 4, (e - s) / 4 * 0.95, m, 1.0, glide, warp))
@@ -1857,7 +1872,7 @@ def compose(opts):
     apply_octaves(evs, tracks, getattr(opts, 'octaves', None))
     for sec in sections:                                  # bass-warp switch-ups: the 808 jumps up, the sub drops out
         bm = sec['opts'].get('bass_mod')                     # ... or a whole section of distorted, growling 808
-        if bm and str(tracks.get('bass', {}).get('inst', '')).endswith('808'):
+        if bm and str(tracks.get('bass', {}).get('inst', '')).startswith('808'):
             b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
             for e in evs:
                 if b0 <= e.beat < b1 and e.track == 'bass' and not (st.get('switchups') and e.mod):
@@ -1877,7 +1892,7 @@ def compose(opts):
         hand_up_bass(evs, tracks, st, opts)              # those notes to a mid-bass (reese / growl / FM) - no squeaky 808
     for e in evs:                                        # a high 808 sounds far louder than a low one at the same level
         t = tracks.get(e.track, {})                      # (the ear is much more sensitive at 100-200 Hz than at 40 Hz):
-        if t.get('layer') == 'bass' and str(t.get('inst', '')).endswith('808') and e.midi is not None and e.midi > 33:
+        if t.get('layer') == 'bass' and is_808(t.get('inst', '')) and e.midi is not None and e.midi > 33:
             e.vel *= 10 ** (-min(9.0, 0.45 * (e.midi - 33)) / 20)   # notes leaping up or raised to E2+ are turned down
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
     if st.get('granular'):                               # IDM / drill & bass: the break resequenced hit by hit, every bar
@@ -2294,7 +2309,8 @@ def debell(st, opts):
         from .styles import POOLS as _P
         mine_ = [] if name == 'hauntology' else [i for (l, i) in own if l == role and bell_allowed(name, i)]   # (Hauntology: unchanged)
         mine_ += [] if name == 'hauntology' else [i for i in _P.get(name, {}).get(role, []) if i not in BELLS | MALLETS]
-        t['inst'] = mine_[0] if mine_ else bell_swap(name, role, t['inst'])
+        mine_ = list(dict.fromkeys(mine_))        # any of the genre's own non-bell sounds, not always the first one
+        t['inst'] = rnd.choice(mine_) if mine_ else bell_swap(name, role, t['inst'])
 
 
 SWELL_SOUNDS = {'warmpad', 'glasspad', 'strings', 'slowstrings', 'choir', 'solina', 'supersaw', 'tremolo', 'violins', 'violas',
@@ -3094,7 +3110,7 @@ def hand_up_bass(evs, tracks, st, opts):
     cfg = st['hi_bass'] if isinstance(st['hi_bass'], dict) else {}
     at = int(cfg.get('at', 38))
     main = tracks.get('bass')
-    if not main or not str(main.get('inst', '')).endswith('808'):
+    if not main or not is_808(main.get('inst', '')):
         return
     doubles = {n for n, t in tracks.items() if t.get('double_of') == 'bass'}
     hi = [e for e in evs if e.track == 'bass' and e.midi is not None and e.midi >= at]

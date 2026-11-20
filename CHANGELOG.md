@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.84.0
+- **35 new synths for house, techno, drum & bass, dubstep, trance and festival music:**
+  - House: a French-house filtered disco chord, disco strings (with the upward swoop), a bouncy UK garage organ bass, a warm Detroit chord pad, a house vocal stab made from scratch, and a deep house organ chord.
+  - Techno: a hypnotic Berlin sequencer line, a harsh industrial stab, tuned metallic FM percussion, a dark evolving drone pad, a screaming peak-time lead, and a swooping rave hoover stab.
+  - Drum & bass: an airy liquid pad, liquid e-piano keys, a bouncy jump-up bass, a deep roller bass, a talking neuro formant bass, and a phasing dancefloor reese.
+  - Dubstep: a talking "yoi" vowel bass, a metallic FM screech, a gated square riddim bass, a talking growl that changes vowel within a note, a pure sliding sub, and a brutal tearout bass.
+  - Dreamy trance and house: a wide floating pad that opens slowly, a soft singing lead with glide and delayed vibrato, an atmospheric air texture, a soft blooming pluck, and a clean supportive bass.
+  - Festival and big room: a huge seven-saw anthem lead, a resonant festival pluck/stab with a noise click, a tight hard bass, a folded electro growl bass, and a rising build pad.
+- **Every electronic genre checked so its songs rotate through all of its proper sounds.** Across 24 songs per genre, the median part now uses 92% of its genre's list:
+  - Electronic genres now pick from their whole list more often, with no extra weight on the first sound.
+  - The defining bass or lead still keeps its own sound more often than the supporting parts.
+  - Fixed: when a bell or mallet sound wasn't allowed in a genre, it was always replaced by the same sound. It now picks any of the genre's own sounds.
+  - Deep, minimal and liquid genres keep the brutal sounds out. Each new bass goes only into genres whose own bass plays the same kind of line.
+- **Rebuilt the Moog-style basses** (sustained and plucked). The old ones beat against themselves, so notes swelled and thinned, and sat behind a dull fixed filter. The new ones:
+  - Use three oscillators that restart on every note.
+  - Have a key-tracked filter that bites on the attack and then settles.
+  - Keep a solid fundamental, so the bass is fat and steady on every note.
+  - The 1.57-1.83 versions stay available as "(1.57-1.83 sound)".
+- **Rebuilt the reese bass so it no longer crackles like clipping.** The old reese drove its low fundamental into the distortion, which rippled the growl. Now only the mids are driven, and the sub sits lower against the growl, so it leaves the master more headroom. The old reese stays available as "Reese bass (1.59-1.83 sound)".
+- **Sound menus now have search built in:** open any sound menu and type to filter it. Arrow keys and Enter pick a sound. Older versions of sounds are grouped at the bottom.
+- **▶ Hear any sound before rendering:**
+  - Each sound menu has a ▶ button that plays a short phrase for that part.
+  - Every row inside the open menu has its own ▶, so you can try sounds without picking them.
+  - Drum voices play a few hits.
+- **Drum voices from any kit:** the kick, snare, clap and hi-hats can each come from any drum machine or real kit (a real kick under 909 hats, an 808 clap on a real kit).
+- Fixed: the 808 variants (distorted, long, punchy) now get the same 808 treatment (slides, warps, high notes handed to the mid-bass) as the plain 808.
+
 ## 1.83.0
 - **New genre: Dark drill (sliding 808s, wobble switch-ups),** measured on a reference record:
   - ~143 BPM; very dark on top, bass-heavy and mono.

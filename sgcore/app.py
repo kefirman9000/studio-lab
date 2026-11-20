@@ -411,7 +411,7 @@ def meta():
         roles={r: [dict(id=i, name=INSTRUMENT_INFO.get(i, i), group='Built-in (suits this part)') for i in lst] + real_insts(r) + vst_insts(r) + user_insts()
                + other_insts(r, lst) for r, lst in ROLE_CHOICES.items()},
         vox_samples=__import__('sgcore.usersounds', fromlist=['listing']).listing()['vocal'],
-        effects=vst_effects(), part_effects=[[k, v] for k, v in __import__('sgcore.part_effects', fromlist=['menu']).menu()], drum_voice_menu=[[k, v] for k, v in __import__('sgcore.drumkits', fromlist=['voice_menu']).voice_menu()], voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
+        effects=vst_effects(), part_effects=[[k, v] for k, v in __import__('sgcore.part_effects', fromlist=['menu']).menu()], drum_voice_menu=[list(e) for e in __import__('sgcore.drumkits', fromlist=['voice_menu']).voice_menu()], voicings=VOICINGS, melody_styles=MELODY_STYLES, chord_colors=[c for c in COLORS if c != 'add9no3'],
         drum_patterns=__import__('sgcore.drumkits', fromlist=['pattern_menu']).pattern_menu(),
         perc_sets=__import__('sgcore.drummer', fromlist=['perc_menu']).perc_menu(), beat_feels={k: __import__('sgcore.drummer', fromlist=['beat_feel']).beat_feel(k) for k in STYLES}, drummer_menu=__import__('sgcore.drummer', fromlist=['DRUMMER_MENU']).DRUMMER_MENU,
         kits=__import__('sgcore.drumkits', fromlist=['sound_menu']).sound_menu() + [dict(id=k, group='Other synth kits', label=k.title())
@@ -742,6 +742,25 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(song_notes(body.get('options') or {}))
             except Exception as e:                       # noqa: BLE001 - shown in the editor, never crashes the app
                 return self._json({'error': str(e)}, 400)
+        if p == '/api/audition':                          # hear one sound / drum hit before rendering a song
+            try:
+                from .api import audition
+                from .instruments import INSTRUMENTS
+                inst, kit, voice = body.get('inst'), body.get('kit'), body.get('voice')
+                if inst and not (inst in INSTRUMENTS or str(inst).startswith(('sf:', 'real:', 'user:'))):
+                    raise ValueError('unknown sound')
+                if voice and voice not in ('kick', 'snare', 'clap', 'hats'):
+                    raise ValueError('unknown drum voice')
+                data = audition(inst=inst, role=str(body.get('role') or 'lead'), kit=kit, voice=voice)
+            except Exception as e:                       # noqa: BLE001
+                return self._json({'error': str(e)}, 400)
+            self.send_response(200)
+            self.send_header('Content-Type', 'audio/wav')
+            self.send_header('Content-Length', str(len(data)))
+            self.send_header('Cache-Control', 'no-store')
+            self.end_headers()
+            self.wfile.write(data)
+            return
         if p == '/api/generate':
             o = body.get('options', {})
             if isinstance(o, dict) and 'vst_rig' not in o:
