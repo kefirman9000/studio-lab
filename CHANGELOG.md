@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.89.0
+**8 more trance synths**
+- A **gated choir**: an "aah" pad chopped in a 16th trance-gate rhythm.
+- A **breakdown piano**: a bright piano layered with a soft saw pluck an octave up.
+- A **trance sequence**: a mono saw whose filter snaps open on every 16th.
+- A breathy **trance flute** with glide and vibrato.
+- A **vocoder chord** (robot choir).
+- A hollow **trance pizzicato**.
+- A distorted, pitch-bent **raw lead** for hard trance.
+- A tight **off-beat trance bass**.
+- They are added to all the trance genres, including classic vocal trance and festival techno. Uplifting trance's protected lead accepts the trance flute and the classic trance lead.
+
+**8 more dubstep synths**
+- A **laser bass**: diving FM zaps in 16ths or triplets.
+- A **robot bass**: a talking ring-mod voice.
+- A blaring FM **dubstep horn**.
+- A **dive bass** that drops an octave over each note.
+- A **creak bass**: a creaking comb-filter growl.
+- A soaring **melodic dubstep lead** with pitch bends.
+- A **color bass**: a wobbling chord-bass that carries the harmony.
+- A **stab wobble**: short, stuttering wob hits.
+- They are added to dubstep, brostep, riddim, melodic dubstep and future bass; dubstep's and brostep's protected bass accepts them. Deep, minimal and early dubstep keep them out.
+
 ## 1.88.0
 **22 more synths, filed with the genres they were made for**
 - **Retro / synthwave:**

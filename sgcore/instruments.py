@@ -6747,3 +6747,258 @@ for _name, _fn, _info, _roles, _gm in (
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.89: trance and dubstep banks
+# --- trance
+def v_gatedchoir(m, dur, p, glide=None, mod=None):
+    """Gated choir: a wide 'aah' voice pad cut into a trance-gate rhythm in 16ths (the chopped, pulsing vocal pads of
+    vocal and uplifting trance breakdowns)."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.01, 0.6, 0.9, 0.2)
+    rng = _rng()
+    x = _stack_saw(np.full(n, f), n, (-8, 0, 8), rng, 0.7)
+    y = np.vstack([_va.formant(x[i], 'a', 7.0) for i in range(2)])
+    spb = float(p.get('spb', 0.45))
+    pat = str(p.get('gate_pat') or 'x.xxx.xx.xxx.x.x')
+    step = ((t / (spb / 4)).astype(int)) % len(pat)
+    g = np.array([1.0 if pat[i] == 'x' else 0.0 for i in step])
+    g = np.convolve(g, np.ones(96) / 96, 'same')
+    return _hpf(y * g[None, :], 200) * env * 0.9
+
+
+def v_breakpiano(m, dur, p, glide=None, mod=None):
+    """Breakdown piano: a bright, hall-ready piano layered with a soft saw pluck an octave up - the emotional, glassy
+    keys of trance breakdowns."""
+    y = np.asarray(INSTRUMENTS['piano'](m, dur, p, glide, mod), float)
+    y = y if y.ndim == 2 else np.vstack([y, y])
+    f = float(mtof(m)) * 2
+    n = y.shape[1]
+    t = np.arange(n) / SR
+    pl = _va.vcf(_va.saw(np.full(n, f), n, 0.0), 300 + 5000 * np.exp(-t / 0.12), 0.2, 1.0) * np.exp(-t / 0.5) * 0.25
+    y = y + np.vstack([pl, np.roll(pl, 30)])
+    return eq(y, 'highshelf', 5000, 0.7, 3.0) * 0.85
+
+
+def v_tranceseq(m, dur, p, glide=None, mod=None):
+    """Trance sequence: a mono saw whose resonant filter snaps open on every 16th and shuts again, its cutoff rising
+    over the bar - the driving, hypnotic off-beat sequencer line of trance and progressive."""
+    f = float(mtof(m))
+    n = int((min(dur, 0.4) + 0.06) * SR)
+    t = np.arange(n) / SR
+    x = _va.saw(np.full(n, f), n, 0.0) * 0.7 + _va.pulse(np.full(n, f * 1.003), n, 0.3, 0.5) * 0.3
+    y = _va.vcf(x, 300 + p.get('cut', 3000) * np.exp(-t / 0.05), 0.55, 1.5)
+    env = np.minimum(1, t / 0.002) * np.exp(-t / 0.09)
+    return _ms_stereo(_hpf(y * env, 150), 15, 0.3) * 0.5
+
+
+def v_tranceflute(m, dur, p, glide=None, mod=None):
+    """Trance flute: a breathy synth flute - a sine-and-triangle tone with a noisy breath, gentle glide and vibrato -
+    the airy hook of progressive and Balearic trance."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.05, 0.3, 0.9, 0.3)
+    rng = _rng()
+    vib = 2 ** (14 * np.clip((t - 0.2) / 0.3, 0, 1) * np.sin(2 * np.pi * 5.3 * t) / 1200)
+    fr = _glide_freq(f, n, glide, 0.08) * vib
+    ph = np.cumsum(fr) / SR
+    tri = 2 * np.abs(2 * (ph % 1) - 1) - 1
+    y = np.sin(2 * np.pi * ph) * 0.7 + tri * 0.25
+    breath = bp(rng.standard_normal(n), f * 1.5, f * 6) * (0.12 + 0.2 * np.exp(-t / 0.08))
+    return _ms_stereo((y + breath) * env, 22, 0.3) * 0.45
+
+
+def v_vocoderchord(m, dur, p, glide=None, mod=None):
+    """Vocoder chord: a robot-choir chord - a bright saw carrier through a bank of vowel formants with a slight
+    movement between 'ee' and 'ah' - the vocoded hooks and pads of 2000s trance and electro."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.01, 0.4, 0.85, 0.2)
+    rng = _rng()
+    x = _va.saw(np.full(n, f), n, 0.0) + 0.4 * _va.pulse(np.full(n, f), n, 0.3, 0.5) + 0.05 * rng.standard_normal(n)
+    u = 0.5 + 0.5 * np.sin(2 * np.pi * 0.6 * t)
+    y = _va.formant(x, 'i', 9.0) * u + _va.formant(x, 'a', 9.0) * (1 - u)
+    return _ms_stereo(hp(y * env, 200), 30, 0.4) * 0.8
+
+
+def v_trancepizz(m, dur, p, glide=None, mod=None):
+    """Trance pizzicato: a hollow, string-like synth pizzicato (filtered square with a fast decay) - the plucked
+    ostinato of uplifting trance intros and breakdowns."""
+    f = float(mtof(m))
+    n = int((min(dur, 0.4) + 0.2) * SR)
+    t = np.arange(n) / SR
+    x = _va.pulse(np.full(n, f), n, 0.0, 0.35)
+    y = _va.vcf(x, 400 + 3500 * np.exp(-t / 0.04), 0.3, 1.1) * np.minimum(1, t / 0.002) * np.exp(-t / 0.12)
+    return _ms_stereo(hp(y, 180), 18, 0.35) * 0.5
+
+
+def v_rawlead(m, dur, p, glide=None, mod=None):
+    """Raw lead: a hard, distorted, pitch-bent screech lead - detuned saws driven into clipping with a downward pitch
+    bend on every note - the aggressive hook of hard trance and hardstyle."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.002, 0.2, 0.9, 0.08)
+    rng = _rng()
+    fr = _glide_freq(f, n, glide, 0.04) * 2 ** ((150 * np.exp(-t / 0.04)) / 1200)
+    x = _stack_saw(fr, n, (-20, -7, 7, 20), rng, 0.6)
+    y = np.tanh(_va.vcf(x, 4000, 0.3, 2.0) * 4.0)
+    y = eq(y, 'peak', 2500, 1.0, 4.0)
+    return _hpf(y, 250) * env * 0.35
+
+
+def v_offbass(m, dur, p, glide=None, mod=None):
+    """Off-beat trance bass: a short, tight saw bass with a quick filter pluck, high-passed slightly so it sits between
+    the kicks without fighting them - the classic 'oom-PAH' off-beat bass of trance and progressive."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.002, 0.12, 0.4, 0.03, 0.25)
+    x = _va.saw(np.full(n, f), n, 0.0) + 0.5 * _va.saw(np.full(n, f * 1.005), n, 0.4)
+    y = _va.vcf(x * 0.6, 300 + 1500 * np.exp(-t / 0.05), 0.25, 1.3)
+    y = hp(y, 40) * env
+    return np.vstack([y, y]) * 0.6
+
+
+# --- dubstep
+def v_laserwob(m, dur, p, glide=None, mod=None):
+    """Laser bass: rapid FM 'zaps' whose pitch dives on every repeat (in 16ths or triplets) - the laser-gun bass of
+    brostep and riddim fills - over a sub."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.002, 0.2, 0.9, 0.04)
+    spb = float(p.get('spb', 0.45))
+    per = spb / (4 if not mod else max(1, int(mod) * 2))
+    ph_t = t % per
+    fr = f * 2 * (1 + 6 * np.exp(-ph_t / (per * 0.25)))
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    zap = np.tanh(np.sin(ph + 2.0 * np.sin(1.5 * ph)) * 3.0) * np.exp(-ph_t / (per * 0.6))
+    sub = lp(np.sin(2 * np.pi * f * t), 100)
+    y = (hp(zap, 150) * 0.45 + sub * 0.7) * env
+    return np.vstack([y, y]) * 0.55
+
+
+def v_robotbass(m, dur, p, glide=None, mod=None):
+    """Robot bass: a ring-modulated saw spoken through a fast-changing sequence of vowels - a mechanical, talking
+    'robot voice' mid-bass for brostep and electro-dubstep, over a sub."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.003, 0.3, 0.85, 0.05)
+    x = _va.saw(np.full(n, f * 2), n, 0.0) * np.sign(np.sin(2 * np.pi * f * 3.01 * t))
+    k = max(3, int(dur / 0.07))
+    seq = ['a', 'o', 'i', 'u', 'e']
+    seg = np.minimum((t / max(dur, 0.05) * k).astype(int), k - 1)
+    y = np.zeros(n)
+    forms = {v: _va.formant(x, v, 8.0) for v in seq}
+    for i in range(k):
+        msk = seg == i
+        y[msk] = forms[seq[(i * 3) % len(seq)]][msk]
+    y = np.convolve(y, np.ones(64) / 64, 'same')
+    sub = lp(np.sin(2 * np.pi * f * t), 100)
+    out = (hp(np.tanh(y * 3.0), 140) * 0.5 + sub * 0.7) * env
+    return np.vstack([out, out]) * 0.55
+
+
+def v_dubhorn(m, dur, p, glide=None, mod=None):
+    """Dubstep horn: a huge, brassy FM stab - a falling, blaring 'horn' with grit and a short tail - the sound of
+    big festival dubstep drops, over a sub."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.002, 0.3, 0.7, 0.08, 1.0)
+    fr = f * 2 * 2 ** (-0.5 * np.clip(t / 0.4, 0, 1) / 12)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    y = np.sin(ph + (3.0 + 2.0 * np.exp(-t / 0.15)) * np.sin(ph))
+    y = np.tanh(eq(y, 'peak', 1200, 0.8, 6.0) * 3.0)
+    sub = lp(np.sin(2 * np.pi * f * t), 100)
+    out = (hp(y, 150) * 0.45 + sub * 0.65) * env
+    return np.vstack([out, np.roll(out, 20)]) * 0.55
+
+
+def v_divebass(m, dur, p, glide=None, mod=None):
+    """Dive bass: a distorted mid-bass that drops an octave over the length of each note (the pitch 'dive') - for
+    brostep fills and the end of a phrase - with a sub that dives with it."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.003, 0.3, 0.9, 0.04)
+    fr = f * 2 ** (-np.clip(t / max(0.1, dur), 0, 1) ** 1.5)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    top = np.tanh((np.sin(2 * ph) + 0.6 * (2 * ((2 * ph / (2 * np.pi)) % 1) - 1)) * 3.0)
+    sub = np.sin(ph) * 0.7
+    out = (hp(_va.vcf(top, 3000, 0.3, 1.5), 130) * 0.45 + lp(sub, 100)) * env
+    return np.vstack([out, out]) * 0.55
+
+
+def v_creakbass(m, dur, p, glide=None, mod=None):
+    """Creak bass: a gritty, creaking low growl - a pulse train through a resonant comb whose delay creeps up and down,
+    like a door creaking in the low mids - for heavy and tearout dubstep, over a sub."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.003, 0.3, 0.9, 0.04)
+    x = _va.pulse(np.full(n, f * 2), n, 0.0, 0.15)
+    lfo = _sync_lfo(t, p, (1.0, 2.0), mod)
+    d = (SR / (f * (3 + 5 * lfo))).astype(int)
+    idx = np.clip(np.arange(n) - d, 0, n - 1)
+    y = x + 0.9 * x[idx]
+    y = np.tanh(_va.vcf(y, 800 + 2500 * lfo, 0.5, 2.0) * 2.5)
+    sub = lp(np.sin(2 * np.pi * f * t), 100)
+    out = (hp(y, 140) * 0.45 + sub * 0.7) * env
+    return np.vstack([out, out]) * 0.55
+
+
+def v_mdsawlead(m, dur, p, glide=None, mod=None):
+    """Melodic dubstep lead: a big, soaring supersaw lead with long portamento, a pitch bend into every note and a
+    slow vibrato - the emotional hook of melodic dubstep and future bass."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.005, 0.4, 0.9, 0.3)
+    rng = _rng()
+    vib = 2 ** (14 * np.clip((t - 0.3) / 0.3, 0, 1) * np.sin(2 * np.pi * 5.0 * t) / 1200)
+    fr = _glide_freq(f, n, glide, 0.12) * vib * 2 ** (-60 * np.exp(-t / 0.06) / 1200)
+    x = _stack_saw(fr, n, (-22, -11, 0, 11, 22), rng, 0.9)
+    y = _va.vcf(x, 5000, 0.15, 1.3)
+    return _hpf(y, 220) * env * 0.5
+
+
+def v_colorbass(m, dur, p, glide=None, mod=None):
+    """Color bass: a chord played as the bass - the root, fifth and tenth (or a minor third) stacked as bright,
+    wobbling supersaws over a sub, so the bass carries the harmony - the 'color bass' of melodic and future riddim."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.003, 0.3, 0.9, 0.06)
+    rng = _rng()
+    lfo = _sync_lfo(t, p, (2.0, 4.0), mod)
+    third = 3 if p.get('minor', True) else 4
+    top = np.zeros((2, n))
+    for semis in (12, 19, 24 + third):
+        top += _stack_saw(np.full(n, f * 2 ** (semis / 12)), n, (-10, 10), rng, 0.8)
+    top = _va.vcf(top * 0.6, 400 + 4000 * lfo, 0.3, 1.5)
+    sub = lp(np.sin(2 * np.pi * f * t), 100)
+    out = (_hpf(np.tanh(top * 1.5), 150) * 0.5 + sub[None, :] * 0.7) * env
+    return out * 0.55
+
+
+def v_stabwob(m, dur, p, glide=None, mod=None):
+    """Stab wobble: a short, punchy wobble burst - one fast filter 'wob' per note with a hard attack - for the
+    stop-start, stuttering bass hits of riddim and brostep."""
+    f = float(mtof(m))
+    n = int((min(dur, 0.35) + 0.04) * SR)
+    t = np.arange(n) / SR
+    x = _va.saw(np.full(n, f), n, 0.0) + _va.pulse(np.full(n, f * 1.01), n, 0.4, 0.5)
+    cut = 150 + 3000 * np.sin(np.pi * np.clip(t / 0.18, 0, 1))
+    y = np.tanh(_va.vcf(x * 0.5, cut, 0.6, 2.0) * 3.0)
+    sub = lp(np.sin(2 * np.pi * f * t), 100)
+    env = np.minimum(1, t / 0.002) * np.exp(-t / 0.2)
+    out = (hp(y, 120) * 0.5 + sub * 0.7) * env
+    return np.vstack([out, out]) * 0.55
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('gatedchoir', v_gatedchoir, 'Gated choir (trance-gated aah pad)', ('pad', 'chords'), 52),
+        ('breakpiano', v_breakpiano, 'Breakdown piano (bright, layered)', ('chords', 'arp', 'lead'), 0),
+        ('tranceseq', v_tranceseq, 'Trance sequence (16th filter snaps)', ('arp',), 81),
+        ('tranceflute', v_tranceflute, 'Trance flute (breathy synth flute)', ('lead', 'arp'), 73),
+        ('vocoderchord', v_vocoderchord, 'Vocoder chord (robot choir)', ('chords', 'pad', 'lead'), 54),
+        ('trancepizz', v_trancepizz, 'Trance pizzicato (hollow synth pizz)', ('arp',), 45),
+        ('rawlead', v_rawlead, 'Raw lead (distorted, pitch-bent screech)', ('lead',), 81),
+        ('offbass', v_offbass, 'Off-beat trance bass (tight saw)', ('bass',), 38),
+        ('laserwob', v_laserwob, 'Laser bass (diving FM zaps)', ('bass', 'lead'), 38),
+        ('robotbass', v_robotbass, 'Robot bass (talking ring-mod)', ('bass', 'lead'), 38),
+        ('dubhorn', v_dubhorn, 'Dubstep horn (blaring FM brass)', ('bass', 'lead', 'chords'), 38),
+        ('divebass', v_divebass, 'Dive bass (drops an octave per note)', ('bass',), 38),
+        ('creakbass', v_creakbass, 'Creak bass (creaking comb growl)', ('bass',), 38),
+        ('mdsawlead', v_mdsawlead, 'Melodic dubstep lead (soaring supersaw)', ('lead',), 81),
+        ('colorbass', v_colorbass, 'Color bass (chord-bass, wobbling)', ('bass', 'chords'), 38),
+        ('stabwob', v_stabwob, 'Stab wobble (short wob hits)', ('bass',), 38)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)

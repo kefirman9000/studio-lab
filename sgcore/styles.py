@@ -10922,11 +10922,11 @@ style('classic_vocal_trance', 'Electronic',
               T('texture', 'fx', 'texture', db=-36)],
       master=dict(tone=[0.0, -1.9, -7.5, -10.4, -12.3, -13.9, -14.3, -13.7, -16.8], lufs=-9.0, air=1.5, low=1.0, width=1.4),
       reverb=3.2, rev_predelay=0.045, rev_hp=220, form_scale=1.5,
-      pools=dict(bass=['rollbass', 'dreambass', 'fmroll', 'sawbass'],
+      pools=dict(bass=['rollbass', 'offbass', 'dreambass', 'fmroll', 'sawbass'],
                  chords=['gatepad', 'supersaw', 'upstab', 'dreampad', 'pluck_saw'],
-                 pad=['dreampad', 'trancepad', 'vocalpad', 'dreamair', 'trancestrings', 'strings'],
-                 arp=['piano', 'dreampluck', 'sylpluck', 'pluck_saw', 'trancebell'],
-                 lead=['classiclead', 'supersaw_lead', 'dreamlead', 'emolead', 'leadsaw']),
+                 pad=['dreampad', 'gatedchoir', 'trancepad', 'vocalpad', 'dreamair', 'trancestrings', 'strings'],
+                 arp=['piano', 'breakpiano', 'tranceseq', 'trancepizz', 'dreampluck', 'sylpluck', 'pluck_saw', 'trancebell'],
+                 lead=['classiclead', 'supersaw_lead', 'dreamlead', 'tranceflute', 'emolead', 'leadsaw']),
       exact_pools=True, label='Classic vocal trance (2004-09)')
 
 # Festival techno / big-room trance (measured on 6 records): 134-142 BPM, very wide leads (correlation 0.48-0.62, the
@@ -10961,7 +10961,7 @@ style('festival_techno', 'Electronic',
       pools=dict(bass=['hardbass', 'electrobass', 'rollbass', 'fmbass'],
                  chords=['megastab', 'anthemlead', 'festpluck', 'supersaw', 'stab'],
                  pad=['buildpad', 'supersaw', 'trancepad', 'warmpad'],
-                 arp=['festpluck', 'syncstab', 'pluck_saw', 'laserpluck'],
+                 arp=['festpluck', 'syncstab', 'tranceseq', 'pluck_saw', 'laserpluck'],
                  lead=['syncstab', 'anthemlead', 'megastab', 'hoover', 'festpluck', 'peaklead']),
       exact_pools=True, label='Festival techno (big-room trance, 2011-14)')
 

@@ -83,8 +83,8 @@ CLUB = {
     'Chill, Lo-fi & Ambient': dict(arp=['handpan', 'hollowpluck'], pad=['granular', 'glassharmonica']),
     'Drum & Bass, Breaks & Hard': dict(lead=['electrosaw', 'wavetable', 'peaklead'], chords=['dancestab', 'liquidkeys'],
                                        arp=['dancestab', 'liquidkeys'], pad=['liquidpad']),
-    'Dubstep, Garage & Bass': dict(lead=['formantchop', 'wavetable', 'fmscreech', 'yoi'], arp=['formantchop', 'hollowpluck'],
-                                   pad=['liquidpad']),
+    'Dubstep, Garage & Bass': dict(lead=['formantchop', 'mdsawlead', 'wavetable', 'fmscreech', 'yoi', 'dubhorn'],
+                                   arp=['formantchop', 'hollowpluck'], pad=['liquidpad'], chords=['colorbass', 'dubhorn']),
     'Pop, R&B & Hopecore': dict(lead=['formantchop']),
 }
 # individual genres (inserted the same way; the genre's own sound stays first)
@@ -102,8 +102,9 @@ _NEW_188 = {
     'city_pop': dict(bass=['slapsynth'], chords=['ppgwave'], pad=['ppgwave']),
     'new_jack_swing': dict(bass=['slapsynth'], chords=['ppgwave']),
     'electro_funk': dict(bass=['slapsynth'], lead=['synthwavelead']),
-    'future_bass': dict(chords=['futurechord'], arp=['kawaiipluck'], lead=['kawaiipluck', 'vocalead']),
-    'melodic_dubstep': dict(chords=['futurechord'], lead=['vocalead']),
+    'future_bass': dict(chords=['futurechord', 'colorbass'], arp=['kawaiipluck'], lead=['kawaiipluck', 'mdsawlead', 'vocalead']),
+    'melodic_dubstep': dict(chords=['futurechord', 'colorbass'], lead=['mdsawlead', 'vocalead'], bass=['colorbass']),
+    'future_bass_dubstep': dict(lead=['mdsawlead'], bass=['colorbass']),
     'hyperpop': dict(arp=['kawaiipluck', 'bitpiano'], lead=['kawaiipluck'], chords=['futurechord', 'bitpiano']),
     'glitch_pop': dict(arp=['kawaiipluck', 'bitpiano'], chords=['bitpiano']),
     'kpop': dict(arp=['kawaiipluck'], chords=['futurechord'], lead=['vocalead']),
@@ -142,12 +143,15 @@ _TECHNO = dict(chords=['dubchord', 'industrialstab', 'ravestab2', 'detroitchord'
                lead=['peaklead', 'analoglead', 'ravestab2'], pad=['hypnopad', 'detroitchord'])
 CLUB_GENRE = {g: _TECHNO for g in ('techno', 'minimal', 'melodic_techno', 'hard_techno', 'uk_tribal_techno',
                                    'berlin_school', 'acid_techno', 'industrial_techno', 'detroit_techno', 'hypnotic_techno')}
-_TRANCE = dict(arp=['sylpluck', 'dreampluck', 'trancebell', 'laserpluck'], lead=['screamlead', 'dreamlead', 'trancebell'],
-               chords=['upstab', 'dreampad'], pad=['trancestrings', 'dreampad', 'dreamair'], bass=['fmroll', 'dreambass'])
+_TRANCE = dict(arp=['sylpluck', 'tranceseq', 'dreampluck', 'trancepizz', 'trancebell', 'breakpiano', 'laserpluck'],
+               lead=['screamlead', 'dreamlead', 'tranceflute', 'trancebell'],
+               chords=['upstab', 'dreampad', 'vocoderchord', 'breakpiano'], pad=['trancestrings', 'gatedchoir', 'dreampad', 'dreamair'],
+               bass=['fmroll', 'offbass', 'dreambass'])
 for _g in ('trance', 'uplifting_trance', 'progressive_trance', 'club_trance_2000s', 'progressive_trance_2010s',
            'vocal_trance_remix', 'electro_prog_trance', 'trance_pop_90s', 'hard_trance'):
     CLUB_GENRE[_g] = _TRANCE
-CLUB_GENRE['hard_trance'] = dict(_TRANCE, arp=['laserpluck', 'sylpluck'], lead=['screamlead', 'trancebell'], bass=['fmroll'])
+CLUB_GENRE['hard_trance'] = dict(_TRANCE, arp=['laserpluck', 'tranceseq', 'sylpluck'], lead=['rawlead', 'screamlead', 'trancebell'],
+                                 bass=['fmroll', 'offbass'])
 _DREAMY_HOUSE = dict(chords=['housechord', 'organchord', 'dreampad', 'detroitchord'], arp=['dreampluck', 'housechord', 'hollowpluck'],
                      pad=['dreampad', 'dreamair', 'discostrings'], lead=['dreamlead', 'housevox', 'analoglead'], bass=['dreambass'])
 for _g in ('melodic_house', 'deep_house', 'progressive_house', 'sunny_melodic_house', 'organic_house', 'balearic_chill'):
@@ -180,7 +184,8 @@ BASS_SWAPS = {   # scene -> [(the genre's own bass family, new basses that play 
     'Drum & Bass, Breaks & Hard': [(_DNB_MID, ['dancereese', 'jumpup', 'neuroformant']),
                                    (('moogbass', 'sinebass', 'deepbass', 'bouncebass'), ['rollerbass'])],
     'Dubstep, Garage & Bass': [(('wobble', 'growl', 'reese', 'midbass', 'riddim', 'vowelwob', 'multiwob', 'fmbass'),
-                                ['yoi', 'talkgrowl2', 'tearout', 'squareriddim']),
+                                ['yoi', 'talkgrowl2', 'tearout', 'squareriddim', 'laserwob', 'robotbass', 'creakbass', 'stabwob',
+                                 'divebass', 'dubhorn']),
                                (('sinebass', 'subwob', 'deepbass', '808'), ['dubsub'])],
 }
 
@@ -192,7 +197,7 @@ def _club(g, scene, pools, banned):
         banned = set(banned) | {'electrosaw', 'techneuro', 'peaklead', 'jumpup', 'neuroformant'}
     if g.startswith('deep_') or g in ('minimal', 'dub_techno', 'chillstep'):   # deep / minimal: no brutal sounds
         banned = set(banned) | {'tearout', 'yoi', 'squareriddim', 'talkgrowl2', 'fmscreech', 'industrialstab', 'ravestab2',
-                                'peaklead'}
+                                'peaklead', 'laserwob', 'robotbass', 'creakbass', 'stabwob', 'divebass', 'dubhorn', 'rawlead'}
     adds.update(CLUB_GENRE.get(g) or {})             # a genre's own list replaces the scene's for that part
     for role, extra in list((WORLD.get(g) or {}).items()) + list((_NEW_188.get(g) or {}).items()):
         adds[role] = list(extra) + [x for x in adds.get(role, []) if x not in extra]
@@ -229,7 +234,7 @@ def _club(g, scene, pools, banned):
     if b and 'fmroll' in (adds.get('bass') or []) and b[0] in ('rollbass', 'sawbass', 'psyroll', 'moogbass') \
             and 'fmroll' not in b and not _locked(g, 'bass'):
         b.insert(min(len(b), 1), 'fmroll')
-    for k, nb in enumerate(x for x in (adds.get('bass') or []) if x in ('dreambass', 'hardbass', 'electrobass')):
+    for k, nb in enumerate(x for x in (adds.get('bass') or []) if x in ('dreambass', 'hardbass', 'electrobass', 'offbass')):
         if b and nb not in b and nb not in banned and not _locked(g, 'bass') and b[0] not in ('acid', '808', 'psyroll', 'psybass'):
             b.insert(min(len(b), 1 + k), nb)                  # dreamy / festival genres: their own kind of bass too
     for fam, news in BASS_SWAPS.get(scene, ()):
