@@ -790,7 +790,7 @@ style('dnb', 'Electronic', 'Drum & bass: two-step breaks at 174, growling reese 
               T('pad', 'pad', 'supersaw', rev=0.4, sc=0.8, p=dict(cut=2500, a=0.5)),
               T('arp', 'arp', 'stab', pan=0.25, rev=0.3, dly=0.3, sc=0.6, db=-28),
               T('lead', 'lead', 'leadsaw', rev=0.35, dly=0.25, sc=0.5, p=dict(cut=4000))],
-      master=dict(lufs=-9.0, air=1.5, low=1.0),
+      master=dict(tone=[0.0, -1.0, -3.9, -6.8, -6.7, -8.0, -9.7, -10.3, -14.1], lufs=-8.5, air=1.5, low=1.0),
       form='dnb',
       sub_layer=True,
       pools=dict(bass=['reese', 'sawbass', 'sinebass', 'fmbass', 'neuro', 'dnbwob', 'metalbass'],
@@ -2891,12 +2891,12 @@ style('hauntology', 'Electronic', 'Hauntology: warped-tape analog synths, slow d
               T('pad', 'pad', 'solina', rev=0.5, db=-25),
               T('arp', 'arp', 'polysynth', rev=0.4, dly=0.3, pan=0.25, db=-26, p=dict(a=0.004, d=0.3, s=0.15, r=0.4, cut=2200)),
               T('lead', 'lead', 'softlead', rev=0.45, dly=0.3, db=-19), T('vinyl', 'fx', 'vinyl', db=-40)],
-      master=dict(lufs=-12.5, air=-1.5, low=1.5, lofi=True, wobble=3.0),
+      master=dict(tone=[-2.5, 0.0, -5.8, -7.7, -5.9, -7.6, -12.3, -14.6, -24.3], lufs=-13.0, air=-1.5, low=1.5, lofi=True, wobble=3.0),
       pools=dict(bass=['sinebass', 'moogbass', 'fmbass', '808'],
                  chords=['polysynth', 'solina', 'wurli', 'epiano', 'warmpad', 'mellotron'],
-                 pad=['solina', 'warmpad', 'glasspad', 'choir', 'strings'],
+                 pad=['solina', 'warblepad', 'warmpad', 'glasspad', 'choir', 'strings'],
                  arp=['polysynth', 'vibes', 'bell', 'celesta'],
-                 lead=['softlead', 'vox', 'polysynth', 'flute', 'vibes']),
+                 lead=['softlead', 'warblelead', 'vox', 'polysynth', 'flute', 'vibes']),
       label='Hauntology')
 
 
@@ -3132,13 +3132,13 @@ style('brostep', 'Electronic', 'Brostep: festival dubstep - snarling growls, wob
               T('pad', 'pad', 'choir', rev=0.5, sc=0.6, db=-28),
               T('arp', 'arp', 'pluck_saw', rev=0.3, dly=0.4, db=-28),
               T('lead', 'lead', 'supersaw_lead', rev=0.3, sc=0.4, db=-19)],
-      master=dict(lufs=-6.5, air=1.6, low=2.0, drive=0.25),
+      master=dict(tone=[0.0, -5.3, -10.6, -15.2, -15.9, -17.8, -18.1, -18.2, -20.5], lufs=-7.5, air=1.6, low=2.0, drive=0.25),
       form_scale=1.75,
       pools=dict(bass=['growl', 'wobble', 'screech', 'reese', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'fmgrowl', 'talkgrowl'],
-                 chords=['warmpad', 'supersaw', 'strings', 'epiano'],
+                 chords=['warmpad', 'synthbrass', 'supersaw', 'strings', 'stab'],
                  pad=['choir', 'warmpad', 'glasspad', 'strings'],
                  arp=['pluck_saw', 'bell', 'pluck', 'stab'],
-                 lead=['supersaw_lead', 'leadsaw', 'polysynth', 'hoover']),
+                 lead=['supersaw_lead', 'analoglead', 'synthbrass', 'talkgrowl2', 'wavetable', 'hoover']),
       label='Brostep')
 
 style('melodic_dubstep', 'Electronic', 'Melodic dubstep: emotional chords and a big supersaw theme over half-time drums - the drop '
@@ -3352,13 +3352,13 @@ style('deep_dubstep', 'Electronic', 'Deep dubstep (soundsystem): half-time 140, 
               T('arp', 'arp', 'bell', rev=0.6, dly=0.55, pan=0.3, db=-32),
               T('lead', 'lead', 'stab', rev=0.5, dly=0.5, pan=-0.15, db=-25, p=dict(cut=1600)),
               T('texture', 'fx', 'texture', rev=0.6, db=-37)],
-      master=dict(lufs=-10.0, air=0.5, low=2.2, width=0.35),
-      pools=dict(bass=['wobble', 'sinebass', 'growl', 'reese', 'darkwob', 'subwob'],
-                 chords=['stab', 'organ', 'warmpad', 'epiano'],
-                 pad=['warmpad', 'strings', 'choir', 'glasspad'],
-                 arp=['bell', 'pluck', 'organ', 'celesta'],
-                 lead=['stab', 'organ', 'bell', 'softlead']),
-      label='Deep Dubstep (soundsystem)')
+      master=dict(tone=[0.0, -6.1, -9.9, -16.8, -17.9, -11.9, -12.6, -19.5, -26.9], lufs=-11.0, air=0.5, low=2.2, width=0.35),
+      pools=dict(bass=['wobble', 'sinebass', 'growl', 'reese', 'darkwob', 'subwob', 'squarewob', 'tonesub'],
+                 chords=['stab', 'organ', 'warmpad', 'epiano', 'darkpad', 'horrorstab'],
+                 pad=['warmpad', 'strings', 'choir', 'glasspad', 'darkpad', 'eeriepad'],
+                 arp=['bell', 'pluck', 'organ', 'celesta', 'grimesquare'],
+                 lead=['stab', 'organ', 'bell', 'softlead', 'grimesquare', 'dubsiren']),
+      exact_pools=True, label='Deep Dubstep (soundsystem)')
 
 FORMS['deep_dubstep_minimal'] = [('intro', 16, {'kick', 'top', 'pad', 'fx'}, {'filter_in': True}),
                          ('intro', 8, {'kick', 'snare', 'top', 'pad', 'fx', 'chords'}, {}),
@@ -6669,12 +6669,12 @@ style('hauntology_campfire', 'Electronic',
               T('arp', 'arp', 'acguitar', rev=0.4, pan=0.25, db=-23, p=dict(bright=4500)),
               T('lead', 'lead', 'polysynth', rev=0.45, dly=0.3, db=-21, chorus=0.5, p=dict(cut=1600)),
               T('texture', 'fx', 'texture', db=-40), T('vinyl', 'fx', 'vinyl', db=-40)],
-      master=dict(lufs=-13.0, air=-2.0, low=1.4, lofi=True, wobble=4.0),
+      master=dict(tone=[-5.2, 0.0, -7.2, -6.6, -4.6, -5.1, -11.6, -21.0, -28.8], lufs=-13.0, air=-2.0, low=1.4, lofi=True, wobble=4.0),
       pools=dict(bass=['moogbass', 'sinebass', 'sf:fingerbass', 'fmbass'],
                  chords=['acguitar', 'guitar', 'sf:nylon', 'sf:steelguitar'],
-                 pad=['warmpad', 'solina', 'strings', 'glasspad'],
+                 pad=['warmpad', 'warblepad', 'solina', 'strings', 'glasspad'],
                  arp=['acguitar', 'guitar', 'harp', 'mutedgtr'],
-                 lead=['polysynth', 'softlead', 'acguitar', 'synthbrass']),
+                 lead=['polysynth', 'warblelead', 'softlead', 'acguitar', 'synthbrass']),
       label='Hauntology - campfire guitar haze')
 
 style('hauntology_cold', 'Electronic',
@@ -6698,10 +6698,10 @@ style('hauntology_cold', 'Electronic',
               T('arp', 'arp', 'polysynth', rev=0.4, dly=0.35, pan=0.25, db=-25, p=dict(a=0.003, d=0.25, s=0.1, cut=1800)),
               T('lead', 'lead', 'softlead', rev=0.5, dly=0.35, db=-20, p=dict(cut=1400)),
               T('texture', 'fx', 'texture', db=-36), T('vinyl', 'fx', 'vinyl', db=-40)],
-      master=dict(lufs=-13.0, air=-1.5, low=1.4, lofi=True, wobble=3.5),
+      master=dict(tone=[-6.8, -2.0, -0.8, 0.0, -2.9, -10.2, -23.9, -34.0, -39.4], lufs=-13.0, air=-1.5, low=1.4, lofi=True, wobble=3.5),
       pools=dict(bass=['sinebass', 'moogbass', '808', 'reese'],
                  chords=['polysynth', 'solina', 'warmpad', 'synthbrass'],
-                 pad=['choir', 'warmpad', 'solina', 'strings'],
+                 pad=['choir', 'warblepad', 'warmpad', 'solina', 'strings'],
                  arp=['polysynth', 'pluck_saw', 'bell', 'pluck'],
                  lead=['softlead', 'polysynth', 'flute', 'vox']),
       label='Hauntology - cold dystopian synths')
@@ -7275,12 +7275,12 @@ style('nu_disco', 'Electronic',
               T('bass', 'bass', 'moogpluck', sc=0.4, db=-13, p=dict(cut=1600)),
               T('chords', 'chords', 'mutedgtr', sc=0.4, pan=0.25, db=-23), T('pad', 'pad', 'strings', rev=0.4, db=-27),
               T('arp', 'arp', 'epiano', pan=-0.25, dly=0.2, db=-27), T('lead', 'lead', 'polysynth', rev=0.3, dly=0.25, db=-19)],
-      master=dict(lufs=-9.5, air=1.2, low=1.6, width=1.0),
+      master=dict(tone=[-5.5, -0.5, 0.0, -1.8, -2.2, -7.2, -11.5, -13.2, -20.7], lufs=-8.5, air=1.2, low=-1.0, width=1.0),
       pools=dict(bass=['moogpluck', 'sf:fingerbass', 'fmbass', 'sawbass', 'junobass', 'fuzzbass'],
                  chords=['mutedgtr', 'epiano', 'clav', 'polysynth', 'junopoly'],
                  pad=['strings', 'solina', 'warmpad', 'sf:slowstrings'],
                  arp=['epiano', 'pluck', 'vibes', 'piano'],
-                 lead=['polysynth', 'sax', 'synthbrass', 'softlead']),
+                 lead=['polysynth', 'talkbox', 'housevox', 'analoglead', 'discostrings', 'sax', 'synthbrass', 'softlead']),
       label='Nu-disco / disco lounge')
 
 # lo-fi bedroom rock: tiny song - 4-bar intro, verse, chorus, dip, verse, a long last chorus / jam, about 2 minutes
@@ -7475,7 +7475,7 @@ style('smooth_jazz_horns', 'Classic',
               T('horns', 'chords', 'brass', rev=0.25, pan=0.15, db=-24, double_of='chords', keep_inst=True, max_dur=0.3),
               T('arp', 'arp', 'shakuhachi', rev=0.45, dly=0.2, pan=0.3, db=-20),
               T('lead', 'lead', 'brass', rev=0.3, db=-15)],
-      master=dict(lufs=-12.0, air=1.4, low=1.0),
+      master=dict(tone=[0.0, -0.1, -1.4, -1.2, -9.2, -13.1, -17.8, -14.5, -18.4], lufs=-13.0, air=1.4, low=4.5),
       pools=dict(bass=['fmbass', 'sf:fingerbass', 'sf:slapbass', 'fretless'], chords=['epiano', 'm1piano', 'piano'],
                  arp=['shakuhachi', 'flute', 'vibes'], lead=['brass', 'sf:trumpetsection', 'trumpet', 'sax']),
       label='Smooth jazz - horns & shakuhachi')
@@ -7537,16 +7537,16 @@ style('early_dubstep', 'Electronic',
       tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.35, db=-15, throw=0.5),
               T('chat', 'top', 'chat', pan=-0.2, db=-28), T('shaker', 'top', 'shaker', pan=0.3, db=-31),
               T('rim', 'top', 'rim', pan=0.25, db=-29, throw=0.8),
-              T('bass', 'bass', 'wobble', sc=0.3, db=-11, p=dict(cut=900, sub=1.2)),
+              T('bass', 'bass', 'squarewob', sc=0.3, db=-11, p=dict(cut=900, sub=1.2)),
               T('chords', 'chords', 'stab', rev=0.4, dly=0.4, db=-26), T('pad', 'pad', 'warmpad', rev=0.6, db=-31),
-              T('arp', 'arp', 'pluck', dly=0.4, db=-30), T('lead', 'lead', 'leadsaw', rev=0.4, dly=0.4, db=-25, p=dict(cut=2200))],
-      master=dict(lufs=-9.5, air=0.6, low=2.2, width=0.4),
-      pools=dict(bass=['wobble', 'sinebass', 'growl', 'reese', 'vowelwob', 'darkwob', 'subwob'],
-                 chords=['stab', 'organ', 'polysynth', 'm1piano'],
-                 pad=['warmpad', 'strings', 'glasspad', 'solina'],
-                 arp=['pluck', 'stab', 'pluck_saw', 'marimba'],
-                 lead=['leadsaw', 'stab', 'softlead', 'supersaw_lead']),
-      label='Early dubstep (stepper era)')
+              T('arp', 'arp', 'pluck', dly=0.4, db=-30), T('lead', 'lead', 'grimesquare', rev=0.4, dly=0.4, db=-25, p=dict(cut=2200))],
+      master=dict(tone=[0.0, -4.7, -8.0, -14.7, -15.7, -15.0, -14.9, -16.4, -19.3], lufs=-11.0, air=0.6, low=2.2, width=0.4),
+      pools=dict(bass=['squarewob', 'wobble', 'tonesub', 'sinebass', 'subwob', 'dubsub'],
+                 chords=['stab', 'organ', 'horrorstab', 'darkpad', 'polysynth'],
+                 pad=['warmpad', 'darkpad', 'strings', 'eeriepad', 'solina'],
+                 arp=['pluck', 'grimesquare', 'marimba', 'bell', 'chip', 'stab'],
+                 lead=['grimesquare', 'leadsaw', 'stab', 'dubsiren', 'softlead', 'chip']),
+      exact_pools=True, label='Early dubstep (stepper era)')
 
 # acoustic folk-rock jam: it never stops - one long gentle groove that slowly gets fuller and louder
 FORMS['folk_jam'] = [('intro', 4, {'chords'}, {}),
@@ -10704,10 +10704,10 @@ style('cybergrind', 'Classic',
               T('arp', 'arp', 'chuggtr', pan=0.3, db=-22),
               T('lead', 'lead', 'screech', rev=0.25, db=-18),
               T('texture', 'fx', 'texture', db=-34)],
-      master=dict(tone=[0.0, -0.2, -9.2, -9.2, -10.5, -11.8, -14.0, -10.9, -17.4], lufs=-7.5, air=-1.5, low=2.5, drive=0.25,
+      master=dict(tone=[-1.5, 0.0, -8.9, -9.0, -10.1, -10.3, -12.2, -10.2, -16.8], lufs=-7.5, air=-1.5, low=2.5, drive=0.25,
                   width=0.95, max_gr=4.0),
       pools=dict(bass=['ebass', 'pickbass', 'sf:pickbass', 'metalbass'], chords=['chuggtr', 'guitar', 'sf:distguitar'],
-                 arp=['chuggtr', 'guitar', 'screech'], lead=['screech', 'chuggtr', 'guitar', 'hoover']),
+                 arp=['chuggtr', 'chip', 'guitar', 'screech'], lead=['screech', 'chip', 'chuggtr', 'guitar', 'hoover']),
       label='Cybergrind / drum-machine deathgrind')
 
 
@@ -10980,5 +10980,6 @@ def _offer_genre_sounds():
 _offer_genre_sounds()
 
 
-# (tone targets: the band balance of the loudest 20 s of the reference records each genre was modelled on, dB per
+# (1.87: tone targets of hauntology, early / deep dubstep, brostep, nu-disco, smooth jazz horns, DnB and cybergrind
+#  measured on reference records; tone targets: the band balance of the loudest 20 s of the reference records each genre was modelled on, dB per
 #  band 20-60 / 60-120 / 120-250 / 250-500 / 500-1k / 1-2k / 2-4k / 4-8k / 8-11k Hz, loudest band = 0)

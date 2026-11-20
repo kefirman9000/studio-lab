@@ -137,16 +137,34 @@ def _corr(a, b):
 _FP = None
 
 
+EXCLUDE = set()
+# (1.87) the matcher's weights, tuned on reference records with tools/record_fingerprints.py --eval
+# (on 72 reference records, each scored with its own fingerprint left out: right genre first 6 -> 18, in the top 3
+#  11 -> 36, right family in the top 3 42 -> 57 - mostly by weighing the tonal balance more; no bonus for genres that
+#  have records, so genres without records aren't pushed down)
+W = dict(tempo=1.0, fp=3.6, fp_slope=3.0, spec=6.0, mode=0.0, pen2=1.5, pen3=2.5, rec_bonus=0.0, rec_spec=3.0)          # record ids left out (tools/record_fingerprints.py --eval: a record never matches itself)
+
+
 def fingerprints():
+    """Per genre: fingerprints of rendered previews, plus (1.87) of the real records the genre was modelled on."""
     global _FP
     if _FP is None:
         import json
         import os
+        here = os.path.dirname(os.path.abspath(__file__))
         try:
-            with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'genre_fingerprints.json')) as f:
+            with open(os.path.join(here, 'genre_fingerprints.json')) as f:
                 _FP = json.load(f)
         except Exception:
             _FP = {}
+        try:
+            with open(os.path.join(here, 'record_fingerprints.json')) as f:
+                for g, lst in json.load(f).items():
+                    _FP[g] = list(_FP.get(g, [])) + list(lst)
+        except Exception:
+            pass
+    if EXCLUDE:
+        return {g: [x for x in lst if x.get('id') not in EXCLUDE] for g, lst in _FP.items()}
     return _FP
 
 
@@ -159,7 +177,8 @@ def _fp_distance(ref, gp):
         d += w * (1 - max(-1.0, min(1.0, _corr(ref.get(k), gp.get(k))))) / 2
     if ref.get('spectrum') and gp.get('spectrum'):
         a, b = np.sqrt(ref['spectrum']), np.sqrt(gp['spectrum'])           # Hellinger distance of the tonal balance
-        d += 2.2 * float(np.sqrt(0.5 * np.sum((a - b) ** 2)))
+        ws = W['rec_spec'] if (gp.get('src') == 'record' and W['rec_spec'] is not None) else W['spec']
+        d += ws * float(np.sqrt(0.5 * np.sum((a - b) ** 2)))
     d += 0.8 * abs(np.log((ref.get('percussive', 0.05) + 0.01) / (gp.get('percussive', 0.05) + 0.01))) / 2
     return d
 
@@ -197,9 +216,10 @@ def suggest(features, styles, labels=None, top=6):
         for h in hyps:
             r = h.get('ratio', 1.0)
             b = (h.get('bpm_exact') or bpm * r)
-            dist = max(0, lo - b, b - hi) + (0 if r == 1.0 else 1.5 if r in (2.0, 0.5) else 2.5)
-            fd = min(_fp_distance(dict(h, spectrum=features.get('spectrum')), g) for g in fps) if (fps and h.get('kick')) else None
-            val = 2.0 * float(np.exp(-dist / 7.0)) + (3.6 - 2.2 * fd if fd is not None else 0)
+            dist = max(0, lo - b, b - hi) + (0 if r == 1.0 else W['pen2'] if r in (2.0, 0.5) else W['pen3'])
+            fd = min(_fp_distance(dict(h, spectrum=features.get('spectrum')), g) - (W['rec_bonus'] if g.get('src') == 'record' else 0)
+                     for g in fps) if (fps and h.get('kick')) else None
+            val = W['tempo'] * float(np.exp(-dist / 7.0)) + (W['fp'] - W['fp_slope'] * fd if fd is not None else 0)
             if best_h is None or val > best_h[0]:
                 best_h = (val, h, dist, fd)
         _, feel_h, dist, fd_best = best_h
@@ -207,14 +227,14 @@ def suggest(features, styles, labels=None, top=6):
         scales = st.get('scales') or []
         mode_ok = any((sc in MINORISH) == minor for sc in scales) if scales else True
         why = []
-        score = 2.0 * t_score + (0.6 if mode_ok else 0.0)
+        score = W['tempo'] * t_score + (W['mode'] if mode_ok else 0.0)
         if t_score > 0.8:
             why.append(f'{lo}-{hi} BPM')
         prof = _profile(st)
         feel = feel_h if feel_h.get('kick') else feel0
         if feel and fps and fd_best is not None:           # compare with how the genre actually sounds
             dist_fp = fd_best
-            score += 3.6 - 2.2 * dist_fp
+            score += W['fp'] - W['fp_slope'] * dist_fp
             g = fps[0]
             if feel.get('four', 0) > 0.4 and g.get('four', 0) > 0.4:
                 why.append('four-on-the-floor')

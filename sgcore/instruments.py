@@ -5600,9 +5600,14 @@ def _env_n(dur, a, d, s, r, cap=None):
     return env, len(env), np.arange(len(env)) / SR
 
 
-def _sync_lfo(t, p, choices=(2.0, 3.0, 4.0)):
+def _sync_lfo(t, p, choices=(2.0, 3.0, 4.0), mod=None):
+    """0..1 LFO locked to the beat: `choices` cycles per beat. A wobble written into the song (mod = beats per cycle,
+    from the wobble bass part) wins over a random choice."""
     spb = float(p.get('spb', 0.45))
-    rate = (p.get('rate') or _rng().choice(choices)) / spb
+    if isinstance(mod, (int, float)) and not isinstance(mod, bool) and mod > 0:
+        rate = 1.0 / (float(mod) * spb)
+    else:
+        rate = (p.get('rate') or _rng().choice(choices)) / spb
     return 0.5 - 0.5 * np.cos(2 * np.pi * rate * t)
 
 
@@ -6221,7 +6226,7 @@ def v_dreadwob(m, dur, p, glide=None, mod=None):
     is a growl in the low mids (the deep, sub-weight dubstep sound)."""
     f = float(mtof(m))
     env, n, t = _env_n(dur, 0.006, 0.4, 0.95, 0.08)
-    lfo = _sync_lfo(t, p, (0.5, 1.0, 2.0))
+    lfo = _sync_lfo(t, p, (0.5, 1.0, 2.0), mod)
     x = _va.pulse(np.full(n, f), n, 0.0, 0.5) * 0.6 + _va.saw(np.full(n, f * 1.006), n, 0.4) * 0.5
     top = _va.vcf(x, 100 + p.get('cut', 800) * lfo, 0.5, 1.8)
     top = np.tanh(top * 2.2)
@@ -6325,6 +6330,82 @@ for _name, _fn, _info, _roles, _gm in (
         ('classiclead', v_classiclead, 'Classic trance lead (bright, singing, glide)', ('lead', 'arp'), 81),
         ('megastab', v_megastab, 'Mega stab (very wide supersaw)', ('chords', 'lead', 'arp'), 81),
         ('syncstab', v_syncstab, 'Sync stab (tearing hard-sync hook)', ('lead', 'arp', 'chords'), 81)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+# ----------------------------------------------------------------------------- 1.87: from more reference sets
+def v_squarewob(m, dur, p, glide=None, mod=None):
+    """Early dubstep wobble: a plain square / saw pair through a low-pass that opens and closes on a slow quarter- or
+    eighth-note LFO (100 Hz - 1.2 kHz), a little gritty, over a clean sine sub - the simple, heavy, hypnotic bass of
+    mid-2000s dubstep, before the screaming mid-basses."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.005, 0.4, 0.95, 0.06)
+    lfo = _sync_lfo(t, p, (1.0, 2.0, 2.0, 4.0), mod)
+    x = _va.pulse(np.full(n, f), n, 0.0, 0.5) * 0.7 + _va.saw(np.full(n, f), n, 0.0) * 0.3
+    top = np.tanh(_va.vcf(x, 100 + p.get('cut', 1100) * lfo, 0.35, 1.5) * 1.6)
+    sub = np.sin(2 * np.pi * (f if f < 70 else f / 2) * t)
+    y = (hp(top, 80) * 0.55 + sub * 0.8) * env
+    return np.vstack([y, y]) * 0.55
+
+
+def v_tonesub(m, dur, p, glide=None, mod=None):
+    """Saturated sine sub: a sine pushed into soft saturation so its 2nd and 3rd harmonics carry it on small speakers,
+    with a short pitch drop on the attack - the round, booming one-note bass of early dubstep and grime."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.004, 0.5, 0.9, 0.08)
+    fr = f * 2 ** (0.6 * np.exp(-t / 0.03) / 12)
+    ph = 2 * np.pi * np.cumsum(_glide_freq(f, n, glide, 0.08) * (fr / f)) / SR
+    y = np.tanh(np.sin(ph) * p.get('drive', 2.2)) / np.tanh(p.get('drive', 2.2)) * env
+    return np.vstack([y, y]) * 0.6
+
+
+def v_warblepad(m, dur, p, glide=None, mod=None):
+    """Warble pad: a detuned PWM pad that drifts slightly out of tune the way an old tape or a cheap analog poly does
+    (slow, random wow and flutter, different in each ear), dark and soft - the nostalgic, washed-out pad of 90s and
+    2000s ambient electronica."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.4), 1.0, 0.95, p.get('r', 1.6))
+    rng = _rng()
+    out = np.zeros((2, n))
+    for ch in range(2):
+        w = lp(rng.standard_normal(n), 1.5)
+        w = w / (np.abs(w).max() + 1e-9)
+        wow = 2 ** ((p.get('wow', 18) * w + 3 * np.sin(2 * np.pi * 5.5 * t + rng.random() * 6)) / 1200)
+        fr = f * wow
+        x = _va.pulse(fr, n, rng.random(), 0.5 + 0.25 * np.sin(2 * np.pi * 0.3 * t + ch)) * 0.5 + \
+            _va.saw(fr * 2 ** (7 / 1200), n, rng.random()) * 0.35
+        out[ch] = x
+    y = _va.vcf(out, p.get('cut', 1300), 0.15, 1.05)
+    y = lp(y, 5000)
+    return _hpf(y, 120) * env * 0.42
+
+
+def v_warblelead(m, dur, p, glide=None, mod=None):
+    """Warble lead: a soft, slightly detuned triangle-and-saw lead whose pitch sags and drifts like a stretched tape,
+    with a gentle vibrato and a rolled-off top - the wistful, out-of-tune melody synth of ambient electronica."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.03, 0.5, 0.85, 0.4)
+    rng = _rng()
+    w = lp(rng.standard_normal(n), 2.0)
+    w = w / (np.abs(w).max() + 1e-9)
+    fr = _glide_freq(f, n, glide, 0.1) * 2 ** ((14 * w - 10 * (1 - np.exp(-t / 0.8)) + 6 * np.sin(2 * np.pi * 4.8 * t)) / 1200)
+    ph = np.cumsum(fr) / SR
+    tri = 2 * np.abs(2 * (ph % 1) - 1) - 1
+    y = tri * 0.7 + 0.25 * _va.saw(fr, n, 0.3)
+    y = _va.vcf(y, 1800, 0.1, 1.0) * env
+    return _ms_stereo(lp(y, 4500), 30, 0.3) * 0.4
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('squarewob', v_squarewob, 'Early dubstep wobble (square, slow LFO)', ('bass',), 38),
+        ('tonesub', v_tonesub, 'Saturated sine sub (round, booming)', ('bass',), 38),
+        ('warblepad', v_warblepad, 'Warble pad (out-of-tune tape analog)', ('pad', 'chords'), 89),
+        ('warblelead', v_warblelead, 'Warble lead (drifting, wistful)', ('lead', 'arp'), 80)):
     INSTRUMENTS[_name] = _fn
     INSTRUMENT_INFO[_name] = _info
     GM_PROGRAM[_name] = _gm

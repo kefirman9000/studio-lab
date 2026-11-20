@@ -1,5 +1,36 @@
 # Changelog
 
+## 1.87.0
+**Tuned on seven more sets of reference records**
+- **Tone targets measured on the records** for ten genres: the band balance of their loud parts, used by the master and the production pass. The genres:
+  - ambient electronica (three hauntology styles);
+  - early and deep dubstep;
+  - the electro-dubstep genre (brostep);
+  - nu-disco;
+  - smooth jazz horns;
+  - drum & bass;
+  - cybergrind.
+- **Loudness targets moved toward the records:**
+  - early and deep dubstep -11 LUFS (masters of that era are quieter and more dynamic);
+  - ambient electronica and smooth jazz horns -13;
+  - nu-disco and DnB -8.5.
+- **New synths:**
+  - a **square wobble** (the simple, slow-LFO bass of mid-2000s dubstep) and a **saturated sine sub** for early dubstep;
+  - a **warble pad** and a **warble lead** (detuned analog that drifts out of tune like an old tape) for ambient electronica.
+- **Early and deep dubstep keep to their era's sounds:** square and sine wobbles, subs, grime squares, dark stabs, organ and bell. The modern brostep and riddim sounds that had crept into their lists are gone.
+- **Cybergrind** now also plays 8-bit chip melodies, like its records.
+- **Nu-disco** gets a talk-box lead; the electro-dubstep genre (brostep) gets 80s synth brass and an analog lead.
+- **Nu-disco** has less sub and **smooth jazz horns** has more low end, closer to their records.
+
+**A much better "sounds closest to" for reference songs**
+- The genre matcher now compares a reference song with **real records** as well as with rendered previews of each genre. It holds fingerprints of 72 records across 19 genres: only measurements, no audio or titles.
+- Its weights were tuned on those records, mainly weighing tonal balance more. Each record was scored with its own fingerprint left out:
+  - the right genre first: 6 → 18 of 72;
+  - in the top 3: 11 → 36;
+  - the right family in the top 3: 42 → 57.
+- Genres without records get no penalty: there is no bonus for having records.
+- New tool: `tools/record_fingerprints.py` adds records from a list (genre, file) and reports how well they're placed (`--eval`).
+
 ## 1.86.0
 **Three new genres, each built from a set of reference records**
 - **Dark dubstep (sub-weight, 2009-12):**
