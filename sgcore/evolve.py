@@ -510,3 +510,39 @@ def bass_stutter(evs, st):
             e.beat, e.dur = e.beat + 1.0, e.dur - 1.0
     evs.extend(out)
     return len(out) // 3
+
+
+# ----------------------------------------------------------------------------- (1.92.3) per-song variations
+def song_variations(st, opts):
+    """Styles with 'song_variations' pick, per song (seeded), one option from each of their lists: a sound palette,
+    a pulse figure, the sparkle and middle arpeggios, a layout, a tempo range, a harmony (mode + chord loops), a bass
+    style, a lead rhythm - so songs in one genre keep its character but never come out the same. Your own sound picks
+    still win (they are applied later). Returns what was picked."""
+    sv = st.get('song_variations')
+    if not sv or st.get('composer'):
+        return None
+    import random as _r
+    rnd = _r.Random(f'{opts.seed}-{st.get("name") or opts.style}-songvar')
+    picked = {}
+    for key in sorted(sv):
+        options = sv[key]
+        i = rnd.randrange(len(options))
+        ch = options[i]
+        picked[key] = ch.get('name', i) if isinstance(ch, dict) else i
+        if key == 'palette':
+            for t in st['tracks']:
+                if t['name'] in ch and t['name'] != 'name':
+                    t['inst'] = ch[t['name']]
+                    t.pop('fallback', None)
+        elif key in ('pulse', 'mid', 'sparkle'):
+            specs = [s for s in (st.get('arps2') or []) if s['track'] != {'pulse': 'arp', 'mid': 'arp_mid', 'sparkle': 'arp_hi'}[key]]
+            if ch.get('track'):
+                specs.append({k: v for k, v in ch.items() if k != 'name'})
+            st['arps2'] = specs
+        elif key == 'form':
+            if (getattr(opts, 'structure', 'auto') or 'auto') == 'auto':
+                st['form'] = ch['form']
+        else:                                            # bpm / harmony / bass / lead: values merged into the style
+            st.update({k: v for k, v in ch.items() if k != 'name'})
+    st['song_var'] = picked
+    return picked

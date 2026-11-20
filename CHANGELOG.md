@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.92.3
+- **Dreamy synthscape songs no longer all sound the same.** Each song now picks, from its seed, one option from each of these lists. The genre keeps its character, but 12 test songs gave 12 different combinations.
+  - **Sound palette:** sine, glass (glass keys, tape bell pulse, bloom lead), tape (dust piano, warm pulse, tape flute), choir (hum choir, sine pluck, glide tone) or warm (R&B pad, warm pulse, tape-wobble sine lead).
+  - **Pulse figure:** triplet rock, triplet climb, 8ths, dotted, or a slow quarter-note swell.
+  - **Sparkle on top:** falling or rising glitter, slow stars, or none. The middle arpeggio is also on or off.
+  - **Layout:**
+    - the swell;
+    - a slow drift (everything eases in, two long swells);
+    - two waves with a hush and a tape stop between them;
+    - a hypnotic loop that slowly fills up.
+  - **Tempo:** slow (94–102), mid (104–112) or lifted (112–120).
+  - **Harmony:** a major vamp with the suspended V, a minor loop, a lydian float, a dorian haze, a mixolydian glow, or major steps.
+  - **Bass:** stutter entrances, long held roots, or a soft half-note pulse.
+  - **Lead rhythm:** flowing, sparse or busy.
+- Your own sound picks in the editor still override the palette. Any genre can now vary its songs this way (`song_variations`).
+
 ## 1.92.2
 - **Dreamy synthscape: no more kick.** The original track has no real kick: its only regular low thumps sit about 40 dB below the music, and the pulse itself is the heartbeat. Our audible straight kick under the triplet pulse is what sounded off, so it's gone.
 - **The bass now comes in the way the original's does:** about every two bars (every 4–6 seconds), struck three times in a quick triplet stutter, held for about two and a half beats, then space. It also sits lower, around 100 Hz like the original, and a little louder. The low end matches the original within a few dB.

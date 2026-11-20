@@ -1137,6 +1137,8 @@ def compose(opts):
     st = _traits.apply_style(st, opts, opts.style)
     if not st.get('composer'):                           # through-composed scores keep their exact orchestration
         st = apply_variety(st, opts, random.Random(opts.seed * 7919 + 17))
+        from .evolve import song_variations
+        song_variations(st, opts)                        # (1.92.3) genres that vary their palette / figures per song
         add_counter_track(st, opts)
         add_layer_tracks(st, opts)
         add_bass_switch_tracks(st)
