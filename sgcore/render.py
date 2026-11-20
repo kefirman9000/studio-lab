@@ -11,7 +11,7 @@ import numpy as np
 from scipy import signal
 from scipy.ndimage import uniform_filter1d
 
-from .dsp import (SR, hp, lp, eq, soft, compressor, limiter, low_limit, lufs, active_rms_db, make_ir, reverb, pingpong,
+from .dsp import (SR, hp, lp, eq, soft, k_weight, compressor, limiter, low_limit, lufs, active_rms_db, make_ir, reverb, pingpong,
                   make_spring_ir, dub_delay, svf_sweep,
                   sweep_region, write_wav_float)
 from .instruments import INSTRUMENTS, DRUMS, fx_riser, fx_impact, fx_vinyl, fx_texture
@@ -1116,6 +1116,16 @@ class Renderer:
         fade_end = next((min(L, b2s(b + d) + int(3.5 * SR)) for kind, b, d in song['fx'] if kind == 'fade'), None)
         stems = []
         n_tracks = len(st['tracks'])
+        has_answer = any(t['name'] == 'answer' for t in st['tracks']) and bool(by_track.get('answer'))
+        hook_mask = call_sum = None
+        if has_answer:                                    # the sections where the lead and its answer trade phrases
+            hook_mask = np.zeros(L, dtype=bool)
+            ab = sorted(e.beat for e in by_track['answer'])
+            for sec in song['sections']:
+                b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+                if any(b0 <= x < b1 for x in ab):
+                    hook_mask[b2s(b0):min(L, b2s(b1))] = True
+            call_sum = np.zeros(int(hook_mask.sum()), dtype=np.float32)
         for ti, tcfg in enumerate(st['tracks']):
             name = tcfg['name']
             evs = by_track.get(name, [])
@@ -1237,6 +1247,19 @@ class Renderer:
                 buf = np.vstack([m_ * np.cos(a) * 1.414, m_ * np.sin(a) * 1.414]).astype(np.float32)
             rl = (lanes.get('reverb') or {}).get(name)
             rev_curve = self.lane_curve(rl, buf.shape[1], 1.0) * 2.0 if rl else None   # 0 dry ... 1 = twice the send
+            if has_answer and np.any(buf) and (name.startswith('lead') and tcfg['layer'] == 'lead' or name == 'answer'):
+                # (1.90.1) call & response: the answering sound plays as loud as the lead it answers - matched by
+                # loudness as the ear hears it (K-weighted), with the lead's doubled layer counted, in the hook sections
+                kw = k_weight(buf.mean(axis=0))[hook_mask].astype(np.float32)
+                if name != 'answer':
+                    call_sum[:len(kw)] += kw
+                elif np.any(call_sum):
+                    a_db, c_db = active_rms_db(kw), active_rms_db(call_sum)
+                    if a_db > -110 and c_db > -110:
+                        g = np.float32(10 ** (max(-12.0, min(12.0, c_db - 0.5 - a_db)) / 20))   # a hair under the call
+                        buf *= g
+                        self.track_gains[name] = self.track_gains.get(name, 1.0) * float(g)
+                        self.log(f'   answer matched to the lead: {20 * np.log10(float(g)):+.1f} dB')
             if tcfg['layer'] in ('kick', 'bass') and np.any(buf):   # low-band envelopes for the kick / bass overlap check
                 lo_e = np.abs(lp(buf.mean(axis=0), 100, 2))
                 hop = 441

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.90.1
+- **Call and response at even volumes.** When a second sound answers the lead in the hooks, the answer is now matched to the lead by how loud it sounds to the ear, not by its raw level. The lead's doubled layer is counted too. Before, the answer could come in noticeably louder or quieter than the lead, depending on the two sounds: up to about 8 dB apart in the songs checked. It now sits just a touch under the lead.
+
 ## 1.90.0
 **Songs with real ups and downs**
 - **Section dynamics** (electronic genres): the second, doubled sound on the lead, chords or bass is now saved for the drops. Verses and intros play one sound per part. Breakdowns start bare and get their layers back halfway through, so a drop adds weight instead of only getting louder. The first downbeat of every drop also lands harder.
