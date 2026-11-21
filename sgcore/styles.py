@@ -11764,3 +11764,39 @@ for _g, _ch in {'techno': 0.6, 'minimal': 0.6, 'melodic_techno': 0.45, 'hard_tec
         STYLES[_g]['polymeter'] = _ch
 
 
+
+
+# ---- (2.0) from Studio Lab 2: Euphoric UK Techno (Scuba - NE1BUTU) --------------------------------------------------
+# a simple punchy broken kick, a heavy sub, percussion that fills in to rolling 16ths - then a long final stretch where
+# pads, rave stabs, plucks and a soaring lead stack up section by section into a euphoric ending
+FORMS['euphoric_uk'] = [
+    ('intro', 16, {'kick', 'top'}, {'filter_in': True}),
+    ('verse', 16, {'kick', 'top', 'snare', 'bass'}, {}),
+    ('verse', 16, {'kick', 'top', 'snare', 'bass', 'arp'}, {'crash': True}),
+    ('break', 8, {'top', 'pad', 'bass'}, {'alt': True}),
+    ('build', 16, {'kick', 'top', 'snare', 'bass', 'pad', 'arp'}, {'crash': True}),
+    ('build', 16, {'kick', 'top', 'snare', 'bass', 'pad', 'arp', 'chords'}, {'crash': True}),
+    ('drop', 16, {'kick', 'top', 'snare', 'bass', 'pad', 'arp', 'chords', 'lead'}, {'drop': True}),
+    ('drop', 16, {'kick', 'top', 'snare', 'bass', 'pad', 'arp', 'chords', 'lead', 'fx'}, {'crash': True}),
+    ('outro', 8, {'pad', 'chords', 'lead', 'fx'}, {'fade': True}),
+]
+style('euphoric_uk_techno', 'Electronic', 'Euphoric UK techno (Scuba - NE1BUTU): a simple energetic broken kick and heavy sub, '
+      'slowly building - pads, rave stabs, plucks and a soaring lead stack up into a euphoric ending',
+      bpm=(126, 130), scales=['major', 'mixolydian', 'dorian'], kit='909', form='euphoric_uk', sc_depth=0.55,
+      progs={'major': [[0, 4, 5, 3], [5, 3, 0, 4], [0, 3, 4, 4]], 'mixolydian': [[0, 6, 3, 0]], 'dorian': [[0, 3, 0, 6]]},
+      drums={'kick': ['X.....X...X.....', 'X..X......X.....', 'X.....X.X...X...'], 'clap': [BACKBEAT],
+             'chat': ['..x...x...x...x.', 'x.xxx.xxx.xxx.xx', 'xxxxxxxxxxxxxxxx'], 'ohat': [OFFHAT],
+             'shaker': ['x.xxx.xxx.xxx.xx']}, snare_tracks=['clap'],
+      bass=['R.....R...R.....', 'R..R......R.....', 'R.....R.R...R...'], bass_lo=28, bass_gate=0.7,
+      chord_rh=['x--x--x---x--x--', 'x-------x-------'], chord_center=64, arp=dict(rate=2, mode='up', oct=5),
+      lead_rh=['x-------x---x---', 'x---x---x-x-x---', 'x-----------x-x-'], filter_arc=True, sc_arc=True, groove='techno_shuffle',
+      tracks=[T('kick', 'kick', 'kick', db=-11), T('clap', 'snare', 'clap', rev=0.3, db=-21), T('chat', 'top', 'chat', db=-28),
+              T('ohat', 'top', 'ohat', db=-27), T('shaker', 'top', 'shaker', db=-31),
+              T('bass', 'bass', 'tonesub', sc=0.7, db=-14),
+              T('chords', 'chords', 'stab', sc=0.6, rev=0.45, dly=0.3, db=-23), T('pad', 'pad', 'warmpad', sc=0.6, rev=0.6, db=-26),
+              T('arp', 'arp', 'pluck', sc=0.4, dly=0.4, db=-24), T('lead', 'lead', 'supersaw_lead', sc=0.35, rev=0.5, dly=0.3, db=-20)],
+      master=dict(lufs=-9.5, air=1.3, low=1.4),
+      pools=dict(bass=['tonesub', 'sawbass', 'fmbass', 'reese'], chords=['stab', 'supersaw', 'noisestab', 'warmpad'],
+                 pad=['warmpad', 'pwmpad', 'strings', 'choir', 'glasspad'], arp=['pluck', 'pluck_saw', 'modseq', 'technoseq'],
+                 lead=['supersaw_lead', 'formantlead', 'leadsaw', 'progpluck']),
+      label='Euphoric UK Techno')

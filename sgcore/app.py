@@ -760,7 +760,10 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError('unknown sound')
                 if voice and voice not in ('kick', 'snare', 'clap', 'hats'):
                     raise ValueError('unknown drum voice')
-                data = audition(inst=inst, role=str(body.get('role') or 'lead'), kit=kit, voice=voice)
+                midi = body.get('midi')
+                midi = None if midi is None else max(12, min(120, int(midi)))
+                data = audition(inst=inst, role=str(body.get('role') or 'lead'), kit=kit, voice=voice, midi=midi,
+                                dur=body.get('dur'), bpm=int(body.get('bpm') or 124))
             except Exception as e:                       # noqa: BLE001
                 return self._json({'error': str(e)}, 400)
             self.send_response(200)

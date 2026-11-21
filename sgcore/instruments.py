@@ -8055,3 +8055,7 @@ for _name, _fn, _info, _roles, _gm in NEW_197B:
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
+
+
+# (2.0) synths the library was missing for trance, techno and hip hop
+from . import synths2  # noqa: E402,F401

@@ -9,7 +9,7 @@ GROUPS = {
         ('House & Disco', ['house', 'deep_house', 'tech_house', 'progressive_house', 'acid_house', 'afro_house', 'melodic_house',
                            'organic_house', 'sunny_melodic_house', 'emotive_deep_house', 'nineties_club_house', 'pop_house_90s', 'italo_disco', 'future_funk',
                            'eurodance', 'bigroom', 'bass_house', 'nu_disco', 'tokyo_deep_house', 'piano_house_90s', 'uk_bounce_house', 'outsider_house', 'garage_house', 'mallet_house', 'french_house', 'electro_swing', 'tropical_house', 'hi_nrg', 'brazilian_bass']),
-        ('Techno & Trance', ['techno', 'minimal', 'melodic_techno', 'new_beat', 'trance', 'uplifting_trance', 'classic_vocal_trance', 'festival_techno',
+        ('Techno & Trance', ['techno', 'minimal', 'melodic_techno', 'euphoric_uk_techno', 'new_beat', 'trance', 'uplifting_trance', 'classic_vocal_trance', 'festival_techno',
                              'progressive_trance', 'club_trance_2000s', 'festival_psy', 'progressive_trance_2010s', 'vocal_trance_remix', 'electro_prog_trance', 'psytrance', 'progressive_psy', 'goa_trance', 'darkpsy', 'trance_pop_90s', 'hard_trance', 'uk_bass_130', 'uk_tribal_techno', 'hard_techno', 'dub_techno']),
         ('Dubstep, Garage & Bass', ['dubstep', 'ethereal_wave', 'brostep', 'riddim', 'melodic_dubstep', 'chillstep', 'deep_dubstep', 'dark_dubstep_classic', 'deep_dubstep_minimal',
                                     'deep_dubstep_rollers', 'deep_dubstep_rolling', 'steppy_halftime', 'sub_pressure_140', 'emotive_2step', 'rolling_atmos_bass', 'chipmunk_2step', 'glitch_future_bass', 'future_bass', 'ukgarage', 'future_garage', 'early_dubstep', 'bassline_140', 'grime', 'uk_funky', 'speed_garage', 'midtempo_bass']),

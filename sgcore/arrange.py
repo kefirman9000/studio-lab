@@ -73,7 +73,7 @@ GENRE_BUILD = {'riddim': 'pause', 'chillstep': 'swell', 'jazz_rap': 'pause', 'cl
                'tech_house': 'filter', 'techno': 'filter', 'minimal': 'filter', 'acid_house': 'filter', 'psytrance': 'filter',
                'ukgarage': 'pause', 'amapiano': 'pause', 'afrobeats': 'pause', 'reggaeton': 'pause', 'synthwave': 'lift',
                'synthpop': 'lift', 'chiptune': 'lift', 'orchestral_hiphop': 'pause', 'hybrid_trailer': 'swell',
-               'symphonic_metal': 'roll', 'kpop': 'lift', 'melodic_techno': 'filter', 'afro_house': 'filter',
+               'symphonic_metal': 'roll', 'kpop': 'lift', 'melodic_techno': 'filter', 'euphoric_uk_techno': 'filter', 'afro_house': 'filter',
                'jersey_club': 'pause', 'baile_funk': 'stutter', 'punk': 'roll', 'waltz': 'swell', 'celtic_jig': 'swell',
                'soul_ballad': 'swell', 'braindance': 'stutter', 'hauntology': 'pause', 'brostep': 'roll', 'melodic_dubstep': 'roll',
                'neurofunk': 'stutter', 'neurofunk_lite': 'roll', 'christmas_joyful': 'swell', 'christmas_magic': 'swell', 'christmas_mischief': 'swell', 'bass_warp_trap': 'pause', 'bass_warp_fast': 'stutter', 'switchup_808': 'pause', 'switchup_808_dj': 'pause', 'switchup_808_hard': 'stutter', 'switchup_mallets': 'pause', 'screwed_slab': 'pause', 'liquid_euphoric': 'roll', 'liquid_dancefloor': 'roll', 'pop_house_90s': 'filter', 'jump_up': 'roll', 'dark_synthwave': 'filter', 'modern_gospel': 'swell', 'liquid_dnb': 'filter', 'house_phonk': 'pause', 'memphis_phonk': 'pause', 'phonk': 'pause', 'brazilian_phonk': 'pause', 'uplifting_trance': 'roll',

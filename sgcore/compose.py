@@ -125,6 +125,7 @@ class Options:
     avoid: dict = field(default_factory=dict)          # role -> instruments your recent songs used (picked less often)
     title: str = None             # song name (front of every exported file name); None = an invented name that fits the song
     journey: dict = None          # Cinematic Journey settings: acts, piano, rubato, dynamics, ending, woodwinds (see journey.py)
+    energy_curve: list = None     # (2.0) your drawn energy across the song: 8-32 values 0..1 (None = the genre's own shape)
 
     def to_dict(self):
         return asdict(self)
@@ -1333,6 +1334,8 @@ def compose(opts):
             else:
                 f2.append((n, b, l, o))
         form = f2
+    if opts.energy_curve and opts.structure != 'loop':
+        form = apply_energy_curve(form, opts.energy_curve, st)
     scale_len = float(opts.length) * (1 if form_abs else st.get('form_scale', 1))
     if opts.structure == 'radio':
         scale_len *= 0.8
@@ -3922,6 +3925,49 @@ def lock_bass_to_kick(evs, tracks, st):
             e.beat = near
 
 
+ENERGY_ORDER = ['pad', 'chords', 'fx', 'lead', 'top', 'bass', 'arp', 'snare', 'kick']
+
+
+def apply_energy_curve(form, curve, st):
+    """(2.0) Arrange the song to the energy curve you drew. Each section reads the curve at its own place in the song:
+         < 0.22  just the harmony: pads / chords (and FX) - an intro, a breakdown, an ending
+         < 0.45  no kick or snare: harmony, hats, bass - a build or a breather
+         < 0.70  the section as the genre wrote it
+         >= 0.70 the full groove: kick, snare, hats and bass all in;  >= 0.85 everything the genre has
+    A dip in the middle of a long drop becomes a breakdown, a slow rise becomes a slow build - the genre's parts, your
+    shape. Sections keep their names, lengths and music; only who plays changes."""
+    try:
+        c = [min(1.0, max(0.0, float(v))) for v in curve][:64]
+    except (TypeError, ValueError):
+        return form
+    if len(c) < 2:
+        return form
+    have = {t.get('layer') for t in st.get('tracks', [])}
+    total = sum(max(1, int(b)) for (_, b, _, _) in form) or 1
+    out, pos = [], 0
+    for (n, b, layers, o) in form:
+        mid = (pos + b / 2) / total
+        pos += b
+        x = mid * (len(c) - 1)
+        i = int(x)
+        e = c[i] + (c[min(i + 1, len(c) - 1)] - c[i]) * (x - i)
+        lay = set(layers)
+        if e < 0.22:
+            new = {l for l in lay if l in ('pad', 'chords', 'fx')} or ({'pad', 'chords', 'lead'} & have) or lay
+        elif e < 0.45:
+            new = (lay - {'kick', 'snare'}) | ({'top', 'bass'} & have)
+            if not new & {'pad', 'chords'}:
+                new |= {'pad', 'chords'} & have
+        elif e < 0.70:
+            new = lay
+        else:
+            new = lay | ({'kick', 'snare', 'top', 'bass'} & have)
+            if e >= 0.85:
+                new |= {'chords', 'arp', 'lead', 'pad'} & have
+        out.append((n, b, new, dict(o, energy=round(e, 2))))
+    return out
+
+
 # per-genre timing feel: offsets in fractions of a 16th note, for each of the 16 steps of a bar, per part
 GROOVES = {
     'dilla': {'snare': [0, 0, 0, 0, .22, 0, 0, 0, 0, 0, 0, 0, .22, 0, 0, 0], 'top': [0, .14] * 8, 'bass': [.1] * 16,
@@ -3932,12 +3978,29 @@ GROOVES = {
     'jazz': {'top': [-.06] * 16, 'bass': [-.03] * 16, 'snare': [.1] * 16, 'chords': [.05] * 16},
     'house': {'top': [0, 0, .07, 0] * 4, 'chords': [0, 0, .04, 0] * 4},
     'funk': {'top': [0, -.05] * 8, 'bass': [-.02] * 16, 'snare': [0, .06] * 8},
+    # (2.0) the classic feels producers reach for, as offsets of a 16th (MPC swing % = how late the off-16ths land)
+    'mpc54': {'top': [0, .08] * 8, 'snare': [0, .08] * 8, 'kick': [0, .08] * 8, 'bass': [0, .08] * 8, 'chords': [0, .08] * 8},
+    'mpc58': {'top': [0, .16] * 8, 'snare': [0, .16] * 8, 'kick': [0, .16] * 8, 'bass': [0, .16] * 8, 'chords': [0, .16] * 8},
+    'mpc62': {'top': [0, .24] * 8, 'snare': [0, .24] * 8, 'kick': [0, .24] * 8, 'bass': [0, .24] * 8, 'chords': [0, .24] * 8},
+    'boombap': {'top': [0, .2] * 8, 'snare': [0, 0, 0, 0, .16, 0, 0, 0, 0, 0, 0, 0, .16, 0, 0, 0], 'kick': [0, .12] * 8,
+                'bass': [.05] * 16},
+    'drunk': {'top': [.04, .3, -.06, .22] * 4, 'snare': [0, 0, 0, 0, .3, 0, 0, 0, 0, 0, 0, 0, .26, 0, 0, 0], 'kick': [-.05, .1] * 8,
+              'bass': [.14] * 16, 'chords': [.12] * 16},
+    'ukg': {'top': [0, .32] * 8, 'kick': [0, .32] * 8, 'snare': [0, .1] * 8, 'bass': [0, .32] * 8},
+    'techno_shuffle': {'top': [0, .12, -.04, .12] * 4, 'kick': [0] * 16, 'snare': [-.02] * 16},
+    'trap_tight': {'top': [-.03] * 16, 'snare': [.04] * 16},
+    'drill': {'top': [0, .1, 0, -.04] * 4, 'snare': [.08] * 16, 'kick': [0, .06] * 8},
+    'dnb_roll': {'snare': [-.06] * 16, 'top': [0, .05] * 8},
 }
-STYLE_GROOVE = {'jazz_rap': 'dilla', 'slow_jam': 'laidback', 'smooth_jazz': 'laidback', 'quiet_storm': 'laidback', 'smooth_funk': 'funk', 'neo_soul': 'dilla', 'g_funk': 'laidback', 'hauntology_sunlit': 'dilla', 'hauntology_dark': 'laidback', 'disco_funk': 'funk', 'organic_house': 'house', 'boombap': 'dilla', 'lofi': 'dilla', 'phonk': 'dilla', 'reggae': 'laidback', 'downtempo': 'laidback',
+STYLE_GROOVE = {'jazz_rap': 'dilla', 'slow_jam': 'laidback', 'smooth_jazz': 'laidback', 'quiet_storm': 'laidback', 'smooth_funk': 'funk', 'neo_soul': 'dilla', 'g_funk': 'laidback', 'hauntology_sunlit': 'dilla', 'hauntology_dark': 'laidback', 'disco_funk': 'funk', 'organic_house': 'house', 'boombap': 'boombap', 'lofi': 'dilla', 'phonk': 'dilla', 'reggae': 'laidback', 'downtempo': 'laidback',
                 'afrobeats': 'afro', 'amapiano': 'afro', 'reggaeton': 'dembow', 'moombahton': 'dembow', 'jazz': 'jazz',
                 'house': 'house', 'deep_house': 'house', 'tech_house': 'house', 'ukgarage': 'house',
                 'funk': 'funk', 'disco': 'funk', 'city_pop': 'funk', 'rnb': 'laidback', 'gospel': 'laidback',
-                'swing': 'jazz', 'afro_house': 'afro', 'dancehall': 'dembow', 'cumbia': 'afro', 'hauntology': 'dilla'}
+                'swing': 'jazz', 'afro_house': 'afro', 'dancehall': 'dembow', 'cumbia': 'afro', 'hauntology': 'dilla',
+                # (2.0) the classic feels as genre defaults
+                'trap': 'trap_tight', 'hard_trap': 'trap_tight', 'uk_drill': 'drill', 'dark_drill': 'drill', 'techno': 'techno_shuffle',
+                'minimal': 'techno_shuffle', 'hypnotic_techno': 'techno_shuffle', 'dnb': 'dnb_roll', 'neurofunk': 'dnb_roll',
+                'soul_sample_rap': 'boombap', 'smooth_90s_rap': 'boombap', 'speed_garage': 'ukg', 'bassline_140': 'ukg'}
 
 
 

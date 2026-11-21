@@ -54,6 +54,49 @@ def last_geometry():
         return 1440, 920, None
 
 
+class Bridge:
+    """(2.0) What the page can ask of the desktop window: window.pywebview.api.save(href) - a real "Save as" dialog for
+    every export / download link, then the saved file shown in Explorer / Finder."""
+
+    def __init__(self, base):
+        self.base = base.rstrip('/')
+        self.window = None
+
+    def save(self, href, name=None):
+        import re
+        import shutil
+        import urllib.parse
+        import urllib.request
+        import webview
+        full = urllib.parse.urljoin(self.base + '/', href)
+        if not full.startswith(self.base):
+            return dict(ok=False, error='not a Studio Lab file')
+        with urllib.request.urlopen(full) as r:
+            cd = r.headers.get('Content-Disposition', '')
+            m = re.search(r"filename\*?=(?:UTF-8'')?\"?([^\";]+)", cd)
+            fname = name or (urllib.parse.unquote(m.group(1)) if m else
+                             urllib.parse.unquote(urllib.parse.urlparse(full).path.rsplit('/', 1)[-1]) or 'studio-lab-export')
+            dest = self.window.create_file_dialog(webview.SAVE_DIALOG, directory=os.path.expanduser('~'), save_filename=fname)
+            if not dest:
+                return dict(ok=False, cancelled=True)
+            dest = dest if isinstance(dest, str) else dest[0]
+            with open(dest + '.part', 'wb') as f:
+                shutil.copyfileobj(r, f, 1 << 20)
+            os.replace(dest + '.part', dest)
+        self.reveal(dest)
+        return dict(ok=True, path=dest)
+
+    def reveal(self, path):
+        try:
+            if sys.platform == 'win32':
+                subprocess.Popen(['explorer', '/select,', os.path.normpath(path)])
+            elif sys.platform == 'darwin':
+                subprocess.Popen(['open', '-R', path])
+        except Exception:
+            pass
+        return True
+
+
 def open_window(url, quit_app):
     """Open the app window - the same size and place as last time. Returns 'webview' (blocks until closed), 'app' or
     'browser'."""
@@ -66,7 +109,8 @@ def open_window(url, quit_app):
         except Exception:
             pass
         kw = dict(x=pos[0], y=pos[1]) if pos else {}
-        webview.create_window('Studio Lab', url, width=w, height=h, min_size=(900, 600), **kw)
+        bridge = Bridge(url.split('?')[0])
+        bridge.window = webview.create_window('Studio Lab', url, width=w, height=h, min_size=(900, 600), js_api=bridge, **kw)
         try:
             webview.start(private_mode=False)            # keep the page's own storage between launches
         except TypeError:                                 # (older pywebview)

@@ -533,7 +533,7 @@ AUDITION_FIG = {   # role -> [(beat, dur, semitones above the root)] - a tiny fi
 ROOT = {'bass': 33, 'lead': 60, 'arp': 60, 'chords': 57, 'pad': 57}
 
 
-def audition(inst=None, role='lead', kit=None, voice=None, bpm=124):
+def audition(inst=None, role='lead', kit=None, voice=None, bpm=124, midi=None, dur=None):
     """A short WAV (bytes) of one sound: an instrument playing a little figure for its role, or one drum voice (kick /
     snare / clap / hats) from any kit hit a few times - so a sound can be heard before rendering a song."""
     import tempfile
@@ -573,7 +573,10 @@ def audition(inst=None, role='lead', kit=None, voice=None, bpm=124):
         tcfg = dict(name='audition', inst=inst, layer=role, p=dict(TONE_DEFAULTS.get(inst, {})))
         r = Renderer(song, log=lambda *a: None)
         p = r._params(tcfg)
-        for i, (b, d, iv) in enumerate(AUDITION_FIG[role]):
+        fig = AUDITION_FIG[role]
+        if midi is not None:                            # (2.0) live preview: just the note you clicked in the editor
+            fig = [(0, max(0.12, min(4.0, float(dur or 0.5))), int(midi) - ROOT[role])]
+        for i, (b, d, iv) in enumerate(fig):
             ev = Ev('audition', b, d, ROOT[role] + iv, 0.85 if i % 2 == 0 else 0.72)
             sig = np.asarray(r._note(tcfg, ev, p), float)
             sig = sig if sig.ndim == 2 else np.vstack([sig, sig])

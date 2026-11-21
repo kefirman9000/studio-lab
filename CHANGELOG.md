@@ -1,5 +1,26 @@
 # Changelog
 
+## 2.0.0
+**Studio Lab 2.0: SL2 merged in, a drawable energy curve, real groove templates, new synths, live note preview, ready-to-mix REAPER projects and a proper Windows app**
+
+- **One Studio Lab.** SL2's ideas now live here. Its mix tools (true-peak limiting, round-robin hits, kick tuning, drum-bus glue and the mix check) were already merged in 1.97. Its **Euphoric UK Techno** genre (Scuba - NE1BUTU) is new: a simple, punchy broken kick and a heavy sub, then a long build where pads, rave stabs, plucks and a soaring lead stack up into a euphoric ending.
+- **Generate and Play.** The main button is now **✦ Generate** (a new song). Next to it, **▶ Play** replays the last song. Once you change something, it becomes **▶ Play with changes**: the *same* song (same seed, sounds and note edits) played again with your changes, not a new song.
+- **Draw the energy curve** (Song → Energy curve). Draw how the song should rise and fall, or start from Slow build, Two drops, Peak at the end or Arc. The arrangement follows your curve: low parts thin out to pads and chords, mid parts drop the drums, and high parts bring everything in.
+- **Groove templates** (Groove feel → Classic feels): MPC swing 54/58/62 %, boom bap, drunk (very loose Dilla), UK garage shuffle, techno shuffle, tight trap, drill bounce and DnB roll. Each template moves each part differently, the way producers set it on their machines. Trap, drill, techno, DnB, boom bap and garage now use these by default.
+- **New synths for trance, techno and hip hop:**
+  - PWM pad, formant lead, FM perc, mod sequence, noise stab, sliding 808, 12-bit MPC keys (with crackle), soul horn and scratch.
+  - Each one is in its genres' sound pools: the hip-hop scenes get MPC keys, soul horns and scratches; trap and drill get the sliding 808; techno gets noise stabs and mod sequences; trance gets the PWM pad and formant lead.
+- **Live preview in the editor:** clicking, adding or moving a note plays that note on the track's own sound, straight away. Turn this off with 🔊 hear notes. In the editor, **▶ Play with changes** replays the song with your edits.
+- **DAW project:** the DAW pack's REAPER project now opens ready to mix:
+  - Each section has a marker and region, and the tempo map follows half-time breakdowns and tempo changes.
+  - Every stem is on its own colour-coded track, and the drums sit in a Drums folder.
+  - The full mix is on a muted reference track, and every part's MIDI is on its own muted track, ready for your own instruments.
+  - A *Sections (markers).txt* file lists the section times for other DAWs.
+- **A real Windows app:** Save buttons open the normal Windows Save dialog (and show the file in Explorer when it's done) instead of downloading the file like a browser.
+- **Cleaner look, same layout:**
+  - The result card is simpler: one row of actions (Full song, Edit, Extend, New sounds, ⋯, 👍👎). Parts, Play and *Like this* sit under **🎛 Tweak this song**, which remembers whether you leave it open. Skip intro and A/B are in the ⋯ menu.
+  - Hover and focus states are calmer, inputs and scrollbars are tidier, and the hierarchy is clearer throughout.
+
 ## 1.97.0
 **Slam / brutal deathcore, a cybergrind that never writes the same song twice, more professional mixes, and a tidier result card**
 

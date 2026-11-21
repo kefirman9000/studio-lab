@@ -134,7 +134,7 @@ GENRE_KIT = {
     'alt_rnb': '808', 'rage': '808', 'plugg': '808', 'jazz_rap': 'funky_drummer', 'cloud_rap': '808', 'slow_jam': '808',
     'trap': '808', 'uk_drill': '808', 'luxury_rap': '808', 'orchestral_hiphop': '808', 'reggaeton': '808', 'jersey_club': '808',
     'house': '909', 'tech_house': '909', 'acid_house': '909', 'progressive_house': '909', 'eurodance': '909',
-    'techno': 'techno', 'minimal': 'techno', 'melodic_techno': 'techno',
+    'techno': 'techno', 'minimal': 'techno', 'melodic_techno': 'techno', 'euphoric_uk_techno': 'techno',
     'trance': 'trance', 'uplifting_trance': 'trance', 'progressive_trance': 'trance', 'psytrance': 'trance',
     'synthwave': 'linn', 'synthpop': 'linn', 'city_pop': 'linn',
     'rock': 'rock', 'indie_rock': 'rock', 'punk': 'rock', 'metal': 'rock', 'symphonic_metal': 'rock', 'jam_band': 'rock',

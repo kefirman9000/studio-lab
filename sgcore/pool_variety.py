@@ -36,10 +36,10 @@ SCENES = {
         arp=['chip', 'superpluck', 'pluck', 'vocalchop', 'technoseq', 'bell', 'glock', 'samplerstab'],
         lead=['emolead', 'vocalchop', 'supersaw_lead', 'breathlead', 'leadsaw', 'synclead', 'hardlead', 'hoover']),
     'Hip-Hop, Trap & Phonk': dict(
-        chords=['piano', 'rhodes', 'strings', 'choir', 'lofikeys', 'bell', 'glasspad', 'fbchord'],
+        chords=['piano', 'rhodes', 'mpckeys', 'strings', 'choir', 'lofikeys', 'soulhorn', 'bell', 'glasspad', 'fbchord'],
         pad=['strings', 'choir', 'glasspad', 'vocalpad', 'atmos', 'darkpad', 'warmpad', 'lushpad'],
         arp=['bell', 'glock', 'celesta', 'pluck', 'piano', 'kalimba', 'harp', 'flute'],
-        lead=['bell', 'glock', 'flute', 'piano', 'vocalchop', 'celesta', 'softlead', 'churchbell']),
+        lead=['bell', 'glock', 'flute', 'piano', 'vocalchop', 'scratch', 'celesta', 'softlead', 'churchbell']),
     'Pop, R&B & Hopecore': dict(
         bass=['sinebass', 'moogbass', 'junobass', 'deepbass', 'fmbass', 'bouncebass'],
         chords=['piano', 'rhodes', 'pianosaw', 'junopoly', 'guitar', 'nylon', 'fbchord', 'epiano'],
@@ -139,13 +139,14 @@ _NEW_188 = {
     'uplifting_trance': dict(pad=['shimmerpad']),
 }
 VARIANTS_808 = ('808dist', '808long', '808punch')
-_TECHNO = dict(chords=['dubchord', 'industrialstab', 'ravestab2', 'detroitchord'], arp=['hypnoseq', 'berlinseq', 'metalperc', 'bleep'],
+_TECHNO = dict(chords=['dubchord', 'industrialstab', 'noisestab', 'ravestab2', 'detroitchord'],
+               arp=['hypnoseq', 'modseq', 'berlinseq', 'fmperc', 'metalperc', 'bleep'],
                lead=['peaklead', 'analoglead', 'ravestab2'], pad=['hypnopad', 'detroitchord'])
 CLUB_GENRE = {g: _TECHNO for g in ('techno', 'minimal', 'melodic_techno', 'hard_techno', 'uk_tribal_techno',
                                    'berlin_school', 'acid_techno', 'industrial_techno', 'detroit_techno', 'hypnotic_techno')}
 _TRANCE = dict(arp=['sylpluck', 'tranceseq', 'dreampluck', 'trancepizz', 'trancebell', 'breakpiano', 'laserpluck'],
-               lead=['screamlead', 'dreamlead', 'tranceflute', 'trancebell'],
-               chords=['upstab', 'dreampad', 'vocoderchord', 'breakpiano'], pad=['trancestrings', 'gatedchoir', 'dreampad', 'dreamair'],
+               lead=['screamlead', 'formantlead', 'dreamlead', 'tranceflute', 'trancebell'],
+               chords=['upstab', 'dreampad', 'vocoderchord', 'breakpiano'], pad=['trancestrings', 'pwmpad', 'gatedchoir', 'dreampad', 'dreamair'],
                bass=['fmroll', 'offbass', 'dreambass'])
 for _g in ('trance', 'uplifting_trance', 'progressive_trance', 'club_trance_2000s', 'progressive_trance_2010s',
            'vocal_trance_remix', 'electro_prog_trance', 'trance_pop_90s', 'hard_trance'):
@@ -294,11 +295,25 @@ def _era_filter(original):
             lst[:] = keep
 
 
+HIPHOP_20 = dict(chords=['mpckeys', 'soulhorn'], lead=['scratch', 'soulhorn'], arp=['mpckeys'])     # (2.0) sampled-era sounds
+
+
 def widen():
     import copy as _copy
     original = _copy.deepcopy(POOLS)
     _widen(original)
     _era_filter(original)
+    for g in dict(GROUPS['Classic']).get('Hip-Hop', []):          # boom bap & co: chopped keys, horn stabs, scratches
+        pools = POOLS.get(g)
+        if not pools or g not in STYLES or STYLES[g].get('exact_pools'):
+            continue
+        for role, extra in HIPHOP_20.items():
+            if role in pools and not _locked(g, role):
+                pools[role] += [i for i in extra if i not in pools[role]]
+    for g in ('trap', 'uk_drill', 'dark_drill', 'hard_trap', 'rage', 'latin_trap'):   # the sliding 808 as an alternative
+        pools = POOLS.get(g)
+        if pools and 'bass' in pools and 'slide808' not in pools['bass']:
+            pools['bass'].append('slide808')
 
 
 def _widen(original):

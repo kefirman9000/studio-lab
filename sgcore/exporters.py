@@ -670,15 +670,93 @@ The vocal guide (MIDI/…vocal_guide.mid) is a melody to sing over - load a pian
 """
 
 
-def _rpp(title, bpm, stems, length_s):
-    """A minimal REAPER project with one track per stem, all starting at 0."""
-    lines = ['<REAPER_PROJECT 0.1 "6.0"', f'  TEMPO {bpm} 4 4', '  SAMPLERATE 44100 0 0']
-    for st in stems:
-        name = os.path.splitext(os.path.basename(st))[0]
-        lines += ['  <TRACK', f'    NAME "{name}"', '    <ITEM', '      POSITION 0', f'      LENGTH {length_s:.3f}',
-                  f'      NAME "{name}"', '      <SOURCE WAVE', f'        FILE "Audio/{os.path.basename(st)}"', '      >', '    >', '  >']
-    lines.append('>')
-    return '\n'.join(lines) + '\n'
+RPP_COLOR = {'kick': (230, 80, 70), 'snare': (240, 140, 60), 'top': (240, 200, 70), 'bass': (70, 140, 240),
+             'chords': (150, 100, 230), 'pad': (110, 190, 220), 'arp': (90, 210, 150), 'lead': (240, 90, 170),
+             'fx': (150, 150, 160), 'vocal': (250, 120, 120), 'midi': (120, 120, 130)}
+
+
+def _rpp_col(layer):
+    r, g, b = RPP_COLOR.get(layer, (160, 160, 170))
+    return r | (g << 8) | (b << 16) | 0x1000000
+
+
+def beat_seconds(song):
+    """A function beat -> seconds that follows the song's tempo map (per-section tempo, accelerando, odd meters)."""
+    bpm = float(song['bpm'])
+    tm = song.get('tempo_map')
+    if not tm:
+        return lambda b: b * 60.0 / bpm
+    end = int(song['total_bars'] * 4) + 8
+    acc, t = [0.0], 0.0
+    for b in range(end):
+        seg = next(((x0, v0, x1, v1) for (x0, v0), (x1, v1) in zip(tm, tm[1:]) if x0 <= b + 0.5 <= x1 and x1 > x0), None)
+        v = (seg[1] + (seg[3] - seg[1]) * (b + 0.5 - seg[0]) / (seg[2] - seg[0])) if seg else tm[-1][1]
+        t += 60.0 / max(20.0, v)
+        acc.append(t)
+
+    def f(b):
+        b = max(0.0, float(b))
+        i = min(int(b), end - 1)
+        return acc[i] + (acc[i + 1] - acc[i]) * (b - i)
+    return f
+
+
+def _rpp(title, song, stems, midis, length_s):
+    """(2.0) A REAPER project that opens ready to mix: the tempo map, a marker + region per section, every stem on its
+    own coloured track (drums inside a Drums folder), the full mix muted for reference, and every part's MIDI on its own
+    muted track - load an instrument on it to replace or layer the sound."""
+    bpm = song['bpm']
+    sec_of = beat_seconds(song)
+    num = {'3/4': 3, '6/8': 6, '12/8': 12}.get(song.get('meter') or '4/4', 4)
+    den = 8 if num in (6, 12) else 4
+    L = ['<REAPER_PROJECT 0.1 "6.0"', f'  TITLE "{title}"', f'  TEMPO {bpm} {num} {den}', '  SAMPLERATE 44100 0 0']
+    tm = song.get('tempo_map')
+    if tm:
+        L += ['  <TEMPOENVEX', '    ACT 1 -1', '    VIS 1 0 1', '    LANEHEIGHT 0 0', '    ARM 0', '    DEFSHAPE 1 -1 -1']
+        last = None
+        for b in range(0, int(song['total_bars'] * 4) + 1):
+            seg = next(((x0, v0, x1, v1) for (x0, v0), (x1, v1) in zip(tm, tm[1:]) if x0 <= b <= x1 and x1 > x0), None)
+            v = (seg[1] + (seg[3] - seg[1]) * (b - seg[0]) / (seg[2] - seg[0])) if seg else tm[-1][1]
+            if last is None or abs(v - last) > 0.05:
+                L.append(f'    PT {sec_of(b):.6f} {v:.4f} 1')
+                last = v
+        L.append('  >')
+    secs = song['sections']
+    for k, x in enumerate(secs, 1):
+        a = sec_of(x['bar'] * 4)
+        e = sec_of((x['bar'] + x['bars']) * 4)
+        nm = str(x['name']).replace('"', "'")
+        L.append(f'  MARKER {k} {a:.6f} "{nm}" 1')
+        L.append(f'  MARKER {k} {e:.6f} "" 1')
+
+    def track(name, path, layer, kind='WAVE', mute=False, folder=0, length=length_s):
+        name = name.replace('"', "'")
+        out = ['  <TRACK', f'    NAME "{name}"', f'    PEAKCOL {_rpp_col(layer)}', f'    MUTESOLO {1 if mute else 0} 0 0',
+               f'    ISBUS {folder}']
+        out += ['    <ITEM', '      POSITION 0', f'      LENGTH {length:.3f}', f'      NAME "{name}"',
+                f'      <SOURCE {kind}', f'        FILE "{path}"', '      >', '    >', '  >']
+        return out
+    drums = [x for x in stems if x[1] in ('kick', 'snare', 'top')]
+    rest = [x for x in stems if x[1] not in ('kick', 'snare', 'top')]
+    if drums:
+        L += ['  <TRACK', '    NAME "Drums"', f'    PEAKCOL {_rpp_col("kick")}', '    ISBUS 1 1', '  >']
+        for i, (path, layer) in enumerate(drums):
+            nm = os.path.splitext(os.path.basename(path))[0]
+            t = track(nm, 'Audio/' + os.path.basename(path), layer, folder='2 -1' if i == len(drums) - 1 else '0 0')
+            L += t
+    for path, layer in rest:
+        nm = os.path.splitext(os.path.basename(path))[0]
+        L += track(nm, 'Audio/' + os.path.basename(path), layer, folder='0 0')
+    if os.path.exists(os.path.join(os.path.dirname(stems[0][0]) if stems else '', 'Extras', 'Full mix (reference).wav')):
+        L += track('Full mix (reference)', 'Audio/Extras/Full mix (reference).wav', 'fx', mute=True, folder='0 0')
+    if midis:
+        L += ['  <TRACK', '    NAME "MIDI parts (muted - add an instrument)"', f'    PEAKCOL {_rpp_col("midi")}', '    ISBUS 1 1', '  >']
+        items = sorted(midis.items())
+        for i, (label, path) in enumerate(items):
+            L += track(f'MIDI {label}', 'MIDI/' + os.path.basename(path), 'midi', kind='MIDI', mute=True,
+                       folder='2 -1' if i == len(items) - 1 else '0 0')
+    L.append('>')
+    return '\n'.join(L) + '\n'
 
 
 def write_daw_pack(folder, song, renderer, mix_wav, log=print):
@@ -701,19 +779,24 @@ def write_daw_pack(folder, song, renderer, mix_wav, log=print):
         n += 1
         dst = os.path.join(audio, f"{n:02d} {st['name'].replace('_', ' ').title()}.wav")
         shutil.copy2(st['path'], dst)
-        copied.append(dst)
+        copied.append((dst, st.get('layer') or ''))
     if mix_wav and os.path.exists(mix_wav):
         os.makedirs(os.path.join(audio, 'Extras'), exist_ok=True)
         dst = os.path.join(audio, 'Extras', 'Full mix (reference).wav')
         shutil.copy2(mix_wav, dst)
     write_midi(os.path.join(midi, f'{title} - full song.mid'), song)
-    write_part_midis(midi, song)
+    part_midis = write_part_midis(midi, song)
     k = song['key']
     with open(os.path.join(folder, 'HOW TO OPEN IN YOUR DAW.txt'), 'w', encoding='utf-8') as f:
         f.write(DAW_GUIDE.format(title=title, style=song['style'], key=k.name(), bpm=song['bpm'], bars=song['total_bars']))
-    length = song['total_bars'] * 4 * 60 / song['bpm'] + 4
+    length = beat_seconds(song)(song['total_bars'] * 4) + 4
     with open(os.path.join(folder, title + '.rpp'), 'w', encoding='utf-8') as f:
-        f.write(_rpp(title, song['bpm'], copied, length))
+        f.write(_rpp(title, song, copied, part_midis, length))
+    with open(os.path.join(folder, 'Sections (markers).txt'), 'w', encoding='utf-8') as f:   # for DAWs without .rpp
+        sec_of = beat_seconds(song)
+        for x in song['sections']:
+            t = sec_of(x['bar'] * 4)
+            f.write(f"bar {x['bar'] + 1:>4}   {int(t // 60)}:{t % 60:06.3f}   {x['name']}  ({x['bars']} bars)\n")
     zpath = folder.rstrip('/\\') + '.zip'
     with zipfile.ZipFile(zpath, 'w', zipfile.ZIP_DEFLATED) as z:
         for root, dirs, files in os.walk(folder):
