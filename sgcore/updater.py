@@ -88,30 +88,33 @@ def apply():
     backup = os.path.join(ROOT, '.backup')
     shutil.rmtree(backup, ignore_errors=True)
     os.makedirs(backup, exist_ok=True)
-    for name in os.listdir(ROOT):
-        if name in KEEP or name.startswith('.'):
-            continue
-        shutil.move(os.path.join(ROOT, name), os.path.join(backup, name))
-    try:
+    root = os.path.realpath(ROOT)
+    saved = []                                          # (2.2.3) only the files being replaced are backed up - files
+    try:                                                # the installer added (StudioLab.exe, the icon ...) stay put
         for member in zf.namelist():
             rel = member[len(top) + 1:]
             if not rel or rel.split('/')[0] in KEEP:
                 continue
             dst = os.path.realpath(os.path.join(ROOT, rel))
-            if os.path.commonpath([dst, os.path.realpath(ROOT)]) != os.path.realpath(ROOT):
+            if os.path.commonpath([dst, root]) != root:
                 continue                    # never write outside the app folder
             if member.endswith('/'):
                 os.makedirs(dst, exist_ok=True)
-            else:
-                os.makedirs(os.path.dirname(dst), exist_ok=True)
-                with zf.open(member) as src, open(dst, 'wb') as f:
-                    shutil.copyfileobj(src, f)
+                continue
+            if os.path.isfile(dst):
+                bk = os.path.join(backup, rel)
+                os.makedirs(os.path.dirname(bk), exist_ok=True)
+                shutil.copy2(dst, bk)
+                saved.append((bk, dst))
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            with zf.open(member) as src, open(dst, 'wb') as f:
+                shutil.copyfileobj(src, f)
     except Exception as e:
-        for name in os.listdir(backup):           # roll back
-            dst = os.path.join(ROOT, name)
-            if os.path.exists(dst):
-                shutil.rmtree(dst, ignore_errors=True) if os.path.isdir(dst) else os.remove(dst)
-            shutil.move(os.path.join(backup, name), dst)
+        for bk, dst in saved:                     # roll back
+            try:
+                shutil.copy2(bk, dst)
+            except Exception:
+                pass
         return dict(ok=False, message=f'Update failed and was rolled back: {e}')
     return dict(ok=True, message='Updated - restarting', version=local_version())
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.4
+- **"Update Studio Lab.bat": update without opening the app.** Double-click it in your Studio Lab folder. It closes Studio Lab if it's open, downloads the latest version from GitHub and copies the program files over. Your songs, presets, settings, sounds, plugins and the bundled Python are never touched. It comes with every install and is attached to every GitHub release.
+- **The in-app updater no longer moves away files it doesn't replace**, such as StudioLab.exe and the icon from the installer. It only backs up the files it overwrites, so it can put them back if an update fails.
+
+
 ## 2.2.3
 - **Fixed: "127.0.0.1 refused to connect" at start-up** (2.2.1 and 2.2.2). The window could load before the studio was answering.
 - **The window stays responsive while Studio Lab loads, and while songs render.** The sound engine now runs in its own background process, so Windows no longer says "Not responding". The engine closes with the window, and installing an update restarts both.

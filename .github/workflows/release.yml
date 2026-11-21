@@ -47,7 +47,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           VER="${{ steps.v.outputs.ver }}"
-          gh release create "v${VER}" "studio-lab-${VER}.zip" --target "$GITHUB_SHA" --title "Studio Lab ${VER}" --notes-file notes.md
+          gh release create "v${VER}" "studio-lab-${VER}.zip" "Update Studio Lab.bat" --target "$GITHUB_SHA" --title "Studio Lab ${VER}" --notes-file notes.md
 
   installers:
     needs: release
