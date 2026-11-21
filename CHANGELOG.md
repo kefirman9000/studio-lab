@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.1
+- **Surprise me generates straight away again.** A volume slider stopped it after it picked the random settings, so nothing played until you pressed Generate. The same fix applies to loading settings and presets.
+
 ## 2.0.0
 **Studio Lab 2.0: SL2 merged in, a drawable energy curve, real groove templates, new synths, live note preview, ready-to-mix REAPER projects and a proper Windows app**
 

@@ -1007,7 +1007,7 @@ function applyOptions(o){
     $('#jDyn').value=(j.dynamics??.75)*100; $('#jEnd').value=j.ending||'major'; $('#jWinds').checked=j.woodwinds!==false;
     $('#jChoir').checked=j.choir!==false; $('#jLift').checked=j.lift!==false; $('#jHybrid').checked=!!j.hybrid; $('#jGlory').value=j.glory_style||'concert'; state.jPreset=j.preset||null; }
   const cat=Object.entries(META.categories).find(([c,l])=>l.some(s=>s.id===o.style)); if(cat) state.cat=cat[0];
-  syncAutos(); initSegs(); renderMoods(); renderLayers(); renderTabs(); refresh(); $$('input[type=range]').forEach(e=>e.oninput&&e.oninput());
+  syncAutos(); initSegs(); renderMoods(); renderLayers(); renderTabs(); refresh(); $$('input[type=range]').forEach(e=>{ try{ e.oninput&&e.oninput({target:e,currentTarget:e}); }catch(_){} });
 }
 // ------------------------------------------------------------- knobs: every slider becomes a rotary knob
 // drag up/down (Shift = fine), scroll wheel or arrow keys to turn; double-click resets. The hidden slider underneath
@@ -1997,7 +1997,7 @@ async function onReference(file){
         if(a.brightness!=null) $('#brightness').value=Math.round(a.brightness*100);
         if(a.energy!=null) $('#energy').value=Math.round(a.energy*100);
         if(a.complexity!=null) $('#complexity').value=Math.round(a.complexity*100);
-        syncAutos(); $$('input[type=range]').forEach(e=>e.oninput&&e.oninput());
+        syncAutos(); $$('input[type=range]').forEach(e=>{ try{ e.oninput&&e.oninput({target:e,currentTarget:e}); }catch(_){} });
         $('#status').textContent='Reference applied'+(a.progression?' (including its chord progression)':'')+' - press Generate.'; };
     };
     show();
@@ -2536,7 +2536,7 @@ async function init(){
     const cat=Object.entries(META.categories).find(([c,l])=>l.some(s=>s.id===state.style)); state.cat=cat[0];
     const il=(TASTE&&TASTE.inst_likes)||{};                          // instruments you liked, per part
     Object.entries(il).forEach(([role,w])=>{ const ok=Object.keys(w).filter(i=>(META.roles[role]||[]).some(x=>x.id===i)); if(ok.length&&Math.random()<.35&&!state.instruments[role]) state.instruments[role]=wpick(ok,w); });
-    renderTabs(); renderMoods(); refresh(); $$('input[type=range]').forEach(e=>e.oninput&&e.oninput());
+    renderTabs(); renderMoods(); refresh(); $$('input[type=range]').forEach(e=>{ try{ e.oninput&&e.oninput({target:e,currentTarget:e}); }catch(_){} });
     const o=options(); const pl=((TASTE&&TASTE.part_likes)||{})[state.style]||{};   // a part you loved in this style
     Object.entries(pl).forEach(([p,seeds])=>{ const sd=seeds.filter(x=>x!=null); if(sd.length&&Math.random()<.5){ o.part_seeds=Object.assign({},o.part_seeds||{}); o.part_seeds[p]=pick(sd); } });
     run(true,1,o);
