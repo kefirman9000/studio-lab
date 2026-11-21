@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 337 GENRES  (version 1.82.0)
+STUDIO LAB - ALL 347 GENRES  (version 1.96.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 1.82
+* = new in 1.96
 
 ========================================================================
-ELECTRONIC  (177)
+ELECTRONIC  (185)
 ========================================================================
 
 House & Disco  (29)
@@ -37,13 +37,15 @@ House & Disco  (29)
     Hi-NRG (80s)  [hi_nrg]
     Brazilian bass  [brazilian_bass]
 
-Techno & Trance  (22)
+Techno & Trance  (24)
     techno  [techno]
     minimal  [minimal]
     Melodic Techno  [melodic_techno]
     New Beat  [new_beat]
     trance  [trance]
     Uplifting Trance  [uplifting_trance]
+    Classic vocal trance (2004-09)  [classic_vocal_trance]
+    Festival techno (big-room trance, 2011-14)  [festival_techno]
     Progressive Trance (emotional)  [progressive_trance]
     Club trance remix (2000s, riff & breakdown)  [club_trance_2000s]
     Festival psy-trance (big-room / psy hybrid)  [festival_psy]
@@ -61,13 +63,15 @@ Techno & Trance  (22)
     Hard techno (150)  [hard_techno]
     Dub techno  [dub_techno]
 
-Dubstep, Garage & Bass  (24)
+Dubstep, Garage & Bass  (26)
     Dubstep (classic UK)  [dubstep]
+    Wave (ethereal half-time, 808 sub, vocal chops)  [ethereal_wave]
     Brostep  [brostep]
     Riddim  [riddim]
     Melodic Dubstep  [melodic_dubstep]
     Chillstep  [chillstep]
     Deep Dubstep (soundsystem)  [deep_dubstep]
+    Dark dubstep (sub-weight, 2009-12)  [dark_dubstep_classic]
     Deep Dubstep - sparse & eerie  [deep_dubstep_minimal]
     Deep dubstep - rollers (sub-weight)  [deep_dubstep_rollers]
     Deep dubstep - rolling percussion (140)  [deep_dubstep_rolling]
@@ -163,8 +167,10 @@ Afro, Latin & Caribbean  (8)
     Funk 150 / mandelao  [funk_150]
     Gqom  [gqom]
 
-Chill, Lo-fi & Ambient  (15)
+Chill, Lo-fi & Ambient  (18)
     Lo-fi Hip Hop  [lofi]
+    Sunlit electronica (analog band, guitars, 112-122)  [sunlit_electronica]
+    Daydream downtempo (dusty breaks, guitar haze, 74-95)  [daydream_downtempo]
     Downtempo  [downtempo]
     Balearic chill (sunset guitar, slow house)  [balearic_chill]
     Sunlit chillwave (live drums, chorus guitar, analog synths)  [sunrise_chillwave]
@@ -172,6 +178,7 @@ Chill, Lo-fi & Ambient  (15)
     Analog arp drive (pulsing sequence, pumping pads)  [analog_arp_drive]
     ambient  [ambient]
     Ambient beat (dark, sub-heavy)  [ambient_beat]
+    Dreamy synthscape (chill synth space)  [dream_synthscape]
     Vaporwave  [vaporwave]
     90s new-age chill (chant)  [new_age_chant]
     Chant downtempo - shakuhachi & monks  [chant_downtempo]
@@ -188,8 +195,9 @@ Footwork & Juke  (6)
     Juke / ghetto house - raw (130)  [juke_raw]
     Juke house - bouncy (126)  [juke_house]
 
-Retro & Video Game  (6)
+Retro & Video Game  (7)
     synthwave  [synthwave]
+    Spooky surf - modern monster theme (synths)  [monster_synth]
     Dark Synthwave  [dark_synthwave]
     Chiptune  [chiptune]
     90s video game (PS1-era)  [ps1_game]
@@ -206,10 +214,10 @@ Hauntology  (7)
     Hauntology - cold dystopian synths  [hauntology_cold]
 
 ========================================================================
-CLASSIC  (129)
+CLASSIC  (131)
 ========================================================================
 
-Rock & Metal  (27)
+Rock & Metal  (29)
     rock  [rock]
     Indie Rock  [indie_rock]
     90s alt rock  [alt_rock_90s]
@@ -224,9 +232,11 @@ Rock & Metal  (27)
     Boogie blues-rock (slide)  [boogie_blues_rock]
     Nu-metal  [nu_metal]
     Cybergrind / drum-machine deathgrind  [cybergrind]
+    Slam / brutal deathcore  [slam]
     Spooky 60s surf / TV theme  [spooky_surf]
     Spooky surf - monster TV theme  [monster_theme]
     Spooky surf - organ & brass  [monster_organ]
+    Spooky surf - monster band (spring guitars, combo organ)  [surf_monster]
     Surf rock (60s)  [surf_rock]
     Shoegaze  [shoegaze]
     Post-rock  [post_rock]

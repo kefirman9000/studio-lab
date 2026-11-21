@@ -488,8 +488,43 @@ def test_bible_genres():
     print('ok  bible genres: tempos, Alberti bass, jazz comping, rubato, gated snare, 13 new genres')
 
 
+def test_metal_breakdowns():
+    """(1.96) Slam and cybergrind write every song's layout fresh, and no breakdown ever repeats one in the same song."""
+    from sgcore import grind
+    from sgcore.windows import tempo_seconds
+    for style, (lo, hi) in (('slam', (80, 240)), ('cybergrind', (35, 130))):
+        layouts = set()
+        for seed in range(1, 25):
+            song = compose(Options(style=style, seed=seed))
+            secs = song['sections']
+            bds = [s['opts'] for s in secs if s['name'] == 'breakdown']
+            assert len(bds) >= (1 if style == 'slam' else 2), (style, seed)
+            sigs = [(o['riffs'][0], o.get('tempo', 1.0)) for o in bds]
+            assert len(set(sigs)) == len(sigs), (style, seed, 'a breakdown repeated')
+            layouts.add(tuple((s['name'], s['bars']) for s in secs))
+            tm = song.get('tempo_map')
+            assert tm, 'sections run at their own tempos'
+            dur = tempo_seconds(tm, song['total_bars'] * 4)
+            assert lo <= dur <= hi, (style, seed, dur)
+            kick = {round(e.beat * 4) for e in song['events'] if e.track == 'kick'}
+            b0 = next(s for s in secs if s['name'] == 'breakdown')
+            chug = b0['opts']['riffs'][0]
+            for bar in range(min(2, b0['bars'])):            # the kick hits with every chug of the breakdown phrase
+                for st_, c in enumerate(chug[(bar % (len(chug) // 16)) * 16:][:16]):
+                    if c not in '.-':
+                        assert (b0['bar'] + bar) * 16 + st_ in kick, (style, seed, bar, st_)
+        assert len(layouts) >= 22, (style, len(layouts))
+    rng = __import__('random').Random(5)
+    used = set()
+    kinds = {grind.breakdown(rng, used)[0]['breakdown'] for _ in range(8)}
+    assert len(kinds) == 8, kinds                            # a song walks through new kinds before repeating one
+    assert STYLES['cybergrind']['bpm'][1] <= 140 and STYLES['slam'].get('form_gen') == 'slam'
+    print('ok  metal: fresh layouts, unique breakdowns, kick locked to the chugs, section tempos')
+
+
 if __name__ == '__main__':
     main()
+    test_metal_breakdowns()
     test_builds_and_vinyl()
     test_kits_and_bells()
     test_bible_genres()

@@ -11159,11 +11159,12 @@ FORMS['cybergrind'] = [
 ]
 
 style('cybergrind', 'Classic',
-      'Drum-machine deathgrind / cybergrind: songs about a minute long that never let up - inhumanly fast programmed '
-      'blast beats and machine-gun double kick (16ths at ~250 BPM), crashes on every beat, then sudden, crushing half-time '
-      'breakdowns where the down-tuned, quad-tracked guitars chug locked to the kick with dead silence between the hits; '
-      'dissonant tremolo riffs and squealing pinch harmonics on top; mixed huge, low and saturated',
-      bpm=(240, 262), scales=['phrygian', 'minor', 'harmonic_minor'], swing=0.5, human=0.0, form='cybergrind', form_scale=1,
+      'Cybergrind (modelled on wecamewithbrokenteeth): songs about a minute long that never sit still - built on ~125 BPM '
+      'but always switching: double-time drum-machine blasts, crushing half-time breakdowns (every one a new rhythm, '
+      'tempo and riff) where the down-tuned guitars chug locked to the kick, slam grooves, dead stops and quiet chiptune '
+      'moments in the middle of the song; every song gets its own order of parts, opening and ending',
+      bpm=(116, 134), scales=['phrygian', 'minor', 'harmonic_minor'], swing=0.5, human=0.0, form='cybergrind', form_scale=1,
+      form_gen='cyber',
       chord_size=2, voicing='power', kit='hard', sc_depth=0.0, reverb=1.2, own_progs=True, no_layers=True,
       progs={'phrygian': [[0, 0, 1, 0], [0, 1, 0, 6]], 'minor': [[0, 0, 5, 6], [0, 6, 5, 0]], 'harmonic_minor': [[0, 1, 0, 4]]},
       kit_override=dict(kick=dict(pitch=62, punch=240, sweep=80, decay=26, drive=2.4, len=0.12, click=1.0),
@@ -11184,11 +11185,45 @@ style('cybergrind', 'Classic',
               T('arp', 'arp', 'chuggtr', pan=0.3, db=-22),
               T('lead', 'lead', 'screech', rev=0.25, db=-18),
               T('texture', 'fx', 'texture', db=-34)],
-      master=dict(tone=[-1.5, 0.0, -8.9, -9.0, -10.1, -10.3, -12.2, -10.2, -16.8], lufs=-7.5, air=-1.5, low=2.5, drive=0.25,
+      master=dict(tone=[-2.1, -0.5, -9.3, -9.1, -9.4, -9.9, -12.1, -9.8, -17.0], lufs=-9.0, air=-1.5, low=2.5, drive=0.25,
                   width=0.95, max_gr=4.0),
       pools=dict(bass=['ebass', 'pickbass', 'sf:pickbass', 'metalbass'], chords=['chuggtr', 'guitar', 'sf:distguitar'],
                  arp=['chuggtr', 'chip', 'guitar', 'screech'], lead=['screech', 'chip', 'chuggtr', 'guitar', 'hoover']),
       label='Cybergrind / drum-machine deathgrind')
+
+
+# (1.96) slam / brutal deathcore: walls of blasts and double kick, slam grooves, and breakdowns - never the same twice
+style('slam', 'Classic',
+      'Slam / brutal deathcore (modelled on Waking the Cadaver and Vulvodynia): a wall of hammer, bomb and gravity blasts '
+      'and rolling double kick, mid-tempo slam grooves on the half-step b2 rub, pinch squeals, and breakdowns that pile up '
+      'toward the end of the song - every one different: kick-locked chugs, half-time slams over double kick, stop-start '
+      'hits, triplet grooves, quarter-note beatdowns, gallops and crawling drags; the lowest, heaviest one last; '
+      'down-tuned quad-tracked guitars and a clicky triggered kit, mixed brutally loud',
+      bpm=(128, 146), scales=['phrygian', 'minor', 'harmonic_minor'], swing=0.5, human=0.0, form='cybergrind', form_scale=1,
+      form_gen='slam', chord_size=2, voicing='power', kit='hard', sc_depth=0.0, reverb=1.0, own_progs=True, no_layers=True,
+      progs={'phrygian': [[0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 6]], 'minor': [[0, 0, 0, 0], [0, 0, 6, 5]],
+             'harmonic_minor': [[0, 1, 0, 0]]},
+      kit_override=dict(kick=dict(pitch=58, punch=260, sweep=70, decay=24, drive=2.6, len=0.11, click=1.0),
+                        snare=dict(crack=0.75, drive=1.8)),
+      drums=dict(_BLAST), snare_tracks=['snare'], build_family=['none', 'stops'], transition_moves=['gap', 'none'],
+      bass=['RRRRRRRRRRRRRRRR'], bass_gate=0.7, bass_lo=21, fill=False,
+      chord_rh=['xxxxxxxxxxxxxxxx'], chord_center=42,
+      riffs=['pppppppppppppppp', 'ppbpppbpppfpppbp', 'pmpbpmpbpgpfpmpb'], riff_lo=30, riff_chorus=0.7,
+      arp=dict(rate=1, mode='updown', oct=4),
+      lead_rh=['x---x---x---x---', 'x-------x-------', 'xxxxxxxxxxxxxxxx'], lead_oct=5,
+      gm_hint='Triggered blast beats and rolling double kick, chinas and crashes; drop-tuned 7-string guitars quad-tracked, '
+              'palm-muted chugs locked to the kick, pinch squeals; a distorted bass doubling the riffs',
+      tracks=[T('kick', 'kick', 'kick', db=-11), T('snare', 'snare', 'snare', rev=0.1, db=-14),
+              T('crash', 'top', 'crash', db=-26), T('chat', 'top', 'chat', db=-30),
+              T('bass', 'bass', 'ebass', db=-13, drive=0.8),
+              T('chords', 'chords', 'chuggtr', db=-14),
+              T('lead', 'lead', 'screech', rev=0.2, db=-19),
+              T('texture', 'fx', 'texture', db=-34)],
+      master=dict(tone=[-6.0, 0.0, -5.6, -9.7, -10.0, -8.3, -8.4, -9.5, -17.3], lufs=-6.0, air=-1.0, low=2.0, drive=0.35,
+                  width=1.0, max_gr=5.0),
+      pools=dict(bass=['ebass', 'metalbass', 'pickbass', 'sf:pickbass'], chords=['chuggtr', 'sf:distguitar', 'guitar'],
+                 lead=['screech', 'chuggtr', 'guitar']),
+      label='Slam / brutal deathcore')
 
 
 # the hybrid: the 808 switch-up engine (every bar a new 808 move) under deathcore breakdowns and blasts
