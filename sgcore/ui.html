@@ -179,6 +179,18 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 .res .info span{color:var(--text)}
 .rr{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;align-items:center}
 .rr .lbl{font-size:11px;color:var(--muted);margin-right:2px}
+.res .grp{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:7px;padding-top:7px;border-top:1px solid var(--line)}
+.res .grp .lbl{font-size:11px;color:var(--muted);min-width:62px}
+.res .grp.acts{border-top:none;padding-top:2px}
+.res .pg{display:inline-flex;align-items:center;gap:0;background:var(--chip);border:1px solid var(--line);border-radius:8px;padding-right:2px}
+.res .pg .mini{border:none;background:none;padding:3px 6px}
+.res .pg .ico{font-size:11px;padding:0 3px;opacity:.55}.res .pg .ico:hover,.res .pg .ico.on{opacity:1}
+.res .chip.sm{font-size:12px;padding:2px 8px;cursor:pointer}
+.res .snd{display:inline}.res .snd summary{display:inline;cursor:pointer;color:var(--acc);margin-left:6px;list-style:none}
+.res .snd summary::-webkit-details-marker{display:none}.res .snd[open] summary{margin-right:6px}
+.res .snd[open]{display:block;margin-top:2px}
+.moremenu{position:relative;display:inline-block}.moremenu summary{list-style:none}.moremenu summary::-webkit-details-marker{display:none}
+.moremenu>div{position:absolute;z-index:20;top:calc(100% + 4px);left:0;display:flex;flex-direction:column;gap:4px;padding:6px;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 20px #0008;min-width:140px}
 .mini{background:var(--chip);border:1px solid var(--line);border-radius:7px;padding:3px 8px;font-size:12px;cursor:pointer}
 .mini:hover{border-color:color-mix(in srgb,var(--line) 65%,var(--text))}
 .mini.acc{background:var(--chipon);border-color:color-mix(in srgb,var(--acc) 70%,var(--bg))}
@@ -1153,15 +1165,16 @@ function addResult(r, target){
     <div class="mt">${r.key} · ${r.meter&&r.meter!=='4/4'?r.meter+' · ':''}${r.bpm_quarter&&r.bpm_quarter!==r.bpm?r.bpm_quarter:r.bpm} BPM · seed ${r.seed}${r.mood?' · '+r.mood:''}${r.preview?' · preview':' · '+r.duration}</div>
     ${(r.arrangement&&r.arrangement.length)||r.genre_fit||r.mix_report?`<div class="tags">${mixTag(r)}${r.genre_fit?`<span class="tag ${r.genre_fit.score>=100?'ok':''}" title="Genre check: ${esc(r.genre_fit.checks.map(c=>(c.ok?'✓ ':'✗ ')+c.name).join(' · '))}">genre fit ${r.genre_fit.score}%</span>`:''}${(r.arrangement||[]).map(a=>`<span class="tag">${esc(a)}</span>`).join(' ')}</div>`:''}</div></div>
     <canvas class="wave"></canvas>
-    <div class="info">Chords <span>${r.chords}</span> · alt <span>${r.chords_alt}</span><br>${inst}${fusion?'<br>Fusion '+fusion:''}</div>
-    <div class="rr"><span class="lbl" title="New version of one part; everything else stays exactly the same">Re-roll</span>${['drums','bass','chords','melody','harmony'].map(p=>`<button class="mini" data-p="${p}">${p}</button>`).join('')}
-      <label class="hint" title="Make 4 versions of the part you click, over this exact song" style="margin-left:6px"><input type="checkbox" class="x4"> ×4</label></div>
-    <div class="rr"><span class="lbl" title="Switch a part off (or back on) and hear this exact take again">On / off</span>${LAYERS.map(([k,n])=>`<span class="chip ${(r.options.muted||[]).includes(k)?'':'on'}" data-mu="${k}" style="cursor:pointer;font-size:12px;padding:2px 8px">${(r.options.muted||[]).includes(k)?'○':'●'} ${n}</span>`).join(' ')}</div>
-    <div class="rr"><span class="lbl" title="🔒 keep this part in your next previews · ♥ you like this part (Surprise me learns from it)">Parts</span>${PARTSEED.map(([p])=>`<span class="pp">${p}<button class="ico" data-lk="${p}" title="Keep this ${p} part in new previews">🔒</button><button class="ico" data-lv="${p}" title="I like this ${p} part">♥</button></span>`).join('')}
-      <span style="margin-left:auto"></span>${!r.preview&&introEnd(r)>1?'<button class="mini" data-a="skip" title="Play from where the intro ends">⏭ Skip intro</button>':''}<button class="mini" data-a="ab" title="Compare two results back to back at matched loudness">A/B</button></div>
-    <div class="rr more"><span class="lbl" title="A new song that keeps what you tick from this one and changes the rest">✨ More like this</span><span class="hint">keep</span>${MORE_KEEP.map(([k,n,on])=>`<span class="chip ${on?'on':''}" data-mk="${k}" style="cursor:pointer;font-size:12px;padding:2px 8px">${on?'✓':'○'} ${n}</span>`).join(' ')}<button class="mini acc" data-a="more" title="New song: keeps the ticked parts, changes the rest">New version</button><span style="margin-left:auto"></span><button class="mini" data-a="diff" title="Same genre, but a different tempo, key, sounds and parts">🔀 Something different</button></div>
-    <div class="rr"><button class="mini acc" data-a="full">⬇ Full song from this</button><button class="mini acc" data-a="edit" title="Open this song in the editor: sections, parts and every sound in it">✏️ Edit</button><button class="mini" data-a="sounds" title="The same song (same notes) played on different sounds that suit the genre">🎲 New sounds</button><button class="mini" data-a="use">Use settings</button><button class="mini" data-a="share" title="Save a tiny settings file - anyone with Studio Lab can load it (Presets → Load a shared song) and get this exact song">📤 Share</button><button class="mini" data-a="save">★ Save preset</button>${(!r.preview&&(r.project||r.lib_title))?`<button class="mini ${r.kept?'acc':''}" data-a="keep" title="Kept songs are never trimmed or deleted by the clean-up">${r.kept?'⭐ Kept':'☆ Keep'}</button>`:''}
-      <span style="margin-left:auto"></span><button class="rate" data-r="1" title="I like this">👍</button><button class="rate" data-r="-1" title="Not for me">👎</button></div>
+    <div class="info">Chords <span>${r.chords}</span>${r.chords_alt?` · break <span>${r.chords_alt}</span>`:''}${fusion?' · fusion '+fusion:''}
+      ${inst?`<details class="snd"><summary>Sounds</summary>${inst}</details>`:''}</div>
+    <div class="grp"><span class="lbl" title="A new version of one part; everything else stays exactly the same. 🔒 keeps the part in your next previews, ♥ teaches Surprise me what you like">Parts</span>
+      ${PARTSEED.map(([p])=>`<span class="pg"><button class="mini" data-p="${p}" title="New ${p}, same everything else">🎲 ${p}</button><button class="ico" data-lk="${p}" title="Keep this ${p} in new previews">🔒</button><button class="ico" data-lv="${p}" title="I like this ${p}">♥</button></span>`).join('')}
+      <label class="hint" title="Make 4 versions of the part you click, over this exact song"><input type="checkbox" class="x4"> ×4</label></div>
+    <div class="grp"><span class="lbl" title="Switch a part off (or back on) and hear this exact take again">Play</span>${LAYERS.map(([k,n])=>`<span class="chip sm ${(r.options.muted||[]).includes(k)?'':'on'}" data-mu="${k}">${(r.options.muted||[]).includes(k)?'○':'●'} ${n}</span>`).join('')}</div>
+    <div class="grp more"><span class="lbl" title="A new song that keeps what you tick from this one and changes the rest">✨ Like this</span>${MORE_KEEP.map(([k,n,on])=>`<span class="chip sm ${on?'on':''}" data-mk="${k}">${on?'✓':'○'} ${n}</span>`).join('')}<button class="mini acc" data-a="more" title="New song: keeps the ticked parts, changes the rest">New version</button><button class="mini" data-a="diff" title="Same genre, but a different tempo, key, sounds and parts">🔀 Different</button></div>
+    <div class="grp acts"><button class="mini acc" data-a="full" title="Render the whole song from this preview">⬇ Full song</button><button class="mini acc" data-a="edit" title="Open this song in the editor: sections, parts and every sound in it">✏️ Edit</button><button class="mini" data-a="extend" title="${(+(r.options.length||1))>=2?'Already as long as it goes (2x)':'The same song, longer: every section gets more bars (1x → 1.5x → 2x), same parts and sounds'}" ${(+(r.options.length||1))>=2?'disabled':''}>⇥ Extend</button><button class="mini" data-a="sounds" title="The same song (same notes) played on different sounds that suit the genre">🎲 New sounds</button>
+      <details class="moremenu"><summary class="mini" title="Use settings, share, save as a preset, keep">⋯</summary><div><button class="mini" data-a="use" title="Put this song's settings into the controls">Use settings</button><button class="mini" data-a="share" title="Save a tiny settings file - anyone with Studio Lab can load it (Presets → Load a shared song) and get this exact song">📤 Share</button><button class="mini" data-a="save">★ Save preset</button>${(!r.preview&&(r.project||r.lib_title))?`<button class="mini ${r.kept?'acc':''}" data-a="keep" title="Kept songs are never trimmed or deleted by the clean-up">${r.kept?'⭐ Kept':'☆ Keep'}</button>`:''}</div></details>
+      <span style="margin-left:auto"></span>${!r.preview&&introEnd(r)>1?'<button class="mini" data-a="skip" title="Play from where the intro ends">⏭ Skip intro</button>':''}<button class="mini" data-a="ab" title="Compare two results back to back at matched loudness">A/B</button><button class="rate" data-r="1" title="I like this">👍</button><button class="rate" data-r="-1" title="Not for me">👎</button></div>
     <div class="tl" title="Click a section to edit it"></div><div class="sedbox"></div>
     <div class="dragrow rr"></div>
     ${r.kit?`<div class="hint" style="margin-top:4px">🥁 ${esc(r.kit)}</div>`:''}
@@ -1213,6 +1226,9 @@ function addResult(r, target){
   el.querySelector('[data-a=more]').onclick=()=>{ const keep=[...el.querySelectorAll('[data-mk].on')].map(c=>c.dataset.mk); moreLike(r, keep); };
   el.querySelector('[data-a=diff]').onclick=()=>somethingDifferent(r);
   el.querySelector('[data-a=full]').onclick=()=>run(false,1,r.options);
+  el.querySelector('[data-a=extend]').onclick=()=>{ const o=JSON.parse(JSON.stringify(r.options)); o.seed=r.seed;   // same song, more bars
+    const L=+(o.length||1); o.length=L<1.5?1.5:2.0; if(o.structure==='radio') o.structure='auto';
+    $('#status').textContent=`Extending - the same song at ${o.length}x length…`; run(false,1,o); };
   el.querySelector('[data-a=use]').onclick=()=>applyOptions(r.options);
   el.querySelector('[data-a=share]').onclick=()=>shareSettings(r);
   el.querySelector('[data-a=edit]').onclick=()=>openEditor(r);

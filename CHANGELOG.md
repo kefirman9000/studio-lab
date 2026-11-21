@@ -1,5 +1,36 @@
 # Changelog
 
+## 1.97.0
+**Slam / brutal deathcore, a cybergrind that never writes the same song twice, more professional mixes, and a tidier result card**
+
+- **New genre: Slam / brutal deathcore**, built from your four reference tracks (Waking the Cadaver, Vulvodynia). What I measured, and what the genre now does:
+  - **Mostly a wall of blasts and double kick** (65–85 % of the time in the references), with slam grooves in between.
+  - **Breakdowns that are never the same.** Every breakdown in a song sits on its own pulse (one hit every 0.3 to 1.3 s in the references). Each one is now written fresh from eight kinds: kick-locked chugs, half-time slams over double kick, stop-start hits, triplet grooves, quarter-note beatdowns, gallops, crawling drags and pinch-squeal climbs. Each also gets its own phrase (2 or 4 bars, with an ending that answers it), tempo (full, ¾, ⅔, ½ or slower), snare and cymbals, and its own riff notes (the b2 rub, the tritone, squeals up to the octave). A song uses kinds it hasn't had yet, and no breakdown can repeat an earlier one.
+  - **Breakdowns pile up toward the end** in most songs (as on Waking the Cadaver), and the heaviest, slowest one comes last.
+  - **Lower tuning, a clickier kick and a brutally loud master**, with the tone matched to the references.
+- **Cybergrind rebuilt from your twelve wecamewithbrokenteeth references.** Before, every cybergrind song used the same nine-part form. Now:
+  - **Every song gets its own layout:** a different opening (cold breakdown, blast, chiptune, a sample-style stop), 5–9 parts in a new order, and a different ending. Across 40 test songs, no two layouts were alike.
+  - **Built on ~125 BPM like the records**, switching all the time: double-time blasts, half-time breakdowns, slam grooves, dead stops and quiet chiptune moments in the middle of the song.
+  - **Mostly breakdowns and grooves, blasts only in short bursts**, matching the references (about 45 % breakdown, short blasts, songs 45–110 s).
+  - **Every breakdown is new**, from the same generator as slam.
+- **More professional mixes** (also in SL2):
+  - **Drum-bus parallel compression:** a hard-squashed copy of the kit blended under it, so the body and room come up between the hits and the transients stay untouched. Electronic genres get 28 %, bands 15 %, orchestral none.
+  - **Room for the lead:** chords, pads and arps now share a music bus that dips 3 dB at the lead's own frequency, only while the lead plays. The melody sits on top without the whole bed being turned down.
+  - **Sub harmonics on electronic bass:** the bass's own upper harmonics, so the bass line is still heard on phones and laptop speakers.
+  - **Sends follow the arrangement** in electronic genres: wetter breakdowns and intros, tighter drops.
+  - **The mix report** now measures how far the lead sits above the music, and warns when it's buried.
+- **A tidier result card:**
+  - **One row per part:** each part's 🎲 new version, 🔒 keep and ♥ like buttons sit together.
+  - **Main buttons up front:** Full song, Edit, Extend and New sounds. Use settings, Share, Save preset and Keep moved into the **⋯** menu.
+  - **Sounds folded away:** the sound list is behind a *Sounds* link.
+- **⇥ Extend:** the same song, longer. Every section gets more bars (1x → 1.5x → 2x), with the same parts and sounds.
+- **The engine:**
+  - A section can now run at its own tempo.
+  - A section's drums and riffs can span a 2- or 4-bar phrase instead of repeating one bar.
+  - Written layouts keep their 1- and 2-bar parts instead of being rounded up to 4 bars.
+- **The genre matcher** now knows your 16 records (measurements only, no audio): 14 of 16 land in the right genre's top 3.
+- The genre docs (`docs/GENRES.md`, `GENRE_LIST.txt`, `GENRE_SPEC.md`) are regenerated; they were behind the code.
+
 ## 1.96.0
 **Sunlit electronica, wave, a new monster surf band, cleaner bass, and a wrapping mixer**
 
