@@ -11331,3 +11331,4 @@ for _g, _ch in {'techno': 0.6, 'minimal': 0.6, 'melodic_techno': 0.45, 'hard_tec
                 'uk_tribal_techno': 0.5, 'festival_techno': 0.35, 'tech_house': 0.35, 'acid_house': 0.4}.items():
     if _g in STYLES:
         STYLES[_g]['polymeter'] = _ch
+

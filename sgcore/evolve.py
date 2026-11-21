@@ -594,3 +594,59 @@ def polymeter(evs, sections, st, opts, tracks):
             step += 1
     st['polymeter_len'] = L if made else 0
     return st['polymeter_len']
+
+
+# ----------------------------------------------------------------------------- (1.94) phrase evolution (club records)
+def phrase_evolution(evs, sections, st, opts, tracks, club=(), trance=()):
+    """How a club record keeps moving inside a long section, on the 8-bar grid:
+    - a groove (intro / verse, 24 bars or more) builds: two secondary parts (an arp, a pad, a percussion or a layer)
+      are held back for its first 8 bars and one for the next 8;
+    - a long drop (32 bars or more) hits full, and one extra part (a ride, a layer, the counter line) comes in halfway
+      as a lift;
+    - in house and techno a very long drop (48 bars or more) also lets the hook step out for 8 bars in the middle
+      while the groove carries on (it comes back for the last part).
+    Returns the number of notes held back."""
+    g = st.get('name') or opts.style
+    if g not in club or st.get('composer') or getattr(opts, 'phrase_evolution', 'auto') == 'off':
+        return 0
+    import random as _r
+    rnd = _r.Random(f'{opts.seed}-{g}-phrases')
+    kick = st.get('kick_track', 'kick')
+    drop_ids = set()
+
+    def secondary(b0, b1):
+        here = {e.track for e in evs if b0 <= e.beat < b1}
+        out = []
+        for n in sorted(here):
+            t = tracks.get(n, {})
+            if n == kick or t.get('layer') in ('kick', 'snare', 'bass'):
+                continue
+            if t.get('layer') in ('arp', 'pad', 'top') or t.get('double_of') or t.get('counter') or n in ('counter', 'answer'):
+                if n in ('chat',):                          # the main closed hat keeps the groove going
+                    continue
+                out.append(n)
+        rnd.shuffle(out)
+        return out
+
+    def hold(names, a, b):
+        for e in evs:
+            if e.track in names and a <= e.beat < b:
+                drop_ids.add(id(e))
+    for sec in sections:
+        o = sec['opts']
+        if o.get('build') or o.get('layer_in') or o.get('layer_out'):
+            continue
+        b0, bars = sec['bar'] * 4, sec['bars']
+        b1 = b0 + bars * 4
+        big = o.get('drop') or sec['name'] in ('drop', 'chorus', 'climax', 'B')
+        sec_ = secondary(b0, b1)
+        if not big and sec['name'] in ('intro', 'verse', 'A') and bars >= 24 and len(sec_) >= 2:
+            hold(set(sec_[:2]), b0, b0 + 32)              # first 8 bars: without two of them
+            hold({sec_[0]}, b0 + 32, b0 + 64)              # next 8: one comes in, then the last
+        elif big and bars >= 32 and sec_:
+            hold({sec_[0]}, b0, b0 + bars * 2)             # the lift: an extra part comes in halfway
+            if bars >= 48 and g not in trance:
+                mid = b0 + (bars // 16) * 32               # an 8-bar breather for the hook, in the middle
+                hold({n for n, t in tracks.items() if t.get('layer') == 'lead'}, mid, mid + 32)
+    evs[:] = [e for e in evs if id(e) not in drop_ids]
+    return len(drop_ids)

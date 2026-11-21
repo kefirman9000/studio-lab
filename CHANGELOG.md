@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.94.0
+**House, trance and techno songs that behave like real records**
+
+A new audit (`tools/song_audit.py`) checks generated songs against how real club records work: phrasing, arrangement changes, the groove, the bassline, the hook, the harmony and the energy shape. It found these problems, now fixed:
+- **Instrument soup.** A song could use 8–11 different melodic sounds: the arp and chords switched to new sounds each section, an extra answer sound came in, and layers paired unrelated sounds. Club records keep a few sounds all song. Now, in house, trance and techno:
+  - **One sound per part for the whole song.** Only a breakdown may move its chords or pad to another sound, like the piano in a trance breakdown.
+  - **No answer sound in house and techno.** Trance keeps its call-and-response, since that's part of the style.
+  - **Doubled parts use a sound of the same kind:** pluck with pluck, keys with keys, stab with stab, never a pluck doubled by a vocal chop. Trance leads still layer a supersaw with a pluck, which is the classic trance sound.
+  - Songs now use 4–6 melodic sounds.
+- **Sounds from the wrong scene.** The trance pluck no longer turns up in house or techno, and the festival anthem lead no longer appears in plain techno. Melodic techno keeps it.
+- **Off the 8-bar grid.** Some layouts stretched to 20- or 40-bar sections. Club genres now always use multiples of 8 bars.
+- **Long static stretches.** Some trance sections ran 40–48 bars with nothing coming in or out. Long sections now evolve on the 8-bar grid:
+  - **Grooves build up:** two secondary parts are held back for the first 8 bars, and one for the next 8.
+  - **Long drops lift halfway:** an extra part (a ride, a layer, the counter line) comes in.
+  - **Very long house and techno drops** also let the hook step out for 8 bars in the middle.
+
+Things the audit checked that were already right: the kick is four-on-the-floor in every bar outside breakdowns, claps land on 2 and 4, house basslines sit on the off-beats, hooks repeat, and nothing clashes with the key or the chord playing at the time. Borrowed chords, such as the major V in minor-key trance, are normal and are not counted as clashes.
+
 ## 1.93.0
 **Batch generator**
 - **🎲 Batch** (next to Full song) makes many full songs in one go: from 1 to 500, in one genre or several.

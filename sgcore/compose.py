@@ -69,6 +69,7 @@ class Options:
     section_dynamics: str = 'auto'   # (1.90) layers saved for the drops, bare breakdowns, harder first downbeats | off
     genre_fills: str = 'auto'     # (1.90) DnB rewinds, dubstep drop stops with a shout, trance pitch-rising rolls | off
     polymeter: str = 'auto'       # (1.93) techno sequences looping in 3 / 5 / 6 / 7 steps against 4/4 | on | off
+    phrase_evolution: str = 'auto'   # (1.94) club genres: long sections change every 8-16 bars | off
     variety: float = 0.5          # 0..1 how adventurous each song's sound palette, grooves and arrangement get
     user_drums: bool = False      # use the drum samples you loaded instead of the built-in kit
     sections: list = None         # section editor: [{src, copy, bars, seeds{part:int}, vary:int, mute:[layers]}]
@@ -1349,7 +1350,10 @@ def compose(opts):
             form = form[1:]
     for (sname, nbars, layers, opts_s) in form:
         if not opts_s.get('build') and opts.structure != 'loop':
-            nbars = max(4, int(round(nbars * scale_len / 4)) * 4)
+            if (st.get('name') or opts.style) in CLUB_COHERENT:     # (1.94) club records live on the 8-bar grid
+                nbars = max(8, int(round(nbars * scale_len / 8)) * 8)
+            else:
+                nbars = max(4, int(round(nbars * scale_len / 4)) * 4)
         base_form.append((sname, nbars, layers, opts_s))
     edits = opts.sections or [dict(src=i, copy=0) for i in range(len(base_form))]
     edits = [e for e in edits if 0 <= int(e.get('src', -1)) < len(base_form)] or [dict(src=i, copy=0) for i in range(len(base_form))]
@@ -1915,7 +1919,10 @@ def compose(opts):
     from . import evolve as _ev                          # (1.85) songs that develop instead of looping (before the
     from .styles import POOLS as POOLS_                  # layers copy the notes, so a doubled lead climbs with it)
     st['evolved'] = _ev.evolve_drops(evs, sections, st, opts, tracks)
-    _ans = _ev.call_response(evs, sections, st, opts, tracks,
+    if (st.get('name') or opts.style) in CLUB_COHERENT and (st.get('name') or opts.style) not in CLUB_TRANCE \
+            and getattr(opts, 'call_response', 'auto') == 'auto':
+        st['no_answer'] = True                           # (1.94) house / techno: no second sound answering the hook
+    _ans = None if st.get('no_answer') else _ev.call_response(evs, sections, st, opts, tracks,
                              [x for r_ in ('lead', 'arp') for x in (POOLS_.get(opts.style, {}).get(r_) or [])])
     if _ans:
         tracks['answer'] = _ans
@@ -1924,6 +1931,7 @@ def compose(opts):
     st['extra_arps'] = _ev.extra_arps(evs, sections, st, opts, tracks)   # (1.91) background arpeggio layers
     st['bass_stutters'] = _ev.bass_stutter(evs, st)      # (1.92.2) long bass notes enter with a triplet stutter
     st['polymeter_len'] = _ev.polymeter(evs, sections, st, opts, tracks)   # (1.93) techno: 3 / 5 / 7-step loops against 4/4
+    st['phrase_moves'] = _ev.phrase_evolution(evs, sections, st, opts, tracks, CLUB_COHERENT, CLUB_TRANCE)   # (1.94)
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     _sw = _ev.structure_moves(evs, sections, st, opts, tracks, POOLS_.get(opts.style, {}).get('bass') or [], fx)
@@ -2483,6 +2491,11 @@ def add_layer_tracks(st, opts):
                 pool = [i for i in pool if attack_class(i) == attack_class(t['inst'])]
                 if not pool:
                     continue
+            _g = st.get('name') or opts.style
+            if _g in CLUB_COHERENT and not (_g in CLUB_TRANCE and role == 'lead'):   # (1.94) club records double a part
+                pool = [i for i in pool if inst_family(i) == inst_family(t['inst']) and sound_kind(i) == sound_kind(t['inst'])]
+                if not pool:                                                        # (trance leads: saw + pluck is the idiom)
+                    continue
             inst = r.choice(pool)
             octv = 12 if inst in OCT_UP and role in ('lead', 'arp') else (-12 if inst in OCT_DOWN and role == 'lead' else 0)
         picks += 1
@@ -2934,6 +2947,29 @@ def _auto_family(base):
     return 'synth'
 
 
+def sound_kind(inst):
+    """(1.94) A finer kind than the instrument family, for doubling: vocal, pluck, stab, pad, bell or other - a vocal chop
+    isn't doubled by a pluck, a pad isn't doubled by a stab."""
+    n = str(inst).lower()
+    for kind, words in (('vocal', ('vox', 'vocal', 'choir', 'formant', 'vowel', 'hum', 'talk')),
+                        ('bell', ('bell', 'chime', 'glock', 'celesta', 'kalimba', 'marimba')),
+                        ('pluck', ('pluck', 'harp', 'pizz', 'seq', 'bleep')),
+                        ('stab', ('stab', 'chord', 'horn', 'hit')),
+                        ('pad', ('pad', 'string', 'solina', 'air', 'wash'))):
+        if any(w in n for w in words):
+            return kind
+    return 'other'
+
+
+CLUB_COHERENT = {'house', 'deep_house', 'tech_house', 'progressive_house', 'acid_house', 'melodic_house', 'organic_house',
+                 'garage_house', 'piano_house_90s', 'nineties_club_house', 'emotive_deep_house', 'tokyo_deep_house',
+                 'sunny_melodic_house', 'bass_house', 'french_house', 'afro_house',
+                 'trance', 'uplifting_trance', 'progressive_trance', 'classic_vocal_trance', 'club_trance_2000s',
+                 'progressive_trance_2010s', 'vocal_trance_remix', 'hard_trance', 'trance_pop_90s', 'electro_prog_trance',
+                 'techno', 'minimal', 'melodic_techno', 'hard_techno', 'dub_techno', 'uk_tribal_techno', 'festival_techno'}
+CLUB_TRANCE = {g for g in CLUB_COHERENT if 'trance' in g}
+
+
 def add_section_switch_tracks(st, opts, rnd):
     """Instrument rotation: verses, choruses and breaks play a part on different instruments from the genre's own pool
     (e.g. Rhodes verse, piano chorus, guitar bridge). The main instrument keeps the big sections."""
@@ -2943,12 +2979,15 @@ def add_section_switch_tracks(st, opts, rnd):
         return                                           # ensemble genres keep each instrument on its own part
     v = float(getattr(opts, 'variety', 0.5))
     n_roles = {'some': 1, 'lots': 3}.get(mode, 1 if v < 0.45 else (2 if v < 0.8 else 3))
+    club = (st.get('name') or opts.style) in CLUB_COHERENT and mode == 'auto'
+    if club:                                             # (1.94) a club record keeps one sound per part all song; only a
+        n_roles = 1                                      # breakdown may move its chords / pad to another sound
     if mode == 'auto' and random.Random(f'{opts.seed}-rot-on').random() > 0.35 + 0.6 * v:
         return
     pal = PALETTES.get(st.get('category'), {})
     recent = getattr(opts, 'avoid', None) or {}
     cands = []
-    for role in ('lead', 'chords', 'pad', 'arp'):
+    for role in (('chords', 'pad') if club else ('lead', 'chords', 'pad', 'arp')):
         if role == 'lead' and (st.get('name') or opts.style) in SIGNATURE_STRICT and mode == 'auto':
             continue                                     # rap / R&B: the hook sound stays the hook sound
         main = next((t for t in st['tracks'] if t['layer'] == role and t['name'] == role), None)
@@ -2969,7 +3008,7 @@ def add_section_switch_tracks(st, opts, rnd):
     for role, main, alts in cands[:n_roles]:
         w = [0.3 if x in recent.get(role, []) else 1.0 for x in alts]
         picks = []
-        for k in range(2 if (mode == 'lots' or rnd.random() < 0.4) and len(alts) >= 2 else 1):
+        for k in range(2 if (mode == 'lots' or rnd.random() < 0.4) and len(alts) >= 2 and not club else 1):
             c = rnd.choices(alts, w)[0]
             i = alts.index(c)
             alts, w = alts[:i] + alts[i + 1:], w[:i] + w[i + 1:]
@@ -2977,8 +3016,9 @@ def add_section_switch_tracks(st, opts, rnd):
             if not alts:
                 break
         for k, inst in enumerate(picks):
+            grp = ('C',) if club else (('A',) if (k == 0 and len(picks) > 1) else (('A', 'C') if k == 0 else ('C',)))
             st['tracks'].append(dict(main, name=f'{role}_sw{k + 1}', inst=inst, p={}, db=None, pooled=True,
-                                     switch_of=role, groups=('A',) if (k == 0 and len(picks) > 1) else (('A', 'C') if k == 0 else ('C',))))
+                                     switch_of=role, groups=grp))
 
 
 def switch_sections(evs, tracks, sections):

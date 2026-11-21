@@ -247,6 +247,26 @@ def main():
                     r = tr.get(e.track)
                     first[r] = min(first.get(r, 1e9), e.beat)
             assert len({int(v // 16) for v in first.values()}) >= 3, (g, first)          # parts come in on different lines
+    # (1.94) club records: one sound per part (only a breakdown may switch chords / pad), 8-bar phrasing, no 32-bar stretch
+    # without a change, doubles of the same kind, everything in key or in the chord playing
+    from sgcore.compose import CLUB_COHERENT, sound_kind
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'tools'))
+    from song_audit import audit
+    for g in ('house', 'deep_house', 'tech_house', 'trance', 'uplifting_trance', 'techno', 'melodic_techno'):
+        assert g in CLUB_COHERENT
+        for k in range(1, 6):
+            song = compose(Options(style=g, seed=k))
+            tr = song['st']['tracks']
+            mel = {t['inst'] for t in tr if t['layer'] in ('lead', 'chords', 'pad', 'arp') and any(e.track == t['name'] for e in song['events'])}
+            assert len(mel) <= (9 if 'trance' in g else 7), (g, k, mel)          # (trance stacks more layers)
+            assert not [t for t in tr if t.get('switch_of') and set(t.get('groups', ())) - {'C'}], (g, k)
+            for t in tr:
+                if t.get('double_of') and not ('trance' in g and t['layer'] == 'lead'):
+                    src = next(x for x in tr if x['name'] == t['double_of'])
+                    assert sound_kind(t['inst']) == sound_kind(src['inst']), (g, k, t['inst'], src['inst'])
+            probs, _, _ = audit(song)
+            bad = [p for p in probs if 'grid' in p or 'no element' in p or 'outside the key' in p or 'four-on-the-floor' in p]
+            assert not bad, (g, k, bad)
     forms = {compose(Options(style='dnb', seed=k))['st']['form'] for k in range(1, 9)}
     assert len(forms) >= 3, forms                                                       # several layouts per genre
     vip = next(compose(Options(style='dubstep', seed=k)) for k in range(1, 30)

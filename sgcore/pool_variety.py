@@ -76,9 +76,9 @@ def _locked(g, role):
 # them often instead of only when the pool happens to have room: scene -> role -> sounds
 CLUB = {
     'House & Disco': dict(chords=['housechord', 'frenchchord', 'organchord', 'detroitchord'],
-                          arp=['housechord', 'housevox', 'organchord', 'trancepluck', 'hollowpluck'],
+                          arp=['housechord', 'housevox', 'organchord', 'mhpluck', 'hollowpluck'],      # (1.94: no trance pluck in house)
                           pad=['discostrings', 'detroitchord'], lead=['housevox', 'analoglead', 'discostrings']),
-    'Techno & Trance': dict(arp=['trancepluck'], lead=['analoglead', 'wavetable']),
+    'Techno & Trance': dict(arp=['hypnoseq'], lead=['analoglead', 'wavetable']),   # (1.94: the trance pluck stays with the trance genres)
     # 1.79 sounds
     'Chill, Lo-fi & Ambient': dict(arp=['handpan', 'hollowpluck'], pad=['granular', 'glassharmonica']),
     'Drum & Bass, Breaks & Hard': dict(lead=['electrosaw', 'wavetable', 'peaklead'], chords=['dancestab', 'liquidkeys'],
@@ -169,10 +169,11 @@ for _g in ('bigroom', 'electro_prog_trance', 'electro_house', 'festival_house', 
 CLUB_GENRE['progressive_house'] = dict(CLUB_GENRE['progressive_house'], lead=['anthemlead', 'dreamlead', 'festpluck', 'housevox'],
                                        arp=['festpluck', 'dreampluck', 'housechord'], pad=['buildpad', 'dreampad', 'dreamair'],
                                        bass=['hardbass', 'dreambass'])
-for _g in ('techno', 'hard_techno', 'melodic_techno'):                   # peak-time techno: the big leads and build pads too
+for _g in ('melodic_techno',):                                           # (1.94: melodic techno only - plain techno keeps its own leads)
     CLUB_GENRE[_g] = dict(CLUB_GENRE[_g], lead=CLUB_GENRE[_g]['lead'] + ['anthemlead'], pad=CLUB_GENRE[_g]['pad'] + ['buildpad'])
 for _g in ('trance', 'uplifting_trance', 'progressive_trance', 'progressive_trance_2010s', 'club_trance_2000s'):
-    CLUB_GENRE[_g] = dict(CLUB_GENRE[_g], lead=CLUB_GENRE[_g]['lead'] + ['anthemlead'], pad=CLUB_GENRE[_g]['pad'] + ['buildpad'])
+    CLUB_GENRE[_g] = dict(CLUB_GENRE[_g], lead=CLUB_GENRE[_g]['lead'] + ['anthemlead'], pad=CLUB_GENRE[_g]['pad'] + ['buildpad'],
+                          arp=['trancepluck'] + [x for x in CLUB_GENRE[_g].get('arp', []) if x != 'trancepluck'])
 SPLIT_FROM = ('sawbass', 'techbass', 'organbass', 'rollbass', 'moogbass', 'deepbass', 'junobass')   # bass lines that
                                                                                                 # suit a split bass
 
