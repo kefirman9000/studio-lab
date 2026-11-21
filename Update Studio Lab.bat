@@ -29,6 +29,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
  "  $keep=@('runtime','songs','presets','settings.json','update.json','user_sounds','ratings.json','plugins','vst_sounds','sound_library','recent_instruments.json','.git');" ^
  "  Write-Host 'Installing...';" ^
  "  Get-ChildItem $src.FullName -Force | Where-Object { $keep -notcontains $_.Name } | ForEach-Object { Copy-Item $_.FullName -Destination $here -Recurse -Force };" ^
+ "  $py=Join-Path $here 'runtime\python\python.exe'; if(Test-Path $py){ Write-Host 'Preparing it for a quick start...'; & $py -m compileall -q -j 0 --invalidation-mode checked-hash (Join-Path $here 'sgcore') (Join-Path $here 'studiolab.py') | Out-Null };" ^
  "  $new=(Get-Content (Join-Path $here 'VERSION') -Raw).Trim();" ^
  "  Write-Host ''; Write-Host ('Done - Studio Lab is now version ' + $new + '.') -ForegroundColor Green;" ^
  "} catch { Write-Host ''; Write-Host ('The update did not work: ' + $_.Exception.Message) -ForegroundColor Red; Write-Host 'Nothing in your folder was removed. Check your internet connection and try again.'; exit 1 }" ^
