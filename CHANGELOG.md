@@ -1,7 +1,7 @@
 # Changelog
 
-## Unreleased
-**Slam / brutal deathcore, a cybergrind that never writes the same song twice, and more professional mixes**
+## 1.97.0
+**Slam / brutal deathcore, a cybergrind that never writes the same song twice, more professional mixes, and a tidier result card**
 
 - **New genre: Slam / brutal deathcore**, built from your four reference tracks (Waking the Cadaver, Vulvodynia). What I measured, and what the genre now does:
   - **Mostly a wall of blasts and double kick** (65–85 % of the time in the references), with slam grooves in between.
@@ -19,6 +19,11 @@
   - **Sub harmonics on electronic bass:** the bass's own upper harmonics, so the bass line is still heard on phones and laptop speakers.
   - **Sends follow the arrangement** in electronic genres: wetter breakdowns and intros, tighter drops.
   - **The mix report** now measures how far the lead sits above the music, and warns when it's buried.
+- **A tidier result card:**
+  - **One row per part:** each part's 🎲 new version, 🔒 keep and ♥ like buttons sit together.
+  - **Main buttons up front:** Full song, Edit, Extend and New sounds. Use settings, Share, Save preset and Keep moved into the **⋯** menu.
+  - **Sounds folded away:** the sound list is behind a *Sounds* link.
+- **⇥ Extend:** the same song, longer. Every section gets more bars (1x → 1.5x → 2x), with the same parts and sounds.
 - **The engine:**
   - A section can now run at its own tempo.
   - A section's drums and riffs can span a 2- or 4-bar phrase instead of repeating one bar.
