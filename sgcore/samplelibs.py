@@ -43,7 +43,7 @@ LIB_ORDER = ['drums', 'kit70s', 'kitbrush', 'kitrusty', 'kitunruly', 'snares', '
 KIT_LIBS = ('drums', 'kit70s', 'kitbrush', 'kitrusty', 'kitunruly')
 BLURB = {
     'drums': 'A real acoustic drum kit (kick, snare, hats, ride, crash, toms) with 3 mic sounds: clean studio, big rock room and '
-             'vintage lo-fi. Plays the rock, funk, disco, jazz and soul kits and the re-played breaks (Amen, Think, Funky Drummer ...).',
+             'vintage lo-fi. Plays the rock, funk, disco, jazz and soul kits and the re-played breaks (jungle break, fast funk break, laid-back funk break ...).',
     'kit70s': 'A dry, warm 70s soul / funk drum kit (Karoryfer Gogodze Phu Vol II, recorded to sound like early-70s records): '
               'funk, Motown, soul jazz, neo-soul, blues, reggae, disco-funk.',
     'kitbrush': 'A real drum kit played with brushes (Karoryfer Swirly Drums): jazz, swing, bebop, bossa nova, soul ballads, '

@@ -3,7 +3,7 @@
 Three kinds of kit:
   drum machines   synthesized 808 / 909 / trance / techno / 80s LinnDrum-style / hardstyle ... (no download)
   real kits       recorded acoustic drums from the free drum library (studio, big rock room, vintage lo-fi)
-  breaks          the classic breakbeat *patterns* (Amen, Think, Funky Drummer, Apache, Back to Life, Levee),
+  breaks          the classic breakbeat *patterns* (jungle break, fast funk break, laid-back funk break, bongo funk break, soul-shuffle groove, big-room rock break),
                   re-played on the real kit - with jungle-style chopping where the genre does that.
 
 The breaks are re-played, not sampled: a drum pattern isn't anyone's recording, so songs that use them stay yours.
@@ -14,51 +14,51 @@ If you own a recording of a break, put its hits in "My sounds" and tick "my samp
 # X accent, x normal, o ghost. Classic transcriptions of the drummer's pattern.
 BREAKS = {
     'amen': dict(
-        label='Amen-style break', bpm=(136, 176), mic='lofi', pitch=1.5, swing=0.5, orig_bpm=137, bits=12, srate=30000,
+        label='Classic jungle break', bpm=(136, 176), mic='lofi', pitch=1.5, swing=0.5, orig_bpm=137, bits=12, srate=30000,
         drums={'kick': ['X.X.......XX....', 'X.X.......XX....', 'X.X.......X.....', '..XX......X.....'],
                'snare': ['....X..x.x..X..x', '....X..x.x..X..x', '....X..x.x....X.', '.x..X..x.x....X.'],
                'ride': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.......'],
                'crash': ['................', '................', '................', '..........X.....']}),
     'think': dict(
-        label='Think-style break', bpm=(110, 176), mic='lofi', pitch=1.0, swing=0.52, orig_bpm=114, bits=12, srate=32000,
+        label='Fast funk break', bpm=(110, 176), mic='lofi', pitch=1.0, swing=0.52, orig_bpm=114, bits=12, srate=32000,
         drums={'kick': ['X.......X.X.....', 'X.X.......X..X..', 'X.......X.X.....', 'X.X.......X.....'],
                'snare': ['....X..x.x..X...', '....X..x....X.x.', '....X..x.x..X...', '.o..X..x....X..x'],
                'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x...', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.....'],
                'ohat': ['................', '..............x.', '................', '............x...']}),
     'funky_drummer': dict(
-        label='Funky Drummer-style break', bpm=(86, 104), mic='lofi', pitch=0.0, swing=0.54,
+        label='Laid-back funk break', bpm=(86, 104), mic='lofi', pitch=0.0, swing=0.54,
         drums={'kick': ['X.X.......X..X..', 'X.X.......X..X..', 'X.X.......X..X..', 'X.X...X...X.....'],
                'snare': ['....X..o.o.oX..o', '.o..X..o.o..X..o', '....X..o.o.oX..o', '.o..X..o.o..X.oo'],
                'chat': ['x.xxx.x.x.xxx.xx', 'x.xxx.x.x.xxx.xx', 'x.xxx.x.x.xxx.xx', 'x.xxx.x.x.xx....'],
                'ohat': ['.......x........', '.......x........', '.......x........', '.......x....x...']}),
     'apache': dict(
-        label='Apache-style break', bpm=(90, 120), mic='lofi', pitch=0.5, swing=0.53,
+        label='Bongo funk break', bpm=(90, 120), mic='lofi', pitch=0.5, swing=0.53,
         drums={'kick': ['X.....X...X.....', 'X.....X...X..X..', 'X.....X...X.....', 'X.....X.X.X.....'],
                'snare': ['....X.......X...', '....X.......X...', '....X.......X...', '....X.....x.X..x'],
                'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.'],
                'conga': ['..x.xx..x..x.x.x', '..x.xx..x..x.xx.', '..x.xx..x..x.x.x', 'x.x.xx..x.xx.x..']}),
     'back_to_life': dict(
-        label='Back to Life / Tom\'s Diner-style groove', bpm=(88, 104), mic='studio', pitch=0.0, swing=0.62,
+        label='Swung soul-shuffle groove', bpm=(88, 104), mic='studio', pitch=0.0, swing=0.62,
         drums={'kick': ['X......X..X.....', 'X......X..X..x..', 'X......X..X.....', 'X......X..X...x.'],
                'snare': ['....X.......X...', '....X.......X...', '....X.......X...', '....X.......X..o'],
                'chat': ['x.xxx.xxx.xxx.xx', 'x.xxx.xxx.xxx.xx', 'x.xxx.xxx.xxx.xx', 'x.xxx.xxx.xx..xx'],
                'ohat': ['..............x.', '..............x.', '..............x.', '..........x.....'],
                'shaker': ['x.xxx.xxx.xxx.xx', 'x.xxx.xxx.xxx.xx', 'x.xxx.xxx.xxx.xx', 'x.xxx.xxx.xxx.xx']}),
     'levee': dict(
-        label='Levee-style break (big room)', bpm=(70, 100), mic='room', pitch=-0.5, swing=0.52,
+        label='Big-room rock break', bpm=(70, 100), mic='room', pitch=-0.5, swing=0.52,
         drums={'kick': ['XX.....X..XX....', 'XX.....X..XX....', 'XX.....X..XX....', 'XX.....X..X.X...'],
                'snare': ['....X.......X...', '....X.......X...', '....X.......X...', '....X.......X.xx'],
                'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.']}),
 }
 BREAKS.update({
     'hot_pants': dict(
-        label='Hot Pants-style break', bpm=(100, 176), mic='lofi', pitch=1.0, swing=0.53,
+        label='Tight funk break', bpm=(100, 176), mic='lofi', pitch=1.0, swing=0.53,
         drums={'kick': ['X.....X...X..X..', 'X.....X.X.X.....', 'X.....X...X..X..', 'X.X...X...X.....'],
                'snare': ['....X..o.o..X.o.', '.o..X..o.o..X...', '....X..o.o..X.o.', '.o..X..o.o..X.oX'],
                'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x...'],
                'ohat': ['...............x', '................', '...............x', '................']}),
     'skull_snaps': dict(
-        label='Skull Snaps-style break (big, dry, heavy)', bpm=(84, 176), mic='lofi', pitch=-0.5, swing=0.52,
+        label='Heavy funk break (big, dry)', bpm=(84, 176), mic='lofi', pitch=-0.5, swing=0.52,
         drums={'kick': ['X.........X.....', 'X.X.......X.....', 'X.........X..X..', 'X.X.......X.....'],
                'snare': ['....X..o....X...', '....X..o....X..o', '....X..o....X...', '....X..o..o.X...'],
                'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.', 'x.x.x.x.x.x.x.x.']}),
@@ -104,12 +104,12 @@ KIT_MENU = [
     ('hot_pants', 'Breaks (re-played)', BREAKS['hot_pants']['label'] + ' - jungle, DnB, funk', 'acoustic', None, 'hot_pants'),
     ('skull_snaps', 'Breaks (re-played)', BREAKS['skull_snaps']['label'] + ' - hip-hop, DnB', 'acoustic', None, 'skull_snaps'),
     # drum & bass
-    ('dnb_rollers', 'Drum & bass', 'Modern DnB: two-step kick + crisp snare over a Think break', 'acoustic', None, 'think',
+    ('dnb_rollers', 'Drum & bass', 'Modern DnB: two-step kick + crisp snare over a fast funk break', 'acoustic', None, 'think',
      dict(layer='dnb', snare='crisp')),
-    ('dnb_amen', 'Drum & bass', 'Amen rollers: two-step layered over the Amen', 'acoustic', None, 'amen', dict(layer='dnb', snare='crisp')),
+    ('dnb_amen', 'Drum & bass', 'Jungle rollers: two-step layered over the jungle break', 'acoustic', None, 'amen', dict(layer='dnb', snare='crisp')),
     ('neuro', 'Drum & bass', 'Neurofunk: hard, distorted snare, compressed break', 'acoustic', None, 'hot_pants', dict(layer='neuro')),
-    ('liquid', 'Drum & bass', 'Liquid: rounder kick, softer snare, shuffled Think', 'acoustic', None, 'think', dict(layer='liquid')),
-    ('jungle_raw', 'Drum & bass', 'Jungle: raw Amen, pitched up, crisp piccolo snare', 'acoustic', None, 'amen', dict(snare='piccolo')),
+    ('liquid', 'Drum & bass', 'Liquid: rounder kick, softer snare, a shuffled funk break', 'acoustic', None, 'think', dict(layer='liquid')),
+    ('jungle_raw', 'Drum & bass', 'Jungle: raw jungle break, pitched up, crisp piccolo snare', 'acoustic', None, 'amen', dict(snare='piccolo')),
     ('dnb_machine', 'Drum & bass', 'DnB drum machine (no break): tight & crisp', 'dnb', None, None),
     # more machines
     ('cr78', 'Drum machines', 'CR-78-style rhythm box (soft, vintage)', 'cr78', None, None),
@@ -187,7 +187,7 @@ def effective(opts, style, st):
 def pattern_of(opts, style):
     """The break (kit id) whose pattern the drums play, or None for programmed patterns.
 
-    drum_pattern None / 'genre': the genre's own beat - its break if the genre is built on one (jungle: Amen), else its
+    drum_pattern None / 'genre': the genre's own beat - its break if the genre is built on one (jungle: jungle break), else its
     programmed patterns. Old settings that picked a break as the kit (before drum style existed) still get that break."""
     raw = getattr(opts, 'drum_pattern', None)
     dp = raw or 'genre'
@@ -396,7 +396,7 @@ GENRE_KIT.update({'swing_tomtom': 'studio', 'big_band_50s': 'studio'})
 GENRE_KIT.update({k: 'vintage' for k in ('hauntology_melody', 'hauntology_campfire', 'hauntology_cold')})
 
 
-# 1.39: funky breaks / glitch electro - a chopped Think break with jungle-style edits
+# 1.39: funky breaks / glitch electro - a chopped funk break with jungle-style edits
 GENRE_KIT.update({'funky_breaks': 'think'})
 CHOP.update({'funky_breaks': 0.35})
 
@@ -419,7 +419,7 @@ GENRE_KIT.update({'jump_up': 'dnb_amen', 'dark_synthwave': 'linn'})
 # metal gets a tight modern kit instead of the big rock room
 GENRE_KIT.update({'swing': 'studio', 'bebop': 'studio', 'metal': 'unruly'})
 
-# 1.51 new genres: the kit each plays by default (trip-hop on the big-room Levee break, big beat on a heavy break)
+# 1.51 new genres: the kit each plays by default (trip-hop on the big-room big-room rock break break, big beat on a heavy break)
 GENRE_KIT.update({'french_house': '909', 'trip_hop': 'levee', 'big_beat': 'skull_snaps', 'footwork': '808', 'juke': '808',
                   'footwork_soulful': '808', 'footwork_dark': '808', 'hard_techno': 'techno', 'uk_hardcore': 'hard',
                   'dub_techno': 'soft', 'electro_swing': 'punchy', 'darkwave_ebm': 'linn', 'baltimore_club': '808',

@@ -461,7 +461,7 @@ class Renderer:
                 b += sw_x * 0.25
             b += ms / 1000.0 / self.spb
         g = GROOVES.get(st.get('groove')) if layer else None
-        if g and layer in g:                            # genre timing feel (e.g. Dilla-late snares, pushed Afro hats)
+        if g and layer in g:                            # genre timing feel (e.g. lazy late snares, pushed Afro hats)
             q16 = beat * 4
             if abs(q16 - round(q16)) < 1e-6:
                 amt = min(1.5, max(0.0, float(getattr(self.opts, 'humanize', 1.0))))
@@ -1948,7 +1948,7 @@ def metal_amp(x, gain):
 
 
 def pitch_vibrato(x, amount, note_sec):
-    """Delayed, widening vibrato on a held note (a sax player's 'Kenny G' vibrato): starts straight, then ~5.5 Hz
+    """Delayed, widening vibrato on a held note (a smooth-jazz sax vibrato): starts straight, then ~5.5 Hz
     wobbling up to ~35 cents at amount 1."""
     x = np.asarray(x, dtype=np.float32)
     n = x.shape[-1]

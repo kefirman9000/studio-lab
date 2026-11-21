@@ -28,7 +28,7 @@
 ## 2.2.2
 **Switch-up Bass: bar-long rising, sinking and alien effects**
 
-- **Every section ends on a move across its last bar**, the way Lucky Beard does it. Everything on top sinks together going into a drop-out or dark stretch: a tape slow-down, a low-pass closing to a thud, or a crush dive. Going into a new drop, it rises instead: a tape push, a filter opening or an accelerating stutter. Before a drop-out the sub often dives with it.
+- **Every section ends on a move across its last bar**, the way the reference track does it. Everything on top sinks together going into a drop-out or dark stretch: a tape slow-down, a low-pass closing to a thud, or a crush dive. Going into a new drop, it rises instead: a tape push, a filter opening or an accelerating stutter. Before a drop-out the sub often dives with it.
 - **Alien moves inside each section.** Every few bars, one or two parts do that scene's own move across a bar or two:
   - a **frequency shifter** sweep that turns the sound inharmonic and UFO-like
   - **ring modulation** gliding from growl to robot clang
@@ -47,7 +47,7 @@
 
 
 ## 2.2.0
-**New genre: Switch-up Bass (Bonal - Lucky Beard)**
+**New genre: Switch-up Bass**
 
 - Measured from your reference: 131.75 BPM, and a broken UK-bass kick (1, the "a" of 1, the "e" of 2, and a push into the next bar) that **never changes from the first bar to the last**. Underneath it, a one-note sub on the root rides the kick and carries most of the record's energy.
 - **Same rhythm all song, new everything else.** Every section is its own scene: a new mid-bass layer (reese, growl, FM, wobble, neuro, hoover), new stabs and samples (rave, sampler, noise, soul horn, MPC keys), new vocal chops and a new perc voice. Each one gets its own effect (bit-crushed, phased, wah'd, flanged, driven, filter-swept or OTT'd). No part keeps the same sound or effect two sections in a row.
@@ -78,10 +78,10 @@
 ## 2.0.0
 **Studio Lab 2.0: SL2 merged in, a drawable energy curve, real groove templates, new synths, live note preview, ready-to-mix REAPER projects and a proper Windows app**
 
-- **One Studio Lab.** SL2's ideas now live here. Its mix tools (true-peak limiting, round-robin hits, kick tuning, drum-bus glue and the mix check) were already merged in 1.97. Its **Euphoric UK Techno** genre (Scuba - NE1BUTU) is new: a simple, punchy broken kick and a heavy sub, then a long build where pads, rave stabs, plucks and a soaring lead stack up into a euphoric ending.
+- **One Studio Lab.** SL2's ideas now live here. Its mix tools (true-peak limiting, round-robin hits, kick tuning, drum-bus glue and the mix check) were already merged in 1.97. Its **Euphoric UK Techno** genre is new: a simple, punchy broken kick and a heavy sub, then a long build where pads, rave stabs, plucks and a soaring lead stack up into a euphoric ending.
 - **Generate and Play.** The main button is now **✦ Generate** (a new song). Next to it, **▶ Play** replays the last song. Once you change something, it becomes **▶ Play with changes**: the *same* song (same seed, sounds and note edits) played again with your changes, not a new song.
 - **Draw the energy curve** (Song → Energy curve). Draw how the song should rise and fall, or start from Slow build, Two drops, Peak at the end or Arc. The arrangement follows your curve: low parts thin out to pads and chords, mid parts drop the drums, and high parts bring everything in.
-- **Groove templates** (Groove feel → Classic feels): MPC swing 54/58/62 %, boom bap, drunk (very loose Dilla), UK garage shuffle, techno shuffle, tight trap, drill bounce and DnB roll. Each template moves each part differently, the way producers set it on their machines. Trap, drill, techno, DnB, boom bap and garage now use these by default.
+- **Groove templates** (Groove feel → Classic feels): MPC swing 54/58/62 %, boom bap, drunk (very loose), UK garage shuffle, techno shuffle, tight trap, drill bounce and DnB roll. Each template moves each part differently, the way producers set it on their machines. Trap, drill, techno, DnB, boom bap and garage now use these by default.
 - **New synths for trance, techno and hip hop:**
   - PWM pad, formant lead, FM perc, mod sequence, noise stab, sliding 808, 12-bit MPC keys (with crackle), soul horn and scratch.
   - Each one is in its genres' sound pools: the hip-hop scenes get MPC keys, soul horns and scratches; trap and drill get the sliding 808; techno gets noise stabs and mod sequences; trance gets the PWM pad and formant lead.
@@ -99,12 +99,12 @@
 ## 1.97.0
 **Slam / brutal deathcore, a cybergrind that never writes the same song twice, more professional mixes, and a tidier result card**
 
-- **New genre: Slam / brutal deathcore**, built from your four reference tracks (Waking the Cadaver, Vulvodynia). What I measured, and what the genre now does:
+- **New genre: Slam / brutal deathcore**, built from your four reference tracks. What I measured, and what the genre now does:
   - **Mostly a wall of blasts and double kick** (65–85 % of the time in the references), with slam grooves in between.
   - **Breakdowns that are never the same.** Every breakdown in a song sits on its own pulse (one hit every 0.3 to 1.3 s in the references). Each one is now written fresh from eight kinds: kick-locked chugs, half-time slams over double kick, stop-start hits, triplet grooves, quarter-note beatdowns, gallops, crawling drags and pinch-squeal climbs. Each also gets its own phrase (2 or 4 bars, with an ending that answers it), tempo (full, ¾, ⅔, ½ or slower), snare and cymbals, and its own riff notes (the b2 rub, the tritone, squeals up to the octave). A song uses kinds it hasn't had yet, and no breakdown can repeat an earlier one.
-  - **Breakdowns pile up toward the end** in most songs (as on Waking the Cadaver), and the heaviest, slowest one comes last.
+  - **Breakdowns pile up toward the end** in most songs (as in the references), and the heaviest, slowest one comes last.
   - **Lower tuning, a clickier kick and a brutally loud master**, with the tone matched to the references.
-- **Cybergrind rebuilt from your twelve wecamewithbrokenteeth references.** Before, every cybergrind song used the same nine-part form. Now:
+- **Cybergrind rebuilt from your twelve reference tracks.** Before, every cybergrind song used the same nine-part form. Now:
   - **Every song gets its own layout:** a different opening (cold breakdown, blast, chiptune, a sample-style stop), 5–9 parts in a new order, and a different ending. Across 40 test songs, no two layouts were alike.
   - **Built on ~125 BPM like the records**, switching all the time: double-time blasts, half-time breakdowns, slam grooves, dead stops and quiet chiptune moments in the middle of the song.
   - **Mostly breakdowns and grooves, blasts only in short bursts**, matching the references (about 45 % breakdown, short blasts, songs 45–110 s).
@@ -1284,7 +1284,7 @@ I went through every genre and counted which instruments they lean on and which 
 - **Orchestra plugin detection (BBC Symphony Orchestra, LABS, Kontakt).** Sounds & instruments → 🎻 Orchestra plugin → ✨ Detect my instruments: the plugin opens once, you click through the instruments (and articulations) you want in its own browser, and each one is recognised from the plugin's state and saved with the right name ("BBC celli pizzicato (Celli · Pizzicato)"), so matching parts in every genre use it. No naming, no reopening. Sounds it can't name are kept for you to name; saved sounds can be renamed, tested and removed in the same window.
 - **One "Sounds & instruments" window** replaces the five header buttons (Real instruments, Genre VSTs, VST, My sounds, My plugins): an overview of what you have plus a tab for each.
 - **Your sound picks stay picked.** Changing genre, blending or Surprise me no longer clears the sounds you chose for bass / chords / pad / arp / lead; parts left on default follow the new genre. Choose "Genre picks" in Parts to get the old behaviour. A part you picked also stops being swapped out in some sections by the genre's instrument rotation.
-- **Drum style and drum sounds are separate.** *Drum style* = what the drums play (the genre's beat, a classic break, the genre's programmed beat without its break, or any other genre's beat); *Drum sounds* = the kit (machines, real kits, sampled-break kits, your samples). Changing the sounds never changes the patterns: jungle on a 909 still plays its Amen, boom bap on brushes still plays its Funky Drummer. Old settings that picked a break as the kit still play that break.
+- **Drum style and drum sounds are separate.** *Drum style* = what the drums play (the genre's beat, a classic break, the genre's programmed beat without its break, or any other genre's beat); *Drum sounds* = the kit (machines, real kits, sampled-break kits, your samples). Changing the sounds never changes the patterns: jungle on a 909 still plays its jungle break, boom bap on brushes still plays its laid-back funk break. Old settings that picked a break as the kit still play that break.
 - **Drummer and percussion, also separate.** *Drummer* sets fills (none / fewer / more), ghost notes (off / more) and hi-hats (sparse 8ths / busy 16ths) on whatever beat plays. *Percussion* is picked on its own: the genre's, none, or a set - shakers, tambourine, disco, Latin (real campana), Afro, Caribbean (iron), woodblocks. Songs with everything on "Genre" are note-for-note the same as before.
 - **Smarter drum style menu:** beats that fit the song's tempo come first, then half / double time, then the rest grouped by feel; every beat is labelled (four-on-the-floor, half-time, two-step, breakbeat, swing / shuffle, dembow / clave, backbeat, 3/4 ...), and beats in another meter aren't offered.
 - **Genre fixes:** jazz leads on trumpet (not a brass section) and keeps an upright bass; the string quartet's harmony is a viola, not a full section; Classical-period broken chords on short strings instead of piano; no timpani thud in the minuet; celli / basses (not the whole section) on the bass line in Orchestral, Film Piano and Cinematic; Japanese zen gets one soft taiko stroke a bar and an airy pad instead of Western strings; no drum-kit kick in salsa; big band swing and bebop on sticks instead of brushes; boogie rock now shuffles; metal on a tight modern kit; synth brass, tuba and e-piano removed from the Classical-era sound pools.
@@ -1492,7 +1492,7 @@ Genre research, round 1: production guides and genre write-ups checked against t
 
 ## 1.40.0
 - **Fixed: a pad that played smeared, off-beat notes.** When a slow, swelling sound (warm pad, string pad, choir) landed on a part that plays short chord stabs, the notes never reached full volume and rang on after the beat. Those parts now hold each chord from its beat until the chord changes.
-- **Fixed: a click / "something before the kick" on Amen-style breaks.** Recorded drum hits now have their pre-roll trimmed and short fades at both ends, kicks and break hits are never humanised (a layered kick no longer flams against the break), and reversed snares now swell into the beat and end on it.
+- **Fixed: a click / "something before the kick" on Classic jungle breaks.** Recorded drum hits now have their pre-roll trimmed and short fades at both ends, kicks and break hits are never humanised (a layered kick no longer flams against the break), and reversed snares now swell into the beat and end on it.
 - **Song editor.** Every result and every Library song has an ✏️ **Edit** button. It opens the song with its section timeline and **every sound playing in it**: main parts, extras, layers, the sounds of other sections, and build-up and fill drums. Change any of them or switch it off, then preview or render. The notes stay the same.
 - **Open a past project by dropping it on the window**: its MP3 / WAV / MIDI / plugin guide or its `_settings.json`. It opens in the editor, or is rebuilt from its settings if the audio is gone.
 - **The Sound panel also lists everything your last song used**, so every sound you hear can be found and changed.
@@ -1526,7 +1526,7 @@ Genre research, round 1: production guides and genre write-ups checked against t
 - **Build-ups you control.** A new **Build-ups** switch: On, Subtle (natural band-style lead-ins, no EDM ramps) or Off. A new **Transition FX** switch: Varied, Fewer, Drum fills only (no riser / cymbal / impact sounds) or Off (straight cuts). Both are saved with presets and available on the command line (`--builds`, `--transition-fx`).
 - **More varied, more natural build-ups.** Ten new styles: groove + short fill, ride-cymbal crescendo, stop-time hits, marching snare, tom groove, mallet cymbal roll, kick pulse, noise wash, tape stop, and nothing at all. Each build in a song is now a different one, and snare and clap rolls ramp up in several different shapes instead of the same speed-up every time.
 - **No more reverse cymbal before every chorus.** Each transition is now one of several lead-ins: a reverse cymbal, a mallet roll, a noise wash, a tape stop, a moment of silence, just a crash, or nothing. The same lead-in never comes twice in a row. Drops alternate between an impact and a falling noise sweep.
-- **Better Amen (and Think) breaks.** Chops now keep the backbeat, because snare slices land on 2 and 4. There is a set of classic jungle re-edits, and phrase ends get snare rushes that rise in pitch, reversed snares, stutters and pitch-downs. The break also gets the 12-bit sampler grit, and its pitch rises with the tempo like a sped-up record.
+- **Better jungle and funk breaks.** Chops now keep the backbeat, because snare slices land on 2 and 4. There is a set of classic jungle re-edits, and phrase ends get snare rushes that rise in pitch, reversed snares, stutters and pitch-downs. The break also gets the 12-bit sampler grit, and its pitch rises with the tempo like a sped-up record.
 - **Genres sorted into sub-groups** inside each tab (House & Disco, Techno & Trance, Dubstep & Bass, Drum & Bass / Breaks & Hard, Hip-Hop / Trap & Phonk, Jazz, Swing & Big Band, Country / Folk & Blues, Solo Piano, Classical Eras ...). Click a group header to collapse it. docs/GENRES.md is grouped the same way.
 - New genre **Solo Piano Miniature**, built from your reference track: one soft, felt-muffled upright in wide close-mic stereo, a rocking 8th-note left hand swaying between two chords, and a plain singing melody, at about 78 BPM.
 - New genre **Funky breaks / glitch electro**, built from your two references: a chopped, swung funk break at 122-132 BPM with edits, a rubbery sliding bass, a warped gliding lead, palm-muted guitar riffs doubled by the bass, and Rhodes stabs.
@@ -1554,10 +1554,10 @@ Genre research, round 1: production guides and genre write-ups checked against t
 - Also **Soca / calypso** (steel pan, iron, brass hits), **Raga** (tanpura drone, sitar with meend, tabla; alap - jor - gat - jhala) and **Japanese zen** (koto, shakuhachi-style flute, taiko).
 
 **Drum kits**
-- **Drum & bass kits**: modern DnB layers a tight electronic two-step kick and a crisp snare over a break (the break's kick filtered so the layered kick owns the low end) - *Modern DnB (Think)*, *Amen rollers*, *Neurofunk* (hard, distorted, compressed break), *Liquid*, *Jungle* (raw Amen, crisp piccolo snare) and a *DnB drum machine*. DnB, liquid, neurofunk and jungle now use them by default.
-- Two more re-played breaks (**Hot Pants-style**, **Skull Snaps-style**) and five more drum machines: **CR-78**, **TR-606**, **TR-707**, **DMX** (8-bit) and a **distorted phonk 808** (old sample-based machines get their real bit depth and sample rate).
+- **Drum & bass kits**: modern DnB layers a tight electronic two-step kick and a crisp snare over a break (the break's kick filtered so the layered kick owns the low end) - *Modern DnB (fast funk break)*, *jungle break rollers*, *Neurofunk* (hard, distorted, compressed break), *Liquid*, *Jungle* (raw jungle break, crisp piccolo snare) and a *DnB drum machine*. DnB, liquid, neurofunk and jungle now use them by default.
+- Two more re-played breaks (**tight funk**, **heavy funk**) and five more drum machines: **CR-78**, **TR-606**, **TR-707**, **DMX** (8-bit) and a **distorted phonk 808** (old sample-based machines get their real bit depth and sample rate).
 - Two more free real kits, **Karoryfer Unruly Drums** (a tight modern studio kit and a dirty one), and **Karoryfer Frankensnare** - real snares that replace a kit's own: a crisp steel piccolo (DnB), an ash piccolo (jungle), a dead muffled 70s snare (soft rock) and a huge one for a **Big 80s kit** with gated reverb. Both CC0, in 🎻 Real instruments.
-- Every kit is in the drum kit menu; genres were assigned their natural kit (pop and modern country: modern studio kit, soft rock: dead 70s snare, acid house: 606, phonk: distorted 808, jazz rap: Skull Snaps).
+- Every kit is in the drum kit menu; genres were assigned their natural kit (pop and modern country: modern studio kit, soft rock: dead 70s snare, acid house: 606, phonk: distorted 808, jazz rap: heavy funk).
 
 **New free plugin: RipplerX** (GPL-3.0, official GitHub release zip): physically modelled marimba, vibes, kalimba, harp, music box, bells, tubular bells and gongs - used for those parts in any genre once installed from 🎚 Genre VSTs.
 
@@ -1602,7 +1602,7 @@ The genres that needed the most work (everything except vocals):
 - **Vaporwave**: slower, sampler grit (SP-1200 style), chorused Rhodes, heavier tape warble, darker top.
 - **Salsa**: a real **piano montuno** (syncopated chord tones in octaves, alternating with the clave) and horn hits. **Afrobeats**: highlife-style picked guitar patterns over Rhodes. **Tango**: a new **bandoneon**.
 - **Rebuilt instruments**: accordion (three reeds, musette beating, bellows push), banjo (metal fingerpick, drum-head resonances), pedal steel (volume-pedal swell, bar slides, glassy pickup), and the amapiano **log drum** (hollow tuned knock that drops in pitch, closing filter, glides).
-- **Classical genres are written in real forms**: Baroque - binary dance form (with ornamented repeats) or a Bach-style prelude; Classical period - **theme & variations** (ornamented, Alberti, theme in the bass, tutti) or a compact **sonata form**; Romantic - a lyric slow movement (the theme sinks to the celli, then climaxes); Impressionism - an arch form with harp shimmer. Sections end on written-out V-I cadences with the melody landing on the tonic.
+- **Classical genres are written in real forms**: Baroque - binary dance form (with ornamented repeats) or a Baroque prelude; Classical period - **theme & variations** (ornamented, Alberti, theme in the bass, tutti) or a compact **sonata form**; Romantic - a lyric slow movement (the theme sinks to the celli, then climaxes); Impressionism - an arch form with harp shimmer. Sections end on written-out V-I cadences with the melody landing on the tonic.
 - **New genre: Minuet & trio** (3/4): minuet, ornamented repeat, trio, minuet da capo.
 
 ## 1.35.1
@@ -1661,12 +1661,12 @@ Every genre checked against the new real instruments:
 - **No more robotic "vox" synth** except in genres built on vocal chops (UK garage, future bass, Jersey club, baile funk, the phonk family, future funk, rave, melodic dubstep, hyperpop). Elsewhere (deep house, tech house, dubstep, jungle, afrobeats, dancehall, K-pop, teen pop, liquid DnB, new beat ...) it's replaced by the genre's own lead.
 
 ## 1.30.1
-- **Smooth Jazz is now Kenny G style**: a new **Soprano sax** sound soaring up high in long held notes with a delayed, widening vibrato and scoops into every phrase, over lush 80s DX electric piano and pads, fretless-style bass and soft reverb-washed drums; slow ballad tempos, romantic major-key progressions and a key change for the last chorus in most songs. The sax stays a soloist (no doubling).
+- **Smooth Jazz now has a soaring soprano sax**: a new **Soprano sax** sound soaring up high in long held notes with a delayed, widening vibrato and scoops into every phrase, over lush 80s DX electric piano and pads, fretless-style bass and soft reverb-washed drums; slow ballad tempos, romantic major-key progressions and a key change for the last chorus in most songs. The sax stays a soloist (no doubling).
 - New expressive vibrato for held notes on recorded instruments (used by the soprano sax).
 
 ## 1.30.0
 - **Smooth jazz**, three new genres (Classic tab):
-  - **Smooth Jazz** (Kenny G, Dave Koz, Boney James): the real tenor sax scooping into its notes over Rhodes 9th / major-7th chords, fretless-style bass, cross-stick drums, soft pads and the real acoustic guitar.
+  - **Smooth Jazz**: the real tenor sax scooping into its notes over Rhodes 9th / major-7th chords, fretless-style bass, cross-stick drums, soft pads and the real acoustic guitar.
   - **Smooth Jazz-Funk** (Grover Washington Jr., George Benson, Spyro Gyra): slap bass groove, jazz-guitar melody in octaves, sax answers, electric piano and brass.
   - **Quiet Storm** (Sade, Luther, late-night radio): slow and intimate - soft Rhodes, breathy sax, fretless bass, brushed snare, swelling strings.
   - They stay on jazz progressions (ii-V-I, I-vi-ii-V, iv-VII-III ...) instead of borrowing generic pop ones.
@@ -1761,7 +1761,7 @@ Every genre checked against the full Studio Lab genre bible (all 114). Most alre
 - **Acid house**: the overdriven 303 is the lead too, rave stabs instead of organ, a dry raw mix.
 - **Dark UK dubstep**: sparse vocal / soft leads instead of festival hoovers, a less aggressive kit.
 - **Downtempo** keeps its glassy bells; **deep house** plays warm Rhodes / organ 7th-9th chords; **baile funk** gets distorted drums and a louder, rawer master.
-- **Braindance / IDM** plays a heavily chopped Think-style break; **country** has a train-beat snare.
+- **Braindance / IDM** plays a heavily chopped Fast funk break; **country** has a train-beat snare.
 - **Chorus** (Juno / Rhodes style) on Italo disco, synth-pop, synthwave, city pop, fusion, vaporwave and R&B keys.
 - **Classical feel**: limited vibrato in Baroque, rubato in film piano, neoclassical and chamber; ambient gets tape drift; spaghetti western can use a whistled lead.
 
@@ -1785,9 +1785,9 @@ Every genre checked against the full Studio Lab genre bible (all 114). Most alre
 ## 1.18.0
 Genres checked against the electronic and multi-genre production bibles (tempo, feel, rhythm grid, sound, arrangement).
 - **13 new genres:**
-  - *Electronic:* Italo Disco (LinnDrum-style kit with a gated-reverb snare, octave synth bass, Juno/DX7-style arps), New Beat (slow, stomping 100-115 BPM EBM/acid), Hardcore / Gabber (170-195 BPM distorted pitched kicks, hoovers), Breakbeat Hardcore / Rave (Amen-style breaks over a 4/4 kick, piano stabs, hoovers), Future Funk (swung disco groove, heavy sidechain, vocal chops, slap-style bass).
+  - *Electronic:* Italo Disco (LinnDrum-style kit with a gated-reverb snare, octave synth bass, Juno/DX7-style arps), New Beat (slow, stomping 100-115 BPM EBM/acid), Hardcore / Gabber (170-195 BPM distorted pitched kicks, hoovers), Breakbeat Hardcore / Rave (Classic jungle breaks over a 4/4 kick, piano stabs, hoovers), Future Funk (swung disco groove, heavy sidechain, vocal chops, slap-style bass).
   - *Jazz:* Bebop (180-260 BPM, rapid ii-V changes, bebop lines, rootless comping), Cool / Modal Jazz (long stretches on one mode, space, muted trumpet), Soul Jazz / Hard Bop (organ trio), Jazz Fusion (straight 16ths, electric bass, Rhodes, synth and overdriven guitar).
-  - *Classical:* Classical period (Mozart / Haydn - melody over Alberti bass, 4+4 phrases, horns, timpani), Romantic Orchestra (rubato, rich chromatic harmony, horns, swelling dynamics), Impressionism (lydian / modal colours, harp, flute, piano washes, flexible pulse), Minimalism (steady pulse, repeating marimba / piano cells, slow harmony).
+  - *Classical:* Classical period (melody over Alberti bass, 4+4 phrases, horns, timpani), Romantic Orchestra (rubato, rich chromatic harmony, horns, swelling dynamics), Impressionism (lydian / modal colours, harp, flute, piano washes, flexible pulse), Minimalism (steady pulse, repeating marimba / piano cells, slow harmony).
 - **New musical behaviour:** Alberti-bass accompaniment; jazz snare comping ("dropping bombs") in Bebop, Modal, Jazz and Swing; Romantic rubato (phrases push, then broaden into the cadence); the 80s **gated-reverb snare** on the LinnDrum-style kit (synthwave, synthpop, city pop, Italo); a real campana cowbell for salsa and cumbia when the percussion library is installed.
 - **Fixes to existing genres:** house 120-127 BPM with moderate (not pumping) sidechain and conga fills; deep house and psytrance now flow continuously instead of build → drop, deep house with gentler sidechain; progressive house gets long evolving builds and strip-down breakdowns; uplifting trance 134-140, psytrance 140-148, big room 126-130, synthwave 90-112; jungle swings harder; the reggae skank sits on every "and".
 
@@ -1795,8 +1795,8 @@ Genres checked against the electronic and multi-genre production bibles (tempo, 
 - **Every genre has its own drum kit, and you can switch kits** (Sound → Drum kit, grouped):
   - *Drum machines:* TR-808 (rap, trap, drill), TR-909 (house), Trance 909 (rolling kick, open hats), Techno 909 (hard, rumble), 80s LinnDrum-style (synthwave, synthpop, city pop), punchy EDM, hardstyle, soft.
   - *Real kits* (from the free drum library): studio, **rock (big room - new mic: 🎻 Real instruments → Update, +51 MB)**, vintage lo-fi.
-  - *Re-played breaks:* Amen-style (jungle, DnB, breakcore - chopped and re-sequenced jungle-style), Think-style (liquid DnB), Funky Drummer-style (boom bap), Apache-style, Back to Life / Tom's Diner-style shuffle (downtempo, trip-hop), Levee-style big room. These are the classic drum *patterns* played on the real kit (tuned like a sped-up record where the genre does that), not copies of the original recordings - so the songs stay yours. To use a break recording you own, load its hits under My sounds and tick "my samples".
-  - Genre defaults: jungle/DnB → Amen, liquid → Think, boom bap → Funky Drummer, downtempo → Back to Life, lo-fi/vaporwave → vintage, trap/drill/rap/reggaeton → 808, house → 909, techno → Techno 909, trance → Trance 909, rock/metal/punk/indie → rock kit, funk/disco/soul/jazz/pop → studio kit, synthwave → LinnDrum-style. The result card shows which kit played.
+  - *Re-played breaks:* jungle-style (jungle, DnB, breakcore - chopped and re-sequenced jungle-style), fast funk (liquid DnB), laid-back funk (boom bap), bongo funk, swung soul-shuffle shuffle (downtempo, trip-hop), big-room rock big room. These are the classic drum *patterns* played on the real kit (tuned like a sped-up record where the genre does that), not copies of the original recordings - so the songs stay yours. To use a break recording you own, load its hits under My sounds and tick "my samples".
+  - Genre defaults: jungle/DnB → jungle break, liquid → fast funk break, boom bap → laid-back funk break, downtempo → soul-shuffle groove, lo-fi/vaporwave → vintage, trap/drill/rap/reggaeton → 808, house → 909, techno → Techno 909, trance → Trance 909, rock/metal/punk/indie → rock kit, funk/disco/soul/jazz/pop → studio kit, synthwave → LinnDrum-style. The result card shows which kit played.
 - **Far fewer bells.** Bell, celesta, glockenspiel and music-box sounds now only appear in genres where they're idiomatic (trap melodies, film & orchestral, holiday, fantasy, horror, braindance); marimba / kalimba / vibes / steel drum only in afro, latin, jazz, bossa, lo-fi and organic styles - and even there only occasionally unless they're the genre's own sound. Everywhere else the part plays the genre's proper sound (trance: gated saw pluck arps and a supersaw lead; techno: stabs; DnB/jungle: rave stabs; garage: organ ...). An instrument you pick yourself is always kept.
 - **Trance sounds like trance:** a new 9-voice supersaw lead with an octave-down layer, a filter that opens on every note and delayed vibrato; bigger hall reverb and dotted-8th delay on lead and arps; the classic 16th-note trance gate on the pad during drops (breakdowns stay open).
 - **Genre fixes from an audit of all 101 genres:** trap now uses an 808 kit (it used the generic one); disco and funk play an electric bass instead of a synth saw; metal, punk and rock never rotate in pianos or synths; ambient never gets a gritty FM bass.
@@ -1929,7 +1929,7 @@ Genres checked against the electronic and multi-genre production bibles (tempo, 
 **Songs sound more like records**
 - **Fills and transitions:** a fill into every chorus, drop and climax (tom fills for band styles, snare fills for electronic), plus a reverse-cymbal swell. Choruses and drops open up with wider chords.
 - **Real endings:** band, jazz, hip-hop and film styles end on a final chord with a crash instead of fading out (club tracks keep their DJ-friendly fade). Choose under *Ending*.
-- **Groove feel:** each genre plays with its own timing - lazy J Dilla snares in boom bap and lo-fi, laid-back reggae skanks, pushed Afro hats, dembow push, house late hats, jazz ride on top. Choose under *Groove feel*.
+- **Groove feel:** each genre plays with its own timing - lazy late snares in boom bap and lo-fi, laid-back reggae skanks, pushed Afro hats, dembow push, house late hats, jazz ride on top. Choose under *Groove feel*.
 - **Tighter low end:** in electronic styles bass notes that land a hair off the kick now hit with it; *Bass rhythm → Follow the kick drum* locks any style's bass to the kick.
 - **Vocal guide:** every song gets a singable melody (verses low, choruses higher, breaths between phrases, the chorus repeats). It's always in the MIDI exports (with "la" lyric markers); tick *hear it in the song* to play it.
 

@@ -2,11 +2,11 @@
 
 Measured from the reference records (only the numbers are kept, never the audio):
 
-  slam / brutal deathcore (Waking the Cadaver, Vulvodynia - 4 tracks)
+  slam / brutal deathcore (4 reference tracks)
       85-200 s songs at about -5.5 LUFS; 65-85 % of the time a wall of blasts and double kick, slam grooves 8-23 %,
       breakdowns 8-17 % in short bursts (3-15 s). Every breakdown in a song sits on its own pulse (one hit every
-      0.3 ... 1.3 s), and Waking the Cadaver piles them up toward the end of a song.
-  cybergrind (wecamewithbrokenteeth - 12 tracks)
+      0.3 ... 1.3 s), and the references pile them up toward the end of a song.
+  cybergrind (12 reference tracks)
       42-98 s songs at about -10 LUFS, built on ~125 BPM: mostly breakdowns (24-67 %) and grooves, blasts at most
       15 %, full stops and near-silences in the middle of songs (up to 22 % of windows), and constant switching
       between half, normal and double time (pulses of 0.24 / 0.48 / 0.96 s).
@@ -178,7 +178,7 @@ def slam_form(rng):
     elif opening == 'groove':
         form.append(('groove', 4, ALL, groove(rng)))
     n_parts = rng.randint(6, 11)
-    late_heavy = rng.random() < 0.6                    # Waking the Cadaver: breakdowns stack up near the end
+    late_heavy = rng.random() < 0.6                    # references: breakdowns stack up near the end
     n_bd = 0
     for i in range(n_parts):
         pos = i / max(1, n_parts - 1)
@@ -204,7 +204,7 @@ def slam_form(rng):
 
 
 def cyber_form(rng):
-    """Cybergrind (wecamewithbrokenteeth): ~45-100 s, mostly breakdowns and grooves around ~125 BPM, short double-time
+    """Cybergrind: ~45-100 s, mostly breakdowns and grooves around ~125 BPM, short double-time
     blasts, full stops and quiet electronic moments, never the same order twice."""
     used = set()
     form = []

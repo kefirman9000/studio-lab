@@ -2509,7 +2509,7 @@ def add_layer_tracks(st, opts):
         if role not in ('lead', 'chords', 'pad', 'arp', 'bass') or t.get('counter') or t.get('double_of'):
             continue
         if role == 'lead' and st.get('solo_lead') and want != 'more':
-            continue                                     # one soloist (Kenny G's sax isn't doubled)
+            continue                                     # one soloist (a smooth-jazz sax isn't doubled)
         if role in (opts.instruments or {}) and want != 'more':
             continue
         part = {'bass': 'bass', 'lead': 'melody', 'arp': 'melody'}.get(role, 'chords')

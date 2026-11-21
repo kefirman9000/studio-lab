@@ -1994,7 +1994,7 @@ style('motown', 'Classic', 'Motown / 60s soul: tambourine on every backbeat, mel
       chord_rh=['....x.......x...', 'x---x---x---x---', '..x...x...x...x.'], chord_center=62,
       arp=dict(rate=2, mode='up', oct=5, prob=0.5),
       lead_rh=['x-x-x---x-x-x---', 'x---x-x-x-------', '..x-x-x-x---x---', 'x-x-x-x-x-------'],
-      gm_hint='Bass guitar (melodic, Jamerson-style); Piano; Rhythm guitar; Strings; Horn section; Tambourine',
+      gm_hint='Bass guitar (melodic, Motown-style); Piano; Rhythm guitar; Strings; Horn section; Tambourine',
       tracks=[T('kick', 'kick', 'kick', db=-17), T('snare', 'snare', 'snare', rev=0.3),
               T('tamb', 'top', 'tamb', pan=0.3, db=-25), T('chat', 'top', 'chat', db=-29),
               T('bass', 'bass', 'ebass', db=-15), T('chords', 'chords', 'piano', rev=0.25, db=-22),
@@ -2416,7 +2416,7 @@ style('idm_jungle_theme', 'Electronic',
       lead_rh=['x-------x-------', 'x---------------', 'x-----------x---', 'x-------x---x---', '........x-------'], lead_oct=5,
       repetition=0.9,
       gm_hint='Detuned analog pads (Juno / Prophet); a melancholy mono synth theme; fretless / fingered bass guitar played '
-              'busily and melodically; a chopped Amen-type break with heavy edits (rushes, ratchets, reverses); dark reverb',
+              'busily and melodically; a chopped jungle-type break with heavy edits (rushes, ratchets, reverses); dark reverb',
       tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.15, db=-15),
               T('chat', 'top', 'chat', pan=0.15, db=-27), T('ride', 'top', 'ride', pan=-0.25, db=-31),
               T('bass', 'bass', 'sf:fingerbass', db=-14, p=dict(cut=1800)),
@@ -3890,8 +3890,8 @@ style('gabber', 'Electronic', 'Hardcore / gabber (90s Rotterdam): 170-200 BPM fo
                  pad=['choir', 'strings', 'warmpad', 'vox']),
       label='Hardcore / Gabber')
 
-style('rave_hardcore', 'Electronic', 'Breakbeat hardcore / early UK rave (1990-93): Amen-style breaks over a four-on-the-floor kick, '
-      'piano stabs, hoover and Mentasm leads, pitched-up vocal chops - funky, chaotic, euphoric',
+style('rave_hardcore', 'Electronic', 'Breakbeat hardcore / early UK rave (1990-93): Classic jungle breaks over a four-on-the-floor kick, '
+      'piano stabs, hoover and rave hoover leads, pitched-up vocal chops - funky, chaotic, euphoric',
       bpm=(135, 155), scales=['minor', 'major'], kit='acoustic', form='edm', sc_depth=0.3, swing=0.52,
       progs={'minor': [[0, 5, 3, 4], [0, 5, 6, 4]], 'major': [[0, 4, 5, 3], [0, 3, 4, 4]]},
       drums={'kick': [FOUR], 'snare': ['....X..x.x..X..x'], 'ride': ['x.x.x.x.x.x.x.x.']},
@@ -4018,7 +4018,7 @@ style('fusion', 'Classic', 'Jazz fusion / jazz-rock: straight 16th-note grooves,
       label='Jazz Fusion')
 
 # ---- classical periods
-style('classical_period', 'Orchestral', 'Classical period (Mozart / Haydn): elegant homophony - a clear singing melody over Alberti-bass '
+style('classical_period', 'Orchestral', 'Classical period (late 1700s): elegant homophony - a clear singing melody over Alberti-bass '
       'and string accompaniment, 4+4-bar phrases, functional cadences, pairs of winds, horns and timpani',
       bpm=(100, 140), scales=['major', 'minor'], human=0.006, chord_size=3, chord_bars=1, form='orchestral', reverb=2.0,
       progs={'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 1, 4, 0], [0, 5, 1, 4], [0, 3, 1, 4]], 'minor': [[0, 3, 4, 0], [0, 5, 3, 4]]},
@@ -4038,9 +4038,9 @@ style('classical_period', 'Orchestral', 'Classical period (Mozart / Haydn): eleg
                  lead=['violin', 'flute', 'oboe', 'clarinet'],
                  pad=['horn', 'strings', 'sf:slowstrings'],
                  bass=['cello', 'contrabass', 'sf:bassoon']),
-      label='Classical (Mozart era)')
+      label='Classical (late 1700s)')
 
-style('romantic', 'Orchestral', 'Romantic orchestra (Tchaikovsky / Brahms): expansive lyrical themes with rubato, rich chromatic '
+style('romantic', 'Orchestral', 'Romantic orchestra (late 1800s): expansive lyrical themes with rubato, rich chromatic '
       'harmony, full strings with continuous vibrato, horns and woodwinds, swelling ppp-to-fff dynamics',
       bpm=(60, 92), scales=['minor', 'major', 'harmonic_minor'], human=0.012, chord_size=4, chord_bars=1, form='cinematic',
       reverb=3.2, voicing='open', rubato=0.8,
@@ -4063,7 +4063,7 @@ style('romantic', 'Orchestral', 'Romantic orchestra (Tchaikovsky / Brahms): expa
                  bass=['cello', 'contrabass', 'sf:bassoon', 'tuba']),
       label='Romantic Orchestra')
 
-style('impressionism', 'Orchestral', 'Impressionism (Debussy / Ravel): modal and lydian colours, parallel gliding chords, blurred '
+style('impressionism', 'Orchestral', 'Impressionism (early 1900s): modal and lydian colours, parallel gliding chords, blurred '
       'harmony, harp and flute over muted strings and piano washes, flexible pulse - atmosphere over function',
       bpm=(56, 80), scales=['lydian', 'dorian', 'mixolydian'], human=0.012, chord_size=4, chord_bars=2, form='orchestral', reverb=3.5,
       voicing='open', rubato=0.5,
@@ -4083,7 +4083,7 @@ style('impressionism', 'Orchestral', 'Impressionism (Debussy / Ravel): modal and
                  bass=['cello', 'contrabass', 'sf:bassoon', 'tuba']),
       label='Impressionism')
 
-style('minimalism', 'Orchestral', 'Minimalism (Reich / Glass / Adams): a steady pulse of repeating cells on marimba, piano and strings, '
+style('minimalism', 'Orchestral', 'Minimalism (1970s-80s): a steady pulse of repeating cells on marimba, piano and strings, '
       'shifting by gradual additive / phasing processes over slow diatonic harmony',
       bpm=(120, 160), scales=['minor', 'major', 'dorian'], human=0.002, chord_size=3, chord_bars=4, form='groove',
       progs={'minor': [[0, 5, 3, 4], [0, 6, 5, 6]], 'major': [[0, 4, 5, 3], [0, 3, 0, 4]], 'dorian': [[0, 3, 0, 3]]},
@@ -4235,7 +4235,7 @@ style('heroic_anthem', 'Orchestral', 'Heroic anthem: a soaring major-key fanfare
                  bass=['contrabass', 'cello', 'tuba', 'sf:bassoon']),
       label='Heroic Anthem')
 
-style('symphonic_finale', 'Orchestral', 'Grand symphonic finale (Tchaikovsky / Mahler scale): full brass chorale over tremolo strings, '
+style('symphonic_finale', 'Orchestral', 'Grand symphonic finale (late-Romantic scale): full brass chorale over tremolo strings, '
       'thundering timpani rolls, cymbal crashes, double basses and tuba - the last, enormous page of a symphony',
       bpm=(96, 132), scales=['major', 'minor', 'harmonic_minor'], chord_size=4, chord_bars=1, form='epic', reverb=3.8, human=0.01,
       rubato=0.3, voicing='open',
@@ -5406,7 +5406,7 @@ style('bedroom_pop', 'Classic',
       arp=dict(rate=2, mode='updown', oct=6, prob=0.8),
       lead_rh=['x-x-x---x-x-----', '..x-x-x-x---....', 'x---x---x-x-x---', 'x-x-x-x-x-------'],
       gm_hint='Drum machine (707 / Linn-ish) with a bouncy kick; warm synth bass; chorused clean electric guitar; '
-              'soft poly synth; bubbly plucks / bells (KKB); glassy synth lead',
+              'soft poly synth; bubbly plucks / bells; glassy synth lead',
       tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.25, db=-16),
               T('clap', 'snare', 'clap', rev=0.25, db=-22), T('chat', 'top', 'chat', pan=0.2, db=-28),
               T('shaker', 'top', 'shaker', pan=-0.3, db=-30), T('tamb', 'top', 'tamb', pan=0.3, db=-31),
@@ -6675,7 +6675,7 @@ style('hopecore_breaks', 'Electronic',
       chord_rh=['x-------x-------', 'x---x---x---x---', 'x-x---x-x---x---'], chord_center=64,
       arp=dict(rate=1, mode='updown', oct=6),
       lead_rh=['x-x-x-x-x---x---', 'x---x-x-x-x-x---', 'x-xxx-x-x-------', 'x-x-x-x-x-x-x-x-'],
-      gm_hint='Chopped Amen / Think break + punchy kick; 808; bright piano and supersaw chords; chiptune and bell arps; '
+      gm_hint='Chopped jungle / funk break + punchy kick; 808; bright piano and supersaw chords; chiptune and bell arps; '
               'soaring saw or square lead; stutter / glitch edits',
       tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.25, db=-15),
               T('clap', 'snare', 'clap', rev=0.3, db=-20), T('chat', 'top', 'chat', pan=0.2, db=-27),
@@ -7035,7 +7035,7 @@ style('funky_breaks', 'Electronic',
       arp=dict(rate=4, mode='up', oct=5, prob=0.55),
       lead_rh=['x---x-x-x-------', '..x-x---x-x-x---', 'x-------x-x-x-x-', 'x-x-....x---x---'],
       riffs=['pp.pp.ppX-pp.pp.', 'X-.pp.ppX-.pp.pp', 'pp.f-pp.m-pp.b--', 'p.ppp.ppb-p.ppm-'], riff_lo=40, riff_chorus=0.55,
-      gm_hint='Chopped funk break (Think / Hot Pants style) with edits; rubbery FM / Moog bass with slides; warped portamento '
+      gm_hint='Chopped funk break (classic funk-break style) with edits; rubbery FM / Moog bass with slides; warped portamento '
               'lead; distorted palm-muted guitar riff doubled by the bass; Rhodes stabs; acid squelch fills',
       tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.15, db=-15),
               T('chat', 'top', 'chat', pan=0.15, db=-27), T('ohat', 'top', 'ohat', pan=-0.15, db=-29),
@@ -8762,7 +8762,7 @@ FORMS['toccata'] = [('flourish', 4, {'lead', 'bass'}, {'level': 0.9}),
                     ('fugato', 12, {'lead', 'arp', 'bass', 'chords'}, {}),
                     ('coda', 4, {'chords', 'bass', 'pad'}, {'cad': True, 'level': 1.0})]
 style('baroque_organ', 'Orchestral',
-      'Baroque organ toccata (Bach style): a big church pipe organ playing free, dramatic flourishes - fast 16th-note runs '
+      'Baroque organ toccata (Baroque style): a big church pipe organ playing free, dramatic flourishes - fast 16th-note runs '
       'and broken chords over long pedal notes, sudden full-organ chords, pauses where the church rings out, harmonic '
       'minor and rubato throughout',
       bpm=(66, 84), scales=['harmonic_minor', 'minor'], human=0.006, form='toccata', chord_size=4, rubato=0.5, reverb=4.2,
@@ -10036,13 +10036,13 @@ BINARY_FORM = [
     ('B', 8, {'chords', 'bass', 'lead', 'pad'}, {'alt': True}),
     ('B', 8, {'chords', 'bass', 'lead', 'arp', 'pad'}, {'alt': True, 'var': 'dim', 'cad': True}),
 ]
-PRELUDE_FORM = [                       # Bach-style prelude: one unbroken figuration over a walking harmony
+PRELUDE_FORM = [                       # Baroque prelude: one unbroken figuration over a walking harmony
     ('A', 8, {'arp', 'bass', 'pad'}, {'arp': {'rate': 1, 'mode': 'updown', 'oct': 4, 'prob': None}}),
     ('B', 8, {'arp', 'bass', 'pad'}, {'alt': True, 'arp': {'rate': 1, 'mode': 'updown', 'oct': 4, 'prob': None}}),
     ('A', 8, {'arp', 'bass', 'pad', 'chords'}, {'arp': {'rate': 1, 'mode': 'up', 'oct': 4, 'prob': None}}),
     ('coda', 4, {'arp', 'bass', 'pad', 'chords'}, {'cad': True, 'arp': {'rate': 2, 'mode': 'updown', 'oct': 4, 'prob': None}}),
 ]
-THEME_VAR_FORM = [                     # theme and variations (Mozart 'Ah vous dirai-je', Haydn)
+THEME_VAR_FORM = [                     # theme and variations
     ('theme', 8, {'chords', 'bass', 'lead', 'pad'}, {'cad': True}),
     ('var', 8, {'chords', 'bass', 'lead', 'pad', 'arp'}, {'var': 'dim', 'cad': True}),
     ('var', 8, {'arp', 'bass', 'lead', 'pad'}, {'arp': {'mode': 'alberti', 'rate': 1, 'oct': 4}, 'cad': True}),
@@ -10082,7 +10082,7 @@ ARCH_FORM = [                          # impressionist arch: mist - the melody -
 FORMS.update(binary=BINARY_FORM, prelude=PRELUDE_FORM, theme_var=THEME_VAR_FORM, sonata=SONATA_FORM, minuet=MINUET_FORM,
              lyric=LYRIC_FORM, arch=ARCH_FORM)
 
-style('minuet', 'Orchestral', 'Minuet & trio (3/4, Mozart / Haydn / Bach): an elegant courtly dance in binary phrases with ornamented '
+style('minuet', 'Orchestral', 'Minuet & trio (3/4): an elegant courtly dance in binary phrases with ornamented '
       'repeats, a quieter contrasting trio, then the minuet da capo - strings, harpsichord or fortepiano, a pair of horns',
       meter='3/4', bpm=(104, 132), scales=['major', 'minor'], human=0.006, form='minuet', form_scale=1, reverb=2.2,
       progs={'major': [[0, 4, 0, 4], [0, 3, 4, 0], [0, 1, 4, 0], [0, 5, 1, 4]], 'minor': [[0, 4, 0, 4], [0, 3, 4, 0]]},
@@ -11159,7 +11159,7 @@ FORMS['cybergrind'] = [
 ]
 
 style('cybergrind', 'Classic',
-      'Cybergrind (modelled on wecamewithbrokenteeth): songs about a minute long that never sit still - built on ~125 BPM '
+      'Cybergrind: songs about a minute long that never sit still - built on ~125 BPM '
       'but always switching: double-time drum-machine blasts, crushing half-time breakdowns (every one a new rhythm, '
       'tempo and riff) where the down-tuned guitars chug locked to the kick, slam grooves, dead stops and quiet chiptune '
       'moments in the middle of the song; every song gets its own order of parts, opening and ending',
@@ -11194,7 +11194,7 @@ style('cybergrind', 'Classic',
 
 # (1.96) slam / brutal deathcore: walls of blasts and double kick, slam grooves, and breakdowns - never the same twice
 style('slam', 'Classic',
-      'Slam / brutal deathcore (modelled on Waking the Cadaver and Vulvodynia): a wall of hammer, bomb and gravity blasts '
+      'Slam / brutal deathcore: a wall of hammer, bomb and gravity blasts '
       'and rolling double kick, mid-tempo slam grooves on the half-step b2 rub, pinch squeals, and breakdowns that pile up '
       'toward the end of the song - every one different: kick-locked chugs, half-time slams over double kick, stop-start '
       'hits, triplet grooves, quarter-note beatdowns, gallops and crawling drags; the lowest, heaviest one last; '
@@ -11766,7 +11766,7 @@ for _g, _ch in {'techno': 0.6, 'minimal': 0.6, 'melodic_techno': 0.45, 'hard_tec
 
 
 
-# ---- (2.0) from Studio Lab 2: Euphoric UK Techno (Scuba - NE1BUTU) --------------------------------------------------
+# ---- (2.0) from Studio Lab 2: Euphoric UK Techno --------------------------------------------------
 # a simple punchy broken kick, a heavy sub, percussion that fills in to rolling 16ths - then a long final stretch where
 # pads, rave stabs, plucks and a soaring lead stack up section by section into a euphoric ending
 FORMS['euphoric_uk'] = [
@@ -11780,7 +11780,7 @@ FORMS['euphoric_uk'] = [
     ('drop', 16, {'kick', 'top', 'snare', 'bass', 'pad', 'arp', 'chords', 'lead', 'fx'}, {'crash': True}),
     ('outro', 8, {'pad', 'chords', 'lead', 'fx'}, {'fade': True}),
 ]
-style('euphoric_uk_techno', 'Electronic', 'Euphoric UK techno (Scuba - NE1BUTU): a simple energetic broken kick and heavy sub, '
+style('euphoric_uk_techno', 'Electronic', 'Euphoric UK techno: a simple energetic broken kick and heavy sub, '
       'slowly building - pads, rave stabs, plucks and a soaring lead stack up into a euphoric ending',
       bpm=(126, 130), scales=['major', 'mixolydian', 'dorian'], kit='909', form='euphoric_uk', sc_depth=0.55,
       progs={'major': [[0, 4, 5, 3], [5, 3, 0, 4], [0, 3, 4, 4]], 'mixolydian': [[0, 6, 3, 0]], 'dorian': [[0, 3, 0, 6]]},
@@ -11830,7 +11830,7 @@ for _st, _sw in GUITAR_20.items():
             _pools[_role].insert(0, _inst)
 
 # Grunge: Seattle, early 90s - drop-D fuzz walls, quiet-loud dynamics (clean verse, crushing chorus), a heavy dry kit,
-# minor and modal riffs (Nirvana, Soundgarden, Alice in Chains, Mudhoney)
+# minor and modal riffs
 import copy as _copy  # noqa: E402
 _g = _copy.deepcopy(STYLES['alt_rock_90s'])
 _g.update(name='grunge', label='Grunge', bpm=(92, 128), scales=['minor', 'dorian', 'phrygian', 'mixolydian'],
@@ -11875,7 +11875,7 @@ for _t in STYLES['grunge']['tracks']:
         _t['db'] = -15
 
 
-# ---- (2.1) Switch-up bass (Bonal - Lucky Beard): one broken UK-bass rhythm all song, a new scene every section -------
+# ---- (2.1) Switch-up bass: one broken UK-bass rhythm all song, a new scene every section -------
 # measured: 131.75 BPM; kick on 1, the 'a' of 1, the 'e' of 2 and a push into the next bar - unchanged from start to end;
 # a one-note sub on the root riding the kick carries most of the energy; every 8-16 bars new sounds and effects on top;
 # short drop-outs where the sub stops dead; dark filtered stretches (see switchup.py)
@@ -11894,7 +11894,7 @@ FORMS['switchup_bass'] = [
     ('outro', 8, {'kick', 'top', 'bass'}, {'fade': True}),
 ]
 style('switchup_bass', 'Electronic',
-      'Switch-up bass (Bonal - Lucky Beard): one broken UK-bass rhythm from the first bar to the last and a huge one-note '
+      'Switch-up bass: one broken UK-bass rhythm from the first bar to the last and a huge one-note '
       'sub riding the kick - while everything on top switches every section: new mid-basses, stabs, vocal chops and '
       'samples, crushed, phased, wah\'d or filtered down dark, with drop-outs where the sub stops dead',
       bpm=(130, 134), scales=['minor', 'phrygian'], kit='punchy', form='switchup_bass', swing=0.53, swing_unit=16, human=0.003,

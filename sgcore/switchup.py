@@ -1,4 +1,4 @@
-"""Switch-up bass (modelled on Bonal - Lucky Beard): ONE rhythm for the whole song, everything else switches.
+"""Switch-up bass: ONE rhythm for the whole song, everything else switches.
 
 What the reference does (measured): 131.75 BPM; a broken UK-bass kick (1, the 'a' of 1, the 'e' of 2, and a push
 into the next bar) that never changes from the first bar to the last; a one-note sub on the root riding that kick

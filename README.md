@@ -121,12 +121,12 @@ The **🎻 Real instruments** tab downloads free recorded instruments (all publi
 
 | Choice | What it changes |
 |---|---|
-| **Drum style** | What the drums play: the genre's own beat, a classic break (Amen, Think, Funky Drummer ...), the genre's programmed beat without its break, or any other genre's beat. Beats that fit your tempo are listed first, then half / double time, then the rest by feel (four-on-the-floor, half-time, two-step, breakbeat, shuffle, backbeat ...). |
+| **Drum style** | What the drums play: the genre's own beat, a classic break (jungle break, fast funk break, laid-back funk break ...), the genre's programmed beat without its break, or any other genre's beat. Beats that fit your tempo are listed first, then half / double time, then the rest by feel (four-on-the-floor, half-time, two-step, breakbeat, shuffle, backbeat ...). |
 | **Drummer** | How it's played: fills (none / fewer / more), ghost notes (off / more) and hi-hats (sparse 8ths / busy 16ths). |
 | **Percussion** | What rides on top of the kit: the genre's own, none, or a set - shakers, tambourine, disco, Latin, Afro, Caribbean, woodblocks. |
 | **Drum sounds** | The kit: drum machines (808, 909, CR-78, 606, 707, DMX, LinnDrum ...), real kits, sampled-break kits, drum & bass kits, or your own samples. |
 
-Changing the drum sounds never changes the pattern: jungle on a 909 still plays its Amen break.
+Changing the drum sounds never changes the pattern: jungle on a 909 still plays its jungle break.
 
 ## Privacy
 

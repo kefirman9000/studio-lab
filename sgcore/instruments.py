@@ -5754,7 +5754,7 @@ def v_peaklead(m, dur, p, glide=None, mod=None):
 
 
 def v_ravestab2(m, dur, p, glide=None, mod=None):
-    """Rave hoover stab: the 'mentasm' sound - a detuned, PWM-ed saw stack with a falling pitch swoop into the note
+    """Rave hoover stab: the classic rave hoover sound - a detuned, PWM-ed saw stack with a falling pitch swoop into the note
     and a big chorus - the screaming rave / hard techno stab."""
     f = float(mtof(m))
     env, n, t = _env_n(dur, 0.002, 0.3, 0.5, 0.15, 0.8)
