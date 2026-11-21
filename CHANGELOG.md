@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.7
+- **No artist or song names anywhere in the app.**
+  - Genres made from reference tracks are now described only by their sound.
+  - The classical genres name their era instead of composers.
+  - The re-played breaks have descriptive names: classic jungle break, fast funk break, laid-back funk break, bongo funk break, tight funk break, heavy funk break, big-room rock break and swung soul-shuffle groove.
+  - The sounds and patterns themselves are unchanged.
+
+
 ## 2.2.6
 - **Fixed: start-up stuck on "Loading numpy…"** (2.2.3–2.2.5). The engine watched a pipe from the window to know when to close, and on Windows that froze its own loading of numpy. It now watches the window's process instead, with no pipe.
 - **Faster start:**
