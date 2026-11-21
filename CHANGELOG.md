@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1
+- **A loading screen at start-up.** The window now opens straight away with an animated loading screen ("Loading the sound engine…", "Starting the studio…") while the engine loads behind it, then switches to the app. Before, nothing showed for several seconds, so it looked frozen. The page also shows a loading screen until the genres and sounds have arrived, and if something goes wrong it says so instead of staying blank.
+
+
 ## 2.2.0
 **New genre: Switch-up Bass (Bonal - Lucky Beard)**
 

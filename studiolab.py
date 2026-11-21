@@ -70,6 +70,15 @@ def _taskbar_identity():
             pass
 
 
+def _window_setting():
+    try:
+        import json
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.json')) as f:
+            return json.load(f).get('window', 'app')
+    except Exception:
+        return 'app'
+
+
 if __name__ == '__main__':
     _taskbar_identity()
     _check_python()
@@ -87,7 +96,17 @@ if __name__ == '__main__':
         from sgcore.cli import vsts_main
         vsts_main(sys.argv[2:])
     else:
-        from sgcore.app import run
         port = int(os.environ.get('STUDIOLAB_PORT', '8765'))
+        if '--browser' not in sys.argv and '--no-browser' not in sys.argv and _window_setting() != 'browser':
+            from sgcore import appwindow                  # (2.1) the window opens at once with a loading screen
+
+            def _boot(say):
+                say('Loading the sound engine…')
+                from sgcore import app
+                say('Starting the studio…')
+                return app.start_server(port)[1]
+            if appwindow.splash_window(_boot, lambda: os._exit(0)):
+                os._exit(0)
+        from sgcore.app import run
         run(port=port, open_browser='--no-browser' not in sys.argv,
             window='browser' if '--browser' in sys.argv else ('app' if '--app-window' in sys.argv else 'auto'))

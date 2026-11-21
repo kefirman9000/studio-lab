@@ -1071,7 +1071,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_error(404)
 
 
-def run(port=8765, open_browser=True, window='auto'):
+def start_server(port=8765):
+    """Start the background workers and the local web server (serving in its own thread). Returns (server, url)."""
     from . import diagnostics
     diagnostics.capture()
     threading.Thread(target=worker, daemon=True).start()
@@ -1084,7 +1085,11 @@ def run(port=8765, open_browser=True, window='auto'):
             break
         except OSError:
             continue
-    url = f'http://127.0.0.1:{srv.server_address[1]}/'
+    return srv, f'http://127.0.0.1:{srv.server_address[1]}/'
+
+
+def run(port=8765, open_browser=True, window='auto'):
+    srv, url = start_server(port)
     print(f'Studio Lab is running at {url}')
     if window == 'auto':
         window = load_settings().get('window', 'app')

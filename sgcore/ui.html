@@ -14,6 +14,15 @@
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 *{box-sizing:border-box}
+#bootScreen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .25s}
+#bootScreen.done{opacity:0;pointer-events:none}
+#bootScreen .bx{display:flex;flex-direction:column;align-items:center;gap:16px}
+#bootScreen .mk{width:56px;height:56px;border-radius:14px;background:conic-gradient(from 210deg,var(--acc),var(--acc2),var(--acc));animation:bootspin 2.4s linear infinite}
+#bootScreen b{font-size:20px;font-weight:650}
+#bootScreen .eq{display:flex;gap:4px;align-items:flex-end;height:24px}
+#bootScreen .eq i{width:5px;border-radius:3px;background:var(--acc);animation:booteq 1s ease-in-out infinite}
+#bootScreen .eq i:nth-child(2n){background:var(--acc2)}
+@keyframes bootspin{to{transform:rotate(360deg)}}@keyframes booteq{0%,100%{height:5px}50%{height:24px}}
 .res .tweak{margin-top:6px;border-top:1px solid var(--line);padding-top:6px}
 .res .tweak>summary{cursor:pointer;font-size:12px;color:var(--muted);list-style:none;user-select:none;padding:2px 0}
 .res .tweak>summary::-webkit-details-marker{display:none}
@@ -340,6 +349,7 @@ select:focus,input[type=number]:focus,input[type=text]:focus{border-color:color-
 </style>
 </head>
 <body>
+<div id="bootScreen"><div class="bx"><div class="mk"></div><b>Studio Lab</b><div class="eq"><i style="animation-delay:0.00s"></i><i style="animation-delay:0.09s"></i><i style="animation-delay:0.18s"></i><i style="animation-delay:0.27s"></i><i style="animation-delay:0.36s"></i><i style="animation-delay:0.45s"></i><i style="animation-delay:0.54s"></i><i style="animation-delay:0.63s"></i><i style="animation-delay:0.72s"></i></div><div class="hint" id="bootMsg">Loading genres and sounds…</div></div></div>
 <div class="app">
 <header>
   <div class="logo"><div class="mark"></div>Studio Lab</div>
@@ -2560,7 +2570,9 @@ async function init(){
   document.addEventListener('keydown',e=>{ if(e.code==='Space'&&!['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)){e.preventDefault(); audio.paused?audio.play():audio.pause();} });
   syncAutos(); updates(false);
 }
-init().then(()=>{ try{ if(!localStorage.getItem('sl_started')||startShow()) startHere(); }catch(e){} });
+init().then(()=>{ const b=$('#bootScreen'); if(b){ b.classList.add('done'); setTimeout(()=>b.remove(),400); }
+  try{ if(!localStorage.getItem('sl_started')||startShow()) startHere(); }catch(e){} })
+ .catch(e=>{ const m=$('#bootMsg'); if(m) m.textContent='Studio Lab could not load: '+(e&&e.message||e)+' - try restarting it.'; });
 document.addEventListener('click',async e=>{ const a=e.target.closest&&e.target.closest('.orchGo'); if(!a) return; e.preventDefault();
   if(/Real instruments/.test(a.dataset.note||'')){ libModal(); return }
   const V=await api('/api/vst',{}); if(!V.available){ vstModal(); return } orchModal(V); });

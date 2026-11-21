@@ -97,6 +97,74 @@ class Bridge:
         return True
 
 
+SPLASH = """<!doctype html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;height:100%;background:#0d0f14;color:#e7e9ef;font:14px "Segoe UI Variable Text","Segoe UI",-apple-system,system-ui,sans-serif;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;user-select:none}
+.box{display:flex;flex-direction:column;align-items:center;gap:18px}
+.mark{width:64px;height:64px;border-radius:16px;background:conic-gradient(from 210deg,#7c5cff,#29d3b2,#4d8fd8,#7c5cff);
+  animation:spin 2.4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{margin:0;font-size:22px;font-weight:650;letter-spacing:.02em}
+.bars{display:flex;gap:4px;align-items:flex-end;height:26px}
+.bars i{width:5px;border-radius:3px;background:#7c5cff;animation:eq 1s ease-in-out infinite}
+.bars i:nth-child(2n){background:#29d3b2}
+@keyframes eq{0%,100%{height:5px}50%{height:26px}}
+#msg{color:#8a90a2;min-height:18px}
+</style></head><body><div class="box"><div class="mark"></div><h1>Studio Lab</h1>
+<div class="bars">%BARS%</div><div id="msg">Starting…</div></div>
+<script>function say(m){document.getElementById('msg').textContent=m}</script></body></html>""".replace(
+    '%BARS%', ''.join(f'<i style="animation-delay:{i * 0.09:.2f}s"></i>' for i in range(9)))
+
+
+def splash_window(boot, quit_app):
+    """(2.1) Open the window at once with a loading screen, run boot(say) - the slow part: loading the sound engine and
+    starting the server - behind it, then swap in the app. Returns False if there is no pywebview (the caller starts
+    the usual way)."""
+    try:
+        import webview
+    except ImportError:
+        return False
+    try:
+        webview.settings['ALLOW_DOWNLOADS'] = True
+        webview.settings['OPEN_EXTERNAL_LINKS_IN_BROWSER'] = True
+    except Exception:
+        pass
+    w, h, pos = last_geometry()
+    kw = dict(x=pos[0], y=pos[1]) if pos else {}
+    bridge = Bridge('')
+    try:
+        win = webview.create_window('Studio Lab', html=SPLASH, width=w, height=h, min_size=(900, 600), js_api=bridge,
+                                    background_color='#0d0f14', **kw)
+    except TypeError:
+        win = webview.create_window('Studio Lab', html=SPLASH, width=w, height=h, min_size=(900, 600), js_api=bridge, **kw)
+    bridge.window = win
+
+    def go():
+        import json
+
+        def say(m):
+            try:
+                win.evaluate_js('say(%s)' % json.dumps(str(m)))
+            except Exception:
+                pass
+        try:
+            url = boot(say)
+            bridge.base = url.split('?')[0]
+            say('Opening…')
+            win.load_url(url)
+        except Exception as e:                            # show what went wrong instead of a window that never loads
+            say('Studio Lab could not start: %s' % e)
+    try:
+        try:
+            webview.start(go, private_mode=False)
+        except TypeError:
+            webview.start(go)
+    except Exception:                                     # no usable web view (e.g. WebView2 missing): the usual way
+        return False
+    quit_app()
+    return True
+
+
 def open_window(url, quit_app):
     """Open the app window - the same size and place as last time. Returns 'webview' (blocks until closed), 'app' or
     'browser'."""
