@@ -85,15 +85,6 @@ def _serve(port):
     """The engine process: load everything, start the server, tell the window where it is, then serve until the
     window goes away (its end of our stdin closes)."""
     import threading
-
-    def watch_parent():                               # the window closed (or crashed): its end of the pipe closes
-        try:
-            while os.read(0, 1):
-                pass
-        except OSError:
-            return                                    # (no pipe to watch: keep serving)
-        os._exit(0)
-    threading.Thread(target=watch_parent, daemon=True).start()
     for what, mod in (('numpy', 'numpy'), ('scipy', 'scipy.signal'), ('the instruments', 'sgcore.instruments'),
                       ('the genres', 'sgcore.styles'), ('the composer', 'sgcore.compose'), ('the studio', 'sgcore.app')):
         _out('STUDIOLAB_SAY Loading ' + what + '…')
@@ -102,7 +93,28 @@ def _serve(port):
     _out('STUDIOLAB_SAY Starting the studio…')
     url = app.start_server(port)[1]
     _out('STUDIOLAB_URL ' + url)
+    threading.Thread(target=_watch_window, daemon=True).start()
     threading.Event().wait()
+
+
+def _watch_window():
+    """Close the engine when the window's process ends. (2.2.6: no stdin pipe - on Windows a thread waiting on a
+    pipe blocks other threads touching it, which froze 'import numpy'.)"""
+    pid = int(os.environ.get('STUDIOLAB_PARENT') or 0)
+    if not pid:
+        return
+    if os.name == 'nt':
+        import ctypes
+        k = ctypes.windll.kernel32
+        h = k.OpenProcess(0x00100000, False, pid)        # SYNCHRONIZE
+        if h:
+            k.WaitForSingleObject(h, 0xFFFFFFFF)
+            os._exit(0)
+        return
+    import time
+    while os.getppid() == pid:
+        time.sleep(2)
+    os._exit(0)
 
 
 def _quit():
@@ -122,10 +134,10 @@ def _engine_boot(port):
         import subprocess
         import threading
         here = os.path.dirname(os.path.abspath(__file__))
-        env = dict(os.environ, STUDIOLAB_CHILD='1', PYTHONUNBUFFERED='1')
+        env = dict(os.environ, STUDIOLAB_CHILD='1', PYTHONUNBUFFERED='1', STUDIOLAB_PARENT=str(os.getpid()))
         say('Starting the sound engine…')
         p = subprocess.Popen([sys.executable, os.path.abspath(__file__), '--serve'], cwd=here, env=env,
-                             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              creationflags=0x08000000 if os.name == 'nt' else 0)
         _CHILD.append(p)
         logp = os.path.join(here, 'startup.log')
@@ -134,13 +146,15 @@ def _engine_boot(port):
         except OSError:
             log = None
         found, tail = [], []
+        import time
+        t0 = time.time()
 
         def read():
             for raw in iter(p.stdout.readline, b''):
                 line = raw.decode('utf-8', 'replace').rstrip()
                 if log:
                     try:
-                        log.write(line + '\n')
+                        log.write('[%6.1fs] %s\n' % (time.time() - t0, line))
                         log.flush()
                     except Exception:
                         pass
@@ -155,8 +169,6 @@ def _engine_boot(port):
                 elif line:
                     tail[:] = (tail + [line])[-6:]
         threading.Thread(target=read, daemon=True).start()   # (keeps reading for good: a full pipe stalls the engine)
-        import time
-        t0 = time.time()
         while not found:
             if p.poll() is not None:
                 time.sleep(0.3)

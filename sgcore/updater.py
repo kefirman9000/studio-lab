@@ -116,6 +116,12 @@ def apply():
             except Exception:
                 pass
         return dict(ok=False, message=f'Update failed and was rolled back: {e}')
+    try:                                                # (2.2.6) compile now, so the next start doesn't have to
+        import compileall
+        compileall.compile_dir(os.path.join(ROOT, 'sgcore'), quiet=1,
+                               invalidation_mode=__import__('py_compile').PycInvalidationMode.CHECKED_HASH)
+    except Exception:
+        pass
     return dict(ok=True, message='Updated - restarting', version=local_version())
 
 

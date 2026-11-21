@@ -1076,8 +1076,10 @@ def start_server(port=8765):
     from . import diagnostics
     diagnostics.capture()
     threading.Thread(target=worker, daemon=True).start()
-    threading.Thread(target=startup_detect, daemon=True).start()
-    threading.Thread(target=storage_loop, daemon=True).start()
+    for delay, fn in ((20.0, startup_detect), (30.0, storage_loop)):   # (2.2.6) after the window has loaded
+        t = threading.Timer(delay, fn)
+        t.daemon = True
+        t.start()
     for p in range(port, port + 20):
         try:
             srv = ThreadingHTTPServer(('127.0.0.1', p), Handler)

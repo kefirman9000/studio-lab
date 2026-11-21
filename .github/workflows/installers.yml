@@ -45,6 +45,8 @@ jobs:
           "$PY" -c "import numpy, scipy, pedalboard, soundfile, lameenc; print('bundled python ok')"
           "$PY" -m pip install --disable-pip-version-check --no-warn-script-location -q pywebview || echo "pywebview not available - the app opens in an Edge app window instead"
           cp installer/windows/studio-lab.ico build/win/app/
+          "$PY" -m compileall -q -j 0 --invalidation-mode checked-hash build/win/app/sgcore build/win/app/studiolab.py   # no compiling at first start
+          "$PY" -m compileall -q -j 0 --invalidation-mode checked-hash build/win/app/runtime/python/Lib/site-packages/scipy build/win/app/runtime/python/Lib/site-packages/numpy || true
       - name: Build StudioLab.exe (the launcher you pin to the taskbar)
         shell: pwsh
         run: |

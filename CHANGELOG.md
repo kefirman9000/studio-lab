@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.6
+- **Fixed: start-up stuck on "Loading numpy…"** (2.2.3–2.2.5). The engine watched a pipe from the window to know when to close, and on Windows that froze its own loading of numpy. It now watches the window's process instead, with no pipe.
+- **Faster start:**
+  - The Windows installer ships Studio Lab, numpy and scipy already compiled, and the updaters compile right after updating, so nothing is compiled at start-up.
+  - The plugin scan and the output-folder tidy-up wait until after the window has loaded.
+- *startup.log* now records the time of every step.
+
+
 ## 2.2.5
 - **Fixed: start-up stuck on "Loading the sound engine…".** The loading screen's progress messages could hold up the start itself (a pywebview quirk on Windows). Now nothing waits on them.
 - **The loading screen shows each step** (numpy, scipy, instruments, genres, composer, studio) **and a seconds counter**, so you can see it's alive.
