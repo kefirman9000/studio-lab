@@ -132,6 +132,11 @@ def growl(m, dur, p, glide=None, mod=None):
     return (y + _sub(f, n, p.get('sub', 0.8))) * env * 0.6
 
 
+# (1.96) the reese's four saws start every note at the same phases (and the detune 'breathing' at the same point):
+# random phases per note made fast reese lines jump between a different swirl on every 16th - a glitchy, stuttering sound
+REESE_PH = (0.0, 0.31, 0.62, 0.87)
+
+
 def reese_v2(m, dur, p, glide=None, mod=None):
     """(1.59-1.83 reese, kept as "reese_v2") Reese / neuro bass: four saws a few cents apart whose detune slowly breathes, a resonant low-pass, an
     oversampled drive and a moving notch (the phaser-like 'movement' of DnB basslines), over a steady sine sub."""
@@ -140,11 +145,11 @@ def reese_v2(m, dur, p, glide=None, mod=None):
     n = len(env)
     t = np.arange(n) / SR
     mv = p.get('move', 1.0)
-    breathe = 1 + mv * 0.5 * np.sin(2 * np.pi * 0.21 * t + _RNG.random() * 6)
+    breathe = 1 + mv * 0.5 * np.sin(2 * np.pi * 0.21 * t + 1.3)      # (1.96) fixed phases: every note starts alike
     x = np.zeros((2, n))
     for k, c in enumerate((-14, -5, 5, 14)):
         cents = c * breathe
-        s_ = va.saw(f * 2 ** (cents / 1200), n, _RNG.random())
+        s_ = va.saw(f * 2 ** (cents / 1200), n, REESE_PH[k])
         x[0] += s_ * (0.8 if k < 2 else 0.5)
         x[1] += s_ * (0.5 if k < 2 else 0.8)
     x *= 0.4
@@ -168,10 +173,10 @@ def reese(m, dur, p, glide=None, mod=None):
     n = len(env)
     t = np.arange(n) / SR
     mv = p.get('move', 1.0)
-    breathe = 1 + mv * 0.5 * np.sin(2 * np.pi * 0.21 * t + _RNG.random() * 6)
+    breathe = 1 + mv * 0.5 * np.sin(2 * np.pi * 0.21 * t + 1.3)      # (1.96) fixed phases: every note starts alike
     x = np.zeros((2, n))
     for k, c in enumerate((-14, -5, 5, 14)):
-        s_ = va.saw(f * 2 ** (c * breathe / 1200), n, _RNG.random())
+        s_ = va.saw(f * 2 ** (c * breathe / 1200), n, REESE_PH[k])
         x[0] += s_ * (0.8 if k < 2 else 0.5)
         x[1] += s_ * (0.5 if k < 2 else 0.8)
     x = _split_hp(x * 0.4, f)                                              # mids only into the drive
@@ -198,16 +203,19 @@ def neuro(m, dur, p, glide=None, mod=None):
     return (y + _sub(f, n, 0.8) * _env(dur, 0.01, 0.3, 0.9, 0.1)[:n]) * 0.55
 
 
+GATE_RAMP = 132
+
+
 def riddim(m, dur, p, glide=None, mod=None):
     """Riddim: a hollow square / saw stack through a resonant band, chopped by a tempo-synced gate (mod = chop length in
     beats), oversampled drive, over a clean sub."""
     f = float(mtof(m))
-    env = _env(dur, 0.002, 0.05, 1.0, 0.02)
+    env = _env(dur, 0.004, 0.05, 1.0, 0.035)
     n = len(env)
     hz = _rate(mod, p, 1 / 3)
     t = np.arange(n) / SR
     gate = (np.sin(2 * np.pi * hz * t) > -0.2).astype(float)
-    gate = np.convolve(gate, np.ones(64) / 64, mode='same')
+    gate = np.convolve(gate, np.ones(GATE_RAMP) / GATE_RAMP, mode='same')   # (1.96) 3 ms chop edges, not 1.5 ms clicks
     fo = f if f > 55 else f * 2
     x = va.pulse(np.full(n, fo), n, 0.0, 0.5) + 0.7 * va.saw(np.full(n, fo * 1.006), n) + 0.5 * va.pulse(np.full(n, fo * 2.003), n, 0.25, 0.3)
     y = va.vcf(x, p.get('cut', 900), res=0.5, drive=1.5) + 0.3 * x

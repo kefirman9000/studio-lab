@@ -991,6 +991,16 @@ for _k in ('909', 'trance', 'techno'):
     for _d in ('kick', 'snare', 'clap', 'chat', 'ohat'):
         KITS[_k].setdefault(_d, {})
         KITS[_k][_d] = dict(KITS[_k][_d], model='analog')
+# 1.97 surf 60s: a small early-60s rock kit played hard in a live room - a boomy, short kick, a bright, ringing snare
+# with lots of wire rattle, and splashy, washy hats and ride (the 'Wipe Out' kit)
+KITS['surf60s'] = dict(kick=dict(pitch=60, punch=55, sweep=26, decay=12, drive=1.2, len=0.36, click=0.35),
+                       snare=dict(tone=215, snap=1.25, body=0.85, decay=10, tdecay=30, nlo=1600, nhi=9000, crack=0.45),
+                       chat=dict(decay=38), ohat=dict(decay=4))
+# 1.96 sun room: a warm, soft live-room kit for sunlit electronica - a round kick with body and only a little click,
+# a warm, fairly dry snare (shell and body over sizzle, its noise kept under ~6 kHz), dark soft hats
+KITS['sunroom'] = dict(kick=dict(pitch=56, punch=75, sweep=32, decay=10, drive=1.4, len=0.42, click=0.2),
+                       snare=dict(tone=192, snap=0.85, body=1.05, decay=13, tdecay=24, nlo=900, nhi=6000, crack=0.2),
+                       chat=dict(decay=70, hp=5500), ohat=dict(decay=7, hp=5000))
 KITS['909']['kick'].update(hold=0.04, drive=1.9)
 KITS['techno']['kick'].update(hold=0.05, drive=2.6)
 KITS['trance']['kick'].update(hold=0.03)
@@ -4107,6 +4117,7 @@ for _name, _fn in (('marimba', v_marimba), ('celesta', v_celesta), ('kalimba', v
                 _lst.append(_name + '_v1')
         GM_PROGRAM[_name + '_v1'] = GM_PROGRAM.get(_name, 0)
     INSTRUMENTS[_name] = _fn
+INSTRUMENT_INFO['brass'] = 'Brass section (trumpets / trombones)'   # (1.97: it was still labelled 'Synth brass')
 INSTRUMENTS['glock'] = v_glock
 INSTRUMENT_INFO['glock'] = 'Glockenspiel'
 GM_PROGRAM['glock'] = 9
@@ -7542,8 +7553,10 @@ def _variant(base, kind):
             hi = _fit(fn(m + 12, dur, p, None if glide is None else glide + 12, mod), n)
             return y + 0.35 * hi
         if kind == 'suboct':                             # an octave below, for weight
+            if float(mtof(m - 12)) < 30:                 # (1.96) below 30 Hz it is felt as headroom eaten, not heard
+                return y
             lo = _fit(fn(m - 12, dur, p, None if glide is None else glide - 12, mod), n)
-            return y + 0.45 * lp(lo, 900)
+            return (y + 0.45 * lp(lo, 900)) * 0.8
         if kind == 'tape':                               # +/- 5 cents of slow wow, softened top
             t = np.arange(n) / SR
             idx = np.clip(np.arange(n) + 0.0009 * SR * np.sin(2 * np.pi * 0.55 * t + 1.3), 0, n - 1)
@@ -7737,6 +7750,305 @@ NEW_193 = (
     ('tonalbass', v_tonalbass, 'Tonal kick-bass (rumbling techno low end)', ('bass',), 38),
 )
 for _name, _fn, _info, _roles, _gm in NEW_193:
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+# 1.96: modern takes on the 60s monster-theme band (a fuzz baritone synth for the creeping riff, a driven detuned
+# combo organ) - harmonic partials only, so everything stays in key.
+def v_fuzzbari(m, dur, p, glide=None, mod=None):
+    """Fuzz baritone synth: the twangy baritone-guitar riff rebuilt as a synth - a bright saw + square pair with a
+    quick pluck of filter, pushed through fuzz and a low-mid honk, then a short spring-like slap - the creeping
+    chromatic monster riff with modern weight."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.002, 0.25, 0.55, 0.09)
+    fr = _glide_freq(f, n, glide, 0.03)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    k = np.arange(1, 16)[:, None]
+    cut = 900 + 3800 * np.exp(-t / 0.07)
+    amp = np.exp(-((k * fr[None, :]) / cut[None, :]) ** 2)
+    sawp = (np.sin(k * ph[None, :]) / k * amp).sum(0)
+    sq = (np.sin(k[::2] * ph[None, :]) / k[::2] * amp[::2]).sum(0)
+    y = np.tanh(2.6 * (0.7 * sawp + 0.45 * sq)) * env
+    y = eq(eq(y, 'peak', 700, 0.9, 4.0), 'peak', 2600, 1.2, 2.0)
+    d = int(0.021 * SR)
+    sl = np.concatenate([np.zeros(d), y[:-d]]) * 0.22
+    return np.vstack([y + sl, y + 0.8 * sl]) * 0.42
+
+
+def v_creeporgan(m, dur, p, glide=None, mod=None):
+    """Creep organ: a modern haunted combo organ - bright upper drawbars on two slightly detuned voices (a chorus, a
+    few cents apart), a fast vibrato, a little valve drive and a key click - the reedy horror organ with width."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.006, 0.05, 0.95, 0.07)
+    vib = 1 + 0.004 * np.sin(2 * np.pi * 6.6 * t)
+    bars = ((1, 0.8), (2, 0.9), (3, 0.5), (4, 0.65), (6, 0.3), (8, 0.4))
+    out = []
+    for cents, pan in ((-5, 0), (5, 1)):
+        ph = 2 * np.pi * np.cumsum(f * 2 ** (cents / 1200) * vib) / SR
+        out.append(sum(a * np.sin(h * ph) for h, a in bars))
+    click = np.exp(-t / 0.004) * np.sin(2 * np.pi * f * 8 * t) * 0.25
+    y = np.vstack([np.tanh(1.5 * (o + click)) for o in out]) * env
+    return y * 0.32
+
+
+NEW_196 = (
+    ('fuzzbari', v_fuzzbari, 'Fuzz baritone synth (creeping monster riff)', ('bass', 'lead', 'arp'), 30),
+    ('creeporgan', v_creeporgan, 'Creep organ (modern haunted combo organ)', ('chords', 'pad', 'arp', 'lead'), 18),
+)
+for _name, _fn, _info, _roles, _gm in NEW_196:
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+# =============================================================================
+#  1.96: sunlit electronica sounds (analog-warm downtempo / electronic post-rock)
+#  Harmonic partials only (everything in key); detune is a few cents of chorus, never a pitch offset.
+# =============================================================================
+def v_spaceguitar(m, dur, p, glide=None, mod=None):
+    """Space guitar: a clean neck-pickup guitar note run into a huge hall until it stops being a pluck and becomes a
+    pad - the string's soft attack, then its harmonics (warm, few highs) frozen into a slow-swelling, chorused
+    sustain that blooms and fades like a reverb tail. Effects as the instrument: the guitar IS the pad."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.25) * SR)
+    rel = p.get('r', 1.4)
+    n = gate + int(rel * SR)
+    t = np.arange(n) / SR
+    swell = np.clip(t / p.get('a', 0.45), 0, 1) ** 1.5
+    tail = np.where(np.arange(n) < gate, 1.0, np.exp(-(np.arange(n) - gate) / (rel * SR / 4)))
+    tail[-int(0.04 * SR):] *= np.linspace(1, 0, int(0.04 * SR))
+    out = np.zeros((2, n))
+    nh = int(min(12, max(3, 5000 // f)))
+    for side, cents in ((0, -4.0), (1, 4.0)):
+        y = np.zeros(n)
+        for k in range(1, nh + 1):
+            a = (1.0 / k ** 1.35) * (1.0 if k < 4 else 0.6) * np.exp(-k * f / 2600)
+            sh = 1 + 0.12 * np.sin(2 * np.pi * (0.13 + 0.05 * k) * t + k * 1.7 + side)    # slow shimmer per partial
+            y += a * sh * np.sin(2 * np.pi * k * f * 2 ** (cents / 1200) * t + k * 0.9 * (side + 1))
+        out[side] = y
+    out *= swell * tail
+    pick = np.asarray(v_eguitar_clean(m, min(dur, 0.5), dict(p, dist=0.0), None, None), float)    # the faint pluck
+    pick = pick if pick.ndim == 2 else np.vstack([pick, pick])
+    k = min(n, pick.shape[1])
+    out[:, :k] += 0.35 * pick[:, :k] / (np.abs(pick).max() + 1e-9) * np.max(np.abs(out) + 1e-9) * 0.5
+    return out / (np.abs(out).max() + 1e-9) * 0.3
+
+
+def v_sunpad(m, dur, p, glide=None, mod=None):
+    """Sun pad: a warm analog poly pad - three saws a few cents apart and a triangle an octave down through a
+    gently driven ladder low-pass that slowly opens as the chord blooms (slow attack, long release); soft, dense and
+    rounded, made to sit under guitars."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.1) * SR)
+    env = _va.adsr(gate, p.get('a', 0.35), 0.8, 0.85, p.get('r', 0.9))
+    n = len(env)
+    t = np.arange(n) / SR
+    drift = 1 + 0.0009 * np.sin(2 * np.pi * 0.31 * t + m)
+    out = np.zeros((2, n))
+    for side in (0, 1):
+        x = np.zeros(n)
+        for c, ph in ((-7, 0.1), (0, 0.5), (7, 0.8)):
+            x += _va.saw(f * 2 ** ((c + (3 if side else -3)) / 1200) * drift, n, ph)
+        x += 0.6 * (2 * np.abs(2 * ((np.cumsum(np.full(n, f / 2)) / SR) % 1.0) - 1) - 1)
+        cut = p.get('cut', 1500) * (0.45 + 0.55 * (1 - np.exp(-t / 0.9)))
+        out[side] = _va.vcf(x * 0.25, cut, res=0.12, drive=1.3)
+    return out * env * 0.42
+
+
+def v_softmoog(m, dur, p, glide=None, mod=None):
+    """Soft mono lead: a warm 3-oscillator mono synth played gently - saw and triangle a hair apart through a ladder
+    low-pass with a soft filter swell, a smooth portamento from the last note, slow drift and a vibrato that only
+    comes in on held notes - the understated, singing analog melody."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.03), 0.35, 0.8, p.get('r', 0.35))
+    fr = _glide_freq(f, n, glide, 0.07)
+    vib = 1 + np.clip((t - 0.35) / 0.4, 0, 1) * 0.0035 * np.sin(2 * np.pi * 5.2 * t)
+    fr = fr * vib * (1 + 0.0007 * np.sin(2 * np.pi * 0.4 * t))
+    x = _va.saw(fr, n, 0.0) + 0.8 * (2 * np.abs(2 * ((np.cumsum(fr * 1.0015) / SR) % 1.0) - 1) - 1)
+    cut = p.get('cut', 1800) * (0.6 + 0.6 * np.exp(-t / 0.25)) + 2.5 * f
+    y = _va.vcf(x * 0.35, cut, res=0.18, drive=1.4)
+    return _st(y * env, 18) * 0.5
+
+
+def v_roundmoog(m, dur, p, glide=None, mod=None):
+    """Round mono bass: the classic 3-oscillator analog bass played warm - saw and square through a ladder low-pass
+    with a short, soft filter 'bow', a gently driven input; weight in the low mids rather than a deep sub, so it
+    sounds full on small speakers (the warm bass under sunlit electronica)."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.006, 0.25, 0.75, p.get('r', 0.12))
+    fr = _glide_freq(f, n, glide, 0.04)
+    x = _va.saw(fr, n, 0.0) + 0.7 * _va.pulse(fr * 0.999, n, 0.3, 0.5)
+    cut = p.get('cut', 420) + 900 * np.exp(-t / 0.12) + 1.5 * f
+    y = _va.vcf(x * 0.4, cut, res=0.15, drive=1.6)
+    y = y + p.get('fund', 0.7) * np.sin(2 * np.pi * np.cumsum(fr) / SR)   # a pure fundamental under it (the weight)
+    return np.vstack([y, y]) * env * 0.55
+
+
+NEW_196B = (
+    ('spaceguitar', v_spaceguitar, 'Space guitar (clean guitar frozen into a pad)', ('pad', 'chords'), 27),
+    ('sunpad', v_sunpad, 'Sun pad (warm analog poly, slow bloom)', ('pad', 'chords'), 89),
+    ('softmoog', v_softmoog, 'Soft mono lead (warm, gliding analog melody)', ('lead', 'arp'), 81),
+    ('roundmoog', v_roundmoog, 'Round mono bass (warm analog, low-mid weight)', ('bass',), 39),
+)
+for _name, _fn, _info, _roles, _gm in NEW_196B:
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+# =============================================================================
+#  1.97: a better surf band - spring-reverb guitars, a real combo organ
+# =============================================================================
+_SPRING_IR = {}
+
+
+def _spring_ir(decay, tank, tone):
+    """The spring tank's impulse response (built once): each round trip down a spring passes the echo through ten
+    first-order all-passes - the dispersion that smears it into the falling 'chirp' of the surf 'drip'."""
+    key = (decay, tank, tone)
+    if key not in _SPRING_IR:
+        from scipy.signal import lfilter
+        n = int(1.4 * SR)
+        imp = np.zeros(n)
+        imp[0] = 1.0
+        src = hp(imp, 300)
+        wet = np.zeros(n)
+        for T, side in zip(tank, (1.0, 0.85)):
+            d = int(T * SR)
+            e = src.copy()
+            g = 1.0
+            for _ in range(7):                         # seven round trips down the spring
+                for _ in range(10):
+                    e = lfilter([0.62, 1.0], [1.0, 0.62], e)
+                e = np.concatenate([np.zeros(d), e[:-d]])
+                g *= decay
+                wet += side * g * e
+        wet = lp(wet, tone)
+        wet[-int(0.05 * SR):] *= np.linspace(1, 0, int(0.05 * SR))
+        _SPRING_IR[key] = wet / (np.sqrt(np.sum(wet ** 2)) + 1e-12)
+    return _SPRING_IR[key]
+
+
+def _spring(y, mix=0.45, decay=0.55, tank=(0.0337, 0.0411), tone=4200):
+    """A guitar amp's spring reverb tank (bright, boingy, its lows kept dry). Returns dry + wet, 1.4 s longer."""
+    from scipy.signal import fftconvolve
+    y = np.asarray(y, float)
+    ir = _spring_ir(decay, tank, tone)
+    wet = fftconvolve(y, ir)
+    wet = wet / (np.abs(wet).max() + 1e-9) * np.abs(y).max() * 0.9
+    out = np.concatenate([y, np.zeros(len(ir) - 1)]) + mix * wet
+    return out
+
+
+def v_surfguitar(m, dur, p, glide=None, mod=None):
+    """Surf guitar: an offset-body guitar's bright single-coil bridge pickup, played hard with a flat pick into a clean,
+    loud amp and its spring reverb tank turned way up - the snappy attack, the wet 'drip' of the springs and a faint
+    amp tremolo (p trem = tremolo depth). The lead and baritone sound of 60s surf and monster themes."""
+    y, pm = _eg_string(m, dur, dict(p, pickup=p.get('pickup', 0.06)), mod)
+    y = np.tanh(y * 2.2) / 1.6
+    y = eq(eq(eq(y, 'peak', 180, 0.9, 1.5), 'peak', 900, 1.0, -2.5), 'peak', 2800, 1.0, 4.0)
+    y = lp(y, 7000)
+    y = _spring(y, mix=p.get('spring', 0.5))
+    tr = float(p.get('trem', 0.15))
+    if tr:
+        t = np.arange(len(y)) / SR
+        y = y * (1 - tr * (0.5 + 0.5 * np.sin(2 * np.pi * p.get('trem_hz', 5.5) * t)))
+    return _ms_stereo(y, 22) * 0.6
+
+
+def v_baritwang(m, dur, p, glide=None, mod=None):
+    """Baritone twang: a six-string bass / baritone guitar (a fourth or an octave below a guitar) picked near the
+    bridge - a deep, growling twang with a hard pick attack, the spring reverb a little lower in the mix; the creeping
+    low riffs of monster and spy themes."""
+    y, pm = _eg_string(m, dur, dict(p, pickup=0.05), mod)
+    y = np.tanh(y * 2.6) / 1.7
+    y = eq(eq(y, 'peak', 110, 0.9, 3.0), 'peak', 1600, 1.1, 4.5)
+    y = lp(y, 5000)
+    y = _spring(y, mix=p.get('spring', 0.32), decay=0.5)
+    return _ms_stereo(y, 15) * 0.62
+
+
+def v_combo(m, dur, p, glide=None, mod=None):
+    """Combo organ: the reedy transistor organ of 60s garage and surf bands - bright divider-tone pulse waves at 8' and
+    4' (thin and buzzy, not a tonewheel's round sines) through a hollow formant, an instant on / off key gate, a fast
+    shallow vibrato and a small speaker's mid bark. The haunted-house organ of monster themes."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.03) * SR)
+    env = _va.adsr(gate, 0.004, 0.05, 0.95, 0.05)
+    n = len(env)
+    t = np.arange(n) / SR
+    vib = 1 + p.get('vib', 0.0045) * np.sin(2 * np.pi * p.get('vib_hz', 6.8) * t)
+    fr = f * vib
+    x = 0.9 * _va.pulse(fr, n, 0.0, 0.32) + 0.55 * _va.pulse(fr * 2, n, 0.25, 0.4) + 0.25 * _va.pulse(fr * 4, n, 0.5, 0.5)
+    x = lp(x, p.get('cut', 3800))
+    x = eq(eq(x, 'peak', 1100, 1.2, 5.0), 'peak', 2400, 1.5, 3.0)
+    x = hp(x, 160)
+    y = np.tanh(x * 1.3) * env
+    return _ms_stereo(y, 30, 0.5) * 0.33
+
+
+NEW_197 = (
+    ('surfguitar', v_surfguitar, 'Surf guitar (bright twang, dripping spring reverb)', ('lead', 'arp', 'chords', 'bass'), 27),
+    ('baritwang', v_baritwang, 'Baritone twang (six-string bass, spring reverb)', ('bass', 'lead', 'arp'), 32),
+    ('combo', v_combo, 'Combo organ (reedy 60s transistor organ)', ('chords', 'pad', 'arp', 'lead'), 17),
+)
+for _name, _fn, _info, _roles, _gm in NEW_197:
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)
+
+
+# =============================================================================
+#  1.97: wave (ethereal half-time bass music) sounds
+# =============================================================================
+def v_wavebass(m, dur, p, glide=None, mod=None):
+    """Wave bass: a long, heavy 808-style sub that holds through the bar - a short pitch drop into the note, a slow
+    'breathing' pitch drift of a few cents and a soft tube saturation adding the 2nd and 3rd harmonics, so the huge
+    low end is heard on small speakers too; slides from the last note (glide)."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.004, 0.6, 0.85, p.get('r', 0.3))
+    fr = _glide_freq(f, n, glide, 0.09) * 2 ** ((1.2 * np.exp(-t / 0.03) + 0.08 * np.sin(2 * np.pi * 0.3 * t)) / 12)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    y = np.sin(ph)
+    y = np.tanh(y * p.get('drive', 1.8)) / np.tanh(p.get('drive', 1.8))
+    y = y + 0.12 * np.sin(2 * ph)
+    return np.vstack([y, y]) * env * 0.55
+
+
+def v_etherchop(m, dur, p, glide=None, mod=None):
+    """Ether chop: a breathy, sung vocal chop - an 'ah' / 'oo' formant voice with air in it, scooping up into the note
+    and fading out soft - the floating vocal chops of wave and melodic bass, made to sit in a huge reverb."""
+    f = float(mtof(m))
+    env, n, t = _env_n(min(dur, 1.6), 0.02, 0.3, 0.7, 0.35)
+    rng = _rng()
+    fr = f * 2 ** (-0.6 * np.exp(-t / 0.06) / 12)
+    x = _stack_saw(fr, n, (-5, 5), rng, 0.6)
+    vow = p.get('vowel', 'a' if m % 2 else 'o')
+    y = np.vstack([_va.formant(x[i], vow, 6.0) for i in range(2)])
+    air = hp(lp(rng.standard_normal(n), 7000), 2500) * 0.08
+    y = y + np.vstack([air, air[::-1]])
+    return _hpf(y, 220) * env * 0.8
+
+
+NEW_197B = (
+    ('wavebass', v_wavebass, 'Wave bass (held 808 sub, saturated, slides)', ('bass',), 38),
+    ('etherchop', v_etherchop, 'Ether chop (breathy floating vocal chop)', ('lead', 'arp', 'chords'), 54),
+)
+for _name, _fn, _info, _roles, _gm in NEW_197B:
     INSTRUMENTS[_name] = _fn
     INSTRUMENT_INFO[_name] = _info
     GM_PROGRAM[_name] = _gm

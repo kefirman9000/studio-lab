@@ -422,6 +422,11 @@ def render_workers(length_samples):
     return max(0, min(3, (os.cpu_count() or 1) - 1))
 
 
+MONO_FADE = int(0.006 * SR)                                  # the bass retrigger crossfade (6 ms)
+MONO_RAMP = (0.5 + 0.5 * np.cos(np.linspace(0, np.pi, MONO_FADE))).astype(np.float32)
+MONO_SAME = int(0.002 * SR)                                  # notes this close together count as one chord
+
+
 class Renderer:
     def __init__(self, song, log=print):
         self.song = song
@@ -744,6 +749,19 @@ class Renderer:
             n = min(sig.shape[1], buf.shape[1] - s)
             buf[:, s:s + n] += sig[:, :n]
 
+    def _mono_flush(self, buf, pend, cut):
+        """Add the held bass note(s), cut at the next note's start `cut` with a short fade (a mono synth's retrigger)."""
+        for sig, s0 in pend:
+            if cut is not None:
+                keep = cut - s0
+                if keep <= 0:
+                    continue
+                if sig.shape[-1] > keep:
+                    k = min(sig.shape[-1], keep + MONO_FADE)
+                    sig = sig[..., :k].copy()
+                    sig[..., keep:k] *= MONO_RAMP[:k - keep]
+            self._add(buf, sig, s0)
+
     def render_track(self, tcfg, evs):
         buf = np.zeros((2, self.length), dtype=np.float32)
         if tcfg['inst'] == 'vinyl':
@@ -784,6 +802,13 @@ class Renderer:
         brk = self.st.get('break_seq') or {}
         # kicks are never humanised (a layered kick would flam), and a break plays as one tight unit
         tight = tcfg['name'] == kick or tcfg['layer'] == 'kick' or tcfg['name'] in brk or tcfg['name'] in ('lkick', 'lsnare')
+        # (1.96) bass plays monophonic, like a mono synth: a new note cuts the one before it (a short crossfade), so
+        # release tails never stack under the next note - stacked tails doubled the level at every note change (clipped
+        # starts / ends) and two detuned bass notes at once phased and glitched
+        mono = not is_drum and tcfg['layer'] == 'bass' and not tcfg.get('poly')
+        if mono:
+            evs = sorted(evs, key=lambda e: e.beat)
+        pend = []
         for i, ev in enumerate(evs):
             s = int((self.t_of(ev.beat, human=not tight, layer=tcfg['layer'], swing=is_drum or ev.dur < HELD, track=tcfg['name'])
                      + getattr(ev, 'strum', 0.0) * self.spb) * SR)
@@ -814,7 +839,15 @@ class Renderer:
                 if n > 16:
                     sig = sig.copy()
                     sig[..., :n] *= (np.linspace(0.08, 1.0, n, dtype=np.float32) ** 1.6)
+            if mono and sig is not None:
+                if pend and s > pend[0][1] + MONO_SAME:
+                    self._mono_flush(buf, pend, s)
+                    pend = []
+                pend.append((sig * ev.vel, s))
+                continue
             self._add(buf, sig * ev.vel, s)
+        if pend:
+            self._mono_flush(buf, pend, None)
         if self.st.get('sampler') and tcfg['layer'] in ('chords', 'lead', 'arp', 'pad') and np.any(buf):
             buf = sp1200(buf)                             # the sampled-loop grit of an SP-1200 / MPC
         if tcfg.get('amp') and (tcfg['inst'].startswith('real:') or tcfg['inst'] in ('guitar', 'mutedgtr')):
@@ -928,6 +961,15 @@ class Renderer:
             if s1 > s0:
                 m[s0:s1] = 1
         return uniform_filter1d(m, int(0.012 * SR))
+
+    def sc_times(self):
+        """When the sidechain ducks: on the kicks - or (styles with 'sc_quarters') on every beat of each bar the kick
+        plays in, the steady quarter-note breathing of pads pumped by a ghost trigger, whatever the kick pattern."""
+        if not self.st.get('sc_quarters'):
+            return self.kick_times()
+        kn = self.st.get('kick_track', 'kick')
+        bars = sorted({int(e.beat // 4) for e in self.song['events'] if e.track == kn})
+        return [self.t_of(b * 4 + q, human=False) for b in bars for q in range(4)]
 
     def kick_times(self):
         kn = self.st.get('kick_track', 'kick')
@@ -1099,7 +1141,7 @@ class Renderer:
         else:
             body = (1 - x) ** 2
         shape = (body * np.minimum(t / 0.004, 1)).astype(np.float32)
-        for kt in self.kick_times():
+        for kt in self.sc_times():
             s = int(kt * SR)
             if s >= self.length:
                 continue
@@ -1515,6 +1557,8 @@ class Renderer:
             dl = hp(pingpong(dly_send.astype(np.float64), st['delay_beats'] * self.spb, fb=0.42), 250)
             if rduck is not None:                        # the echoes step back while the lead plays, bloom in its gaps
                 dl *= (1 - 0.6 * rduck)[None, :]
+            if duck is not None and st.get('sc_quarters'):  # (1.96) the whole music bus breathes: the echoes pump too
+                dl *= (1 - duck * sc_depth * 0.8)[None, :]
             returns += dl * 0.45
             if np.any(rev_send):
                 returns += reverb(dl * 0.3, ir) * 0.3

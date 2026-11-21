@@ -607,8 +607,8 @@ def phrase_evolution(evs, sections, st, opts, tracks, club=(), trance=()):
       while the groove carries on (it comes back for the last part).
     Returns the number of notes held back."""
     g = st.get('name') or opts.style
-    if g not in club or st.get('composer') or getattr(opts, 'phrase_evolution', 'auto') == 'off':
-        return 0
+    if (g not in club and not st.get('phrase_evolve')) or st.get('composer') or getattr(opts, 'phrase_evolution', 'auto') == 'off':
+        return 0                                       # (1.96: other styles opt in with 'phrase_evolve')
     import random as _r
     rnd = _r.Random(f'{opts.seed}-{g}-phrases')
     kick = st.get('kick_track', 'kick')

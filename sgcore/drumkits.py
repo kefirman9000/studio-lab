@@ -84,6 +84,8 @@ KIT_MENU = [
     ('trance_classic', 'Drum machines', 'Trance 909 (classic sound, before 1.72)', 'trance_classic', None, None),
     ('techno_classic', 'Drum machines', 'Techno 909 (classic sound, before 1.72)', 'techno_classic', None, None),
     ('linn', 'Drum machines', '80s LinnDrum-style (gated snare)', 'linn', None, None),
+    ('surf60s', 'Modelled kits', 'Surf 60s (bright rattling snare, boomy kick, washy cymbals)', 'surf60s', None, None),
+    ('sunroom', 'Modelled kits', 'Sun room (warm, soft live-room kit, dark hats)', 'sunroom', None, None),
     ('punchy', 'Drum machines', 'Punchy EDM', 'punchy', None, None),
     ('hard', 'Drum machines', 'Hardstyle / big room', 'hard', None, None),
     ('soft', 'Drum machines', 'Soft / deep', 'soft', None, None),
@@ -401,7 +403,7 @@ CHOP.update({'funky_breaks': 0.35})
 # 1.41: kits for the genres that had none (each picks the recorded / machine kit its records were made with)
 GENRE_KIT.update({'holiday': 'brushes', 'western': 'vintage', 'chamber_pop': 'studio', 'jam_rock_80s': 'big80s',
                   'lofi_rock': 'rusty', 'sophisti_pop': 'big80s', 'folk_jam': 'brushes', 'psych_pop': 'dead70s',
-                  'boogie_rock': 'rock', 'boogie_blues_rock': 'rock', 'spooky_surf': 'vintage', 'surf_rock': 'vintage', 'monster_theme': 'vintage', 'monster_organ': 'vintage', 'nu_metal': 'rock', 'soul_sample_rap': 'vintage',
+                  'boogie_rock': 'rock', 'boogie_blues_rock': 'rock', 'spooky_surf': 'vintage', 'surf_rock': 'vintage', 'monster_theme': 'vintage', 'monster_organ': 'vintage', 'surf_monster': 'surf60s', 'nu_metal': 'rock', 'soul_sample_rap': 'vintage',
                   'new_age_chant': 'funky_drummer', 'midfi_synthfunk': 'linn', 'uk_bass_130': 'techno', 'hard_trance': 'trance',
                   'nu_disco': '909', 'piano_house_90s': '909', 'tokyo_deep_house': '909', 'smooth_90s_rap': '808',
                   'bay_rap': '808', 'futuristic_bounce': '808', 'hard_trap': '808', 'switch_trap': '808', 'bass_warp_trap': '808', 'bass_warp_fast': '808', 'switchup_808': '808', 'switchup_808_dj': '808', 'switchup_808_hard': '808', 'switchup_mallets': '808', 'screwed_slab': '808', 'trap_metal': '808', 'club_pop': '707',

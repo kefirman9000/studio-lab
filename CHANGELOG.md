@@ -1,5 +1,68 @@
 # Changelog
 
+## 1.96.0
+**Sunlit electronica, wave, a new monster surf band, cleaner bass, and a wrapping mixer**
+
+- **New genre: Wave (ethereal half-time, 808 sub, vocal chops)**, built from your two newest reference tracks. What I measured, and what the genre now does:
+  - **Half-time at 140–155 BPM,** with the snare and clap on the 3 and busy trap hats with rolls.
+  - **A huge held 808 sub** that slides between notes and carries the track. It holds most of the energy, so the mix is built around it.
+  - **Slow, washed maj7 harmony** that hangs on one or two chords.
+  - **A long intro with no low end:** 24–40 bars of airy pads and breathy vocal chops.
+  - **Pads and chords that pump on every beat.**
+  - **The tone** is matched to the references.
+  - **Two new sounds:**
+    - **Wave bass:** a held, saturated 808 sub that slides.
+    - **Ether chop:** a breathy sung vocal chop.
+
+  A style can now also let its bass slide into the next note now and then.
+- **New genre: Spooky surf - monster band (spring guitars, combo organ).** The 60s monster-theme surf band, rebuilt with better instruments:
+  - **The riff:** a new baritone six-string doubles the electric bass on the creeping chromatic riff, through a dripping spring reverb.
+  - **The organ:** a new reedy transistor combo organ, with thin, buzzy pulse tones and a fast, shallow vibrato instead of a round drawbar organ. It holds the chords and takes a creepy organ break.
+  - **The rest of the band:** a horn section for the stabs, a new bright surf guitar for the melody and its own guitar break, and a new hard-hit early-60s kit with a rattling snare and tom fills.
+  - **Every song is different:** each picks its lead instrument (guitar, horns, organ or sax), its length, its tempo and whether the melody is played or tremolo-picked.
+- **New sounds:**
+  - **Surf guitar:** an offset guitar's bright pickup into a loud clean amp, with a spring-reverb tank modelled for that wet "drip".
+  - **Baritone twang:** a six-string bass through the same spring reverb.
+  - **Combo organ:** a 60s transistor organ.
+  - **Surf 60s drum kit.**
+
+  The older spooky-surf and monster-theme genres can now pick these sounds too.
+- **The brass section's name** in the sound list said "Synth brass", but since 1.67 it has been the modelled trumpet and trombone section. It now says "Brass section".
+- **New genre: Spooky surf - modern monster theme (synths).** It's the 60s monster-sitcom sound rebuilt with modern synths:
+  - **The riff:** the creeping chromatic riff (root, a half step up, back, a half step down) on a new fuzz baritone synth, locked to a driven saw bass.
+  - **The band:** wide synth-brass stabs, a new detuned "creep organ", a harpsichord arp and a sliding theremin lead.
+  - **The beat:** tight, punchy modern drums at about 150 BPM (kick, snare plus clap, 16th hats with rolls).
+  - **The shape:** a ghostly organ and theremin breakdown, riser builds, and a big last riff that stops dead.
+
+  It's in the Retro & Video Game group. Like the other monster themes, its melody is original. The two new synths (fuzz baritone, creep organ) can be picked in any genre.
+- **Bass notes no longer pile up.** Each bass note kept ringing under the next one: in dubstep, over half of all bass notes still sounded at 55–70% when the next note began. The two notes added up, which caused the clipped-sounding starts and ends, and two detuned bass notes at once phased and glitched. Bass parts now play like a mono synth, so a new note cuts off the one before it with a short 6 ms crossfade. The sub layer's peaks dropped by about a third.
+- **Reese bass glitch.** Each reese note started its four detuned saws at random positions, so fast reese lines jumped to a different swirl on every note and sounded glitchy. Every note now starts the same way.
+- **Riddim chops** open and close over 3 ms instead of 1.5 ms (no clicks on each chop), and the notes end over 35 ms instead of 20 ms.
+- **Sub-octave bass variants** no longer add an octave below 30 Hz. Down there you can't hear it, and it only ate headroom, which made the limiter pump. Their level is also trimmed to match the plain sound.
+- **Two new genres from your 12 reference tracks:** Sunlit electronica and Daydream downtempo. I measured each reference's tempo, key, chords, drum pattern, sections, tone, loudness, stereo width and how much the pads pump, then compared generated songs against the same numbers until they matched. What the references share, and the new genres now do:
+  - **Two tempo families:**
+    - **Sunlit electronica, 112–122 BPM:** a warm live-room kit, a round mono bass or bass guitar pushing 8th notes, and pads that pump on every beat.
+    - **Daydream downtempo, 74–95 BPM:** a dusty hip-hop break with a syncopated kick, the snare on 2 and 4, and soft swung hats.
+  - **Harmony that barely moves:** two or three chords, one or two bars each, always coloured (maj7, m7, add9, sus2), and sometimes one chord vamped for minutes.
+  - **How the songs unfold:**
+    - A long intro with no bass: 12–24 bars of pad and guitar, with the hats creeping in first.
+    - Then the low end and the full kit arrive together.
+    - Long sections change by adding and removing parts.
+    - A breakdown drops the bass.
+    - The outro loses the sub first, then fades.
+  - **The sound:** strong lows and low-mids, a steep roll-off above 2 kHz (warm, tape-dark), about −10 LUFS with real dynamics, and moderate width.
+  - **The instruments:** a clean guitar picking into a dotted-8th delay, a second guitar answering it, a guitar frozen into a reverb pad, warm analog pads, and an understated gliding mono-synth melody. Each song picks its own palette, guitar figure, layout, tempo, chord loop, bass style and melody rhythm, so no two come out the same.
+- **New sounds** (usable in any genre):
+  - **Space guitar:** a clean guitar note frozen into a slow-blooming reverb pad.
+  - **Sun pad:** a warm analog poly pad with a slow bloom.
+  - **Soft mono lead:** a warm, gliding analog melody.
+  - **Round mono bass:** warm, with its weight in the low-mids.
+  - **Sun room drum kit:** a soft round kick, a warm dry snare and dark hats.
+- **Pads can pump on every beat.** A style can now duck its pads on every beat of the bars the kick plays in, not only on the kick hits. This is the steady breathing you hear in sunlit electronica.
+- **Long sections keep moving in more genres.** The step that brings parts in over long club sections can now be switched on for any style. The two new genres use it.
+- **Preview starts on the last chorus or drop.** The quick preview used to start two bars before the first big section. It now starts on the last one, usually the fullest part of the song.
+- **Mixer view wraps.** Channel strips that don't fit the window now move to the next row instead of scrolling sideways.
+
 ## 1.95.0
 **Dubstep genres get the same treatment as house, trance and techno**
 

@@ -78,17 +78,17 @@ def _window(song, b0, b1, fade=True, keep_fx=True):
 
 
 def preview_window(song, target_sec=26.0):
-    """Cut a short excerpt around the most energetic section (for quick auditioning)."""
+    """Cut a short excerpt from the most energetic section - the last chorus / drop - for quick auditioning."""
     spb = 60.0 / song['bpm']
     bar_sec = 4 * spb
     nbars = int(max(8, min(16, round(target_sec / bar_sec / 4) * 4)))
     best = None
     for s in song['sections']:
         score = len(s['layers']) + (3 if s['opts'].get('drop') else 0) + (1 if s['name'] in ('chorus', 'hook', 'climax', 'B', 'head', 'theme', 'loop') else 0)
-        if best is None or score > best[0]:
+        if best is None or score >= best[0]:          # (1.96) ties go to the LAST one: the last chorus / drop
             best = (score, s)
     sec = best[1]
-    b0 = max(0, sec['bar'] - (2 if sec['bar'] >= 2 else 0))
+    b0 = sec['bar']                                   # (1.96) start right on it, not on the bars before the drop
     b1 = min(song['total_bars'], b0 + nbars)
     beat0, beat1 = b0 * 4, b1 * 4
     evs = []
