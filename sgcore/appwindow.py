@@ -111,8 +111,10 @@ h1{margin:0;font-size:22px;font-weight:650;letter-spacing:.02em}
 @keyframes eq{0%,100%{height:5px}50%{height:26px}}
 #msg{color:#8a90a2;min-height:18px}
 </style></head><body><div class="box"><div class="mark"></div><h1>Studio Lab</h1>
-<div class="bars">%BARS%</div><div id="msg">Starting…</div></div>
-<script>function say(m){document.getElementById('msg').textContent=m}</script></body></html>""".replace(
+<div class="bars">%BARS%</div><div id="msg">Starting…</div><div id="sec" style="color:#5d6375;font-size:12px"></div></div>
+<script>function say(m){document.getElementById('msg').textContent=m}
+var t0=Date.now();setInterval(function(){var s=Math.round((Date.now()-t0)/1000);
+document.getElementById('sec').textContent=s>2?s+' s':''},500);</script></body></html>""".replace(
     '%BARS%', ''.join(f'<i style="animation-delay:{i * 0.09:.2f}s"></i>' for i in range(9)))
 
 
@@ -142,11 +144,13 @@ def splash_window(boot, quit_app):
     def go():
         import json
 
-        def say(m):
-            try:
-                win.evaluate_js('say(%s)' % json.dumps(str(m)))
-            except Exception:
-                pass
+        def say(m):                                   # never wait on the window: a hung evaluate_js (pywebview on
+            def _s():                                  # Windows) must not stop the start-up
+                try:
+                    win.evaluate_js('say(%s)' % json.dumps(str(m)))
+                except Exception:
+                    pass
+            threading.Thread(target=_s, daemon=True).start()
         try:
             url = boot(say)
             bridge.base = url.split('?')[0]

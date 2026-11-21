@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.5
+- **Fixed: start-up stuck on "Loading the sound engine…".** The loading screen's progress messages could hold up the start itself (a pywebview quirk on Windows). Now nothing waits on them.
+- **The loading screen shows each step** (numpy, scipy, instruments, genres, composer, studio) **and a seconds counter**, so you can see it's alive.
+- **If the engine takes over 2 minutes or stops, the screen says so** and points to *startup.log* in your Studio Lab folder, which holds everything the engine printed while starting.
+- The updater no longer clears Python's compiled-file cache, so the first start after an update is faster.
+
+
 ## 2.2.4
 - **"Update Studio Lab.bat": update without opening the app.** Double-click it in your Studio Lab folder. It closes Studio Lab if it's open, downloads the latest version from GitHub and copies the program files over. Your songs, presets, settings, sounds, plugins and the bundled Python are never touched. It comes with every install and is attached to every GitHub release.
 - **The in-app updater no longer moves away files it doesn't replace**, such as StudioLab.exe and the icon from the installer. It only backs up the files it overwrites, so it can put them back if an update fails.

@@ -94,7 +94,10 @@ def _serve(port):
             return                                    # (no pipe to watch: keep serving)
         os._exit(0)
     threading.Thread(target=watch_parent, daemon=True).start()
-    _out('STUDIOLAB_SAY Loading the sound engine…')
+    for what, mod in (('numpy', 'numpy'), ('scipy', 'scipy.signal'), ('the instruments', 'sgcore.instruments'),
+                      ('the genres', 'sgcore.styles'), ('the composer', 'sgcore.compose'), ('the studio', 'sgcore.app')):
+        _out('STUDIOLAB_SAY Loading ' + what + '…')
+        __import__(mod)
     from sgcore import app
     _out('STUDIOLAB_SAY Starting the studio…')
     url = app.start_server(port)[1]
@@ -120,30 +123,50 @@ def _engine_boot(port):
         import threading
         here = os.path.dirname(os.path.abspath(__file__))
         env = dict(os.environ, STUDIOLAB_CHILD='1', PYTHONUNBUFFERED='1')
+        say('Starting the sound engine…')
         p = subprocess.Popen([sys.executable, os.path.abspath(__file__), '--serve'], cwd=here, env=env,
                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              creationflags=0x08000000 if os.name == 'nt' else 0)
         _CHILD.append(p)
-        url, tail = None, []
-        for raw in iter(p.stdout.readline, b''):
-            line = raw.decode('utf-8', 'replace').rstrip()
-            if line.startswith('STUDIOLAB_SAY '):
-                say(line[14:])
-            elif line.startswith('STUDIOLAB_URL '):
-                url = line[14:]
-                break
-            elif line:
-                tail = (tail + [line])[-6:]
-        if not url:
-            raise RuntimeError(' | '.join(tail) or 'the engine stopped while loading')
+        logp = os.path.join(here, 'startup.log')
+        try:
+            log = open(logp, 'w', encoding='utf-8')
+        except OSError:
+            log = None
+        found, tail = [], []
 
-        def drain():                                  # keep reading (a full pipe would stall the engine)
+        def read():
             for raw in iter(p.stdout.readline, b''):
-                if raw.startswith(b'STUDIOLAB_RESTART'):  # an update was installed: start the whole app again
+                line = raw.decode('utf-8', 'replace').rstrip()
+                if log:
+                    try:
+                        log.write(line + '\n')
+                        log.flush()
+                    except Exception:
+                        pass
+                if line.startswith('STUDIOLAB_SAY '):
+                    say(line[14:])
+                elif line.startswith('STUDIOLAB_URL ') and not found:
+                    found.append(line[14:])
+                elif line.startswith('STUDIOLAB_RESTART'):    # an update was installed: start the whole app again
                     subprocess.Popen([sys.executable] + sys.argv, cwd=here,
                                      creationflags=0x08000000 if os.name == 'nt' else 0)
                     _quit()
-        threading.Thread(target=drain, daemon=True).start()
+                elif line:
+                    tail[:] = (tail + [line])[-6:]
+        threading.Thread(target=read, daemon=True).start()   # (keeps reading for good: a full pipe stalls the engine)
+        import time
+        t0 = time.time()
+        while not found:
+            if p.poll() is not None:
+                time.sleep(0.3)
+                if not found:
+                    raise RuntimeError((' | '.join(tail) or 'the engine stopped while loading') + ' (details: ' + logp + ')')
+            if time.time() - t0 > 120:
+                raise RuntimeError('the engine is taking over 2 minutes to load - details are in ' + logp)
+            time.sleep(0.1)
+        url = found[0]
+
         return url
     return boot
 

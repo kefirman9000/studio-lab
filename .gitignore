@@ -17,3 +17,4 @@ logs/
 runtime/
 build/
 dist/
+startup.log
