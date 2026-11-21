@@ -1,8 +1,8 @@
-# Studio Lab genres (337)
+# Studio Lab genres (347)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (177)
+## Electronic (185)
 
 ### House & Disco (29)
 
@@ -38,14 +38,16 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Tropical house | `tropical_house` | 100-115 | Tropical house: a relaxed four-on-the-floor around 105, soft snaps and shakers, warm piano chords, marimba and steel-pan plucks, a pan-flute or sax hook - sunny, laid-back and summery |
 | UK bounce house (bassline, vocal chops) | `uk_bounce_house` | 122-126 | UK bounce house: a four-on-the-floor groove at 122-126 with busy, shuffling percussion and crisp claps, a rubbery, bouncing bassline doing most of the work, chopped vocal hooks answering it and short organ / piano stabs - radio-friendly, warm and made for dancing |
 
-### Techno & Trance (22)
+### Techno & Trance (24)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
+| Classic vocal trance (2004-09) | `classic_vocal_trance` | 136-140 | Classic vocal trance (2004-09): 136-140 BPM in a minor key, a rolling off-beat bass ducking hard under the kick, constant 16th hats, a bright singing lead with glide, gated supersaw chords, airy pads and a piano-led breakdown in the middle that rises into the last, biggest drop; long, wide and emotional |
 | Club trance remix (2000s, riff & breakdown) | `club_trance_2000s` | 136-140 | Club trance remix (early-2000s, vocal-trance style): a tight 909 kick at 138 with a galloping off-beat rolling bass, open hats and driving 16th hats, a punchy syncopated tech-trance synth riff through a dotted delay, gated supersaw chords and a wide pad; long DJ intro and groove, a big breakdown where the pad, a breathy vocal-like lead and the chords slowly filter open, a snare-roll build and long full sections - dark, dense and hypnotic |
 | Dark psy / forest (148-158) | `darkpsy` | 148-158 | Dark psy / forest: 148-158 BPM, heavy and abstract - a hard, short kick and a gritty, growling rolling bass (K-B-B-B), laser zaps, twisted squelches and glitchy blips instead of melodies, eerie pads in short breaks, flangers and bit-crushed percussion; hypnotic, intense and strange |
 | Dub techno | `dub_techno` | 118-126 | Dub techno: a soft four-on-the-floor under a single deep chord stab that echoes and fades through long, filtered delays and reverb, a round sub, hiss and crackle - hypnotic, misty and slowly shifting |
 | Festival psy-trance (big-room / psy hybrid) | `festival_psy` | 134-138 | Festival psy-trance (big-room / psy hybrid): a hard, tight kick at 134-138 with the rolling psy bass playing three short notes between every kick (K-B-B-B), squelchy FM psy leads and acid lines twisting over it, big supersaw chords and a wide pad in the breakdown with an emotional, singable lead, a long snare-and-riser build and a main riff drop; very wide mids, a tight mono low end |
+| Festival techno (big-room trance, 2011-14) | `festival_techno` | 134-138 | Festival techno (big-room trance, 2011-14): 134-138 BPM, a punchy four-on-the-floor with the bass on the 16ths right after each kick, a huge, very wide supersaw stab and a tearing hard-sync hook, a rising build pad and a pumping sidechain; bold, rhythmic and larger than life |
 | Goa trance (classic 90s psychedelic) | `goa_trance` | 140-148 | Goa trance (classic 90s psychedelic trance): 140-148 BPM, melodic and layered - squelchy detuned-saw lead melodies with an eastern colour (phrygian dominant, harmonic minor), several interlocking acid / 303 arpeggios, a rolling bass under a punchy kick, choirs and pads in the breakdowns, brighter and busier than modern psy |
 | Hard techno (150) | `hard_techno` | 145-160 | Hard techno (2020s): 145-160 BPM, a distorted, saturated kick with a rumbling sub tail, driving 16th hats, off-beat open hats, sparse industrial stabs and a screaming acid or rave lead - relentless and loud |
 | Hard trance / hands-up | `hard_trance` | 136-144 | Hard trance / hands-up (2000s): a pounding 909 kick around 140 with offbeat open hats, a driving 16th-note rolling bass pinned to the root, hard supersaw and hoover-style riffs, acid squelches and a catchy synth hook - short, punchy breakdowns with a classic snare roll and long, relentless main sections |
@@ -65,13 +67,14 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Uplifting Trance | `uplifting_trance` | 134-140 | Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw leads and plucky arps, a long piano / pad breakdown that explodes into the drop |
 | Vocal-trance club remix (late 2000s, instrumental) | `vocal_trance_remix` | 128-130 | Vocal-trance club remix, late 2000s (instrumental): 129 BPM, a punchy kick with a driving rolling 16th bass, off-beat hats and claps, a tight, gated tech-trance riff in the first drop, a long DJ intro that adds a layer every 16 bars, then a huge breakdown - pads, a piano / pluck theme and an airy vocal-like pad where the singer would be - a filter-sweep build and a full drop with the lead on top; a big, loud master with real contrast between the breakdown and the drops |
 
-### Dubstep, Garage & Bass (24)
+### Dubstep, Garage & Bass (26)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Brostep | `brostep` | 140-150 | Brostep: festival dubstep - snarling growls, wobbles and FM stabs trading bars in the drop over a clean sub, aggressive half-time drums, pitch dives, risers and hard stops |
 | Chillstep | `chillstep` | 138-144 | Chillstep (the ambient side of dubstep): slow half-time dubstep at 140 with lush reverb pads, piano and gentle plucks drowned in delay, a soft rolling wobble and a warm sub - melancholic and floating |
 | Chipmunk 2-step (pitched vocal chops) | `chipmunk_2step` | 140-146 | Chipmunk 2-step: hyper, playful UK bass at 140-146 - a skippy 2-step kick, snares on 2 and 4, shuffled hats - with pitched-up, chipmunk vocal chops as the hook, bright rave stabs and trancey chords, a bouncing sub, and a very wide, glossy mix |
+| Dark dubstep (sub-weight, 2009-12) | `dark_dubstep_classic` | 140-144 | Dark dubstep (sub-weight, 2009-12): half-time 140-144 with the snare on beat 3 and syncopated kicks, a huge mono sine sub that is the loudest thing in the mix, a dark slow-growling wobble in the low mids, cold grime squares, dissonant horror stabs and a soundsystem siren thrown into the echo; very mono and dark on top, long drops |
 | Deep Dubstep (soundsystem) | `deep_dubstep` | 138-142 | Deep dubstep (soundsystem): half-time 140, kick on 1 and snare on 3, a mono sub pinned to one note for minutes (the root, now and then the flat 2nd), a growling mid-bass that wobbles in strict 8ths and 16ths or swells slowly, skippy rims and shakers thrown into dub echoes, one dark motif, a long drums-only intro - and no snare-roll build-ups: the drop just lands, or everything stops for a beat first |
 | Deep Dubstep - sparse & eerie | `deep_dubstep_minimal` | 138-142 | Deep / minimal dubstep: half-time 140 with the kick on 1 and the snare on 3, sparse shuffled 2-step percussion thrown into dub delays, a heavy clean sub carrying the track, one eerie motif, dub chord stabs and lots of dark negative space - soundsystem pressure, not festival brostep |
 | Deep dubstep - rollers (sub-weight) | `deep_dubstep_rollers` | 138-142 | Deep dubstep - rollers: 140 half-time and steppers, a huge rolling sub that moves under everything, sparse skippy percussion thrown into dub echoes, a dark motif or a squelchy acid line, mono and heavy - built for a soundsystem |
@@ -93,6 +96,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | UK Garage | `ukgarage` | 130-134 | UK garage / 2-step: skippy shuffled drums, organ stabs, vocal chops, sub bass |
 | UK bassline (140) | `bassline_140` | 136-142 | UK bassline (Northern / speed-garage style): a bouncy four-on-the-floor around 138-142 with shuffled garage hats, a warbling, organ-like wobble bass that bounces in octaves and talks between the kicks, bright stabs and a chopped vocal-style hook - cheeky, fast and built for the rave |
 | UK funky | `uk_funky` | 126-132 | UK funky: London house at 130 with a soca and Afro swing - a house kick under syncopated snares, tribal toms and congas, a bouncy sub bass, warm keys and vocal hooks |
+| Wave (ethereal half-time, 808 sub, vocal chops) | `ethereal_wave` | 140-155 | Wave (ethereal half-time): floating, melancholic bass music at 140-155 - a long intro of airy pads and breathy vocal chops with no low end, then the drop: a huge held 808 sub that slides between its notes and carries the whole track, half-time drums with the snare on the 3 and busy trap hats with rolls, washed-out maj7 chords pumping hard against the kick, glassy plucks and chops drifting in a huge reverb; slow harmony that hangs on one or two chords - dreamy, heavy and wide open |
 
 ### Drum & Bass, Breaks & Hard (20)
 
@@ -182,7 +186,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Moombahton | `moombahton` | 106-112 | Moombahton: dembow groove at 110 with big-room synths and heavy drops |
 | Reggaeton | `reggaeton` | 88-100 | Reggaeton: dembow rhythm, deep 808s, plucky synths, latin percussion |
 
-### Chill, Lo-fi & Ambient (15)
+### Chill, Lo-fi & Ambient (18)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -193,12 +197,15 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Balearic chill (sunset guitar, slow house) | `balearic_chill` | 94-108 | Balearic chill: a sunset groove around 95-108 - a soft four-on-the-floor kick, shakers and congas, a warm round bass, a nylon-string guitar picking under warm pads and Rhodes, a gentle melody drifting in the delay - mellow, golden and soft, nothing sharp on top |
 | Berlin school (sequencer) | `berlin_school` | 100-128 | Berlin school (70s): long, hypnotic analog sequencer patterns - a pulsing 16th-note sequence that slowly shifts, string-machine and choir pads, a drifting lead, no drums - spacey and cosmic |
 | Chant downtempo - shakuhachi & monks | `chant_downtempo` | 92-100 | Chant downtempo (early 90s): it opens on a lone, breathy shakuhachi calling over a dark pad - then a monk choir chants slow minor chords, and a heavy, lazy hip-hop break around 96 drops in under it with a deep pedal sub; the shakuhachi answers the chant between the drums - mystical, sensual, cavernous |
+| Daydream downtempo (dusty breaks, guitar haze, 74-95) | `daydream_downtempo` | 74-95 | Daydream downtempo: dusty, sun-faded electronica at 74-95 - a soft hip-hop break (a syncopated kick, the snare on 2 and 4, quiet swung hats) under warm analog pads, a guitar frozen into the reverb, tape-worn keys, a clean guitar figure in the delay and a round mono bass on long notes; one or two coloured chords swaying for minutes (IVmaj7 - ii7, vi7 - I, a single-chord vamp), a long bass-less intro, short breakdowns that drop the low end, a soft gliding synth or wordless voice on top - hazy, wide and warm, nothing bright |
 | Downtempo | `downtempo` | 85-100 | Downtempo / chillout: laid-back beats, Rhodes & piano, warm pads, glassy bells |
+| Dreamy synthscape (chill synth space) | `dream_synthscape` | 94-120 | Dreamy synthscape: a chill, effects-washed synth space - warm pulsing chords breathing against a muffled heartbeat kick, a soft pad cloud, a high bass on the phrase starts, tiny chimes sparkling far above, a gliding sine line drifting through; slow ii - IV - I movement on rich 7th and 9th chords, dark and warm (no sub, no bright top), wide and deep in reverb, one long swell that rises and fades, and a moment where it all stops |
 | Hazy downtempo (pumping pads, dusty break, wide) | `hazy_downtempo` | 74-90 | Hazy downtempo: a slow, dusty beat at 75-90 - a soft hip-hop break with busy, quiet 16th hats - under deep, pumping analog pads that swell and breathe with the kick, a round synth bass, wordless vocal pads, a gentle plucked arpeggio and a guitar or synth melody floating far away in the reverb; a huge, wide, dreamy stereo field and a warm, tape-soft top |
 | Lo-fi Hip Hop | `lofi` | 72-88 | Lo-fi hip hop: swung boom-bap, jazzy 7th/9th Rhodes chords, warm bass, vinyl + tape wobble |
 | Mid-fi synth-funk / chillwave | `midfi_synthfunk` | 80-100 | Mid-fi synth-funk / chillwave: a slow, crunchy drum-machine groove around 80-100 with a fat gated snare, a rubbery analog bass, detuned, warbly poly-synth chords and arps soaked in tape wobble and chorus, a warm square lead - nostalgic, hazy and funky, like a worn 80s VHS |
 | Spooky TV theme (90s mystery, whistle & echoes) | `spooky_tv_theme` | 84-90 | Spooky TV theme (90s paranormal mystery): a slow, steady electronic groove at about 87 BPM under a cold, echoing four-note piano / bell ostinato in a minor key that keeps repeating into a long delay, dark synth pads and a lonely, sliding whistled melody - drenched in reverb, very wide, quiet and dark on top (no air), like a late-night TV main title |
 | Sunlit chillwave (live drums, chorus guitar, analog synths) | `sunrise_chillwave` | 114-128 | Sunlit chillwave (live band): a warm, nostalgic, sun-faded sound - a long ambient intro of tape hiss, soft analog pads and a chorus-drenched guitar picking in the delay, then a real drummer drives a straight, motorik indie beat with a picked bass guitar underneath, a bright analog synth arpeggio sparkling on top and a simple synth melody; slow, open major-key chords, pads breathing with the kick, a breakdown with the drums out, a slow fade |
+| Sunlit electronica (analog band, guitars, 112-122) | `sunlit_electronica` | 112-122 | Sunlit electronica (analog band): warm, nostalgic electronic post-rock at 112-122 - a long intro of a pad and a clean guitar picking into a dotted-8th delay, hats creeping in, then a warm live-room kit and a round mono bass pushing 8th notes; slow, two-chord progressions on maj7 / m7 / add9 chords, a guitar frozen into a reverb pad, analog pads breathing with the kick, interlocking guitar lines and an understated mono synth melody; layers come and go, a breakdown with the bass out, a slow fade - tape-warm and dark on top |
 | Trip-hop | `trip_hop` | 76-96 | Trip-hop: slow, heavy, dusty breakbeats, a deep sub, dark minor Rhodes and string chords, a haunting theremin-like lead, harpsichord or vibes colour and vinyl crackle - moody, cinematic and smoky |
 | Vaporwave | `vaporwave` | 58-74 | Vaporwave: slowed 80s nostalgia - lush Rhodes, sax, chorused pads, tape haze |
 
@@ -213,7 +220,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Juke / ghetto house - raw (130) | `juke_raw` | 128-134 | Juke / ghetto house - raw (130): stripped to the drums - a syncopated kick (1, the "a" of 2, the "e" of 4), claps and hand percussion locked in the same off-kilter pattern every bar, dense 16th hats, a huge sub under the kick and one repeated vocal chop. A long drums-only intro, breakdowns that drop to almost nothing, then the full groove slams back - no build-ups, all repetition |
 | Juke house - bouncy (126) | `juke_house` | 124-128 | Juke house (126): bouncy and hypnotic - a 3-3-2 tresillo kick, hi-hats on the off-grid spots against it, claps every five 16ths for a rolling cross-rhythm, a busy 16th percussion loop, a fat sub following the kick and one bright, catchy major-key synth riff on top. Plateaus and breakdowns, no snare ramps |
 
-### Retro & Video Game (6)
+### Retro & Video Game (7)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -222,6 +229,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Dark Synthwave | `dark_synthwave` | 85-105 | Dark synthwave (neon-noir): slower and minor - a heavy pulsing analog bass, cold supersaw chords, string-machine fog, a lonely saw lead and a stark gated drum machine; night-drive rather than sunset |
 | Darkwave / EBM | `darkwave_ebm` | 112-130 | Darkwave / EBM: cold 80s machines - a driving 16th-note sequenced bass, stomping kick, gated snare, icy polysynth chords and choir pads, a stern detuned lead - dark, danceable and mechanical |
 | Krautrock / motorik | `krautrock` | 120-140 | Krautrock / motorik (70s Germany): the endless, straight motorik beat that never changes, a bass pulsing eighth notes on one chord, drones and sequenced synths fading in layer by layer, a distant guitar - hypnotic, forward-moving repetition |
+| Spooky surf - modern monster theme (synths) | `monster_synth` | 146-156 | Spooky surf - modern monster theme: the 60s monster-sitcom theme rebuilt with modern synths - a fuzz baritone synth and a driven saw bass lock together on the creeping chromatic riff (root, a half step up, back, a half step down), wide synth-brass stabs, a detuned creep organ, a harpsichord arp and a sliding theremin-style lead, over tight, punchy modern drums at about 150 - a ghostly organ breakdown, a riser build and a big last riff - campy, creepy and hard-hitting |
 | Synthwave | `synthwave` | 90-112 | 80s synthwave/retrowave: gated-reverb snares, pulsing octave bass, supersaws, saw lead |
 
 ### Hauntology (7)
@@ -236,9 +244,9 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hauntology II (sunlit tape) | `hauntology_sunlit` | 82-96 | Hauntology II - sunlit tape: warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
 | Hauntology III (dark film haze) | `hauntology_dark` | 64-80 | Hauntology III - dark film haze: slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
 
-## Classic (129)
+## Classic (131)
 
-### Rock & Metal (27)
+### Rock & Metal (29)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -246,7 +254,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | 80s boogie rock | `boogie_rock` | 164-176 | Mid-80s boogie rock: a fast, bouncing two-beat shuffle around 170 driven by a cheerful combo-organ riff, clean chorused electric guitar licks, a pumping root-fifth bass and a big, roomy kit with a backbeat snare - feel-good and radio-bright |
 | 90s alt rock | `alt_rock_90s` | 104-132 | 90s alternative rock: jangly clean arpeggios in the verses, crunchy distorted power chords that explode in the choruses, an eighth-note pick bass, a big dry room kit - catchy, major-key and a little melancholy, mastered with 90s dynamics |
 | Boogie blues-rock (slide) | `boogie_blues_rock` | 95-125 | Boogie blues-rock (bar-band slide boogie): a heavy, swaggering shuffle around 95-125 BPM in E, G, A or D - the bass and a raunchy rhythm guitar locked on the boogie riff (root, third, fifth, sixth, flat seventh), a fat backbeat, a distorted slide guitar answering every line and taking a solo chorus, a honking tenor sax for another; 12-bar choruses at full tilt, dry and mid-heavy, ending on a hit |
-| Cybergrind / drum-machine deathgrind | `cybergrind` | 240-262 | Drum-machine deathgrind / cybergrind: songs about a minute long that never let up - inhumanly fast programmed blast beats and machine-gun double kick (16ths at ~250 BPM), crashes on every beat, then sudden, crushing half-time breakdowns where the down-tuned, quad-tracked guitars chug locked to the kick with dead silence between the hits; dissonant tremolo riffs and squealing pinch harmonics on top; mixed huge, low and saturated |
+| Cybergrind / drum-machine deathgrind | `cybergrind` | 116-134 | Cybergrind (modelled on wecamewithbrokenteeth): songs about a minute long that never sit still - built on ~125 BPM but always switching: double-time drum-machine blasts, crushing half-time breakdowns (every one a new rhythm, tempo and riff) where the down-tuned guitars chug locked to the kick, slam grooves, dead stops and quiet chiptune moments in the middle of the song; every song gets its own order of parts, opening and ending |
 | Doom / stoner metal | `doom_metal` | 55-80 | Doom / stoner metal: crushingly slow and heavy - huge, fuzzed-out down-tuned riffs, a lumbering half-time beat with massive crashes, a bass locked to the guitar and a wailing, bluesy lead |
 | Garage rock (60s, fuzz & organ) | `garage_rock` | 128-160 | Garage rock (60s): raw, loud and simple - fuzz guitars bashing three chords, a cheap combo organ riffing, a driving bass, tambourine on every beat and a slightly sloppy, pounding beat |
 | Indie Rock | `indie_rock` | 108-140 | Indie rock: jangly clean guitars in 8ths, melodic bass, straight-ahead drums, a hooky guitar lead |
@@ -263,8 +271,10 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Rock | `rock` | 110-140 | Rock: driving drums, distorted power-chord guitars, solid bass, lead guitar |
 | Rockabilly (slap bass & twang) | `rockabilly` | 156-190 | Rockabilly (50s): a slapped upright bass clicking on every beat, a brushed snare shuffle, a strummed rhythm guitar and a twangy hollow-body lead with slapback echo - fast, swinging 12-bar rock and roll |
 | Shoegaze | `shoegaze` | 100-130 | Shoegaze: a wall of sound - loud, washed-out, heavily distorted and reverbed guitars, a steady straight-8ths beat with a splashy ride, a melodic bass, swirling pads and a soft, buried lead - dreamy and enormous |
+| Slam / brutal deathcore | `slam` | 128-146 | Slam / brutal deathcore (modelled on Waking the Cadaver and Vulvodynia): a wall of hammer, bomb and gravity blasts and rolling double kick, mid-tempo slam grooves on the half-step b2 rub, pinch squeals, and breakdowns that pile up toward the end of the song - every one different: kick-locked chugs, half-time slams over double kick, stop-start hits, triplet grooves, quarter-note beatdowns, gallops and crawling drags; the lowest, heaviest one last; down-tuned quad-tracked guitars and a clicky triggered kit, mixed brutally loud |
 | Spooky 60s surf / TV theme | `spooky_surf` | 144-160 | Spooky 60s surf / TV-theme rock: a fast, driving beat around 150 with a twangy, heavily reverbed electric guitar melody, a walking / chromatic bass line, stabbing brass and a cheesy combo organ - campy, creepy and fun |
 | Spooky surf - monster TV theme | `monster_theme` | 146-158 | Spooky surf - 60s monster-sitcom theme: a driving 150 BPM surf beat under a low, creeping chromatic riff (root, a half step up, back, a half step down) played by the bass and a twangy baritone guitar together, punchy brass stabs, a bright brass-melody bridge in the relative major, a honking sax-section stretch, and a big chromatic stab ending - campy, creepy and catchy |
+| Spooky surf - monster band (spring guitars, combo organ) | `surf_monster` | 146-158 | Spooky surf - monster band: the 60s monster-sitcom surf band with better instruments - a baritone six-string and electric bass creeping through the chromatic riff (root, a half step up, back, a half step down) with the spring reverb dripping, a reedy transistor combo organ holding the chords and taking a creepy break, a horn section punching stabs, a bright surf guitar for the melody and its own break, and a small, hard-hit early-60s kit with a rattling snare and tom fills, at about 150 - campy, creepy and wet with reverb |
 | Spooky surf - organ & brass | `monster_organ` | 144-156 | Spooky surf - organ & brass: the 60s monster-sitcom theme with a reedy combo organ and a full horn section up front - the organ holds every chord with a fast vibrato and takes a creeping organ break, the brass section punches the stabs and sings the melody, over the same twangy baritone guitar + bass chromatic riff and a driving 150 BPM surf beat - campy haunted-house organ-and-horns |
 | Stoner rock - raga / psych (sitar, tabla) | `stoner_raga` | 66-88 | Stoner rock - raga / psych: slow, heavy fuzz-guitar riffs and a fuzzed bass locked together over a lumbering beat, a tanpura drone humming underneath, tabla rolling on top of the drum kit and a sitar singing raga phrases that climb, hold and slide back down - opening on the drone and sitar alone, a tabla-and-sitar breakdown, then a heavy psychedelic jam |
 | Surf rock (60s) | `surf_rock` | 146-160 | Surf rock (early-60s instrumental surf): a fast, straight beat driven by the floor tom, a twangy guitar melody tremolo-picked in bursts on the low strings and drowned in spring reverb, a strummed rhythm guitar, a root-fifth bass and now and then a combo organ or sax - sunny, wet and full speed ahead |

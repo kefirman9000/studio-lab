@@ -1310,6 +1310,9 @@ def compose(opts):
         _ch = random.Random(opts.seed * 31 + 7).choice(st['forms'])        # classical genres: one of their forms
         if not (st.get('forms_variants') and _ch == st['forms'][0]):          # (1.91) club genres: one of their layouts
             st['form'] = _ch
+    if st.get('form_gen') and getattr(opts, 'structure', 'auto') in (None, '', 'auto', 'club', 'radio'):
+        from . import grind as _grind                       # (1.96) metal: every song's layout written fresh,
+        st['form'] = _grind.make_form(st['form_gen'], opts.seed, opts.style)   # every breakdown a new one
     from .styles import ABS_FORMS, CLUB_FORM
     if opts.structure == 'club' and CLUB_FORM.get(st.get('name') or opts.style):      # (1.91) Extended / club: the
         st['form'] = CLUB_FORM[st.get('name') or opts.style]                          # record-shaped layout
@@ -1353,7 +1356,9 @@ def compose(opts):
             form = form[1:]
     for (sname, nbars, layers, opts_s) in form:
         if not opts_s.get('build') and opts.structure != 'loop':
-            if (st.get('name') or opts.style) in CLUB_COHERENT:     # (1.94) club records live on the 8-bar grid
+            if st.get('form_gen'):                                  # (1.96) written layouts keep their 1- and 2-bar parts
+                nbars = max(1, int(round(nbars * scale_len)))
+            elif (st.get('name') or opts.style) in CLUB_COHERENT:     # (1.94) club records live on the 8-bar grid
                 nbars = max(8, int(round(nbars * scale_len / 8)) * 8)
             else:
                 nbars = max(4, int(round(nbars * scale_len / 4)) * 4)
@@ -1440,7 +1445,8 @@ def compose(opts):
         if opts_s.get('riffs') and S < 0.6:                # a section's own riffs (a breakdown's chug pattern)
             riff_pat = rnd_c.choice(opts_s['riffs'])
             if opts_s.get('kick_riff') and kick_name in pchoice:   # breakdown: the kick hits with every chug
-                pchoice[kick_name] = ''.join('X' if c not in '.-' else '.' for c in riff_pat[:16]).ljust(16, '.')
+                L = max(16, len(riff_pat) // 16 * 16)              # (1.96: over a 2- or 4-bar phrase)
+                pchoice[kick_name] = ''.join('X' if c not in '.-' else '.' for c in riff_pat[:L]).ljust(L, '.')
         prev_bass = None
         for b in range(nbars):
             bar = bar0 + b
@@ -1456,6 +1462,9 @@ def compose(opts):
                 if dname not in tracks or tracks[dname]['layer'] not in layers:
                     continue
                 pat = pchoice[dname]
+                if G == 16 and len(pat) > 16 and len(pat) % 16 == 0:    # (1.96) a 2- / 4-bar phrase: this bar's part
+                    k_ = len(pat) // 16
+                    pat = pat[(b % k_) * 16:(b % k_ + 1) * 16]
                 if slices is not None:                      # a break: its 4-bar pattern, straight or chopped
                     pat = drumkits.bar_pattern(st, dname, slices) or pat
                 elif dname == kick_name and last_of_4 and len(pats) > 1 and not sec_dr and rnd_d.random() < 0.2 + 0.3 * energy:
@@ -1501,7 +1510,11 @@ def compose(opts):
                     evs.append(Ev(s, beat0 + step / 4, 0.25, None, 0.55 + 0.1 * k))
             if opts_s.get('build'):
                 add_build_drums(evs, st, tracks, snares, kick_name, b, nbars, beat0, rnd_d)
-            riff = gen_riff(riff_pat, key, chord, st.get('riff_lo', 40)) if riff_pat else None
+            bar_riff = riff_pat
+            if riff_pat and G == 16 and len(riff_pat) > 16 and len(riff_pat) % 16 == 0:
+                k_ = len(riff_pat) // 16
+                bar_riff = riff_pat[(b % k_) * 16:(b % k_ + 1) * 16]
+            riff = gen_riff(bar_riff, key, chord, st.get('riff_lo', 40)) if bar_riff else None
             # ---------------- bass
             if 'bass' in layers and 'bass' in tracks and riff:      # the bass doubles the guitar riff an octave down
                 for step, l, m, c in riff:
@@ -2045,10 +2058,10 @@ def compose(opts):
                 total_bars=bar0, prog_main=prog_main, prog_alt=prog_alt, prog_verse=prog_verse, chord_color=chord_color,
                 modulate=modulate, st=st, opts=opts, user_opts=user_opts, vocal=vocal,
                 energy=energy)
-    if st.get('sec_tempo') and bar0 > 0:                 # tempo steps by section (klezmer: a slow, free doina, then the dance)
-        tm = []
-        for sec in sections:
-            f = st['sec_tempo'].get(sec['name'], 1.0)
+    if (st.get('sec_tempo') or any((sec.get('opts') or {}).get('tempo', 1.0) != 1.0 for sec in sections)) and bar0 > 0:
+        tm = []                                          # tempo steps by section (klezmer: a slow, free doina, then the
+        for sec in sections:                             # dance; metal: half-time slams and double-time blasts)
+            f = (sec.get('opts') or {}).get('tempo') or (st.get('sec_tempo') or {}).get(sec['name'], 1.0)
             tm += [(sec['bar'] * 4.0, bpm * f), ((sec['bar'] + sec['bars']) * 4.0 - 0.01, bpm * f)]
         song['tempo_map'] = tm
     elif bar_steps:                                      # odd meters: a 7/8 bar is a 4/4 bar cut short and played faster
