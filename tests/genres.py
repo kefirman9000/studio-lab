@@ -252,20 +252,23 @@ def main():
     from sgcore.compose import CLUB_COHERENT, sound_kind
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'tools'))
     from song_audit import audit
-    for g in ('house', 'deep_house', 'tech_house', 'trance', 'uplifting_trance', 'techno', 'melodic_techno'):
+    for g in ('house', 'deep_house', 'tech_house', 'trance', 'uplifting_trance', 'techno', 'melodic_techno',
+              'dubstep', 'brostep', 'riddim', 'deep_dubstep', 'early_dubstep', 'dark_dubstep_classic', 'deep_dubstep_rollers'):
         assert g in CLUB_COHERENT
         for k in range(1, 6):
             song = compose(Options(style=g, seed=k))
             tr = song['st']['tracks']
             mel = {t['inst'] for t in tr if t['layer'] in ('lead', 'chords', 'pad', 'arp') and any(e.track == t['name'] for e in song['events'])}
-            assert len(mel) <= (9 if 'trance' in g else 7), (g, k, mel)          # (trance stacks more layers)
+            assert len(mel) <= (9 if 'trance' in g or g in ('melodic_dubstep', 'chillstep') else 7), (g, k, mel)   # (lush styles stack more)
             assert not [t for t in tr if t.get('switch_of') and set(t.get('groups', ())) - {'C'}], (g, k)
             for t in tr:
-                if t.get('double_of') and not ('trance' in g and t['layer'] == 'lead'):
+                if t.get('double_of') and not ('trance' in g and t['layer'] == 'lead') and t['layer'] != 'bass':   # (a sine sub
+                    #                                                                    under a mid bass is the point)
                     src = next(x for x in tr if x['name'] == t['double_of'])
                     assert sound_kind(t['inst']) == sound_kind(src['inst']), (g, k, t['inst'], src['inst'])
             probs, _, _ = audit(song)
-            bad = [p for p in probs if 'grid' in p or 'no element' in p or 'outside the key' in p or 'four-on-the-floor' in p]
+            bad = [p for p in probs if 'grid' in p or 'no element' in p or 'outside the key' in p or 'four-on-the-floor' in p
+                   or 'half-time' in p or 'sparse dubstep' in p]
             assert not bad, (g, k, bad)
     forms = {compose(Options(style='dnb', seed=k))['st']['form'] for k in range(1, 9)}
     assert len(forms) >= 3, forms                                                       # several layouts per genre

@@ -680,13 +680,14 @@ style('dubstep', 'Electronic', 'Dark / UK dubstep: half-time at 140, deep clean 
       tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.35, db=-14),
               T('chat', 'top', 'chat', pan=0.2, db=-29), T('ohat', 'top', 'ohat', db=-30),
               T('rim', 'top', 'rim', pan=-0.25, db=-30),
-              T('bass', 'bass', 'wobble', sc=0.7, db=-14, p=dict(sub=0.0)),
+              T('bass', 'bass', 'wobble', sc=0.7, db=-19, p=dict(sub=0.0)),
               T('chords', 'chords', 'warmpad', rev=0.6, sc=0.5, db=-27, p=dict(cut=900)),
               T('pad', 'pad', 'choir', rev=0.6, sc=0.5, db=-28, p=dict(vowel='o')),
               T('arp', 'arp', 'bell', rev=0.4, dly=0.35, db=-27),
               T('lead', 'lead', 'stab', rev=0.5, dly=0.4, sc=0.4, db=-22, p=dict(cut=1600)),
               T('texture', 'fx', 'texture', rev=0.5, db=-36)],
-      master=dict(lufs=-8.0, air=1.2, low=1.8),
+      master=dict(lufs=-8.0, air=1.2, low=1.8,
+                  tone=[0.0, -7.5, -10.0, -15.4, -16.4, -14.1, -12.9, -15.6, -20.6]),  # classic UK records' balance
       form_scale=1.75,
       pools=dict(bass=['wobble', 'reese', 'growl', 'fmbass', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'fmgrowl', 'talkgrowl'],
                  chords=['warmpad', 'supersaw', 'strings', 'epiano'],
@@ -9602,7 +9603,7 @@ style('riddim', 'Electronic', 'Riddim: minimal and hypnotic - a hollow, hard-cho
               T('pad', 'pad', 'warmpad', rev=0.5, db=-30, p=dict(cut=700)),
               T('arp', 'arp', 'bell', rev=0.5, dly=0.35, pan=0.3, db=-27),
               T('lead', 'lead', 'stab', rev=0.3, db=-23, p=dict(cut=1400)), T('texture', 'fx', 'texture', db=-38)],
-      master=dict(lufs=-8.0, air=1.4, low=2.4, drive=0.2),
+      master=dict(lufs=-8.0, air=1.4, low=2.4, drive=0.2, tone=[0.0, -5.3, -10.6, -15.2, -15.9, -17.8, -18.1, -18.2, -20.5]),
       pools=dict(bass=['riddim', 'wobble', 'fmbass', 'growl', 'chopwob', 'tablewob', 'fmgrowl', 'talkgrowl'],
                  arp=['bell', 'celesta', 'vibes', 'pluck'],
                  lead=['stab', 'bell', 'screech', 'pluck_saw'],
@@ -11331,4 +11332,5 @@ for _g, _ch in {'techno': 0.6, 'minimal': 0.6, 'melodic_techno': 0.45, 'hard_tec
                 'uk_tribal_techno': 0.5, 'festival_techno': 0.35, 'tech_house': 0.35, 'acid_house': 0.4}.items():
     if _g in STYLES:
         STYLES[_g]['polymeter'] = _ch
+
 

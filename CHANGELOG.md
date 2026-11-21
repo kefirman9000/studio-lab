@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.95.0
+**Dubstep genres get the same treatment as house, trance and techno**
+
+The song audit now knows dubstep's rules: a half-time beat (the snare on the 3), wobbles in time, a sub-bass voice that owns the low end, and the sparseness of deep and early dubstep. It found these problems, now fixed:
+- **Off the 8-bar grid.** Most dubstep, brostep, melodic and deep / early dubstep songs had stretched 28-bar or 12-bar sections. They're now on the 8-bar grid.
+- **Instrument soup:** up to 8–10 melodic sounds. Now there's one sound per part all song, except that a breakdown may move its chords or pad to another sound. Doubled parts use a sound of the same kind, and only melodic dubstep and chillstep keep an answering sound. Brostep and riddim still trade bars between several bass sounds, which is part of the style.
+- **Deep, early and dark dubstep were too busy.** They used 5–7 melodic sounds where the real records keep 2–4. These styles now never swap or double sounds.
+- **64-bar drops with nothing changing.** Long drops now get a lift halfway, and grooves build up, as in the club genres.
+- **The half-time beat could get lost.** Two deep dubstep genres were being treated as straight-beat genres by the drum-variety step, which then added snare patterns on 2 and 4:
+  - **Deep dubstep minimal:** its clap was written as a soft hit, which the detector missed.
+  - **Deep dubstep rollers:** its "steppers" kick (one on every beat) made it look like house.
+
+  Both stay half-time now. Steppers kicks are still allowed, with the snare on the 3. No other genre's groove classification changed.
+- **Drops that drone.** Dubstep drops piled a held pad and dense chords on top of the wobble bass, so the mid-range droned. In dubstep, brostep, riddim and the deep / early styles, the pad now steps out in the drops and the chords thin to one short accent every two bars, so the bass owns the drop. Melodic dubstep and chillstep keep their pads, since lush is their style.
+- **Boxy, mid-heavy mix.** Measured against seven classic UK dubstep records, the generated dubstep mix had its 250 Hz–1 kHz band only about 5 dB under the sub, where the records keep it about 15 dB under. The wobble now sits lower against its clean sine sub, and the master's tone match aims at the records' balance, so the sub leads and the mids stop crowding. Riddim, which had no tone target, now uses brostep's.
+- **A last check** drops a doubled layer if a later step swapped its main part to a different kind of sound (e.g. a bell layer left on what became a pluck).
+
 ## 1.94.0
 **House, trance and techno songs that behave like real records**
 

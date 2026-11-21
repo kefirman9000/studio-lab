@@ -10,7 +10,11 @@ from sgcore.compose import compose, Options  # noqa: E402
 
 FAMILY = {'house': 'house', 'deep_house': 'house', 'tech_house': 'house', 'progressive_house': 'house', 'acid_house': 'house',
           'trance': 'trance', 'uplifting_trance': 'trance', 'progressive_trance': 'trance', 'classic_vocal_trance': 'trance',
-          'techno': 'techno', 'melodic_techno': 'techno', 'minimal': 'techno', 'hard_techno': 'techno'}
+          'techno': 'techno', 'melodic_techno': 'techno', 'minimal': 'techno', 'hard_techno': 'techno',
+          'dubstep': 'dubstep', 'brostep': 'dubstep', 'riddim': 'dubstep', 'melodic_dubstep': 'dubstep', 'deep_dubstep': 'dubstep',
+          'deep_dubstep_minimal': 'dubstep', 'deep_dubstep_rollers': 'dubstep', 'deep_dubstep_rolling': 'dubstep',
+          'early_dubstep': 'dubstep', 'dark_dubstep_classic': 'dubstep', 'chillstep': 'dubstep'}
+SPARSE = {'deep_dubstep', 'deep_dubstep_minimal', 'deep_dubstep_rollers', 'deep_dubstep_rolling', 'early_dubstep', 'dark_dubstep_classic'}
 
 
 def audit(song):
@@ -46,10 +50,33 @@ def audit(song):
     # ---- groove: kick four-on-the-floor where the drums play
     kick = st.get('kick_track', 'kick')
     kb = Counter(int(e.beat // 4) for e in ev if e.track == kick)
-    full = [b for b, c in kb.items() if c >= 4]
-    gappy = [b for b, c in kb.items() if 0 < c < 4]
+    qb = defaultdict(set)                                 # four-on-the-floor = a kick on all four beats of the bar
+    for e in ev:
+        if e.track == kick and abs(e.beat % 1) < 0.01:
+            qb[int(e.beat // 4)].add(int(e.beat % 4))
+    full = [b for b in kb if len(qb.get(b, ())) == 4]
+    gappy = [b for b in kb if len(qb.get(b, ())) < 4]
     notes['kick bars 4otf'] = f'{len(full)}/{len(kb)}'
-    if kb and len(gappy) > 0.25 * len(kb):
+    if fam == 'dubstep':                                  # half-time: the snare on the 3rd beat, the kick not on every beat
+        sn = [n for n, t in tr.items() if t['layer'] == 'snare']
+        in_b = lambda b: any(x['opts'].get('build') and x['bar'] * 4 <= b < (x['bar'] + x['bars']) * 4 for x in secs)
+        sb = [e.beat % 4 for e in ev if e.track in sn and not in_b(e.beat) and e.vel > 0.6]
+        if sb:
+            on3 = sum(1 for b in sb if abs(b - 2) < 0.01) / len(sb)
+            notes['snare on 3'] = round(on3, 2)
+            if on3 < 0.5:
+                probs.append(f'half-time snare only {on3:.0%} on beat 3')
+        if kb and len(full) > 0.5 * len(kb) and notes.get('snare on 3', 1) < 0.5:   # (steppers: a kick on every beat
+            probs.append('four-on-the-floor kick in dubstep (should be half-time)')    # under a snare on 3 is fine)
+        mel = {t['inst'] for t in tr.values() if t['layer'] in ('lead', 'chords', 'pad', 'arp') and any(e.track == t['name'] for e in ev)}
+        notes['melodic sounds'] = len(mel)
+        if st.get('name') in SPARSE and len(mel) > 4:
+            probs.append(f'{len(mel)} melodic sounds in a sparse dubstep style (deep / early dubstep keeps 2-4)')
+        if len(mel) > (9 if st.get('name') in ('melodic_dubstep', 'chillstep') else 7):   # (lush styles stack more layers)
+            probs.append(f'{len(mel)} different melodic sounds (instrument soup)')
+        subs = [t['inst'] for t in tr.values() if t['layer'] == 'bass' and any(e.track == t['name'] for e in ev)]
+        notes['bass voices'] = subs
+    elif kb and len(gappy) > 0.25 * len(kb):
         probs.append(f'kick not four-on-the-floor in {len(gappy)} of {len(kb)} bars')
     claps = [n for n, t in tr.items() if t['layer'] == 'snare']
     in_build = lambda b: any(x['opts'].get('build') and x['bar'] * 4 <= b < (x['bar'] + x['bars']) * 4 for x in secs)

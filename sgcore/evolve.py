@@ -650,3 +650,32 @@ def phrase_evolution(evs, sections, st, opts, tracks, club=(), trance=()):
                 hold({n for n, t in tracks.items() if t.get('layer') == 'lead'}, mid, mid + 32)
     evs[:] = [e for e in evs if id(e) not in drop_ids]
     return len(drop_ids)
+
+
+def drop_space(evs, sections, st, opts, tracks, genres):
+    """(1.95.1) A dubstep drop belongs to the bass: the held pad steps out and the chords thin to one short accent hit
+    every two bars, so nothing drones in the mid-range under the wobble (melodic dubstep / chillstep keep their pads -
+    lush is their style). Returns the number of notes taken out."""
+    g = st.get('name') or opts.style
+    if g not in genres or st.get('composer') or getattr(opts, 'drop_space', 'auto') == 'off':
+        return 0
+    kill = set()
+    for sec in sections:
+        if not (sec['opts'].get('drop') or sec['name'] in ('drop',)):
+            continue
+        b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+        for e in evs:
+            if not (b0 <= e.beat < b1) or e.midi is None:
+                continue
+            t = tracks.get(e.track, {})
+            role = t.get('layer')
+            if role == 'pad':
+                kill.add(id(e))
+            elif role == 'chords':
+                rel = e.beat - b0
+                if not (rel % 8 < 0.01):                   # one accent at the top of every second bar
+                    kill.add(id(e))
+                else:
+                    e.dur = min(e.dur, 0.5)
+    evs[:] = [e for e in evs if id(e) not in kill]
+    return len(kill)

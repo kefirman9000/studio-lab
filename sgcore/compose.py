@@ -70,6 +70,7 @@ class Options:
     genre_fills: str = 'auto'     # (1.90) DnB rewinds, dubstep drop stops with a shout, trance pitch-rising rolls | off
     polymeter: str = 'auto'       # (1.93) techno sequences looping in 3 / 5 / 6 / 7 steps against 4/4 | on | off
     phrase_evolution: str = 'auto'   # (1.94) club genres: long sections change every 8-16 bars | off
+    drop_space: str = 'auto'      # (1.95.1) dubstep drops: no held pad, chords thinned to accents (the bass owns the mids) | off
     variety: float = 0.5          # 0..1 how adventurous each song's sound palette, grooves and arrangement get
     user_drums: bool = False      # use the drum samples you loaded instead of the built-in kit
     sections: list = None         # section editor: [{src, copy, bars, seeds{part:int}, vary:int, mute:[layers]}]
@@ -352,12 +353,14 @@ OWN_GROOVE = {'reggae', 'dub', 'ska', 'reggaeton', 'dancehall', 'moombahton', 's
 
 
 def groove_family(st):
-    kicks = st['drums'].get(st.get('kick_track', 'kick'), [])
+    def first_hit(p):                                  # (1.95) soft hits ('x') count too: a clap written 'x' on the 3rd beat
+        return next((i for i, c in enumerate(p) if c in 'Xx'), -1)   # used to make a half-time genre look 'other'
+    snares = sum((st['drums'].get(n, []) for n in st.get('snare_tracks', [])), [])
+    if snares and all(first_hit(p) == 8 or p.strip('.') == '' for p in snares):
+        return 'half'                                  # (1.95) checked first: a steppers kick (one on every beat) under a
+    kicks = st['drums'].get(st.get('kick_track', 'kick'), [])   # snare on the 3 is still half-time dubstep, not house
     if any(k == FOURX for k in kicks):
         return 'four'
-    snares = sum((st['drums'].get(n, []) for n in st.get('snare_tracks', [])), [])
-    if snares and all(p.find('X') == 8 or p.strip('.') == '' for p in snares):
-        return 'half'
     if max(st['bpm']) >= 160:
         return 'break'
     return 'other'
@@ -1932,6 +1935,7 @@ def compose(opts):
     st['bass_stutters'] = _ev.bass_stutter(evs, st)      # (1.92.2) long bass notes enter with a triplet stutter
     st['polymeter_len'] = _ev.polymeter(evs, sections, st, opts, tracks)   # (1.93) techno: 3 / 5 / 7-step loops against 4/4
     st['phrase_moves'] = _ev.phrase_evolution(evs, sections, st, opts, tracks, CLUB_COHERENT, CLUB_TRANCE)   # (1.94)
+    st['drop_space'] = _ev.drop_space(evs, sections, st, opts, tracks, CLUB_DUBSTEP - {'melodic_dubstep', 'chillstep'})   # (1.95.1)
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     _sw = _ev.structure_moves(evs, sections, st, opts, tracks, POOLS_.get(opts.style, {}).get('bass') or [], fx)
@@ -2433,6 +2437,13 @@ def debell(st, opts):
         mine_ += [] if name == 'hauntology' else [i for i in _P.get(name, {}).get(role, []) if i not in BELLS | MALLETS]
         mine_ = list(dict.fromkeys(mine_))        # any of the genre's own non-bell sounds, not always the first one
         t['inst'] = rnd.choice(mine_) if mine_ else bell_swap(name, role, t['inst'])
+    if name in CLUB_COHERENT and not mine:             # (1.95.1) a swap above can leave a doubled part on a sound of another
+        by = {t['name']: t for t in st['tracks']}         # kind (a bell layer on what became a pluck): drop that layer
+        st['tracks'][:] = [t for t in st['tracks'] if not (t.get('double_of') and t['layer'] != 'bass'
+                                                            and not (name in CLUB_TRANCE and t['layer'] == 'lead')
+                                                            and t['double_of'] in by
+                                                            and (sound_kind(t['inst']) != sound_kind(by[t['double_of']]['inst'])
+                                                                 or inst_family(t['inst']) != inst_family(by[t['double_of']]['inst'])))]
 
 
 SWELL_SOUNDS = {'warmpad', 'glasspad', 'strings', 'slowstrings', 'choir', 'solina', 'supersaw', 'tremolo', 'violins', 'violas',
@@ -2454,7 +2465,8 @@ def add_layer_tracks(st, opts):
     from song to song."""
     from .styles import POOLS
     want = getattr(opts, 'layering', None)
-    if want == 'off' or st.get('name') == 'chiptune' or (st.get('no_layers') and want != 'on'):
+    if want == 'off' or st.get('name') == 'chiptune' or (st.get('no_layers') and want != 'on') \
+            or ((st.get('name') or opts.style) in SPARSE_DUBSTEP and want != 'on'):   # (1.95) sparse dubstep: no doubles
         return                                           # (a genre whose doubling is written in keeps its line-up)
     v = max(0.0, min(1.0, float(opts.variety)))
     cat = st.get('category')
@@ -2967,7 +2979,12 @@ CLUB_COHERENT = {'house', 'deep_house', 'tech_house', 'progressive_house', 'acid
                  'trance', 'uplifting_trance', 'progressive_trance', 'classic_vocal_trance', 'club_trance_2000s',
                  'progressive_trance_2010s', 'vocal_trance_remix', 'hard_trance', 'trance_pop_90s', 'electro_prog_trance',
                  'techno', 'minimal', 'melodic_techno', 'hard_techno', 'dub_techno', 'uk_tribal_techno', 'festival_techno'}
-CLUB_TRANCE = {g for g in CLUB_COHERENT if 'trance' in g}
+CLUB_DUBSTEP = {'dubstep', 'brostep', 'riddim', 'melodic_dubstep', 'deep_dubstep', 'deep_dubstep_minimal', 'deep_dubstep_rollers',
+                'deep_dubstep_rolling', 'early_dubstep', 'dark_dubstep_classic', 'chillstep'}
+SPARSE_DUBSTEP = {'deep_dubstep', 'deep_dubstep_minimal', 'deep_dubstep_rollers', 'deep_dubstep_rolling', 'early_dubstep',
+                  'dark_dubstep_classic'}
+CLUB_COHERENT = CLUB_COHERENT | CLUB_DUBSTEP             # (1.95) dubstep keeps the same discipline
+CLUB_TRANCE = {g for g in CLUB_COHERENT if 'trance' in g} | {'melodic_dubstep', 'chillstep'}   # (styles where an answering sound is idiomatic)
 
 
 def add_section_switch_tracks(st, opts, rnd):
@@ -2980,6 +2997,8 @@ def add_section_switch_tracks(st, opts, rnd):
     v = float(getattr(opts, 'variety', 0.5))
     n_roles = {'some': 1, 'lots': 3}.get(mode, 1 if v < 0.45 else (2 if v < 0.8 else 3))
     club = (st.get('name') or opts.style) in CLUB_COHERENT and mode == 'auto'
+    if (st.get('name') or opts.style) in SPARSE_DUBSTEP and mode == 'auto':
+        return                                           # (1.95) deep / early dubstep: a few sounds, kept all the way
     if club:                                             # (1.94) a club record keeps one sound per part all song; only a
         n_roles = 1                                      # breakdown may move its chords / pad to another sound
     if mode == 'auto' and random.Random(f'{opts.seed}-rot-on').random() > 0.35 + 0.6 * v:
