@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.3
+- **Fixed: "127.0.0.1 refused to connect" at start-up** (2.2.1 and 2.2.2). The window could load before the studio was answering.
+- **The window stays responsive while Studio Lab loads, and while songs render.** The sound engine now runs in its own background process, so Windows no longer says "Not responding". The engine closes with the window, and installing an update restarts both.
+
+
 ## 2.2.2
 **Switch-up Bass: bar-long rising, sinking and alien effects**
 

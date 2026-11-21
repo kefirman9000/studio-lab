@@ -1085,6 +1085,7 @@ def start_server(port=8765):
             break
         except OSError:
             continue
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
     return srv, f'http://127.0.0.1:{srv.server_address[1]}/'
 
 
@@ -1096,7 +1097,6 @@ def run(port=8765, open_browser=True, window='auto'):
     if open_browser and window == 'app':
         # its own app window; the web server runs in the background and stops when the window is closed
         from . import appwindow
-        threading.Thread(target=srv.serve_forever, daemon=True).start()
         mode = appwindow.open_window(url, lambda: os._exit(0))
         print(f'   opened as: {mode}')
         if mode == 'webview':
@@ -1109,6 +1109,6 @@ def run(port=8765, open_browser=True, window='auto'):
     if open_browser:
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()
     try:
-        srv.serve_forever()
+        threading.Event().wait()
     except KeyboardInterrupt:
         pass

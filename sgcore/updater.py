@@ -117,4 +117,9 @@ def apply():
 
 
 def restart():
+    if os.environ.get('STUDIOLAB_CHILD'):              # (2.2.3) the engine runs beside the window: the window relaunches
+        try:                                            # the whole app (window + a new engine)
+            os.write(1, b'STUDIOLAB_RESTART\n')
+        finally:
+            os._exit(0)
     os.execv(sys.executable, [sys.executable] + sys.argv)
