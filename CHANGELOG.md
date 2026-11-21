@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.1.0
+**Real-sounding guitars, a Grunge genre, and previews from the middle of the song**
+
+- **Rebuilt guitars.** The old ones sounded synthetic for three reasons: each note of a chord was distorted on its own, left and right were one take made wide, and the cabinet was a plain low-pass filter. Now every guitar part is played twice (two takes, each with its own pick attack, pick position, a few cents of tuning and a few ms of timing), and the **whole part** goes through its rig together, so chords distort together like on a real amp. The rig is an amp, a speaker cabinet modelled on a real 4x12 / 2x12 / combo, and the effects the style uses.
+  - **Metal:** down-tuned high gain. A tight boost in front, two hard stages, scooped mids, a V30 4x12 and a noise gate (the silence between chugs is part of the groove).
+  - **Rock / punk:** a humbucker into a cranked plexi-style amp and a greenback 4x12.
+  - **Grunge:** a fuzz pedal into a worn 2x12. Wooly, scooped, a little loose and out of tune.
+  - **Country:** a Telecaster bridge pickup, a compressor for the snap, slapback and a little spring reverb.
+  - **Jangle:** clean, chorused single-coil arpeggios for indie and 90s verses.
+  - **Acoustic:** a dreadnought recorded with two mics (body and 12th fret), with strum noise and the odd finger squeak.
+  - Solos are one player in the middle, not a wall, and guitar lows stay centred so the mix still works in mono.
+  - Levels match the old guitars, so your mixes don't jump. The metal solo now sits on top of the rhythm wall instead of buried under it.
+  - Rock, metal, nu metal, doom, punk, pop punk, garage, indie, post-punk, 90s alt, shoegaze, country, modern country, outlaw, bluegrass, folk, rockabilly and soft rock all use the new guitars, including when their sound pool picks one of the old ones.
+- **New genre: Grunge.** Drop-D fuzz walls, clean chorused verses and crushing choruses, a heavy dry kit, minor and modal riffs.
+- **Previews now play the song's first big chorus or drop**, from the middle of the song. Before, a preview could land on the last section or the outro, so you often heard the ending.
+
+
 ## 2.0.1
 - **Surprise me generates straight away again.** A volume slider stopped it after it picked the random settings, so nothing played until you pressed Generate. The same fix applies to loading settings and presets.
 

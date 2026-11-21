@@ -82,14 +82,23 @@ def preview_window(song, target_sec=26.0):
     spb = 60.0 / song['bpm']
     bar_sec = 4 * spb
     nbars = int(max(8, min(16, round(target_sec / bar_sec / 4) * 4)))
+    total = max(1, song['total_bars'])
     best = None
-    for s in song['sections']:
-        score = len(s['layers']) + (3 if s['opts'].get('drop') else 0) + (1 if s['name'] in ('chorus', 'hook', 'climax', 'B', 'head', 'theme', 'loop') else 0)
-        if best is None or score >= best[0]:          # (1.96) ties go to the LAST one: the last chorus / drop
+    for s in song['sections']:                        # (2.0) the song's main hook, not its ending
+        nm = str(s['name']).lower()
+        if s['opts'].get('fade') or any(w in nm for w in ('outro', 'ending', 'end', 'coda', 'fade', 'tag')):
+            continue
+        mid = (s['bar'] + s['bars'] / 2) / total
+        score = len(s['layers']) + (3 if s['opts'].get('drop') else 0) \
+            + (1 if s['name'] in ('chorus', 'hook', 'climax', 'B', 'head', 'theme', 'loop') else 0) \
+            - (2 if mid > 0.85 else 0) - (1 if mid < 0.12 else 0)
+        if best is None or score > best[0]:           # ties go to the FIRST one: the first big chorus / drop
             best = (score, s)
-    sec = best[1]
-    b0 = sec['bar']                                   # (1.96) start right on it, not on the bars before the drop
-    b1 = min(song['total_bars'], b0 + nbars)
+    sec = best[1] if best else song['sections'][len(song['sections']) // 2]
+    b0 = sec['bar']                                   # start right on it, not on the bars before the drop
+    if b0 + nbars > total:                            # never a window that runs off the end of the song
+        b0 = max(0, total - nbars)
+    b1 = min(total, b0 + nbars)
     beat0, beat1 = b0 * 4, b1 * 4
     evs = []
     for e in song['events']:

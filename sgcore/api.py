@@ -583,6 +583,9 @@ def audition(inst=None, role='lead', kit=None, voice=None, bpm=124, midi=None, d
             s = int(b * 60 / bpm * SR)
             k = min(sig.shape[1], out.shape[1] - s)
             out[:, s:s + k] += sig[:, :k] * (0.6 if role in ('chords', 'pad') else 1.0)
+    from .guitars2 import RIGS, guitar_rig
+    if inst in RIGS:                                    # (2.0) hear a guitar through its amp, like in the song
+        out = np.asarray(guitar_rig(out, dict(RIGS[inst])), float)
     pk = float(np.max(np.abs(out))) or 1.0
     out = out / pk * 0.7
     nz = np.nonzero(np.max(np.abs(out), axis=0) > 1e-4)[0]

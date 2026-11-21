@@ -21,6 +21,7 @@ from . import fx2 as _fx2
 
 SYNTH_TAKES = 3          # analog character: takes per (note, length, velocity layer)
 from .compose import SECTION_ENERGY, GROOVES
+from .guitars2 import RIGS as _GTR_RIGS, guitar_rig as _guitar_rig
 
 HELD = 0.75     # notes held this many beats or longer (pads, sustained chords) are never swung - only short notes swing
 
@@ -852,7 +853,16 @@ class Renderer:
             self._mono_flush(buf, pend, None)
         if self.st.get('sampler') and tcfg['layer'] in ('chords', 'lead', 'arp', 'pad') and np.any(buf):
             buf = sp1200(buf)                             # the sampled-loop grit of an SP-1200 / MPC
-        if tcfg.get('amp') and (tcfg['inst'].startswith('real:') or tcfg['inst'] in ('guitar', 'mutedgtr')):
+        if tcfg['inst'] in _GTR_RIGS and np.any(buf):    # (2.0) the guitar's rig on the whole part: chords distort together
+            rig = dict(_GTR_RIGS[tcfg['inst']])
+            if tcfg.get('amp'):
+                rig['gain'] = float(tcfg['amp'])
+            if tcfg['layer'] == 'lead':
+                rig['width'] = min(float(rig.get('width', 1.0)), 0.35)   # a solo is one player, not a wall
+                rig.pop('gate', None)
+            rig.update(tcfg.get('rig') or {})
+            buf = _guitar_rig(buf, rig, self.spb)
+        elif tcfg.get('amp') and (tcfg['inst'].startswith('real:') or tcfg['inst'] in ('guitar', 'mutedgtr')):
             buf = guitar_amp(buf, float(tcfg['amp']))
         if tcfg.get('drive'):
             buf = (soft(buf * (1 + tcfg['drive'] * 3), 1.5) / (1 + tcfg['drive'])).astype(np.float32)

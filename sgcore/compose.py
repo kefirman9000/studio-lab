@@ -450,6 +450,7 @@ def apply_variety(st, opts, rnd):
             w = [(1.4 if i == 0 and not club else 1.0) * (0.25 if x in recent else 1.0) * (2.5 if x in favs else 1.0)
                  for i, x in enumerate(pool)]
             choice = rr.choices(pool, w)[0]
+            choice = _GTR_UP.get(opts.style, {}).get(choice, choice)     # (2.0) the rig guitars play the old guitar picks
             if choice != t['inst']:                   # (the genre's level for this part stays: every part is levelled to it)
                 t.update(inst=choice, p={}, pooled=True)
         elif free and not pool and role in pal and rr.random() < 0.12 + 0.5 * v:
@@ -546,6 +547,8 @@ def apply_sampled(st, opts):
                 t['fallback'] = sfm.fallback_for(inst[3:])
             continue
         if not on or inst.startswith(('user:', 'vst:')) or t['layer'] not in MELODIC_ROLES:
+            continue
+        if inst in _GTR20:                                     # (2.0) the played, double-tracked rig guitars beat GM samples
             continue
         user_pick = bool(t.get('fallback'))
         mapped = None if (user_pick or t.get('pooled') or t.get('keep_inst')) else ACOUSTIC_MAP.get(name, {}).get(t['layer'])
@@ -4005,6 +4008,8 @@ STYLE_GROOVE = {'jazz_rap': 'dilla', 'slow_jam': 'laidback', 'smooth_jazz': 'lai
 
 
 
+from .guitars2 import NEW as _GTR20  # noqa: E402
+from .styles import GTR_UPGRADE as _GTR_UP  # noqa: E402
 from .pool_variety import widen as _widen_pools  # noqa: E402  (needs SIGNATURE_STRICT above)
 _widen_pools()
 from .styles import _offer_genre_sounds  # noqa: E402

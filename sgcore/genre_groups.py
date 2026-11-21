@@ -26,7 +26,7 @@ GROUPS = {
                         'hauntology_campfire', 'hauntology_cold']),
     ],
     'Classic': [
-        ('Rock & Metal', ['rock', 'indie_rock', 'alt_rock_90s', 'punk', 'soft_rock', 'jam_band', 'jam_rock_80s', 'metal',
+        ('Rock & Metal', ['rock', 'indie_rock', 'alt_rock_90s', 'grunge', 'punk', 'soft_rock', 'jam_band', 'jam_rock_80s', 'metal',
                           'symphonic_metal', 'lofi_rock', 'boogie_rock', 'boogie_blues_rock', 'nu_metal', 'cybergrind', 'slam', 'spooky_surf', 'monster_theme', 'monster_organ', 'surf_monster', 'surf_rock', 'shoegaze', 'post_rock', 'math_rock', 'pop_punk', 'doom_metal', 'stoner_raga', 'garage_rock', 'rockabilly', 'post_punk']),
         ('Pop & Indie', ['pop', 'bedroom_pop', 'velvet_pop', 'chamber_pop', 'city_pop', 'holiday', 'sophisti_pop', 'psych_pop', 'musical_theatre', 'anime_opening', 'shakuhachi_pop']),
         ('Funk & Disco', ['funk', 'disco', 'disco_funk', 'smooth_funk', 'electro_funk', 'afrobeat']),

@@ -11800,3 +11800,76 @@ style('euphoric_uk_techno', 'Electronic', 'Euphoric UK techno (Scuba - NE1BUTU):
                  pad=['warmpad', 'pwmpad', 'strings', 'choir', 'glasspad'], arp=['pluck', 'pluck_saw', 'modseq', 'technoseq'],
                  lead=['supersaw_lead', 'formantlead', 'leadsaw', 'progpluck']),
       label='Euphoric UK Techno')
+
+
+# ---- (2.0) better guitars: each guitar genre gets a played double-tracked guitar through its own rig (guitars2.py) --
+GUITAR_20 = {
+    'metal': {'chords': 'metalgtr', 'arp': 'metalgtr'}, 'nu_metal': {'chords': 'metalgtr', 'arp': 'metalgtr'},
+    'doom_metal': {'chords': 'metalgtr', 'arp': 'metalgtr'}, 'symphonic_metal': {'chords': 'metalgtr'},
+    'rock': {'chords': 'rhythmgtr', 'arp': 'rhythmgtr'}, 'punk': {'chords': 'rhythmgtr'}, 'pop_punk': {'chords': 'rhythmgtr', 'arp': 'jangle'},
+    'garage_rock': {'chords': 'rhythmgtr'}, 'boogie_rock': {'arp': 'rhythmgtr'}, 'boogie_blues_rock': {'chords': 'rhythmgtr'},
+    'jam_rock_80s': {'chords': 'rhythmgtr'}, 'indie_rock': {'chords': 'rhythmgtr', 'arp': 'jangle'},
+    'post_punk': {'chords': 'rhythmgtr', 'arp': 'jangle'}, 'post_rock': {'arp': 'jangle'},
+    'alt_rock_90s': {'chords': 'grungegtr', 'chords_r': 'grungegtr', 'arp': 'jangle'},
+    'shoegaze': {'chords': 'grungegtr'},
+    'country': {'chords': 'dreadnought', 'arp': 'telegtr'}, 'modern_country': {'chords': 'dreadnought', 'arp': 'telegtr', 'lead': 'telegtr'},
+    'country_waltz': {'chords': 'dreadnought'}, 'outlaw_country': {'lead': 'telegtr'}, 'bluegrass': {'chords': 'dreadnought'},
+    'folk': {'chords': 'dreadnought'}, 'folk_jam': {'chords': 'dreadnought'}, 'soft_rock': {'chords': 'dreadnought'},
+    'rockabilly': {'chords': 'dreadnought', 'lead': 'telegtr'},
+}
+for _st, _sw in GUITAR_20.items():
+    if _st not in STYLES:
+        continue
+    for _t in STYLES[_st]['tracks']:
+        if _t['name'] in _sw:
+            _t['inst'] = _sw[_t['name']]
+    _pools = STYLES[_st].setdefault('pools', {}) or {}
+    for _name, _inst in _sw.items():
+        _role = next((t['layer'] for t in STYLES[_st]['tracks'] if t['name'] == _name), _name)
+        if _role in _pools and _inst not in _pools[_role]:
+            _pools[_role].insert(0, _inst)
+
+# Grunge: Seattle, early 90s - drop-D fuzz walls, quiet-loud dynamics (clean verse, crushing chorus), a heavy dry kit,
+# minor and modal riffs (Nirvana, Soundgarden, Alice in Chains, Mudhoney)
+import copy as _copy  # noqa: E402
+_g = _copy.deepcopy(STYLES['alt_rock_90s'])
+_g.update(name='grunge', label='Grunge', bpm=(92, 128), scales=['minor', 'dorian', 'phrygian', 'mixolydian'],
+          desc='Grunge: drop-D fuzz walls, quiet-loud dynamics (clean verses, crushing choruses), a heavy dry kit and '
+               'minor, modal riffs - Seattle, early 90s',
+          gm_hint='Fuzz guitar (Big Muff into a worn 2x12), clean chorused verse guitar, pick bass, big dry kit')
+_g['master'] = dict(_g.get('master') or {}, lufs=-11.0)
+for _t in _g['tracks']:
+    if _t['name'] in ('chords', 'chords_r'):
+        _t['inst'] = 'grungegtr'
+        _t['p'] = dict(_t.get('p') or {}, detune=7.0)
+    elif _t['name'] == 'arp':
+        _t['inst'] = 'jangle'
+    elif _t['name'] == 'lead':
+        _t['inst'] = 'grungegtr'
+        _t['amp'] = 10
+_g['pools'] = dict(_g.get('pools') or {}, chords=['grungegtr', 'rhythmgtr'], arp=['jangle', 'cleanguitar'], lead=['grungegtr', 'rhythmgtr'])
+STYLES['grunge'] = _g
+
+# when a guitar genre's sound pool picks one of the 1.x guitar synths, the 2.0 rig guitar plays it instead
+_UP_METAL = {'distguitar': 'metalgtr', 'odguitar': 'rhythmgtr', 'guitar': 'rhythmgtr', 'mutedgtr': 'metalgtr', 'cleanguitar': 'jangle'}
+_UP_ROCK = {'distguitar': 'rhythmgtr', 'odguitar': 'rhythmgtr', 'guitar': 'rhythmgtr', 'cleanguitar': 'jangle', 'acguitar': 'dreadnought'}
+_UP_GRUNGE = {'distguitar': 'grungegtr', 'odguitar': 'grungegtr', 'guitar': 'grungegtr', 'cleanguitar': 'jangle', 'acguitar': 'dreadnought'}
+_UP_COUNTRY = {'acguitar': 'dreadnought', 'twang': 'telegtr', 'cleanguitar': 'telegtr', 'guitar': 'telegtr'}
+GTR_UPGRADE = {}
+for _st in GUITAR_20:
+    GTR_UPGRADE[_st] = (_UP_METAL if 'metal' in _st else _UP_GRUNGE if _st in ('alt_rock_90s', 'shoegaze') else
+                        _UP_COUNTRY if any(w in _st for w in ('country', 'folk', 'bluegrass', 'rockabilly', 'soft_rock')) else _UP_ROCK)
+GTR_UPGRADE['grunge'] = _UP_GRUNGE
+_UP_FOLK = {'acguitar': 'dreadnought', 'guitar': 'dreadnought', 'cleanguitar': 'dreadnought'}
+for _st in ('folk', 'folk_jam', 'soft_rock', 'bluegrass'):
+    GTR_UPGRADE[_st] = _UP_FOLK
+for _m in list(GTR_UPGRADE.values()):
+    for _k in [k for k in _m if not k.startswith('sf:')]:
+        _m.setdefault('sf:' + _k, _m[_k])
+# the solo guitar sits on top of the wall (the mix check found it buried under the double-tracked rhythm)
+for _t in STYLES['metal']['tracks']:
+    if _t['name'] == 'lead':
+        _t['db'] = -10
+for _t in STYLES['grunge']['tracks']:
+    if _t['name'] == 'lead':
+        _t['db'] = -15
