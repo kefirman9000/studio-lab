@@ -11873,3 +11873,53 @@ for _t in STYLES['metal']['tracks']:
 for _t in STYLES['grunge']['tracks']:
     if _t['name'] == 'lead':
         _t['db'] = -15
+
+
+# ---- (2.1) Switch-up bass (Bonal - Lucky Beard): one broken UK-bass rhythm all song, a new scene every section -------
+# measured: 131.75 BPM; kick on 1, the 'a' of 1, the 'e' of 2 and a push into the next bar - unchanged from start to end;
+# a one-note sub on the root riding the kick carries most of the energy; every 8-16 bars new sounds and effects on top;
+# short drop-outs where the sub stops dead; dark filtered stretches (see switchup.py)
+_SWB_KICK = 'X..X.X.......XX.'
+FORMS['switchup_bass'] = [
+    ('intro', 8, {'kick', 'top', 'fx', 'chords'}, {'filter_in': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {'drop': True, 'crash': True}),
+    ('drop', 8, {'kick', 'snare', 'top', 'bass', 'lead', 'arp'}, {'drop': True}),
+    ('break', 4, {'kick', 'top', 'chords', 'lead', 'fx'}, {'gap': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True, 'crash': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'arp', 'lead'}, {'drop': True}),
+    ('drop', 8, {'kick', 'snare', 'top', 'bass', 'chords'}, {'drop': True}),
+    ('break', 4, {'kick', 'top', 'lead', 'fx'}, {'gap': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'drop': True, 'crash': True}),
+    ('drop', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {'drop': True}),
+    ('outro', 8, {'kick', 'top', 'bass'}, {'fade': True}),
+]
+style('switchup_bass', 'Electronic',
+      'Switch-up bass (Bonal - Lucky Beard): one broken UK-bass rhythm from the first bar to the last and a huge one-note '
+      'sub riding the kick - while everything on top switches every section: new mid-basses, stabs, vocal chops and '
+      'samples, crushed, phased, wah\'d or filtered down dark, with drop-outs where the sub stops dead',
+      bpm=(130, 134), scales=['minor', 'phrygian'], kit='punchy', form='switchup_bass', swing=0.53, swing_unit=16, human=0.003,
+      sc_depth=0.45, sc_release=0.12, reverb=1.2, fill=False, ghosts=False, no_rotation=True, own_progs=True, plain_drops=True,
+      scene_switch=True, build_family=['none'], transition_moves=['gap', 'none'],
+      progs={'minor': [[0, 0, 0, 0], [0, 0, 5, 5], [0, 0, 6, 6]], 'phrygian': [[0, 0, 1, 1], [0, 0, 0, 1]]}, chord_size=2,
+      drums={'kick': [_SWB_KICK], 'clap': ['....X.......X...'], 'chat': ['x...x...x.....x.'], 'shaker': ['x.x.x.x.x.x.x.x.'],
+             'rim': ['..x.....x..x....']},
+      snare_tracks=['clap'], bass=['R..R.R.......RR.'], bass_mode='pattern', bass_lo=33, bass_gate=0.8, bass_rhythm='kick',
+      chord_rh=['x..x.x.......x..', 'x.......x.......', '..x...x...x...x.'], chord_center=58,
+      arp=dict(rate=2, mode='random', oct=5, prob=0.55),
+      lead_rh=['x..x............', '....x.x.....x...', 'x.x.....x.x.....'], repetition=0.8,
+      gm_hint='Huge one-note sub on the kick; switching mid-bass layer (reese / growl / FM / wobble); rave stabs, vocal chops '
+              'and samples with a new effect every section; broken UK-bass drums that never change',
+      tracks=[T('kick', 'kick', 'kick', db=-11), T('clap', 'snare', 'clap', rev=0.2, db=-19),
+              T('chat', 'top', 'chat', pan=0.15, db=-28), T('shaker', 'top', 'shaker', pan=-0.2, db=-32),
+              T('rim', 'top', 'rim', pan=0.3, db=-30),
+              T('bass', 'bass', 'tonesub', sc=0.5, db=-8),
+              T('bass_mid', 'bass', 'reese', double_of='bass', octave=12, keep_inst=True, hp=180, sc=0.6, db=-21),
+              T('chords', 'chords', 'noisestab', sc=0.5, rev=0.3, dly=0.25, db=-22),
+              T('arp', 'arp', 'fmperc', pan=0.2, dly=0.3, db=-25),
+              T('lead', 'lead', 'vocalchop', rev=0.35, dly=0.3, db=-21),
+              T('texture', 'fx', 'texture', db=-36)],
+      master=dict(lufs=-9.5, air=1.0, low=1.6),
+      pools=dict(bass=['tonesub', 'dubsub', 'sinebass_suboct'], chords=['noisestab', 'ravestab', 'samplerstab', 'darksample'],
+                 arp=['fmperc', 'modseq'], lead=['vocalchop', 'formantchop', 'housevox']),
+      label='Switch-up Bass')
+STYLES['switchup_bass']['exact_pools'] = True

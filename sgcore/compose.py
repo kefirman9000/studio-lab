@@ -1999,6 +1999,9 @@ def compose(opts):
         if t.get('layer') == 'bass' and is_808(t.get('inst', '')) and e.midi is not None and e.midi > 33:
             e.vel *= 10 ** (-min(9.0, 0.45 * (e.midi - 33)) / 20)   # notes leaping up or raised to E2+ are turned down
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
+    if st.get('scene_switch'):                           # (2.1) switch-up bass: one rhythm, a new scene every section
+        from .switchup import scene_switch
+        scene_switch(evs, tracks, sections, st, opts.seed)
     if st.get('granular'):                               # IDM / drill & bass: the break resequenced hit by hit, every bar
         granular_breaks(evs, tracks, sections, float(st['granular']), random.Random(opts.seed * 97 + 5))
     _gname = st.get('name') or opts.style

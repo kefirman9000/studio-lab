@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.2.0
+**New genre: Switch-up Bass (Bonal - Lucky Beard)**
+
+- Measured from your reference: 131.75 BPM, and a broken UK-bass kick (1, the "a" of 1, the "e" of 2, and a push into the next bar) that **never changes from the first bar to the last**. Underneath it, a one-note sub on the root rides the kick and carries most of the record's energy.
+- **Same rhythm all song, new everything else.** Every section is its own scene: a new mid-bass layer (reese, growl, FM, wobble, neuro, hoover), new stabs and samples (rave, sampler, noise, soul horn, MPC keys), new vocal chops and a new perc voice. Each one gets its own effect (bit-crushed, phased, wah'd, flanged, driven, filter-swept or OTT'd). No part keeps the same sound or effect two sections in a row.
+- **Drop-outs where the sub stops dead**, and one or two **dark stretches** where everything on top is filtered down, like the record.
+- Bass-heavy master (−9.5 LUFS, extra low end) and a mono-safe sub.
+
+
 ## 2.1.0
 **Real-sounding guitars, a Grunge genre, and previews from the middle of the song**
 
