@@ -6371,7 +6371,7 @@ Slam / brutal deathcore (modelled on Waking the Cadaver and Vulvodynia): a wall 
   - chat (top): `chat` -30 dB
   - bass (bass): `ebass` -13 dB · alternatives ['metalbass', 'pickbass', 'sf:pickbass']
   - chords (chords): `chuggtr` -14 dB · alternatives ['sf:distguitar', 'guitar']
-  - lead (lead): `screech` -19 dB · rev=0.2 · alternatives ['chuggtr', 'guitar']
+  - lead (lead): `screech` -17 dB · rev=0.2 · alternatives ['chuggtr', 'guitar']
   - texture (fx): `texture` -34 dB
 - **Mix** {'tone': [-6.0, 0.0, -5.6, -9.7, -10.0, -8.3, -8.4, -9.5, -17.3], 'lufs': -6.0, 'air': -1.0, 'low': 2.0, 'drive': 0.35, 'width': 1.0, 'max_gr': 5.0} · reverb 1.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 58, 'punch': 260, 'sweep': 70, 'decay': 24, 'drive': 2.6, 'len': 0.11, 'click': 1.0}, 'snare': {'crack': 0.75, 'drive': 1.8}}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 42, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'form_gen': 'slam', 'own_progs': True, 'no_layers': True, 'riff_lo': 30, 'riff_chorus': 0.7}
