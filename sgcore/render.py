@@ -300,7 +300,7 @@ def loudness_range(y, win=3.0, hop=1.0):
     return float(np.percentile(g, 95) - np.percentile(g, 10)), float(np.max(lk))
 
 
-def mix_report(y, song=None, spb=None, tone=None, low_env=None, dyn_eq=None):
+def mix_report(y, song=None, spb=None, tone=None, low_env=None, dyn_eq=None, lead_db=None):
     """Quality check of a finished master - what a mastering engineer looks at:
     loudness (LUFS), true peak (dBTP, 4x oversampled), peak-to-loudness ratio (PLR - how much punch the limiter left),
     loudness range (LRA) and the loudest 3-second moment, stereo correlation (+1 mono ... 0 wide ... <0 phasey),
@@ -349,6 +349,8 @@ def mix_report(y, song=None, spb=None, tone=None, low_env=None, dyn_eq=None):
         warn.append('stereo low end (bass not mono)')
     if contrast < 2.0 and len(good) > 20:
         warn.append('sections all equally loud (little contrast)')
+    if lead_db is not None and lead_db < -3.0:
+        warn.append(f'lead buried ({lead_db:+.1f} dB against the chords and pads where it plays)')
     if tone_dev:
         names = ('sub', 'bass', 'low-mids', 'mids', 'upper mids', 'presence', 'highs', 'air', 'top air')
         far = [(names[i], d) for i, d in enumerate(tone_dev) if abs(d) > 4.5 and i < 8]
@@ -357,7 +359,7 @@ def mix_report(y, song=None, spb=None, tone=None, low_env=None, dyn_eq=None):
     return dict(lufs=round(L, 1), true_peak=round(float(tp), 1), plr=round(float(plr), 1), correlation=round(corr, 2),
                 low_side_db=round(float(low_side), 1), section_contrast=round(contrast, 1), lra=round(lra, 1),
                 st_max=round(st_max, 1), mono_drop=round(float(mono_drop), 1), tone_dev=tone_dev,
-                kick_bass_overlap=kb_overlap, dyn_eq=dyn_eq or {}, warnings=warn)
+                kick_bass_overlap=kb_overlap, dyn_eq=dyn_eq or {}, lead_over_music_db=lead_db, warnings=warn)
 
 
 def auto_lp(buf, cut, block=256):
@@ -1165,6 +1167,8 @@ class Renderer:
         self._dodge = None
         self.low_env = {}                                   # layer -> 10 ms peak envelope below 100 Hz (kick, bass)
         drums = np.zeros((2, L), dtype=np.float32)
+        music = np.zeros((2, L), dtype=np.float32)          # (1.97) chords, pads, arps: a bus that makes room for the lead
+        lead_mono = np.zeros(L, dtype=np.float32)
         rev_send = np.zeros((2, L), dtype=np.float32)
         self._duck_on = _va.analog() and st.get('category') != 'Orchestral' and getattr(opts, 'send_duck', 'auto') != 'off'
         self._lead_key = np.zeros(L, dtype=np.float32)
@@ -1440,8 +1444,14 @@ class Renderer:
                     rp = os.path.join(stems_dir, f'{ti + 1:02d}_{name}_rumble.wav')
                     write_wav_float(rp, rum)
                     stems.append(dict(name=name + '_rumble', layer='bass', inst='rumble', path=rp))
+            if tcfg['layer'] == 'bass' and np.any(buf) and st.get('sub_harmonics', st.get('category') == 'Electronic'):
+                buf = sub_harmonics(buf, float(st.get('sub_harmonics_amt', 0.12)))   # the bass reads on small speakers
+            if tcfg['layer'] == 'lead' and np.any(buf):
+                lead_mono[:buf.shape[1]] += buf.mean(axis=0)[:L]
             if tcfg['layer'] in ('kick', 'snare', 'top'):
                 drums += buf
+            elif tcfg['layer'] in ('chords', 'pad', 'arp'):
+                music += buf
             else:
                 mix += buf
             if stems_dir:
@@ -1518,7 +1528,17 @@ class Renderer:
             hold = max(1, int(1 + 3 * c))
             dm = np.round(np.asarray(drums, np.float64) * q) / q
             drums = np.repeat(dm[:, ::hold], hold, axis=1)[:, :drums.shape[1]].astype(np.float32)
-        drums = drum_bus(drums, float(st.get('drum_drive', 0.25)))
+        # ---- music bus (1.97): chords, pads and arps dip at the lead's own frequency while the lead plays
+        self.lead_over_music = None
+        if np.any(music):
+            if np.any(lead_mono) and st.get('lead_room', st.get('category') != 'Orchestral'):
+                music, self.lead_over_music, f0 = lead_room(music, lead_mono)
+                if f0:
+                    self.log(f'   music bus: -3 dB at {f0:.0f} Hz while the lead plays (lead {self.lead_over_music:+.1f} dB over the music)')
+            mix += music
+        del music
+        par = st.get('drum_parallel', {'Electronic': 0.28, 'Classic': 0.15}.get(st.get('category'), 0.0))
+        drums = drum_bus(drums, float(st.get('drum_drive', 0.25)), float(par))
         if stems_dir and np.any(drums):
             path = os.path.join(stems_dir, '00_drum_bus.wav')
             write_wav_float(path, drums)
@@ -1526,6 +1546,10 @@ class Renderer:
         mix += drums.astype(np.float32, copy=False)        # (1.90: the mix stays 32-bit until the master)
         del drums
         # ---- returns
+        if st.get('category') == 'Electronic' and not st.get('no_send_arc') and _va.analog():
+            arc = self.send_arc(song, b2s, L)                # (1.97) wet breakdowns and intros, tighter drops
+            rev_send *= arc[None, :]
+            dly_send *= arc[None, :]
         _trim()
         self.log('   reverb + delay returns')
         returns = np.zeros_like(mix)
@@ -1583,6 +1607,18 @@ class Renderer:
         if _va.analog() and st.get('category') == 'Electronic' and not st.get('no_section_width'):
             mix = self.section_width(mix)
         return mix
+
+    SEND_ARC = {'intro': 1.2, 'break': 1.45, 'breakdown': 1.45, 'build': 1.15, 'calm': 1.3, 'outro': 1.35,
+                'drop': 0.8, 'chorus': 0.85, 'climax': 0.8, 'hook': 0.85}
+
+    def send_arc(self, song, b2s, L):
+        """(1.97) How much reverb / delay each kind of section gets (1 = as set): an engineer rides the sends - wetter in
+        the breakdown, drier and tighter in the drop."""
+        arc = np.ones(L, np.float32)
+        for sec in song['sections']:
+            m = next((v for k, v in self.SEND_ARC.items() if sec['name'].startswith(k)), 1.0)
+            arc[b2s(sec['bar']):min(L, b2s(sec['bar'] + sec['bars']))] = m
+        return uniform_filter1d(arc, int(0.25 * SR)).astype(np.float32)
 
     # how wide each kind of section sits (above 150 Hz; 1 = as mixed): the drop opens up after a narrower break / build
     SECTION_WIDTH = {'intro': 0.85, 'break': 0.82, 'breakdown': 0.82, 'build': 0.88, 'calm': 0.85, 'outro': 0.88,
@@ -1710,10 +1746,12 @@ def peak_round(x, ceiling_db=-1.0, above_db=2.5):
     return y
 
 
-def drum_bus(drums, drive=0.25):
+def drum_bus(drums, drive=0.25, parallel=0.0):
     """Drum-bus glue that behaves the same however loud the drums arrive: work at a fixed level (peaks at -6 dBFS),
     compress gently a few dB above the kit's own average with a slow-enough attack that the hits keep their snap,
-    saturate with unity small-signal gain (only the very top of a peak rounds off), then restore the level."""
+    saturate with unity small-signal gain (only the very top of a peak rounds off), then restore the level.
+    (1.97) parallel: a hard-squashed copy blended under the kit ('New York' compression) - the body and room come up
+    between the hits while the transients stay untouched; the bus is level-matched afterwards."""
     x = np.asarray(drums, dtype=np.float64)
     pk = float(np.max(np.abs(x))) if x.size else 0.0
     if pk < 1e-6:
@@ -1721,12 +1759,58 @@ def drum_bus(drums, drive=0.25):
     g = 0.5 / pk
     y = x * g
     ref = active_rms_db(y)
+    if parallel > 0:
+        squash = compressor(y, thresh=ref - 6.0, ratio=8.0, attack=0.001, release=0.08)
+        squash *= np.sqrt(np.mean(y ** 2) / max(np.mean(squash ** 2), 1e-12))
+        before = np.sqrt(np.mean(y ** 2))
+        y = y + parallel * squash
+        y *= before / max(np.sqrt(np.mean(y ** 2)), 1e-12)
     y = compressor(y, thresh=ref + 5.0, ratio=2.0, attack=0.012, release=0.12)
     k = 1.0 + max(0.0, drive)
     y *= k
     np.tanh(y, out=y)
     y /= (k * g)
     return y.astype(np.float32)
+
+
+def sub_harmonics(x, amount=0.12):
+    """(1.97) The bass's own upper harmonics (160 Hz - 1.2 kHz), made by saturating its sub, blended in quietly: on phones
+    and laptop speakers that can't play the sub, the ear still hears the bass line. The low end itself stays as it is."""
+    y = np.asarray(x, np.float64)
+    lo = signal.sosfilt(signal.butter(4, 120 / (SR / 2), 'low', output='sos'), y.mean(axis=0))
+    if not np.any(lo):
+        return x
+    pk = float(np.max(np.abs(lo))) + 1e-9
+    h = np.tanh(lo / pk * 4.0)
+    h = signal.sosfilt(signal.butter(2, [160 / (SR / 2), 1200 / (SR / 2)], 'band', output='sos'), h)
+    h *= amount * np.sqrt(np.mean(lo ** 2) / max(np.mean(h ** 2), 1e-12))
+    return (y + h[None, :]).astype(np.float32)
+
+
+def lead_room(music, lead_mono, cut_db=-3.0):
+    """(1.97) A dynamic EQ keyed by the lead: the chords / pads / arps dip at the lead's strongest frequency (400 Hz -
+    5 kHz) only while the lead plays, so the melody sits on top without turning the whole bed down.
+    -> (music, lead-over-music dB in 0.8-5 kHz where the lead plays, the frequency)"""
+    f, P = signal.welch(lead_mono[:SR * 120].astype(np.float64), SR, nperseg=8192)
+    band = (f > 400) & (f < 5000)
+    if not np.any(P[band] > 0):
+        return music, None, None
+    f0 = float(f[band][np.argmax(P[band])])
+    m = np.asarray(music, np.float64)
+    cut = eq(m, 'peak', f0, 1.2, cut_db)
+    env = np.sqrt(np.maximum(uniform_filter1d(lead_mono.astype(np.float64) ** 2, int(0.05 * SR)), 0))
+    live = env > 1e-5
+    ref = float(np.percentile(env[live], 80)) if np.any(live) else 1.0
+    act = uniform_filter1d(np.clip(env / (ref + 1e-9), 0, 1), int(0.1 * SR))[None, :m.shape[1]]
+    out = m + (cut - m) * act
+    on = env > np.percentile(env, 70)
+    lod = None
+    if on.sum() > SR:
+        bp = signal.butter(4, [800 / (SR / 2), 5000 / (SR / 2)], 'band', output='sos')
+        a = signal.sosfilt(bp, lead_mono.astype(np.float64))[on[:len(lead_mono)]]
+        b = signal.sosfilt(bp, out.mean(axis=0))[on[:out.shape[1]]]
+        lod = round(float(10 * np.log10(np.mean(a ** 2) / max(np.mean(b ** 2), 1e-12))), 1)
+    return out.astype(np.float32), lod, f0
 
 
 # the engineer's EQ on a kit's raw close mics (the Unruly kick is a huge, boomy 20" with little beater click)

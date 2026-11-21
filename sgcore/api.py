@@ -353,6 +353,7 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     try:
         from .render import mix_report
         info['mix_report'] = mix_report(out, song, tone=song['st']['master'].get('tone'), low_env=getattr(r, 'low_env', None),
+                                       lead_db=getattr(r, 'lead_over_music', None),
                                         dyn_eq=getattr(master, 'last_dyn_eq', None))
         mr = info['mix_report']
         log(f"   mix check: {mr['true_peak']} dBTP, PLR {mr['plr']} dB, correlation {mr['correlation']}, low-end side "

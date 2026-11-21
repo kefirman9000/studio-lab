@@ -1,7 +1,7 @@
 # Changelog
 
 ## Unreleased
-**Slam / brutal deathcore, and a cybergrind that never writes the same song twice**
+**Slam / brutal deathcore, a cybergrind that never writes the same song twice, and more professional mixes**
 
 - **New genre: Slam / brutal deathcore**, built from your four reference tracks (Waking the Cadaver, Vulvodynia). What I measured, and what the genre now does:
   - **Mostly a wall of blasts and double kick** (65–85 % of the time in the references), with slam grooves in between.
@@ -13,6 +13,12 @@
   - **Built on ~125 BPM like the records**, switching all the time: double-time blasts, half-time breakdowns, slam grooves, dead stops and quiet chiptune moments in the middle of the song.
   - **Mostly breakdowns and grooves, blasts only in short bursts**, matching the references (about 45 % breakdown, short blasts, songs 45–110 s).
   - **Every breakdown is new**, from the same generator as slam.
+- **More professional mixes** (also in SL2):
+  - **Drum-bus parallel compression:** a hard-squashed copy of the kit blended under it, so the body and room come up between the hits and the transients stay untouched. Electronic genres get 28 %, bands 15 %, orchestral none.
+  - **Room for the lead:** chords, pads and arps now share a music bus that dips 3 dB at the lead's own frequency, only while the lead plays. The melody sits on top without the whole bed being turned down.
+  - **Sub harmonics on electronic bass:** the bass's own upper harmonics, so the bass line is still heard on phones and laptop speakers.
+  - **Sends follow the arrangement** in electronic genres: wetter breakdowns and intros, tighter drops.
+  - **The mix report** now measures how far the lead sits above the music, and warns when it's buried.
 - **The engine:**
   - A section can now run at its own tempo.
   - A section's drums and riffs can span a 2- or 4-bar phrase instead of repeating one bar.
