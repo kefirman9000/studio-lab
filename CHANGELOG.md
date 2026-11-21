@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.2.2
+**Switch-up Bass: bar-long rising, sinking and alien effects**
+
+- **Every section ends on a move across its last bar**, the way Lucky Beard does it. Everything on top sinks together going into a drop-out or dark stretch: a tape slow-down, a low-pass closing to a thud, or a crush dive. Going into a new drop, it rises instead: a tape push, a filter opening or an accelerating stutter. Before a drop-out the sub often dives with it.
+- **Alien moves inside each section.** Every few bars, one or two parts do that scene's own move across a bar or two:
+  - a **frequency shifter** sweep that turns the sound inharmonic and UFO-like
+  - **ring modulation** gliding from growl to robot clang
+  - **robot vowels** morphing a-e-i-o-u
+  - a **comb-filter scream**
+  - **laser zaps** (every 16th diving in pitch)
+  - **accelerating stutters**
+  - a **sample-rate dive** into digital grit
+
+  Each scene picks two of these, so every section moves differently.
+- Every move is level-matched to the bar it replaces and cross-faded in and out, so nothing clicks or jumps out of the mix.
+
+
 ## 2.2.1
 - **A loading screen at start-up.** The window now opens straight away with an animated loading screen ("Loading the sound engine…", "Starting the studio…") while the engine loads behind it, then switches to the app. Before, nothing showed for several seconds, so it looked frozen. The page also shows a loading screen until the genres and sounds have arrived, and if something goes wrong it says so instead of staying blank.
 

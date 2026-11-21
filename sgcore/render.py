@@ -872,6 +872,9 @@ class Renderer:
             buf = chorus(buf, float(tcfg['chorus']))
         if any(tcfg.get(k) for k in ('phaser', 'flanger', 'trem', 'wah', 'crush', 'wide', 'ott')) and np.any(buf):
             buf = track_fx(buf, tcfg, self.spb).astype(np.float32)
+        if tcfg.get('motion') and np.any(buf):           # (2.2.2) bar-long rises, sinks and alien moves (switch-up bass)
+            from .alienfx import apply_motion
+            buf = apply_motion(buf, tcfg['motion'], self)
         if tcfg.get('sweep') and np.any(buf):             # techno: a filter that opens and closes over 16-32 bars
             lo_hz, hi_hz, bars = tcfg['sweep']
             n = buf.shape[1]

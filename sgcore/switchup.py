@@ -74,3 +74,44 @@ def scene_switch(evs, tracks, sections, st, seed):
                     e.track = tname
                     made[tname] += 1
     st['scenes'] = [{k: v[0] for k, v in sc.items()} for sc in plan]
+    add_motion(tracks, sections, plan, rnd)
+
+
+def add_motion(tracks, sections, plan, rnd):
+    """(2.2.2) Bar-long moves (see alienfx.py): every section ends on a rise (into a drop) or a sink (into a break or
+    a dark stretch) on all its colour parts together - sometimes the sub dives with them - and inside the section, every
+    few bars, one or two parts do the scene's own alien move (frequency shift, ring mod, robot vowels, comb scream,
+    zaps, stutters, crush dive) across a bar or two."""
+    from .alienfx import KINDS_ALIEN
+    for i, (sec, scene) in enumerate(zip(sections, plan)):
+        if not scene:
+            continue
+        names = [f'{r}_scene{i + 1}' for r in scene if f'{r}_scene{i + 1}' in tracks]
+        if not names:
+            continue
+        b0, nb = sec['bar'], sec['bars']
+        nxt = sections[i + 1] if i + 1 < len(sections) else None
+        into_low = nxt is None or nxt['opts'].get('gap') or nxt['opts'].get('fade') or any(
+            (tracks.get(f'{r}_scene{i + 2}') or {}).get('sweep') == DARK['sweep'] for r in scene)
+        last = (b0 + nb - 1) * 4.0, (b0 + nb) * 4.0
+        if into_low:
+            kind = rnd.choice(['tape_sink', 'filter_sink', 'filter_sink', 'crushdive'])
+            up = -1
+        else:
+            kind = rnd.choice(['tape_rise', 'filter_rise', 'filter_rise', 'stutter'])
+            up = 1
+        for n in names:
+            tracks[n].setdefault('motion', []).append((last[0], last[1], kind, up))
+        if into_low and 'bass' in tracks and rnd.random() < 0.55:      # the sub dives into the drop-out
+            tracks['bass'].setdefault('motion', []).append((last[0] + 2.0, last[1], 'tape_sink', -1))
+        alien = rnd.sample(KINDS_ALIEN, 2)                # this scene's own two alien moves
+        every = rnd.choice([2, 4, 4])
+        for k in range(every - 1, nb - 1, every):
+            if rnd.random() < 0.25:
+                continue
+            span = 2 if (k + 2 < nb - 1 and rnd.random() < 0.25) else 1
+            who = rnd.sample(names, 1 + (len(names) > 2 and rnd.random() < 0.35))
+            mv = alien[(k // every) % 2]
+            for n in who:
+                tracks[n].setdefault('motion', []).append(((b0 + k) * 4.0, (b0 + k + span) * 4.0, mv,
+                                                           1 if rnd.random() < 0.5 else -1))
