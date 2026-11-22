@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.4.2
+**The rest of the Celtic dance forms, and 9/8**
+
+- **Celtic Hornpipe:** slower and heavier than a reel, with the dotted, swung long-short lilt and strains ending on three firm beats.
+- **Slip Jig (9/8):** three groups of three, graceful and flowing. Studio Lab now supports **9/8**, with the right time signature in the MIDI file and the REAPER project.
+- **Strathspey:** the Scottish dance built on dotted rhythms and the **Scotch snap**.
+- **Celtic Polka:** fast and punchy, with an oom-pah guitar on the off-beats and accordion on the tune.
+- **Celtic Session Set:** two or three tunes as one unbroken medley, the way a pub session plays them. Each tune is AABB, and the next one comes in a new key (up a fourth, then a fifth) with a lift in tempo.
+- The Celtic dance genres keep their strict AABB form; the per-song layout changes don't touch them.
+
+
 ## 2.4.1
 **Celtic, made authentic: session instruments, session drums, and real ornaments**
 

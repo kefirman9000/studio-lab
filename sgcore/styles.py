@@ -1952,7 +1952,7 @@ style('celtic_jig', 'Classic', 'Celtic jig (6/8): a session in full flight - fid
       'AABB tune (cuts, taps and rolls), a chiming bouzouki and guitar, the bodhrán\'s low boom and high tipper strokes, '
       'a soft pipe drone - in D, G, A or E',
       meter='6/8', bpm=(104, 124), scales=['major', 'mixolydian', 'dorian'], human=0.008, kit='soft', form='jig', form_scale=1,
-      roots=[2, 7, 9, 4], celtic_orn='trad', voicing='open',
+      roots=[2, 7, 9, 4], celtic_orn='trad', voicing='open', exact_form=True,
       progs={'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]],
              'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]},
       drums={'bodhran': ['X.xX.xX.xX.x', 'X..X.xX..X.x', 'X.xx.xX.xX.x'], 'tip': ['..x..x..x..x', '.....x.....x']},
@@ -12306,3 +12306,53 @@ derive('celtic_new_age', 'new_age_chant', 'Classic',
        sounds={'lead': 'lowwhistle', 'chords': 'choir_wide', 'pad': 'warmpad_wide', 'arp': 'harp'}, celtic_orn='trad', roots=[2, 4, 9],
        pools=dict(lead=['lowwhistle', 'irish_flute', 'uilleann', 'fiddle'], chords=['choir_wide', 'humchoir', 'choir'],
                   arp=['harp', 'celesta', 'acguitar'], bass=['sinebass', 'upright'], pad=['warmpad_wide', 'glasspad', 'humchoir']))
+
+
+# ---- (2.4.2) the rest of the Celtic dance forms: hornpipe, slip jig (9/8), strathspey, polka, and the session set ----
+FORMS['session_set'] = (                                  # two (or three) tunes run together without stopping: each one
+    [(n, 8, L, dict(o)) for (n, _, L, o) in FORMS['jig']] +                   # AABB; the next tune in a new key, a lift
+    [(n, 8, L | {'arp'}, dict(o, alt=not o.get('alt'), tune=2, tempo=1.05)) for (n, _, L, o) in FORMS['jig']] +
+    [(n, 8, L | {'arp'}, dict(o, tune=3, tempo=1.09)) for (n, _, L, o) in FORMS['jig'][:4]])
+
+derive('celtic_hornpipe', 'celtic_reel', 'Classic',
+       'Celtic hornpipe (4/4): slower and heavier than a reel, with the hornpipe\'s dotted, swung long-short lilt - '
+       'fiddle or pipes carrying a strong, grounded tune that ends each strain on three firm beats, a heavier bodhrán, '
+       'bouzouki chords - stately and dancing', 'Celtic Hornpipe',
+       bpm=(92, 112), swing=0.63, swing_unit=8,
+       drums={'bodhran': ['X...x.X.X...x.X.', 'X..xX...X..xX...', 'X...X.x.X...X.x.'], 'tip': ['..x...x...x...x.', '....x.......x...'],
+              'bones': ['', 'x.x.x.x.x.x.x.x.']},
+       bass=['R.......F.......', 'R...F...R...F...'], chord_rh=['x...x...x...x...', 'x.x.x.x.x.x.x.x.'],
+       lead_rh=['x.x.x.x.x.x.x.x.', 'x.x.x.x.x---x---', 'x---x---x-------', 'x.xxx.x.x.x.x.x.'])
+
+derive('slip_jig', 'celtic_jig', 'Classic',
+       'Slip jig (9/8): the graceful Irish dance in three groups of three (ONE-two-three TWO-two-three THREE-two-three) - '
+       'fiddle and whistle flowing over a lighter bodhrán and a delicate guitar or harp, with cuts and rolls - '
+       'elegant and lyrical', 'Slip Jig (9/8)',
+       meter='9/8', bpm=(74, 84),
+       drums={'bodhran': ['X.xX.xX.xX.xX.xX.x', 'X..X..X..X..X..X..', 'X.xX..X.xX.xX..X.x'],
+              'tip': ['..x..x..x..x..x..x', '.....x.....x.....x']},
+       bass=['R........F........', 'R.....F..R.....F..'], chord_rh=['x..x..x..x..x..x..', 'x........x........'],
+       lead_rh=['xxxxxxxxxxxxxxxxxx', 'x-xx-xx-xx-xx-xx-x', 'x-xxxxx-xx-xxxxx-x', 'xxx-xxxxxxxx-xxxxx'],
+       sounds={'arp': 'harp'})
+
+derive('strathspey', 'celtic_reel', 'Classic',
+       'Scottish strathspey (4/4): slower and prouder than a reel, built on dotted rhythms and the Scotch snap (a short '
+       'note snapped onto a long one) - fiddle leading over a drone, a firm bodhrán and bouzouki - dignified and '
+       'a little martial', 'Strathspey (Scottish)',
+       bpm=(88, 106), swing=0.5, roots=[9, 2, 7, 4],
+       lead_rh=['xx--x--xxx--x---', 'x--xxx--x--xxx--', 'xx--xx--x--xx---', 'x--xx--xxx--x---'],
+       drums={'bodhran': ['X...X...X...X...', 'X..xX...X..xX...'], 'tip': ['....x.......x...'], 'bones': ['']},
+       bass=['R.......R.......', 'R.......F.......'], chord_rh=['x...x...x...x...', 'x--xx--xx--xx--x'])
+
+derive('celtic_polka', 'celtic_reel', 'Classic',
+       'Celtic polka (2/4 feel): fast, bright and punchy - strong downbeats, an oom-pah guitar and bouzouki on the '
+       'off-beats, accordion or fiddle carrying a bouncy tune, a lively bodhrán - the Kerry / Sliabh Luachra set dance',
+       'Celtic Polka', bpm=(116, 136), swing=0.5, sounds={'lead': 'accordion'},
+       drums={'bodhran': ['X...x...X...x...', 'X.x.x...X.x.x...'], 'tip': ['..x...x...x...x.'], 'bones': ['', '..x...x...x...x.']},
+       bass=['R.......F.......', 'R...F...R...F...'], chord_rh=['..x...x...x...x.', 'x.x...x.x.x...x.'],
+       lead_rh=['x.x.x.x.x.x.x---', 'xxx.x.x.xxx.x---', 'x.x.xxx.x.x.x.x.'])
+
+derive('celtic_session', 'celtic_reel', 'Classic',
+       'Celtic session set: two or three tunes played as one unbroken medley, the way a pub session runs them - each '
+       'tune AABB, then straight into the next in a new key with a lift in tempo, the energy climbing to the end',
+       'Celtic Session Set', form='session_set', set_shift={2: 5, 3: 7})

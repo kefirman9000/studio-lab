@@ -34,7 +34,7 @@ GROUPS = {
         ('Hip-Hop', ['boombap', 'beat_tape_cinematic', 'jazz_rap', 'g_funk', 'smooth_90s_rap', 'soul_sample_rap', 'bay_rap', 'futuristic_bounce', 'jazz_hop']),
         ('Jazz', ['jazz', 'bebop', 'modal_jazz', 'soul_jazz', 'fusion', 'smooth_jazz', 'gypsy_jazz', 'ragtime', 'ethio_jazz', 'exotica', 'smooth_jazz_horns']),
         ('Swing & Big Band', ['swing', 'swing_tomtom', 'big_band_50s', 'western_swing', 'nola_brass']),
-        ('Celtic', ['celtic_jig', 'celtic_reel', 'celtic_slow_air', 'celtic_punk', 'sea_shanty', 'highland_pipes', 'celtic_new_age']),
+        ('Celtic', ['celtic_jig', 'celtic_reel', 'celtic_hornpipe', 'slip_jig', 'strathspey', 'celtic_polka', 'celtic_session', 'celtic_slow_air', 'celtic_punk', 'sea_shanty', 'highland_pipes', 'celtic_new_age']),
         ('Country, Folk & Blues', ['country', 'modern_country', 'country_waltz', 'outlaw_country', 'western', 'bluegrass',
                                    'folk', 'blues', 'folk_jam']),
         ('Latin & Caribbean', ['bossa_nova', 'salsa', 'cumbia', 'tango', 'reggae', 'ska', 'soca', 'groovy_soca', 'dub', 'corridos_tumbados', 'bachata', 'merengue', 'samba', 'son_cubano', 'flamenco_rumba']),

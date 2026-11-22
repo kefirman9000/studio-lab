@@ -175,7 +175,7 @@ def parse_rhythm(pat):
     """'x-..X...' -> [(step, length, char)] in 16ths of a bar. 12-step patterns (triple / compound meters: 3/4, 6/8,
     12/8) are scaled onto the same bar, so a step is a third of a beat there."""
     out = []
-    k = 16 / len(pat) if len(pat) == 12 else 1
+    k = 16 / len(pat) if len(pat) in (12, 18) else 1      # (2.4.2) 18 steps: 9/8 (two slip-jig bars per bar)
     for i, c in enumerate(pat):
         if c not in '.-':
             l = 1
@@ -189,7 +189,7 @@ def parse_rhythm(pat):
 
 def grid_of(st):
     """Steps per bar: 16 (straight 4/4) or 12 (3/4, 6/8, 12/8 - see styles 'meter')."""
-    return 12 if st.get('meter') else 16
+    return 18 if st.get('meter') == '9/8' else 12 if st.get('meter') else 16
 
 
 def grid_steps(st):

@@ -230,6 +230,16 @@ def ornament_pass(evs, tracks, sections, st, bpm, seed):
     if not style:
         return
     rnd = random.Random(f'{seed}-celtic-orn')
+    shift = st.get('set_shift') or {}
+    if shift:                                            # a session set: each next tune in its new key (drums stay put)
+        for sec in sections:
+            k = shift.get((sec.get('opts') or {}).get('tune'))
+            if not k:
+                continue
+            b0, b1 = sec['bar'] * 4.0, (sec['bar'] + sec['bars']) * 4.0
+            for e in evs:
+                if b0 <= e.beat < b1 and e.midi is not None and tracks.get(e.track, {}).get('inst') not in DRUMS:
+                    e.midi += k
     leads = {n for n, t in tracks.items() if t.get('layer') == 'lead'}
     chords = [e for e in evs if e.track in ('chords', 'pad')]
     scale = {e.midi % 12 for e in chords} if chords else None

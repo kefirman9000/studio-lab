@@ -56,7 +56,8 @@ def write_midi(path, song):
     sc = 1.5 if meter != '4/4' else 1.0        # in 3/4, 6/8, 12/8 the engine's beat is a dotted quarter
     ppq_b = ppq * sc                            # ticks per engine beat
     tempo = int(60_000_000 / (song['bpm'] * sc))
-    ts = {'4/4': b'\x04\x02\x18\x08', '3/4': b'\x03\x02\x18\x08', '6/8': b'\x06\x03\x24\x08', '12/8': b'\x0c\x03\x24\x08'}[meter]
+    ts = {'4/4': b'\x04\x02\x18\x08', '3/4': b'\x03\x02\x18\x08', '6/8': b'\x06\x03\x24\x08', '12/8': b'\x0c\x03\x24\x08',
+          '9/8': b'\x09\x03\x24\x08'}.get(meter, b'\x04\x02\x18\x08')
     meta = [(0, 0, b'\xff\x51\x03' + tempo.to_bytes(3, 'big')), (0, 0, b'\xff\x58\x04' + ts)]
     tm = song.get('tempo_map')
     if tm:                                            # tempo changes (accelerando, allargando, ritardando) beat by beat
@@ -707,8 +708,8 @@ def _rpp(title, song, stems, midis, length_s):
     muted track - load an instrument on it to replace or layer the sound."""
     bpm = song['bpm']
     sec_of = beat_seconds(song)
-    num = {'3/4': 3, '6/8': 6, '12/8': 12}.get(song.get('meter') or '4/4', 4)
-    den = 8 if num in (6, 12) else 4
+    num = {'3/4': 3, '6/8': 6, '12/8': 12, '9/8': 9}.get(song.get('meter') or '4/4', 4)
+    den = 8 if num in (6, 9, 12) else 4
     L = ['<REAPER_PROJECT 0.1 "6.0"', f'  TITLE "{title}"', f'  TEMPO {bpm} {num} {den}', '  SAMPLERATE 44100 0 0']
     tm = song.get('tempo_map')
     if tm:
