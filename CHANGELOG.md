@@ -1,6 +1,8 @@
 # Changelog
 
-## 2.3.0
+## 2.3.1
+*(Euphoric Trance and the sound check below were committed after the 2.3.0 release had already been built, so they ship here.)*
+
 **New genre: Euphoric Trance, and an electronic sound check**
 
 - **Euphoric Trance** (Techno & Trance), built from your uplifting-trance brief:

@@ -18,7 +18,6 @@ seeded from the note it plays so the same note always sounds the same.
 import zlib
 
 import numpy as np
-from scipy import signal
 
 from .dsp import SR, adsr, bp, hp, lp, mtof, saw, sine, soft, square, svf_sweep
 from .instruments import GM_PROGRAM, INSTRUMENT_INFO, INSTRUMENTS, ROLE_CHOICES

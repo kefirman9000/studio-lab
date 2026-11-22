@@ -21,7 +21,7 @@ apply_motion(buf, motions, renderer) - motions: [(beat0, beat1, kind, up), ...];
 import numpy as np
 from scipy import signal
 
-from .dsp import SR, bp, hp, lp
+from .dsp import SR, bp, lp
 
 KINDS_MOVE = ('tape_rise', 'tape_sink', 'filter_rise', 'filter_sink')
 KINDS_ALIEN = ('freqshift', 'ringmod', 'vowel', 'comb', 'zap', 'stutter', 'crushdive')

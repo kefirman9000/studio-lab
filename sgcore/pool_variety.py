@@ -314,6 +314,36 @@ def widen():
         pools = POOLS.get(g)
         if pools and 'bass' in pools and 'slide808' not in pools['bass']:
             pools['bass'].append('slide808')
+    for g, roles in AUDIT_228.items():                 # (2.2.8) electronic sound audit - see AUDIT_228
+        if g not in STYLES:
+            continue
+        pools = POOLS.setdefault(g, {})
+        for role, (mode, lst) in roles.items():
+            if mode == 'set':
+                pools[role] = list(lst) + [x for x in pools.get(role, []) if x not in lst and role != 'bass']
+            else:
+                pools[role] = list(pools.get(role, [])) + [x for x in lst if x not in pools.get(role, [])]
+
+
+# (2.2.8) the electronic sound audit (12 songs per genre): parts that always - or nearly always - got the same synth.
+# 808 genres rotate through the 808 family (the plain 808 first = likeliest); acid house uses every acid bass; a few
+# thin pools widened. 'set' = this list first (bass: exactly this list), 'add' = appended.
+AUDIT_228 = {
+    'trap': {'bass': ('set', ['808', '808long', 'slide808', '808punch', '808_dark', '808dist'])},
+    'uk_drill': {'bass': ('set', ['808', 'drill808', 'slide808', '808long', '808_dark', 'wob808'])},
+    'plugg': {'bass': ('set', ['808', '808long', '808punch', 'slide808'])},
+    'reggaeton': {'bass': ('set', ['808', '808punch', '808long'])},
+    'alt_rnb': {'bass': ('set', ['808', '808long', '808_dark', 'slide808'])},
+    'baile_funk': {'bass': ('set', ['808', '808punch', '808dist', '808_driven'])},
+    'funk_150': {'bass': ('set', ['808', '808punch', '808long'])},
+    'orchestral_hiphop': {'bass': ('set', ['808', '808long', '808_dark', '808punch'])},
+    'acid_house': {'bass': ('set', ['acid', 'acidsquare', 'acid_dark', 'acid_driven', 'fmacid', 'acid_v1', 'sawbass',
+                                    'moogbass', 'fmbass', 'sh101', 'sh101_dark', 'moogbass_driven'])},
+    'dream_synthscape': {'bass': ('set', ['roundbass', 'sinebass', 'dreambass', 'junobass'])},
+    'ethereal_wave': {'pad': ('add', ['glasspad', 'choir_wide', 'warmpad_wide']),
+                      'lead': ('add', ['formantchop', 'vocalchop', 'softlead_wide'])},
+    'switchup_bass': {'arp': ('add', ['pluck', 'bell', 'acid', 'modseq', 'technoseq'])},
+}
 
 
 def _widen(original):

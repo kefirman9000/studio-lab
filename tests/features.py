@@ -1123,7 +1123,7 @@ def test_va_synth():
         assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.3, (k, np.abs(a).max())
     from sgcore.styles import POOLS as _P4
     assert all(len(_P4[g][r]) >= 6 for g in ('dnb', 'house', 'techno', 'dubstep') for r in ('chords', 'pad', 'arp', 'lead'))
-    assert _P4['trap']['bass'][0] == '808' and set(_P4['trap']['bass']) <= {'808', 'slide808'}   # a defining part keeps its own (808) family
+    assert _P4['trap']['bass'][0] == '808' and all('808' in x for x in _P4['trap']['bass'])   # a defining part keeps its own (808) family
     for k in ('darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass', 'progpluck', 'gatepad', 'orchhit',
               'darkpiano', 'eeriepad', 'musicbox', 'crushlead'):                                  # 1.69
         a = np.asarray(INSTRUMENTS[k](40 if k in ('darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass') else 67,

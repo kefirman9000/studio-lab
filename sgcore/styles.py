@@ -12017,21 +12017,7 @@ style('switchup_bass', 'Electronic',
 
 
 # ---- (2.2.8) electronic sound audit: parts that always (or nearly always) got the same synth --------------------------
-# 808 genres rotate through the 808 family (the plain 808 stays the likeliest - it's first in the pool)
-_808S = {'trap': ['808', '808long', 'slide808', '808punch', '808_dark', '808dist'],
-         'uk_drill': ['808', 'drill808', 'slide808', '808long', '808_dark', 'wob808'],
-         'plugg': ['808', '808long', '808punch', 'slide808'], 'reggaeton': ['808', '808punch', '808long'],
-         'alt_rnb': ['808', '808long', '808_dark', 'slide808'], 'baile_funk': ['808', '808punch', '808dist', '808_driven'],
-         'funk_150': ['808', '808punch', '808long'], 'orchestral_hiphop': ['808', '808long', '808_dark', '808punch']}
-for _st, _b in _808S.items():
-    if _st in STYLES:
-        POOLS.setdefault(_st, {})['bass'] = list(_b)
-POOLS['acid_house']['bass'] = ['acid', 'acidsquare', 'acid_dark', 'acid_driven', 'fmacid', 'acid_v1'] + \
-    [x for x in POOLS['acid_house']['bass'] if x not in ('acid', 'acidsquare')]
-POOLS['dream_synthscape']['bass'] = ['roundbass', 'sinebass', 'dreambass', 'junobass']
-POOLS['ethereal_wave']['pad'] += ['glasspad', 'choir_wide', 'warmpad_wide']
-POOLS['ethereal_wave']['lead'] += ['formantchop', 'vocalchop', 'softlead_wide']
-POOLS['switchup_bass']['arp'] += ['pluck', 'bell', 'acid', 'modseq', 'technoseq']
+# (the pool fixes themselves live in pool_variety.AUDIT_228, applied after the pools are widened)
 
 
 # ---- (2.3) Euphoric Trance: the full uplifting arc - built from a detailed genre brief -------------------------------
@@ -12061,7 +12047,7 @@ style('euphoric_trance', 'Electronic',
       'filters, and a climax far bigger than the first drop: a huge supersaw lead with a chord-aware harmony joining '
       'it, bright 16th arps, rolling off-beat bass and pumping 7-voice supersaw chords',
       bpm=(138, 142), scales=['minor'], roots=[6, 9, 2, 4], kit='909', form='euphoric_trance', sc_depth=0.65,
-      chord_size=3, voicing='close', euphoric=True, no_rotation=True, filter_arc=True, sc_arc=True, fill=True, exact_form=True,
+      chord_size=3, voicing='close', euphoric=True, no_rotation=True, exact_pools=True, filter_arc=True, sc_arc=True, fill=True, exact_form=True,
       progs=[[0, 5, 2, 6], [0, 5, 2, 6], [5, 3, 0, 6], [0, 5, 3, 6], [2, 6, 0, 5], [0, 3, 5, 6]],
       drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'chat': ['x.x.x.x.x.x.x.x.', 'xxxxxxxxxxxxxxxx'],
              'ride': ['..x...x...x...x.'], 'shaker': ['x.xxx.xxx.xxx.xx']},
@@ -12089,4 +12075,3 @@ style('euphoric_trance', 'Electronic',
                  arp=['trancepluck', 'trancebell', 'superpluck', 'pluckbell', 'dxbell', 'nordpluck', 'icebell'],
                  lead=['supersaw_lead', 'hypersaw', 'supersaw_lead_octave', 'emolead', 'formantlead']),
       label='Euphoric Trance')
-STYLES['euphoric_trance']['exact_pools'] = True          # its sound lists are hand-picked for the brief: not widened
