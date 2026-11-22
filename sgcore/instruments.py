@@ -628,7 +628,7 @@ def i_wobble(m, dur, p, glide=None, mod=None):
     n = len(env)
     t = np.arange(n) / SR
     rate_beats = mod if isinstance(mod, (int, float)) and mod else 0.5
-    hz = 1.0 / (rate_beats * p.get('spb', 0.43))
+    hz = _vb.sync_hz(rate_beats, p.get('spb', 0.43))
     ph = (hz * t) % 1.0
     shape = p.get('shape', 'sine')
     if shape == 'saw':                                   # snaps open, closes slowly: "WAAow"
@@ -1632,7 +1632,7 @@ def i_growl(m, dur, p, glide=None, mod=None):
     env = adsr(dur * SR, 0.004, 0.1, 1.0, 0.04)
     n = len(env)
     t = np.arange(n) / SR
-    hz = 1.0 / ((mod if isinstance(mod, (int, float)) and mod else 0.5) * p.get('spb', 0.43))
+    hz = _vb.sync_hz(mod if isinstance(mod, (int, float)) and not isinstance(mod, bool) and mod else 0.5, p.get('spb', 0.43))
     lfo = 0.5 - 0.5 * np.cos(2 * np.pi * hz * t)
     idx = 1.5 + 5.0 * lfo                                      # FM depth swells with the LFO
     ph = 2 * np.pi * np.cumsum(np.full(n, f)) / SR
@@ -1820,7 +1820,7 @@ def i_screech(m, dur, p, glide=None, mod=None):
     n = len(env)
     t = np.arange(n) / SR
     bend = 2 ** ((-5 * np.exp(-t * 18)) / 12)                     # whines up into the note
-    hz = 1.0 / ((mod if isinstance(mod, (int, float)) and mod else 0.25) * p.get('spb', 0.43))
+    hz = _vb.sync_hz(mod if isinstance(mod, (int, float)) and not isinstance(mod, bool) and mod else 0.25, p.get('spb', 0.43))
     lfo = 0.5 - 0.5 * np.cos(2 * np.pi * hz * t)
     ph = 2 * np.pi * np.cumsum(f * bend) / SR
     x = np.sin(ph + (3.0 + 6.0 * lfo) * np.sin(ph * 3.01)) + 0.4 * saw(f * 1.01, n)
@@ -1836,7 +1836,7 @@ def i_riddim(m, dur, p, glide=None, mod=None):
     env = adsr(dur * SR, 0.002, 0.05, 1.0, 0.02)
     n = len(env)
     t = np.arange(n) / SR
-    hz = 1.0 / ((mod if isinstance(mod, (int, float)) and mod else 1 / 3) * p.get('spb', 0.43))
+    hz = _vb.sync_hz(mod if isinstance(mod, (int, float)) and not isinstance(mod, bool) and mod else 1 / 3, p.get('spb', 0.43))
     gate = (np.sin(2 * np.pi * hz * t) > -0.2).astype(np.float64)
     gate = np.convolve(gate, np.ones(64) / 64, mode='same')       # click-free chops
     x = square(f, n, 0.0) + 0.7 * saw(f * 1.006, n) + 0.5 * square(f * 2.003, n, 0.25)
@@ -3498,7 +3498,7 @@ def v_bouncebass(m, dur, p, glide=None, mod=None):
     cut = p.get('cut', 700) * (1 + 3.0 * np.exp(-t / p.get('fdecay', 0.12)))
     if p.get('lfo'):                                              # the moving liquid / dancefloor bass: an 8th-note
         spb = p.get('spb', 0.35)                                  # filter LFO inside a slow one-bar sweep
-        fast = 0.5 - 0.5 * np.cos(2 * np.pi * t / (float(p['lfo']) * spb))
+        fast = 0.5 - 0.5 * np.cos(2 * np.pi * t * _vb.sync_hz(float(p['lfo']), spb))
         slow = 0.5 - 0.5 * np.cos(2 * np.pi * t / (float(p.get('sweep', 4)) * spb))
         cut = cut * (0.45 + 0.9 * fast) * (0.6 + 0.8 * slow)
     mid = _vb.dist(_va.vcf(x, cut, 0.4, 1.4), 1.8)
@@ -3574,7 +3574,7 @@ def v_fbchord(m, dur, p, glide=None, mod=None):
     x = _va.vcf(x, p.get('cut', 6500), 0.12, 1.25)
     swell = 0.35 + 0.65 * (1 - np.exp(-t / 0.09))
     if isinstance(mod, (int, float)) and mod:
-        rate = 1.0 / (mod * p.get('spb', 0.43))
+        rate = _vb.sync_hz(mod, p.get('spb', 0.43))
         swell = swell * (0.55 + 0.45 * (0.5 - 0.5 * np.cos(2 * np.pi * rate * t)))
     return _hpf(x, 170) * env * swell * 0.6
 
@@ -5547,7 +5547,7 @@ def v_wob808(m, dur, p, glide=None, mod=None):
     n = gate + int(0.05 * SR)
     t = np.arange(n) / SR
     spb = float(p.get('spb', 0.42))
-    rate = _rng().choice([2.0, 3.0, 4.0]) / spb             # wobbles per second: 1/8, 1/8 triplet, 1/16
+    rate = _vb.sync_hz(1.0 / _rng().choice([2.0, 3.0, 4.0]), spb)   # 1/8, 1/8 triplet, 1/16 (never a buzz)
     sub = np.sin(2 * np.pi * np.cumsum(_glide_freq(f, n, glide, 0.08)) / SR) * 0.8
     sub = lp(sub, 90)
     saw = _vb._stack(f * 2, n, 3, 14, 0.5)
@@ -5621,9 +5621,9 @@ def _sync_lfo(t, p, choices=(2.0, 3.0, 4.0), mod=None):
     from the wobble bass part) wins over a random choice."""
     spb = float(p.get('spb', 0.45))
     if isinstance(mod, (int, float)) and not isinstance(mod, bool) and mod > 0:
-        rate = 1.0 / (float(mod) * spb)
+        rate = _vb.sync_hz(float(mod), spb)
     else:
-        rate = (p.get('rate') or _rng().choice(choices)) / spb
+        rate = _vb.sync_hz(1.0 / (p.get('rate') or _rng().choice(choices)), spb)   # (2.10) never a buzz
     return 0.5 - 0.5 * np.cos(2 * np.pi * rate * t)
 
 
@@ -6878,6 +6878,8 @@ def v_laserwob(m, dur, p, glide=None, mod=None):
     env, n, t = _env_n(dur, 0.002, 0.2, 0.9, 0.04)
     spb = float(p.get('spb', 0.45))
     per = spb / (4 if not mod else max(1, int(mod) * 2))
+    while 1.0 / per > _vb.LFO_MAX_HZ * 1.01:            # (2.10) never more than ~9.5 zaps a second, still on the beat
+        per *= 2
     ph_t = t % per
     fr = f * 2 * (1 + 6 * np.exp(-ph_t / (per * 0.25)))
     ph = 2 * np.pi * np.cumsum(fr) / SR

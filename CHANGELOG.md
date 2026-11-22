@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.10.0
+- **Fixed: bass wobbles going crazy at fast tempos.** Bass LFOs are tempo-synced in beats, so at drum & bass tempos a 1/6- or 1/4-beat wobble (and the default speeds of the growl, screech, riddim, wobble 808, laser and other LFO basses) ran at 12-23 wobbles a second - a buzz, not a wobble. Every bass LFO is now slowed by whole doublings (so it stays on the beat) until it is at most ~9.5 a second (a 16th at 140 BPM still fits).
+- **Genres modelled on one record keep their own sounds:** Spacious Breaks Electronica no longer swaps its parts for other genres' synths (one test song had picked a trance pluck, a house pad and a choir) or rotates them between sections. New sounds made for it: a warbly **modular pad** (two oscillators drifting on their own, wavefolded), a soaring, gliding **modular lead** and a **generative modular blip** for the patch sequences. Its balance is the record's now: the synths carry the track over a constant sub from the very start, the drums sit under them.
+
 ## 2.9.9
 - New genre: **Spacious breaks electronica (128-130)** - from a progressive-breaks record and your production notes: a long atmospheric opening of haze and weather, the chords and sub, then a soaring lead, before an energetic breakbeat with a flurry of percussion arrives; warbly, slightly unstable poly-synth chords and pads, melancholic Am - Fmaj7 - Dm - Em-style colour chords that never resolve, one continuous flowing arrangement (parts layer in and out, no hard cuts), a warm rolled-off top, a wide deep image and a quieter master that leaves room to breathe.
 - New background textures: **wind** (slow gusts) and **fire** (a warm roar with crackles), next to rain, air, waves and vinyl. A genre can now give its own list of textures to pick from.

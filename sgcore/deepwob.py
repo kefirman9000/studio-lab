@@ -341,3 +341,80 @@ def register():
         for role in (roles[0] if roles else ('bass',)):
             if name not in ROLE_CHOICES.setdefault(role, []):
                 ROLE_CHOICES[role].append(name)
+
+
+# ---- (2.10) generative-modular sounds: warbly, slightly unstable, alive ----
+
+def _drift(n, cents, rate, seed):
+    """A slow, wandering pitch drift in cents (a modular oscillator that won't sit still)."""
+    rng = np.random.default_rng(seed)
+    k = max(2, int(n / SR * rate) + 2)
+    pts = rng.standard_normal(k) * cents
+    x = np.interp(np.linspace(0, k - 1, n), np.arange(k), pts)
+    return x
+
+
+def modularpad(m, dur, p, glide=None, mod=None):
+    """Modular pad: two slightly detuned oscillators (a soft saw and a wavefolded triangle) that each drift on their
+    own by 10-20 cents, a low-pass that breathes slowly, a long swell - celestial but never quite stable."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.4) * SR)
+    env = va.adsr(gate, float(p.get('a', min(2.5, max(0.6, dur * 0.3)))), 1.0, 0.95, float(p.get('r', 2.0)))
+    n = len(env)
+    t = np.arange(n) / SR
+    out = np.zeros((2, n))
+    for c in range(2):
+        dr = _drift(n, 9.0, 0.6, int(m) * 13 + c)
+        fr = f * 2 ** ((dr + (-6 if c == 0 else 6)) / 1200)
+        ph = np.cumsum(fr) / SR % 1.0
+        tri = 4 * np.abs(ph - 0.5) - 1
+        fold = np.sin(np.pi * tri * (1.2 + 0.6 * np.sin(2 * np.pi * 0.09 * t + c)))
+        sw = va.saw(fr, n, _RNG.random())
+        out[c] = 0.55 * fold + 0.45 * sw
+    cut = float(p.get('cut', 2200)) * (0.7 + 0.3 * np.sin(2 * np.pi * 0.06 * t))
+    y = va.vcf(out * 0.6, cut, res=0.25, drive=1.0)
+    y = signal.sosfilt(signal.butter(2, 160 / (SR / 2), 'high', output='sos'), y, axis=-1)
+    return y * env * 0.5
+
+
+def modularlead(m, dur, p, glide=None, mod=None):
+    """Soaring modular lead: a warm pulse-and-saw voice that glides between notes, drifts in pitch, and opens up as it
+    holds - big and singing once the track opens, a little wobbly like a patch left running."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.06) * SR)
+    env = va.adsr(gate, 0.04, 0.3, 0.85, float(p.get('r', 0.8)))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = np.full(n, f) if glide is None else f + (float(mtof(glide)) - f) * np.exp(-t / 0.09)
+    dr = _drift(n, 7.0, 1.2, int(m) * 7 + 3)
+    vib = np.clip((t - 0.35) / 0.5, 0, 1) * 10 * np.sin(2 * np.pi * 4.6 * t)
+    fr = fr * 2 ** ((dr + vib) / 1200)
+    x = np.vstack([va.saw(fr * 2 ** (-5 / 1200), n, 0.1) + 0.5 * va.pulse(fr, n, 0.3, 0.4),
+                   va.saw(fr * 2 ** (5 / 1200), n, 0.6) + 0.5 * va.pulse(fr, n, 0.8, 0.4)])
+    cut = 700 + (float(p.get('cut', 3200)) - 700) * (1 - np.exp(-t / 0.6))
+    y = va.vcf(x * 0.45, cut, res=0.3, drive=1.2)
+    y = signal.sosfilt(signal.butter(2, 220 / (SR / 2), 'high', output='sos'), y, axis=-1)
+    return y * env * 0.5
+
+
+def modularseq(m, dur, p, glide=None, mod=None):
+    """Generative modular blip: a short, round, slightly detuned pluck with a random-ish filter and tiny pitch wobble -
+    for the patch-generated sequences that run underneath."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.35), 0.03) * SR)
+    env = va.adsr(gate, 0.002, 0.22, 0.0, 0.2)
+    n = len(env)
+    t = np.arange(n) / SR
+    seed = int(m) * 31 + int(dur * 1000)
+    fr = f * 2 ** (_drift(n, 6.0, 3.0, seed) / 1200)
+    ph = np.cumsum(fr) / SR % 1.0
+    x = np.sin(np.pi * (4 * np.abs(ph - 0.5) - 1) * 1.8)
+    top = 900 + 2600 * np.random.default_rng(seed).random()
+    y = va.vcf(np.vstack([x, x]) * 0.6, 200 + top * np.exp(-t / 0.08), res=0.4, drive=1.1)
+    return y * env * 0.5
+
+
+NEW_210 = (('modularpad', modularpad, 'Modular pad (warbly, drifting, celestial)', 89, ('pad', 'chords')),
+           ('modularlead', modularlead, 'Soaring modular lead (gliding, drifting)', 81, ('lead',)),
+           ('modularseq', modularseq, 'Generative modular blip (patch sequences)', 81, ('arp',)))
+NEW_290 = NEW_290 + NEW_210

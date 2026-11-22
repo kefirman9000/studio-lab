@@ -82,9 +82,23 @@ def _split_hp(y, f):
     return signal.lfilter(b, a, y, axis=-1)
 
 
+LFO_MAX_HZ = 9.5                     # (2.10) the fastest a bass LFO may wobble (140 BPM 16ths still fit)
+
+
+def sync_hz(beats, spb, cap=LFO_MAX_HZ):
+    """(2.10) Tempo-synced LFO speed, kept musical: at drum & bass tempos a 1/6- or 1/4-beat LFO ran at 17-23 Hz - a
+    buzz rather than a wobble. Too-fast rates are slowed by whole doublings (still in time with the beat) until they
+    are at most ~9.5 wobbles a second (a 16th at 140 BPM)."""
+    beats = float(beats) if beats else 0.5
+    hz = 1.0 / (beats * float(spb))
+    while hz > cap * 1.01:
+        hz /= 2.0
+    return hz
+
+
 def _rate(mod, p, default=0.5):
-    beats = mod if isinstance(mod, (int, float)) and mod else default
-    return 1.0 / (beats * p.get('spb', 0.43))
+    beats = mod if isinstance(mod, (int, float)) and not isinstance(mod, bool) and mod else default
+    return sync_hz(beats, p.get('spb', 0.43), float(p.get('lfo_max', LFO_MAX_HZ)))
 
 
 def wobble(m, dur, p, glide=None, mod=None):

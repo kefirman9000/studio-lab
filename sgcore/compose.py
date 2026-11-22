@@ -456,6 +456,8 @@ def apply_variety(st, opts, rnd):
             sg = _SIG.get(owner)
             if sg and sg[0] == role:
                 pool = [x for x in pool if x in sg[1]] or pool
+        if st.get('keep_sounds') and free and rr.random() < float(st['keep_sounds']):
+            free = False                              # (2.10) a genre modelled on one record keeps its own sounds
         if free and pool and rr.random() < p_pool:
             # the genre's own pool: its signature sound a little likelier, every other one an authentic alternative;
             # instruments your last songs in this genre used are picked less often, so the next one sounds fresh

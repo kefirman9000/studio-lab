@@ -12492,8 +12492,8 @@ derive('anthem_trance_2000', 'club_trance_2000s', 'Electronic',
 # warbly, slightly detuned modular-style pads and soaring leads, weather / wind / fire field recordings, a big
 # breakbeat with a flurry of percussion that arrives only after a long atmospheric opening, Am - Fmaj7 colour chords
 # that never resolve, a dark rolled-off top - and one continuous, flowing arrangement with no hard cuts
-FORMS['warped_electronica'] = [('intro', 16, {'pad', 'fx'}, {'filter_in': True}),                 # haze and weather
-                               ('verse', 8, {'pad', 'fx', 'chords', 'bass'}, {'layer_in': True}),  # the chords and sub
+FORMS['warped_electronica'] = [('intro', 16, {'pad', 'fx', 'bass'}, {'filter_in': True}),        # sub, haze, weather
+                               ('verse', 8, {'pad', 'fx', 'chords', 'bass', 'arp'}, {'layer_in': True}),   # chords + patch
                                ('verse', 8, {'pad', 'fx', 'chords', 'bass', 'lead'}, {}),         # the voice / lead
                                ('build', 8, {'pad', 'chords', 'bass', 'lead', 'top', 'fx'}, {'build': True}),
                                ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead', 'arp', 'fx'},
@@ -12514,15 +12514,25 @@ derive('warped_electronica', 'wonky_beats', 'Electronic',
        progs={'minor': [[0, 5, 3, 4], [0, 5, 0, 5], [0, 5, 3, 0], [5, 0, 3, 4]]}, own_progs=True, groove=None,
        drums={'kick': ['X.....x...X..x..', 'X.x.......X.....', 'X.....x.x.X...x.'], 'snare': ['....X..o.o..X..o', '....X.......X.o.'],
               'chat': ['x.xxx.x.x.xxx.xx', 'xxx.xxx.xxx.xxx.', 'x.x.x.x.x.x.x.x.'], 'rim': ['..x...x...x..x..', '...x..x.x....x..']},
-       chord_rh=['x-------x-------', 'x---------------', 'x-------x---x---'], chord_center=60,
+       chord_rh=['x-------x-------', 'x---------------', 'x-------x---x---'], chord_center=55,
        lead_rh=['x-------x-------', 'x---------------', '....x-------x---'], lead_oct=5,
-       sounds={'chords': 'jpmorph', 'pad': 'lushpad', 'lead': 'glidelead', 'arp': 'fmpluck'},
-       add_tracks=[T('texture', 'fx', 'texture', rev=0.6, db=-27)], texture_kind=['rain', 'wind', 'fire', 'wind', 'rain'],
-       pools=dict(bass=['sinebass', 'deepsub', 'moogbass', 'reese'],
-                  chords=['jpmorph', 'polysynth', 'virusflutter', 'epiano'],     # poly-synth chords, slightly unstable
-                  pad=['lushpad', 'vocalpad', 'warmpad', 'dddpad', 'glasspad'],
-                  arp=['fmpluck', 'pluck', 'viruspluck', 'hypnopluck'],
-                  lead=['glidelead', 'dreamlead', 'softlead', 'pluckvox']),
+       # (2.10) the record's own sounds, kept (no swapping to other genres' synths, no section rotation), and its
+       # balance: the synths carry the track - big and forward over a constant sub - the drums sit under them
+       keep_sounds=0.85, no_rotation=True,
+       tracks=[T('kick', 'kick', 'kick', db=-14), T('snare', 'snare', 'snare', rev=0.3, db=-17),
+               T('chat', 'top', 'chat', pan=0.25, db=-31), T('rim', 'top', 'rim', pan=-0.3, rev=0.3, db=-31),
+               T('bass', 'bass', 'sinebass', db=-10, p=dict(cut=300)),
+               T('chords', 'chords', 'polysynth', rev=0.5, chorus=0.5, wide=0.4, db=-16),
+               T('pad', 'pad', 'modularpad', rev=0.65, wide=0.6, db=-18),
+               T('arp', 'arp', 'modularseq', rev=0.5, dly=0.45, pan=0.2, db=-23),
+               T('lead', 'lead', 'modularlead', rev=0.55, dly=0.35, db=-15),
+               T('texture', 'fx', 'texture', rev=0.6, db=-26)],
+       texture_kind=['rain', 'wind', 'fire', 'wind', 'rain'],
+       pools=dict(bass=['sinebass', 'deepsub'],
+                  chords=['polysynth', 'modularpad', 'jpmorph'],
+                  pad=['modularpad', 'lushpad', 'vocalpad'],
+                  arp=['modularseq', 'fmpluck', 'hypnopluck'],
+                  lead=['modularlead', 'glidelead', 'dreamlead']),
        # space and feeling over loudness: a wide, deep image and room to breathe
        master=dict(lufs=-11.0, air=0.0, low=2.0, width=1.25, lofi=True, wobble=2.6))
 
