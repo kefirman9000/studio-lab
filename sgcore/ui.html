@@ -1254,7 +1254,7 @@ function addResult(r, target){
   const fusion=r.fusion?Object.entries(r.fusion).map(([p,s])=>`${p}←<span>${styleName(s)}</span>`).join(' · '):'';
   el.innerHTML=`<div class="top"><button class="play">▶</button><div style="min-width:0"><div class="tt">${title}</div>
     <div class="mt">${r.key} · ${r.meter&&r.meter!=='4/4'?r.meter+' · ':''}${r.bpm_quarter&&r.bpm_quarter!==r.bpm?r.bpm_quarter:r.bpm} BPM · seed ${r.seed}${r.mood?' · '+r.mood:''}${r.preview?' · preview':' · '+r.duration}</div>
-    ${(r.arrangement&&r.arrangement.length)||r.genre_fit||r.mix_report?`<div class="tags">${mixTag(r)}${r.genre_fit?`<span class="tag ${r.genre_fit.score>=100?'ok':''}" title="Genre check: ${esc(r.genre_fit.checks.map(c=>(c.ok?'✓ ':'✗ ')+c.name).join(' · '))}">genre fit ${r.genre_fit.score}%</span>`:''}${(r.arrangement||[]).map(a=>`<span class="tag">${esc(a)}</span>`).join(' ')}</div>`:''}</div></div>
+    ${(r.arrangement&&r.arrangement.length)||r.genre_fit||r.mix_report?`<div class="tags">${mixTag(r)}${r.genre_fit?`<span class="tag ${r.genre_fit.score>=100?'ok':''}" title="Genre check: ${esc(r.genre_fit.checks.map(c=>(c.ok?'✓ ':'✗ ')+c.name).join(' · '))}">genre fit ${r.genre_fit.score}%</span>${r.genre_fit.score<100?'<button class="mini acc" data-a="fixfit" title="Repair what breaks the genre (tempo, choices that fight it, a nearby seed that fits better) and hear it again">✓ Fix genre fit</button>':''}`:''}${(r.arrangement||[]).map(a=>`<span class="tag">${esc(a)}</span>`).join(' ')}</div>`:''}</div></div>
     <canvas class="wave"></canvas>
     <div class="info">Chords <span>${r.chords}</span>${r.chords_alt?` · break <span>${r.chords_alt}</span>`:''}${fusion?' · fusion '+fusion:''}
       ${inst?`<details class="snd"><summary>Sounds</summary>${inst}</details>`:''}</div>
@@ -1314,6 +1314,11 @@ function addResult(r, target){
     const k=b.dataset.mu; const m=new Set(o.muted||[]); m.has(k)?m.delete(k):m.add(k); o.muted=[...m];
     $('#status').textContent=(m.has(k)?'Removing ':'Bringing back ')+k+' - same take…'; run(true,1,o); });
   el.querySelector('[data-a=ab]').onclick=()=>abPick(r, el);
+  const fixb=el.querySelector('[data-a=fixfit]');
+  if(fixb) fixb.onclick=async()=>{ fixb.textContent='…'; const o=JSON.parse(JSON.stringify(r.options||{})); if(r.seed!=null) o.seed=r.seed;
+    const f=await api('/api/fix',{options:o}); fixb.textContent='✓ Fix genre fit';
+    $('#status').textContent=`Genre fit ${f.before}% → ${f.after}%: ${(f.changes||[]).join('; ')}`;
+    if(f.after>f.before) run(!!r.preview,1,f.options); };
   const sk=el.querySelector('[data-a=skip]'); if(sk) sk.onclick=()=>{ const t=introEnd(r); if(playingId!==r.id) togglePlay(r.id,url,btn,cv); const go=()=>{ audio.currentTime=t; }; if(audio.readyState>0) go(); else audio.addEventListener('loadedmetadata',go,{once:true}); };
   el.querySelectorAll('[data-mk]').forEach(c=>c.onclick=()=>{ const on=!c.classList.contains('on'); c.classList.toggle('on',on); c.textContent=(on?'✓ ':'○ ')+c.textContent.slice(2); });
   el.querySelector('[data-a=more]').onclick=()=>{ const keep=[...el.querySelectorAll('[data-mk].on')].map(c=>c.dataset.mk); moreLike(r, keep); };
@@ -1606,7 +1611,34 @@ async function loadLibrary(){
   $('#stMode').onchange=saveSt; $('#stDays').onchange=saveSt;
   $('#stClean').onclick=async()=>{ const r=await api('/api/storage/clean',{}); $('#status').textContent=`Cleaned: ${r.previews} previews, ${r.trimmed} songs trimmed, ${r.deleted} deleted - ${r.freed_mb} MB freed.`; loadLibrary(); };
   if(!lib.length){box.insertAdjacentHTML('beforeend','<div class="empty"><div class="big">🗂</div>Full songs you create show up here.</div>');return}
-  lib.forEach(it=>{ const i=it.info||{};
+  // (2.7) filters: genre, rating / kept, genre fit, name - and a tip for comparing any two songs
+  const LF=window.LIBF=window.LIBF||{g:'',r:'',f:'',q:''};
+  const gsty=s=>((s.options||{}).style)||'';
+  const genres=[...new Set(lib.map(gsty).filter(Boolean))].sort((a,b)=>styleName(a).localeCompare(styleName(b)));
+  const bar=document.createElement('div'); bar.className='row'; bar.style.cssText='gap:6px;flex-wrap:wrap;margin:0 0 10px;align-items:center';
+  bar.innerHTML=`<b>Filter</b><input id="lfQ" placeholder="name…" style="width:140px" value="${esc(LF.q)}">
+    <select id="lfG" style="width:auto"><option value="">All genres</option>${genres.map(g=>`<option value="${esc(g)}" ${LF.g===g?'selected':''}>${esc(styleName(g))}</option>`).join('')}</select>
+    <select id="lfR" style="width:auto"><option value="">Any rating</option><option value="kept">⭐ kept</option><option value="up">👍 liked</option><option value="down">👎 disliked</option><option value="none">not rated</option></select>
+    <select id="lfF" style="width:auto"><option value="">Any genre fit</option><option value="100">perfect fit</option><option value="low">below 100%</option></select>
+    <span class="hint" id="lfN"></span><span class="hint" style="margin-left:auto">Tip: press A/B on any two songs to compare them</span>`;
+  box.appendChild(bar); $('#lfR').value=LF.r; $('#lfF').value=LF.f;
+  const list=document.createElement('div'); box.appendChild(list);
+  const fitOf=it=>{ const g=(it.info||{}).genre_fit; return g&&typeof g==='object'?g.score:null; };
+  const keep=it=>{ const i=it.info||{}, fit=fitOf(it);
+    if(LF.g&&gsty(it)!==LF.g) return false;
+    if(LF.r==='kept'&&!it.kept) return false; if(LF.r==='up'&&!(it.rating>0)) return false;
+    if(LF.r==='down'&&!(it.rating<0)) return false; if(LF.r==='none'&&it.rating) return false;
+    if(LF.f==='100'&&fit!==100) return false; if(LF.f==='low'&&!(fit!=null&&fit<100)) return false;
+    if(LF.q){ const hay=((i.name||'')+' '+it.title+' '+styleName(gsty(it))).toLowerCase(); if(!hay.includes(LF.q.toLowerCase())) return false; }
+    return true; };
+  const draw=()=>{ list.innerHTML=''; const shown=lib.filter(keep); $('#lfN').textContent=`${shown.length} of ${lib.length}`;
+    if(!shown.length){ list.innerHTML='<div class="hint">No songs match these filters.</div>'; return; }
+    shown.forEach(it=>libEntry(it, list)); };
+  $('#lfQ').oninput=e=>{LF.q=e.target.value; draw();};
+  [['#lfG','g'],['#lfR','r'],['#lfF','f']].forEach(([id,k])=>$(id).onchange=e=>{LF[k]=e.target.value; draw();});
+  draw();
+}
+function libEntry(it, box){ { const i=it.info||{};
     if(it.trimmed){                                     // audio cleared to save space: MIDI + settings remain
       const el=document.createElement('div'); el.className='res';
       el.innerHTML=`<div class="tt">${esc(i.name?'“'+i.name+'” · ':'')}${esc(styleName((it.options||{}).style||''))}</div>
@@ -1617,7 +1649,7 @@ async function loadLibrary(){
       el.querySelector('[data-tr=use]').onclick=()=>applyOptions(it.options);
       el.querySelector('[data-tr=keep]').onclick=async e=>{ const r=await api('/api/library/keep',{name:it.title, keep:!it.kept}); if(r.ok){ it.kept=r.kept; e.currentTarget.textContent=it.kept?'⭐ Kept':'☆ Keep'; e.currentTarget.classList.toggle('acc',it.kept);} };
       box.appendChild(el); return; }
-    addResult({...i, id:'lib'+it.title, preview:false, options:it.options, urls:it.urls, files:{waveform:it.urls.waveform}, lib_title:it.title, kept:it.kept}, box); });
+    addResult({...i, id:'lib'+it.title, preview:false, options:it.options, urls:it.urls, files:{waveform:it.urls.waveform}, lib_title:it.title, kept:it.kept}, box); }
 }
 async function savePreset(o){
   const name=prompt('Name this preset:', styleName((o||options()).style)+' '+((o||options()).mood||''));

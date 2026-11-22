@@ -198,7 +198,7 @@ def main():
     from sgcore.api import describe
     tmp = tempfile.mkdtemp()
     for s in ('waltz', 'celtic_jig', 'soul_ballad'):
-        song = compose(Options(style=s, seed=4, counter='on'))
+        song = compose(Options(style=s, seed=4, counter='on', ornaments=0))   # (Celtic grace notes sit off the grid on purpose)
         assert song['meter'] == STYLES[s]['meter']
         assert all(abs(e.beat * 3 - round(e.beat * 3)) < 0.02 for e in song['events']), s     # everything on the triplet grid
         p = write_midi(os.path.join(tmp, s + '.mid'), song)

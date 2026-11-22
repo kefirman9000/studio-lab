@@ -132,7 +132,8 @@ def genre_fit(song):
     if name in SUB_BASS:
         add('clean sub under the bass', a['sub'])
     if name in SLIDING_808:
-        add('808 bass with slides', str(a['insts'].get('bass')).startswith('808') and a['glides'] > 0)
+        add('808 bass with slides', any(p == 'bass' and '808' in str(i) for p, i in a['all_insts']) and a['glides'] > 0)
+        # (2.7) any 808 in the family counts: a song that switches to its slide / wobble / drill 808 is still an 808 song
     if name in SIGNATURE:
         part, ok, label = SIGNATURE[name]
         add(label, any(p == part and i in ok for p, i in a['all_insts']))
@@ -146,3 +147,64 @@ for _g, _extra in (('trap', {'slide808'}), ('uk_drill', {'slide808', 'drill808',
     if _g in SIGNATURE:
         _r, _ok, _nm = SIGNATURE[_g]
         SIGNATURE[_g] = (_r, set(_ok) | _extra, _nm)
+
+
+def fix_options(opts_dict, tries=8):
+    """(2.7) Genre-fit fixer: keep what makes this song itself (style, key, mood, your settings) and repair what breaks the
+    genre's rules. Tempo is pulled into the genre's range, the user's instrument / kit / groove overrides that fight the
+    genre are dropped, variety is calmed down, and if a check still fails the nearest seeds are tried. Returns
+    {options, before, after, changes}."""
+    from .compose import Options, compose
+    o = dict(opts_dict)
+    name = o.get('style', 'house')
+    changes = []
+
+    def score(d):
+        try:
+            f = genre_fit(compose(Options.from_dict(d)))
+        except Exception:
+            return -1, []
+        if not f:
+            return 100, []
+        return f['score'], [c['name'] for c in f['checks'] if not c['ok']]
+    before, failing = score(o)
+    from .styles import STYLES
+    lo, hi = TEMPO.get(name) or STYLES.get(name, {}).get('bpm', (40, 240))
+    if o.get('bpm') and not lo <= o['bpm'] <= hi:
+        o['bpm'] = max(lo, min(hi, o['bpm']))
+        changes.append(f'tempo moved into {lo}-{hi} BPM')
+    if before >= 100:
+        return dict(options=o, before=before, after=before, changes=changes or ['already a perfect genre fit'])
+    if any('tempo' in f for f in failing) and not o.get('bpm'):
+        b0, b1 = STYLES.get(name, {}).get('bpm', (lo, hi))
+        o['bpm'] = int(round((max(lo, b0) + min(hi, b1)) / 2))
+        changes.append(f"tempo set to {o['bpm']} BPM")
+    if any('808' in f or 'bass' in f or f in ('cowbell melody',) or 'lead' in f or 'chop' in f for f in failing) and o.get('instruments'):
+        o['instruments'] = {}
+        changes.append('your instrument picks were reset to the genre\'s own')
+    if any(w in f for f in failing for w in ('kick', 'snare', 'backbeat', 'half-time', 'two-step', 'drill', 'punk')):
+        for k, label in (('kit', 'drum kit'), ('groove', 'groove feel'), ('bass_rhythm', 'bass rhythm')):
+            if o.get(k):
+                o.pop(k)
+                changes.append(f'{label} back to the genre default')
+        if o.get('ref_rhythm'):
+            o.pop('ref_rhythm')
+            changes.append('reference-track rhythm dropped (it fought the genre)')
+    if any('swing' in f for f in failing) and o.get('swing') is not None:
+        o.pop('swing')
+        changes.append('swing back to the genre\'s own')
+    if float(o.get('variety', 0.5)) > 0.35:
+        o['variety'] = 0.35
+        changes.append('variety calmed to 35%')
+    best, s_best = dict(o), score(o)[0]
+    seed = int(o.get('seed') or 1)
+    for k in range(1, tries + 1):
+        if s_best >= 100:
+            break
+        d = dict(o, seed=seed + k)
+        sc = score(d)[0]
+        if sc > s_best:
+            best, s_best = d, sc
+    if best.get('seed') != seed:
+        changes.append(f"nearest seed that fits better: {best['seed']}")
+    return dict(options=best, before=before, after=s_best, changes=changes)

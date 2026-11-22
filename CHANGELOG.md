@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.7.0
+- **The genre test suite passes again** (it had been failing since 2.4.0, which hid real bugs). Fixes along the way:
+  - **Trap and drill 808s were marked "not sliding".** The songs slid fine. The check only knew the plain "808", so a song
+    that switched to its slide / wobble / drill 808 for the VIP section failed. Every 808 in the family now counts.
+  - **Reading chord progressions from your reference MIDI.** Major-7th chords were read as their upper triad (G-maj7 as
+    B minor, so IV came out as vi). The bass now counts double, as intended, and the bar's real bass note decides: the
+    note the bass holds, not a quick pickup.
+  - Genres no longer carry sound lists for parts they don't have (left over from genre inheritance: a chant had an 808
+    list), and a genre's own sound always leads its list.
+  - The meter test now leaves out the Celtic grace notes, which sit just off the beat on purpose.
+- **Genre-fit fixer:** any song under 100% genre fit gets a **Fix genre fit** button. It pulls the tempo into the genre's
+  range, drops your overrides that fight the genre (instruments, kit, groove, reference rhythm), calms variety, tries
+  nearby seeds, then plays the fixed version.
+- **Library filters:** filter your songs by genre, rating (kept, liked, disliked, not rated), genre fit and name. The library
+  now lists your last 300 songs (was 60).
+- **Genres lead with the new instruments:**
+  - The tonewheel organ with its two-rotor speaker is now the organ in gospel, modern gospel, soul jazz, reggae, soul
+    ballad, blues, ska, jam band and funk. The rock organ is the organ in rock.
+  - Funk's second guitar is the wah guitar.
+  - The old sounds stay in rotation, and the old organ keeps its classic Leslie when picked.
+- **Song titles never repeat a word** ("Static of the Static" became "Static of the City").
+
 ## 2.6.1
 - New genre: **Progressive House Journey (Y2K)** - the long, hypnotic turn-of-the-millennium progressive DJ track (128-131 BPM, about 6 minutes) that builds by adding one part at a time: percussion alone, a rolling bass filtering in, claps and an evolving widescreen pad, a dark hypnotic pluck under delays, muted stabs, and only late a sparse gliding lead - two breakdowns, a peak, then the parts leave one by one. Soft round kick, pumping sidechain, slow filter sweeps, a warm controlled top end.
 - New sounds for it (usable anywhere): **rolling progressive bass**, **evolving widescreen pad**, **hypnotic pluck**, **dark progressive stab** and **gliding progressive lead**.

@@ -452,13 +452,21 @@ def _lib_item(d, base, s=None):
 def library():
     items = []
     d = out_dir()
+    rated = {}                                       # (2.7) latest whole-song 👍 / 👎 per (style, seed), for the filters
+    for r in load_ratings():
+        o = r.get('options') or {}
+        if not r.get('part') and o.get('style'):
+            rated[(o.get('style'), o.get('seed'))] = r.get('rating')
     for f in sorted(os.listdir(d), key=lambda x: os.path.getmtime(os.path.join(d, x)), reverse=True):
         if f.endswith('_settings.json'):
             try:
-                items.append(_lib_item(d, f[:-len('_settings.json')]))
+                it = _lib_item(d, f[:-len('_settings.json')])
+                o = it.get('options') or {}
+                it['rating'] = rated.get((o.get('style'), o.get('seed', (it.get('info') or {}).get('seed'))))
+                items.append(it)
             except Exception:
                 pass
-        if len(items) >= 60:
+        if len(items) >= 300:                        # (2.7) the filters make a longer list usable
             break
     return items
 
@@ -1029,6 +1037,9 @@ class Handler(BaseHTTPRequestHandler):
             out = plugin_state()
             out['scan'] = dict(found=len(res['found']), other=len(res['other']), dirs=res['dirs'])
             return self._json(out)
+        if p == '/api/fix':                              # (2.7) repair what breaks the genre, keep the rest of the song
+            from .fitness import fix_options
+            return self._json(fix_options(body.get('options') or {}))
         if p == '/api/rate':
             rs = load_ratings()
             rec = dict(options=body.get('options', {}), rating=1 if body.get('rating', 0) > 0 else -1, t=int(time.time()))

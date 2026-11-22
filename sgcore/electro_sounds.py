@@ -85,8 +85,39 @@ def add_new_sounds():
                     lst.append(inst)
 
 
+# (2.7) genres that now LEAD with a new instrument: {genre: {track name: new sound}}. The old sound stays in the rotation.
+LEAD_WITH = {
+    'gospel': {'chords': 'tonewheel'}, 'modern_gospel': {'chords': 'tonewheel'}, 'soul_jazz': {'chords': 'tonewheel'},
+    'reggae': {'chords': 'tonewheel'}, 'soul_ballad': {'pad': 'tonewheel'}, 'blues': {'pad': 'tonewheel'},
+    'ska': {'pad': 'tonewheel'}, 'jam_band': {'pad': 'tonewheel'}, 'funk': {'pad': 'tonewheel', 'arp': 'wahgtr'},
+    'rock': {'pad': 'rockorgan'},
+}
+
+
+def lead_with_new():
+    from .instruments import INSTRUMENTS
+    for g, parts in LEAD_WITH.items():
+        st = STYLES.get(g)
+        if not st:
+            continue
+        for t in st['tracks']:
+            new = parts.get(t.get('name'))
+            if not new or new not in INSTRUMENTS or t.get('inst') == new:
+                continue
+            old = t['inst']
+            t['inst'] = new
+            # (the part keeps its leslie_fx: the old organ, if the rotation picks it, still gets its Leslie;
+            #  the new organs skip it and spin their own two-rotor speaker - see render.py)
+            lst = POOLS.setdefault(g, {}).setdefault(t['layer'], [old])
+            for x in (new, old):
+                if x in lst:
+                    lst.remove(x)
+            lst[:0] = [new, old]
+
+
 def apply():
     add_new_sounds()
+    lead_with_new()
     from .instruments import INSTRUMENTS
     changed = []
     for g, st in STYLES.items():
@@ -128,6 +159,16 @@ def apply():
             for t in STYLES[g]['tracks']:
                 if t.get('layer') == role and t.get('inst') in m and m[t['inst']]:
                     t['inst'] = m[t['inst']]
+    for g, st in STYLES.items():                       # (2.7) no sound lists for parts a genre doesn't have (inherited
+        have = {t.get('layer') for t in st['tracks']}  # leftovers - a chant has no bass, so no 808 list either)
+        for role in [r for r in POOLS.get(g, {}) if r not in have]:
+            del POOLS[g][role]
+    for g, st in STYLES.items():                       # (2.7) a genre's own sound leads its list when the list has it
+        for t in st['tracks']:
+            lst = POOLS.get(g, {}).get(t.get('layer'))
+            if t.get('name') == t.get('layer') and lst and t.get('inst') in lst and lst[0] != t.get('inst'):
+                lst.remove(t['inst'])
+                lst.insert(0, t['inst'])
     from .guitars2 import NEW as RIG
     from .styles import GTR_UPGRADE
     for g, st in STYLES.items():

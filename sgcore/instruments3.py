@@ -417,8 +417,6 @@ for _k, (_fn, _info, _roles, _gm, _cat) in NEW.items():
 # whole-part effects (render.py runs them like the guitar rigs)
 def _rot(default):
     def fx(buf, tcfg, spb):
-        if tcfg.get('leslie_fx'):                      # the part already has the classic Leslie effect: don't stack two
-            return buf
         return rotary(buf, (tcfg.get('p') or {}).get('rotor', default(tcfg)), spb)
     return fx
 

@@ -41,7 +41,8 @@ def invent(style, category, mood, seed):
     pat = rng.choice(PATTERNS)
     n = rng.choice(NOUN[cat])
     a = rng.choice([x for x in adj if x != n] or adj)
-    return pat.format(a=a, n=n, a2=rng.choice(A2[cat]))
+    a2 = rng.choice([x for x in A2[cat] if x.lower() not in (n.lower(), a.lower())] or A2[cat])   # (2.7) no 'Static of the Static'
+    return pat.format(a=a, n=n, a2=a2)
 
 
 def clean(name):

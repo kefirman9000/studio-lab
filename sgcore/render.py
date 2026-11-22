@@ -932,7 +932,7 @@ class Renderer:
             buf = np.vstack([svf_sweep(buf[c], cut, q=0.9) for c in range(buf.shape[0])]).astype(np.float32)
         if tcfg['name'] == self.st.get('kick_track', 'kick') and self.st.get('rumble') and np.any(buf):
             buf = self._rumble(buf, float(self.st['rumble']))
-        if tcfg.get('leslie_fx') and np.any(buf):
+        if tcfg.get('leslie_fx') and tcfg['inst'] not in _PART_FX and np.any(buf):   # (the new organs spin their own)
             buf = leslie(buf, float(tcfg['leslie_fx']), float(tcfg.get('overdrive', 0.0)))
         if any(tcfg.get(k) for k in _fx2.KEYS) and np.any(buf):    # 1.78 pedals (sgcore.fx2)
             buf = _fx2.apply(buf, tcfg, self)

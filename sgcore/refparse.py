@@ -230,11 +230,17 @@ def _progression(notes, root, scale, beats_per_bar):
             if drum or b + l <= b0 or b >= b1:
                 continue
             ov = min(b + l, b1) - max(b, b0)
-            w[(m - root) % 12] += ov
+            w[(m - root) % 12] += ov * (2.0 if m < 52 else 1.0)          # bass notes count double (as documented)
             lo = min(lo, m)
         if w.sum() == 0:
             continue
-        bass = [m for b, l, m, v, d in notes if not d and b0 <= b < b1 and m <= lo + 4]
+        # (2.7) the bar's real bass: the lowest notes (by sounding time), not whichever low note the file listed first -
+        # so a G-major-7 is read as IV (root in the bass), not as the B-minor triad sitting on top of it
+        low = Counter()
+        for b, l, m, v, d in notes:                       # the bass register (an octave up from the lowest note), by time
+            if not d and b + l > b0 and b < b1 and m <= max(lo + 7, 47):
+                low[(m - root) % 12] += min(b + l, b1) - max(b, b0)
+        bass = [root + low.most_common(1)[0][0]] if low else []
         best, bs = None, -1e9
         for d in range(7):
             pcs = {sc[(d + k) % 7] for k in (0, 2, 4)}
