@@ -545,11 +545,12 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None, life=
         y = F.reed_conical(breath, turb, delay, _CH['pos'] if reed_pos is None else reed_pos, _CH['offset'], _CH['slope'],
                            _CH['refl'])
         y = resample_poly(y, 1, OS)[: b - a]                         # back to the normal rate, the fizz filtered off
-        y = np.diff(y, prepend=y[0]) * 2.3 + 0.55 * y                # radiation: (2.4.13) most of 2.4.6's brightness back
+        y = np.diff(y, prepend=y[0]) * 3.0 + 0.4 * y                 # radiation: (2.4.14) all of 2.4.6's brightness
         y = eq(eq(eq(eq(y, 'peak', 1150, 1.2, 3.5), 'peak', 1300, 1.1, 2.5), 'peak', 2800, 1.2, 3.5), 'peak', 3200, 1.1, 1.5)
         y = eq(eq(y, 'peak', 520, 0.9, 1.5), 'peak', 300, 1.0, -2.0)   # (2.4.13) 2.4.6's nasal formants over 2.4.8's, less boom   # nasal bite + body
-        y = eq(y, 'peak', 6500, 0.8, -5.0)                           # tame the hard fizz up top
-        out[a:a + len(y)] += hp(lp(y, 10000), 190) * 0.16
+        y = eq(eq(y, 'peak', 6500, 0.8, -1.5), 'highshelf', 3500, 0.7, 3.0)   # (2.4.14) open the top: it was muffled
+        y = eq(eq(y, 'highpass', 650, 0.7), 'peak', 2400, 0.6, 5.0)  # and the fundamental no longer drowns the reed's bright overtones
+        out[a:a + len(y)] += hp(lp(y, 14000), 220) * 0.19
     return out
 
 
@@ -562,7 +563,7 @@ def _hall(x, seed=4):
         d = int(ms * 0.001 * SR)
         for c in range(out.shape[0]):
             dc = d + int(rnd.integers(0, 60))
-            out[c, dc:] += g * lp(x[(c + 1) % out.shape[0], :-dc], 4500)
+            out[c, dc:] += g * lp(x[(c + 1) % out.shape[0], :-dc], 7000)
     return out / 1.2
 
 

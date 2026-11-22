@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.14
+- Bagpipes much brighter, not muffled: the low fundamental no longer drowns the reed's overtones, the top end is opened up (all of 2.4.6's brightness, a high shelf, a 2.4 kHz presence lift, the old fizz-tamer mostly removed) and the hall's reflections are brighter too.
+
 ## 2.4.13
 - Bagpipes: some of 2.4.6's sound back on top of 2.4.12 - brighter, reedier radiation, 2.4.6's nasal formants layered with 2.4.8's, less low boom, the reeds blended a bit harder into one wall, and the pipers a little tighter together. Still the 4-piper group, still no hiss.
 
