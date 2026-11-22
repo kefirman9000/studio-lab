@@ -1,1 +1,5 @@
-{}
+{
+ "obxf": {
+  "error": "couldn't reach GitHub: HTTP Error 403: rate limit exceeded (GitHub limits how often it can be asked - try again in an hour). You can also download it from https://surge-synth-team.org/ob-xf/"
+ }
+}
