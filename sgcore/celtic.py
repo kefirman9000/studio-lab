@@ -330,6 +330,89 @@ def d_tenor_drum(p):
     return fade_out(soft(y, 1.2), 0.03)
 
 
+# ---- (2.5.0) more of the Celtic world: harps, citterns, the other bagpipes, Breton reeds, the hurdy-gurdy, melodeon ----
+
+def c_clarsach(m, dur, p, glide=None, mod=None):
+    """Clarsach - the old wire-strung Gaelic harp, plucked with the fingernails: a bright, bell-like ring that sustains
+    for seconds, a faint metallic shimmer from the brass strings and the sympathetic ring of its neighbours."""
+    f = float(mtof(m))
+    n = int(max(dur, 0.1) * SR) + int(3.0 * SR)
+    t = np.arange(n) / SR
+    y = _va.string(f, n, _bass_exc(f, 'pick', 1.3), t60=5.0 * (220 / max(f, 90)) ** 0.25, bright=0.9, pickup=0.0)
+    y = y + 0.18 * _va.string(f * 2 ** (4 / 1200), n, _bass_exc(f, 'finger', 1.0), t60=6.0, bright=0.8) * np.clip(t / 0.15, 0, 1)
+    y = eq(eq(y, 'peak', 2600, 1.0, 4.0), 'peak', 350, 1.2, 2.0)       # brass shimmer + the soundbox
+    return hp(y, 110) * 0.3
+
+
+def c_cittern(m, dur, p, glide=None, mod=None):
+    """Cittern - the small, high, flat-backed cousin of the bouzouki: tight steel courses, crisp and jangly."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    n = gate + int(1.2 * SR)
+    out = np.zeros(n)
+    for k, fk in enumerate((f, f * 2 ** (8 / 1200), f * 2.0)):
+        d = int(0.003 * SR * k)
+        y = _va.string(fk, n - d, _bass_exc(fk, 'pick', 1.8), t60=2.4 * (220 / max(fk, 90)) ** 0.3, bright=0.92,
+                       gate=gate - d if gate > d else None, mute_t60=0.2, pickup=0.0)
+        out[d:] += y * (0.55, 0.45, 0.22)[k]
+    out = eq(eq(out, 'peak', 380, 1.4, 2.0), 'peak', 4000, 1.3, 4.5)
+    return hp(out, 140) * 0.3
+
+
+def _reed_voice(name, m, dur, pw, peaks, bright, drone=None, vib=0.0, att=0.008):
+    f = float(mtof(m))
+    r = _rng(name, m, dur)
+    env = _gate(dur, att, 0.05, 0.95, 0.05)
+    n = len(env)
+    t = np.arange(n) / SR
+    fv = f * 2 ** ((vib * np.sin(2 * np.pi * 5.2 * t) * np.clip((t - 0.2) / 0.3, 0, 1)) / 1200)
+    y = lp(_reed(fv, n, r, pw), bright)
+    for fc, q, g in peaks:
+        y = eq(y, 'peak', fc, q, g)
+    y = y * env
+    if drone is not None:
+        y = y + drone * env
+    return y
+
+
+def c_smallpipes(m, dur, p, glide=None, mod=None):
+    """Scottish smallpipes - bellows-blown, cylindrical bore, quiet and sweet enough for the parlour: soft-edged, round,
+    with gentle drones on the tonic."""
+    f = float(mtof(m))
+    n = len(_gate(dur, 0.01, 0.05, 0.95, 0.05))
+    root = 58.27 if p.get('drone_root') is None else float(p['drone_root'])
+    dr = lp(saw(root * 2, n) * 0.6 + saw(root * 4 * 2 ** (2 / 1200), n) * 0.35, 900) * 0.18
+    y = _reed_voice('smallpipes', m, dur, 0.3, ((900, 1.0, 3.0), (2200, 1.2, 2.0), (300, 1.0, -3.0)), 4200, dr)
+    return hp(y, 90) * 0.2 * (220 / max(f, 220)) ** 0.1
+
+
+def c_gaita(m, dur, p, glide=None, mod=None):
+    """Gaita - the Galician / Asturian bagpipe: a conical chanter, sweeter and more open than the Highland pipes, played
+    with vibrato and a little expression, over a single deep bass drone (the roncón)."""
+    root = 73.42 if p.get('drone_root') is None else float(p['drone_root'])
+    n = len(_gate(dur, 0.01, 0.05, 0.95, 0.05))
+    dr = lp(saw(root, n) * 0.7 + saw(root * 2, n) * 0.3, 1100) * 0.2
+    y = _reed_voice('gaita', m, dur, 0.2, ((1400, 1.3, 4.5), (3000, 1.4, 3.0), (350, 1.0, -3.0)), 6500, dr, vib=8.0)
+    return hp(y, 70) * 0.18
+
+
+def c_bombarde(m, dur, p, glide=None, mod=None):
+    """Bombarde - the Breton oboe: a loud, piercing double reed that answers the biniou in call and response."""
+    y = _reed_voice('bombarde', m, dur, 0.11, ((1800, 1.4, 6.0), (3600, 1.5, 4.0), (450, 1.0, -5.0)), 8000, vib=3.0, att=0.012)
+    return hp(y, 280) * 0.16
+
+
+def c_melodeon(m, dur, p, glide=None, mod=None):
+    """Melodeon - the Irish/Scottish button box: two reeds tuned 'wet' (well apart), so every note shimmers with a fast
+    tremolo, bouncy and bright."""
+    f = float(mtof(m))
+    env = _gate(dur, 0.015, 0.04, 0.9, 0.04)
+    n = len(env)
+    x = square(f, n, pw=0.4) * 0.5 + square(f * 2 ** (22 / 1200), n, pw=0.4) * 0.5 + saw(f * 2 ** (-6 / 1200), n) * 0.3
+    y = eq(eq(lp(x, 7000), 'peak', 2000, 1.3, 4.0), 'peak', 450, 1.0, -2.0)
+    return hp(y, 170) * env * 0.15
+
+
 NEW = {
     'fiddle': (c_fiddle, 'Fiddle (session / folk bowing)', 110, ('lead', 'arp')),
     'bouzouki': (c_bouzouki, 'Irish bouzouki (paired steel courses)', 25, ('chords', 'arp')),
@@ -340,6 +423,12 @@ NEW = {
     'bagpipe': (c_bagpipe, 'Great Highland bagpipe (chanter)', 109, ('lead',)),
     'bagpipe_bright': (c_bagpipe_bright, 'Great Highland bagpipe, bright (more edge and overtones)', 109, ('lead',)),
     'bagpipe_drones': (c_bagpipe_drones, 'Highland bagpipe drones', 109, ('pad',)),
+    'clarsach': (c_clarsach, 'Clarsach (wire-strung Gaelic harp)', 46, ('arp', 'chords', 'lead')),
+    'cittern': (c_cittern, 'Cittern (bright steel courses)', 25, ('chords', 'arp')),
+    'smallpipes': (c_smallpipes, 'Scottish smallpipes (soft, bellows-blown)', 109, ('lead',)),
+    'gaita': (c_gaita, 'Gaita (Galician bagpipe)', 109, ('lead',)),
+    'bombarde': (c_bombarde, 'Bombarde (Breton oboe)', 68, ('lead',)),
+    'melodeon': (c_melodeon, 'Melodeon (button accordion)', 21, ('lead', 'chords')),
     'synthpipes': (c_synthpipes, 'Synth pipes (bagpipe-style EDM lead)', 109, ('lead', 'arp')),
 }
 for _n, (_fn, _info, _gm, _roles) in NEW.items():

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.5.0
+**More Celtic**
+- New sounds: **clarsach** (wire-strung Gaelic harp), **cittern**, **Scottish smallpipes**, **gaita** (Galician bagpipe with its roncón drone), **bombarde** (Breton oboe) and **melodeon** (button accordion). They join the pools of the Celtic genres.
+- New genres: **Pipes & Orchestra** (the pipe band with strings, horns, contrabass and timpani), **Breton An Dro** (fest-noz: bombarde, cittern, driving bodhrán), **Galician Muiñeira** (gaita over tamboril and bombo) and **Clarsach Air** (slow wire-harp music).
+- Uilleann pipes, gaita and smallpipes drones now sit on the song's key.
+
 ## 2.4.15
 - New sound: **Great Highland bagpipe, bright** - the same pipe band with its overtones pushed well forward (more edge, open top, same loudness). Picked by Highland Pipe Band and the Celtic genres alongside the regular bagpipe, or choose it yourself for the lead.
 - Highland Pipe Band: the drones are 5 dB lower, so the chanters sit on top.

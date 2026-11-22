@@ -13,7 +13,7 @@ from scipy import signal
 from scipy.ndimage import uniform_filter1d
 
 from .dsp import (SR, hp, lp, eq, soft, k_weight, compressor, limiter, low_limit, lufs, active_rms_db, make_ir, reverb, pingpong,
-                  make_spring_ir, dub_delay, svf_sweep,
+                  make_spring_ir, dub_delay, svf_sweep, mtof,
                   sweep_region, write_wav_float)
 from .instruments import INSTRUMENTS, DRUMS, fx_riser, fx_impact, fx_vinyl, fx_texture
 from . import va as _va
@@ -502,6 +502,8 @@ class Renderer:
         k_ = self.song.get('key') if isinstance(self.song, dict) else None
         if k_ is not None and hasattr(k_, 'scale'):     # (1.92) sounds that stack intervals keep them in the key
             p.setdefault('key_pcs', tuple(sorted({(k_.root + s_) % 12 for s_ in k_.scale})))
+            if tcfg['inst'] in ('uilleann', 'gaita', 'smallpipes'):   # (2.5.0) the pipes' drones sit on the song's key
+                p.setdefault('drone_root', float(mtof(36 + k_.root)))
         if self.bright != 1.0:
             for k in CUT_KEYS:
                 if k in p:

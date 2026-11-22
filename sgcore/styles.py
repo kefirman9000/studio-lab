@@ -1970,9 +1970,9 @@ style('celtic_jig', 'Classic', 'Celtic jig (6/8): a session in full flight - fid
               T('whistle', 'lead', 'tinwhistle', rev=0.3, pan=0.15, db=-20, double_of='lead', octave=12, keep_inst=True)],
       master=dict(lufs=-12.0, air=1.4, low=0.8),
       pools=dict(bass=['upright', 'sf:acbass', 'ebass'],
-                 chords=['bouzouki', 'acguitar', 'guitar', 'sf:nylon'],
-                 arp=['acguitar', 'harp', 'banjo', 'mandolin', 'bouzouki'],
-                 lead=['fiddle', 'tinwhistle', 'irish_flute', 'uilleann', 'concertina', 'accordion'],
+                 chords=['bouzouki', 'acguitar', 'guitar', 'sf:nylon', 'cittern'],
+                 arp=['acguitar', 'harp', 'banjo', 'mandolin', 'bouzouki', 'clarsach', 'cittern'],
+                 lead=['fiddle', 'tinwhistle', 'irish_flute', 'uilleann', 'concertina', 'accordion', 'melodeon'],
                  pad=['drone', 'concertina', 'uilleann']),
       label='Celtic Jig (6/8)',
       pad_drone=True,
@@ -12257,7 +12257,8 @@ derive('celtic_slow_air', 'celtic_jig', 'Classic',
        lead_rh=['x-------x---x---', 'x-----x-x-------', 'x---x---x-------', 'x-------x-x-x---'],
        sounds={'lead': 'uilleann', 'chords': 'harp', 'arp': 'harp'}, drop_tracks=('whistle',),
        arp=dict(rate=2, mode='updown', oct=5), master=dict(lufs=-15.0, air=1.2, low=0.7),
-       pools=dict(lead=['uilleann', 'lowwhistle', 'irish_flute', 'fiddle'], chords=['harp', 'acguitar', 'bouzouki'], arp=['harp', 'acguitar']))
+       pools=dict(lead=['uilleann', 'lowwhistle', 'irish_flute', 'fiddle', 'smallpipes'], chords=['harp', 'acguitar', 'bouzouki', 'clarsach'],
+                  arp=['harp', 'acguitar', 'clarsach']))
 
 derive('celtic_punk', 'punk', 'Classic',
        'Celtic punk: punk rock at full tilt with a pub-session heart - thrashing double-time drums and distorted '
@@ -12267,7 +12268,8 @@ derive('celtic_punk', 'punk', 'Classic',
        progs={'major': [[0, 3, 4, 0], [0, 4, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 3, 0]], 'dorian': [[0, 6, 0, 3]]},
        sounds={'lead': 'tinwhistle'},
        add_tracks=[T('arp', 'arp', 'banjo', pan=0.3, rev=0.15, db=-22), T('pad', 'pad', 'accordion', pan=-0.25, rev=0.2, db=-24)],
-       pools=dict(lead=['tinwhistle', 'fiddle', 'concertina', 'uilleann', 'synthpipes', 'bagpipe', 'bagpipe_bright'], arp=['banjo', 'mandolin', 'acguitar'],
+       pools=dict(lead=['tinwhistle', 'fiddle', 'concertina', 'uilleann', 'synthpipes', 'bagpipe', 'bagpipe_bright', 'melodeon', 'gaita'],
+                  arp=['banjo', 'mandolin', 'acguitar', 'cittern'],
                   pad=['accordion', 'organ', 'humchoir']))
 
 derive('sea_shanty', 'folk_jam', 'Classic',
@@ -12297,6 +12299,47 @@ derive('highland_pipes', 'celtic_jig', 'Classic',
        pools=dict(lead=['bagpipe', 'bagpipe_bright'], pad=['bagpipe_drones']), drum_voice={'kick': dict(pitch=62), 'tom': dict(pitch=120)},
        master=dict(lufs=-10.5, air=1.3, low=0.9))
 
+
+derive('pipes_orchestra', 'highland_pipes', 'Classic',
+       'Pipes and orchestra: the Highland pipe band in front of a full orchestra - massed strings swelling under the '
+       'chanters, horns answering the tune, a deep contrabass line and rolling timpani, the drones and the pipe-band '
+       'drums driving it - epic, cinematic and proud', 'Pipes & Orchestra', exact_pools=True, reverb=2.8,
+       progs={'mixolydian': [[0, 6, 3, 0], [0, 3, 6, 0], [0, 5, 6, 0]]},
+       drums={'kick': ['X.......X.......', 'X...X...X...X...'], 'snare': ['X.xxX.x.X.xxX.x.', 'X.x.X.xxX.x.Xxxx'],
+              'tom': ['x...x...x...x...'], 'timp': ['X...............', 'X.......X.......', 'X.....x.X.......']},
+       bass=['R-------R-------', 'R-------F-------'], chord_rh=['x---------------', 'x-------x-------'], chord_center=55,
+       add_tracks=[T('strings', 'pad', 'strings', pan=0.0, rev=0.45, db=-19), T('chords', 'chords', 'horn', pan=-0.2, rev=0.4, db=-22),
+                   T('bass', 'bass', 'contrabass', rev=0.3, db=-20), T('timp', 'top', 'timp', rev=0.4, db=-21)],
+       pools=dict(lead=['bagpipe', 'bagpipe_bright'], pad=['bagpipe_drones', 'strings', 'strings_wide'],
+                  chords=['horn', 'brass', 'trombone'], bass=['contrabass', 'cello']),
+       master=dict(lufs=-11.5, air=1.3, low=1.0))
+
+derive('breton_an_dro', 'celtic_reel', 'Classic',
+       'Breton an dro: the hypnotic Breton line dance - a piercing bombarde calling the tune and a bagpipe answering, '
+       'a jangling cittern, a driving bodhrán and a pounding bass on a short, looping minor tune that never lets up - '
+       'a fest-noz in full swing', 'Breton An Dro (fest-noz)', exact_pools=True,
+       bpm=(116, 132), scales=['dorian', 'minor'], roots=[9, 2, 7, 4], swing=0.5,
+       progs={'dorian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'minor': [[0, 6, 5, 6], [0, 5, 6, 0]]},
+       sounds={'lead': 'bombarde', 'chords': 'cittern', 'arp': 'cittern'}, drop_tracks=('whistle',),
+       pools=dict(lead=['bombarde', 'gaita', 'fiddle', 'melodeon'], chords=['cittern', 'bouzouki', 'acguitar'],
+                  arp=['cittern', 'mandolin', 'clarsach'], pad=['drone', 'hurdygurdy']))
+
+derive('galician_muineira', 'celtic_jig', 'Classic',
+       'Galician muiñeira (6/8): the dance of Galicia and Asturias - a gaita (the Galician bagpipe) singing a bright, '
+       'leaping tune over its deep single drone, a snare-like tamboril and booming bombo drum, cittern and guitar '
+       'chiming along - festive, sunlit and wild', 'Galician Muiñeira (gaita)', exact_pools=True,
+       bpm=(108, 128), scales=['major', 'mixolydian'], roots=[0, 2, 7],
+       sounds={'lead': 'gaita', 'chords': 'cittern', 'bodhran': 'tenor_drum', 'tip': 'pipe_snare'}, drop_tracks=('whistle',),
+       pools=dict(lead=['gaita', 'fiddle', 'irish_flute', 'melodeon'], chords=['cittern', 'acguitar', 'bouzouki'],
+                  arp=['acguitar', 'cittern', 'clarsach'], pad=['drone', 'hurdygurdy']))
+
+derive('clarsach_air', 'celtic_slow_air', 'Classic',
+       'Clarsach air: the old Gaelic harpers\' music - a wire-strung harp ringing out a slow, stately tune and its own '
+       'shimmering chords, the strings left to sound into each other, a soft drone beneath - ancient and glowing',
+       'Clarsach Air (wire harp)', exact_pools=True,
+       sounds={'lead': 'clarsach', 'chords': 'clarsach', 'arp': 'clarsach'},
+       pools=dict(lead=['clarsach', 'harp', 'lowwhistle'], chords=['clarsach', 'harp'], arp=['clarsach', 'harp'], pad=['drone', 'humchoir']))
+
 derive('celtic_new_age', 'new_age_chant', 'Classic',
        'Celtic new age: misty, layered and serene - a wordless choir stacked into lush chords, a harp rippling '
        'beneath, a low whistle or flute drifting over the top and a slow, soft heartbeat drum, in dorian and aeolian - '
@@ -12304,7 +12347,7 @@ derive('celtic_new_age', 'new_age_chant', 'Classic',
        bpm=(66, 84), scales=['dorian', 'minor', 'major'], reverb=4.0,
        progs={'dorian': [[0, 6, 3, 0], [0, 3, 6, 0]], 'minor': [[0, 5, 6, 0], [0, 5, 2, 6]], 'major': [[0, 4, 5, 3]]},
        sounds={'lead': 'lowwhistle', 'chords': 'choir_wide', 'pad': 'warmpad_wide', 'arp': 'harp'}, celtic_orn='trad', roots=[2, 4, 9],
-       pools=dict(lead=['lowwhistle', 'irish_flute', 'uilleann', 'fiddle'], chords=['choir_wide', 'humchoir', 'choir'],
+       pools=dict(lead=['lowwhistle', 'irish_flute', 'uilleann', 'fiddle', 'smallpipes'], chords=['choir_wide', 'humchoir', 'choir'],
                   arp=['harp', 'celesta', 'acguitar'], bass=['sinebass', 'upright'], pad=['warmpad_wide', 'glasspad', 'humchoir']))
 
 
