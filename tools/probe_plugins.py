@@ -48,3 +48,26 @@ for pid in ids:
         r['error'] = str(e)
         print(pid, 'ERROR', e)
 json.dump(res, open(os.path.join(OUT, 'plugins.json'), 'w'), indent=1, default=str)
+# apply every rig patch of the probed players and check it sounds
+from sgcore import vstrigs, vst_worker
+from pedalboard import load_plugin
+from mido import Message
+chk = {}
+for pid in ids:
+    paths = [q for q in vstpacks.installed_paths(vstpacks.BY_ID[pid]) if q.endswith('.vst3')]
+    for name, pt in vstrigs.PATCHES.items():
+        if pt['player'] != pid or not paths:
+            continue
+        try:
+            pl = load_plugin(paths[0])
+            applied, missing = vst_worker.apply_recipe(pl, vstrigs.recipe_for(name))
+            ev = []
+            for n_ in (48, 52, 55):
+                ev += [Message('note_on', note=n_, velocity=100, time=0.0), Message('note_off', note=n_, time=1.0)]
+            out = pl(ev, duration=2.0, sample_rate=44100, num_channels=2)
+            pk = float(np.abs(out).max()); late = float(np.abs(out[:, int(1.6 * 44100):]).max())
+            chk[name] = dict(missing=missing, peak=pk, tail=late)
+            print(name, 'missing', missing, 'peak', round(pk, 3), 'tail', round(late, 4))
+        except Exception as e:
+            chk[name] = str(e); print(name, 'FAIL', e)
+json.dump(chk, open(os.path.join(OUT, 'patches.json'), 'w'), indent=1)
