@@ -127,6 +127,7 @@ class Options:
     title: str = None             # song name (front of every exported file name); None = an invented name that fits the song
     journey: dict = None          # Cinematic Journey settings: acts, piano, rubato, dynamics, ending, woodwinds (see journey.py)
     energy_curve: list = None     # (2.0) your drawn energy across the song: 8-32 values 0..1 (None = the genre's own shape)
+    ornaments: float = None       # (2.4.4) Celtic / pipe ornaments: 0 none, 0.25 light, 0.5 traditional, 0.75 heavy, 1 virtuoso
 
     def to_dict(self):
         return asdict(self)
@@ -2048,6 +2049,8 @@ def compose(opts):
     switch_basses(evs, tracks, sections, st)              # brostep / neuro: several bass timbres trade bars in the drop
     if st.get('celtic_orn'):                             # (2.4.1) Celtic ornaments: cuts / taps / rolls, pipe gracenotes
         from .celtic import ornament_pass
+        if getattr(opts, 'ornaments', None) is not None:
+            st['_orn_amount'] = opts.ornaments
         ornament_pass(evs, tracks, sections, st, bpm, opts.seed)
     if st.get('euphoric'):                               # (2.3) euphoric trance: chord-aware lead harmony, piano breakdown
         from .trance2 import euphoric_pass

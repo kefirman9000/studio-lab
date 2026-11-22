@@ -514,6 +514,9 @@ select:focus,input[type=number]:focus,input[type=text]:focus{border-color:color-
       <div class="f"><label>Scale</label><select id="scale"></select></div>
       <div class="f"><label>Length</label><div class="seg" id="length"></div></div>
       <div class="f"><label>Structure</label><div class="seg" id="structure"></div></div>
+      <div class="f"><label>Ornaments <span class="hint">Celtic & bagpipe grace notes, cuts and rolls</span></label><select id="ornaments">
+        <option value="">Auto (traditional)</option><option value="0">None - plain melody</option><option value="0.25">Light</option>
+        <option value="0.5">Traditional</option><option value="0.75">Heavy</option><option value="1">Virtuoso</option></select></div>
       <div class="f wide"><label>Energy curve <span class="hint">draw how the song should rise and fall · the arrangement follows it</span></label>
         <div class="curvebox"><canvas id="curve" width="640" height="90" title="Draw with the mouse: low = sparse (pads only), high = everything in"></canvas>
         <div class="row curvebtns"><label class="auto"><input type="checkbox" id="curveOn"> use it</label><button class="chip sm" data-cv="build">Slow build</button><button class="chip sm" data-cv="wave">Two drops</button><button class="chip sm" data-cv="peak">Peak at the end</button><button class="chip sm" data-cv="arc">Arc</button><button class="chip sm" data-cv="clear">Flat</button></div></div></div>
@@ -970,6 +973,7 @@ function options(){
   if($('#melStyle').value) o.melody_style=$('#melStyle').value;
   if($('#groove').value) o.groove=$('#groove').value;
   if($('#curveOn').checked) o.energy_curve=CURVE.map(v=>Math.round(v*100)/100);
+  if($('#ornaments')&&$('#ornaments').value!=='') o.ornaments=parseFloat($('#ornaments').value);
   if($('#chordSpeed').value) o.chord_speed=$('#chordSpeed').value; o.motif=$('#motif').value||'song'; if($('#masterPreset').value) o.master_preset=$('#masterPreset').value; o.production_pass=$('#prodPass').checked?'auto':false; if(FAVS.length) o.favorites=FAVS.slice(0,200); if(Object.keys(state.tlevels||{}).length) o.track_levels=Object.assign({}, state.tlevels); if(state.ref_tone) o.ref_tone=state.ref_tone; if(state.midi_parts) o.midi_parts=state.midi_parts; if(state.ref_tone_quiet) o.ref_tone_quiet=state.ref_tone_quiet; if(state.sound_seed) o.sound_seed=state.sound_seed;
   if($('#rotation').value!=='auto') o.rotation=$('#rotation').value;
   if($('#leadStyle').value) o.lead_style=$('#leadStyle').value;
@@ -1011,6 +1015,7 @@ function applyOptions(o){
   $('#swingAuto').checked=o.swing==null; if(o.swing!=null)$('#swing').value=o.swing*100;
   $('#scAuto').checked=o.sidechain==null; if(o.sidechain!=null)$('#sidechain').value=o.sidechain*100;
   $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#drFills').value=o.drum_fills||''; $('#drGhosts').value=o.drum_ghosts||''; $('#drHats').value=o.hat_density||''; $('#percSet').value=o.percussion||''; $('#drumPattern').value=o.drum_pattern||(o.kit&&(META.drum_patterns||[]).some(p=>p.id==='break:'+o.kit)?'break:'+o.kit:'genre'); $('#userDrums').checked=!!o.user_drums;
+  if($('#ornaments')) $('#ornaments').value=(o.ornaments==null?'':String(o.ornaments));
   if(o.energy_curve&&o.energy_curve.length>1){CURVE=resample(o.energy_curve,CURVE_N);$('#curveOn').checked=true;}else $('#curveOn').checked=false; drawCurve();
   $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#builds').value=o.builds||'auto'; renderTraits(); setTraits(o.traits); state.octaves=Object.assign({}, o.octaves||{}); bindOctaves(); $('#transFx').value=o.transition_fx||'auto'; $('#vinyl').value=o.vinyl===true?'on':''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#hookFirst').value=o.hook_first||''; $('#layering').value=o.layering||''; $('#bends').value=o.bends||''; $('#vocals').value=o.vocals||(o.vocal_guide?'guide':''); $('#voice').value=o.voice||'female'; $('#lyrics').value=o.lyrics||''; syncVocals(); fillVox(o.vox_sample||''); $('#voxUse').value=o.vox_use||'auto'; $('#voxPitch').value=o.vox_pitch||'auto'; $('#voxAmount').value=o.vox_amount||'normal'; syncVox();
   $('#melStyle').value=o.melody_style||''; $('#voicing').value=o.voicing||''; $('#chordColor').value=o.chord_color||'';

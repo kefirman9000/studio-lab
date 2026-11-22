@@ -785,7 +785,8 @@ class Renderer:
             notes = sorted(((self.t_of(e.beat, human=False), max(0.03, self._dsec(e.beat, e.dur)), e.midi)
                             for e in evs if e.midi is not None), key=lambda x: x[0])
             if tcfg['inst'] == 'bagpipe':
-                y = pipe_part(notes, self.length)
+                k_ = self.song.get('key')
+                y = pipe_part(notes, self.length, getattr(k_, 'root', None))
                 buf[0] = y
                 buf[1] = y
             else:

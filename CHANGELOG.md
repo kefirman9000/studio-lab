@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.4.4
+**Bagpipes: real piping ornaments and the traditional pipe scale**
+
+- **Ornaments that follow the melody.** On a chanter that never stops, the ornament *is* the articulation, so it now depends on what the tune does:
+  - a **gracenote or a strike** on every repeated note (the only way to sound the same note twice)
+  - a **cut** from the note above when the tune steps down
+  - a **doubling** on strong beats
+  - a **taorluath-style** figure into long, heavy notes
+  - a high-G gracenote going up
+- **The traditional Highland scale.** The chanter is tuned pure against its drones rather than equal-tempered: the third 14 cents low, the sixth 16 low, and the famously "flat" high G at the natural seventh. That's what makes real pipes ring and lock with the drones.
+- **New: Ornaments** (Song panel), from *None* (a plain melody) through *Light*, *Traditional* and *Heavy* to *Virtuoso*. It works for every Celtic genre: cuts, taps and rolls on fiddle, whistle and flute, and gracenotes on the pipes.
+
+
 ## 2.4.3
 - **A real bagpipe.** The Great Highland bagpipe is now a **physical model**: a simulated double reed driving a conical bore, blown by a bag at constant pressure.
   - The pitch locks in by itself and the reed buzzes naturally. Every note is tuned and checked automatically, and notes that would overblow are eased off, as a piper would.

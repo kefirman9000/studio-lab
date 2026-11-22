@@ -357,6 +357,10 @@ def ornament_pass(evs, tracks, sections, st, bpm, seed):
     if not style:
         return
     rnd = random.Random(f'{seed}-celtic-orn')
+    amt = st.get('_orn_amount')
+    amt = 0.5 if amt is None else max(0.0, min(1.0, float(amt)))
+    if amt <= 0.01 and not st.get('set_shift'):
+        return
     shift = st.get('set_shift') or {}
     if shift:                                            # a session set: each next tune in its new key (drums stay put)
         for sec in sections:
@@ -380,36 +384,54 @@ def ornament_pass(evs, tracks, sections, st, bpm, seed):
     for e in lead_evs:
         p = prev.get(e.track)
         prev[e.track] = e
-        if style == 'pipes':
-            if p is not None and p.midi == e.midi or rnd.random() < 0.1 or e.dur < 2.5 * g:
+        if style == 'pipes':                             # Highland piping: the ornament follows the melody
+            if e.dur < 2.5 * g or rnd.random() > 0.35 + 0.65 * amt:
                 continue
-            hg = max(m for m in range(e.midi, e.midi + 13) if m % 12 in scale)   # 'high G': the top of the scale
+            top = max(m for m in range(e.midi, e.midi + 13) if m % 12 in scale)      # 'high G': the top of the scale
+            if top == e.midi:
+                top = _step(e.midi, scale, True)
+            lo = _step(e.midi, scale, False)
             on_beat = abs(e.beat - round(e.beat)) < 0.01
-            if on_beat and e.dur > 4 * g and rnd.random() < 0.45:            # a doubling: high G, the note, a D
-                lo = _step(e.midi, scale, True)
-                new += [Ev(e.track, e.beat - g, g * 0.9, hg, e.vel), Ev(e.track, e.beat, g * 0.9, e.midi, e.vel),
-                        Ev(e.track, e.beat + g, g * 0.9, lo, e.vel)]
-                e.beat += 2 * g
-                e.dur -= 2 * g
+            fig = []
+            if p is not None and p.midi == e.midi:                # a repeated note: the chanter can't stop, so it
+                fig = [top] if rnd.random() < 0.6 else [top, e.midi, lo]   # MUST be split - a gracenote or a strike
+            elif e.dur > 6 * g and on_beat and amt > 0.6 and rnd.random() < 0.25 * amt:
+                low = min(m for m in range(e.midi - 12, e.midi + 1) if m % 12 in scale)
+                fig = [top, low, _step(low, scale, True)]          # a taorluath-like figure into a long strong note
+            elif e.dur > 4 * g and on_beat and rnd.random() < 0.35 + 0.3 * amt:
+                fig = [top, e.midi, _step(e.midi, scale, True)]   # a doubling
+            elif p is not None and p.midi > e.midi:
+                fig = [p.midi if p.midi > e.midi + 2 else top]     # going down: a cut from the note above
             else:
-                new.append(Ev(e.track, e.beat - g, g * 0.9, hg, e.vel))
+                fig = [top]                                         # going up / starting: a high-G gracenote
+            k = len(fig)
+            for q, gm in enumerate(fig):
+                new.append(Ev(e.track, e.beat - (k - q) * g, g * 0.9, gm, e.vel))
             continue
         # trad: cuts, taps, rolls
-        if e.dur >= 0.75 and rnd.random() < 0.35:                         # a roll on the long notes
+        if amt <= 0.01:
+            continue
+        if e.dur >= 0.75 and rnd.random() < 0.7 * amt:                    # a roll on the long notes
             cut, tap = _step(e.midi, scale, True), _step(e.midi, scale, False)
             third = e.dur / 3
             new += [Ev(e.track, e.beat + third - g, g, cut, e.vel * 0.85), Ev(e.track, e.beat + third, third - g, e.midi, e.vel),
                     Ev(e.track, e.beat + 2 * third - g, g, tap, e.vel * 0.85), Ev(e.track, e.beat + 2 * third, third, e.midi, e.vel)]
             e.dur = third - g
-        elif e.dur >= 0.4 and rnd.random() < 0.45:                       # a cut
+        elif e.dur >= 0.4 and rnd.random() < 0.9 * amt:                  # a cut
             new.append(Ev(e.track, e.beat - g, g, _step(e.midi, scale, True), e.vel * 0.8))
-        elif e.dur >= 0.4 and rnd.random() < 0.12:                       # a tap
+        elif e.dur >= 0.4 and rnd.random() < 0.24 * amt:                 # a tap
             new.append(Ev(e.track, e.beat - g, g, _step(e.midi, scale, False), e.vel * 0.8))
     evs.extend(x for x in new if x.beat >= 0)
 
 
 # ------------------------------------------------------------------------------- whole-part pipes (2.4.3, rendering)
-def pipe_part(notes, length):
+# the traditional Highland scale, tuned pure against the drones (cents away from equal temperament, by interval above
+# the tonic): the 2nd 9/8, the 3rd 5/4, the 4th 4/3, the 5th 3/2, the 6th 5/3 and 'high G' the natural 7th 7/4 - which is
+# why real pipes ring and lock with their drones (and why the high G sounds 'flat' to a piano)
+PIPE_JI = {0: 0.0, 2: 3.9, 4: -13.7, 5: -2.0, 7: 2.0, 9: -15.6, 10: -31.2, 11: -11.7}
+
+
+def pipe_part(notes, length, tonic=None):
     """The Highland chanter as it really plays: ONE reed sounding continuously through each phrase. Each note's pitch
     holds until the next note starts (the chanter never stops between notes - the gracenotes are what separate them),
     the reed only catches (the crow) at the start of a phrase, and a phrase ends only at a real silence.
@@ -438,7 +460,8 @@ def pipe_part(notes, length):
         for k, (t0, dur, m) in enumerate(ph):
             s0 = max(0, int(t0 * SR) - a)
             s1 = n if k == len(ph) - 1 else max(s0 + 1, int(ph[k + 1][0] * SR) - a)
-            d, b0 = _tuned_delay(float(mtof(m)), 'chanter')
+            cents = PIPE_JI.get((m - tonic) % 12, 0.0) if tonic is not None else 0.0
+            d, b0 = _tuned_delay(float(mtof(m)) * 2 ** (cents / 1200), 'chanter')
             delay[s0:s1] = d
             breath[s0:s1] = b0
         first = max(0, int(ph[0][0] * SR) - a)
