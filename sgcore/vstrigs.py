@@ -28,6 +28,7 @@ PLAYERS = {
     'surge': dict(name='Surge XT', match=_matcher('surge xt', exclude=('effects', 'fx')), kind='synth', pack='surge'),
     'tal': dict(name='TAL-NoiseMaker', match=_matcher('noisemaker', 'noise maker'), kind='synth', pack=None),
     'dexed': dict(name='Dexed', match=_matcher('dexed'), kind='synth', pack='dexed'),
+    'obxf': dict(name='OB-Xf', match=_matcher('ob xf', 'obxf'), kind='synth', pack='obxf'),
     'jc303': dict(name='JC303', match=_matcher('jc303', 'jc 303'), kind='synth', pack='jc303'),
     'nekobi': dict(name='Nekobi', match=_matcher('nekobi'), kind='synth', pack=None),
     'ripplerx': dict(name='RipplerX', match=_matcher('ripplerx'), kind='synth', pack='ripplerx'),
@@ -125,6 +126,42 @@ PATCHES = {
     # ---- Kars: Karplus-Strong plucked string
     'kars.pluck': dict(player='kars', label='Plucked string', required=['Release'], params={
         'Sustain': OFF, 'Release': 0.15, 'Volume': 0.8}),
+    # ---- OB-Xf: Oberheim OB-X style poly. Parameter names read from the plugin (v1.0.3). Raw 0..1 knob positions:
+    #      cutoff is exponential 33 Hz - 33 kHz (0.5 ~ 1 kHz), voices 1..32 = (n-1)/31, osc pitch -24..+24 st (0.5 = 0).
+    'obxf.brass': dict(player='obxf', label='OB brass', required=['filter_cutoff_hz'], params={
+        'osc_1_saw_wave': ON, 'osc_2_saw_wave': ON, 'osc_1_volume': 0.9, 'osc_2_volume': 0.85, 'osc_2_detune_cents': 0.12,
+        'polyphony_voices': 0.484, 'unison': OFF, 'glide': 0.0, 'filter_cutoff_hz': 0.5, 'filter_resonance': 0.12,
+        'filter_env_amount': 0.42, 'filter_env_attack_ms': 0.2, 'filter_env_decay_ms': 0.45, 'filter_env_sustain': 0.45,
+        'filter_env_release_ms': 0.3, 'amp_env_attack_ms': 0.12, 'amp_env_decay_ms': 0.5, 'amp_env_sustain': 0.85,
+        'amp_env_release_ms': 0.3, 'velocity_to_filter_env': 0.3}),
+    'obxf.stab': dict(player='obxf', label='OB 80s chord stab', required=['filter_cutoff_hz'], params={
+        'osc_1_saw_wave': ON, 'osc_2_saw_wave': ON, 'osc_1_volume': 0.9, 'osc_2_volume': 0.85, 'osc_2_detune_cents': 0.18,
+        'polyphony_voices': 0.484, 'unison': OFF, 'glide': 0.0, 'filter_cutoff_hz': 0.46, 'filter_resonance': 0.15,
+        'filter_env_amount': 0.55, 'filter_env_attack_ms': 0.0, 'filter_env_decay_ms': 0.35, 'filter_env_sustain': 0.15,
+        'filter_env_release_ms': 0.25, 'amp_env_attack_ms': 0.0, 'amp_env_decay_ms': 0.42, 'amp_env_sustain': 0.35,
+        'amp_env_release_ms': 0.28, 'velocity_to_filter_env': 0.4}),
+    'obxf.pad': dict(player='obxf', label='OB warm pad', required=['filter_cutoff_hz'], params={
+        'osc_1_saw_wave': ON, 'osc_2_saw_wave': ON, 'osc_2_pulse_wave': ON, 'osc_1_volume': 0.85, 'osc_2_volume': 0.8,
+        'osc_2_detune_cents': 0.3, 'polyphony_voices': 0.484, 'unison': OFF, 'glide': 0.0, 'filter_cutoff_hz': 0.55,
+        'filter_resonance': 0.08, 'filter_env_amount': 0.15, 'filter_env_attack_ms': 0.55, 'filter_env_sustain': 0.7,
+        'amp_env_attack_ms': 0.55, 'amp_env_decay_ms': 0.6, 'amp_env_sustain': 0.95, 'amp_env_release_ms': 0.6,
+        'lfo_1_rate_hz': 0.2, 'lfo_1_to_osc_2_pw': 'On', 'lfo_1_mod_2_amount': 0.25}),
+    'obxf.strings': dict(player='obxf', label='OB strings', required=['filter_cutoff_hz'], params={
+        'osc_1_saw_wave': ON, 'osc_2_saw_wave': ON, 'osc_1_volume': 0.85, 'osc_2_volume': 0.85, 'osc_2_detune_cents': 0.22,
+        'polyphony_voices': 0.484, 'unison': OFF, 'glide': 0.0, 'filter_cutoff_hz': 0.62, 'filter_resonance': 0.05,
+        'filter_env_amount': 0.05, 'amp_env_attack_ms': 0.42, 'amp_env_decay_ms': 0.6, 'amp_env_sustain': 1.0,
+        'amp_env_release_ms': 0.5}),
+    'obxf.lead': dict(player='obxf', label='OB unison lead', required=['filter_cutoff_hz'], params={
+        'osc_1_saw_wave': ON, 'osc_2_saw_wave': ON, 'osc_1_volume': 0.9, 'osc_2_volume': 0.8, 'osc_2_detune_cents': 0.15,
+        'unison': ON, 'unison_voices_voices': 0.097, 'unison_detune': 0.3, 'glide': 0.12, 'filter_cutoff_hz': 0.66,
+        'filter_resonance': 0.15, 'filter_env_amount': 0.25, 'filter_env_decay_ms': 0.4, 'filter_env_sustain': 0.6,
+        'amp_env_attack_ms': 0.02, 'amp_env_sustain': 0.9, 'amp_env_release_ms': 0.28, 'vibrato_rate_hz': 0.3}),
+    'obxf.bass': dict(player='obxf', label='OB fat bass', required=['filter_cutoff_hz'], params={
+        'osc_1_saw_wave': ON, 'osc_2_saw_wave': OFF, 'osc_2_pulse_wave': ON, 'osc_1_volume': 0.9, 'osc_2_volume': 0.75,
+        'osc_2_pitch_semitones': 0.25, 'osc_2_detune_cents': 0.05, 'polyphony_voices': 0.0, 'unison': OFF, 'glide': 0.0,
+        'filter_cutoff_hz': 0.34, 'filter_resonance': 0.2, 'filter_env_amount': 0.5, 'filter_env_attack_ms': 0.0,
+        'filter_env_decay_ms': 0.32, 'filter_env_sustain': 0.2, 'amp_env_attack_ms': 0.0, 'amp_env_decay_ms': 0.5,
+        'amp_env_sustain': 0.9, 'amp_env_release_ms': 0.12}),
     # ---- Dexed: original DX7 ROM 1A voices, selected by program name
     'dexed.epiano': dict(player='dexed', label='DX7 E.Piano 1', program=['E.PIANO 1', 10], params={}),
     'dexed.clav': dict(player='dexed', label='DX7 Clav', program=['CLAV 1', 19], params={}),
@@ -184,19 +221,19 @@ PATCHES = {
 # what each built-in instrument becomes, best first (synths: only in electronic styles unless marked 'any')
 ROLE_PATCHES = {
     'acid': ['jc303.acid', 'nekobi.acid', 'tal.acid'],
-    'sawbass': ['tal.saw_bass', 'surge.saw_bass', 'tal.fat_bass', 'jc303.bass', 'nekobi.bass'],
+    'sawbass': ['tal.saw_bass', 'surge.saw_bass', 'tal.fat_bass', 'jc303.bass', 'nekobi.bass', 'obxf.bass'],
     'reese': ['surge.reese', 'tal.reese'],
     'wobble': [],                                              # LFO-routed wobbles stay built-in
     'fmbass': ['dexed.bass', 'dexed.bass2', 'tal.fat_bass'],
     'chipbass': [], 'sinebass': [], '808': [],                # sub-heavy parts sound best from the built-in engine
     'supersaw': ['surge.supersaw', 'surge.dark_supersaw', 'tal.analog_pad'],
-    'supersaw_lead': ['surge.supersaw_lead', 'tal.80s_lead'],
-    'warmpad': ['tal.analog_pad', 'surge.warm_pad', 'surge.wide_pad'],
-    'strings': ['tal.strings', 'dexed.strings', 'surge.wide_pad'],
-    'stab': ['tal.brass_stab', 'surge.pluck', 'surge.bright_pluck'],
-    'brass': ['tal.brass_stab', 'dexed.brass'],
+    'supersaw_lead': ['surge.supersaw_lead', 'tal.80s_lead', 'obxf.lead'],
+    'warmpad': ['tal.analog_pad', 'surge.warm_pad', 'surge.wide_pad', 'obxf.pad'],
+    'strings': ['tal.strings', 'dexed.strings', 'surge.wide_pad', 'obxf.strings'],
+    'stab': ['tal.brass_stab', 'surge.pluck', 'surge.bright_pluck', 'obxf.stab'],
+    'brass': ['tal.brass_stab', 'dexed.brass', 'obxf.brass'],
     'pluck_saw': ['tal.pluck', 'surge.pluck', 'surge.bright_pluck'],
-    'leadsaw': ['tal.80s_lead', 'surge.saw_lead', 'tal.square_lead', 'dexed.synlead'],
+    'leadsaw': ['tal.80s_lead', 'surge.saw_lead', 'tal.square_lead', 'dexed.synlead', 'obxf.lead'],
     'softlead': ['tal.soft_lead', 'dexed.flute'],
     'pluck': ['kars.pluck', 'tal.pluck', 'surge.bright_pluck'],
     'chip': ['tal.square_lead'],
@@ -205,9 +242,9 @@ ROLE_PATCHES = {
     'epiano': ['dexed.epiano'], 'clav': ['dexed.clav'], 'marimba': ['ripplerx.marimba', 'dexed.marimba'], 'bell': ['ripplerx.bells', 'dexed.bells', 'dexed.chime', 'ripplerx.crystal'],
     'celesta': ['ripplerx.musicbox', 'dexed.chime', 'dexed.vibes'],
     'steeldrum': ['dexed.steeldrum'], 'kalimba': ['ripplerx.kalimba', 'dexed.koto'], 'cowbell': [], 'cowbell_808': [], 'cowbell_long': [], 'cowbell_dist': [], 'cowbell_crushed': [], 'organ': ['dexed.organ'],
-    'polysynth': ['tal.pluck', 'tal.analog_pad', 'surge.pluck'], 'synthbrass': ['tal.brass_stab', 'dexed.brass'],
-    'moogbass': ['tal.fat_bass', 'tal.saw_bass', 'surge.saw_bass'], 'moogpluck': ['tal.saw_bass', 'tal.fat_bass', 'surge.saw_bass'], 'glasspad': ['surge.wide_pad', 'dexed.chime'],
-    'solina': ['tal.strings'], 'wurli': ['dexed.epiano'], 'vibes': ['ripplerx.vibes', 'dexed.vibes'], 'tubular': ['ripplerx.tubes', 'dexed.bells'],
+    'polysynth': ['tal.pluck', 'tal.analog_pad', 'surge.pluck', 'obxf.stab'], 'synthbrass': ['tal.brass_stab', 'dexed.brass', 'obxf.brass'],
+    'moogbass': ['tal.fat_bass', 'tal.saw_bass', 'surge.saw_bass', 'obxf.bass'], 'moogpluck': ['tal.saw_bass', 'tal.fat_bass', 'surge.saw_bass'], 'glasspad': ['surge.wide_pad', 'dexed.chime'],
+    'solina': ['tal.strings', 'obxf.strings'], 'wurli': ['dexed.epiano'], 'vibes': ['ripplerx.vibes', 'dexed.vibes'], 'tubular': ['ripplerx.tubes', 'dexed.bells'],
     'harp': ['ripplerx.harp'], 'musicbox': ['ripplerx.musicbox'], 'koto': ['dexed.koto'], 'gong': ['ripplerx.gong'],
 }
 ANY_CATEGORY = {'epiano', 'clav', 'marimba', 'steeldrum', 'kalimba', 'fmbass', 'vibes', 'koto', 'tubular', 'gong', 'musicbox', 'harp'}   # FM keys also suit funk, city pop, bossa, reggae
@@ -256,9 +293,14 @@ SAMPLER_ROLES = {k for k in SOUND_WORDS if k in ('strings', 'violin', 'pizz', 'h
 # genre flavour: which plugin family to reach for first, and a tone tweak (shifts filter cutoffs)
 STYLE_PREF = {
     'progressive_trance': ['surge'], 'organic_house': ['dexed', 'tal'], 'disco_funk': ['dexed', 'tal'], 'deep_dubstep': ['surge'], 'deep_dubstep_minimal': ['surge'],
-    'synthwave': ['tal'], 'synthpop': ['tal'], 'electro': ['tal'], 'vaporwave': ['tal', 'dexed'], 'eurodance': ['tal', 'surge'],
+    'synthwave': ['obxf', 'tal'], 'synthpop': ['obxf', 'tal'], 'electro': ['tal'], 'vaporwave': ['tal', 'dexed'], 'eurodance': ['tal', 'surge'],
+    'dark_synthwave': ['obxf', 'tal'], 'darksynth': ['obxf', 'surge'], 'italo_disco': ['obxf', 'tal'], 'sophisti_pop': ['obxf', 'dexed'],
+    'midfi_synthfunk': ['obxf', 'tal'], 'electro_funk': ['obxf', 'tal'], 'jam_rock_80s': ['obxf'], 'dream_synthscape': ['obxf', 'surge'],
+    'anthem_trance_2000': ['surge', 'obxf'], 'progressive_journey': ['obxf', 'surge'], 'warped_electronica': ['obxf', 'surge'],
+    'uplifting_trance': ['surge', 'obxf'], 'club_trance_2000s': ['surge', 'obxf'], 'trance_pop_90s': ['obxf', 'surge'],
+    'new_jack_swing': ['obxf', 'dexed'], 'synth_rnb': ['obxf', 'dexed'],
     'city_pop': ['dexed', 'tal'], 'house': ['tal'], 'deep_house': ['tal', 'dexed'], 'ukgarage': ['tal'],
-    'trance': ['surge'], 'progressive_house': ['surge'], 'bigroom': ['surge'], 'hardstyle': ['surge'], 'future_bass': ['surge'],
+    'trance': ['surge', 'obxf'], 'progressive_house': ['surge', 'obxf'], 'bigroom': ['surge'], 'hardstyle': ['surge'], 'future_bass': ['surge'],
     'dnb': ['surge'], 'jungle': ['surge'], 'hyperpop': ['surge'], 'orchestral_hiphop': ['dexed'],
     'acid_house': ['jc303', 'nekobi'], 'techno': ['jc303', 'nekobi'], 'psytrance': ['jc303', 'surge'], 'minimal': ['jc303'],
 }

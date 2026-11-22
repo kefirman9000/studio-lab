@@ -375,7 +375,7 @@ FALLBACK = {'nylon': 'acguitar', 'cleanguitar': 'guitar', 'muted': 'mutedgtr', '
             'acbass': 'upright', 'fingerbass': 'ebass', 'pickbass': 'ebass', 'slapbass': 'fmbass', 'viola': 'violin',
             'contrabass': 'cello', 'slowstrings': 'strings', 'bandoneon': 'accordion', 'steelguitar': 'guitar', 'fiddle': 'violin', 'trumpetsection': 'brass',
             'mutedtrumpet': 'trumpet', 'trombone': 'horn', 'tuba': 'horn', 'bassoon': 'clarinet', 'piccolo': 'flute', 'tenorsax': 'sax', 'sopranosax': 'sax', 'taikodrum': 'timpani',
-            'shehnai': 'oboe', 'shamisen': 'koto'}
+            'shehnai': 'oboe', 'shamisen': 'koto', 'concertgrand': 'piano', 'upright_piano': 'piano', 'mutehorn': 'horn'}
 # electronic genres only swap instruments that are obviously acoustic
 ELECTRONIC_SWAP = {'piano', 'epiano', 'guitar', 'violin', 'harp', 'flute', 'sax', 'marimba', 'kalimba', 'steeldrum',
                    'celesta', 'pizz', 'clav', 'cello', 'harpsichord', 'oboe', 'clarinet', 'spiccato', 'tremolo',

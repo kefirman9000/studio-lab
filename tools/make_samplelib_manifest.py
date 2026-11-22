@@ -12,6 +12,8 @@ app checks after download. Run from the repo root with shallow, blob-less clones
     git clone --depth 1 --filter=blob:none --no-checkout https://github.com/sfzinstruments/karoryfer.frankensnare <dir>/frankensnare
     python tools/make_samplelib_manifest.py <dir>                     (all libraries)
     python tools/make_samplelib_manifest.py <dir> --only twang,archtop  (just these, merged into the existing file)
+NOTE: "grandpiano" (Salamander, CC-BY 3.0) and the muted trumpet / horn in "winds" were added from the GitHub trees API,
+not by this script - a full rebuild drops them; use --only for the other libraries.
 (never use `git ls-tree -l` on these clones: it downloads every sample to report its size)
 """
 import json

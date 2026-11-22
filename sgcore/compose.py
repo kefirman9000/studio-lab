@@ -610,6 +610,10 @@ def apply_real(st, opts):
         style_ = st.get('name') or opts.style
         if base == 'piano' and style_ in sl.UPRIGHT_STYLES and sl.plays('upright_piano'):
             base = 'upright_piano'                         # lo-fi / vintage styles: a worn upright, not a concert grand
+        elif base == 'piano' and style_ in sl.CONCERT_GRAND_STYLES and sl.plays('concertgrand'):
+            base = 'concertgrand'                          # classical / film / jazz: the big open Salamander grand
+        elif base == 'trumpet' and style_ in sl.MUTE_TRUMPET_STYLES and sl.plays('mutedtrumpet'):
+            base = 'mutedtrumpet'                           # cool jazz / noir / lo-fi: harmon mute
         elif base == 'organ' and (style_ in sl.PIPE_ORGAN_STYLES or st.get('category') == 'Orchestral') and sl.plays('pipeorgan'):
             base = 'pipeorgan'                             # church / film organ, not a Hammond
         elif base in ('tenorsax', 'altosax'):
@@ -2963,14 +2967,14 @@ SIGNATURE_SOUNDS = {'trap', 'boombap', 'rnb', 'lofi', 'uk_drill', 'luxury_rap', 
 
 
 INST_FAMILIES = {
-    'keys': {'piano', 'epiano', 'wurli', 'm1piano', 'organ', 'clav', 'fmpiano', 'upright_piano', 'harpsichord', 'grand', 'rhodes'},
+    'keys': {'piano', 'epiano', 'wurli', 'm1piano', 'organ', 'clav', 'fmpiano', 'upright_piano', 'concertgrand', 'harpsichord', 'grand', 'rhodes'},
     'guitar': {'guitar', 'acguitar', 'nylon', 'twang', 'mutedgtr', 'cleanguitar', 'distgtr', 'overdrive', 'jazzguitar', 'steelgtr',
                'banjo', 'mandolin', 'sitar', 'koto', 'oud', 'pedalsteel'},
     'synth': {'leadsaw', 'softlead', 'supersaw_lead', 'supersaw', 'polysynth', 'hoover', 'pluck', 'pluck_saw', 'chip', 'stab',
               'synthbrass', 'acid', 'screech', 'square_lead', 'vox', 'saw_lead'},
     'pad': {'warmpad', 'glasspad', 'solina', 'strings', 'slowstrings', 'choir', 'tremolo', 'violins', 'violas'},
     'winds': {'sax', 'tenorsax', 'altosax', 'flute', 'clarinet', 'oboe', 'brass', 'trumpet', 'mutedtrumpet', 'trombone', 'horn',
-              'trumpetsection', 'piccolo', 'bassoon', 'harmonica', 'panflute', 'shakuhachi', 'violin', 'fiddle', 'cello'},
+              'trumpetsection', 'mutehorn', 'piccolo', 'bassoon', 'harmonica', 'panflute', 'shakuhachi', 'violin', 'fiddle', 'cello'},
     'mallets': {'vibes', 'bell', 'celesta', 'marimba', 'kalimba', 'musicbox', 'steeldrum', 'xylophone', 'glock', 'tubular'},
 }
 

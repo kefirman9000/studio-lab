@@ -1,6 +1,7 @@
 """Real-instrument sample libraries: multi-sampled orchestra, percussion and acoustic drum kits.
 
-All of them are CC0 (public domain) recordings by Versilian Studios and Karoryfer Samples, fetched straight from their GitHub repositories
+All but one are CC0 (public domain) recordings by Versilian Studios and Karoryfer Samples; the Salamander concert grand is
+CC-BY 3.0 by Alexander Holm (free for any use, credit him). Each is fetched straight from its GitHub repository
 at a pinned commit. Every file is checked against the git SHA-1 listed in samplelibs.json before it's kept, and
 only audio is stored (nothing runs). Songs made with them are entirely yours.
 
@@ -11,6 +12,7 @@ Libraries
   drums       Virtuosity Drums - a real acoustic kit, close "studio" sound and a vintage "lofi" mic
   archtop     Karoryfer Shinyguitar (microphone) - the acoustic guitar
   twang       Karoryfer Black And Green Guitars - twangy hollowbody electric, sustained + staccato (country leads)
+  grandpiano  Salamander Grand Piano V3 - a Yamaha C5 concert grand, 5 velocity layers (classical, film, jazz, ballads)
 
 The player picks the recorded note nearest to the one asked for (re-pitching only a few semitones), a velocity layer
 that matches how hard the note is played, a different round-robin take each time, and - for orchestral sounds - the
@@ -38,8 +40,9 @@ from . import updater
 ROOT = updater.ROOT
 REAL_DIR = os.path.join(ROOT, 'sound_library', 'real')
 MANIFEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'samplelibs.json')
-LIB_ORDER = ['drums', 'kit70s', 'kitbrush', 'kitrusty', 'kitunruly', 'snares', 'percussion', 'strings', 'winds', 'keys', 'colors', 'archtop', 'twang',
-             'ebass', 'dbass']
+LIB_ORDER = ['drums', 'kit70s', 'kitbrush', 'kitrusty', 'kitunruly', 'snares', 'percussion', 'strings', 'winds', 'keys', 'grandpiano', 'colors',
+             'archtop', 'twang', 'ebass', 'dbass']
+LICENSES = {'CC0-1.0': 'CC0 (public domain)', 'CC-BY-3.0': 'CC-BY 3.0 (free for any use - credit the author)'}
 KIT_LIBS = ('drums', 'kit70s', 'kitbrush', 'kitrusty', 'kitunruly')
 BLURB = {
     'drums': 'A real acoustic drum kit (kick, snare, hats, ride, crash, toms) with 3 mic sounds: clean studio, big rock room and '
@@ -58,7 +61,11 @@ BLURB = {
                   '(organic house, afro, latin, disco, pop ...).',
     'strings': 'A real string orchestra: violin, viola, cello and bass sections that play sustain, spiccato, pizzicato and tremolo, '
                'plus a solo violin. Replaces the General MIDI strings everywhere.',
-    'winds': 'Real French horn, trumpet, trombone, tuba, flute, oboe, clarinet, bassoon and piccolo (sustain + staccato) and timpani.',
+    'winds': 'Real French horn, trumpet, trombone, tuba, flute, oboe, clarinet, bassoon and piccolo (sustain + staccato) and timpani, '
+             'plus a harmon-muted trumpet (cool jazz, noir, lo-fi) and a muted horn.',
+    'grandpiano': 'A big, open concert grand (Salamander Grand Piano V3, a Yamaha C5 recorded by Alexander Holm, 5 velocity '
+                  'layers): classical, film and neoclassical piano, piano ballads, jazz trios, gospel and piano house. '
+                  'License CC-BY 3.0 - songs are yours, just credit "Salamander Grand Piano by Alexander Holm".',
     'keys': 'A real Steinway grand piano (every genre that plays piano), a Yamaha upright for lo-fi / boom-bap / vintage styles, '
             'a Flemish harpsichord, a pipe organ for orchestral and baroque styles, and a Yamaha TX81Z FM piano.',
     'colors': 'Concert harp, marimba, vibraphone, xylophone, glockenspiel, tubular bells, kalimba, tenor sax (sustain + staccato), '
@@ -108,7 +115,7 @@ def status():
         missing = [f for f in L['files'] if not os.path.isfile(_local(lib, f))] if inst else []
         out.append(dict(id=lib, title=L['title'], by=L['by'], mb=round(L['bytes'] / 1e6), files=len(L['files']),
                         installed=inst, update_mb=round(sum(f['s'] for f in missing) / 1e6, 1) if len(missing) > 3 else 0,
-                        blurb=BLURB[lib], license='CC0 (public domain)',
+                        blurb=BLURB[lib], license=LICENSES.get(L.get('license', 'CC0-1.0'), L.get('license')),
                         source=f"https://github.com/{L['repo']}"))
     return out
 
@@ -242,7 +249,8 @@ def install(lib, log=print, progress=None, fetch=None):
     os.makedirs(_dir(lib), exist_ok=True)
     files = L['files']
     todo = [f for f in files if not os.path.isfile(_local(lib, f))]
-    log(f"{L['title']} - {len(files)} recordings, {L['bytes'] / 1e6:.0f} MB, CC0 public domain, from github.com/{L['repo']}")
+    lic = LICENSES.get(L.get('license', 'CC0-1.0'), L.get('license'))
+    log(f"{L['title']} - {len(files)} recordings, {L['bytes'] / 1e6:.0f} MB, {lic}, from github.com/{L['repo']}")
     if len(todo) < len(files):
         log(f'   {len(files) - len(todo)} already downloaded')
     dec = None
@@ -280,7 +288,7 @@ def install(lib, log=print, progress=None, fetch=None):
             raise RuntimeError(f'{len(bad)} files failed - run the install again to retry them')
         log(f'   {len(bad)} files skipped (the rest of the library works)')
     with open(os.path.join(_dir(lib), 'installed.json'), 'w') as fh:
-        json.dump(dict(commit=L['commit'], files=len(files) - len(bad), license='CC0-1.0', source=L['repo']), fh)
+        json.dump(dict(commit=L['commit'], files=len(files) - len(bad), license=L.get('license', 'CC0-1.0'), source=L['repo']), fh)
     with _lock:
         _idx.pop(lib, None)
     log('   installed ✓')
@@ -426,7 +434,8 @@ ORCH = {
     'trombone': ('solo', 'trombone'), 'tuba': ('solo', 'tuba'), 'flute': ('solo', 'flute'), 'oboe': ('solo', 'oboe'),
     'clarinet': ('solo', 'clarinet'), 'bassoon': ('solo', 'bassoon'), 'piccolo': ('solo', 'piccolo'),
     # keys & colours
-    'piano': ('solo', 'grand'), 'upright_piano': ('solo', 'upright_piano'), 'harpsichord': ('solo', 'harpsichord'),
+    'piano': ('solo', 'grand'), 'concertgrand': ('solo', 'salgrand'), 'upright_piano': ('solo', 'upright_piano'),
+    'mutedtrumpet': ('solo', 'mutetrumpet'), 'mutehorn': ('solo', 'mutehorn'), 'harpsichord': ('solo', 'harpsichord'),
     'pipeorgan': ('solo', 'pipeorgan'), 'fmpiano': ('solo', 'fmpiano'),
     'harp': ('ring', 'harp'), 'marimba': ('ring', 'marimba'), 'vibes': ('ring', 'vibes'), 'xylophone': ('ring', 'xylophone'),
     'glock': ('ring', 'glock'), 'tubular': ('ring', 'tubular'), 'kalimba': ('ring', 'kalimba'),
@@ -436,6 +445,13 @@ ORCH = {
 }
 # styles whose piano is a worn upright rather than a concert grand
 UPRIGHT_STYLES = {'piano_miniature', 'lofi', 'boombap', 'hauntology', 'vaporwave', 'memphis_phonk', 'blues', 'soul_ballad', 'folk', 'western', 'motown'}
+# styles whose piano is the big Salamander concert grand (when installed) rather than the Steinway B
+CONCERT_GRAND_STYLES = {'film_piano', 'neoclassical', 'romantic', 'classical_period', 'cinematic', 'cinematic_journey', 'cinematic_journey_low',
+                        'storybook_score', 'festive_cinematic', 'minimalism', 'piano_house_90s', 'gospel', 'modern_gospel', 'jazz', 'modal_jazz',
+                        'bebop', 'soul_jazz', 'smooth_jazz', 'neo_soul', 'ambient', 'celtic_new_age', 'chamber_pop', 'emotive_deep_house'}
+# styles whose trumpet plays with a harmon mute
+MUTE_TRUMPET_STYLES = {'jazz', 'modal_jazz', 'jazz_hop', 'jazz_rap', 'lofi', 'trip_hop', 'smooth_jazz', 'electro_swing', 'ethio_jazz',
+                       'soul_jazz', 'neo_soul'}
 PIPE_ORGAN_STYLES = {'baroque_organ', 'epic_choir', 'baroque', 'cinematic', 'tension', 'hybrid_trailer', 'symphonic_metal', 'adventure', 'romantic'}
 SHORT_NOTE = 0.24          # seconds: notes this short are played with the short articulation (spiccato / staccato)
 
@@ -504,6 +520,8 @@ CHOICES = [
     ('tremolo', 'String section - tremolo', 'strings', ('pad', 'chords')),
     ('horn', 'French horn', 'winds', ('lead', 'pad', 'chords')),
     ('trumpet', 'Trumpet', 'winds', ('lead',)),
+    ('mutedtrumpet', 'Muted trumpet (harmon)', 'winds', ('lead',)),
+    ('mutehorn', 'Muted French horn', 'winds', ('lead', 'pad', 'chords')),
     ('trombone', 'Trombone', 'winds', ('lead', 'bass', 'chords')),
     ('tuba', 'Tuba', 'winds', ('bass',)),
     ('brass', 'Brass section', 'winds', ('lead', 'chords', 'pad')),
@@ -513,6 +531,7 @@ CHOICES = [
     ('clarinet', 'Clarinet', 'winds', ('lead', 'arp', 'chords')),
     ('bassoon', 'Bassoon', 'winds', ('bass', 'lead')),
     ('piano', 'Grand piano (Steinway)', 'keys', ('chords', 'lead', 'arp', 'pad', 'bass')),
+    ('concertgrand', 'Concert grand piano (Salamander)', 'grandpiano', ('chords', 'lead', 'arp', 'pad', 'bass')),
     ('upright_piano', 'Upright piano', 'keys', ('chords', 'lead', 'arp')),
     ('harpsichord', 'Harpsichord', 'keys', ('chords', 'arp', 'lead')),
     ('pipeorgan', 'Pipe organ', 'keys', ('chords', 'pad', 'lead')),

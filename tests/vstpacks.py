@@ -236,7 +236,7 @@ def test_safety(tmp):
     finally:
         vstpacks.PLUGIN_DIR, vstpacks.RECORD, vstpacks.resolve, vstpacks.download, safety._vt = old
     rels = [rel('v1.0.3', ['ob-xf-Windows-v1.0.3.exe', 'ob-xf-Windows-arm64-v1.0.3.zip', 'ob-xf-Windows-v1.0.3.zip',
-                           'ob-xf-macOS-v1.0.3.dmg', 'ob-xf-Linux-x86_64-v1.0.3.zip', 'ob-xf-assets.zip'])]
+                           'ob-xf-macOS-v1.0.3.dmg', 'ob-xf-Linux-v1.0.3.zip', 'ob-xf-assets.zip'])]
     assert vstpacks.pick_asset(vstpacks.BY_ID['obxf'], rels, 'windows')['name'] == 'ob-xf-Windows-v1.0.3.zip'   # no installer, no ARM
     assert vstpacks.pick_asset(vstpacks.BY_ID['obxf'], [rel('v1', ['ob-xf-Windows-v1.exe'])], 'windows') is None
     aw = [rel('DAWPlugin', ['AirwindowsConsolidated-x-Windows-arm64ec.zip', 'AirwindowsConsolidated-x-Windows-Setup.exe',
@@ -245,7 +245,11 @@ def test_safety(tmp):
     v = safety.defender_verdict(-2147467259, 'CmdTool: Failed with hr = 0x80004005. Check MpCmdRun.log for more information')
     assert v['ran'] is False and v['clean'] is None                     # a scan that couldn't run is not a threat
     assert safety.defender_verdict(2, 'found 1 threats')['clean'] is False and safety.defender_verdict(0, '')['clean'] is True
-    for gone in ('sixsines', 'monique', 'obxf', 'odin2'):
+    nightly = [rel('Nightly', ['ob-xf-Windows-2026-11-17-e03452f.zip'])] + rels
+    assert vstpacks.pick_asset(vstpacks.BY_ID['obxf'], nightly, 'windows')['version'] == 'v1.0.3'   # numbered release, not the nightly
+    assert vstpacks.pick_asset(vstpacks.BY_ID['obxf'], rels, 'linux')['name'] == 'ob-xf-Linux-v1.0.3.zip'
+    assert 'obxf' in [p_['id'] for p_ in vstpacks.PACKS]
+    for gone in ('sixsines', 'monique', 'odin2'):
         assert gone not in [p_['id'] for p_ in vstpacks.PACKS]
     print('ok  safety: checksum, Defender (a failed scan is not a threat), VirusTotal 0-detection rule, packs')
 
