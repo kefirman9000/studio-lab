@@ -176,65 +176,58 @@ def _state(plugin):
 
 def _scan(plugin, path, job):
     """Orchestra detection: the plugin window stays open while you click through instruments in the plugin's own
-    browser. Every second its state is read; whenever a new instrument (or articulation) has been loaded and stays
-    loaded for a moment, it is captured under the name found inside the state. Live progress goes to <job>.live."""
+    browser. (2.13.4) This process only copies the plugin's state now and then - nothing heavy, so the plugin's window
+    stays smooth: a state that has changed and then stayed the same for one more read is written to <job>.cap<n>.bin,
+    and Studio Lab (the app, in its own process) works out which instrument it is. Reads slow down by themselves when
+    the plugin is slow to hand its state over. Progress goes to <job>.live."""
+    import hashlib
     import threading
-    from sgcore import orchscan
-    found, order, unknown = {}, [], []
-    last = {'sig': None, 'seen': 0, 'raw': None, 'reads': 0, 'busy_since': None, 'blocked': False, 'texts': []}
-    lock = threading.Lock()
+    last = {'h': None, 'seen': 0, 'saved': set(), 'n': 0, 'reads': 0, 'ms': 0.0, 'busy_since': None, 'blocked': False}
     stop = threading.Event()
 
     def write_live():
         try:
-            names = [orchscan.sound_name('', found[k]) for k in order] + [f'unnamed sound {i + 1}' for i in range(len(unknown))]
             with open(path + '.live', 'w') as f:
-                json.dump(dict(names=names, reads=last['reads'], blocked=last['blocked']), f)
+                json.dump(dict(caps=last['n'], reads=last['reads'], blocked=last['blocked'], ms=round(last['ms'])), f)
         except Exception:
             pass
 
-    def snap():
-        last['busy_since'] = time.time()
+    def snap(final=False):
+        last['busy_since'] = t0 = time.time()
         try:
             raw = bytes(plugin.raw_state)
         except Exception:
             last['busy_since'] = None
             return
         last['busy_since'] = None
+        last['ms'] = (time.time() - t0) * 1000
         last['reads'] += 1
-        info = orchscan.identify(raw)
-        if not info and len(last['texts']) < 3:           # (2.13.3) what the state does say, for the log / a report
-            last['texts'].append([v for _, v in orchscan.decode_strings(raw)][:60])
-        sig = (info['instrument'], info.get('articulation')) if info else ('?', hash(raw))
-        if sig == last['sig']:
+        h = hashlib.sha1(raw).hexdigest()
+        if h == last['h']:
             last['seen'] += 1
         else:
-            last.update(sig=sig, seen=0)
-        if last['seen'] < 1:                          # wait until it has stayed loaded for two reads
-            return
-        st = _state(plugin)
-        with lock:
-            if info:
-                key = sig
-                if key not in found:
-                    order.append(key)
-                found[key] = dict(info, state=st)     # the newest state wins (your volume / mic tweaks included)
-            elif (not unknown or unknown[-1]['raw'] != hash(raw)) and len(unknown) < 40:
-                unknown.append(dict(raw=hash(raw), state=st))
+            last.update(h=h, seen=0)
+        if (last['seen'] >= 1 or final) and h not in last['saved']:     # changed, then stayed loaded for a moment
+            last['saved'].add(h)
+            with open(path + '.cap%d.bin' % last['n'], 'wb') as f:
+                f.write(raw)
+            last['n'] += 1
         write_live()
 
     def poll():
-        while not stop.wait(float(job.get('every', 1.0))):
+        wait = float(job.get('every', 2.0))
+        while not stop.wait(wait):
             snap()
+            wait = min(10.0, max(2.0, last['ms'] / 1000 * 8))         # a slow plugin is asked less often
 
-    def watchdog():                                   # (2.13.3) some plugins can't be read while their window is open:
-        while not stop.wait(1.0):                     # say so instead of silently catching nothing
+    def watchdog():                                   # some plugins can't be read while their window is open
+        while not stop.wait(1.0):
             b = last['busy_since']
             if b and time.time() - b > 6 and not last['blocked']:
                 last['blocked'] = True
                 write_live()
+    write_live()
     threading.Thread(target=watchdog, daemon=True).start()
-
     th = threading.Thread(target=poll, daemon=True)
     th.start()
     try:
@@ -242,15 +235,9 @@ def _scan(plugin, path, job):
     except TypeError:
         plugin.show_editor()
     stop.set()
-    th.join(timeout=5)
-    last['seen'] = 9
-    snap()                                            # what's loaded at the moment you closed the window
-    caps = [dict(instrument=found[k]['instrument'], articulation=found[k].get('articulation'), words=found[k]['words'],
-                 state=found[k]['state']) for k in order]
-    if not caps and unknown:                          # the state names nothing we know: keep the captures for naming
-        caps = [dict(instrument=None, articulation=None, words=None, state=u['state']) for u in unknown]
-    return {'ok': True, 'captures': caps, 'named': bool(order), 'reads': last['reads'], 'blocked': last['blocked'],
-            'texts': last['texts']}
+    th.join(timeout=15)
+    snap(final=True)                                  # what's loaded at the moment you closed the window
+    return {'ok': True, 'caps': last['n'], 'reads': last['reads'], 'blocked': last['blocked']}
 
 
 def main(path):

@@ -1,5 +1,6 @@
 """Experimental: use your own VST3 / Audio Unit instruments to render parts (via Spotify's pedalboard library).
 Every plugin call runs in a separate process (sgcore.vst_worker) so a crashing plugin can't take the app down."""
+import base64
 import hashlib
 import json
 import os
@@ -386,9 +387,42 @@ def scan_orchestra(path, prefix='BBC', log=print, timeout=3 * 3600):
     env['PYTHONPATH'] = ROOT + os.pathsep + env.get('PYTHONPATH', '')
     proc = subprocess.Popen([sys.executable, '-m', 'sgcore.vst_worker', jp], cwd=ROOT, env=env,
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **NOWIN)
-    shown, t0, warned = [], time.time(), False
+    t0, warned, done = time.time(), False, 0
+    found, order, unknown, texts = {}, [], [], []
     log(f'{os.path.splitext(os.path.basename(path))[0]} is opening. In its own browser, load each instrument you want '
-        '(and its articulation). Each one is picked up automatically - close the plugin window when you are done.')
+        '(and its articulation) and leave it loaded for a few seconds - each one is listed here as it is picked up. '
+        'Close the plugin window when you are done.')
+
+    def take(raw):
+        info = orchscan.identify(raw)
+        st = {'params': {}, 'raw': base64.b64encode(raw).decode()}
+        if info:
+            key = (info['instrument'], info.get('articulation'))
+            new = key not in found
+            if new:
+                order.append(key)
+            found[key] = dict(info, state=st)         # the newest state wins (your volume / mic tweaks included)
+            log(('  ✓ found ' if new else '  ✓ updated ') + orchscan.sound_name('', info))
+        else:
+            unknown.append(dict(state=st))
+            if len(texts) < 3:
+                texts.append([v for _, v in orchscan.decode_strings(raw)][:60])
+            log(f'  • picked up a sound (#{len(unknown)}) - the plugin did not say which instrument it is')
+
+    def collect():
+        nonlocal done
+        while os.path.exists(f'{jp}.cap{done}.bin'):
+            try:
+                with open(f'{jp}.cap{done}.bin', 'rb') as f:
+                    raw = f.read()
+            except OSError:
+                return
+            done += 1
+            try:
+                take(raw)
+            except Exception as e:
+                log(f'  ! could not read sound #{done}: {e}')
+    last_note = time.time()
     while proc.poll() is None:
         if time.time() - t0 > timeout:
             proc.kill()
@@ -398,29 +432,31 @@ def scan_orchestra(path, prefix='BBC', log=print, timeout=3 * 3600):
                 live = json.load(f)
         except Exception:
             live = {}
-        if isinstance(live, list):
-            live = dict(names=live)
-        names = live.get('names') or []
-        for n in names[len(shown):]:
-            log('  ✓ found ' + n)
-        shown = names if len(names) >= len(shown) else shown
+        collect()
         if live.get('blocked') and not warned:
             warned = True
             log('  ! this plugin does not let Studio Lab read it while its window is open - the instrument loaded when you '
-                'close the window is still saved. To set up several sections, use "set up one section at a time" below '
-                '(or run Detect again for each section).')
-        time.sleep(0.5)
+                'close the window is still saved. For several sections, run Detect once per section, or use '
+                '"set up one section at a time" below.')
+        if time.time() - last_note > 20 and live.get('reads'):
+            last_note = time.time()
+            log(f"  … watching ({live['reads']} checks so far) - {len(order) + len(unknown)} sound(s) picked up")
+        time.sleep(0.7)
+    collect()
     try:
         with open(jp + '.result') as f:
             res = json.load(f)
     except Exception:
-        res = {'ok': False, 'error': 'the plugin crashed while it was open'}
+        res = {'ok': bool(order or unknown), 'error': 'the plugin crashed while it was open'}
     shutil.rmtree(d, ignore_errors=True)
-    if not res.get('ok'):
+    if not res.get('ok') and not (order or unknown):
         return res
+    caps = [dict(found[k], state=found[k]['state']) for k in order]
+    if not caps:                                      # the state names nothing we know: keep the captures for naming
+        caps = [dict(instrument=None, articulation=None, words=None, state=u['state']) for u in unknown[:40]]
     existing = {(s.get('scan_key') or ''): s['id'] for s in list_sounds_full() if s.get('scan_key')}
     saved = []
-    for i, c in enumerate(res.get('captures') or []):
+    for i, c in enumerate(caps):
         if c.get('instrument'):
             name = orchscan.sound_name(prefix, c)
             key = f"{os.path.basename(path)}|{c['instrument']}|{c.get('articulation') or ''}"
@@ -430,17 +466,19 @@ def scan_orchestra(path, prefix='BBC', log=print, timeout=3 * 3600):
                           extra=dict(scan_key=key, instrument=c.get('instrument'), articulation=c.get('articulation')))
         saved.append(dict(id=sid, name=name, named=bool(c.get('instrument'))))
     if not saved:
-        log('Nothing was captured - load an instrument in the plugin and leave it loaded for a second or two.')
-    elif not res.get('named'):
+        log('Nothing was captured - load an instrument in the plugin and leave it loaded for a few seconds.')
+    elif not order:
         log('The plugin did not say which instruments these are, so they were saved as "sound 1, 2 ..." - '
             'give each a name (e.g. "BBC celli spiccato") and matching parts will use it.')
-        try:                                              # (2.13.3) keep what the state did contain, for a bug report
+        try:                                              # what the state did contain, for a bug report
             with open(os.path.join(SOUNDS, '.last_scan.json'), 'w') as f:
                 json.dump(dict(plugin=os.path.basename(path), reads=res.get('reads'), blocked=res.get('blocked'),
-                               texts=res.get('texts')), f, indent=1)
+                               texts=texts), f, indent=1)
         except Exception:
             pass
-    return {'ok': True, 'sounds': saved, 'named': bool(res.get('named'))}
+    else:
+        log(f'Saved {len(saved)} sound(s).')
+    return {'ok': True, 'sounds': saved, 'named': bool(order)}
 
 
 def list_sounds_full():
