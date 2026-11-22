@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 354 GENRES  (version 2.2.7)
+STUDIO LAB - ALL 383 GENRES  (version 2.5.2)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 2.2
+* = new in 2.5
 
 ========================================================================
-ELECTRONIC  (189)
+ELECTRONIC  (196)
 ========================================================================
 
 House & Disco  (29)
@@ -37,10 +37,11 @@ House & Disco  (29)
     Hi-NRG (80s)  [hi_nrg]
     Brazilian bass  [brazilian_bass]
 
-Techno & Trance  (25)
+Techno & Trance  (26)
     techno  [techno]
     minimal  [minimal]
     Melodic Techno  [melodic_techno]
+    Euphoric Trance  [euphoric_trance]
     Euphoric UK Techno  [euphoric_uk_techno]
     New Beat  [new_beat]
     trance  [trance]
@@ -161,7 +162,10 @@ Pop, R&B & Hopecore  (12)
     Latin freestyle (80s)  [freestyle]
     80s synth R&B  [synth_rnb]
 
-Afro, Latin & Caribbean  (8)
+Afro, Latin & Caribbean  (11)
+    Shangaan Electro  [shangaan_electro]
+    Kuduro  [kuduro]
+    Neoperreo  [neoperreo]
     Afrobeats  [afrobeats]
     Amapiano  [amapiano]
     Reggaeton  [reggaeton]
@@ -171,7 +175,8 @@ Afro, Latin & Caribbean  (8)
     Funk 150 / mandelao  [funk_150]
     Gqom  [gqom]
 
-Chill, Lo-fi & Ambient  (18)
+Chill, Lo-fi & Ambient  (20)
+    Mallsoft  [mallsoft]
     Lo-fi Hip Hop  [lofi]
     Sunlit electronica (analog band, guitars, 112-122)  [sunlit_electronica]
     Daydream downtempo (dusty breaks, guitar haze, 74-95)  [daydream_downtempo]
@@ -183,6 +188,7 @@ Chill, Lo-fi & Ambient  (18)
     ambient  [ambient]
     Ambient beat (dark, sub-heavy)  [ambient_beat]
     Dreamy synthscape (chill synth space)  [dream_synthscape]
+    Synthscape vignette (one-minute miniature)  [vignette_synthscape]
     Vaporwave  [vaporwave]
     90s new-age chill (chant)  [new_age_chant]
     Chant downtempo - shakuhachi & monks  [chant_downtempo]
@@ -199,7 +205,8 @@ Footwork & Juke  (6)
     Juke / ghetto house - raw (130)  [juke_raw]
     Juke house - bouncy (126)  [juke_house]
 
-Retro & Video Game  (7)
+Retro & Video Game  (8)
+    Darksynth  [darksynth]
     synthwave  [synthwave]
     Spooky surf - modern monster theme (synths)  [monster_synth]
     Dark Synthwave  [dark_synthwave]
@@ -218,7 +225,7 @@ Hauntology  (7)
     Hauntology - cold dystopian synths  [hauntology_cold]
 
 ========================================================================
-CLASSIC  (133)
+CLASSIC  (152)
 ========================================================================
 
 Rock & Metal  (30)
@@ -253,7 +260,8 @@ Rock & Metal  (30)
     Rockabilly (slap bass & twang)  [rockabilly]
     Post-punk  [post_punk]
 
-Pop & Indie  (11)
+Pop & Indie  (12)
+    Dream Pop  [dream_pop]
     pop  [pop]
     Bedroom / indie pop  [bedroom_pop]
     Velvet pop (soft, warm, dark)  [velvet_pop]
@@ -317,7 +325,25 @@ Swing & Big Band  (5)
     Western Swing  [western_swing]
     New Orleans brass band  [nola_brass]
 
-Country, Folk & Blues  (10)
+Celtic  (16)
+    Celtic Jig (6/8)  [celtic_jig]
+    Celtic Reel (4/4)  [celtic_reel]
+    Celtic Hornpipe  [celtic_hornpipe]
+    Slip Jig (9/8)  [slip_jig]
+    Strathspey (Scottish)  [strathspey]
+    Celtic Polka  [celtic_polka]
+    Celtic Session Set  [celtic_session]
+    Celtic Slow Air  [celtic_slow_air]
+    Celtic Punk  [celtic_punk]
+    Sea Shanty  [sea_shanty]
+    Highland Pipe Band  [highland_pipes]
+    Pipes & Orchestra  [pipes_orchestra]
+    Breton An Dro (fest-noz)  [breton_an_dro]
+    Galician Muiñeira (gaita)  [galician_muineira]
+    Clarsach Air (wire harp)  [clarsach_air]
+    Celtic New Age (choir & harp)  [celtic_new_age]
+
+Country, Folk & Blues  (9)
     Country (classic / honky-tonk)  [country]
     Modern Country  [modern_country]
     Country Waltz (3/4)  [country_waltz]
@@ -325,7 +351,6 @@ Country, Folk & Blues  (10)
     Spaghetti Western  [western]
     Bluegrass  [bluegrass]
     folk  [folk]
-    Celtic Jig (6/8)  [celtic_jig]
     blues  [blues]
     Acoustic folk-rock jam  [folk_jam]
 
@@ -346,7 +371,10 @@ Latin & Caribbean  (15)
     Son cubano (tres & bongos)  [son_cubano]
     Flamenco rumba (guitar & palmas)  [flamenco_rumba]
 
-World  (6)
+World  (9)
+    Highlife  [highlife]
+    Soukous  [soukous]
+    Balkan Brass  [balkan_brass]
     Raga (sitar, tabla, tanpura)  [raga_fusion]
     Japanese zen (koto, shakuhachi)  [japanese_zen]
     Bhangra  [bhangra]
@@ -383,10 +411,12 @@ Hindu devotional  (9)
     Carnatic kriti (veena & mridangam)  [carnatic_kriti]
 
 ========================================================================
-ORCHESTRAL  (32)
+ORCHESTRAL  (35)
 ========================================================================
 
-Film & Trailer  (9)
+Film & Trailer  (11)
+    Horror / Dread  [horror]
+    Wonder / Discovery  [wonder]
     Cinematic Journey (ultimate orchestral)  [cinematic_journey]
     Cinematic Journey - Dark & Low  [cinematic_journey_low]
     Cinematic / Epic  [cinematic]
@@ -419,7 +449,8 @@ Christmas & Holiday  (3)
     Christmas orchestral - magical (celesta)  [christmas_magic]
     Christmas orchestral - mischief  [christmas_mischief]
 
-Classical Eras  (11)
+Classical Eras  (12)
+    Gregorian Chant  [gregorian_chant]
     Baroque  [baroque]
     Baroque organ toccata  [baroque_organ]
     Minuet & trio  [minuet]

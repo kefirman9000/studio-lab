@@ -380,6 +380,18 @@ TONE_DEFAULTS = {'sawbass': dict(cut=2200), 'supersaw': dict(cut=3000, detune=1.
 PART_K = {'harmony': 1, 'melody': 2, 'drums': 3, 'bass': 4, 'chords': 5}
 
 
+def _layout_seed(opts):
+    """(2.6) The per-song arrangement variant follows a locked part: a part locked from another song keeps that song's
+    section layout, so the locked drums / bass / chords land where they did (before, a re-roll re-arranged the song
+    around them and moved them). Part seeds are seed * 1009 + PART_K, so the source song's seed comes back exactly."""
+    ps = getattr(opts, 'part_seeds', None) or {}
+    for part in sorted(ps, key=lambda k: PART_K.get(k, 99)):
+        v, k = ps.get(part), PART_K.get(part)
+        if v is not None and k is not None and (int(v) - k) % 1009 == 0:
+            return (int(v) - k) // 1009
+    return opts.seed
+
+
 def _snd(opts):
     """The sound re-roll (🎲 Re-roll sounds): a new sound_seed re-picks the sounds - main parts, layers, the sounds that
     take over in other sections, the drum-machine voices - while every note stays the same."""
@@ -1371,7 +1383,7 @@ def compose(opts):
             and not st.get('form_gen') and not st.get('composer') and len(st.get('forms') or []) < 2 \
             and st.get('category') != 'Orchestral' and not st.get('meter_form'):
         from .layouts import vary_layout                 # (2.4) the genre's layout, reshaped for this song
-        form, st['layout_moves'] = vary_layout(form, st, opts.seed, {t['layer'] for t in st['tracks']})
+        form, st['layout_moves'] = vary_layout(form, st, _layout_seed(opts), {t['layer'] for t in st['tracks']})
     form = _traits.shape_form(form, opts, opts.style)
     if opts.structure == 'loop':
         form = [('loop', 16, set(l for l in ['kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead', 'fx']), {})]

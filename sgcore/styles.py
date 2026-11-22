@@ -12399,3 +12399,64 @@ derive('celtic_session', 'celtic_reel', 'Classic',
        'Celtic session set: two or three tunes played as one unbroken medley, the way a pub session runs them - each '
        'tune AABB, then straight into the next in a new key with a lift in tempo, the energy climbing to the end',
        'Celtic Session Set', form='session_set', set_shift={2: 5, 3: 7})
+
+
+# ---- (2.6) a second synthscape, modelled on another short synth piece the user sent ---------------------------------
+# One minute, one gesture: a hushed 4-bar opening, the whole thing dropping in at once for 12 bars (a soft quarter-note
+# heartbeat, a high bass walking the V pedal - in A-flat: Eb, Eb, F, Ab), then an 11-bar tail that only thins and fades,
+# never comes back. Even darker than the dreamy synthscape (nearly nothing above 1 kHz), the bass up in the low mids
+# (no 60-120 Hz boom), narrower, and the harmony leaning on V with vi and I as neighbours, maj7 colour on top.
+FORMS['synthscape_vignette'] = [
+    ('intro', 4, {'pad', 'chords', 'arp', 'fx'}, {'level': 0.27}),
+    ('B', 12, {'kick', 'bass', 'pad', 'chords', 'arp', 'lead', 'fx'}, {}),
+    ('outro', 8, {'pad', 'chords', 'arp', 'fx'}, {'level': 0.27}),         # the tail holds, quiet ...
+    ('outro', 3, {'pad', 'chords', 'fx'}, {'level': 0.22, 'fade': True}),  # ... and only fades at the very end
+]
+FORMS['synthscape_vignette_long'] = [      # the same gesture, a little longer
+    ('intro', 4, {'pad', 'chords', 'arp', 'fx'}, {'level': 0.27}),
+    ('A', 4, {'pad', 'chords', 'arp', 'lead', 'fx'}, {'level': 0.4}),
+    ('B', 16, {'kick', 'bass', 'pad', 'chords', 'arp', 'lead', 'fx'}, {}),
+    ('outro', 8, {'pad', 'chords', 'arp', 'fx'}, {'level': 0.27}),
+    ('outro', 4, {'pad', 'chords', 'fx'}, {'level': 0.22, 'fade': True}),
+]
+
+
+def _vignette_variations():
+    import copy
+    sv = copy.deepcopy(STYLES['dream_synthscape']['song_variations'])
+    sv['form'] = [dict(name='one minute', form='synthscape_vignette'), dict(name='one minute', form='synthscape_vignette'),
+                  dict(name='a little longer', form='synthscape_vignette_long')]
+    sv['bpm'] = [dict(name='as sent', bpm=(108, 112)), dict(name='a touch slower', bpm=(102, 108)), dict(name='a touch faster', bpm=(112, 116))]
+    v_pedal = {'major': [[4, 4, 5, 0], [0, 4, 4, 5], [4, 4, 4, 5], [4, 5, 0, 4], [5, 4, 0, 4]]}
+    sv['harmony'] = [dict(name='V pedal', scales=['major'], progs=v_pedal), dict(name='V pedal', scales=['major'], progs=v_pedal),
+                     dict(name='home vamp', scales=['major'], progs={'major': [[0, 0, 4, 4], [0, 4, 5, 4]]}),
+                     dict(name='mixolydian glow', scales=['mixolydian'], progs={'mixolydian': [[0, 6, 0, 6], [6, 6, 0, 0]]})]
+    sv['bass'] = [dict(name='quarter pulse', bass_stutter=False, bass=['R...R...R...R...']),
+                  dict(name='quarter pulse', bass_stutter=False, bass=['R...R...R...R...']),
+                  dict(name='half notes', bass_stutter=False, bass=['R-------R-------']),
+                  dict(name='stutter entrances', bass_stutter=True)]
+    sv['sparkle'] = [dict(name='no sparkle'), dict(name='no sparkle'),
+                     dict(name='slow stars', track='arp_hi', step=1.0, mode='random', center=84, vel=0.45, prob=0.5)]
+    sv['mid'] = [dict(name='mid line', track='arp_mid', step=2 / 3, mode='updown', center=70, vel=0.45, prob=0.8), dict(name='no mid')]
+    return sv
+
+
+_vm = dict(STYLES['dream_synthscape']['master'])
+_vm.update(tone=[-40.0, -16.0, 0.0, -1.5, -13.0, -23.0, -38.0, -50.0, -60.0], width=0.95, vintage_lp=2600, sub_cut=90, low=-3.0)
+_vt = []
+for _t in STYLES['dream_synthscape']['tracks']:
+    _t = dict(_t, p=dict(_t.get('p') or {}))
+    if _t['name'] == 'kick':
+        _t.update(db=-30, lp=180)                      # the heartbeat: felt more than heard
+    elif _t['name'] in ('arp_hi', 'arp_mid'):
+        _t['pan'] = _t.get('pan', 0) * 0.5             # narrower than the dreamy one
+    _vt.append(_t)
+derive('vignette_synthscape', 'dream_synthscape', 'Electronic',
+       'Synthscape vignette: a one-minute synth miniature - a hushed opening, then everything drops in at once over a soft '
+       'quarter-note heartbeat and a high bass walking the V pedal, warm maj7 chord tones pulsing in triplets against it, '
+       'then a long tail that only thins and fades. Very dark and muffled (almost nothing above 1 kHz), no sub, '
+       'close and soft - like a synth heard through the wall', 'Synthscape vignette (one-minute miniature)',
+       form='synthscape_vignette', bpm=(106, 114), scales=['major'],
+       progs={'major': [[4, 4, 5, 0], [0, 4, 4, 5], [4, 4, 4, 5], [4, 5, 0, 4]]},
+       bass=['R...R...R...R...'], bass_lo=44, bass_stutter=False, song_variations=_vignette_variations(),
+       transition_moves=['none'], master=_vm, tracks=_vt)

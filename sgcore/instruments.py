@@ -8060,5 +8060,6 @@ for _name, _fn, _info, _roles, _gm in NEW_197B:
 # (2.0) synths the library was missing for trance, techno and hip hop
 from . import synths2  # noqa: E402,F401
 from . import guitars2  # noqa: E402,F401
+from . import instruments3  # noqa: E402,F401
 from . import celtic  # noqa: E402,F401
 from . import synths25  # noqa: E402,F401

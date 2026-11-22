@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.6.0
+- **New genre: Synthscape vignette** (Electronic > Chill, Lo-fi & Ambient), modelled on the one-minute synth piece you sent.
+  It plays one gesture: a hushed 4-bar opening, then everything drops in at once for 12 bars over a soft quarter-note
+  heartbeat and a high bass walking the V pedal (in A-flat: Eb, Eb, F, Ab), warm maj7 chord tones pulsing in triplets
+  against it, then an 11-bar tail that holds quiet and only fades at the very end. It is darker than the dreamy
+  synthscape (almost nothing above 1 kHz), has no sub, sits narrower, and is about a minute long (sometimes a little
+  longer). It shares the dreamy synthscape's sound palettes and pulses, so no two songs sound alike.
+- **14 new instruments**, each added to the rotation of the genres it suits:
+  - **Organs:** tonewheel organ with a real rotary speaker (drawbars, key click, percussion; the horn and drum spin
+    separately, slow under chords and fast for solos) and an overdriven rock organ.
+  - **Guitars and strings:** wah funk guitar (chicken-scratch through an envelope wah), 12-string jangle, lap steel /
+    slide, dobro (resonator), ukulele and hammered dulcimer.
+  - **World:** didgeridoo.
+  - **Electronic:** donk bass, glitch chopper, omnichord and stylophone.
+  - **Keys:** toy piano.
+  - The Irish bouzouki and the modelled bagpipes stay as they were; those were already here.
+- **Fixed: locked parts moved when you re-rolled.** Since 2.4.0 each song picks its own arrangement variant, and it
+  picked one from the new seed. A part locked from another song then landed in different sections. The arrangement
+  now follows the locked part's song, so locked drums, bass or chords stay where they were.
+
 ## 2.5.2
 **More sounds, more variety**
 - New trance sounds: hollow **virus pluck**, **FM pluck**, **reverse-swell pad** (sucks into the drop), **trance choir pad**, classic **square lead** with portamento, and a rolling **tri bass** for uplifting and psy.

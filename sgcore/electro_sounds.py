@@ -31,7 +31,62 @@ SWAPS = {
 }
 
 
+# (2.6) the new instruments join the rotation of the genres they belong to: {sound: ({genre: roles}, roles-for-all)}
+NEW_SOUNDS = {
+    'tonewheel': (['gospel', 'modern_gospel', 'soul_ballad', 'motown', 'rnb', 'neo_soul', 'soul_jazz', 'jam_band', 'jam_rock_80s',
+                   'blues', 'funk', 'reggae', 'ska', 'dub', 'smooth_funk', 'quiet_storm', 'slow_jam', 'jazz', 'jazz_rap', 'psych_pop'],
+                  ('chords', 'pad', 'lead')),
+    'rockorgan': (['rock', 'boogie_rock', 'boogie_blues_rock', 'jam_band', 'garage_rock', 'alt_rock_90s', 'doom_metal',
+                   'celtic_punk'], ('chords', 'pad', 'lead')),
+    'wahgtr': (['funk', 'disco', 'disco_funk', 'smooth_funk', 'electro_funk', 'g_funk', 'afrobeat', 'nu_disco', 'future_funk',
+                'french_house', 'thai_funk', 'funk_150', 'new_jack_swing'], ('chords', 'arp')),
+    'twelvestring': (['folk', 'folk_jam', 'indie_rock', 'psych_pop', 'jam_band', 'soft_rock', 'chamber_pop', 'shoegaze', 'post_rock',
+                      'celtic_session', 'bedroom_pop'], ('chords', 'arp')),
+    'lapsteel': (['blues', 'country', 'outlaw_country', 'western', 'western_swing', 'modern_country', 'boogie_blues_rock',
+                  'desert_blues', 'exotica', 'surf_rock'], ('lead',)),
+    'dobro': (['bluegrass', 'country', 'blues', 'folk_jam', 'outlaw_country', 'folk', 'country_waltz'], ('lead', 'arp')),
+    'ukulele': (['tropical_house', 'pop', 'bedroom_pop', 'hopecore', 'hopecore_dreamy', 'exotica', 'reggae', 'folk', 'teen_pop',
+                 'balearic_chill'], ('chords', 'arp')),
+    'dulcimer': (['celtic_jig', 'celtic_reel', 'celtic_hornpipe', 'celtic_slow_air', 'celtic_session', 'clarsach_air',
+                  'celtic_new_age', 'folk', 'fantasy_rpg', 'christmas_magic', 'storybook_score', 'festive_cinematic'], ('arp',)),
+    'didgeridoo': (['fourth_world', 'field_ambient', 'new_age_chant', 'chant_downtempo', 'raga_fusion', 'ambient'], ('pad',)),
+    'donk': (['bassline_140', 'uk_bounce_house', 'speed_garage', 'bass_house', 'uk_hardcore', 'rave_hardcore', 'hard_trance'], ('bass',)),
+    'glitchchop': (['braindance', 'glitch_pop', 'glitch_future_bass', 'hyperpop', 'breakcore', 'idm_jungle_theme', 'wonky_beats'],
+                   ('lead', 'arp')),
+    'omnichord': (['sunrise_chillwave', 'bedroom_pop', 'lofi', 'hazy_downtempo', 'daydream_downtempo', 'sunlit_electronica',
+                   'hopecore_dreamy', 'vaporwave', 'city_pop'], ('arp', 'chords')),
+    'stylophone': (['synthpop', 'electro', 'krautrock', 'new_beat', 'post_punk', 'freestyle', 'italo_disco', 'chiptune'], ('lead', 'arp')),
+    'toypiano': (['storybook_score', 'hauntology_lullaby', 'hauntology_melody', 'christmas_mischief', 'christmas_magic', 'bedroom_pop',
+                  'musical_theatre', 'spooky_tv_theme'], ('lead', 'arp')),
+}
+
+
+def add_new_sounds():
+    from .instruments import INSTRUMENTS
+    for inst, (genres, roles) in NEW_SOUNDS.items():
+        if inst not in INSTRUMENTS:
+            continue
+        for g in genres:
+            st = STYLES.get(g)
+            if not st or st.get('exact_pools'):
+                continue
+            pools = POOLS.setdefault(g, {})
+            have = {t.get('layer') for t in st['tracks']}
+            for r in roles:
+                if r not in have:
+                    continue
+                lst = pools.get(r)
+                if lst is None:
+                    own = next((t['inst'] for t in st['tracks'] if t.get('layer') == r and t.get('name') == r), None)
+                    if not own:
+                        continue
+                    lst = pools[r] = [own]
+                if inst not in lst:
+                    lst.append(inst)
+
+
 def apply():
+    add_new_sounds()
     from .instruments import INSTRUMENTS
     changed = []
     for g, st in STYLES.items():

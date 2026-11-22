@@ -112,6 +112,9 @@ def works_in(plugin, daws, osname, found_formats=None):
 
 # which plugin category suits each built-in instrument
 INST_CAT = {
+    'tonewheel': 'organ', 'rockorgan': 'organ', 'wahgtr': 'guitar', 'twelvestring': 'guitar', 'lapsteel': 'guitar',
+    'dobro': 'guitar', 'ukulele': 'guitar', 'dulcimer': 'keys', 'didgeridoo': 'pad',
+    'donk': 'bass', 'glitchchop': 'lead', 'omnichord': 'pluck', 'stylophone': 'lead', 'toypiano': 'keys',
     'sawbass': 'bass', 'reese': 'bass', 'fmbass': 'bass', 'wobble': 'bass', 'acid': 'bass', 'sinebass': 'bass',
     'chipbass': 'bass', '808': 'bass', 'supersaw': 'pad', 'warmpad': 'pad', 'stab': 'chords', 'pluck_saw': 'pluck',
     'leadsaw': 'lead', 'supersaw_lead': 'lead', 'hoover': 'lead', 'chip': 'lead', 'softlead': 'lead', 'epiano': 'epiano',

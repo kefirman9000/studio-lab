@@ -22,6 +22,7 @@ from . import fx2 as _fx2
 SYNTH_TAKES = 3          # analog character: takes per (note, length, velocity layer)
 from .compose import SECTION_ENERGY, GROOVES
 from .guitars2 import RIGS as _GTR_RIGS, guitar_rig as _guitar_rig
+from .instruments3 import PART_FX as _PART_FX
 
 HELD = 0.75     # notes held this many beats or longer (pads, sustained chords) are never swung - only short notes swing
 
@@ -883,6 +884,8 @@ class Renderer:
                 rig.pop('gate', None)
             rig.update(tcfg.get('rig') or {})
             buf = _guitar_rig(buf, rig, self.spb)
+        elif tcfg['inst'] in _PART_FX and np.any(buf):  # (2.6) whole-part effects: the organs' rotary speaker
+            buf = _PART_FX[tcfg['inst']](buf, tcfg, self.spb)
         elif tcfg.get('amp') and (tcfg['inst'].startswith('real:') or tcfg['inst'] in ('guitar', 'mutedgtr')):
             buf = guitar_amp(buf, float(tcfg['amp']))
         if tcfg.get('drive'):
