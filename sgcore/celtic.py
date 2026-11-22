@@ -169,9 +169,9 @@ def _chanter_raw(d, b0, n, seed, rate=SR, turb_amt=0.06):
     turbulence (time constants and the turbulence band set in real time / Hz, whatever the rate)."""
     from . import fastdsp as F
     t = np.arange(n) / rate
-    crow = 1 + 0.008 * np.exp(-t / 0.006)
+    crow = 1 + 0.02 * np.exp(-t / 0.008)
     br = np.full(n, b0) * (0.7 + 0.3 * np.clip(t / 0.02, 0, 1))       # started exactly as pipe_part starts a phrase
-    turb = lp(np.random.default_rng(seed).standard_normal(n), 3000 * SR / rate) * turb_amt
+    turb = lp(np.random.default_rng(seed).standard_normal(n), 800 * SR / rate) * turb_amt
     turb = turb + np.random.default_rng(seed + 1).standard_normal(n) * 0.1 * np.exp(-t / 0.01)     # the first puff of air
     return F.reed_conical(br, turb, d * crow, _CH['pos'], _CH['offset'], _CH['slope'], _CH['refl'])
 
@@ -192,7 +192,7 @@ def _tuned_delay(f, kind):
         if kind == 'chanter':
             y = _chanter_raw(d, b0, n, 7)
         elif kind == 'chanter_os':                        # tested exactly as the band plays it: at twice the rate
-            y = _chanter_raw(d, b0, 2 * n, 7, rate=2 * SR, turb_amt=0.0)
+            y = _chanter_raw(d, b0, 2 * n, 7, rate=2 * SR, turb_amt=0.03)
         else:
             y = F.reed_cylindrical(br, np.zeros(n), np.full(n, d), _DR['offset'], _DR['slope'], _DR['refl'])
         got = _f0(y)
@@ -480,7 +480,8 @@ def pipe_band(notes, length, tonic=None, players=3):
         out[0] += y * np.sqrt(0.5 * (1 - pan))
         out[1] += y * np.sqrt(0.5 * (1 + pan))
     out /= players ** 0.7
-    return _hall(out)                                                    # (no saturation: it added crunch)
+    out = soft(out * 1.08, 1.05)                    # (2.4.12) 2.4.8's blend of the reeds into one wall, lighter
+    return _hall(out)
 
 
 def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None, life=2.0):
@@ -530,7 +531,7 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None, life=
         delay[:w] = delay[w]
         delay[-w:] = delay[-w - 1]
         t = np.arange(n) / R
-        delay *= 1 + 0.008 * np.exp(-t / 0.006)                      # (2.4.11) a tiny crow: a big pitch sweep sounded like a sitar
+        delay *= 1 + 0.02 * np.exp(-t / 0.008)                       # the crow: half of 2.4.8's (the full one twanged)
         drift = lp(np.random.default_rng(a * 31 + seed).standard_normal(n), 0.8 * SR / R)
         delay *= 2 ** (-(drift / (np.std(drift) + 1e-12) * life) / 1200)   # this piper's reed: slow life in cents
         breath = breath * (0.7 + 0.3 * np.clip(t / 0.02, 0, 1))        # a step to 70 % sets the reed going, then it eases in
@@ -539,20 +540,29 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None, life=
         # (2.4.10) no breath noise while it sounds (the reed turns ANY of it into hiss and crunch) - only the first puff of
         # air, a few ms, which is what sets the reed going
         turb = np.random.default_rng(a + 9973 * seed).standard_normal(n) * 0.1 * np.exp(-t / 0.01)
+        # (2.4.12) the 2.4.8 reed's breath is back - but slow (below 800 Hz): on this reed it gives life, not hiss
+        turb = turb + lp(np.random.default_rng(a + 7 * seed).standard_normal(n), 800 * SR / R) * 0.03
         y = F.reed_conical(breath, turb, delay, _CH['pos'] if reed_pos is None else reed_pos, _CH['offset'], _CH['slope'],
                            _CH['refl'])
         y = resample_poly(y, 1, OS)[: b - a]                         # back to the normal rate, the fizz filtered off
         y = np.diff(y, prepend=y[0]) * 1.6 + 0.7 * y                 # radiation: brighter, but gently
-        y = eq(eq(eq(y, 'peak', 1300, 0.8, 3.5), 'peak', 3000, 0.7, 2.5), 'peak', 520, 0.8, 3.0)   # broad: narrow peaks rang like a sitar   # nasal bite + body
+        y = eq(eq(eq(eq(y, 'peak', 1300, 1.1, 5.0), 'peak', 3200, 1.1, 3.5), 'peak', 2400, 1.0, 1.5), 'peak', 520, 0.9, 3.0)   # 2.4.8's nasal bite + body, a little broader   # nasal bite + body
         y = eq(y, 'peak', 6500, 0.8, -5.0)                           # tame the hard fizz up top
         out[a:a + len(y)] += hp(lp(y, 9000), 180) * 0.18
     return out
 
 
 def _hall(x, seed=4):
-    """(2.4.9) No early-reflection comb any more - short strong reflections made the band sound like it was in a
-    tunnel. The pipes' space comes from the track's own reverb send, which sounds natural."""
-    return x
+    """(2.4.12) 2.4.8's stone-hall space, gently: only later, weaker reflections (the strong 7-13 ms ones made the
+    tunnel), so the band sounds like it's playing in a room, not a pipe."""
+    rnd = np.random.default_rng(seed)
+    out = x.copy()
+    for ms, g in ((23, 0.16), (34, 0.13), (47, 0.11), (63, 0.08)):
+        d = int(ms * 0.001 * SR)
+        for c in range(out.shape[0]):
+            dc = d + int(rnd.integers(0, 60))
+            out[c, dc:] += g * lp(x[(c + 1) % out.shape[0], :-dc], 4500)
+    return out / 1.2
 
 
 def _drone_table(bass, N=4096):

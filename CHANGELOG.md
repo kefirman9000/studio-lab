@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.12
+- Bagpipes: the best of 2.4.8 and 2.4.11. The 4-piper group sound stays; 2.4.8's character comes back - the reed's breath (slow now, so it adds life without hiss), the crow at each phrase start (half as strong, so no twang), the nasal bite, the reeds blending into one wall, and the hall's space (only the later, softer reflections, so no tunnel).
+
 ## 2.4.11
 - Pipe band sounds like a group again: 4 pipers, each drifting slightly ahead and behind on their own, a few cents apart and wandering in pitch independently, so the chanters beat against each other like a real band.
 - Bagpipe tone: no more sitar twang - the pitch scoop at each phrase start is nearly gone, note changes are quicker (2.5 ms) and the tone EQ is broad instead of ringing.
