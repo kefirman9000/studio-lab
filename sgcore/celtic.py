@@ -164,13 +164,14 @@ def _f0(y):
 _TUNED = {}
 
 
-def _chanter_raw(d, b0, n, seed):
-    """The chanter's bore output for n samples: bore length d, bag pressure b0 - with the crow and the turbulence."""
+def _chanter_raw(d, b0, n, seed, rate=SR, turb_amt=0.06):
+    """The chanter's bore output for n samples at `rate`: bore length d, bag pressure b0 - with the crow and the
+    turbulence (time constants and the turbulence band set in real time / Hz, whatever the rate)."""
     from . import fastdsp as F
-    t = np.arange(n) / SR
+    t = np.arange(n) / rate
     crow = 1 + 0.04 * np.exp(-t / 0.01)
     br = np.full(n, b0) * np.clip(t / 0.004, 0, 1)
-    turb = lp(np.random.default_rng(seed).standard_normal(n), 3000) * 0.06
+    turb = lp(np.random.default_rng(seed).standard_normal(n), 3000 * SR / rate) * turb_amt
     return F.reed_conical(br, turb, d * crow, _CH['pos'], _CH['offset'], _CH['slope'], _CH['refl'])
 
 
@@ -183,17 +184,21 @@ def _tuned_delay(f, kind):
         return _TUNED[key]
     n = int(0.25 * SR)
     b0 = 0.65 if kind == 'chanter' else 0.6
-    d = SR / f - 3.0 if kind == 'chanter' else SR / f / 2 - 1.0
+    d = (SR / f - 3.0) if kind == 'chanter' else (2 * SR / f - 3.0) if kind == 'chanter_os' else SR / f / 2 - 1.0
     for _ in range(10):
         br = np.full(n, b0)
         br[:150] = np.linspace(0, b0, 150)
         if kind == 'chanter':
             y = _chanter_raw(d, b0, n, 7)
+        elif kind == 'chanter_os':                        # tested exactly as the band plays it: at twice the rate
+            y = _chanter_raw(d, b0, 2 * n, 7, rate=2 * SR, turb_amt=0.04)
         else:
             y = F.reed_cylindrical(br, np.zeros(n), np.full(n, d), _DR['offset'], _DR['slope'], _DR['refl'])
         got = _f0(y)
         if not got or got <= 0:
             break
+        if kind == 'chanter_os':
+            got *= 2.0
         if got > 1.6 * f and b0 > 0.4:                               # overblown: ease off the bag
             b0 -= 0.04
             continue
@@ -377,7 +382,7 @@ def ornament_pass(evs, tracks, sections, st, bpm, seed, tonic=None):
     if not scale or len(scale) < 5:
         scale = {e.midi % 12 for e in evs if e.track in leads} or set(range(12))
     sec_beat = 60.0 / max(40, bpm)
-    g = 0.045 / sec_beat                                            # a grace note: ~45 ms, in beats
+    g = (0.038 if style == 'pipes' else 0.045) / sec_beat           # a grace note: ~38 ms on pipes (snappy), 45 ms trad
     new = []
     ch_notes = None
     if style == 'pipes' and tonic is not None:          # (2.4.6) the Highland chanter has exactly nine notes: low G to
@@ -452,7 +457,7 @@ def pipe_band(notes, length, tonic=None, players=3):
     ms early or late, on their own reed - summed and soft-saturated the way the reeds blend into one wall. (2, length)."""
     if players <= 1:
         y = pipe_part(notes, length, tonic)
-        return np.vstack([y, y])
+        return _hall(np.vstack([y, y]))
     out = np.zeros((2, length))
     rnd = np.random.default_rng(len(notes) * 7 + players)
     for k in range(players):
@@ -464,15 +469,21 @@ def pipe_band(notes, length, tonic=None, players=3):
         out[0] += y * np.sqrt(0.5 * (1 - pan))
         out[1] += y * np.sqrt(0.5 * (1 + pan))
     out /= players ** 0.7
-    return soft(out * 1.3, 1.15) / 1.1                                  # the reeds blending into one wall
+    out = soft(out * 1.15, 1.05)                                         # the reeds blending into one wall (gently)
+    return _hall(out)
 
 
 def pipe_part(notes, length, tonic=None, cents=0.0, seed=0):
     """The Highland chanter as it really plays: ONE reed sounding continuously through each phrase. Each note's pitch
     holds until the next note starts (the chanter never stops between notes - the gracenotes are what separate them),
     the reed only catches (the crow) at the start of a phrase, and a phrase ends only at a real silence.
+    The reed model runs at twice the sample rate (2.4.8): its reed snapping shut every cycle makes harmonics far above
+    hearing, which at the normal rate fold back down as a fizzy, electronic buzz - oversampled, they're filtered away.
     notes: [(start_s, dur_s, midi)] sorted; returns (length,) mono."""
     from . import fastdsp as F
+    from scipy.signal import resample_poly
+    OS = 2
+    R = SR * OS
     out = np.zeros(length)
     if not notes:
         return out
@@ -490,32 +501,52 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0):
         b = min(length, int((ph[-1][0] + ph[-1][1]) * SR) + int(0.03 * SR))
         if b - a < 64:
             continue
-        n = b - a
+        n = (b - a) * OS
         delay = np.empty(n)
         breath = np.empty(n)
         for k, (t0, dur, m) in enumerate(ph):
-            s0 = max(0, int(t0 * SR) - a)
-            s1 = n if k == len(ph) - 1 else max(s0 + 1, int(ph[k + 1][0] * SR) - a)
+            s0 = max(0, int(t0 * R) - a * OS)
+            s1 = n if k == len(ph) - 1 else max(s0 + 1, int(ph[k + 1][0] * R) - a * OS)
             ji = PIPE_JI.get((m - tonic) % 12, 0.0) if tonic is not None else 0.0
-            d, b0 = _tuned_delay(float(mtof(m)) * 2 ** ((ji + cents) / 1200), 'chanter')
+            # at twice the rate, the bore tuned (at the normal rate) for half the pitch sounds exactly this pitch
+            d, b0 = _tuned_delay(float(mtof(m)) * 2 ** ((ji + cents) / 1200), 'chanter_os')
             delay[s0:s1] = d
             breath[s0:s1] = b0
-        first = max(0, int(ph[0][0] * SR) - a)
+        first = max(0, int(ph[0][0] * R) - a * OS)
         delay[:first] = delay[first]
         breath[:first] = breath[first]
-        delay = np.convolve(delay, np.ones(24) / 24, mode='same')    # ~0.5 ms: a finger lifting, not a splice
-        delay[:24] = delay[24]
-        delay[-24:] = delay[-25]
-        t = np.arange(n) / SR
+        w = 24 * OS
+        delay = np.convolve(delay, np.ones(w) / w, mode='same')       # ~0.5 ms: a finger lifting, not a splice
+        delay[:w] = delay[w]
+        delay[-w:] = delay[-w - 1]
+        t = np.arange(n) / R
         delay *= 1 + 0.04 * np.exp(-t / 0.01)                        # the crow - once, at the start of the phrase
+        drift = lp(np.random.default_rng(a * 31 + seed).standard_normal(n), 0.8 * SR / R)
+        delay *= 2 ** (-(drift / (np.std(drift) + 1e-12) * 2.0) / 1200)   # this piper's reed: ~2 cents of slow life
         breath = breath * np.clip(t / 0.004, 0, 1)
-        breath[-int(0.02 * SR):] *= np.linspace(1, 0, int(0.02 * SR))
-        turb = lp(np.random.default_rng(a + 9973 * seed).standard_normal(n), 3000) * 0.06
+        fo = int(0.02 * R)
+        breath[-fo:] *= np.linspace(1, 0, fo)
+        turb = np.random.default_rng(a + 9973 * seed).standard_normal(n)
+        turb = lp(turb, 3000) * 0.04
         y = F.reed_conical(breath, turb, delay, _CH['pos'], _CH['offset'], _CH['slope'], _CH['refl'])
-        y = np.diff(y, prepend=y[0]) * 3.0 + 0.4 * y
-        y = eq(eq(eq(y, 'peak', 1150, 1.3, 4.0), 'peak', 2800, 1.2, 4.0), 'peak', 300, 1.0, -4.0)   # the nasal formants
-        out[a:b] += hp(lp(y, 10000), 200) * 0.16
+        y = resample_poly(y, 1, OS)[: b - a]                         # back to the normal rate, the fizz filtered off
+        y = np.diff(y, prepend=y[0]) * 1.6 + 0.7 * y                 # radiation: brighter, but gently
+        y = eq(eq(eq(eq(y, 'peak', 1300, 1.4, 5.5), 'peak', 3200, 1.5, 4.0), 'peak', 2400, 1.2, 2.0), 'peak', 520, 1.0, 3.0)   # nasal bite + body
+        y = eq(y, 'peak', 6500, 0.8, -5.0)                           # tame the hard fizz up top
+        out[a:a + len(y)] += hp(lp(y, 9000), 180) * 0.18
     return out
+
+
+def _hall(x, seed=4):
+    """Early reflections of a stone hall / parade ground around the band (7-60 ms): what makes pipes sound big."""
+    rnd = np.random.default_rng(seed)
+    out = x.copy()
+    for ms, g in ((7, 0.45), (13, 0.38), (21, 0.33), (29, 0.27), (41, 0.22), (58, 0.16)):
+        d = int(ms * 0.001 * SR)
+        for c in range(out.shape[0]):
+            dc = d + int(rnd.integers(0, 40))
+            out[c, dc:] += g * lp(x[(c + 1) % out.shape[0], :-dc], 5000)
+    return out / 1.6
 
 
 def _drone_table(bass, N=4096):
@@ -570,6 +601,7 @@ def drone_part(notes, length, tonic=None):
     env = np.minimum(t / 0.4, 1) * np.clip((t[-1] - t) / 0.3, 0, 1)
     left = lp(0.55 * ten1 + 0.35 * ten2 + 0.75 * bass, 4500)
     right = lp(0.35 * ten1 + 0.55 * ten2 + 0.75 * bass, 4500)
+    left, right = (eq(x, 'peak', 950, 0.9, -3.5) for x in (left, right))   # leave room for the chanters to cut through
     y = soft(np.vstack([left, right]) * 0.9, 1.1) * env * 0.12
     out[:, a:a + n] = y
     return out

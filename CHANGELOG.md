@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.4.8
+**Bagpipes: less electronic, fuller**
+
+- **No more electronic fizz.** The chanter's reed snaps shut every cycle, which makes harmonics far above hearing. At the normal sample rate those fold back down as a fizzy, synthetic buzz (aliasing). The reed model now runs at **twice the sample rate** and is filtered back down, so the fizz is gone. Each note is tuned at that rate too, and all nine chanter notes land within about 4 cents.
+- **Fuller and bigger:**
+  - more body in the chanter around 500 Hz and gentler top-end emphasis
+  - **early reflections of a stone hall** around the band, so it sounds like pipes in a space rather than straight out of a box
+  - a stronger nasal bite (1.3 and 3.2 kHz)
+  - snappier gracenotes (38 ms)
+  - drones with a little room carved in their midrange so the tune cuts through
+  - each piper's reed drifting a couple of cents on its own, like real reeds
+
+
 ## 2.4.7
 - **Fixed: bagpipe drones drifting out of tune.** Their bag-pressure sway was a random walk that wandered up to nearly a semitone flat or sharp over a song, which is why the drones sounded out of tune only some of the time. It now holds within about 1 cent, as a steady piper does.
 - **The pipes no longer stop inside a tune:** a note holds over short rests, as on a real chanter, and the reed only starts again after a real silence.
