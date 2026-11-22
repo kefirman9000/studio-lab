@@ -12789,7 +12789,39 @@ derive('melodic_club_rap', 'plugg', 'Electronic',
                   lead=['vocalead', 'vocalchop', 'vox', 'softlead']),
        master=dict(lufs=-9.0, air=1.4, low=1.8))
 
-# (2.12.1) the village party meets dubstep: the same tresillo groove, guitar riffs and sung call, but the plain bass
+# (2.12.1) the village party played on synths: the same tresillo groove, DJ drop-outs and call-and-response, but a
+# drum-machine kit (808 kick, claps, rimshots, cowbell, synth toms), an FM / analog synth bass, cheap-keyboard synth
+# chords, bright FM and saw plucks for the cascading riffs and a square / synth-brass lead for the call
+derive('afro_village_synth', 'afro_village_party', 'Electronic',
+       'African village party, synth version (150-160): the same packed open-air dance - a kick on every beat, '
+       'tresillo accents that sway in half-time, a call line answered every two bars, the kick and bass dropping out '
+       'every 8 bars and slamming back - but all electronic: a drum-machine kit with claps, rimshots, cowbell and synth '
+       'toms, a punchy FM / analog synth bass, cheap-keyboard synth chords chopping the off-beats, bright saw and '
+       'digital plucks cascading in 16ths (no guitars) and a square-wave or synth-brass lead', 'Afro Village Party - Synth (150-160)',
+       kit='808',
+       drums={'kick': ['X...X...X...X...', 'X...X...X..xX...'],
+              'clap': ['x..X..X.x..X..X.', '...X..X....X..X.'],
+              'rim': ['..x...x...x...x.', 'x..x..x.x..x..x.'],
+              'chat': ['x.xxx.xxx.xxx.xx', 'xxxxxxxxxxxxxxxx'],
+              'cowbell808': ['x..x..x...x.x...', '..x...x...x...x.'],
+              'tom': ['......x.......x.', '...x..x....x..x.']},
+       snare_tracks=['clap'],
+       tracks=[T('kick', 'kick', 'kick', db=-12), T('clap', 'snare', 'clap', rev=0.2, db=-18),
+               T('rim', 'top', 'rim', pan=-0.25, db=-26), T('chat', 'top', 'chat', pan=0.2, db=-29),
+               T('cowbell808', 'top', 'cowbell808', pan=0.3, db=-30), T('tom', 'top', 'tom', pan=-0.15, db=-25),
+               T('bass', 'bass', 'fmbass', db=-15, p=dict(cut=1600)),
+               T('chords', 'chords', 'junopoly', pan=-0.2, rev=0.25, db=-18),
+               T('pad', 'pad', 'warmpad', rev=0.45, db=-26),
+               T('arp', 'arp', 'pluck_saw', pan=0.25, rev=0.2, dly=0.2, db=-18),
+               T('lead', 'lead', 'squarelead', rev=0.35, dly=0.25, db=-17)],
+       pools=dict(bass=['fmbass', 'junobass', 'sh101', 'tribass', 'sawbass'],
+                  chords=['junopoly', 'polysynth', 'synthbrass', 'stab', 'dancestab', 'houseorgan'],
+                  pad=['warmpad', 'amapad_saw', 'junopoly', 'sawchoir'],
+                  arp=['pluck_saw', 'viruspluck', 'nordpluck', 'superpluck', 'dxbell', 'pluckbell', 'trancebell'],
+                  lead=['squarelead', 'synthbrass', 'analoglead', 'glidelead', 'talkbox', 'chip']),
+       master=dict(lufs=-9.0, air=1.2, low=1.1))
+
+# (2.12.1) the village party meets dubstep (on synths): the same tresillo groove, plucks and call, but the plain bass
 # is gone - the verses ride on drums, guitar and voice, a snare build and a one-bar stop set up each drop, and in the
 # drops a big wobble bass takes over, womping in beats, dotted 8ths (the tresillo again) and half bars
 _AW = {'kick', 'snare', 'top', 'arp', 'chords', 'lead'}
@@ -12805,9 +12837,9 @@ FORMS['afro_wobble'] = [
     ('break', 1, {'lead'}, {}),
     ('drop', 16, {'kick', 'snare', 'top', 'bass', 'arp', 'chords'}, {'drop': True, 'alt': True, 'crash': True}),
     ('outro', 8, {'top', 'arp', 'chords'}, {'layer_out': True, 'fade': True})]
-derive('afro_wobble', 'afro_village_party', 'Electronic',
-       'Afro wobble (150-160): the African village party groove - a kick on every beat, tresillo snare and shaker, '
-       'bright guitar riffs and a sung call - crossed with dubstep: verses with no bass at all, snare-roll builds, a '
+derive('afro_wobble', 'afro_village_synth', 'Electronic',
+       'Afro wobble (150-160): the African village party groove on synths - a kick on every beat, tresillo claps and '
+       'rims, bright synth plucks and a synth call line - crossed with dubstep: verses with no bass at all, snare-roll builds, a '
        'one-bar stop, then drops where a huge wobble bass takes over, womping in beats, dotted 8ths and half bars and '
        'gliding between notes', 'Afro Wobble (dubstep, 150-160)', form='afro_wobble',
        sounds={'bass': 'yoiwob'},
@@ -12818,35 +12850,3 @@ derive('afro_wobble', 'afro_village_party', 'Electronic',
 for _t in STYLES['afro_wobble']['tracks']:
     if _t['name'] == 'bass':
         _t.update(db=-12, p={})
-
-# (2.12.1) the village party played on synths: the same tresillo groove, DJ drop-outs and call-and-response, but a
-# drum-machine kit (808 kick, claps, rimshots, cowbell, synth toms), an FM / analog synth bass, cheap-keyboard synth
-# chords, bright FM and saw plucks for the cascading riffs and a square / synth-brass lead for the call
-derive('afro_village_synth', 'afro_village_party', 'Electronic',
-       'African village party, synth version (150-160): the same packed open-air dance - a kick on every beat, '
-       'tresillo accents that sway in half-time, a call line answered every two bars, the kick and bass dropping out '
-       'every 8 bars and slamming back - but all electronic: a drum-machine kit with claps, rimshots, cowbell and synth '
-       'toms, a punchy FM / analog synth bass, cheap-keyboard synth chords chopping the off-beats, bright FM and saw '
-       'plucks cascading in 16ths and a square-wave or synth-brass lead', 'Afro Village Party - Synth (150-160)',
-       kit='808',
-       drums={'kick': ['X...X...X...X...', 'X...X...X..xX...'],
-              'clap': ['x..X..X.x..X..X.', '...X..X....X..X.'],
-              'rim': ['..x...x...x...x.', 'x..x..x.x..x..x.'],
-              'chat': ['x.xxx.xxx.xxx.xx', 'xxxxxxxxxxxxxxxx'],
-              'cowbell808': ['x..x..x...x.x...', '..x...x...x...x.'],
-              'tom': ['......x.......x.', '...x..x....x..x.']},
-       snare_tracks=['clap'],
-       tracks=[T('kick', 'kick', 'kick', db=-12), T('clap', 'snare', 'clap', rev=0.2, db=-18),
-               T('rim', 'top', 'rim', pan=-0.25, db=-26), T('chat', 'top', 'chat', pan=0.2, db=-29),
-               T('cowbell808', 'top', 'cowbell808', pan=0.3, db=-30), T('tom', 'top', 'tom', pan=-0.15, db=-25),
-               T('bass', 'bass', 'fmbass', db=-15, p=dict(cut=1600)),
-               T('chords', 'chords', 'junopoly', pan=-0.2, rev=0.25, db=-18),
-               T('pad', 'pad', 'warmpad', rev=0.45, db=-26),
-               T('arp', 'arp', 'fmpluck', pan=0.25, rev=0.2, dly=0.2, db=-18),
-               T('lead', 'lead', 'squarelead', rev=0.35, dly=0.25, db=-17)],
-       pools=dict(bass=['fmbass', 'junobass', 'sh101', 'tribass', 'sawbass'],
-                  chords=['junopoly', 'polysynth', 'synthbrass', 'stab', 'dancestab', 'houseorgan'],
-                  pad=['warmpad', 'amapad_saw', 'junopoly', 'sawchoir'],
-                  arp=['fmpluck', 'afropluck', 'pluck_saw', 'viruspluck', 'nordpluck', 'dxbell', 'pluckbell'],
-                  lead=['squarelead', 'synthbrass', 'analoglead', 'glidelead', 'talkbox', 'chip']),
-       master=dict(lufs=-9.0, air=1.2, low=1.1))

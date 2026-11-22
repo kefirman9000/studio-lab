@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.13.1
+- **No more guitars in the synth Afro genres**: Afro Village Party - Synth now plays bright saw / digital plucks for its riffs (the wood and glassy-keys plucks that could sound like a twangy guitar are gone), and Afro Wobble is now built on the synth version - drum-machine kit, synth plucks, Juno chords, a square / synth-brass lead - instead of the clean guitar, organ and choir.
+
 ## 2.13.0
 - **New genre: Afro Wobble (dubstep, 150-160)**: the village-party groove (tresillo drums, guitar riffs, sung call) crossed with dubstep - verses with no bass, snare-roll builds, a one-bar stop, then drops where a big wobble bass takes over, womping in beats, dotted 8ths and half bars and gliding between notes.
 - **New genre: Afro Village Party - Synth (150-160)**: the same party on synths - a drum-machine kit (claps, rimshots, 808 cowbell, synth toms), an FM / analog synth bass, Juno-style chords, bright FM and saw plucks for the riffs and a square-wave or synth-brass lead.
