@@ -2545,6 +2545,14 @@ NO_LAYER = {'808', 'logdrum', 'logdrum_deep', 'logdrum_talk', 'logdrum_sine', 'w
             'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'deepsub', 'sleepersub', 'brightwob', 'tearwob', 'divesub', 'ms10zap', 'pitchgrowl'}
 
 
+def synth_bell(inst):
+    """(2.13.2) Any bell-like sound - the acoustic ones and every synth / FM / trance bell (not cowbells, not the phonk
+    cowbell hook)."""
+    b = str(inst).split(':', 1)[-1]
+    return b in ('bell', 'celesta', 'glock', 'musicbox', 'tubular', 'churchbell') or \
+        ('bell' in b and not b.startswith('cowbell') and b != 'phonkbell')
+
+
 def debell(st, opts):
     """Last check on every song: no bell / mallet sound in a genre where it isn't idiomatic (rotation, layering, moods
     and palettes all end up here) - unless you picked it yourself."""
@@ -2553,20 +2561,24 @@ def debell(st, opts):
     mine = opts.instruments or {}
     own = {(t['layer'], t['inst']) for t in STYLES.get(name, {}).get('tracks', [])}
     rnd = random.Random(f'{opts.seed}-bells-{name}')
+    club = st.get('category') == 'Electronic'
     for t in st['tracks']:
         role = t['layer']
         if role not in ('arp', 'lead', 'chords', 'pad') or t['inst'].startswith(('vst:', 'user:', 'real:')):
             continue
         if mine.get(role) == t['inst'] or t.get('extra'):     # your picks and your extra instruments stay
             continue
-        if bell_allowed(name, t['inst']):
+        if club and synth_bell(t['inst']) and (role, t['inst']) not in own and rnd.random() >= 0.12:
+            pass                                          # (2.13.2) electronic genres: a bell that isn't the genre's own
+        elif bell_allowed(name, t['inst']):               # sound for the part is a rare colour, not a regular pick
             # even where they fit, a bell / mallet that isn't the genre's own sound for this part is an occasional colour
-            if t['inst'] not in BELLS | MALLETS or (role, t['inst']) in own or rnd.random() < 0.35:
+            if t['inst'] not in BELLS | MALLETS or (role, t['inst']) in own or rnd.random() < (0.12 if club else 0.35):
                 continue
         # replaced by the genre's own sound for this part when it has one (not a generic category synth)
         from .styles import POOLS as _P
         mine_ = [] if name == 'hauntology' else [i for (l, i) in own if l == role and bell_allowed(name, i)]   # (Hauntology: unchanged)
-        mine_ += [] if name == 'hauntology' else [i for i in _P.get(name, {}).get(role, []) if i not in BELLS | MALLETS]
+        mine_ += [] if name == 'hauntology' else [i for i in _P.get(name, {}).get(role, []) if i not in BELLS | MALLETS
+                                                  and not (club and synth_bell(i))]
         mine_ = list(dict.fromkeys(mine_))        # any of the genre's own non-bell sounds, not always the first one
         t['inst'] = rnd.choice(mine_) if mine_ else bell_swap(name, role, t['inst'])
     if name in CLUB_COHERENT and not mine:             # (1.95.1) a swap above can leave a doubled part on a sound of another

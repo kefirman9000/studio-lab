@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.13.2
+- **Fewer bells in electronic genres**: every bell-like sound (glockenspiel, celesta, music box and all the synth / FM / trance bells) now only turns up as a rare colour in electronic genres - in roughly 1 song in 8 when it isn't the genre's own sound - and is otherwise swapped for one of the genre's own non-bell sounds (pool picks, section rotation and layers alike). Genres whose signature *is* a bell (trap, plugg ...) keep it. Melodic Club Rap's chords are now a dark poly synth instead of a bell.
+- The Amapiano genre's log-drum check accepts the new log drums.
+
 ## 2.13.1
 - **No more guitars in the synth Afro genres**: Afro Village Party - Synth now plays bright saw / digital plucks for its riffs (the wood and glassy-keys plucks that could sound like a twangy guitar are gone), and Afro Wobble is now built on the synth version - drum-machine kit, synth plucks, Juno chords, a square / synth-brass lead - instead of the clean guitar, organ and choir.
 

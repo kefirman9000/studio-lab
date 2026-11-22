@@ -44,7 +44,7 @@ SIGNATURE = {   # genre -> (part, instruments, label): the sound that defines it
     'brostep': ('bass', {'growl', 'wobble', 'fmbass', 'reese', 'fmgrowl', 'talkgrowl', 'metalbass', 'darkwob', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'dnbwob', 'talkgrowl2', 'laserwob', 'robotbass', 'creakbass', 'stabwob', 'divebass', 'dubhorn', 'tearout', 'yoi',
                 'brightwob', 'tearwob', 'pitchgrowl', 'yoiwob'}, 'aggressive mid-bass'),
     'neurofunk': ('bass', {'growl', 'reese', 'fmbass', 'wobble', 'neuro', 'dnbwob', 'metalbass', 'fmgrowl', 'talkgrowl'}, 'neuro / reese bass'),
-    'amapiano': ('bass', {'logdrum'}, 'log drum'), 'trap': ('bass', {'808'}, '808'), 'uk_drill': ('bass', {'808'}, '808'),
+    'amapiano': ('bass', {'logdrum', 'logdrum_sine', 'logdrum_deep', 'logdrum_talk'}, 'log drum'), 'trap': ('bass', {'808'}, '808'), 'uk_drill': ('bass', {'808'}, '808'),
     'festival_psy': ('bass', {'psybass', 'rollbass', 'sawbass', 'psyroll', 'tribass'}, 'rolling psy bass'),
     'progressive_psy': ('bass', {'psyroll', 'psybass', 'rollbass', 'tribass'}, 'rolling psy bass'),
     'goa_trance': ('bass', {'psyroll', 'psybass', 'sawbass', 'rollbass', 'tribass'}, 'rolling psy bass'),
