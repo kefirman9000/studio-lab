@@ -781,14 +781,13 @@ class Renderer:
                 buf[:, :n] = y[:, :n] * 0.5
             return buf
         if tcfg['inst'] in ('bagpipe', 'bagpipe_drones'):    # (2.4.3) the pipes: one continuous reed per phrase, unbroken drones
-            from .celtic import pipe_part, drone_part
+            from .celtic import drone_part
             notes = sorted(((self.t_of(e.beat, human=False), max(0.03, self._dsec(e.beat, e.dur)), e.midi)
                             for e in evs if e.midi is not None), key=lambda x: x[0])
             if tcfg['inst'] == 'bagpipe':
+                from .celtic import pipe_band
                 k_ = self.song.get('key')
-                y = pipe_part(notes, self.length, getattr(k_, 'root', None))
-                buf[0] = y
-                buf[1] = y
+                buf[:] = pipe_band(notes, self.length, getattr(k_, 'root', None), int(self.st.get('pipers') or 1))
             else:
                 buf[:] = drone_part(notes, self.length)
             return buf

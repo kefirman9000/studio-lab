@@ -431,7 +431,27 @@ def ornament_pass(evs, tracks, sections, st, bpm, seed):
 PIPE_JI = {0: 0.0, 2: 3.9, 4: -13.7, 5: -2.0, 7: 2.0, 9: -15.6, 10: -31.2, 11: -11.7}
 
 
-def pipe_part(notes, length, tonic=None):
+def pipe_band(notes, length, tonic=None, players=3):
+    """A pipe band's chanters: several pipers on the same line, never quite together - each a few cents apart, a few
+    ms early or late, on their own reed - summed and soft-saturated the way the reeds blend into one wall. (2, length)."""
+    if players <= 1:
+        y = pipe_part(notes, length, tonic)
+        return np.vstack([y, y])
+    out = np.zeros((2, length))
+    rnd = np.random.default_rng(len(notes) * 7 + players)
+    for k in range(players):
+        dt = (rnd.random() - 0.5) * 0.016                               # +-8 ms
+        cents = (k - (players - 1) / 2) * 5.0 + (rnd.random() - 0.5) * 3
+        nk = [(max(0.0, t + dt), d, m) for (t, d, m) in notes]
+        y = pipe_part(nk, length, tonic, cents=cents, seed=k + 1)
+        pan = (k - (players - 1) / 2) / max(1, players - 1) * 0.6       # spread across the field, centre heavy
+        out[0] += y * np.sqrt(0.5 * (1 - pan))
+        out[1] += y * np.sqrt(0.5 * (1 + pan))
+    out /= players ** 0.7
+    return soft(out * 1.3, 1.15) / 1.1                                  # the reeds blending into one wall
+
+
+def pipe_part(notes, length, tonic=None, cents=0.0, seed=0):
     """The Highland chanter as it really plays: ONE reed sounding continuously through each phrase. Each note's pitch
     holds until the next note starts (the chanter never stops between notes - the gracenotes are what separate them),
     the reed only catches (the crow) at the start of a phrase, and a phrase ends only at a real silence.
@@ -460,8 +480,8 @@ def pipe_part(notes, length, tonic=None):
         for k, (t0, dur, m) in enumerate(ph):
             s0 = max(0, int(t0 * SR) - a)
             s1 = n if k == len(ph) - 1 else max(s0 + 1, int(ph[k + 1][0] * SR) - a)
-            cents = PIPE_JI.get((m - tonic) % 12, 0.0) if tonic is not None else 0.0
-            d, b0 = _tuned_delay(float(mtof(m)) * 2 ** (cents / 1200), 'chanter')
+            ji = PIPE_JI.get((m - tonic) % 12, 0.0) if tonic is not None else 0.0
+            d, b0 = _tuned_delay(float(mtof(m)) * 2 ** ((ji + cents) / 1200), 'chanter')
             delay[s0:s1] = d
             breath[s0:s1] = b0
         first = max(0, int(ph[0][0] * SR) - a)
@@ -474,10 +494,10 @@ def pipe_part(notes, length, tonic=None):
         delay *= 1 + 0.04 * np.exp(-t / 0.01)                        # the crow - once, at the start of the phrase
         breath = breath * np.clip(t / 0.004, 0, 1)
         breath[-int(0.02 * SR):] *= np.linspace(1, 0, int(0.02 * SR))
-        turb = lp(np.random.default_rng(a).standard_normal(n), 3000) * 0.06
+        turb = lp(np.random.default_rng(a + 9973 * seed).standard_normal(n), 3000) * 0.06
         y = F.reed_conical(breath, turb, delay, _CH['pos'], _CH['offset'], _CH['slope'], _CH['refl'])
         y = np.diff(y, prepend=y[0]) * 3.0 + 0.4 * y
-        y = eq(eq(y, 'peak', 2600, 1.2, 3.0), 'peak', 300, 1.0, -4.0)
+        y = eq(eq(eq(y, 'peak', 1150, 1.3, 4.0), 'peak', 2800, 1.2, 4.0), 'peak', 300, 1.0, -4.0)   # the nasal formants
         out[a:b] += hp(lp(y, 10000), 200) * 0.16
     return out
 

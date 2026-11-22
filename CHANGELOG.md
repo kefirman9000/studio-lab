@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.4.5
+- **The pipe band is a band now.** Three modelled chanters play the tune together, the way a real band does: a few cents apart, a few milliseconds early or late, each on its own reed, spread across the stereo field and soft-saturated together. That gives the thick, slightly chorused wall of reed a real pipe band has, instead of one solo piper.
+- Stronger nasal chanter formants (around 1.1 and 2.8 kHz), more present drones, and a louder, brighter master for the pipe band.
+
+
 ## 2.4.4
 **Bagpipes: real piping ornaments and the traditional pipe scale**
 
