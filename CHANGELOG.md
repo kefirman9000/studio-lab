@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.10.2
+More natural-sounding songs:
+- **A natural rise and fall in loudness** instead of every section sitting at one level and then jumping: the drums dig in a little more across each verse (about 1 dB), the pads, chords and arps swell over the last two bars into a chorus or drop, and everything eases back over the bar before a break. Gentle, acoustic genres move a little more.
+- **Mixed more like a record:** a little more room in the low mids, the harsh 4-5 kHz eased, a softer presence lift and the brightest top pulled back 1 dB (each genre's own brightness still applies), and lighter limiting - at most 2 dB (was 3) and half the clipping - so the loud parts hit harder. Songs that can't reach their loudness target without squashing now come out slightly quieter instead.
+
 ## 2.10.1
 - **Less vinyl noise:** the vinyl layer (lo-fi, boom-bap, soul-sample and the other genres that use it, and the vinyl background texture) has about a third as many crackles at half the level, and its hiss is ~8 dB quieter.
 

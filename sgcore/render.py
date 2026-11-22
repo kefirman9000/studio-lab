@@ -1437,6 +1437,10 @@ class Renderer:
                     if 'fx' in sec['layers']:
                         g[b2s(sec['bar'] * 4):b2s((sec['bar'] + sec['bars']) * 4)] = 1
                 buf *= uniform_filter1d(g, int(0.5 * SR))
+            if tcfg['layer'] != 'fx' and not st.get('flat_dynamics') and np.any(buf):
+                arc = dynamics_arc(song['sections'], tcfg['layer'], L, b2s, gentle=bool(st.get('master', {}).get('gentle')))
+                if arc is not None:
+                    buf *= arc[None, :buf.shape[1]] if buf.ndim == 2 else arc[:buf.shape[-1]]
             if tcfg.get('hp'):
                 buf = hp(buf, tcfg['hp']).astype(np.float32)
             if tcfg.get('lp'):                                # a muffled, felted tone
@@ -2359,6 +2363,43 @@ def mono_safe_width(mid, side, w, min_corr=0.2):
     return float(min(w, max(w_max, min(w, 0.6))))     # (never narrower than 0.6 just to pass the guard)
 
 
+DRUM_LAYERS = ('kick', 'snare', 'top')
+BIG = ('chorus', 'drop', 'hook', 'B')
+
+
+def dynamics_arc(sections, layer, L, b2s, gentle=False):
+    """(2.10.2) The natural rise and fall of a played song, instead of every section sitting at one level and then
+    jumping: the drums dig in a little more across each verse (about -1.2 dB to 0), the pads and chords swell over
+    the last two bars into a chorus or drop, and everything eases back over the bar before a break. Gentle,
+    acoustic genres move a little more. Returns a gain curve (or None if nothing moves)."""
+    k = 1.3 if gentle else 1.0
+    g_db = np.zeros(L, dtype=np.float32)
+    moved = False
+    for i, sec in enumerate(sections):
+        a = b2s(sec['bar'] * 4)
+        e = min(L, b2s((sec['bar'] + sec['bars']) * 4))
+        if e - a < SR:
+            continue
+        nxt = sections[i + 1]['name'] if i + 1 < len(sections) else None
+        bar_s = max(1, (e - a) // max(1, sec['bars']))
+        if sec['name'] in ('verse', 'A') and layer in DRUM_LAYERS:
+            g_db[a:e] += np.linspace(-1.2 * k, 0.0, e - a, dtype=np.float32)
+            moved = True
+        if nxt in BIG and layer in ('pad', 'chords', 'arp') and sec['name'] not in BIG:
+            n2 = min(e - a, 2 * bar_s)
+            g_db[a:e - n2] -= 1.0 * k
+            g_db[e - n2:e] += np.linspace(-1.0 * k, 0.0, n2, dtype=np.float32)
+            moved = True
+        if nxt in ('break', 'bridge', 'C') and sec['name'] in BIG:
+            n1 = min(e - a, bar_s)
+            g_db[e - n1:e] += np.linspace(0.0, -1.5 * k, n1, dtype=np.float32)
+            moved = True
+    if not moved:
+        return None
+    g_db = uniform_filter1d(g_db, int(0.25 * SR))
+    return (10 ** (g_db / 20)).astype(np.float32)
+
+
 def master(x, cfg, log=print):
     master.last_dyn_eq = {}
     log('   mastering: EQ > dynamic EQ > glue comp > stereo image > saturation > limiter')
@@ -2369,10 +2410,12 @@ def master(x, cfg, log=print):
     x *= 10 ** ((-18 - l0) / 20)
     x = eq(x, 'lowshelf', 90, 0.7, cfg.get('low', 1.0))
     gentle = cfg.get('gentle')
-    if not gentle:
-        x = eq(x, 'peak', 320, 1.0, -1.5)
-    x = eq(x, 'peak', 3000, 0.8, 0.5)
-    x = eq(x, 'highshelf', 9000, 0.7, cfg.get('air', 1.5))
+    # (2.10.2) mix like a record: a little more room in the low mids, the brightest top pulled back a touch, a softer
+    # presence lift and the harsh 4-5 kHz eased - the air lift each genre asks for still applies, just 1 dB less
+    x = eq(x, 'peak', 320, 0.8, -0.9 if gentle else -2.0)
+    x = eq(x, 'peak', 3000, 0.8, 0.2)
+    x = eq(x, 'peak', 4600, 1.2, -0.7)
+    x = eq(x, 'highshelf', 9000, 0.7, float(cfg.get('air', 1.5)) - 1.0)
     if cfg.get('tone'):                # steer the tonal balance toward the genre's reference records
         x0 = x
         x = tone_match(x, cfg['tone'], log, amount=float(cfg.get('tone_amount', 0.6)), limit=float(cfg.get('tone_limit', 3.0)))
@@ -2418,14 +2461,14 @@ def master(x, cfg, log=print):
     # percentile). A song that can't reach its loudness target without that ends up a little quieter, not distorted.
     a = np.max(np.abs(x), axis=0)
     p999 = float(np.percentile(a, 99.9)) + 1e-9
-    max_gr = float(cfg.get('max_gr', 3.0))
+    max_gr = float(cfg.get('max_gr', 2.0))                 # (2.10.2) at most 2 dB of limiting (was 3): punchier peaks
     g_cap = max_gr + 20 * np.log10(10 ** (-1.0 / 20) / p999)
     # and never push a loud bass line into the limiter: the band below 120 Hz may reach ~80% of the ceiling (the
     # bass-safe pre-limiter takes at most another 1.5 dB) - a bass-heavy song ends up a little quieter, not clipped
     lo = signal.sosfiltfilt(signal.butter(2, 120 / (SR / 2), output='sos'), x.mean(axis=0))
     lp999 = float(np.percentile(np.abs(lo), 99.9)) + 1e-9
     g_cap = min(g_cap, 1.5 + 20 * np.log10(0.8 * 10 ** (-1.0 / 20) / lp999))
-    clip_amt = float(cfg.get('clip', 0.0 if gentle else 1.0))
+    clip_amt = float(cfg.get('clip', 0.0 if gentle else 0.5))   # (2.10.2) half the clipping (was 1.0)
 
     def chain(v, g):                                       # gain > clipper > bass-safe limiter > limiter
         v = peak_round(v * 10 ** (g / 20))
