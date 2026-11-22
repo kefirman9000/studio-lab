@@ -694,6 +694,12 @@ def resolve_style(opts, rnd=None, mood=None):
     preset = drumkits.configure(st, kit_id, groove_of, opts, pattern_id) if (kit_id or pattern_id) else st['kit']
     if not kit_id:
         preset = st['kit']
+        from .pool_variety import KIT_ALTS              # (2.5.2) some genres pick one of several fitting kits per song
+        alts = KIT_ALTS.get(st.get('name') or opts.style)
+        if alts and preset in alts and not st.get('kit_override'):
+            import random as _random
+            ks = (opts.sound_seed if opts.sound_seed is not None else opts.seed) or 0
+            preset = _random.Random(ks * 7919 + 17).choice([a_ for a_ in alts if a_ in KITS] or [preset])
     kit = dict(KITS.get(preset, {}))
     if not kit_id:
         for k, v in st.get('kit_override', {}).items():

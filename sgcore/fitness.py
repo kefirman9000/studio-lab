@@ -43,11 +43,11 @@ SIGNATURE = {   # genre -> (part, instruments, label): the sound that defines it
     'brostep': ('bass', {'growl', 'wobble', 'fmbass', 'reese', 'fmgrowl', 'talkgrowl', 'metalbass', 'darkwob', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'dnbwob', 'talkgrowl2', 'laserwob', 'robotbass', 'creakbass', 'stabwob', 'divebass', 'dubhorn', 'tearout', 'yoi'}, 'aggressive mid-bass'),
     'neurofunk': ('bass', {'growl', 'reese', 'fmbass', 'wobble', 'neuro', 'dnbwob', 'metalbass', 'fmgrowl', 'talkgrowl'}, 'neuro / reese bass'),
     'amapiano': ('bass', {'logdrum'}, 'log drum'), 'trap': ('bass', {'808'}, '808'), 'uk_drill': ('bass', {'808'}, '808'),
-    'festival_psy': ('bass', {'psybass', 'rollbass', 'sawbass', 'psyroll'}, 'rolling psy bass'),
-    'progressive_psy': ('bass', {'psyroll', 'psybass', 'rollbass'}, 'rolling psy bass'),
-    'goa_trance': ('bass', {'psyroll', 'psybass', 'sawbass', 'rollbass'}, 'rolling psy bass'),
-    'darkpsy': ('bass', {'psyroll', 'psybass', 'fmbass'}, 'rolling psy bass'),
-    'uplifting_trance': ('lead', {'supersaw_lead', 'leadsaw', 'pluck_saw', 'piano', 'vox', 'emolead', 'hypersaw', 'screamlead', 'dreamlead', 'anthemlead', 'tranceflute', 'classiclead'}, 'trance lead'),
+    'festival_psy': ('bass', {'psybass', 'rollbass', 'sawbass', 'psyroll', 'tribass'}, 'rolling psy bass'),
+    'progressive_psy': ('bass', {'psyroll', 'psybass', 'rollbass', 'tribass'}, 'rolling psy bass'),
+    'goa_trance': ('bass', {'psyroll', 'psybass', 'sawbass', 'rollbass', 'tribass'}, 'rolling psy bass'),
+    'darkpsy': ('bass', {'psyroll', 'psybass', 'fmbass', 'tribass'}, 'rolling psy bass'),
+    'uplifting_trance': ('lead', {'supersaw_lead', 'leadsaw', 'pluck_saw', 'piano', 'vox', 'emolead', 'hypersaw', 'screamlead', 'dreamlead', 'anthemlead', 'tranceflute', 'classiclead', 'squarelead', 'supersaw_lead_octave', 'risinglead'}, 'trance lead'),
 }
 for _g, (_part, _set, _lbl) in list(SIGNATURE.items()):      # the 808 variants (1.79) are 808s too
     if '808' in _set:

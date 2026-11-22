@@ -8061,3 +8061,4 @@ for _name, _fn, _info, _roles, _gm in NEW_197B:
 from . import synths2  # noqa: E402,F401
 from . import guitars2  # noqa: E402,F401
 from . import celtic  # noqa: E402,F401
+from . import synths25  # noqa: E402,F401

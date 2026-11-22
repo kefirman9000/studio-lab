@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.5.2
+**More sounds, more variety**
+- New trance sounds: hollow **virus pluck**, **FM pluck**, **reverse-swell pad** (sucks into the drop), **trance choir pad**, classic **square lead** with portamento, and a rolling **tri bass** for uplifting and psy.
+- New acid sounds: **acid squelch** (resonance near screaming), **acid distorted** (acid techno) and **acid lead** (the 303 played high).
+- New Celtic sounds: **Irish tenor banjo**, **crwth** (Welsh bowed lyre with drones) and **DADGAD guitar**.
+- Trance, psy, techno, acid house, house and the Celtic genres now offer many more sounds per part - Euphoric Trance went from 4-7 sounds per part to 8-15.
+- Drum kits: trance, techno, acid house and psytrance now pick one of several fitting kits per song (re-roll sounds to change it; choosing a kit still overrides).
+
 ## 2.5.1
 - The gaita and the Scottish smallpipes are rebuilt on the Highland pipes' physical reed model (they were simple synth reeds): one continuous reed per phrase, folded into the chanter's range, with their own drones - the gaita open and singing with vibrato over a single deep roncón, the smallpipes quiet and sweet over three soft drones.
 

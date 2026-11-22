@@ -314,6 +314,7 @@ def widen():
         pools = POOLS.get(g)
         if pools and 'bass' in pools and 'slide808' not in pools['bass']:
             pools['bass'].append('slide808')
+    _variety_252()
     for g, roles in AUDIT_228.items():                 # (2.2.8) electronic sound audit - see AUDIT_228
         if g not in STYLES:
             continue
@@ -373,3 +374,75 @@ def _widen(original):
                             break
                         if inst in INSTRUMENTS and inst not in lst and inst not in banned:
                             lst.append(inst)
+
+
+# (2.5.2) more variety: the popular sounds of the top electronic genres (and the Celtic ones) offered in every genre
+# of the family - also the genres with their own exact lists, which had the fewest. Locked parts only take sounds
+# their check accepts; the era / gentleness check still applies.
+_TRANCE = dict(
+    arp=['viruspluck', 'fmpluck', 'trancepluck', 'sylpluck', 'superpluck', 'trancebell', 'pluckbell', 'tranceseq',
+         'festpluck', 'progpluck', 'trancepluck_octave', 'pluck_saw_wide'],
+    pad=['sawchoir', 'reversepad', 'trancepad_wide', 'gatepad', 'shimmerpad', 'gatedchoir', 'trancestrings', 'dreampad'],
+    lead=['squarelead', 'risinglead', 'anthemlead', 'supersaw_lead_octave', 'dreamlead', 'tranceflute', 'formantlead',
+          'emolead', 'screamlead'],
+    chords=['viruspluck', 'reversepad', 'supersaw_wide', 'gatepad', 'upstab', 'fmpluck', 'hypersaw', 'sawchoir'],
+    bass=['tribass', 'offbass', 'rollbass', 'fmroll', 'sawbass_driven'])
+_PSY = dict(bass=['tribass', 'psybass', 'psyroll'], arp=['acid_squelch', 'acidlead', 'viruspluck', 'psylead'],
+            lead=['acidlead', 'psylead', 'squarelead'])
+_TECHNO = dict(arp=['acid_dist', 'acid_squelch', 'technoseq', 'modseq', 'berlinseq', 'hypnoseq', 'viruspluck'],
+               lead=['acidlead', 'acid_dist'], pad=['reversepad', 'darkpad_wide', 'hypnopad'])
+_ACID = dict(bass=['acid_squelch', 'acid_dist'], arp=['acid_squelch', 'acidlead', 'acid_dist', 'sh101', 'acidsquare'],
+             lead=['acidlead', 'acid_squelch', 'hoover'], chords=['housechord', 'samplerstab', 'm1piano'])
+_HOUSE = dict(lead=['acidlead'], arp=['acid_squelch', 'fmpluck'])
+_CELTIC = dict(arp=['tenor_banjo', 'dadgad', 'clarsach', 'cittern'], chords=['dadgad', 'cittern'],
+               lead=['tenor_banjo', 'melodeon'])
+_CELTIC_SLOW = dict(lead=['crwth', 'smallpipes'], chords=['dadgad', 'clarsach'], arp=['clarsach', 'dadgad'])
+_GENTLE_TECHNO = ('minimal', 'dub_techno', 'melodic_techno')
+
+
+def _variety_252():
+    from .genre_groups import GROUPS as _G
+    from .instruments import INSTRUMENTS
+    el = dict(_G['Electronic'])
+    plan = {}
+    for g in el.get('Techno & Trance', []):
+        if 'psy' in g or g == 'goa_trance':
+            plan[g] = [_PSY, _TRANCE] if g != 'darkpsy' else [_PSY]
+        elif 'trance' in g:
+            plan[g] = [_TRANCE]
+        elif g not in _GENTLE_TECHNO:
+            plan[g] = [_TECHNO]
+    for g in el.get('House & Disco', []):
+        plan[g] = [_ACID] if 'acid' in g else [_HOUSE]
+    for g in dict(_G['Classic']).get('Celtic', []):
+        if g in ('celtic_punk', 'highland_pipes', 'pipes_orchestra'):
+            continue
+        plan[g] = [_CELTIC_SLOW, _CELTIC] if g in ('celtic_slow_air', 'celtic_new_age', 'clarsach_air') else [_CELTIC]
+    for g, adds in plan.items():
+        pools = POOLS.get(g)
+        if not pools or g not in STYLES:
+            continue
+        for add in adds:
+            for role, extra in add.items():
+                lst = pools.get(role)
+                if lst is None:
+                    continue
+                if _locked(g, role):
+                    from .fitness import SIGNATURE
+                    extra = [x for x in extra if x in SIGNATURE[g][1]]
+                if role == 'bass' and lst and lst[0] in ('808', 'drill808'):
+                    continue
+                for x in extra:
+                    if x in INSTRUMENTS and x not in lst and not era_clash(g, x):
+                        lst.append(x)
+
+
+# (2.5.2) drum kits: these genres pick one of several fitting kit presets per song (unless a kit is chosen)
+KIT_ALTS = {}
+for _g in ('trance', 'uplifting_trance', 'euphoric_trance', 'classic_vocal_trance', 'progressive_trance', 'club_trance_2000s',
+           'progressive_trance_2010s', 'vocal_trance_remix', 'electro_prog_trance', 'trance_pop_90s', 'hard_trance'):
+    KIT_ALTS[_g] = ['909', 'trance', 'trance_classic', 'punchy']
+for _g in ('techno', 'festival_techno', 'hard_techno', 'uk_tribal_techno', 'euphoric_uk_techno'):
+    KIT_ALTS[_g] = ['techno', 'techno_classic', 'punchy', '909', 'hard']
+KIT_ALTS['acid_house'] = ['808', '909', '909_classic', 'cr78', '707']
+KIT_ALTS['psytrance'] = ['punchy', 'techno', 'trance']
