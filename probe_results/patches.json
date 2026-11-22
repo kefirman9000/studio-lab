@@ -1,0 +1,32 @@
+{
+ "obxf.brass": {
+  "missing": [],
+  "peak": 0.3918681740760803,
+  "tail": 0.0
+ },
+ "obxf.stab": {
+  "missing": [],
+  "peak": 0.3075295388698578,
+  "tail": 0.0
+ },
+ "obxf.pad": {
+  "missing": [],
+  "peak": 0.36948662996292114,
+  "tail": 0.056160978972911835
+ },
+ "obxf.strings": {
+  "missing": [],
+  "peak": 0.342655211687088,
+  "tail": 0.009431750513613224
+ },
+ "obxf.lead": {
+  "missing": [],
+  "peak": 0.6003497242927551,
+  "tail": 0.0
+ },
+ "obxf.bass": {
+  "missing": [],
+  "peak": 0.18033863604068756,
+  "tail": 0.0
+ }
+}
