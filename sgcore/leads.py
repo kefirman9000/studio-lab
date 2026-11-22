@@ -7,7 +7,7 @@ import math
 import random
 
 # which devices suit each genre (one is picked per song, so the same style still varies)
-GENRE_DEVICES = {
+GENRE_DEVICES = {'jazz_hop': ['hook', 'call'], 'storybook_score': ['hook', 'hook', 'call'], 'cinematic_trap': ['bell', 'hook'], 'synth_rnb': ['hook', 'hook', 'arp'], 
     'bhajan': ['raga'], 'kirtan': ['raga'], 'aarti': ['raga'], 'santoor_raga': ['raga'], 'sitar_bhajan': ['raga'], 'tabla_bhajan': ['raga'], 'drum_kirtan': ['raga'], 'jugalbandi': ['raga'], 'qawwali': ['raga'], 'carnatic_kriti': ['raga'], 'ghazal': ['raga'], 'bollywood': ['raga', 'hook'], 'anatolian_psych': ['raga', 'riff'], 'klezmer': ['raga', 'hook'], 'rai': ['raga', 'hook'], 'ethio_jazz': ['riff', 'hook'], 'thai_funk': ['riff', 'call'], 'chicha': ['hook', 'call'], 'desert_blues': ['riff', 'call'], 'exotica': ['hook'], 'garage_rock': ['riff', 'hook'], 'rockabilly': ['hook', 'riff'], 'krautrock': ['ostinato', 'hook'], 'post_punk': ['riff', 'hook'], 'flamenco_rumba': ['hook', 'raga'], 'gamelan': ['ostinato', 'hook'], 'son_cubano': ['call', 'hook'], 'shakuhachi_pop': ['hook'], 'smooth_jazz_horns': ['hook', 'call'], 'stoner_raga': ['raga'], 'raga_fusion': ['raga'], 'takht_maqam': ['raga'], 'raqs_sharqi': ['raga', 'hook'], 'arab_pop': ['hook', 'raga'], 'sufi_dhikr': ['raga'],
     'epic_orchestral': ['hook'], 'epic_battle': ['hook', 'riff'], 'epic_choir': ['hook'], 'heroic_anthem': ['hook'], 'symphonic_finale': ['hook'],
     'italo_disco': ['hook', 'arp'], 'new_beat': ['ostinato', 'chops'], 'gabber': ['riff', 'hook'], 'rave_hardcore': ['chops', 'hook'],

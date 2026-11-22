@@ -186,6 +186,8 @@ def _arrangement(song):
                      'bell': 'bell melody', 'chops': 'vocal-chop lead'}.get(dev, dev + ' lead'))
     if any(t.get('counter') for t in st['tracks']):
         tags.append('counter-melody')
+    if st.get('hook_first'):
+        tags.append('verse built from the hook')
     n = sum(1 for t in st['tracks'] if t.get('double_of') and not (t['layer'] == 'bass' and t['inst'] == 'sinebass'))
     if n:
         tags.append(f'{n} layered part' + ('s' if n > 1 else ''))

@@ -56,6 +56,7 @@ def main(argv=None):
     ap.add_argument('--bass-rhythm', choices=['kick'], help='kick = bass plays with the kick drum')
     ap.add_argument('--ending', choices=['auto', 'hit', 'fade'])
     ap.add_argument('--counter', choices=['on', 'off'], help='counter-melody answering the lead (default: genre decides)')
+    ap.add_argument('--hook-first', choices=['on', 'off'], help='build the verse melody from the chorus hook (default: off)')
     ap.add_argument('--layering', choices=['off', 'more'], help='parts doubled by a second instrument (default: genre decides)')
     ap.add_argument('--vocal-guide', action='store_true', help='also play the vocal guide melody (always in MIDI exports)')
     ap.add_argument('--bends', choices=['off', 'subtle', 'more'], help='meend / gamak on sitar, veena, bansuri ... (default: genre)')
@@ -129,7 +130,7 @@ def main(argv=None):
             if a.fx:
                 o['part_fx'] = dict(x.split('=', 1) for x in a.fx)
             for k, v in (('melody_style', a.melody), ('voicing', a.voicing), ('chord_color', a.chord_color), ('groove', a.groove),
-                         ('bass_rhythm', a.bass_rhythm), ('ending', a.ending), ('counter', a.counter), ('layering', a.layering),
+                         ('bass_rhythm', a.bass_rhythm), ('ending', a.ending), ('counter', a.counter), ('hook_first', a.hook_first), ('layering', a.layering),
                          ('lead_style', a.lead), ('build_style', a.build),
                          ('builds', a.builds), ('transition_fx', a.transition_fx)):
                 if v:

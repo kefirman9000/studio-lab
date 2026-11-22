@@ -114,6 +114,7 @@ class Options:
     groove: str = None            # None = genre feel | straight | dilla | laidback | afro | dembow | jazz | house | funk
     mood: str = None              # dark | happy | chill | epic | dreamy | aggressive | melancholic | energetic | mysterious | romantic
     counter: str = None           # None = genre decides | on | off  (a second line answering the lead: celli, horns, flute ...)
+    hook_first: str = None        # None / off | on  (the verse melody is built from the chorus hook)
     layering: str = None          # None = genre + variety decide | off | more  (parts doubled by a second instrument)
     simplicity: float = 0.0       # 0..1 strip it back: triads, fewer & longer notes, held chords, no extras
     repetition: float = 0.5       # 0..1 how much the melody repeats its opening idea (catchy loop <-> developing line)
@@ -166,14 +167,14 @@ HOUSE_VOICINGS = {'deep_house': ['drop2', 'drop2', 'fourths', 'open'], 'tech_hou
                   'minimal': ['fourths', 'close'], 'techno': ['fourths', 'close', 'close'], 'nineties_club_house': ['close', 'drop2'],
                   'emotive_deep_house': ['open', 'drop2'], 'organic_house': ['open', 'drop2'], 'uk_funky': ['drop2', 'fourths'],
                   'afro_house': ['drop2', 'open'], 'outsider_house': ['fourths', 'drop2'], 'french_house': ['close', 'drop2']}
-GENRE_VOICING = {'bebop': 'rootless', 'soul_jazz': 'rootless', 'modal_jazz': 'open', 'fusion': 'drop2', 'impressionism': 'open', 'romantic': 'open', 'jazz': 'rootless', 'bossa_nova': 'rootless', 'lofi': 'rootless', 'boombap': 'rootless', 'city_pop': 'drop2',
+GENRE_VOICING = {'jazz_hop': 'rootless', 'storybook_score': 'open', 'bebop': 'rootless', 'soul_jazz': 'rootless', 'modal_jazz': 'open', 'fusion': 'drop2', 'impressionism': 'open', 'romantic': 'open', 'jazz': 'rootless', 'bossa_nova': 'rootless', 'lofi': 'rootless', 'boombap': 'rootless', 'city_pop': 'drop2',
                  'deep_house': 'drop2', 'ukgarage': 'drop2', 'funk': 'drop2', 'disco': 'drop2', 'downtempo': 'drop2',
                  'neoclassical': 'open', 'chamber': 'open', 'fantasy_rpg': 'open', 'cinematic': 'open', 'orchestral': 'open',
                  'swing': 'drop2', 'gospel': 'open', 'rnb': 'drop2', 'waltz': 'open', 'tango': 'close'}
 GENRE_COLORS_HOUSE = {'deep_house': ['9', 'm11', '9', '7'], 'tech_house': ['m11', '7', 'triad'], 'tokyo_deep_house': ['9', 'm11', '7'],
                       'garage_house': ['9', '7'], 'house': ['7', '9', 'triad', 'triad'], 'uk_funky': ['m11', '9'],
                       'outsider_house': ['m11', '9', '7'], 'dub_techno': ['m11', '7', 'triad']}
-GENRE_COLORS = {'ethereal_wave': ['7', 'add9', '7', 'triad'], 'sunlit_electronica': ['7', 'add9', '7', 'sus2'], 'daydream_downtempo': ['7', 'add9', '7', 'sus2'], 'dream_synthscape': ['9', '7', '9', 'add9'], 'festive_cinematic': ['7', 'add9', '7', 'triad'], 'jazz_rap': ['9', '7', '9', '6'], 'cloud_rap': ['add9', 'sus2', 'triad'], 'slow_jam': ['9', '7', 'add9'], 'smooth_jazz': ['add9', '9', '7', 'sus2'], 'smooth_funk': ['9', '7'], 'quiet_storm': ['9', '7', 'add9'], 'modern_country': ['triad', 'add9', 'sus2'], 'country_waltz': ['triad'], 'outlaw_country': ['triad', '7'], 'western_swing': ['6', '7', '9', '6'], 'g_funk': ['7', '9', 'triad'], 'neo_soul': ['9', '7', '9', 'add9'], 'new_jack_swing': ['7', '9', 'triad'], 'alt_rnb': ['7', 'add9', '9'], 'rage': ['triad'], 'plugg': ['add9', 'triad', '7'], 'hauntology_sunlit': ['add9', 'triad', 'sus2', '7'], 'hauntology_dark': ['triad', 'sus2', 'add9'], 'epic_orchestral': ['triad', 'sus4'], 'epic_battle': ['triad'], 'epic_choir': ['triad'], 'heroic_anthem': ['triad', 'sus4', 'add9'], 'symphonic_finale': ['triad', '7'], 'bebop': ['9', '7', '6'], 'modal_jazz': ['9', 'sus4', '7'], 'soul_jazz': ['7', '9'], 'fusion': ['9', 'add9', '7'], 'future_funk': ['7', '9'], 'italo_disco': ['triad', 'add9'], 'new_beat': ['triad'], 'gabber': ['triad'], 'rave_hardcore': ['triad', '7'], 'classical_period': ['triad'], 'romantic': ['7', 'triad', 'add9'], 'impressionism': ['add9', '9', 'sus2'], 'minimalism': ['triad', 'add9'], 'deep_dubstep': ['triad'], 'deep_dubstep_minimal': ['triad'], 'progressive_trance': ['triad', 'sus2', 'add9'], 'organic_house': ['add9', 'triad', 'sus2'], 'disco_funk': ['7', '9', 'triad'], 'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
+GENRE_COLORS = {'jazz_hop': ['9', '7', '9', 'add9'], 'storybook_score': ['triad', 'add9', '7'], 'synth_rnb': ['triad', 'add9', '7'], 'cinematic_trap': ['triad'], 'ethereal_wave': ['7', 'add9', '7', 'triad'], 'sunlit_electronica': ['7', 'add9', '7', 'sus2'], 'daydream_downtempo': ['7', 'add9', '7', 'sus2'], 'dream_synthscape': ['9', '7', '9', 'add9'], 'festive_cinematic': ['7', 'add9', '7', 'triad'], 'jazz_rap': ['9', '7', '9', '6'], 'cloud_rap': ['add9', 'sus2', 'triad'], 'slow_jam': ['9', '7', 'add9'], 'smooth_jazz': ['add9', '9', '7', 'sus2'], 'smooth_funk': ['9', '7'], 'quiet_storm': ['9', '7', 'add9'], 'modern_country': ['triad', 'add9', 'sus2'], 'country_waltz': ['triad'], 'outlaw_country': ['triad', '7'], 'western_swing': ['6', '7', '9', '6'], 'g_funk': ['7', '9', 'triad'], 'neo_soul': ['9', '7', '9', 'add9'], 'new_jack_swing': ['7', '9', 'triad'], 'alt_rnb': ['7', 'add9', '9'], 'rage': ['triad'], 'plugg': ['add9', 'triad', '7'], 'hauntology_sunlit': ['add9', 'triad', 'sus2', '7'], 'hauntology_dark': ['triad', 'sus2', 'add9'], 'epic_orchestral': ['triad', 'sus4'], 'epic_battle': ['triad'], 'epic_choir': ['triad'], 'heroic_anthem': ['triad', 'sus4', 'add9'], 'symphonic_finale': ['triad', '7'], 'bebop': ['9', '7', '6'], 'modal_jazz': ['9', 'sus4', '7'], 'soul_jazz': ['7', '9'], 'fusion': ['9', 'add9', '7'], 'future_funk': ['7', '9'], 'italo_disco': ['triad', 'add9'], 'new_beat': ['triad'], 'gabber': ['triad'], 'rave_hardcore': ['triad', '7'], 'classical_period': ['triad'], 'romantic': ['7', 'triad', 'add9'], 'impressionism': ['add9', '9', 'sus2'], 'minimalism': ['triad', 'add9'], 'deep_dubstep': ['triad'], 'deep_dubstep_minimal': ['triad'], 'progressive_trance': ['triad', 'sus2', 'add9'], 'organic_house': ['add9', 'triad', 'sus2'], 'disco_funk': ['7', '9', 'triad'], 'jazz': ['7', '9', '9', '6'], 'bossa_nova': ['7', '9', '6'], 'lofi': ['7', '9', 'add9'], 'boombap': ['7', '9'],
                 'city_pop': ['7', '9', 'add9'], 'deep_house': ['7', '9', 'add9'], 'ukgarage': ['7', '9'], 'funk': ['7', '9'],
                 'blues': ['7'], 'downtempo': ['7', 'add9', '9'], 'neoclassical': ['triad', 'add9', 'add9', 'sus2'],
                 'baroque': ['triad'], 'chamber': ['triad', 'triad', '7'], 'holiday': ['triad', '6', '7', 'add9'],
@@ -864,6 +865,39 @@ def theme_device(notes, role, rnd):
     return [n for n in notes if abs(n[0] * 4 - round(n[0] * 4)) > 1e-6 or round(n[0] * 4) % 4 == 0 or rnd.random() < 0.6]
 
 
+def derive_verse(hook, ph_hook, prog_v, cb, key, rnd):
+    """Hook-first writing: the verse melody is the chorus hook's rhythm and contour, sung lower (down a third) and a
+    little sparser, re-fitted to the verse chords - so the chorus lands as the payoff of an idea you've already heard."""
+    ph = 2 * len(prog_v) * cb
+    L = ph * 4
+    scale = {(key.root + iv) % 12 for iv in key.scale}
+    down = rnd.choice([3, 4, 3, 5])
+    thin = rnd.uniform(0.1, 0.3)
+
+    def snap(m, pcs):
+        return min((m + k for k in range(-5, 6) if (m + k) % 12 in pcs), key=lambda x: (abs(x - m), x))
+    out = []
+    reps = int(math.ceil(L / max(1, ph_hook * 4)))
+    for r in range(reps):
+        for (bt, du, m, v) in hook:
+            t = bt + r * ph_hook * 4
+            if t >= L - 0.01:
+                break
+            strong = abs(t - round(t)) < 0.01
+            if not strong and du <= 0.5 and rnd.random() < thin:
+                continue
+            chord = prog_v[(int(t // 4) // cb) % len(prog_v)]
+            ct = {key.deg(chord + i, 4) % 12 for i in (0, 2, 4)}
+            m2 = snap(m - down, ct if strong else scale)
+            out.append((t, min(du, L - t), m2, v * 0.92))
+    if out:                                                    # end the verse phrase open (3rd / 5th), not on the root
+        t, du, m, v = out[-1]
+        chord = prog_v[(int(t // 4) // cb) % len(prog_v)]
+        open_ = {key.deg(chord + i, 4) % 12 for i in (2, 4)}
+        out[-1] = (t, du, snap(m, open_), v)
+    return out, ph
+
+
 def gen_melody(key, prog, chord_bars, st, rnd, complexity, theme=None, role='main'):
     """theme: a dict shared by the song's melodies (main first, then alt / verse). The main melody writes its opening
     two-bar motif into it - rhythm cells and the notes relative to the first chord - and the alt and verse melodies
@@ -1304,6 +1338,10 @@ def compose(opts):
                                     for i_, (x, p_) in enumerate(((mel_main, ph_bars), (mel_alt, ph_alt), (mel_verse, ph_verse)))]
     lead_k = lead_octave_shift(mel_main, st)            # same register in every key (not an octave higher in B than in C)
     mel_main, mel_alt, mel_verse = [[(a, b, m + lead_octave_shift(x, st), v) for a, b, m, v in x] for x in (mel_main, mel_alt, mel_verse)]
+    if getattr(opts, 'hook_first', None) == 'on' and mel_main and not st.get('meter'):
+        # hook-first writing: the verse is the chorus hook's rhythm and contour, sung lower, on the verse chords
+        mel_verse, ph_verse = derive_verse(mel_main, ph_bars, prog_verse, cb, key, random.Random(opts.seed * 71 + 5))
+        st['hook_first'] = True
     st['lead_shift'] = lead_k
     acid_pat = gen_acid_pattern(key, rnd_b, energy)
 
@@ -1413,6 +1451,10 @@ def compose(opts):
                 if rb_.random() < 0.4 and 'lead' in tracks:
                     layers = layers | {'lead'}
         is_verse = sname in ('verse', 'A', 'rise', 'head') and not opts_s.get('drop')
+        hook_verse = bool(st.get('hook_first') and is_verse and 'lead' in tracks and 'lead' not in layers
+                          and not ed.get('keep_layers'))
+        if hook_verse:                                   # hook-first: the verse sings the hook idea, low and soft
+            layers = layers | {'lead'}
         prog = prog_alt if opts_s.get('alt') else (prog_verse if is_verse else prog_main)
         mel, ph = (mel_alt, ph_alt) if opts_s.get('alt') else ((mel_verse, ph_verse) if is_verse else (mel_main, ph_bars))
         if (ed.get('seeds') or {}).get('melody') is not None:
@@ -1786,7 +1828,7 @@ def compose(opts):
                                   (0.95 if (k % 4 == 0 if G == 16 else (k * rate) % 3 == 0) else 0.75) * rnd_c.uniform(0.9, 1.0)))
         # ---------------- lead
         if 'lead' in layers and 'lead' in tracks:
-            soft_lead = 0.75 if sname in ('break', 'bridge', 'C', 'calm') else 1.0
+            soft_lead = 0.75 if sname in ('break', 'bridge', 'C', 'calm') else (0.8 if hook_verse else 1.0)
             reps = int(math.ceil(nbars / ph))
             src_mel = vary_melody(mel, var, key) if var in ('dim', 'aug') else mel
             n0 = len(evs)
@@ -3998,7 +4040,7 @@ GROOVES = {
     'drill': {'top': [0, .1, 0, -.04] * 4, 'snare': [.08] * 16, 'kick': [0, .06] * 8},
     'dnb_roll': {'snare': [-.06] * 16, 'top': [0, .05] * 8},
 }
-STYLE_GROOVE = {'jazz_rap': 'dilla', 'slow_jam': 'laidback', 'smooth_jazz': 'laidback', 'quiet_storm': 'laidback', 'smooth_funk': 'funk', 'neo_soul': 'dilla', 'g_funk': 'laidback', 'hauntology_sunlit': 'dilla', 'hauntology_dark': 'laidback', 'disco_funk': 'funk', 'organic_house': 'house', 'boombap': 'boombap', 'lofi': 'dilla', 'phonk': 'dilla', 'reggae': 'laidback', 'downtempo': 'laidback',
+STYLE_GROOVE = {'jazz_hop': 'dilla', 'jazz_rap': 'dilla', 'slow_jam': 'laidback', 'smooth_jazz': 'laidback', 'quiet_storm': 'laidback', 'smooth_funk': 'funk', 'neo_soul': 'dilla', 'g_funk': 'laidback', 'hauntology_sunlit': 'dilla', 'hauntology_dark': 'laidback', 'disco_funk': 'funk', 'organic_house': 'house', 'boombap': 'boombap', 'lofi': 'dilla', 'phonk': 'dilla', 'reggae': 'laidback', 'downtempo': 'laidback',
                 'afrobeats': 'afro', 'amapiano': 'afro', 'reggaeton': 'dembow', 'moombahton': 'dembow', 'jazz': 'jazz',
                 'house': 'house', 'deep_house': 'house', 'tech_house': 'house', 'ukgarage': 'house',
                 'funk': 'funk', 'disco': 'funk', 'city_pop': 'funk', 'rnb': 'laidback', 'gospel': 'laidback',
@@ -4017,3 +4059,5 @@ from .pool_variety import widen as _widen_pools  # noqa: E402  (needs SIGNATURE_
 _widen_pools()
 from .styles import _offer_genre_sounds  # noqa: E402
 _offer_genre_sounds()
+from .electro_sounds import apply as _electronic_basses  # noqa: E402  (last pool step)
+_electronic_basses()

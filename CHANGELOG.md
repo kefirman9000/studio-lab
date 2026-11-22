@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.3.0
+- **Electronic genres play electronic basses.** Bass guitars, upright and acoustic basses (finger, pick, slap, sampled or
+  modelled) no longer turn up under electronic tracks. They were in about 40 electronic genres' bass rotations (deep house,
+  melodic house, liquid DnB, K-pop, PS1 game, teen pop, glitch pop, the hauntology genres, chillwave and more), including
+  the per-song palettes of sunlit electronica and daydream downtempo. Genres whose own bass was one of them now use a synth
+  bass (Moog-style, FM or Juno), and short rotations were refilled with synth basses. Synth basses with a plucky filter
+  stay. Electro swing, krautrock and future funk keep their real bass, because those genres are built on one.
+- **Synth brass, not a real brass section,** in synthwave and electro. **No acoustic piano** in tech house.
+- **Hook-first melodies** (Sound panel, or `--hook-first on`): the verse sings the chorus hook's rhythm and shape, lower and
+  softer, over the verse chords, so the chorus lands as the payoff of an idea you've already heard. Off by default.
+- **Four new genres:** Jazz-hop (crisp swung drums, 9th-chord Rhodes and piano, upright, flute and sax), Storybook film
+  score (a nostalgic piano theme, warm strings, flute and glockenspiel answers, harp), Cinematic dark trap (menacing
+  strings, choir and bells over sliding 808s) and 80s synth R&B (gated LinnDrum, pulsing synth bass, poly synths and
+  synth brass, a soaring hook).
+- **Fixed: metal genres lost their metal guitar** whenever a song picked from the genre's guitar list. They got the plain
+  rhythm guitar instead. Every genre built on a 2.0 rig guitar (metal, jangle, dreadnought, telecaster ...) now lists it first.
+- **Fixed: grunge's rebuilt guitars never rotated.** Its guitar lists were stored where the app doesn't read them.
+- Genre matching now has fingerprints for grunge, euphoric UK techno, switch-up bass and the new genres.
+- The test suites pass again: several checks still assumed pre-2.0 guitar names and the old trap bass list.
+
 ## 2.2.7
 - **No artist or song names anywhere in the app.**
   - Genres made from reference tracks are now described only by their sound.

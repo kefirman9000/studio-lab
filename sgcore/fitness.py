@@ -8,7 +8,7 @@ COWBELLS = {'phonkbell', 'cowbell', 'cowbell_808', 'cowbell_long', 'cowbell_dist
 from collections import Counter
 
 # tempo ranges (BPM) per genre, from production practice
-TEMPO = {
+TEMPO = {'jazz_hop': (78, 98), 'storybook_score': (60, 110), 'cinematic_trap': (128, 155), 'synth_rnb': (96, 126), 
     'phonk': (140, 170), 'house_phonk': (125, 145), 'memphis_phonk': (60, 95), 'brazilian_phonk': (128, 160), 'dubstep': (138, 142), 'brostep': (140, 150),
     'melodic_dubstep': (140, 150), 'dnb': (160, 180), 'liquid_dnb': (165, 180), 'neurofunk': (170, 180), 'jungle': (155, 175),
     'trance': (125, 150), 'uplifting_trance': (130, 142), 'psytrance': (135, 150), 'house': (118, 130), 'deep_house': (115, 126),

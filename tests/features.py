@@ -533,8 +533,9 @@ def test_world_and_rock_genres_153():
         for sd in (1, 2):
             s = compose(Options(style=g, seed=sd))
             ins = {t['inst'] for t in s['st']['tracks']}
-            if ins & {'cleanguitar', 'odguitar', 'distguitar', 'sf:cleanguitar', 'sf:odguitar', 'sf:distguitar'}:
-                ins.add('guitar')                                          # (any electric guitar amp)
+            from sgcore.guitars2 import NEW as _RIG
+            if ins & ({'cleanguitar', 'odguitar', 'distguitar', 'sf:cleanguitar', 'sf:odguitar', 'sf:distguitar'} | set(_RIG)):
+                ins.add('guitar')                                          # (any electric guitar amp, or a 2.0 rig guitar)
             used = {e.track for e in s['events']}
             assert insts <= ins, (g, ins)
             assert drums.get(g, set()) <= used, (g, used)
@@ -1122,7 +1123,7 @@ def test_va_synth():
         assert np.isfinite(a).all() and 0.02 < np.abs(a).max() < 1.3, (k, np.abs(a).max())
     from sgcore.styles import POOLS as _P4
     assert all(len(_P4[g][r]) >= 6 for g in ('dnb', 'house', 'techno', 'dubstep') for r in ('chords', 'pad', 'arp', 'lead'))
-    assert _P4['trap']['bass'] == ['808']                                    # a genre's defining part keeps its own list
+    assert _P4['trap']['bass'][0] == '808' and set(_P4['trap']['bass']) <= {'808', 'slide808'}   # a defining part keeps its own (808) family
     for k in ('darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass', 'progpluck', 'gatepad', 'orchhit',
               'darkpiano', 'eeriepad', 'musicbox', 'crushlead'):                                  # 1.69
         a = np.asarray(INSTRUMENTS[k](40 if k in ('darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass') else 67,

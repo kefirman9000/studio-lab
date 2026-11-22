@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 347 GENRES  (version 1.96.0)
+STUDIO LAB - ALL 354 GENRES  (version 2.2.7)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 1.96
+* = new in 2.2
 
 ========================================================================
-ELECTRONIC  (185)
+ELECTRONIC  (189)
 ========================================================================
 
 House & Disco  (29)
@@ -37,10 +37,11 @@ House & Disco  (29)
     Hi-NRG (80s)  [hi_nrg]
     Brazilian bass  [brazilian_bass]
 
-Techno & Trance  (24)
+Techno & Trance  (25)
     techno  [techno]
     minimal  [minimal]
     Melodic Techno  [melodic_techno]
+    Euphoric UK Techno  [euphoric_uk_techno]
     New Beat  [new_beat]
     trance  [trance]
     Uplifting Trance  [uplifting_trance]
@@ -63,8 +64,9 @@ Techno & Trance  (24)
     Hard techno (150)  [hard_techno]
     Dub techno  [dub_techno]
 
-Dubstep, Garage & Bass  (26)
+Dubstep, Garage & Bass  (27)
     Dubstep (classic UK)  [dubstep]
+    Switch-up Bass  [switchup_bass]
     Wave (ethereal half-time, 808 sub, vocal chops)  [ethereal_wave]
     Brostep  [brostep]
     Riddim  [riddim]
@@ -113,7 +115,7 @@ Drum & Bass, Breaks & Hard  (20)
     Big beat  [big_beat]
     UK hardcore / happy hardcore  [uk_hardcore]
 
-Hip-Hop, Trap & Phonk  (29)
+Hip-Hop, Trap & Phonk  (30)
     Trap  [trap]
     UK Drill  [uk_drill]
     UK road rap  [uk_road_rap]
@@ -143,8 +145,9 @@ Hip-Hop, Trap & Phonk  (29)
     Baltimore club  [baltimore_club]
     Witch house  [witch_house]
     Latin trap  [latin_trap]
+    Cinematic dark trap  [cinematic_trap]
 
-Pop, R&B & Hopecore  (11)
+Pop, R&B & Hopecore  (12)
     Synth-pop  [synthpop]
     K-pop  [kpop]
     Teen Pop ('99)  [teen_pop]
@@ -156,6 +159,7 @@ Pop, R&B & Hopecore  (11)
     Minimal club pop  [club_pop]
     Glitchy IDM pop  [glitch_pop]
     Latin freestyle (80s)  [freestyle]
+    80s synth R&B  [synth_rnb]
 
 Afro, Latin & Caribbean  (8)
     Afrobeats  [afrobeats]
@@ -214,13 +218,14 @@ Hauntology  (7)
     Hauntology - cold dystopian synths  [hauntology_cold]
 
 ========================================================================
-CLASSIC  (131)
+CLASSIC  (133)
 ========================================================================
 
-Rock & Metal  (29)
+Rock & Metal  (30)
     rock  [rock]
     Indie Rock  [indie_rock]
     90s alt rock  [alt_rock_90s]
+    Grunge  [grunge]
     Punk  [punk]
     70s Soft Rock  [soft_rock]
     Jam Band (70s psychedelic jams)  [jam_band]
@@ -281,7 +286,7 @@ Soul, R&B & Gospel  (10)
     Quiet Storm  [quiet_storm]
     90s R&B Slow Jam  [slow_jam]
 
-Hip-Hop  (8)
+Hip-Hop  (9)
     Boom Bap  [boombap]
     Cinematic beat tape (instrumental hip hop)  [beat_tape_cinematic]
     Jazz Rap  [jazz_rap]
@@ -290,6 +295,7 @@ Hip-Hop  (8)
     Soul-sample hip-hop  [soul_sample_rap]
     West-coast slap rap  [bay_rap]
     Futuristic hip-hop bounce (early 2000s)  [futuristic_bounce]
+    Jazz-hop  [jazz_hop]
 
 Jazz  (11)
     jazz  [jazz]
@@ -377,10 +383,10 @@ Hindu devotional  (9)
     Carnatic kriti (veena & mridangam)  [carnatic_kriti]
 
 ========================================================================
-ORCHESTRAL  (31)
+ORCHESTRAL  (32)
 ========================================================================
 
-Film & Trailer  (8)
+Film & Trailer  (9)
     Cinematic Journey (ultimate orchestral)  [cinematic_journey]
     Cinematic Journey - Dark & Low  [cinematic_journey_low]
     Cinematic / Epic  [cinematic]
@@ -389,6 +395,7 @@ Film & Trailer  (8)
     Dark Tension  [tension]
     Hybrid Trailer  [hybrid_trailer]
     Festive cinematic Christmas (full orchestra)  [festive_cinematic]
+    Storybook film score  [storybook_score]
 
 Epic  (5)
     Epic Orchestral  [epic_orchestral]
@@ -416,7 +423,7 @@ Classical Eras  (11)
     Baroque  [baroque]
     Baroque organ toccata  [baroque_organ]
     Minuet & trio  [minuet]
-    Classical (Mozart era)  [classical_period]
+    Classical (late 1700s)  [classical_period]
     Waltz (3/4)  [waltz]
     Romantic Orchestra  [romantic]
     Impressionism  [impressionism]
