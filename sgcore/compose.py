@@ -1602,7 +1602,7 @@ def compose(opts):
                 elif inst == 'acid' and mode == 'pattern':
                     mode = 'acid'
                 elif inst in ('wobble', 'riddim', 'dnbwob', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass',
-                              'slowwob', 'yoiwob', 'sweepwob', 'reesewob') and mode == 'pattern':
+                              'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'sleepersub', 'brightwob', 'tearwob') and mode == 'pattern':
                     mode = 'wobble'
                 if getattr(opts, 'bass_rhythm', None) == 'kick' and mode not in ('walk', '808'):
                     mode = 'kick'
@@ -1650,6 +1650,7 @@ def compose(opts):
                         prev_bass = m
                 elif mode == 'wobble':
                     pos = 0
+                    last_wob = None                              # (2.9.1) (pitch, end step) of the note before
                     while pos < 16:
                         ln = rnd_b.choice(st.get('wobble_lens') or [8, 4, 4, 2, 16]) if pos % 4 == 0 else 2
                         ln = min(ln, 16 - pos)
@@ -1662,7 +1663,13 @@ def compose(opts):
                         rate = rnd_b.choice(rates)
                         m = rnd_b.choice([root, root, root + 12] if st.get('pedal_sub') else
                                          [root, root, root + 12, fold(key.deg(chord + 4, 2), lo)])
-                        evs.append(Ev('bass', beat0 + pos / 4, ln / 4 * 0.97, m, 1.0, None, rate))
+                        ev_ = Ev('bass', beat0 + pos / 4, ln / 4 * 0.97, m, 1.0, None, rate)
+                        # (2.9.1) some wobble notes glide in from the note before (straight on from it, no gap)
+                        if last_wob and last_wob[1] == pos and 0 < abs(last_wob[0] - m) <= 12 and \
+                                rnd_b.random() < st.get('wobble_glide', 0.35):
+                            ev_.slide = float(m - last_wob[0])
+                        evs.append(ev_)
+                        last_wob = (m, pos + ln)
                         pos += ln
                 elif mode == 'walk':
                     tgt = fold(key.deg(nxt, 2), lo)
@@ -2285,7 +2292,7 @@ def apply_note_edits(evs, edits, tracks):
     return out
 
 
-SUB_BASSES = ('808', '808dist', '808long', '808punch', 'sinebass', 'deepsub', 'logdrum', 'chipbass', 'deepbass', 'splitbass', 'rumble', 'subwob')
+SUB_BASSES = ('808', '808dist', '808long', '808punch', 'sinebass', 'deepsub', 'sleepersub', 'logdrum', 'chipbass', 'deepbass', 'splitbass', 'rumble', 'subwob')
 
 EXTRA_FOLLOWS = ('lead', 'counter', 'chords', 'pad', 'arp', 'bass')
 
@@ -2519,7 +2526,7 @@ OCT_UP = {'bell', 'celesta', 'flute', 'sf:piccolo', 'pluck', 'chip', 'marimba', 
 OCT_DOWN = {'cello', 'sf:contrabass', 'sf:bassoon', 'sf:trombone', 'sf:tuba', 'horn'}
 NO_LAYER = {'808', 'logdrum', 'wobble', 'acid', 'sinebass', 'chipbass', 'riddim', 'screech', 'dnbwob', 'vowelwob',
             'multiwob', 'tablewob', 'chopwob', 'rumble', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass',
-            'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'deepsub'}
+            'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'deepsub', 'sleepersub', 'brightwob', 'tearwob'}
 
 
 def debell(st, opts):
@@ -2774,7 +2781,7 @@ def sync_drones(evs, tracks, bpm):
 
 SUSTAINED_BASS = {'reese', 'growl', 'wobble', 'hoover', 'sinebass', 'moogbass', 'drone', 'tanpura', 'dnbwob', 'vowelwob',
                   'multiwob', 'tablewob', 'chopwob', 'rumble', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass',
-                  'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'deepsub'}
+                  'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'deepsub', 'sleepersub', 'brightwob', 'tearwob'}
 
 
 def legato_bass(evs, tracks):

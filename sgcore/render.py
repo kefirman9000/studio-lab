@@ -12,7 +12,7 @@ import numpy as np
 from scipy import signal
 from scipy.ndimage import uniform_filter1d
 
-from .dsp import (SR, hp, lp, eq, soft, k_weight, compressor, limiter, low_limit, lufs, active_rms_db, make_ir, reverb, pingpong,
+from .dsp import (SR, hp, lp, bp, eq, soft, k_weight, compressor, limiter, low_limit, lufs, active_rms_db, make_ir, reverb, pingpong,
                   make_spring_ir, dub_delay, svf_sweep, mtof,
                   sweep_region, write_wav_float)
 from .instruments import INSTRUMENTS, DRUMS, fx_riser, fx_impact, fx_vinyl, fx_texture
@@ -453,6 +453,23 @@ def render_workers(length_samples):
 MONO_FADE = int(0.006 * SR)                                  # the bass retrigger crossfade (6 ms)
 MONO_RAMP = (0.5 + 0.5 * np.cos(np.linspace(0, np.pi, MONO_FADE))).astype(np.float32)
 MONO_SAME = int(0.002 * SR)                                  # notes this close together count as one chord
+_DC_IN = int(0.0012 * SR)                                     # (2.9.1) de-click: a 1.2 ms fade into every bass note
+_DC_OUT = int(0.004 * SR)                                     # and a 4 ms fade at the very end of every pitched note
+_DC_IN_RAMP = (np.sin(np.linspace(0, np.pi / 2, _DC_IN)) ** 2).astype(np.float32)
+_DC_OUT_RAMP = (np.cos(np.linspace(0, np.pi / 2, _DC_OUT)) ** 2).astype(np.float32)
+
+
+def declick(sig, start=True):
+    """(2.9.1) Notes that started on a non-zero sample or were cut off mid-wave (many synth basses' last sample was
+    still 5-50 % of their peak) clicked at their start and end - heard as a 'clipping' tick on every note. Every pitched
+    note now ends in a 4 ms fade, and bass notes also start with a 1.2 ms one (too short to soften a pluck)."""
+    if sig is None or sig.shape[-1] < 4 * (_DC_IN + _DC_OUT):
+        return sig
+    sig = np.array(sig, dtype=np.float32, copy=True)
+    sig[..., -_DC_OUT:] *= _DC_OUT_RAMP
+    if start:
+        sig[..., :_DC_IN] *= _DC_IN_RAMP
+    return sig
 
 
 class Renderer:
@@ -827,8 +844,31 @@ class Renderer:
                 buf[:] = drone_part(notes, self.length, getattr(self.song.get('key'), 'root', None))
             return buf
         if tcfg['inst'] == 'texture':
-            buf[0] = fx_texture(self.length)
-            buf[1] = fx_texture(self.length)
+            # (2.9.1) the background texture is no longer the same washing-waves noise in every song: about half the
+            # songs have none, the others get one of a few kinds (unless a genre insists on its own)
+            kind = self.st.get('texture_kind') or random.Random(self.song['seed'] * 31 + 11).choice(
+                ['none', 'none', 'none', 'none', 'waves', 'air', 'rain', 'vinyl'])
+            self.song['texture_kind'] = kind
+            if kind == 'none':
+                return buf
+            if kind == 'vinyl':
+                buf[0] = fx_vinyl(self.length) * 0.6
+                buf[1] = fx_vinyl(self.length) * 0.6
+                return buf
+            for c in range(2):
+                if kind == 'air':                           # a soft high breath that swells very slowly
+                    t = np.arange(self.length) / SR
+                    x = bp(np.random.default_rng(self.song['seed'] + c).standard_normal(self.length), 3000, 9000) * 0.5
+                    buf[c] = x * (0.4 + 0.6 * np.sin(2 * np.pi * t / 23.0 + c) ** 2)
+                elif kind == 'rain':                        # light rain: a soft bed and scattered drops
+                    rng_ = np.random.default_rng(self.song['seed'] * 3 + c)
+                    bed = bp(rng_.standard_normal(self.length), 1500, 7000) * 0.25
+                    drops = np.zeros(self.length)
+                    hits = rng_.random(self.length) < 0.0009
+                    drops[hits] = rng_.standard_normal(int(hits.sum()))
+                    buf[c] = bed + bp(drops, 2000, 9000) * 1.5
+                else:
+                    buf[c] = fx_texture(self.length)
             return buf
         if tcfg['inst'].startswith('vst:') and not evs:
             return buf
@@ -888,6 +928,8 @@ class Renderer:
                 if n > 16:
                     sig = sig.copy()
                     sig[..., :n] *= (np.linspace(0.08, 1.0, n, dtype=np.float32) ** 1.6)
+            if not is_drum and sig is not None:
+                sig = declick(sig, start=tcfg['layer'] == 'bass')
             if mono and sig is not None:
                 if pend and s > pend[0][1] + MONO_SAME:
                     self._mono_flush(buf, pend, s)

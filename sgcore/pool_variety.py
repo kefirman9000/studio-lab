@@ -418,6 +418,13 @@ def _variety_252():
         if g in ('celtic_punk', 'highland_pipes', 'pipes_orchestra'):
             continue
         plan[g] = [_CELTIC_SLOW, _CELTIC] if g in ('celtic_slow_air', 'celtic_new_age', 'clarsach_air') else [_CELTIC]
+    # (2.9.1) the new deep / grimy / tearout wobbles for the dubstep family
+    for g, add in (('dubstep', dict(bass=['slowwob', 'yoiwob', 'brightwob', 'reesewob', 'sleepersub'])),
+                   ('deep_dubstep', dict(bass=['slowwob', 'yoiwob', 'sweepwob', 'sleepersub'])),
+                   ('deep_dubstep_rolling', dict(bass=['slowwob', 'reesewob', 'sleepersub'])),
+                   ('brostep', dict(bass=['brightwob', 'tearwob'])),
+                   ('riddim', dict(bass=['tearwob', 'brightwob']))):
+        plan.setdefault(g, []).append(add)
     for g, adds in plan.items():
         pools = POOLS.get(g)
         if not pools or g not in STYLES:

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.9.1
+- **Fixed: clicks / 'clipping' at the start or end of bass notes.** Many synth basses (the acids, 808 variants, stab and 808 wobbles...) were cut off mid-wave - their last sample still 5-50 % of their peak - and some started on a non-zero sample. Every pitched note now ends with a 4 ms fade, and every bass note starts with a 1.2 ms one (too short to soften a pluck).
+- **Dubstep bass glides:** about a third of the wobble notes that follow straight on from another note now glide into it (octave dives and rises, slides to the next note; never more than an octave).
+- **The background 'waves' texture is no longer in every song:** about half the songs have none; the others get one of washing noise, a soft high air, light rain or vinyl crackle.
+- Learned from your loops: new **'sleeper' sub** (the sub's own pitch bends slowly, or arcs up a tritone and back), **grimy bright wobble** (dotted / triplet bounce) and **tearout riff bass** (tight chops in 300 Hz - 4 kHz); skippy 32nd-note hat rolls and sparse percussion patterns for Slow Wobble Dubstep; deep dubstep and riddim pools get the new basses. Drum patterns can now use a 32nd grid (rolls) or 16th triplets.
+
 ## 2.9.0
 - New genre: **Slow Wobble Dubstep (bass-led)** - deep half-time 140 where the bass is the song: a clean sine sub and one wobble on top moving slowly (a sweep per bar, half bar or beat, a dotted-1/8 bounce, or one sweep opening across the whole note), lots of space where the sub carries on alone, minimal drums. Measured against deep dubstep reference drops (sub share, darkness, wobble speeds).
 - New bass sounds: **slow deep wobble**, **talking 'yoi' wobble** (oo-ah-oo vowels), **rising sweep wobble**, **slow dark reese wobble** and a clean **deep sine sub**. All take their LFO speed from the composer, sit on a clean sub, and work in any genre's bass.

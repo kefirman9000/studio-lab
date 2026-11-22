@@ -146,6 +146,63 @@ def deepsub(m, dur, p, glide=None, mod=None):
     return np.vstack([s, s]) * env * 0.6
 
 
+def sleepersub(m, dur, p, glide=None, mod=None):
+    """'Sleeper' sub: a pure sine sub whose pitch slowly bends a semitone or so up and down (the LFO speed comes from
+    the composer), dropping in from just above the note - the sub itself wobbles, felt more than heard."""
+    f = float(mtof(m))
+    fs = f if f < 80 else f / 2
+    env = _env(dur, a=0.01, d=0.05, s=1.0, r=0.08)
+    n = len(env)
+    t = np.arange(n) / SR
+    depth = float(p.get('bend', 1.0))                           # semitones
+    lfo = np.sin(2 * np.pi * _rate(mod, p, 1.33) * t - np.pi / 2)  # starts low in its swing
+    st_ = depth * 0.6 * lfo + 1.0 * np.exp(-t / 0.06)          # ...after a short drop from a semitone above
+    if (int(m) * 5 + int(round((mod or 1) * 3))) % 3 == 0 and dur > 0.6:
+        # (2.9.1) every third phrase the sub arcs instead: up about a tritone across the note's middle and back down
+        u = np.clip(t / max(dur, 0.1), 0, 1)
+        st_ = 6.0 * np.sin(np.pi * u) ** 1.5 + 0.8 * np.exp(-t / 0.06)
+    fr = fs * 2 ** (st_ / 12)
+    s = np.sin(2 * np.pi * np.cumsum(fr) / SR)
+    s = np.tanh(1.4 * s) / np.tanh(1.4)
+    return np.vstack([s, s]) * env * 0.6
+
+
+def brightwob(m, dur, p, glide=None, mod=None):
+    """Grimy bright wobble: a hard-driven saw / square stack through a resonant low-pass and a moving comb, opening
+    much higher than the deep wobbles - a dirtier, more forward 'wow-wow' at a dotted / triplet bounce."""
+    f = float(mtof(m))
+    env = _env(dur, a=0.004, d=0.08, s=1.0, r=0.05)
+    n = len(env)
+    fo = f if f > 50 else f * 2
+    x = _stack(fo, n, (-12, 12), 0.8)
+    lfo = _lfo_shape(n, _rate(mod, p, 2 / 3), p.get('shape') or 'sine')
+    cut = 150 * (p.get('cut', 4500) / 150) ** lfo
+    y = va.vcf(x, cut, res=p.get('res', 0.65), drive=1.6)
+    y = dist(y, 4.0, 'hard')
+    d = (1 / (300 + 900 * lfo)) * SR                         # a comb that moves with the filter: metallic grit
+    idx = np.clip(np.arange(n) - d, 0, n - 1).astype(int)
+    y = y + 0.4 * y[:, idx]
+    y = _mid_hp(y, f) * 0.9
+    return (y + _clean_sub(f, n, p.get('sub', 0.7))) * env * 0.33
+
+
+def tearwob(m, dur, p, glide=None, mod=None):
+    """Tearout / riddim riff bass: a clipped, nasal mid-bass that chops in tight 8ths, triplets or 16ths (the LFO is
+    a hard gate on the filter and the formant), all in the 300 Hz - 4 kHz band, with a plain sub under it."""
+    f = float(mtof(m))
+    env = _env(dur, a=0.002, d=0.05, s=1.0, r=0.03)
+    n = len(env)
+    fo = f if f > 50 else f * 2
+    x = _stack(fo, n, (-5, 5), 1.0)
+    lfo = _lfo_shape(n, _rate(mod, p, 1 / 3), 'square')
+    cut = 250 * (p.get('cut', 3500) / 250) ** lfo
+    y = va.vcf(x, cut, res=0.7, drive=2.0)
+    y = y + 0.8 * _bp_moving(y, 500 + 1300 * lfo, 4.0)
+    y = dist(y, 6.0, 'hard')
+    y = _mid_hp(y, f, 250.0) * 0.8
+    return (y + _clean_sub(f, n, p.get('sub', 0.6))) * env * 0.36
+
+
 def _bp_moving(x, fc, q):
     """Band-pass with a moving centre (block-wise, state carried) - two channels."""
     n = x.shape[-1]
@@ -168,6 +225,9 @@ NEW_290 = (
     ('sweepwob', sweepwob, 'Rising sweep wobble (opens across each note)', 38),
     ('reesewob', reesewob, 'Slow dark reese wobble (rolling growl)', 38),
     ('deepsub', deepsub, 'Deep dubstep sine sub (clean, steady)', 38),
+    ('sleepersub', sleepersub, "'Sleeper' sub (the sub's pitch slowly bends)", 38),
+    ('brightwob', brightwob, 'Grimy bright wobble (dotted / triplet bounce)', 38),
+    ('tearwob', tearwob, 'Tearout / riddim riff bass (tight chops)', 38),
 )
 
 

@@ -175,7 +175,8 @@ def parse_rhythm(pat):
     """'x-..X...' -> [(step, length, char)] in 16ths of a bar. 12-step patterns (triple / compound meters: 3/4, 6/8,
     12/8) are scaled onto the same bar, so a step is a third of a beat there."""
     out = []
-    k = 16 / len(pat) if len(pat) in (12, 18) else 1      # (2.4.2) 18 steps: 9/8 (two slip-jig bars per bar)
+    k = 16 / len(pat) if len(pat) in (12, 18, 24, 32) else 1   # (2.4.2) 18 steps: 9/8; (2.9.1) 32: 32nd-note hat rolls,
+    #                                                                  24: 16th-note triplets
     for i, c in enumerate(pat):
         if c not in '.-':
             l = 1

@@ -12400,8 +12400,15 @@ derive('slow_wobble', 'deep_dubstep', 'Electronic',
        'Slow Wobble Dubstep (bass-led)', exact_pools=True,
        sounds={'bass': 'slowwob'}, drop_tracks=('lead', 'arp'),
        roots=[4, 5, 2, 3, 9], simplicity=0.85, repetition=0.95,
-       wobble_rates=[4, 2, 2, 1, 0.75], wobble_rates_alt=[2, 1, 1, 0.75, 0.5], wobble_lens=[16, 8, 8, 4], wobble_rest=0.25,
-       pools=dict(bass=['slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'wobble', 'darkwob'],
+       wobble_rates=[4, 2, 2, 1, 0.75, 4 / 3], wobble_rates_alt=[2, 1, 0.75, 2 / 3, 0.5, 1 / 3], wobble_lens=[16, 8, 8, 4], wobble_rest=0.25,
+       # (2.9.1) skippy hats from the reference loops, on a 32nd grid: a beat is 8 steps, with little rolls and late skips
+       drums=dict(STYLES['deep_dubstep']['drums'],
+                  chat=['X...x...X....x..X...x...X....x..', 'X...o.x...o....oxoo.o...o.......',
+                        'Xx..o.xoo...o.o...o.o.o.o...o...', '..x...x...x...x.'],
+                  ohat=['................................', '..............................x.', '......x.........'],
+                  rim=['x...X.o.....x...X...x...x...Xo..', 'x...X...x.......X...............', '...x......x...x.',
+                       '....x.......X.o.................']),
+       pools=dict(bass=['slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'sleepersub', 'brightwob', 'wobble', 'darkwob'],
                   chords=['stab', 'dubstab', 'stab_dark'], pad=['warmpad', 'darkpad', 'drone']))
 
 derive('celtic_new_age', 'new_age_chant', 'Classic',
