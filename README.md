@@ -28,26 +28,26 @@ built-in sounds only (no downloaded instruments or plugins):
 
 | Genre | Excerpt |
 |---|---|
-| Bhajan groove - tabla, dholak & bongos (Hindu devotional) | [▶ Eb mixolydian, 112 BPM](docs/samples/tabla_bhajan.mp3) |
-| Spooky surf - monster TV theme | [▶ Bb minor, 156 BPM](docs/samples/monster_theme.mp3) |
-| Outlaw country | [▶ Eb mixolydian, 112 BPM](docs/samples/outlaw_country.mp3) |
-| Stoner rock - raga / psych (sitar & tabla) | [▶ Bb phrygian, 87 BPM](docs/samples/stoner_raga.mp3) |
-| Anatolian psych rock (saz & fuzz) | [▶ Bb phrygian dominant, 121 BPM](docs/samples/anatolian_psych.mp3) |
-| Ethio-jazz (vibes & horns) | [▶ Eb minor, 108 BPM](docs/samples/ethio_jazz.mp3) |
-| Qawwali (harmonium & claps) | [▶ Bb harmonic minor, 98 BPM](docs/samples/qawwali.mp3) |
-| Flamenco rumba (guitar & palmas) | [▶ Bb phrygian, 121 BPM](docs/samples/flamenco_rumba.mp3) |
-| Rockabilly (slap bass & twang) | [▶ Eb mixolydian, 168 BPM](docs/samples/rockabilly.mp3) |
-| Gamelan (Javanese) | [▶ Bb pelog, 83 BPM](docs/samples/gamelan.mp3) |
-| Juke / ghetto house - raw | [▶ Bb minor, 133 BPM](docs/samples/juke_raw.mp3) |
-| Garage rock (60s fuzz & organ) | [▶ Eb dorian, 140 BPM](docs/samples/garage_rock.mp3) |
-| Deep Dubstep (soundsystem) | [▶ C minor, 142 BPM](docs/samples/deep_dubstep.mp3) |
-| Liquid DnB | [▶ C dorian, 173 BPM](docs/samples/liquid_dnb.mp3) |
-| Future garage | [▶ Eb dorian, 128 BPM](docs/samples/future_garage.mp3) |
-| Nu-disco / disco lounge | [▶ Bb minor, 120 BPM](docs/samples/nu_disco.mp3) |
-| Mallet melodic house | [▶ A dorian, 119 BPM](docs/samples/mallet_house.mp3) |
-| Hard trap (brass & strings) | [▶ D minor, 152 BPM](docs/samples/hard_trap.mp3) |
-| 80s sophisti-pop / jazz-funk pop | [▶ Eb dorian, 100 BPM](docs/samples/sophisti_pop.mp3) |
-| Solo Piano Miniature | [▶ G major, 83 BPM](docs/samples/piano_miniature.mp3) |
+| Bhajan groove - tabla, dholak & bongos (Hindu devotional) | [▶ Eb mixolydian, 99 BPM](docs/samples/tabla_bhajan.mp3) |
+| Spooky surf - monster TV theme | [▶ E minor, 147 BPM](docs/samples/monster_theme.mp3) |
+| Outlaw country | [▶ Eb minor, 110 BPM](docs/samples/outlaw_country.mp3) |
+| Stoner rock - raga / psych (sitar & tabla) | [▶ B phrygian dominant, 82 BPM](docs/samples/stoner_raga.mp3) |
+| Anatolian psych rock (saz & fuzz) | [▶ Eb phrygian dominant, 115 BPM](docs/samples/anatolian_psych.mp3) |
+| Ethio-jazz (vibes & horns) | [▶ G minor, 95 BPM](docs/samples/ethio_jazz.mp3) |
+| Qawwali (harmonium & claps) | [▶ F# harmonic minor, 94 BPM](docs/samples/qawwali.mp3) |
+| Flamenco rumba (guitar & palmas) | [▶ F phrygian, 109 BPM](docs/samples/flamenco_rumba.mp3) |
+| Rockabilly (slap bass & twang) | [▶ B mixolydian, 160 BPM](docs/samples/rockabilly.mp3) |
+| Gamelan (Javanese) | [▶ C# pelog, 79 BPM](docs/samples/gamelan.mp3) |
+| Juke / ghetto house - raw | [▶ E minor, 129 BPM](docs/samples/juke_raw.mp3) |
+| Garage rock (60s fuzz & organ) | [▶ E dorian, 143 BPM](docs/samples/garage_rock.mp3) |
+| Deep Dubstep (soundsystem) | [▶ G minor, 140 BPM](docs/samples/deep_dubstep.mp3) |
+| Liquid DnB | [▶ B minor, 176 BPM](docs/samples/liquid_dnb.mp3) |
+| Future garage | [▶ B minor, 128 BPM](docs/samples/future_garage.mp3) |
+| Nu-disco / disco lounge | [▶ C# minor, 120 BPM](docs/samples/nu_disco.mp3) |
+| Mallet melodic house | [▶ B lydian, 123 BPM](docs/samples/mallet_house.mp3) |
+| Hard trap (brass & strings) | [▶ F# minor, 153 BPM](docs/samples/hard_trap.mp3) |
+| 80s sophisti-pop / jazz-funk pop | [▶ D dorian, 107 BPM](docs/samples/sophisti_pop.mp3) |
+| Solo Piano Miniature | [▶ B major, 83 BPM](docs/samples/piano_miniature.mp3) |
 
 ## Getting started
 
