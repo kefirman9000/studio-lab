@@ -8,7 +8,7 @@ GROUPS = {
     'Electronic': [
         ('House & Disco', ['house', 'deep_house', 'tech_house', 'progressive_house', 'acid_house', 'afro_house', 'melodic_house',
                            'organic_house', 'sunny_melodic_house', 'emotive_deep_house', 'nineties_club_house', 'pop_house_90s', 'italo_disco', 'future_funk',
-                           'eurodance', 'euro_bounce', 'bigroom', 'bass_house', 'nu_disco', 'tokyo_deep_house', 'piano_house_90s', 'uk_bounce_house', 'outsider_house', 'garage_house', 'mallet_house', 'french_house', 'electro_swing', 'tropical_house', 'hi_nrg', 'brazilian_bass', 'progressive_journey']),
+                           'eurodance', 'bigroom', 'bass_house', 'nu_disco', 'tokyo_deep_house', 'piano_house_90s', 'uk_bounce_house', 'outsider_house', 'garage_house', 'mallet_house', 'french_house', 'electro_swing', 'tropical_house', 'hi_nrg', 'brazilian_bass', 'progressive_journey']),
         ('Techno & Trance', ['techno', 'minimal', 'melodic_techno', 'euphoric_trance', 'euphoric_uk_techno', 'new_beat', 'trance', 'uplifting_trance', 'classic_vocal_trance', 'festival_techno',
                              'progressive_trance', 'club_trance_2000s', 'anthem_trance_2000', 'festival_psy', 'progressive_trance_2010s', 'vocal_trance_remix', 'electro_prog_trance', 'psytrance', 'progressive_psy', 'goa_trance', 'darkpsy', 'trance_pop_90s', 'hard_trance', 'uk_bass_130', 'uk_tribal_techno', 'hard_techno', 'dub_techno']),
         ('Dubstep, Garage & Bass', ['dubstep', 'switchup_bass', 'ethereal_wave', 'brostep', 'riddim', 'melodic_dubstep', 'chillstep', 'deep_dubstep', 'slow_wobble', 'dark_dubstep_classic', 'deep_dubstep_minimal',
@@ -18,7 +18,7 @@ GROUPS = {
         ('Hip-Hop, Trap & Phonk', ['trap', 'uk_drill', 'uk_road_rap', 'rage', 'plugg', 'melodic_club_rap', 'cloud_rap', 'luxury_rap', 'orchestral_hiphop',
                                    'jersey_club', 'phonk', 'memphis_phonk', 'house_phonk', 'brazilian_phonk', 'hard_trap', 'trap_metal', 'bass_warp_trap', 'bass_warp_fast', 'switchup_808', 'switchup_808_dj', 'switchup_808_hard', 'switchup_deathcore', 'dark_drill', 'switchup_mallets', 'screwed_slab', 'switch_trap', 'wonky_beats', 'warped_electronica', 'baltimore_club', 'witch_house', 'latin_trap', 'cinematic_trap']),
         ('Pop, R&B & Hopecore', ['synthpop', 'kpop', 'teen_pop', 'hyperpop', 'alt_rnb', 'hopecore', 'hopecore_dreamy', 'hopecore_breaks', 'club_pop', 'glitch_pop', 'freestyle', 'synth_rnb']),
-        ('Afro, Latin & Caribbean', ['shangaan_electro', 'kuduro', 'neoperreo', 'afrobeats', 'amapiano', 'reggaeton', 'moombahton', 'dancehall', 'baile_funk', 'funk_150', 'gqom', 'afro_village_party']),
+        ('Afro, Latin & Caribbean', ['shangaan_electro', 'kuduro', 'neoperreo', 'afrobeats', 'amapiano', 'reggaeton', 'moombahton', 'dancehall', 'baile_funk', 'funk_150', 'gqom', 'afro_village_party', 'afro_village_synth', 'afro_wobble', 'bass_amapiano']),
         ('Chill, Lo-fi & Ambient', ['mallsoft', 'lofi', 'sunlit_electronica', 'daydream_downtempo', 'downtempo', 'balearic_chill', 'sunrise_chillwave', 'hazy_downtempo', 'analog_arp_drive', 'ambient', 'ambient_beat', 'dream_synthscape', 'vignette_synthscape', 'vaporwave', 'new_age_chant', 'chant_downtempo', 'midfi_synthfunk', 'trip_hop', 'spooky_tv_theme', 'berlin_school']),
         ('Footwork & Juke', ['footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house']),
         ('Retro & Video Game', ['darksynth', 'synthwave', 'monster_synth', 'dark_synthwave', 'chiptune', 'ps1_game', 'darkwave_ebm', 'krautrock']),

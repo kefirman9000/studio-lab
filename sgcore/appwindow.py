@@ -118,6 +118,30 @@ document.getElementById('sec').textContent=s>2?s+' s':''},500);</script></body><
     '%BARS%', ''.join(f'<i style="animation-delay:{i * 0.09:.2f}s"></i>' for i in range(9)))
 
 
+def theme_colors():
+    """(2.12.1) The colours of the theme you picked last time (saved by the page in settings.json), so the loading
+    screen opens in your theme instead of the default one."""
+    c = dict(bg='#0d0f14', text='#e7e9ef', muted='#8a90a2', acc='#7c5cff', acc2='#29d3b2')
+    try:
+        import json
+        with open(os.path.join(updater.ROOT, 'settings.json')) as f:
+            raw = (json.load(f).get('ui_prefs') or {}).get('sl_theme_css')
+        v = (json.loads(raw) if raw else {}).get('vars') or {}
+        import re
+        for k, css in (('bg', '--bg'), ('text', '--text'), ('muted', '--muted'), ('acc', '--acc'), ('acc2', '--acc2')):
+            if re.fullmatch(r'#[0-9a-fA-F]{6}', str(v.get(css, ''))):
+                c[k] = v[css]
+    except Exception:
+        pass
+    return c
+
+
+def splash_html():
+    c = theme_colors()
+    return (SPLASH.replace('#0d0f14', c['bg']).replace('#e7e9ef', c['text']).replace('#8a90a2', c['muted'])
+            .replace('#7c5cff', c['acc']).replace('#29d3b2', c['acc2']))
+
+
 WINDOW = {}          # the app window (for an in-place restart after an update)
 
 
@@ -144,7 +168,7 @@ def show_splash(msg):
     if w is None:
         return
     try:
-        w.load_html(SPLASH)
+        w.load_html(splash_html())
     except Exception:
         pass
     import time
@@ -179,10 +203,10 @@ def splash_window(boot, quit_app):
     kw = dict(x=pos[0], y=pos[1]) if pos else {}
     bridge = Bridge('')
     try:
-        win = webview.create_window('Studio Lab', html=SPLASH, width=w, height=h, min_size=(900, 600), js_api=bridge,
-                                    background_color='#0d0f14', **kw)
+        win = webview.create_window('Studio Lab', html=splash_html(), width=w, height=h, min_size=(900, 600), js_api=bridge,
+                                    background_color=theme_colors()['bg'], **kw)
     except TypeError:
-        win = webview.create_window('Studio Lab', html=SPLASH, width=w, height=h, min_size=(900, 600), js_api=bridge, **kw)
+        win = webview.create_window('Studio Lab', html=splash_html(), width=w, height=h, min_size=(900, 600), js_api=bridge, **kw)
     bridge.window = win
     WINDOW['win'] = win
     WINDOW['bridge'] = bridge

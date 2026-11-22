@@ -6,6 +6,13 @@
 <meta name="color-scheme" content="dark">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Studio Lab</title>
+<script>
+// (2.12.1) the saved theme painted before anything else, so the app opens in your colours (no flash of the default)
+(function(){ try{ const P='__SL_UIPREFS__'; if(P&&typeof P==='object') for(const [k,v] of Object.entries(P)) if(localStorage.getItem(k)!==v) localStorage.setItem(k,v);
+  const c=JSON.parse(localStorage.getItem('sl_theme_css')||'null'); if(!c||!c.vars) return; const r=document.documentElement;
+  for(const [k,v] of Object.entries(c.vars)) r.style.setProperty(k,v); r.dataset.mode=c.mode||'dark';
+  r.style.background=c.vars['--bg']||''; const m=document.querySelector('meta[name=color-scheme]'); if(m) m.content=c.mode==='light'?'light':'dark'; }catch(e){} })();
+</script>
 <style>
 :root{
   --bg:#0d0f14; --panel:#151821; --panel2:#1b1f2b; --line:#262b3a; --text:#e7e9ef; --muted:#8a90a2;
@@ -1413,6 +1420,10 @@ function applyTheme(t){
   const r=document.documentElement;
   if(!t||(t.mode==='dark'&&t.main===THEMES.studio.main&&t.acc===THEMES.studio.acc&&!t.acc2)){ ['--bg','--panel','--panel2','--line','--chip','--chipon','--text','--muted','--acc','--acc2','--onacc','--onacc2','--chiptext'].forEach(k=>r.style.removeProperty(k)); r.dataset.mode='dark'; }
   else { Object.entries(themeColors(t)).forEach(([k,v])=>r.style.setProperty(k,v)); r.dataset.mode=t.mode; }
+  r.style.background='';
+  try{ const dflt=!t||(t.mode==='dark'&&t.main===THEMES.studio.main&&t.acc===THEMES.studio.acc&&!t.acc2);   // for the next start:
+    const css=JSON.stringify(dflt?{mode:'dark',vars:null}:{mode:t.mode,vars:themeColors(t)});                // the page head and
+    if(localStorage.getItem('sl_theme_css')!==css) localStorage.setItem('sl_theme_css',css); }catch(e){}       // the loading screen
   document.querySelector('meta[name=color-scheme]')&&(document.querySelector('meta[name=color-scheme]').content=t&&t.mode==='light'?'light':'dark');
   $$('.res canvas.wave').forEach(c=>c._redraw&&c._redraw());
 }

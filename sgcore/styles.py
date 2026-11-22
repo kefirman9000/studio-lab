@@ -1238,10 +1238,10 @@ style('amapiano', 'Electronic', 'Amapiano: log-drum basslines, jazzy piano chord
       master=dict(lufs=-9.5, air=1.0, low=2.0),
       form='amapiano',
       pools=dict(chords=['piano', 'epiano', 'organ', 'wurli'],
-                 pad=['warmpad', 'strings', 'choir', 'glasspad'],
+                 pad=['warmpad', 'strings', 'choir', 'glasspad', 'amapad_saw'],
                  arp=['kalimba', 'marimba', 'vibes', 'pluck'],
                  lead=['flute', 'sax', 'piano', 'kalimba'],
-                 bass=['logdrum']),
+                 bass=['logdrum', 'logdrum_sine', 'logdrum_deep']),
       label='Amapiano')
 
 style('reggaeton', 'Electronic', 'Reggaeton: dembow rhythm, deep 808s, plucky synths, latin percussion',
@@ -12712,33 +12712,55 @@ derive('afro_village_party', 'soukous', 'Electronic',
                   lead=['vocalead', 'vox', 'pluckvox', 'whistlelead', 'synthbrass', 'accordion']),
        master=dict(lufs=-9.5, air=0.9, low=0.9))
 
-# The DJ-controller clip: 130 BPM four-on-the-floor, most of the energy in a fat 60-150 Hz bass rolling between the
-# kicks, off-beat open hats over 16th closed hats, wide detuned minor chords and a high one-note pluck hook (F minor)
-derive('euro_bounce', 'eurodance', 'Electronic',
-       'Euro club bounce (128-132): a hard four-on-the-floor kick, a fat, rolling bass bouncing between every kick, '
-       'off-beat open hats over busy 16th hats, wide detuned minor chords and a high pluck hook hammering one note in '
-       '16ths - bass-heavy and built for a DJ set: a filtered intro, a build, big drops and short breakdowns',
-       'Euro Club Bounce (128-132)', exact_pools=True, form='edm', keep_sounds=0.85, riff_locked=True,
-       bpm=(128, 132), scales=['minor'], roots=[5, 1, 10, 8], swing=0.5, sc_depth=0.55,
-       progs={'minor': [[0, 5, 2, 6], [0, 5, 6, 4], [0, 0, 5, 6], [5, 6, 0, 0]]}, own_progs=True,
-       drums={'kick': ['X...X...X...X...'], 'clap': ['....X.......X...'], 'ohat': ['..x...x...x...x.'],
-              'chat': ['xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxx.xx']},
-       bass=['.RRR.RRR.RRR.RRR', '..R...R...R...R.', '.RR..RR..RR..RRR'], bass_gate=0.55, bass_lo=29,
-       chord_rh=['x-------x-------', 'x---------------'], chord_center=62,
-       lead_rh=['xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxx.xx', 'xxxx.xxxxxxx.xxx'], lead_oct=6,
-       tracks=[T('kick', 'kick', 'kick', db=-11), T('clap', 'snare', 'clap', rev=0.25, db=-20),
-               T('ohat', 'top', 'ohat', db=-26), T('chat', 'top', 'chat', pan=0.15, db=-30),
-               T('bass', 'bass', 'widesawbass', sc=0.75, db=-12, p=dict(cut=700)),
-               T('chords', 'chords', 'supersaw', sc=0.6, rev=0.4, wide=0.5, db=-22),
-               T('pad', 'pad', 'warmpad', sc=0.6, rev=0.5, db=-27),
-               T('arp', 'arp', 'pluck_saw', sc=0.4, dly=0.3, db=-26),
-               T('lead', 'lead', 'pluck', sc=0.3, rev=0.3, dly=0.25, db=-19)],
-       pools=dict(bass=['widesawbass', 'sawbass', 'reese', 'fmbass'],
-                  chords=['supersaw', 'polysynth', 'hypersaw', 'pumpchord'],
-                  pad=['warmpad', 'strings', 'glasspad'],
-                  arp=['pluck_saw', 'nordpluck', 'pluck'],
-                  lead=['pluck', 'nordpluck', 'trancebell', 'pluck_saw']),
-       master=dict(lufs=-8.5, air=0.8, low=1.8, width=1.2))
+# The DJ-controller clip, per the user: deep "bass amapiano" (the 202x style) - a 110-116 four-on-the-floor house
+# groove where the log drum is the star: a saturated, sustained, sliding log drum playing melodic bass lines, laid-back
+# swung shakers / congas / light hats, soft high-passed analog pads with long attack and lots of reverb, short plucky
+# keys, side-chain on almost everything, a mono low end, long builds and sparse drops with room to breathe
+_BA = {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead'}
+FORMS['bass_amapiano'] = [
+    ('intro', 16, {'top', 'pad', 'chords'}, {'filter_in': True}),
+    ('verse', 16, {'kick', 'snare', 'top', 'chords', 'pad'}, {'layer_in': True}),
+    ('build', 8, {'kick', 'top', 'pad', 'chords'}, {'build': True}),                    # long builds
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'pad'}, {'drop': True, 'crash': True}),   # sparse: log drum + pads
+    ('drop', 16, _BA, {'alt': True}),
+    ('break', 8, {'pad', 'bass'}, {}),                                                  # the log drum and pads breathe
+    ('verse', 8, {'kick', 'top', 'chords', 'pad'}, {}),
+    ('build', 8, {'kick', 'top', 'pad', 'chords', 'lead'}, {'build': True}),
+    ('drop', 16, _BA, {'drop': True, 'crash': True}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'pad', 'chords'}, {'alt': True}),
+    ('outro', 16, {'kick', 'top', 'bass', 'pad'}, {'layer_out': True, 'fade': True})]
+derive('bass_amapiano', 'amapiano', 'Electronic',
+       'Bass amapiano (deep, 110-116): four-on-the-floor South African house where the log drum is the star - a deep, '
+       'saturated, near-sine log drum that scoops into each note, sustains and slides, playing melodic bass lines and '
+       'talking on long notes - over '
+       'laid-back, swung shakers, congas and light hats that roll behind the beat, a soft detuned-saw pad breathing on '
+       'a slow filter LFO with a little pitch warble, scooping saw stabs or short plucky keys, side-chain on nearly everything and a tight mono low end; '
+       'long builds, sparse drops, lots of space', 'Bass Amapiano (deep log drum)',
+       exact_pools=True, form='bass_amapiano', exact_form=True, keep_sounds=0.85, no_rotation=True, riff_locked=True,
+       bpm=(110, 116), scales=['minor', 'dorian'], roots=[5, 2, 0, 9, 7], swing=0.58, human=0.006, chord_size=4,
+       sc_depth=0.45, bass_glide=0.45,
+       progs={'minor': [[0, 5, 3, 4], [0, 3, 6, 5], [0, 0, 5, 6]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]}, own_progs=True,
+       drums={'kick': ['X...X...X...X...'], 'clap': ['....x.......x...', '........x.......'],
+              'shaker': ['oxoxoxoxoxoxoxox', 'oxoXoxoxoxoXoxox'], 'conga': ['..o.x..o..o.x..o', '......x.o.....x.'],
+              'chat': ['..x...x...x...x.', '..x...x...x.x.x.'], 'rim': ['...x......x...x.', '......x.......x.']},
+       snare_tracks=['clap'],
+       # melodic log-drum lines: held notes that slide (bass_glide), syncopated against the kick
+       bass=['R-.F-.R---.O-.F-', 'R--.R--.F-.A--O.', '..R-.F-.R--.O---', 'R---F---.A-.R-..'], bass_gate=0.95, bass_lo=31,
+       chord_rh=['x.........x.....', '...x......x..x..', 'x..x......x.....'], chord_center=62,
+       lead_rh=['x.x...x.........', '....x.x...x.....', 'x-------x---....'], lead_oct=5,
+       tracks=[T('kick', 'kick', 'kick', db=-14), T('clap', 'snare', 'clap', rev=0.25, sc=0.3, db=-22),
+               T('shaker', 'top', 'shaker', pan=0.3, sc=0.3, db=-26), T('conga', 'top', 'conga', pan=-0.3, sc=0.3, db=-25),
+               T('chat', 'top', 'chat', pan=0.15, sc=0.3, db=-29), T('rim', 'top', 'rim', pan=-0.2, rev=0.2, db=-28),
+               T('bass', 'bass', 'logdrum_sine', sc=0.45, db=-11),
+               T('chords', 'chords', 'epiano', sc=0.5, rev=0.3, dly=0.2, db=-20, p=dict(cut=2600)),
+               T('pad', 'pad', 'amapad_saw', sc=0.6, rev=0.6, dly=0.25, wide=0.3, hp=220, db=-23, p=dict(a=0.6, r=1.2, cut=1300)),
+               T('lead', 'lead', 'pluck', sc=0.5, rev=0.35, dly=0.3, db=-20)],
+       pools=dict(bass=['logdrum_sine', 'logdrum_deep', 'logdrum_talk', 'logdrum'],
+                  chords=['epiano', 'amastab_saw', 'rhodes', 'piano', 'wurli', 'm1piano'],
+                  pad=['amapad_saw', 'warmpad', 'glasspad', 'junopoly', 'lushpad'],
+                  lead=['pluck', 'analoglead_soft', 'epiano', 'kalimba', 'pluckvox']),
+       master=dict(lufs=-9.5, air=0.8, low=2.0))
+STYLE_ALIASES['euro_bounce'] = 'bass_amapiano'                  # (2.12.1) the club clip was bass amapiano
 
 # The music-video clip: ~160 BPM half-time (snare on beat 3), a long sustained 808 sliding between notes on the root
 # (B-flat minor), a sung hook, busy hats, and sudden full stops where the beat cuts out and slams back
@@ -12766,3 +12788,65 @@ derive('melodic_club_rap', 'plugg', 'Electronic',
                   pad=['darkpad', 'glasspad', 'choir_dark'],
                   lead=['vocalead', 'vocalchop', 'vox', 'softlead']),
        master=dict(lufs=-9.0, air=1.4, low=1.8))
+
+# (2.12.1) the village party meets dubstep: the same tresillo groove, guitar riffs and sung call, but the plain bass
+# is gone - the verses ride on drums, guitar and voice, a snare build and a one-bar stop set up each drop, and in the
+# drops a big wobble bass takes over, womping in beats, dotted 8ths (the tresillo again) and half bars
+_AW = {'kick', 'snare', 'top', 'arp', 'chords', 'lead'}
+FORMS['afro_wobble'] = [
+    ('intro', 8, {'top', 'arp', 'chords'}, {'filter_in': True}),
+    ('verse', 16, _AW, {'crash': True}),
+    ('build', 8, {'snare', 'top', 'arp', 'chords'}, {'build': True}),
+    ('break', 1, {'lead'}, {}),                                                               # the stop before the drop
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'arp', 'lead'}, {'drop': True, 'crash': True}),
+    ('break', 1, {'chords', 'lead'}, {}),
+    ('verse', 8, _AW, {'alt': True, 'crash': True}),
+    ('build', 8, {'snare', 'top', 'arp', 'chords', 'lead'}, {'build': True}),
+    ('break', 1, {'lead'}, {}),
+    ('drop', 16, {'kick', 'snare', 'top', 'bass', 'arp', 'chords'}, {'drop': True, 'alt': True, 'crash': True}),
+    ('outro', 8, {'top', 'arp', 'chords'}, {'layer_out': True, 'fade': True})]
+derive('afro_wobble', 'afro_village_party', 'Electronic',
+       'Afro wobble (150-160): the African village party groove - a kick on every beat, tresillo snare and shaker, '
+       'bright guitar riffs and a sung call - crossed with dubstep: verses with no bass at all, snare-roll builds, a '
+       'one-bar stop, then drops where a huge wobble bass takes over, womping in beats, dotted 8ths and half bars and '
+       'gliding between notes', 'Afro Wobble (dubstep, 150-160)', form='afro_wobble',
+       sounds={'bass': 'yoiwob'},
+       wobble_rates=[1, 0.75, 0.75, 0.5, 2, 1.5], wobble_rates_alt=[0.75, 0.5, 1 / 3, 0.25, 1],
+       wobble_lens=[4, 4, 8, 2], wobble_rest=0.15, wobble_glide=0.4,
+       pools=dict(bass=['yoiwob', 'slowwob', 'brightwob', 'tearwob', 'pitchgrowl', 'sweepwob', 'wobble', 'reesewob']),
+       master=dict(lufs=-9.0, air=1.0, low=1.4))
+for _t in STYLES['afro_wobble']['tracks']:
+    if _t['name'] == 'bass':
+        _t.update(db=-12, p={})
+
+# (2.12.1) the village party played on synths: the same tresillo groove, DJ drop-outs and call-and-response, but a
+# drum-machine kit (808 kick, claps, rimshots, cowbell, synth toms), an FM / analog synth bass, cheap-keyboard synth
+# chords, bright FM and saw plucks for the cascading riffs and a square / synth-brass lead for the call
+derive('afro_village_synth', 'afro_village_party', 'Electronic',
+       'African village party, synth version (150-160): the same packed open-air dance - a kick on every beat, '
+       'tresillo accents that sway in half-time, a call line answered every two bars, the kick and bass dropping out '
+       'every 8 bars and slamming back - but all electronic: a drum-machine kit with claps, rimshots, cowbell and synth '
+       'toms, a punchy FM / analog synth bass, cheap-keyboard synth chords chopping the off-beats, bright FM and saw '
+       'plucks cascading in 16ths and a square-wave or synth-brass lead', 'Afro Village Party - Synth (150-160)',
+       kit='808',
+       drums={'kick': ['X...X...X...X...', 'X...X...X..xX...'],
+              'clap': ['x..X..X.x..X..X.', '...X..X....X..X.'],
+              'rim': ['..x...x...x...x.', 'x..x..x.x..x..x.'],
+              'chat': ['x.xxx.xxx.xxx.xx', 'xxxxxxxxxxxxxxxx'],
+              'cowbell808': ['x..x..x...x.x...', '..x...x...x...x.'],
+              'tom': ['......x.......x.', '...x..x....x..x.']},
+       snare_tracks=['clap'],
+       tracks=[T('kick', 'kick', 'kick', db=-12), T('clap', 'snare', 'clap', rev=0.2, db=-18),
+               T('rim', 'top', 'rim', pan=-0.25, db=-26), T('chat', 'top', 'chat', pan=0.2, db=-29),
+               T('cowbell808', 'top', 'cowbell808', pan=0.3, db=-30), T('tom', 'top', 'tom', pan=-0.15, db=-25),
+               T('bass', 'bass', 'fmbass', db=-15, p=dict(cut=1600)),
+               T('chords', 'chords', 'junopoly', pan=-0.2, rev=0.25, db=-18),
+               T('pad', 'pad', 'warmpad', rev=0.45, db=-26),
+               T('arp', 'arp', 'fmpluck', pan=0.25, rev=0.2, dly=0.2, db=-18),
+               T('lead', 'lead', 'squarelead', rev=0.35, dly=0.25, db=-17)],
+       pools=dict(bass=['fmbass', 'junobass', 'sh101', 'tribass', 'sawbass'],
+                  chords=['junopoly', 'polysynth', 'synthbrass', 'stab', 'dancestab', 'houseorgan'],
+                  pad=['warmpad', 'amapad_saw', 'junopoly', 'sawchoir'],
+                  arp=['fmpluck', 'afropluck', 'pluck_saw', 'viruspluck', 'nordpluck', 'dxbell', 'pluckbell'],
+                  lead=['squarelead', 'synthbrass', 'analoglead', 'glidelead', 'talkbox', 'chip']),
+       master=dict(lufs=-9.0, air=1.2, low=1.1))

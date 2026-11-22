@@ -417,3 +417,131 @@ NEW_210 = (('modularpad', modularpad, 'Modular pad (warbly, drifting, celestial)
            ('modularlead', modularlead, 'Soaring modular lead (gliding, drifting)', 81, ('lead',)),
            ('modularseq', modularseq, 'Generative modular blip (patch sequences)', 81, ('arp',)))
 NEW_290 = NEW_290 + NEW_210
+
+
+# ---- (2.12.1) deep "bass amapiano" log drums: the log drum as the song's bass and lead - saturated, sustained by
+# heavy upward compression instead of knocking and dying, a resonant low-pass closing on each note, and a talking pitch
+# movement / slide between notes ----
+
+def _log_body(m, dur, p, glide, talk, mod):
+    from .dsp import svf_sweep
+    f = float(mtof(m))
+    while f < 55:
+        f *= 2                                                         # it sits above the sub, 55-110 Hz
+    f0 = float(mtof(glide)) if glide is not None else f * 1.6
+    while glide is not None and f0 < 55:
+        f0 *= 2
+    gate = max(0.08, float(dur))
+    n = int((gate + 0.09) * SR)
+    t = np.arange(n) / SR
+    fr = f + (f0 - f) * np.exp(-t * (18 if glide is not None else 34))      # drops in from above / slides from the note before
+    if talk:                                                           # the "talking" log: a synced bend up and back
+        lfo = _lfo(n, _rate(mod, p, 1.0), 'sine')
+        fr = fr * 2 ** ((talk * (lfo - 0.5) * 2) / 12)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    body = np.sin(ph) + 0.45 * np.tanh(3 * np.sin(ph)) + 0.25 * np.sin(2 * ph)
+    cut = 140 + 1500 * np.exp(-t * 16)                                 # resonant low-pass closing to ~100-150 Hz
+    if talk:
+        cut = cut + 500 * _lfo(n, _rate(mod, p, 1.0), 'sine') * np.exp(-t * 2)
+    y = svf_sweep(body, cut, q=2.2) + 0.55 * np.sin(ph)
+    y += signal.lfilter(*signal.butter(2, [700 / (SR / 2), 2400 / (SR / 2)], 'band'), np.random.default_rng(int(m)).standard_normal(n)) \
+        * np.exp(-t * 170) * 0.35                                      # the woody knock on top
+    # upward compression: the knock stays, the body holds up for the whole note instead of dying away
+    env = (0.62 + 0.38 * np.exp(-t * 14)) * np.exp(-t * float(p.get('decay', 0.9))) * np.minimum(t / 0.0015, 1)
+    g = int(gate * SR)
+    if g < n:
+        env[g:] *= np.exp(-np.arange(n - g) / (0.035 * SR))
+    y = np.tanh(y * env * float(p.get('drive', 1.3))) * 0.7            # soft saturation
+    y = signal.lfilter(*signal.butter(1, 22 / (SR / 2), 'high'), y)    # no DC thump
+    return np.vstack([y, y])                                           # mono low end
+
+
+def logdrum_deep(m, dur, p, glide=None, mod=None):
+    """Deep log drum (bass amapiano): saturated and sustained, a resonant low-pass closing on every note, slides."""
+    return _log_body(m, dur, p, glide, 0.0, mod)
+
+
+def logdrum_talk(m, dur, p, glide=None, mod=None):
+    """Talking log drum: the deep log with a synced pitch bend and filter wah - it 'speaks' on long notes."""
+    return _log_body(m, dur, p, glide, float(p.get('talk', 1.2)), mod)
+
+
+NEW_2121 = (('logdrum_deep', logdrum_deep, 'Deep log drum (bass amapiano: saturated, sustained, sliding)', 117),
+            ('logdrum_talk', logdrum_talk, 'Talking log drum (pitch bend + wah)', 117))
+NEW_290 = NEW_290 + NEW_2121
+
+
+# ---- (2.12.1) more bass-amapiano sounds, from the user's notes: a near-sine log drum with a strong pitch scoop, and
+# the "alive" detuned-saw pad / stab - a 7-voice supersaw kept soft and filtered, its cutoff breathing on a slow LFO,
+# a tiny pitch warble and a little scoop into each note ----
+
+def logdrum_sine(m, dur, p, glide=None, mod=None):
+    """Sine log drum: an almost pure sine with a strong pitch scoop from above (or a slide from the note before), a
+    little random drift in pitch and level so it feels alive, saturated so it stays thick - the defining sound."""
+    f = float(mtof(m))
+    while f < 55:
+        f *= 2
+    f0 = float(mtof(glide)) if glide is not None else f * 2.0
+    while glide is not None and f0 < 55:
+        f0 *= 2
+    gate = max(0.08, float(dur))
+    n = int((gate + 0.08) * SR)
+    t = np.arange(n) / SR
+    drift = 2 ** (_drift(n, 6.0, 3.0, int(m) * 7 + 1) / 1200)            # a few cents of wander
+    fr = (f + (f0 - f) * np.exp(-t * (16 if glide is not None else 28))) * drift
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    y = np.sin(ph) + 0.12 * np.sin(2 * ph) * np.exp(-t * 6)
+    env = (0.7 + 0.3 * np.exp(-t * 10)) * np.exp(-t * float(p.get('decay', 1.1))) * np.minimum(t / 0.0012, 1)
+    env *= 1 + 0.04 * np.sin(2 * np.pi * 4.3 * t)                         # slight level movement
+    g = int(gate * SR)
+    if g < n:
+        env[g:] *= np.exp(-np.arange(n - g) / (0.03 * SR))
+    y = np.tanh(y * env * float(p.get('drive', 1.8))) * 0.75             # saturation: thick, present
+    y = signal.lfilter(*signal.butter(1, 22 / (SR / 2), 'high'), y)
+    return np.vstack([y, y])
+
+
+def _amasaw(m, dur, p, mod, stab):
+    from .dsp import svf_sweep
+    f = float(mtof(m))
+    gate = max(0.05, float(dur))
+    a, r = (0.003, 0.18) if stab else (float(p.get('a', 0.35)), float(p.get('r', 1.0)))
+    env = va.adsr(int(gate * SR), a, 0.25 if stab else 0.6, 0.0 if stab else 0.85, r)
+    n = len(env)
+    t = np.arange(n) / SR
+    scoop = 2 ** ((-45 * np.exp(-t * 18)) / 1200)                         # scoops up into the note
+    warble = 2 ** ((5 * np.sin(2 * np.pi * 0.45 * t + m)) / 1200)         # tiny pitch drift
+    out = np.zeros((2, n))
+    rng = np.random.default_rng(int(m) * 13 + (1 if stab else 0))
+    for k, c in enumerate((-17, -11, -5, 0, 5, 11, 17)):                  # 7 detuned saws, spread across the stereo
+        x = va.saw(f * scoop * warble * 2 ** (c / 1200), n, rng.random())
+        pan = (k - 3) / 3 * 0.7
+        out[0] += x * (1 - pan) * 0.5
+        out[1] += x * (1 + pan) * 0.5
+    lfo_hz = _rate(mod, p, 4.0) if mod else float(p.get('lfo', 0.35))      # slow breathing: 0.1-2 Hz
+    lfo = _lfo(n, min(2.0, max(0.1, lfo_hz)), 'tri')
+    if stab:
+        cut = 500 + 2600 * np.exp(-t * 22) + 400 * lfo                     # a quick filter envelope on the stab
+    else:
+        cut = float(p.get('cut', 1300)) * (0.55 + 0.9 * lfo)
+    for ch in range(2):
+        out[ch] = svf_sweep(out[ch], cut, q=1.1)
+    out = signal.lfilter(*signal.butter(2, 180 / (SR / 2), 'high'), out, axis=1)   # sits above the log drum
+    return np.tanh(out * env * 0.55) * 0.5
+
+
+def amapad_saw(m, dur, p, glide=None, mod=None):
+    """Breathing supersaw pad: 7 detuned saws, soft and low-passed, cutoff moving on a slow LFO, a little pitch scoop
+    and warble - the alive, slightly unstable amapiano pad."""
+    return _amasaw(m, dur, p, mod, False)
+
+
+def amastab_saw(m, dur, p, glide=None, mod=None):
+    """Scooping supersaw stab: the same saw stack as a short chord stab with a pitch scoop and a quick filter snap."""
+    return _amasaw(m, dur, p, mod, True)
+
+
+NEW_2121B = (('logdrum_sine', logdrum_sine, 'Sine log drum (pitch scoop, saturated, alive)', 117),
+             ('amapad_saw', amapad_saw, 'Breathing supersaw pad (slow LFO filter, pitch warble)', 90, ('pad', 'chords')),
+             ('amastab_saw', amastab_saw, 'Scooping supersaw stab (pitch scoop + filter snap)', 90, ('chords',)))
+NEW_290 = NEW_290 + NEW_2121B

@@ -352,7 +352,7 @@ OWN_GROOVE = {'reggae', 'dub', 'ska', 'reggaeton', 'dancehall', 'moombahton', 's
               'bossa_nova', 'samba', 'bachata', 'merengue', 'baile_funk', 'funk_150', 'brazilian_phonk', 'afrobeat', 'afrobeats',
               'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'bhajan', 'kirtan', 'aarti', 'santoor_raga', 'sitar_bhajan', 'tabla_bhajan', 'drum_kirtan', 'jugalbandi', 'qawwali', 'carnatic_kriti', 'ghazal', 'bollywood', 'klezmer', 'gamelan', 'rai', 'takht_maqam', 'raqs_sharqi', 'arab_pop', 'sufi_dhikr', 'son_cubano', 'flamenco_rumba', 'chicha', 'krautrock', 'rockabilly', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house',
               'baltimore_club', 'jersey_club', 'uk_drill', 'ukgarage', 'speed_garage', 'freestyle', 'electro', 'nola_brass',
-              'tango', 'celtic_jig', 'swing_tomtom', 'western_swing', 'country', 'outlaw_country', 'surf_rock', 'afro_village_party'}
+              'tango', 'celtic_jig', 'swing_tomtom', 'western_swing', 'country', 'outlaw_country', 'surf_rock', 'afro_village_party', 'afro_wobble', 'afro_village_synth'}
 
 
 def groove_family(st):
@@ -2308,7 +2308,7 @@ def apply_note_edits(evs, edits, tracks):
     return out
 
 
-SUB_BASSES = ('808', '808dist', '808long', '808punch', 'sinebass', 'deepsub', 'sleepersub', 'divesub', 'logdrum', 'chipbass', 'deepbass', 'splitbass', 'rumble', 'subwob')
+SUB_BASSES = ('808', '808dist', '808long', '808punch', 'sinebass', 'deepsub', 'sleepersub', 'divesub', 'logdrum', 'logdrum_deep', 'logdrum_talk', 'logdrum_sine', 'chipbass', 'deepbass', 'splitbass', 'rumble', 'subwob')
 
 EXTRA_FOLLOWS = ('lead', 'counter', 'chords', 'pad', 'arp', 'bass')
 
@@ -2540,7 +2540,7 @@ def expression_curves(evs, tracks, sections, fx, total_bars):
 LAYER_ODDS = {'Electronic': 0.5, 'Classic': 0.3, 'Orchestral': 0.45}
 OCT_UP = {'bell', 'celesta', 'flute', 'sf:piccolo', 'pluck', 'chip', 'marimba', 'kalimba', 'harp', 'glock', 'steeldrum', 'pizz'}
 OCT_DOWN = {'cello', 'sf:contrabass', 'sf:bassoon', 'sf:trombone', 'sf:tuba', 'horn'}
-NO_LAYER = {'808', 'logdrum', 'wobble', 'acid', 'sinebass', 'chipbass', 'riddim', 'screech', 'dnbwob', 'vowelwob',
+NO_LAYER = {'808', 'logdrum', 'logdrum_deep', 'logdrum_talk', 'logdrum_sine', 'wobble', 'acid', 'sinebass', 'chipbass', 'riddim', 'screech', 'dnbwob', 'vowelwob',
             'multiwob', 'tablewob', 'chopwob', 'rumble', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass',
             'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'deepsub', 'sleepersub', 'brightwob', 'tearwob', 'divesub', 'ms10zap', 'pitchgrowl'}
 

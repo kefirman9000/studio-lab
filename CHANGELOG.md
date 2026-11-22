@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.13.0
+- **New genre: Afro Wobble (dubstep, 150-160)**: the village-party groove (tresillo drums, guitar riffs, sung call) crossed with dubstep - verses with no bass, snare-roll builds, a one-bar stop, then drops where a big wobble bass takes over, womping in beats, dotted 8ths and half bars and gliding between notes.
+- **New genre: Afro Village Party - Synth (150-160)**: the same party on synths - a drum-machine kit (claps, rimshots, 808 cowbell, synth toms), an FM / analog synth bass, Juno-style chords, bright FM and saw plucks for the riffs and a square-wave or synth-brass lead.
+- **New genre: Bass Amapiano (deep log drum, 110-116)** replaces Euro Club Bounce (that clip was bass amapiano; old Euro Club Bounce songs open as Bass Amapiano): the log drum is the star, with swung, laid-back shakers / congas / hats, a breathing detuned-saw pad, side-chain on almost everything, a mono low end, long builds and sparse drops.
+- **New sounds**: sine log drum (strong pitch scoop, saturated, a little drift), deep log drum (sustained, resonant low-pass), talking log drum (synced bend + wah), breathing supersaw pad (7 detuned saws, slow LFO on the filter, pitch warble and scoop) and scooping supersaw stab. The classic Amapiano genre can use the new log drums and pad too.
+- **The app opens in your theme**: the loading screen and the first paint of the app now use the theme you picked last time, instead of flashing the default colours.
+
 ## 2.12.0
 - **New genre: Afro Village Party (150-160)** (Electronic > Afro, Latin & Caribbean), built from the ten open-air party videos: a kick on every beat with snare, rim, shaker and conga accents on the 3-3-2 tresillo (the half-time sway the recordings all share), a punchy bouncing bass, bright clean-guitar riffs cascading in 16ths, a cheap-keyboard organ chopping the off-beats, a sung call line that answers itself every two bars, sunny major keys - and the DJ move from the videos: every 8 bars the kick and bass drop out for a bar or two while the voices and guitar carry on, then everything slams back in. Its rhythm and sounds stay its own (no swapping in other genres' grooves).
 - **New genre: Euro Club Bounce (128-132)** (House & Disco), from the DJ-controller clip: a hard four-on-the-floor, a fat bass rolling between every kick, off-beat open hats over 16th hats, wide detuned minor chords and a high one-note pluck hook, bass-heavy and laid out for a DJ set.
