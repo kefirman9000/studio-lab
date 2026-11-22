@@ -203,6 +203,102 @@ def tearwob(m, dur, p, glide=None, mod=None):
     return (y + _clean_sub(f, n, p.get('sub', 0.6))) * env * 0.36
 
 
+# ---- (2.9.2) learned from a deep-dark-dubstep sample pack: subs that dive, MS-10 zaps, pitch-wobbling growls, and the
+#      slow, dark swelling atmospheres and fluttering pads that sit behind them ----
+
+def divesub(m, dur, p, glide=None, mod=None):
+    """Diving sub: a warm sine sub whose pitch moves across the note - a long dive down an octave, a slow sag of a
+    semitone or two, or a dive that comes back up (each phrase picks one from its note, so a riff stays consistent)."""
+    f = float(mtof(m))
+    fs = f if f < 80 else f / 2
+    env = _env(dur, a=0.01, d=0.05, s=1.0, r=0.08)
+    n = len(env)
+    t = np.arange(n) / SR
+    u = np.clip(t / max(dur, 0.1), 0, 1)
+    kind = p.get('dive') or ('octave', 'sag', 'sag', 'return')[(int(m) * 3 + int(round((mod or 1) * 2))) % 4]
+    if kind == 'octave':
+        st_ = -12.0 * u ** 1.6
+    elif kind == 'return':
+        st_ = -7.0 * np.sin(np.pi * u) ** 1.2
+    else:
+        st_ = -1.5 * u
+    fr = fs * 2 ** (st_ / 12)
+    s_ = np.sin(2 * np.pi * np.cumsum(fr) / SR)
+    s_ = np.tanh(1.5 * s_) / np.tanh(1.5)
+    return np.vstack([s_, s_]) * env * 0.6
+
+
+def ms10zap(m, dur, p, glide=None, mod=None):
+    """Monophonic analog 'zap' bass (a small Korg-style mono synth): a saw that starts two octaves up and dives down
+    to the note over a couple of seconds through a resonant low-pass that closes as it falls - bright and buzzy at the
+    top, a plain sub at the bottom."""
+    f = float(mtof(m))
+    env = _env(dur, a=0.003, d=0.1, s=1.0, r=0.1)
+    n = len(env)
+    t = np.arange(n) / SR
+    drop = float(p.get('zap', 24.0))
+    tau = max(0.25, min(dur, 3.0) * 0.35)
+    fr = f * 2 ** (drop * np.exp(-t / tau) / 12)
+    x = va.saw(fr, n, _RNG.random())
+    cut = 120 + 4000 * np.exp(-t / (tau * 0.8))
+    y = va.vcf(np.vstack([x, x]), cut, res=0.55, drive=1.4)
+    y = dist(y, 1.6)
+    return y * env * 0.5
+
+
+def pitchgrowl(m, dur, p, glide=None, mod=None):
+    """Pitch-wobbling growl: a mid-bass (500 Hz - 3 kHz) whose pitch bends a semitone up and down with the LFO while
+    a formant band-pass follows it - a moaning, alive mid-range over a clean sub."""
+    f = float(mtof(m))
+    env = _env(dur, a=0.02, d=0.1, s=1.0, r=0.08)
+    n = len(env)
+    t = np.arange(n) / SR
+    lfo = _lfo(n, _rate(mod, p, 2.0), 'sine')
+    fo = (f if f > 50 else f * 2) * 2 * 2 ** ((lfo - 0.5) * 2.0 / 12)
+    x = np.zeros((2, n))
+    for k, c in enumerate((-9, 9)):
+        x[k] += va.saw(fo * 2 ** (c / 1200), n, _RNG.random())
+    x = dist(x * 0.6, 2.4)
+    y = _bp_moving(x, 700 + 1100 * lfo, 3.0) * 1.6 + 0.3 * va.vcf(x, 300 + 2000 * lfo, res=0.3, drive=1.0)
+    y = _mid_hp(y, f, 300.0)
+    return (y + _clean_sub(f, n, p.get('sub', 0.75))) * env * 0.45
+
+
+def dddpad(m, dur, p, glide=None, mod=None):
+    """Dark atmosphere: a wide, detuned saw drone with a breath of filtered noise, swelling in over seconds and kept
+    under 1.5 kHz, drifting very slowly - the cold air behind a deep dubstep track."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.5) * SR)
+    env = va.adsr(gate, float(p.get('a', min(4.0, max(0.8, dur * 0.4)))), 1.0, 0.95, float(p.get('r', 2.5)))
+    n = len(env)
+    t = np.arange(n) / SR
+    x = np.zeros((2, n))
+    for k, c in enumerate((-14, -5, 5, 14)):
+        fr = f * 2 ** ((c + 3 * np.sin(2 * np.pi * (0.05 + 0.02 * k) * t + k)) / 1200)
+        x[k % 2] += va.saw(fr, n, _RNG.random()) * 0.35
+    x += 0.04 * np.vstack([_RNG.standard_normal(n), _RNG.standard_normal(n)])
+    cut = float(p.get('cut', 1300)) * (0.75 + 0.25 * np.sin(2 * np.pi * 0.07 * t))
+    y = va.vcf(x, cut, res=0.2, drive=1.0)
+    y = signal.sosfilt(signal.butter(2, 140 / (SR / 2), 'high', output='sos'), y, axis=-1)
+    return y * env * 0.45
+
+
+def virusflutter(m, dur, p, glide=None, mod=None):
+    """Fluttering virtual-analog pad: a hollow mid-range chord tone that swells in and shimmers with a fast (about 10 Hz)
+    flutter of its level and filter - glassy and uneasy, made for the space between drops."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.3) * SR)
+    env = va.adsr(gate, float(p.get('a', min(3.0, max(0.5, dur * 0.35)))), 1.0, 0.9, float(p.get('r', 1.5)))
+    n = len(env)
+    t = np.arange(n) / SR
+    x = np.vstack([va.pulse(np.full(n, f * 2 ** (-6 / 1200)), n, 0.1, 0.35) + 0.5 * va.saw(np.full(n, f * 2), n, 0.2),
+                   va.pulse(np.full(n, f * 2 ** (6 / 1200)), n, 0.6, 0.35) + 0.5 * va.saw(np.full(n, f * 2), n, 0.7)])
+    fl = 0.5 + 0.5 * np.sin(2 * np.pi * float(p.get('flutter', 10.0)) * t)
+    y = va.vcf(x * 0.5, 900 + 1400 * fl, res=0.35, drive=1.0) * (0.75 + 0.25 * fl)
+    y = signal.sosfilt(signal.butter(2, 400 / (SR / 2), 'high', output='sos'), y, axis=-1)
+    return y * env * 0.4
+
+
 def _bp_moving(x, fc, q):
     """Band-pass with a moving centre (block-wise, state carried) - two channels."""
     n = x.shape[-1]
@@ -228,14 +324,20 @@ NEW_290 = (
     ('sleepersub', sleepersub, "'Sleeper' sub (the sub's pitch slowly bends)", 38),
     ('brightwob', brightwob, 'Grimy bright wobble (dotted / triplet bounce)', 38),
     ('tearwob', tearwob, 'Tearout / riddim riff bass (tight chops)', 38),
+    ('divesub', divesub, 'Diving sub (dives an octave, sags, or dives and returns)', 38),
+    ('ms10zap', ms10zap, 'Mono analog zap bass (dives from two octaves up)', 38),
+    ('pitchgrowl', pitchgrowl, 'Pitch-wobbling mid growl', 38),
+    ('dddpad', dddpad, 'Dark swelling atmosphere (deep dubstep)', 89, ('pad',)),
+    ('virusflutter', virusflutter, 'Fluttering hollow pad (fast shimmer)', 89, ('pad', 'chords')),
 )
 
 
 def register():
     from .instruments import GM_PROGRAM, INSTRUMENT_INFO, INSTRUMENTS, ROLE_CHOICES
-    for name, fn, info, gm in NEW_290:
+    for name, fn, info, gm, *roles in NEW_290:
         INSTRUMENTS[name] = fn
         INSTRUMENT_INFO[name] = info
         GM_PROGRAM[name] = gm
-        if name not in ROLE_CHOICES.setdefault('bass', []):
-            ROLE_CHOICES['bass'].append(name)
+        for role in (roles[0] if roles else ('bass',)):
+            if name not in ROLE_CHOICES.setdefault(role, []):
+                ROLE_CHOICES[role].append(name)

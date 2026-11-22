@@ -12399,17 +12399,24 @@ derive('slow_wobble', 'deep_dubstep', 'Electronic',
        'the sub carries on alone. Kick on 1, snare on 3, a few rims and hats in a dub echo, almost nothing else',
        'Slow Wobble Dubstep (bass-led)', exact_pools=True,
        sounds={'bass': 'slowwob'}, drop_tracks=('lead', 'arp'),
-       roots=[4, 5, 2, 3, 9], simplicity=0.85, repetition=0.95,
-       wobble_rates=[4, 2, 2, 1, 0.75, 4 / 3], wobble_rates_alt=[2, 1, 0.75, 2 / 3, 0.5, 1 / 3], wobble_lens=[16, 8, 8, 4], wobble_rest=0.25,
+       roots=[5, 6, 3, 2, 4, 9], simplicity=0.85, repetition=0.95,
+       # (2.9.2) the darkest references move even slower: half-bar and dotted-quarter (1.5-beat) sweeps lead, then
+       # bar-long, beat and triplet-quarter ones
+       wobble_rates=[4, 2, 2, 1.5, 1.5, 1, 0.75, 4 / 3], wobble_rates_alt=[2, 1.5, 1, 2 / 3, 0.75, 0.5, 1 / 3],
+       wobble_lens=[16, 8, 8, 4], wobble_rest=0.25,
        # (2.9.1) skippy hats from the reference loops, on a 32nd grid: a beat is 8 steps, with little rolls and late skips
        drums=dict(STYLES['deep_dubstep']['drums'],
                   chat=['X...x...X....x..X...x...X....x..', 'X...o.x...o....oxoo.o...o.......',
-                        'Xx..o.xoo...o.o...o.o.o.o...o...', '..x...x...x...x.'],
+                        'Xx..o.xoo...o.o...o.o.o.o...o...', '..x...x...x...x.',
+                        'oo..x...Xxo.x...oo..x...ooooXxoo', 'X..o....o..xo.X.Xx.Xo...o..xo.X.',
+                        'x...x...Xoo.x.Xxx...x...x...x...'],
                   ohat=['................................', '..............................x.', '......x.........'],
                   rim=['x...X.o.....x...X...x...x...Xo..', 'x...X...x.......X...............', '...x......x...x.',
                        '....x.......X.o.................']),
-       pools=dict(bass=['slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'sleepersub', 'brightwob', 'wobble', 'darkwob'],
-                  chords=['stab', 'dubstab', 'stab_dark'], pad=['warmpad', 'darkpad', 'drone']))
+       # (2.9.2) the deep-dark kit: a short, tight kick (gone in ~0.2 s, ending around 65-80 Hz) and a crisp, bright snare
+       kit_override={'kick': {'drive': 1.4, 'decay': 5, 'pitch': 50, 'punch': 140}, 'snare': {'snap': 1.7, 'decay': 7, 'tone': 230}},
+       pools=dict(bass=['slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'pitchgrowl', 'brightwob', 'wobble', 'darkwob'],   # wobbles only: the main character
+                  chords=['stab', 'dubstab', 'stab_dark', 'virusflutter'], pad=['dddpad', 'virusflutter', 'warmpad', 'darkpad', 'drone']))
 
 derive('celtic_new_age', 'new_age_chant', 'Classic',
        'Celtic new age: misty, layered and serene - a wordless choir stacked into lush chords, a harp rippling '

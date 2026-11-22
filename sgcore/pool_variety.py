@@ -420,8 +420,9 @@ def _variety_252():
         plan[g] = [_CELTIC_SLOW, _CELTIC] if g in ('celtic_slow_air', 'celtic_new_age', 'clarsach_air') else [_CELTIC]
     # (2.9.1) the new deep / grimy / tearout wobbles for the dubstep family
     for g, add in (('dubstep', dict(bass=['slowwob', 'yoiwob', 'brightwob', 'reesewob', 'sleepersub'])),
-                   ('deep_dubstep', dict(bass=['slowwob', 'yoiwob', 'sweepwob', 'sleepersub'])),
-                   ('deep_dubstep_rolling', dict(bass=['slowwob', 'reesewob', 'sleepersub'])),
+                   ('deep_dubstep', dict(bass=['slowwob', 'yoiwob', 'sweepwob', 'sleepersub', 'divesub', 'pitchgrowl'],
+                                         pad=['dddpad', 'virusflutter'])),
+                   ('deep_dubstep_rolling', dict(bass=['slowwob', 'reesewob', 'sleepersub', 'divesub'], pad=['dddpad'])),
                    ('brostep', dict(bass=['brightwob', 'tearwob'])),
                    ('riddim', dict(bass=['tearwob', 'brightwob']))):
         plan.setdefault(g, []).append(add)

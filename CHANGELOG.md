@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.9.2
+Learned from a deep-dark dubstep sample pack and five more reference tracks:
+- New basses: **diving sub** (dives an octave, sags a semitone or two, or dives and comes back), **mono analog zap** (a saw diving from two octaves up through a closing filter) and **pitch-wobbling growl** (a moaning mid-bass whose pitch bends with the LFO).
+- New pads: **dark swelling atmosphere** (slow seconds-long swell, kept under 1.5 kHz) and **fluttering hollow pad** (a fast ~10 Hz shimmer).
+- Slow Wobble Dubstep: its main bass is always a wobble now (sub-only sounds moved out of its list); slower movement leads - half-bar and dotted-quarter sweeps, then bar, beat and triplet ones; keys around F / F# / D# / D; a tight, short kick and a crisp bright snare like the pack's; more hat and ride patterns from its loops.
+- Deep Dubstep and Deep Dubstep Rolling can pick the new subs, growl and pads.
+
 ## 2.9.1
 - **Fixed: clicks / 'clipping' at the start or end of bass notes.** Many synth basses (the acids, 808 variants, stab and 808 wobbles...) were cut off mid-wave - their last sample still 5-50 % of their peak - and some started on a non-zero sample. Every pitched note now ends with a 4 ms fade, and every bass note starts with a 1.2 ms one (too short to soften a pluck).
 - **Dubstep bass glides:** about a third of the wobble notes that follow straight on from another note now glide into it (octave dives and rises, slides to the next note; never more than an octave).

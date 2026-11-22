@@ -1602,7 +1602,7 @@ def compose(opts):
                 elif inst == 'acid' and mode == 'pattern':
                     mode = 'acid'
                 elif inst in ('wobble', 'riddim', 'dnbwob', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass',
-                              'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'sleepersub', 'brightwob', 'tearwob') and mode == 'pattern':
+                              'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'sleepersub', 'brightwob', 'tearwob', 'divesub', 'pitchgrowl') and mode == 'pattern':
                     mode = 'wobble'
                 if getattr(opts, 'bass_rhythm', None) == 'kick' and mode not in ('walk', '808'):
                     mode = 'kick'
@@ -2292,7 +2292,7 @@ def apply_note_edits(evs, edits, tracks):
     return out
 
 
-SUB_BASSES = ('808', '808dist', '808long', '808punch', 'sinebass', 'deepsub', 'sleepersub', 'logdrum', 'chipbass', 'deepbass', 'splitbass', 'rumble', 'subwob')
+SUB_BASSES = ('808', '808dist', '808long', '808punch', 'sinebass', 'deepsub', 'sleepersub', 'divesub', 'logdrum', 'chipbass', 'deepbass', 'splitbass', 'rumble', 'subwob')
 
 EXTRA_FOLLOWS = ('lead', 'counter', 'chords', 'pad', 'arp', 'bass')
 
@@ -2526,7 +2526,7 @@ OCT_UP = {'bell', 'celesta', 'flute', 'sf:piccolo', 'pluck', 'chip', 'marimba', 
 OCT_DOWN = {'cello', 'sf:contrabass', 'sf:bassoon', 'sf:trombone', 'sf:tuba', 'horn'}
 NO_LAYER = {'808', 'logdrum', 'wobble', 'acid', 'sinebass', 'chipbass', 'riddim', 'screech', 'dnbwob', 'vowelwob',
             'multiwob', 'tablewob', 'chopwob', 'rumble', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass',
-            'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'deepsub', 'sleepersub', 'brightwob', 'tearwob'}
+            'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'deepsub', 'sleepersub', 'brightwob', 'tearwob', 'divesub', 'ms10zap', 'pitchgrowl'}
 
 
 def debell(st, opts):
@@ -2781,7 +2781,7 @@ def sync_drones(evs, tracks, bpm):
 
 SUSTAINED_BASS = {'reese', 'growl', 'wobble', 'hoover', 'sinebass', 'moogbass', 'drone', 'tanpura', 'dnbwob', 'vowelwob',
                   'multiwob', 'tablewob', 'chopwob', 'rumble', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass',
-                  'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'deepsub', 'sleepersub', 'brightwob', 'tearwob'}
+                  'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'deepsub', 'sleepersub', 'brightwob', 'tearwob', 'divesub', 'ms10zap', 'pitchgrowl'}
 
 
 def legato_bass(evs, tracks):
