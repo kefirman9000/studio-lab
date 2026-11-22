@@ -139,3 +139,10 @@ def genre_fit(song):
     if not checks:
         return None
     return dict(score=round(100 * sum(c['ok'] for c in checks) / len(checks)), checks=checks)
+
+
+# (2.2.8) the defining part may use its whole family: every 808 flavour in trap / drill, every acid bass in acid house
+for _g, _extra in (('trap', {'slide808'}), ('uk_drill', {'slide808', 'drill808', 'wob808'}), ('acid_house', {'fmacid', 'acid_v1'})):
+    if _g in SIGNATURE:
+        _r, _ok, _nm = SIGNATURE[_g]
+        SIGNATURE[_g] = (_r, set(_ok) | _extra, _nm)

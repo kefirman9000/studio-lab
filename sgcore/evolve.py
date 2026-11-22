@@ -532,6 +532,10 @@ def song_variations(st, opts):
         if key == 'palette':
             for t in st['tracks']:
                 if t['name'] in ch and t['name'] != 'name':
+                    # (2.2.8) a part every palette gives the same sound isn't part of the palette choice: the song's
+                    # pick from the genre's sound pool stands (else it was always that one sound)
+                    if t.get('pooled') and len({o.get(t['name']) for o in options if isinstance(o, dict)}) == 1:
+                        continue
                     t['inst'] = ch[t['name']]
                     t.pop('fallback', None)
         elif key in ('pulse', 'mid', 'sparkle'):

@@ -12014,3 +12014,79 @@ style('switchup_bass', 'Electronic',
       pools=dict(bass=['tonesub', 'dubsub', 'sinebass_suboct'], chords=['noisestab', 'ravestab', 'samplerstab', 'darksample'],
                  arp=['fmperc', 'modseq'], lead=['vocalchop', 'formantchop', 'housevox']),
       label='Switch-up Bass', exact_pools=True)
+
+
+# ---- (2.2.8) electronic sound audit: parts that always (or nearly always) got the same synth --------------------------
+# 808 genres rotate through the 808 family (the plain 808 stays the likeliest - it's first in the pool)
+_808S = {'trap': ['808', '808long', 'slide808', '808punch', '808_dark', '808dist'],
+         'uk_drill': ['808', 'drill808', 'slide808', '808long', '808_dark', 'wob808'],
+         'plugg': ['808', '808long', '808punch', 'slide808'], 'reggaeton': ['808', '808punch', '808long'],
+         'alt_rnb': ['808', '808long', '808_dark', 'slide808'], 'baile_funk': ['808', '808punch', '808dist', '808_driven'],
+         'funk_150': ['808', '808punch', '808long'], 'orchestral_hiphop': ['808', '808long', '808_dark', '808punch']}
+for _st, _b in _808S.items():
+    if _st in STYLES:
+        POOLS.setdefault(_st, {})['bass'] = list(_b)
+POOLS['acid_house']['bass'] = ['acid', 'acidsquare', 'acid_dark', 'acid_driven', 'fmacid', 'acid_v1'] + \
+    [x for x in POOLS['acid_house']['bass'] if x not in ('acid', 'acidsquare')]
+POOLS['dream_synthscape']['bass'] = ['roundbass', 'sinebass', 'dreambass', 'junobass']
+POOLS['ethereal_wave']['pad'] += ['glasspad', 'choir_wide', 'warmpad_wide']
+POOLS['ethereal_wave']['lead'] += ['formantchop', 'vocalchop', 'softlead_wide']
+POOLS['switchup_bass']['arp'] += ['pluck', 'bell', 'acid', 'modseq', 'technoseq']
+
+
+# ---- (2.3) Euphoric Trance: the full uplifting arc - built from a detailed genre brief -------------------------------
+# 138-142, minor keys (F#m / Am / Dm / Em), i-VI-III-VII and its relatives; every part has its own job:
+#   bass  - rolling off-beat mid-bass + a clean centred sub, tight to the kick, roots only
+#   chords- a wide 7-voice supersaw, voice-led, pumping;  pad - an evolving bed behind it (dominant in the breakdown)
+#   arp   - a bright pluck / FM-bell in 16ths on chord tones, ping-pong delay;  lead - a big supersaw melody
+#   harm  - the lead's chord-aware harmony, only in the 2nd half of phrases at the first climax, all through the last
+#   lead_piano - the melody on piano in the breakdown (see trance2.py)
+_ALL_ET = {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead', 'fx'}
+FORMS['euphoric_trance'] = [
+    ('intro', 16, {'kick', 'top', 'bass'}, {'filter_in': True}),                                    # kick, bass, percussion
+    ('intro', 16, {'kick', 'top', 'bass', 'arp', 'pad', 'fx'}, {}),                                 # arp + atmosphere
+    ('verse', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp'}, {'crash': True}),      # the main groove
+    ('build', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'fx'}, {'build': True}),        # risers, rolls
+    ('drop', 16, _ALL_ET - {'pad'}, {'drop': True, 'crash': True}),                                # first drop: simple
+    ('break', 8, {'pad', 'chords', 'lead', 'fx'}, {'alt': True}),                                   # the lead fades out
+    ('break', 16, {'pad', 'chords', 'lead', 'fx'}, {'alt': True, 'piano_lead': True}),              # the breakdown
+    ('build', 16, {'pad', 'chords', 'arp', 'lead', 'snare', 'fx'}, {'build': True, 'piano_lead': True}),   # main build
+    ('drop', 32, _ALL_ET, {'drop': True, 'crash': True, 'harm': 'half'}),                           # the climax
+    ('drop', 32, _ALL_ET, {'drop': True, 'crash': True, 'harm': 'full', 'alt': True}),              # extended climax
+    ('outro', 32, {'kick', 'top', 'bass', 'pad', 'arp'}, {'layer_out': True}),                     # mix-out
+]
+style('euphoric_trance', 'Electronic',
+      'Euphoric trance: the full uplifting arc at 138-142 - a long DJ intro, a first drop with a simple lead, then a '
+      'long emotional breakdown where the melody moves to piano over wide pads, a tense build of snare rolls and rising '
+      'filters, and a climax far bigger than the first drop: a huge supersaw lead with a chord-aware harmony joining '
+      'it, bright 16th arps, rolling off-beat bass and pumping 7-voice supersaw chords',
+      bpm=(138, 142), scales=['minor'], roots=[6, 9, 2, 4], kit='909', form='euphoric_trance', sc_depth=0.65,
+      chord_size=3, voicing='close', euphoric=True, no_rotation=True, filter_arc=True, sc_arc=True, fill=True, exact_form=True,
+      progs=[[0, 5, 2, 6], [0, 5, 2, 6], [5, 3, 0, 6], [0, 5, 3, 6], [2, 6, 0, 5], [0, 3, 5, 6]],
+      drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'chat': ['x.x.x.x.x.x.x.x.', 'xxxxxxxxxxxxxxxx'],
+             'ride': ['..x...x...x...x.'], 'shaker': ['x.xxx.xxx.xxx.xx']},
+      snare_tracks=['clap'], bass=['..R...R...R...R.', '.RRR.RRR.RRR.RRR'], bass_lo=30, bass_gate=0.45,
+      chord_rh=['x---------------', '..x...x...x...x.', 'x-------x-------'], chord_center=64,
+      arp=dict(rate=4, mode='updown', oct=5), lead_oct=5,
+      lead_rh=['x-------x---x---', 'x-----x-----x---', 'x---x---x-x-x---', 'x-------x-x-----'], repetition=0.75,
+      gm_hint='Layered supersaw lead + chord-aware harmony; 7-voice supersaw chords; evolving pad; pluck / FM-bell 16th '
+              'arp with ping-pong delay; rolling off-beat bass + clean sub; piano melody in the breakdown',
+      tracks=[T('kick', 'kick', 'kick', db=-11), T('clap', 'snare', 'clap', rev=0.35, db=-19),
+              T('ohat', 'top', 'ohat', db=-26), T('chat', 'top', 'chat', db=-30), T('ride', 'top', 'ride', db=-32),
+              T('shaker', 'top', 'shaker', pan=-0.2, db=-33),
+              T('bass', 'bass', 'rollbass', sc=0.75, db=-14, p=dict(cut=1000, d=0.09, s=0.2)),
+              T('chords', 'chords', 'supersaw_wide', rev=0.5, dly=0.15, sc=0.8, db=-22, p=dict(a=0.04)),
+              T('pad', 'pad', 'trancepad_wide', wide=0.5, rev=0.7, sc=0.45, db=-26, p=dict(a=0.9)),
+              T('arp', 'arp', 'trancepluck', dly_time=0.375, rev=0.4, dly=0.45, pan=0.15, sc=0.5, db=-24),
+              T('lead', 'lead', 'supersaw_lead', ott=0.3, rev=0.55, dly=0.35, sc=0.45, db=-17),
+              T('harm', 'lead', 'supersaw', rev=0.5, dly=0.25, sc=0.45, wide=0.3, db=-22, keep_inst=True),
+              T('lead_piano', 'lead', 'piano', rev=0.65, dly=0.3, db=-18, keep_inst=True)],
+      master=dict(tone=[-0.5, 0, -5.5, -7.5, -12.0, -7.0, -9.5, -10.0, -16.0], lufs=-8.3, air=2.0, low=1.1),
+      reverb=3.6, rev_predelay=0.04, rev_hp=240,
+      pools=dict(bass=['rollbass', 'sawbass', 'fmbass', 'moogbass'],
+                 chords=['supersaw_wide', 'supersaw', 'hypersaw', 'trancestrings', 'pianosaw'],
+                 pad=['trancepad_wide', 'trancepad', 'pwmpad', 'warmpad', 'choir', 'atmos', 'strings'],
+                 arp=['trancepluck', 'trancebell', 'superpluck', 'pluckbell', 'dxbell', 'nordpluck', 'icebell'],
+                 lead=['supersaw_lead', 'hypersaw', 'supersaw_lead_octave', 'emolead', 'formantlead']),
+      label='Euphoric Trance')
+STYLES['euphoric_trance']['exact_pools'] = True          # its sound lists are hand-picked for the brief: not widened

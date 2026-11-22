@@ -1,6 +1,21 @@
 # Changelog
 
 ## 2.3.0
+**New genre: Euphoric Trance, and an electronic sound check**
+
+- **Euphoric Trance** (Techno & Trance), built from your uplifting-trance brief:
+  - **The full arc, about 6 minutes at 138–142:** a DJ intro (kick, bass, percussion), then the arp and atmosphere, the main groove and a first build. The first drop has a simple lead. Then the lead fades and a **long breakdown** follows, with no kick or bass, where **the melody moves to piano** over wide pads. A tense main build (snare rolls, rising filters, the piano still singing) leads into a **climax far bigger than the first drop**, an extended climax, and a 32-bar mix-out.
+  - **A lead harmony that follows the chords**, not a fixed interval. Each lead note gets the nearest chord tone a third above (else a sixth or a fifth). On passing notes it gets the diatonic third, like a second singer, so it always stays in key. It joins only the answering half of each phrase in the first climax, then plays throughout the extended climax, so the arrangement keeps growing.
+  - **Every part has its own job:** a rolling off-beat mid-bass plus a clean, centred sub; a wide 7-voice supersaw chord stack, voice-led and pumping; an evolving pad behind it; a bright pluck / FM-bell arp in 16ths with ping-pong delay; a layered supersaw lead.
+  - **F#, A, D and E minor**, using i–VI–III–VII and its relatives.
+- **Electronic sound check:** I generated 12 songs in each of the 189 electronic genres and looked for parts that always got the same synth.
+  - Daydream downtempo and Sunlit electronica always played the same bass because their sound palettes overrode the pick. Now a palette only decides a part when the palettes actually differ on it.
+  - Trap, UK drill, plugg, reggaeton, alt R&B, baile funk, funk 150 and orchestral hip-hop now rotate through the 808 family: plain, long, punch, dark, distorted, sliding, drill and wobble. The plain 808 is still the most common.
+  - Acid house now uses all its acid basses. Dream synthscape, ethereal wave and switch-up bass have wider pools.
+  - Everything else already rotated properly. Chiptune stays on chip sounds and amapiano on its log drum, on purpose.
+
+
+## 2.3.0
 - **Electronic genres play electronic basses.** Bass guitars, upright and acoustic basses (finger, pick, slap, sampled or
   modelled) no longer turn up under electronic tracks. They were in about 40 electronic genres' bass rotations (deep house,
   melodic house, liquid DnB, K-pop, PS1 game, teen pop, glitch pop, the hauntology genres, chillwave and more), including
