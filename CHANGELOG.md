@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.4.10
+- Bagpipes: the white noise / crunch is gone. The reed no longer gets breath noise while it plays (any of it came out as hiss, about 35 dB less now) - only a tiny puff to start each phrase.
+- Bagpipes: notes now glide into each other (about 5 ms instead of an instant snap) and each phrase eases in softly instead of a hard 8-bit-style start. Timing is unchanged.
+- Bagpipes: no saturation on the band, and the reeds were retuned to stay stable without the noise (all chanter notes within a few cents, no octave jumps). Drone buzz turned way down.
+
 ## 2.4.9
 - **Fixed: the pipe band sounding like it was in a tunnel.** Two things caused it. The short "hall" reflections are gone, since copies of the sound a few milliseconds apart made a boxy comb; the pipes' space now comes from their normal reverb. And the three pipers were near-identical reeds playing almost exactly together, which flanged. Now each piper has a different reed (a different harmonic balance, all still in tune), they're spread wider, and they're as loose as humans at the note changes.
 

@@ -137,7 +137,7 @@ def _reed(fv, n, r, pw=0.16):
     return pulse + buzz
 
 
-_CH = dict(pos=0.33, offset=0.7, slope=0.3, refl=0.9)      # chanter reed + bore: stable across the whole chanter range
+_CH = dict(pos=0.375, offset=0.7, slope=0.4, refl=0.9)      # chanter reed + bore: stable across the whole chanter range
 _DR = dict(offset=0.7, slope=-0.3, refl=0.95)                # drone reeds
 
 
@@ -170,8 +170,9 @@ def _chanter_raw(d, b0, n, seed, rate=SR, turb_amt=0.06):
     from . import fastdsp as F
     t = np.arange(n) / rate
     crow = 1 + 0.04 * np.exp(-t / 0.01)
-    br = np.full(n, b0) * np.clip(t / 0.004, 0, 1)
+    br = np.full(n, b0) * (0.7 + 0.3 * np.clip(t / 0.02, 0, 1))       # started exactly as pipe_part starts a phrase
     turb = lp(np.random.default_rng(seed).standard_normal(n), 3000 * SR / rate) * turb_amt
+    turb = turb + np.random.default_rng(seed + 1).standard_normal(n) * 0.1 * np.exp(-t / 0.01)     # the first puff of air
     return F.reed_conical(br, turb, d * crow, _CH['pos'], _CH['offset'], _CH['slope'], _CH['refl'])
 
 
@@ -183,7 +184,7 @@ def _tuned_delay(f, kind):
     if key in _TUNED:
         return _TUNED[key]
     n = int(0.25 * SR)
-    b0 = 0.65 if kind == 'chanter' else 0.6
+    b0 = 0.65 if kind == 'chanter' else 0.7 if kind == 'chanter_os' else 0.6
     d = (SR / f - 3.0) if kind == 'chanter' else (2 * SR / f - 3.0) if kind == 'chanter_os' else SR / f / 2 - 1.0
     for _ in range(10):
         br = np.full(n, b0)
@@ -191,7 +192,7 @@ def _tuned_delay(f, kind):
         if kind == 'chanter':
             y = _chanter_raw(d, b0, n, 7)
         elif kind == 'chanter_os':                        # tested exactly as the band plays it: at twice the rate
-            y = _chanter_raw(d, b0, 2 * n, 7, rate=2 * SR, turb_amt=0.04)
+            y = _chanter_raw(d, b0, 2 * n, 7, rate=2 * SR, turb_amt=0.0)
         else:
             y = F.reed_cylindrical(br, np.zeros(n), np.full(n, d), _DR['offset'], _DR['slope'], _DR['refl'])
         got = _f0(y)
@@ -464,14 +465,13 @@ def pipe_band(notes, length, tonic=None, players=3):
         dt = (rnd.random() - 0.5) * 0.02                                # +-10 ms at the note changes: humans, not a flanger
         cents = (k - (players - 1) / 2) * 1.5 + (rnd.random() - 0.5) * 1.0   # within ~2 cents: unison, not chorus
         nk = [(max(0.0, t + dt), d, m) for (t, d, m) in notes]
-        rp = _CH['pos'] + (k - (players - 1) / 2) * 0.025               # every piper's reed is a little different: a
+        rp = _CH['pos'] + (k - (players - 1) / 2) * 0.012               # every piper's reed is a little different: a
         y = pipe_part(nk, length, tonic, cents=cents, seed=k + 1, reed_pos=rp)   # different harmonic balance, not a copy
         pan = (k - (players - 1) / 2) / max(1, players - 1) * 0.9       # spread wide (summed close, near-copies flange)
         out[0] += y * np.sqrt(0.5 * (1 - pan))
         out[1] += y * np.sqrt(0.5 * (1 + pan))
     out /= players ** 0.7
-    out = soft(out * 1.15, 1.05)                                         # the reeds blending into one wall (gently)
-    return _hall(out)
+    return _hall(out)                                                    # (no saturation: it added crunch)
 
 
 def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None):
@@ -510,25 +510,26 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None):
             s1 = n if k == len(ph) - 1 else max(s0 + 1, int(ph[k + 1][0] * R) - a * OS)
             ji = PIPE_JI.get((m - tonic) % 12, 0.0) if tonic is not None else 0.0
             # at twice the rate, the bore tuned (at the normal rate) for half the pitch sounds exactly this pitch
-            d, b0 = _tuned_delay(float(mtof(m)) * 2 ** ((ji + cents) / 1200), 'chanter_os')
+            d, b0 = _tuned_delay(float(mtof(m)) * 2 ** ((ji + cents + 4.5) / 1200), 'chanter_os')   # +4.5: the crow/drift pull it flat
             delay[s0:s1] = d
             breath[s0:s1] = b0
         first = max(0, int(ph[0][0] * R) - a * OS)
         delay[:first] = delay[first]
         breath[:first] = breath[first]
-        w = 24 * OS
-        delay = np.convolve(delay, np.ones(w) / w, mode='same')       # ~0.5 ms: a finger lifting, not a splice
+        w = int(0.005 * R)
+        delay = np.convolve(delay, np.ones(w) / w, mode='same')       # ~5 ms: a smooth move between notes, no crackle
         delay[:w] = delay[w]
         delay[-w:] = delay[-w - 1]
         t = np.arange(n) / R
         delay *= 1 + 0.04 * np.exp(-t / 0.01)                        # the crow - once, at the start of the phrase
         drift = lp(np.random.default_rng(a * 31 + seed).standard_normal(n), 0.8 * SR / R)
         delay *= 2 ** (-(drift / (np.std(drift) + 1e-12) * 2.0) / 1200)   # this piper's reed: ~2 cents of slow life
-        breath = breath * np.clip(t / 0.004, 0, 1)
+        breath = breath * (0.7 + 0.3 * np.clip(t / 0.02, 0, 1))        # a step to 70 % sets the reed going, then it eases in
         fo = int(0.02 * R)
         breath[-fo:] *= np.linspace(1, 0, fo)
-        turb = np.random.default_rng(a + 9973 * seed).standard_normal(n)
-        turb = lp(turb, 3000) * 0.04
+        # (2.4.10) no breath noise while it sounds (the reed turns ANY of it into hiss and crunch) - only the first puff of
+        # air, a few ms, which is what sets the reed going
+        turb = np.random.default_rng(a + 9973 * seed).standard_normal(n) * 0.1 * np.exp(-t / 0.01)
         y = F.reed_conical(breath, turb, delay, _CH['pos'] if reed_pos is None else reed_pos, _CH['offset'], _CH['slope'],
                            _CH['refl'])
         y = resample_poly(y, 1, OS)[: b - a]                         # back to the normal rate, the fizz filtered off
@@ -563,7 +564,7 @@ def _drone_voice(f, n, bag, tab, beat_hz=0.0, seed=0):
     i0 = pos.astype(np.int64) % len(tab)
     fr = pos - np.floor(pos)
     y = tab[i0] * (1 - fr) + tab[(i0 + 1) % len(tab)] * fr
-    buzz = bp(np.random.default_rng(seed).standard_normal(n), 1500, 4000) * np.exp(-frac * 8) * 0.025   # the reed, faintly
+    buzz = bp(np.random.default_rng(seed).standard_normal(n), 1500, 4000) * np.exp(-frac * 8) * 0.006   # the reed, faintly
     return y + buzz
 
 
