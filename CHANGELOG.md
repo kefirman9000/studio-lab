@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.13.3
+- **Install all free plugins** (Sounds & instruments → Genre VSTs → ⚡ Install everything): one button downloads every free plugin that can be installed automatically. The open-source instruments are unpacked as before; the free open-source plugins that are only published as an installer app - Cardinal, Geonkick, Vaporizer2, CHOW Tape Model and BYOD - now have their official installer downloaded from the project's GitHub release, checked the same way (published SHA-256, Microsoft Defender, VirusTotal when you have a key) and run, silently where the installer allows it (Windows asks for permission first; on a Mac the system asks for your password). Each also has its own Install button. Plugins that need an account (Vital, LABS, BBC Symphony Orchestra, TAL, u-he) still need their own sign-up.
+- **Smoother start after an update**: the new app now waits until the old one has fully closed (its engine, its port and the window's web view) before opening, which is what made the restart hang or come up blank. The window also appears sooner on every start (no more loading scipy before the window), and a first start after an update gets up to 5 minutes to compile instead of 2.
+- **Orchestra detection (BBC SO) tells you what's happening**: if the plugin can't be read while its window is open, the log says so (the instrument loaded when you close the window is still saved - or set up one section at a time). When it can't name what it found, what the plugin's state did contain is kept in vst_sounds/.last_scan.json for a bug report.
+
 ## 2.13.2
 - **Fewer bells in electronic genres**: every bell-like sound (glockenspiel, celesta, music box and all the synth / FM / trance bells) now only turns up as a rare colour in electronic genres - in roughly 1 song in 8 when it isn't the genre's own sound - and is otherwise swapped for one of the genre's own non-bell sounds (pool picks, section rotation and layers alike). Genres whose signature *is* a bell (trap, plugg ...) keep it. Melodic Club Rap's chords are now a dark poly synth instead of a bell.
 - The Amapiano genre's log-drum check accepts the new log drums.

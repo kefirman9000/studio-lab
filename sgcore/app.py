@@ -914,7 +914,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(vstrigs.plan(style))
         if p == '/api/vstpacks/install':
             from . import vstpacks, vsthost, vstrigs
-            ids = [str(i) for i in (body.get('ids') or []) if str(i) in vstpacks.BY_ID]
+            ids = [str(i) for i in (body.get('ids') or []) if str(i) in vstpacks.BY_ID or vstpacks.installer_available(str(i))]
             if body.get('style') in STYLES:
                 ids += [i for i in vstrigs.plan(body['style'])['missing_packs'] if i not in ids]
 

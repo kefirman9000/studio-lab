@@ -2298,12 +2298,12 @@ function orchModal(V){
 // ------------------------------------------------------------- genre VST rigs (auto-downloaded instruments)
 async function rigModal(){
   const [S,P]=await Promise.all([api('/api/vstpacks',{}), api('/api/vstpacks/plan',{style:state.style})]);
-  const busy=()=>$$('#modalBox [data-pk],#modalBox [data-rm],#rigNeed,#rigAll').forEach(b=>b.disabled=true);
+  const busy=()=>$$('#modalBox [data-pk],#modalBox [data-rm],#rigNeed,#rigAll,#rigEvery').forEach(b=>b.disabled=true);
   const packs=S.packs.map(p=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(p.name)}</span> ${p.retired?'':`<span class="m">${esc(p.maker)} · ${esc(p.license)} · ${esc(p.size)}</span>`}
       ${p.installed?`<span class="tag ok">installed${p.version?' '+esc(p.version):''}</span>`:(p.partial?'<span class="tag no">partly installed</span>':'')}<div class="m">${esc(p.plays)}</div>${p.checks?`<div class="m" title="${esc(Object.values(p.checks).join('\n'))}">✔ ${esc([p.checks.checksum&&p.checks.checksum.startsWith('matches')?'checksum':'',p.checks.defender&&p.checks.defender.includes('no threats')?'Defender clean':'',p.checks.virustotal&&p.checks.virustotal.includes(' 0/')?'VirusTotal '+(p.checks.virustotal.match(/0\/\d+/)||[''])[0]:''].filter(Boolean).join(' · ')||'official open-source release')}</div>`:''}</div>
       <div class="row">${p.installed?(p.version?`<button class="mini" data-rm="${p.id}">Remove</button>`:'<span class="m">installed on this computer</span>'):`<button class="mini acc" data-pk="${p.id}">Download</button>`}</div></div>`).join('');
   const known=S.known.map(k=>`<div class="pl" style="grid-template-columns:1fr auto"><div><span class="n">${esc(k.name)}</span> ${k.installed?'<span class="tag ok">found</span>':''}<div class="m">${esc(k.plays)}</div></div>
-      <div>${k.installed?'':`<a class="mini" href="${esc(k.url)}" target="_blank" rel="noopener">Get it ↗</a>`}</div></div>`).join('');
+      <div class="row">${k.installed?'':(k.auto?`<button class="mini acc" data-pk="${k.id}" title="Downloads the official installer, checks it, and runs it">Install</button> `:'')+`<a class="mini" href="${esc(k.url)}" target="_blank" rel="noopener">Get it ↗</a>`}</div></div>`).join('');
   const plan=P.parts.map(r=>`<tr><td>${esc(r.layer)}</td><td class="m">${esc(r.inst)}</td><td>${r.uses?'<b>'+esc(r.uses)+'</b>':'<span class="m">built-in</span>'}${r.ideal&&!r.uses?` <span class="m">· best: ${esc(r.ideal)}</span>`:''}${r.hint?`<div class="m">${esc(r.hint)}</div>`:''}</td></tr>`).join('');
   $('#modalBox').className='box wide';
   $('#modalBox').innerHTML=`<h3>🎚 Genre VSTs</h3>
@@ -2325,6 +2325,10 @@ async function rigModal(){
       <div class="row" style="gap:6px;margin-top:6px"><input type="password" id="vtKey" placeholder="${S.vt&&S.vt.configured?'VirusTotal key saved '+esc(S.vt.hint):'VirusTotal API key (optional, free)'}" style="flex:1">
         <button class="mini" id="vtSave">Save key</button>${S.vt&&S.vt.configured?'<button class="mini" id="vtClear">Remove key</button>':''}</div>
       <label class="row" style="gap:6px;margin-top:6px"><input type="checkbox" id="vtReq" ${S.vt&&S.vt.require?'checked':''} ${S.vt&&S.vt.configured?'':'disabled'}> only install with a VirusTotal result of 0 detections</label></div>
+    <div class="sel" style="margin:10px 0"><b>⚡ Install everything</b> <button class="btn p" id="rigEvery" style="margin-left:8px">Install all free plugins</button>
+      <div class="hint">Downloads every free plugin below that can be installed automatically: the open-source instruments are unpacked as usual, and the ones only published as an installer app
+      (${S.known.filter(k=>k.auto).map(k=>esc(k.name)).join(', ')||'none on this computer'}) have their official installer checked the same way and then run - Windows asks for permission first.
+      Plugins that need an account (Vital, LABS, BBC Symphony Orchestra, TAL, u-he) still need their own sign-up: use <b>Get it ↗</b>.</div></div>
     <h3 style="margin-top:12px">Free instruments <button class="mini" id="rigAll" style="margin-left:8px">Download all</button></h3>${packs}
     <h3 style="margin-top:12px">Also used when you have them</h3>${known}
     <p class="hint">Sample players like BBC Symphony Orchestra pick their instrument inside the plugin: use the <b>🎻 Orchestra plugin</b> tab → ✨ Detect my instruments,
@@ -2332,9 +2336,10 @@ async function rigModal(){
     <div style="text-align:right;margin-top:14px"><button class="btn p" onclick="closeModal()">Done</button></div>`;
   const go=async body=>{ busy(); $('#rigLog').textContent='Starting…'; const {job}=await api('/api/vstpacks/install',body);
     pollJob(job, j=>{ const r=j.results[0]||{}; $('#rigLog').textContent+=(j.status==='done'?(r.ok?'\nDone!':'\nFinished with problems - see above.'):'\nFailed: '+(j.error||''));
-      if(j.status==='done'&&r.ok) setTimeout(rigModal,900); else $$('#modalBox [data-pk],#modalBox [data-rm],#rigNeed,#rigAll').forEach(b=>b.disabled=false); }, l=>{$('#rigLog').textContent=l; $('#rigLog').scrollTop=1e9;}); };
+      if(j.status==='done'&&r.ok) setTimeout(rigModal,900); else $$('#modalBox [data-pk],#modalBox [data-rm],#rigNeed,#rigAll,#rigEvery').forEach(b=>b.disabled=false); }, l=>{$('#rigLog').textContent=l; $('#rigLog').scrollTop=1e9;}); };
   if($('#rigNeed')) $('#rigNeed').onclick=()=>go({style:state.style});
   $('#rigAll').onclick=()=>go({ids:S.packs.filter(p=>!p.installed&&!p.retired).map(p=>p.id)});
+  $('#rigEvery').onclick=()=>go({ids:S.packs.filter(p=>!p.installed&&!p.retired).map(p=>p.id).concat(S.known.filter(k=>k.auto&&!k.installed).map(k=>k.id))});
   $('#vtSave').onclick=async()=>{ const r=await api('/api/vstpacks/safety',{key:$('#vtKey').value.trim(), require:true}); if(r.error){ $('#rigLog').textContent=r.error; return; } rigModal(); };
   if($('#vtClear')) $('#vtClear').onclick=async()=>{ await api('/api/vstpacks/safety',{key:'', require:false}); rigModal(); };
   $('#vtReq').onchange=async e=>{ await api('/api/vstpacks/safety',{require:e.target.checked}); };

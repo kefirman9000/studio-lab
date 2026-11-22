@@ -386,7 +386,7 @@ def scan_orchestra(path, prefix='BBC', log=print, timeout=3 * 3600):
     env['PYTHONPATH'] = ROOT + os.pathsep + env.get('PYTHONPATH', '')
     proc = subprocess.Popen([sys.executable, '-m', 'sgcore.vst_worker', jp], cwd=ROOT, env=env,
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **NOWIN)
-    shown, t0 = [], time.time()
+    shown, t0, warned = [], time.time(), False
     log(f'{os.path.splitext(os.path.basename(path))[0]} is opening. In its own browser, load each instrument you want '
         '(and its articulation). Each one is picked up automatically - close the plugin window when you are done.')
     while proc.poll() is None:
@@ -397,10 +397,18 @@ def scan_orchestra(path, prefix='BBC', log=print, timeout=3 * 3600):
             with open(jp + '.live') as f:
                 live = json.load(f)
         except Exception:
-            live = []
-        for n in live[len(shown):]:
+            live = {}
+        if isinstance(live, list):
+            live = dict(names=live)
+        names = live.get('names') or []
+        for n in names[len(shown):]:
             log('  ✓ found ' + n)
-        shown = live if len(live) >= len(shown) else shown
+        shown = names if len(names) >= len(shown) else shown
+        if live.get('blocked') and not warned:
+            warned = True
+            log('  ! this plugin does not let Studio Lab read it while its window is open - the instrument loaded when you '
+                'close the window is still saved. To set up several sections, use "set up one section at a time" below '
+                '(or run Detect again for each section).')
         time.sleep(0.5)
     try:
         with open(jp + '.result') as f:
@@ -426,6 +434,12 @@ def scan_orchestra(path, prefix='BBC', log=print, timeout=3 * 3600):
     elif not res.get('named'):
         log('The plugin did not say which instruments these are, so they were saved as "sound 1, 2 ..." - '
             'give each a name (e.g. "BBC celli spiccato") and matching parts will use it.')
+        try:                                              # (2.13.3) keep what the state did contain, for a bug report
+            with open(os.path.join(SOUNDS, '.last_scan.json'), 'w') as f:
+                json.dump(dict(plugin=os.path.basename(path), reads=res.get('reads'), blocked=res.get('blocked'),
+                               texts=res.get('texts')), f, indent=1)
+        except Exception:
+            pass
     return {'ok': True, 'sounds': saved, 'named': bool(res.get('named'))}
 
 

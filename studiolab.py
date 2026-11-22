@@ -38,10 +38,12 @@ def _importable(m):
 
 def _check_deps():
     missing = []
-    for m in ('numpy', 'scipy'):
+    import importlib.util
+    for m in ('numpy', 'scipy'):                 # (2.13.3) only look for them - importing scipy here held up the window
         try:
-            __import__(m)
-        except ImportError:
+            if importlib.util.find_spec(m) is None:
+                missing.append(m)
+        except Exception:
             missing.append(m)
     here = os.path.dirname(os.path.abspath(__file__))
     bundled = os.path.isdir(os.path.join(here, 'runtime')) or '.app/Contents/Resources' in sys.executable
@@ -173,8 +175,11 @@ def _engine_boot(port):
             except Exception:
                 pass
             flags = (0x00000008 | 0x00000200) if os.name == 'nt' else 0     # DETACHED_PROCESS | NEW_PROCESS_GROUP
+            env2 = dict(os.environ, STUDIOLAB_WAIT_PID=str(os.getpid()))   # (2.13.3) the new app waits for this one
+            env2.pop('STUDIOLAB_CHILD', None)
+            env2.pop('STUDIOLAB_PARENT', None)
             try:
-                subprocess.Popen([sys.executable] + sys.argv, cwd=here, creationflags=flags, close_fds=True,
+                subprocess.Popen([sys.executable] + sys.argv, cwd=here, creationflags=flags, close_fds=True, env=env2,
                                  stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             finally:
                 _quit()
@@ -184,13 +189,50 @@ def _engine_boot(port):
                 time.sleep(0.3)
                 if not found:
                     raise RuntimeError((' | '.join(tail) or 'the engine stopped while loading') + ' (details: ' + logp + ')')
-            if time.time() - t0 > 120:
-                raise RuntimeError('the engine is taking over 2 minutes to load - details are in ' + logp)
+            if time.time() - t0 > 300:                     # (after an update the first start compiles everything
+                raise RuntimeError('the engine is taking over 5 minutes to load - details are in ' + logp)   # anew)
             time.sleep(0.1)
         url = found[0]
 
         return url
     return boot
+
+
+def _wait_for_old_app(port):
+    """(2.13.3) After an update the old app starts the new one and then closes. Starting the new window while the old
+    one (its web view helpers, its engine on the port) is still going away made the restart hang or come up blank -
+    so wait until the old process has really gone, the port is free and the web view has let go."""
+    import socket
+    import time
+    pid = int(os.environ.pop('STUDIOLAB_WAIT_PID', '0') or 0)
+    if not pid:
+        return
+    t0 = time.time()
+    if os.name == 'nt':
+        try:
+            import ctypes
+            k = ctypes.windll.kernel32
+            h = k.OpenProcess(0x00100000, False, pid)              # SYNCHRONIZE
+            if h:
+                k.WaitForSingleObject(h, 20000)
+                k.CloseHandle(h)
+        except Exception:
+            pass
+    else:
+        while time.time() - t0 < 20:
+            try:
+                os.kill(pid, 0)
+            except OSError:
+                break
+            time.sleep(0.2)
+    while time.time() - t0 < 30:                                     # the old engine's port
+        try:
+            with socket.socket() as sk:
+                sk.bind(('127.0.0.1', port))
+            break
+        except OSError:
+            time.sleep(0.3)
+    time.sleep(1.5)                                                  # the old web view's helper processes
 
 
 def _window_setting():
@@ -225,6 +267,7 @@ if __name__ == '__main__':
         port = int(os.environ.get('STUDIOLAB_PORT', '8765'))
         if '--serve' in sys.argv:                         # (2.2.3) the engine on its own, for the app window
             _serve(port)
+        _wait_for_old_app(port)
         try:                                              # (2.9.3) Windows: Start menu + desktop shortcuts with the icon,
             from sgcore.winshortcut import ensure_shortcuts   # pinnable to the taskbar (once, in the background)
             ensure_shortcuts(os.path.dirname(os.path.abspath(__file__)))

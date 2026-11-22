@@ -3,6 +3,7 @@
    job: {"mode": "probe"|"editor"|"render", "path": ..., "plugin_name": ..., "state": {...}, "events": [...],
          "duration": s, "out": result-path}"""
 import base64
+import time
 import json
 import re
 import sys
@@ -180,16 +181,30 @@ def _scan(plugin, path, job):
     import threading
     from sgcore import orchscan
     found, order, unknown = {}, [], []
-    last = {'sig': None, 'seen': 0, 'raw': None}
+    last = {'sig': None, 'seen': 0, 'raw': None, 'reads': 0, 'busy_since': None, 'blocked': False, 'texts': []}
     lock = threading.Lock()
     stop = threading.Event()
 
+    def write_live():
+        try:
+            names = [orchscan.sound_name('', found[k]) for k in order] + [f'unnamed sound {i + 1}' for i in range(len(unknown))]
+            with open(path + '.live', 'w') as f:
+                json.dump(dict(names=names, reads=last['reads'], blocked=last['blocked']), f)
+        except Exception:
+            pass
+
     def snap():
+        last['busy_since'] = time.time()
         try:
             raw = bytes(plugin.raw_state)
         except Exception:
+            last['busy_since'] = None
             return
+        last['busy_since'] = None
+        last['reads'] += 1
         info = orchscan.identify(raw)
+        if not info and len(last['texts']) < 3:           # (2.13.3) what the state does say, for the log / a report
+            last['texts'].append([v for _, v in orchscan.decode_strings(raw)][:60])
         sig = (info['instrument'], info.get('articulation')) if info else ('?', hash(raw))
         if sig == last['sig']:
             last['seen'] += 1
@@ -206,15 +221,19 @@ def _scan(plugin, path, job):
                 found[key] = dict(info, state=st)     # the newest state wins (your volume / mic tweaks included)
             elif (not unknown or unknown[-1]['raw'] != hash(raw)) and len(unknown) < 40:
                 unknown.append(dict(raw=hash(raw), state=st))
-            try:
-                with open(path + '.live', 'w') as f:
-                    json.dump([orchscan.sound_name('', found[k]) for k in order] + [f'unnamed sound {i + 1}' for i in range(len(unknown))], f)
-            except Exception:
-                pass
+        write_live()
 
     def poll():
         while not stop.wait(float(job.get('every', 1.0))):
             snap()
+
+    def watchdog():                                   # (2.13.3) some plugins can't be read while their window is open:
+        while not stop.wait(1.0):                     # say so instead of silently catching nothing
+            b = last['busy_since']
+            if b and time.time() - b > 6 and not last['blocked']:
+                last['blocked'] = True
+                write_live()
+    threading.Thread(target=watchdog, daemon=True).start()
 
     th = threading.Thread(target=poll, daemon=True)
     th.start()
@@ -230,7 +249,8 @@ def _scan(plugin, path, job):
                  state=found[k]['state']) for k in order]
     if not caps and unknown:                          # the state names nothing we know: keep the captures for naming
         caps = [dict(instrument=None, articulation=None, words=None, state=u['state']) for u in unknown]
-    return {'ok': True, 'captures': caps, 'named': bool(order)}
+    return {'ok': True, 'captures': caps, 'named': bool(order), 'reads': last['reads'], 'blocked': last['blocked'],
+            'texts': last['texts']}
 
 
 def main(path):

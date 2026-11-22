@@ -208,7 +208,7 @@ def sha256_of(path):
     return h.hexdigest()
 
 
-def download(url, dst, progress=None, expected=0):
+def download(url, dst, progress=None, expected=0, limit=None):
     if not _host_ok(url):
         raise RuntimeError('refusing to download from ' + url)
     req = urllib.request.Request(url, headers={'User-Agent': 'StudioLab'})
@@ -222,7 +222,7 @@ def download(url, dst, progress=None, expected=0):
             if not b:
                 break
             got += len(b)
-            if got > MAX_BYTES:
+            if got > (limit or MAX_BYTES):
                 raise RuntimeError('download is unexpectedly large - stopped')
             f.write(b)
             if progress and total:
@@ -445,7 +445,7 @@ def status():
                         size=p['size'], installed=len(found) >= need, partial=0 < len(found) < need,
                         version=rec.get(p['id'], {}).get('version'), paths=paths, checks=rec.get(p['id'], {}).get('checks')))
     for pid, r in rec.items():
-        if pid not in BY_ID and any(os.path.exists(f) for f in r.get('files', [])):
+        if pid not in BY_ID and not r.get('app') and any(os.path.exists(f) for f in r.get('files', [])):
             out.append(dict(id=pid, name=', '.join(os.path.splitext(os.path.basename(f))[0] for f in r.get('files', [])),
                             maker='', license='', size='', page='', installed=True, partial=False, version=r.get('version'),
                             retired=True, paths=r.get('files', []),
@@ -454,7 +454,7 @@ def status():
     for k in KNOWN:
         from .vstrigs import PLAYERS
         hit = [x['path'] for x in plugins if PLAYERS[k['id']]['match'](x['path'])]
-        known.append(dict(k, installed=bool(hit), paths=hit))
+        known.append(dict(k, installed=bool(hit), paths=hit, auto=installer_available(k['id'])))
     from .vsthost import broken
     bad = [dict(name=os.path.splitext(os.path.basename(p))[0], path=p, why=w) for p, w in broken().items()]
     return dict(packs=out, known=known, broken=bad, os=host_os(), folder=PLUGIN_DIR)
@@ -565,12 +565,147 @@ def remove(pack_id):
 
 def install_many(ids, log=print, progress=None, vt_key=None, require_vt=False):
     res, failed = [], []
-    ids = [i for i in ids if i in BY_ID]
+    ids = [i for i in ids if i in BY_ID or i in INST_BY_ID]
     for n, i in enumerate(ids):
         try:
-            res.append(install(i, log, (lambda p, n=n: progress((n + p) / len(ids))) if progress else None,
-                               vt_key=vt_key, require_vt=require_vt))
+            fn = install if i in BY_ID else install_app
+            res.append(fn(i, log, (lambda p, n=n: progress((n + p) / len(ids))) if progress else None,
+                          vt_key=vt_key, require_vt=require_vt))
         except Exception as e:
-            log(f"!! {BY_ID[i]['name']}: {e}")
+            log(f"!! {(BY_ID.get(i) or INST_BY_ID[i])['name']}: {e}")
             failed.append(dict(id=i, error=str(e)))
     return dict(ok=not failed, installed=[r['id'] for r in res], failed=failed)
+
+
+# ----------------------------------------------------------------------------- (2.13.3) official installers
+# Free, open-source plugins that are only published as an installer app (or a download too big to unpack here): the
+# official installer is downloaded from the project's GitHub release, checked exactly like the packs (published
+# SHA-256, Microsoft Defender, VirusTotal when you have a key) and then run - silently when it is a standard Inno Setup
+# or NSIS installer, otherwise its own setup window opens. Windows asks for permission (UAC) first; on a Mac the
+# system asks for your password. Plugins that need an account (Vital, LABS, BBC SO ...) can't be installed this way.
+INSTALLER_MAX = 1600 * 1024 * 1024
+INSTALLERS = [
+    dict(id='cardinal', name='Cardinal (modular)', repo='DISTRHO/Cardinal', license='GPL-3.0', page='https://cardinal.kx.studio/',
+         assets={'windows': [r'^cardinal-win64-.*-installer\.exe$'], 'mac': [r'^cardinal-macos-universal-.*\.pkg$']}),
+    dict(id='geonkick', name='Geonkick', repo='Geonkick-Synthesizer/geonkick', license='GPL-3.0', page='https://geonkick.org/',
+         assets={'windows': [r'^geonkickwindowsinstaller-.*x86_64.*\.exe$']}),
+    dict(id='vaporizer2', name='Vaporizer2', repo='VASTDynamics/Vaporizer2', license='GPL-3.0',
+         page='https://www.vast-dynamics.com/?q=products',
+         assets={'windows': [r'^vaporizer2_installer_win_.*\.zip$'], 'mac': [r'^vaporizer2_installer_osx64_.*\.zip$']}),
+    dict(id='chowtape', name='CHOW Tape Model', repo='jatinchowdhury18/AnalogTapeModel', license='GPL-3.0',
+         page='https://chowdsp.com/products.html',
+         assets={'windows': [r'win.*64.*\.exe$', r'win.*\.exe$'], 'mac': [r'mac.*\.pkg$', r'mac.*\.dmg$']}),
+    dict(id='byod', name='BYOD (Build Your Own Distortion)', repo='Chowdhury-DSP/BYOD', license='GPL-3.0',
+         page='https://chowdsp.com/products.html',
+         assets={'windows': [r'win.*64.*\.exe$', r'win.*\.exe$'], 'mac': [r'mac.*\.pkg$', r'mac.*\.dmg$']}),
+]
+INST_BY_ID = {p['id']: p for p in INSTALLERS}
+
+
+def installer_kind(path):
+    """'inno', 'nsis' or None, read from the installer itself (to run it silently with the right switches)."""
+    try:
+        with open(path, 'rb') as f:
+            head = f.read(4 * 1024 * 1024)
+    except OSError:
+        return None
+    if b'Inno Setup' in head:
+        return 'inno'
+    if b'Nullsoft' in head or b'NSIS' in head:
+        return 'nsis'
+    return None
+
+
+def run_installer(path, log=print):
+    """Run an installer and wait for it. Windows: elevated (UAC prompt), silent for Inno Setup / NSIS. Mac: the
+    system's own package installer, with its password prompt. Returns the exit code."""
+    low = path.lower()
+    if host_os() == 'windows' and low.endswith(('.exe', '.msi')):
+        kind = installer_kind(path)
+        args = {'inno': '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-', 'nsis': '/S'}.get(kind, '')
+        if low.endswith('.msi'):
+            args, exe = f'/i "{path}" /qn /norestart', 'msiexec.exe'
+        else:
+            exe = path
+        log('   running the installer' + (' silently' if args else ' - follow its setup window') + ' (Windows will ask for permission) ...')
+        ps = (f"$p = Start-Process -FilePath '{exe}' " + (f"-ArgumentList '{args}' " if args else '') +
+              "-Verb RunAs -Wait -PassThru; exit $p.ExitCode")
+        from .proc import NOWIN
+        r = subprocess.run(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', ps], timeout=3600, **NOWIN)
+        return r.returncode
+    if host_os() == 'mac' and low.endswith('.pkg'):
+        log('   running the macOS installer (it will ask for your password) ...')
+        cmd = f'installer -pkg {json.dumps(path)} -target /'
+        from .proc import NOWIN
+        r = subprocess.run(['osascript', '-e', f'do shell script {json.dumps(cmd)} with administrator privileges'], timeout=3600, **NOWIN)
+        return r.returncode
+    if host_os() == 'mac' and low.endswith('.dmg'):
+        from .proc import NOWIN
+        subprocess.run(['open', path], **NOWIN)
+        log('   the disk image is open - drag or run the installer inside it')
+        return 0
+    raise RuntimeError('this installer type cannot be run automatically on this computer')
+
+
+def installer_available(pid):
+    p = INST_BY_ID.get(pid)
+    return bool(p and p['assets'].get(host_os()))
+
+
+def install_app(pid, log=print, progress=None, vt_key=None, require_vt=False):
+    """Download a plugin's official installer (checked like the packs) and run it."""
+    pack = INST_BY_ID[pid]
+    if not installer_available(pid):
+        raise RuntimeError(f"{pack['name']} has no automatic installer for this computer - get it from {pack['page']}")
+    log(f"Looking up the latest {pack['name']} release ...")
+    try:
+        rels = _get_json(f"https://api.github.com/repos/{pack['repo']}/releases?per_page=10")
+    except Exception as e:
+        raise RuntimeError(f"couldn't reach GitHub: {e}. You can also download it from {pack['page']}")
+    asset = pick_asset(pack, rels)
+    if not asset:
+        raise RuntimeError(f"no {host_os()} installer found for {pack['name']} - get it from {pack['page']}")
+    log(f"Downloading {asset['name']} ({asset['version']}, {asset['size'] / 1e6:.0f} MB) ...")
+    work = tempfile.mkdtemp(prefix='sl_inst_')
+    try:
+        fn = os.path.join(work, re.sub(r'[^A-Za-z0-9._-]', '_', asset['name']))
+        download(asset['url'], fn, progress, asset.get('size', 0), limit=INSTALLER_MAX)
+        from . import safety
+        want, digest = expected_sha256(asset), sha256_of(fn)
+        if want and digest != want:
+            raise RuntimeError(f"{asset['name']} failed its checksum check - not installed")
+        log('   checksum verified (SHA-256)' if want else '   (the project publishes no checksum for this file)')
+        d = safety.defender_scan(fn)
+        log('   ' + d['detail'])
+        if d['ran'] and not d['clean']:
+            raise RuntimeError(d['detail'] + ' - not installed')
+        v = safety.vt_check(fn, digest, vt_key, log)
+        log('   ' + v['detail'])
+        if v.get('ran') and not v.get('clean'):
+            raise RuntimeError(f"VirusTotal: {v['flagged']} of {v['engines']} engines flagged this download - not installed ({v['link']})")
+        if require_vt and not v.get('ran'):
+            raise RuntimeError('no VirusTotal result (' + v['detail'] + ') and you asked for one - not installed')
+        run = fn
+        if fn.lower().endswith('.zip'):                       # an installer shipped inside a zip
+            ex = os.path.join(work, 'x')
+            extract_zip(fn, ex, keep=lambda n: n.lower().endswith(('.exe', '.msi', '.pkg', '.dmg')))
+            cands = []
+            for root, _, files in os.walk(ex):
+                cands += [os.path.join(root, f) for f in files if f.lower().endswith(('.exe', '.msi', '.pkg', '.dmg'))]
+            cands = [c for c in cands if not re.search(r'uninst', os.path.basename(c), re.I)]
+            if not cands:
+                raise RuntimeError(f"no installer inside {asset['name']} - get it from {pack['page']}")
+            run = max(cands, key=os.path.getsize)
+            d = safety.defender_scan(run)
+            if d['ran'] and not d['clean']:
+                raise RuntimeError(d['detail'] + ' - not installed')
+        code = run_installer(run, log)
+        if code not in (0, 3010):
+            raise RuntimeError(f"the {pack['name']} installer stopped (code {code}) - it may have been cancelled")
+        rec = _record()
+        rec['app:' + pid] = dict(version=asset['version'], asset=asset['name'], installed=int(time.time()), sha256=digest, app=True)
+        _save_record(rec)
+        log(f"{pack['name']} is installed.")
+        return dict(ok=True, id=pid, version=asset['version'])
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
