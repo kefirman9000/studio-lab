@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.9
+- **Fixed: the pipe band sounding like it was in a tunnel.** Two things caused it. The short "hall" reflections are gone, since copies of the sound a few milliseconds apart made a boxy comb; the pipes' space now comes from their normal reverb. And the three pipers were near-identical reeds playing almost exactly together, which flanged. Now each piper has a different reed (a different harmonic balance, all still in tune), they're spread wider, and they're as loose as humans at the note changes.
+
+
 ## 2.4.8
 **Bagpipes: less electronic, fuller**
 

@@ -461,11 +461,12 @@ def pipe_band(notes, length, tonic=None, players=3):
     out = np.zeros((2, length))
     rnd = np.random.default_rng(len(notes) * 7 + players)
     for k in range(players):
-        dt = (rnd.random() - 0.5) * 0.006                               # +-3 ms: a good band plays as one
+        dt = (rnd.random() - 0.5) * 0.02                                # +-10 ms at the note changes: humans, not a flanger
         cents = (k - (players - 1) / 2) * 1.5 + (rnd.random() - 0.5) * 1.0   # within ~2 cents: unison, not chorus
         nk = [(max(0.0, t + dt), d, m) for (t, d, m) in notes]
-        y = pipe_part(nk, length, tonic, cents=cents, seed=k + 1)
-        pan = (k - (players - 1) / 2) / max(1, players - 1) * 0.6       # spread across the field, centre heavy
+        rp = _CH['pos'] + (k - (players - 1) / 2) * 0.025               # every piper's reed is a little different: a
+        y = pipe_part(nk, length, tonic, cents=cents, seed=k + 1, reed_pos=rp)   # different harmonic balance, not a copy
+        pan = (k - (players - 1) / 2) / max(1, players - 1) * 0.9       # spread wide (summed close, near-copies flange)
         out[0] += y * np.sqrt(0.5 * (1 - pan))
         out[1] += y * np.sqrt(0.5 * (1 + pan))
     out /= players ** 0.7
@@ -473,7 +474,7 @@ def pipe_band(notes, length, tonic=None, players=3):
     return _hall(out)
 
 
-def pipe_part(notes, length, tonic=None, cents=0.0, seed=0):
+def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None):
     """The Highland chanter as it really plays: ONE reed sounding continuously through each phrase. Each note's pitch
     holds until the next note starts (the chanter never stops between notes - the gracenotes are what separate them),
     the reed only catches (the crow) at the start of a phrase, and a phrase ends only at a real silence.
@@ -528,7 +529,8 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0):
         breath[-fo:] *= np.linspace(1, 0, fo)
         turb = np.random.default_rng(a + 9973 * seed).standard_normal(n)
         turb = lp(turb, 3000) * 0.04
-        y = F.reed_conical(breath, turb, delay, _CH['pos'], _CH['offset'], _CH['slope'], _CH['refl'])
+        y = F.reed_conical(breath, turb, delay, _CH['pos'] if reed_pos is None else reed_pos, _CH['offset'], _CH['slope'],
+                           _CH['refl'])
         y = resample_poly(y, 1, OS)[: b - a]                         # back to the normal rate, the fizz filtered off
         y = np.diff(y, prepend=y[0]) * 1.6 + 0.7 * y                 # radiation: brighter, but gently
         y = eq(eq(eq(eq(y, 'peak', 1300, 1.4, 5.5), 'peak', 3200, 1.5, 4.0), 'peak', 2400, 1.2, 2.0), 'peak', 520, 1.0, 3.0)   # nasal bite + body
@@ -538,15 +540,9 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0):
 
 
 def _hall(x, seed=4):
-    """Early reflections of a stone hall / parade ground around the band (7-60 ms): what makes pipes sound big."""
-    rnd = np.random.default_rng(seed)
-    out = x.copy()
-    for ms, g in ((7, 0.45), (13, 0.38), (21, 0.33), (29, 0.27), (41, 0.22), (58, 0.16)):
-        d = int(ms * 0.001 * SR)
-        for c in range(out.shape[0]):
-            dc = d + int(rnd.integers(0, 40))
-            out[c, dc:] += g * lp(x[(c + 1) % out.shape[0], :-dc], 5000)
-    return out / 1.6
+    """(2.4.9) No early-reflection comb any more - short strong reflections made the band sound like it was in a
+    tunnel. The pipes' space comes from the track's own reverb send, which sounds natural."""
+    return x
 
 
 def _drone_table(bass, N=4096):
