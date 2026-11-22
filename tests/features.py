@@ -370,7 +370,7 @@ def test_sound_choices():
             if len(pool) < 3 and inst not in ('808', 'logdrum', 'piano', 'chipbass', 'chip', 'tanpura', 'koto', 'sinebass', 'upright',
                                               'cello', 'contrabass', 'organ', 'ebass', 'mandolin', 'guitar', 'choir',
                                               'sitar', 'harmonium', 'santoor', 'veena', 'gamelan', 'saz', 'phin', 'khaen', 'tres', 'oud', 'shakuhachi',
-                                              'pipes', 'drone', 'tuba', 'banjo', 'accordion', 'harp'):
+                                              'pipes', 'drone', 'tuba', 'banjo', 'accordion', 'harp', 'bagpipe', 'bagpipe_drones'):
                 thin.append((k, r, pool))
     assert len(thin) <= 6, thin
     print('ok  every genre part has idiomatic alternative sounds (re-roll / suggestions)')

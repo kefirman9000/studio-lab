@@ -1,5 +1,32 @@
 # Changelog
 
+## 2.4.1
+**Celtic, made authentic: session instruments, session drums, and real ornaments**
+
+- **New instruments:**
+  - **Session fiddle**: bowed, with rosin and bow-change scratch and a woody body. Almost no vibrato, the way folk fiddlers play.
+  - **Irish bouzouki**: paired steel courses, the low ones in octaves, so every note shimmers.
+  - **Wooden Irish flute**, breathy with a soft chiff, and a soft, airy **low whistle**.
+  - **Concertina**: two free reeds a hair apart.
+  - **Uilleann pipes**: a sweet chanter over its own drones.
+  - **Great Highland bagpipe**, loud and nasal with no dynamics, plus its **drones** (two tenors and a bass, beating).
+- **New drums:**
+  - a **bodhrán** with a deep, hand-bent boom and high tipper strokes near the rim
+  - **bones** and **spoons**
+  - a crisp, high-tuned **pipe-band snare** and a **tenor drum**
+- **Ornaments, the heart of the style.**
+  - Fiddle, whistle, flute and pipe melodies now get **cuts** (a flick to the note above), **taps** (a flick below) and **rolls** on long notes.
+  - The Highland pipes articulate almost every note with a **high-G gracenote**, and add **doublings** on strong beats.
+- **The Celtic genres use all this:**
+  - **Jig:** session fiddle with whistle, bouzouki, bodhrán with tipper.
+  - **Reel:** a swung 8th-note lilt and bones.
+  - **Slow air:** uilleann pipes.
+  - **Sea shanty:** concertina and claps.
+  - **Pipe band:** bagpipe chanter and drones at the chanter's real pitch (about B♭), pipe-band snare and tenor drums.
+  - **Celtic new age:** low whistle.
+- All of them play in session keys (D, G, A, E) with open, drone-friendly chords.
+
+
 ## 2.4.0
 **Songs that don't repeat their shape, 22 new genres, fewer bells in dubstep**
 
