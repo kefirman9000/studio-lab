@@ -392,8 +392,32 @@ def auto_lp(buf, cut, block=256):
 _WORKER = {}
 
 
+def _parent_watch(ppid):
+    """(2.5.3) A render worker quits when the engine that started it is gone (killed, crashed, restarted for an
+    update) instead of staying behind holding a gigabyte of memory."""
+    import os
+    import time
+    if sys.platform.startswith('win'):
+        try:
+            import ctypes
+            h = ctypes.windll.kernel32.OpenProcess(0x00100000, False, ppid)        # SYNCHRONIZE
+            if h:
+                ctypes.windll.kernel32.WaitForSingleObject(h, 0xFFFFFFFF)
+                os._exit(0)
+        except Exception:                                                         # noqa: BLE001
+            return
+        return
+    while True:
+        time.sleep(2.0)
+        if os.getppid() != ppid:
+            os._exit(0)
+
+
 def _pool_init(song_blob, character):
+    import os
     import pickle
+    import threading
+    threading.Thread(target=_parent_watch, args=(os.getppid(),), daemon=True).start()
     song = pickle.loads(song_blob) if song_blob is not None else _WORKER.get('song')
     _WORKER['r'] = Renderer(song, log=lambda *a: None)
     _va.CHARACTER = character
@@ -2313,9 +2337,10 @@ def master(x, cfg, log=print):
     if cfg.get('dyn_eq', 1.0) > 0:     # tame low-mid build-up / harshness only where it happens
         x, master.last_dyn_eq = dynamic_eq(x, amount=float(cfg.get('dyn_eq', 0.6 if gentle else 1.0)))
     if gentle:     # acoustic / orchestral: keep the dynamics, no pumping glue
-        x = compressor(x, thresh=-24, ratio=1.3, attack=0.05, release=0.4, win=0.03)
-    else:
-        x = compressor(x, thresh=cfg.get('glue_thresh', -14), ratio=2.0, attack=0.025, release=0.2, win=0.02)
+        x = compressor(x, thresh=-24, ratio=1.3, attack=0.05, release=0.4, win=0.05)
+    else:   # (2.5.3) the level detector averages over 50 ms - two cycles of a 40 Hz sub. At 20 ms it rose and fell
+        #     with every wave of a low bass, so the glue compressor rode the waveform and fuzzed the bass ('clipping')
+        x = compressor(x, thresh=cfg.get('glue_thresh', -14) - 1.5, ratio=2.0, attack=0.025, release=0.2, win=0.05, sc_hp=90)
     mid = (x[0] + x[1]) / 2
     # width 1.0 = the mix as it is (it used to widen every song by 15%); the genre's width x your width slider
     w_ = max(0.0, min(2.0, float(cfg.get('genre_width', 1.0)) * float(cfg.get('width', 1.0))))

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.6.1
+- New genre: **Progressive House Journey (Y2K)** - the long, hypnotic turn-of-the-millennium progressive DJ track (128-131 BPM, about 6 minutes) that builds by adding one part at a time: percussion alone, a rolling bass filtering in, claps and an evolving widescreen pad, a dark hypnotic pluck under delays, muted stabs, and only late a sparse gliding lead - two breakdowns, a peak, then the parts leave one by one. Soft round kick, pumping sidechain, slow filter sweeps, a warm controlled top end.
+- New sounds for it (usable anywhere): **rolling progressive bass**, **evolving widescreen pad**, **hypnotic pluck**, **dark progressive stab** and **gliding progressive lead**.
+- **Fixed: bass crunching when it comes in and swelling when it stops.** The master's glue compressor reacted to the sub itself: when a loud bass entered, the whole mix ducked and the limiter caught the overshoot. Its level detector now ignores the sub (a 90 Hz sidechain filter) and averages over two bass cycles.
+- **Fixed: the sine bass thumped on and off.** Its warm saturation left a DC offset in every note that jumped in at the start and out at the end; it's removed.
+- Render workers now quit if the engine that started them is closed or crashes, instead of staying behind holding memory.
 ## 2.6.0
 - **New genre: Synthscape vignette** (Electronic > Chill, Lo-fi & Ambient), modelled on the one-minute synth piece you sent.
   It plays one gesture: a hushed 4-bar opening, then everything drops in at once for 12 bars over a soft quarter-note

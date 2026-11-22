@@ -12340,6 +12340,57 @@ derive('clarsach_air', 'celtic_slow_air', 'Classic',
        sounds={'lead': 'clarsach', 'chords': 'clarsach', 'arp': 'clarsach'},
        pools=dict(lead=['clarsach', 'harp', 'lowwhistle'], chords=['clarsach', 'harp'], arp=['clarsach', 'harp'], pad=['drone', 'humchoir']))
 
+
+# (2.5.3) turn-of-the-millennium progressive house journey: one long DJ track that builds by adding one part at a time
+_PJ = {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead', 'fx'}
+FORMS['progressive_journey'] = [
+    ('intro', 16, {'kick', 'top'}, {'filter_in': True}),                                     # percussion only, for mixing in
+    ('intro', 16, {'kick', 'top', 'bass'}, {'filter_in': True}),                             # the rolling bass filters in
+    ('verse', 8, {'kick', 'top', 'bass', 'fx'}, {}),                                         # the groove settles
+    ('verse', 16, {'kick', 'snare', 'top', 'bass', 'pad'}, {'crash': True}),                 # claps + the widescreen pad
+    ('verse', 16, {'kick', 'snare', 'top', 'bass', 'pad', 'arp'}, {}),                       # the hypnotic pluck
+    ('build', 8, {'kick', 'top', 'bass', 'pad', 'arp', 'fx'}, {'build': True}),
+    ('break', 16, {'pad', 'arp', 'fx'}, {'alt': True}),                                      # first breakdown
+    ('verse', 16, {'kick', 'snare', 'top', 'bass', 'pad', 'arp', 'chords'}, {'crash': True}),   # back in, now with stabs
+    ('verse', 16, {'kick', 'snare', 'top', 'bass', 'pad', 'arp', 'chords', 'lead'}, {}),     # the lead drifts in
+    ('build', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'lead', 'fx'}, {'build': True}),
+    ('break', 8, {'pad', 'chords', 'lead', 'fx'}, {'alt': True}),                            # short breath
+    ('drop', 24, _PJ, {'drop': True, 'crash': True}),                                        # the peak: everything at once
+    ('drop', 8, _PJ - {'lead'}, {'alt': True}),                                              # easing off
+    ('outro', 16, {'kick', 'top', 'bass', 'arp'}, {'layer_out': True}),                      # parts leave one by one
+    ('outro', 8, {'kick', 'top'}, {'layer_out': True}),                                      # percussion only, for mixing out
+]
+style('progressive_journey', 'Electronic',
+      'Progressive house journey (around 2000): one long, hypnotic DJ track at 128-131 that builds by adding a part at '
+      'a time - percussion alone, then a rolling detuned bass filtering in, claps and a widescreen evolving pad, a dark '
+      'hypnotic pluck looping under delays, muted stabs, and only late a sparse gliding lead; two breakdowns, a peak, '
+      'then the parts leave one by one. Soft round kick, pumping sidechain, slow filter sweeps, warm controlled top end',
+      bpm=(128, 131), scales=['minor', 'phrygian'], roots=[2, 9, 4], swing=0.5, slow_chords=0.5, chord_size=3,
+      progs={'minor': [[0, 0, 5, 6], [0, 6, 0, 6], [0, 5, 6, 0]], 'phrygian': [[0, 1, 0, 1], [0, 1, 6, 0]]},
+      sc_depth=0.7, sc_release=0.45, reverb=3.2, kit='909', form='progressive_journey', exact_form=True,
+      filter_arc=True, sc_arc=True, fill=True,
+      kick_shape=dict(pitch=48, punch=150, sweep=30, decay=10, drive=1.4, len=0.32, click=0.25),
+      drums={'kick': [FOUR], 'clap': [BACKBEAT, '....X.......X..x'], 'ohat': [OFFHAT], 'chat': ['x.x.x.x.x.x.x.x.', 'xxx.xxx.xxx.xxx.'],
+             'shaker': ['oxoxoxoxoxoxoxox', '.x.x.x.x.x.x.x.x'], 'ride': ['', '..o...o...o...o.']},
+      snare_tracks=['clap'], bass=['..R.R.R...R.R.R.', '..RR..RR..RR..RR', 'R.RRR.RRR.RRR.RR'], bass_gate=0.55,
+      chord_rh=['..x.....x.....x.', '..x.......x.....'], chord_center=60, arp=dict(rate=2, mode='updown', oct=5, prob=0.85),
+      lead_rh=['x---------x-----', 'x-------x---x---', 'x---------------'], lead_oct=5,
+      tracks=[T('kick', 'kick', 'kick', db=-9), T('clap', 'snare', 'clap', rev=0.35, db=-21),
+              T('ohat', 'top', 'ohat', db=-30), T('chat', 'top', 'chat', pan=-0.2, db=-34),
+              T('shaker', 'top', 'shaker', pan=0.35, db=-35), T('ride', 'top', 'ride', pan=0.25, db=-36),
+              T('bass', 'bass', 'nordroll', sc=1.0, db=-15),
+              T('pad', 'pad', 'jpmorph', wide=0.45, sc=0.9, rev=0.55, db=-21),
+              T('arp', 'arp', 'hypnopluck', sc=0.8, rev=0.4, dly=0.45, pan=-0.15, db=-23),
+              T('chords', 'chords', 'deepstab', sc=0.9, rev=0.4, dly=0.35, pan=0.15, db=-24),
+              T('lead', 'lead', 'glidelead', sc=0.6, rev=0.5, dly=0.4, db=-21)],
+      master=dict(lufs=-10.0, air=0.8, low=1.0),
+      pools=dict(bass=['nordroll', 'rollbass', 'sawbass', 'moogbass', 'junobass', 'tribass', 'deepbass'],
+                 pad=['jpmorph', 'trancepad', 'warmpad', 'darkpad', 'lushpad', 'vocalpad_dark', 'gatepad', 'sawchoir', 'reversepad'],
+                 arp=['hypnopluck', 'viruspluck', 'technoseq', 'sylpluck', 'pluck_dark', 'hypnoseq', 'berlinseq', 'acid'],
+                 chords=['deepstab', 'dubstab', 'stab_dark', 'techstab', 'obstab', 'samplerstab', 'jpmorph'],
+                 lead=['glidelead', 'squarelead', 'leadsaw_soft', 'softlead', 'progpluck', 'vocalead', 'dreamlead']),
+      label='Progressive House Journey (Y2K)')
+
 derive('celtic_new_age', 'new_age_chant', 'Classic',
        'Celtic new age: misty, layered and serene - a wordless choir stacked into lush chords, a harp rippling '
        'beneath, a low whistle or flute drifting over the top and a slow, soft heartbeat drum, in dorian and aeolian - '

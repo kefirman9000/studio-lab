@@ -256,14 +256,20 @@ def _smooth_gr(gr_db, attack, release, block=32):
     return np.interp(np.arange(n), np.arange(nb) * block + block / 2, out)
 
 
-def compressor(x, thresh=-18.0, ratio=3.0, attack=0.01, release=0.15, knee=6.0, win=0.005):
+def compressor(x, thresh=-18.0, ratio=3.0, attack=0.01, release=0.15, knee=6.0, win=0.005, sc_hp=None):
+    """sc_hp (2.5.3): high-pass the level detector (a sidechain filter) so a loud sub doesn't slam the compressor -
+    when the bass came in, the whole mix ducked, the limiter caught the overshoot and the bass crunched at its start
+    and swelled at its end."""
+    det = x
+    if sc_hp:
+        det = signal.sosfilt(signal.butter(2, sc_hp / (SR / 2), 'high', output='sos'), x, axis=-1)
     if x.ndim == 2:                                   # (1.90: channel by channel - no stereo-sized temporaries)
         pw = np.zeros(x.shape[1])
         for c in range(x.shape[0]):
-            pw += x[c] * x[c]
+            pw += det[c] * det[c]
         pw /= x.shape[0]
     else:
-        pw = x * x
+        pw = det * det
     pw = uniform_filter1d(pw, size=max(1, int(win * SR)))
     ldb = 10 * np.log10(pw + 1e-12) + 3.0  # +3 so a sine's rms reads near its peak
     over = ldb - thresh

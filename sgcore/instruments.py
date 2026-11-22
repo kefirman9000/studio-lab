@@ -3288,7 +3288,9 @@ def v_sinebass(m, dur, p, glide=None, mod=None):
     x = np.sin(2 * np.pi * np.cumsum(fr) / SR)
     sat = p.get('sat', 1.0)
     y = np.tanh(x * (1.0 + 0.9 * sat) + 0.15 * sat) - np.tanh(0.15 * sat)                   # asymmetric: 2nd harmonic
-    y = lp(y / np.tanh(1.0 + 0.9 * sat), p.get('cut', 700) * 1.4)
+    ph_ = np.linspace(0, 2 * np.pi, 512, endpoint=False)                                     # (2.5.3) minus the DC the
+    y = y - np.mean(np.tanh(np.sin(ph_) * (1.0 + 0.9 * sat) + 0.15 * sat) - np.tanh(0.15 * sat))   # asymmetry makes: it
+    y = lp(y / np.tanh(1.0 + 0.9 * sat), p.get('cut', 700) * 1.4)                           # thumped on/off every note
     return y * env * 0.95
 
 

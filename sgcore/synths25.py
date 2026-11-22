@@ -204,3 +204,95 @@ for _name, _fn, _info, _roles, _gm in NEW_252:
     for _role in _roles:
         if _name not in ROLE_CHOICES.setdefault(_role, []):
             ROLE_CHOICES[_role].append(_name)
+
+
+# ---- (2.5.3) turn-of-the-millennium progressive house: the hypnotic, slowly evolving club sounds of around 2000 ----
+
+def v_nordroll(m, dur, p, glide=None, mod=None):
+    """Rolling progressive bass: two saws a few cents apart and a sub square into a resonant 24 dB low-pass with a
+    short envelope blip - warm, round, a little detuned, made to roll in 16ths under a long build."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.3), 0.03) * SR)
+    env = _va.adsr(gate, 0.002, 0.12, 0.55, 0.04)
+    n = len(env)
+    t = np.arange(n) / SR
+    x = _va.saw(np.full(n, f * 2 ** (-8 / 1200)), n, 0.0) + _va.saw(np.full(n, f * 2 ** (8 / 1200)), n, 0.5) \
+        + 0.6 * _va.pulse(np.full(n, f / 2), n, 0.25, 0.5)
+    cut = 160 * (p.get('cut', 1100) / 160) ** np.exp(-t / 0.07)
+    y = np.tanh(_va.vcf(x * 0.5, cut, 0.38, 1.3) * 1.2)
+    return _hpf(y, 32) * env * 0.65
+
+
+def v_jpmorph(m, dur, p, glide=None, mod=None):
+    """Evolving widescreen pad: a soft supersaw and a slowly sweeping pulse whose width and filter drift over many
+    seconds, a long attack and longer release - the 'widescreen' wall behind an old progressive track."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.3) * SR)
+    env = _va.adsr(gate, p.get('a', 1.2), 1.0, 0.9, p.get('r', 1.6))
+    n = len(env)
+    t = np.arange(n) / SR
+    x = _va.jp_supersaw(f, n, 0.35, 0.6, 1.0) * 0.7
+    pw = 0.5 + 0.35 * np.sin(2 * np.pi * 0.11 * t)
+    pl = np.vstack([_va.pulse(np.full(n, f * 2 ** (-5 / 1200)), n, 0.1, pw), _va.pulse(np.full(n, f * 2 ** (5 / 1200)), n, 0.6, pw)])
+    cut = p.get('cut', 2200) * (0.6 + 0.4 * np.sin(2 * np.pi * 0.07 * t + 1.0)) * np.clip(t / 2.0, 0.35, 1)
+    y = _va.vcf(x + 0.35 * pl, cut, 0.22, 1.05)
+    return _hpf(y, 180) * env * 0.5
+
+
+def v_hypnopluck(m, dur, p, glide=None, mod=None):
+    """Hypnotic progressive pluck: a dark, round square-and-saw blip with a low resonant filter, kept in the mids so
+    it loops for minutes under the delays without ever getting bright."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.3), 0.02) * SR)
+    env = _va.adsr(gate, 0.001, 0.16, 0.0, 0.12)
+    n = len(env)
+    t = np.arange(n) / SR
+    x = _va.pulse(np.full(n, f), n, 0.0, 0.42) * 0.7 + _va.saw(np.full(n, f * 2 ** (4 / 1200)), n, 0.3) * 0.4
+    cut = 300 * (p.get('cut', 2600) / 300) ** np.exp(-t / 0.07)
+    y = _va.vcf(x * 0.6, cut, 0.45, 1.15) * env
+    y = lp(y, 4500)
+    return np.vstack([y, np.roll(y, 23)]) * 0.55
+
+
+def v_deepstab(m, dur, p, glide=None, mod=None):
+    """Dark progressive chord stab: a short, filtered detuned saw chord-note with a soft resonant bump - the muted,
+    dubby stab that answers the groove before the delays carry it away."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.4), 0.03) * SR)
+    env = _va.adsr(gate, 0.003, 0.22, 0.2, 0.18)
+    n = len(env)
+    t = np.arange(n) / SR
+    x = np.vstack([_va.saw(np.full(n, f * 2 ** (-10 / 1200)), n, 0.0), _va.saw(np.full(n, f * 2 ** (10 / 1200)), n, 0.5)])
+    cut = 400 * (p.get('cut', 3000) / 400) ** np.exp(-t / 0.1)
+    y = _va.vcf(x * 0.5, cut, 0.4, 1.2) * env
+    return _hpf(lp(y, 5000), 200) * 0.55
+
+
+def v_glidelead(m, dur, p, glide=None, mod=None):
+    """Sparse progressive lead: a soft resonant saw with slow portamento and a filter that blooms open over each long
+    note - not a hook, a voice drifting in over the groove."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    env = _va.adsr(gate, 0.06, 0.3, 0.85, p.get('r', 0.6))
+    n = len(env)
+    t = np.arange(n) / SR
+    fr = np.full(n, f) if glide is None else f + (float(mtof(glide)) - f) * np.exp(-t / 0.12)
+    fr = fr * 2 ** (np.clip((t - 0.4) / 0.4, 0, 1) * 9 * np.sin(2 * np.pi * 4.8 * t) / 1200)
+    x = np.vstack([_va.saw(fr * 2 ** (-6 / 1200), n, 0.0), _va.saw(fr * 2 ** (6 / 1200), n, 0.4)])
+    cut = 600 + (p.get('cut', 3500) - 600) * (1 - np.exp(-t / 0.5))
+    y = _va.vcf(x * 0.5, cut, 0.35, 1.1)
+    return _hpf(y, 200) * env * 0.5
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('nordroll', v_nordroll, 'Rolling progressive bass (detuned, resonant)', ('bass',), 38),
+        ('jpmorph', v_jpmorph, 'Evolving widescreen pad (slow morph)', ('pad', 'chords'), 89),
+        ('hypnopluck', v_hypnopluck, 'Hypnotic dark progressive pluck', ('arp', 'chords'), 81),
+        ('deepstab', v_deepstab, 'Dark progressive chord stab', ('chords', 'arp'), 81),
+        ('glidelead', v_glidelead, 'Sparse gliding progressive lead', ('lead',), 81)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES.setdefault(_role, []):
+            ROLE_CHOICES[_role].append(_name)
