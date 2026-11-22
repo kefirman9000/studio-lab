@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.9.0
+- New genre: **Slow Wobble Dubstep (bass-led)** - deep half-time 140 where the bass is the song: a clean sine sub and one wobble on top moving slowly (a sweep per bar, half bar or beat, a dotted-1/8 bounce, or one sweep opening across the whole note), lots of space where the sub carries on alone, minimal drums. Measured against deep dubstep reference drops (sub share, darkness, wobble speeds).
+- New bass sounds: **slow deep wobble**, **talking 'yoi' wobble** (oo-ah-oo vowels), **rising sweep wobble**, **slow dark reese wobble** and a clean **deep sine sub**. All take their LFO speed from the composer, sit on a clean sub, and work in any genre's bass.
+- Wobble genres can now leave more space between phrases (the sub carries on alone).
+
 ## 2.8.0
 - **Listening check** over 120 random genres (preview render, loudness, peaks, clipping, band balance, stereo width,
   silence, genre fit, melody-against-chord rubs). No errors, no clipping, every genre at 100% fit, loudness on target.

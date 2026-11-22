@@ -1601,7 +1601,8 @@ def compose(opts):
                     mode = '808'
                 elif inst == 'acid' and mode == 'pattern':
                     mode = 'acid'
-                elif inst in ('wobble', 'riddim', 'dnbwob', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass') and mode == 'pattern':
+                elif inst in ('wobble', 'riddim', 'dnbwob', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass',
+                              'slowwob', 'yoiwob', 'sweepwob', 'reesewob') and mode == 'pattern':
                     mode = 'wobble'
                 if getattr(opts, 'bass_rhythm', None) == 'kick' and mode not in ('walk', '808'):
                     mode = 'kick'
@@ -1652,7 +1653,7 @@ def compose(opts):
                     while pos < 16:
                         ln = rnd_b.choice(st.get('wobble_lens') or [8, 4, 4, 2, 16]) if pos % 4 == 0 else 2
                         ln = min(ln, 16 - pos)
-                        if rnd_b.random() < 0.12 and pos > 0:
+                        if rnd_b.random() < st.get('wobble_rest', 0.12) and pos > 0:   # (2.9.0) space: the sub alone
                             pos += ln
                             continue
                         rates = (opts_s.get('alt') and st.get('wobble_rates_alt')) or st.get('wobble_rates') or \
@@ -2284,7 +2285,7 @@ def apply_note_edits(evs, edits, tracks):
     return out
 
 
-SUB_BASSES = ('808', '808dist', '808long', '808punch', 'sinebass', 'logdrum', 'chipbass', 'deepbass', 'splitbass', 'rumble', 'subwob')
+SUB_BASSES = ('808', '808dist', '808long', '808punch', 'sinebass', 'deepsub', 'logdrum', 'chipbass', 'deepbass', 'splitbass', 'rumble', 'subwob')
 
 EXTRA_FOLLOWS = ('lead', 'counter', 'chords', 'pad', 'arp', 'bass')
 
@@ -2517,7 +2518,8 @@ LAYER_ODDS = {'Electronic': 0.5, 'Classic': 0.3, 'Orchestral': 0.45}
 OCT_UP = {'bell', 'celesta', 'flute', 'sf:piccolo', 'pluck', 'chip', 'marimba', 'kalimba', 'harp', 'glock', 'steeldrum', 'pizz'}
 OCT_DOWN = {'cello', 'sf:contrabass', 'sf:bassoon', 'sf:trombone', 'sf:tuba', 'horn'}
 NO_LAYER = {'808', 'logdrum', 'wobble', 'acid', 'sinebass', 'chipbass', 'riddim', 'screech', 'dnbwob', 'vowelwob',
-            'multiwob', 'tablewob', 'chopwob', 'rumble', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass'}
+            'multiwob', 'tablewob', 'chopwob', 'rumble', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass',
+            'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'deepsub'}
 
 
 def debell(st, opts):
@@ -2771,7 +2773,8 @@ def sync_drones(evs, tracks, bpm):
 
 
 SUSTAINED_BASS = {'reese', 'growl', 'wobble', 'hoover', 'sinebass', 'moogbass', 'drone', 'tanpura', 'dnbwob', 'vowelwob',
-                  'multiwob', 'tablewob', 'chopwob', 'rumble', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass'}
+                  'multiwob', 'tablewob', 'chopwob', 'rumble', 'darkwob', 'subwob', 'fmgrowl', 'talkgrowl', 'metalbass', 'fuzzbass',
+                  'slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'deepsub'}
 
 
 def legato_bass(evs, tracks):

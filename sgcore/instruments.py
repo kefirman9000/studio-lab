@@ -8065,3 +8065,5 @@ from . import guitars2  # noqa: E402,F401
 from . import instruments3  # noqa: E402,F401
 from . import celtic  # noqa: E402,F401
 from . import synths25  # noqa: E402,F401
+from . import deepwob as _deepwob  # noqa: E402
+_deepwob.register()

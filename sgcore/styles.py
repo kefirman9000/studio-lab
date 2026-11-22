@@ -12391,6 +12391,19 @@ style('progressive_journey', 'Electronic',
                  lead=['glidelead', 'squarelead', 'leadsaw_soft', 'softlead', 'progpluck', 'vocalead', 'dreamlead']),
       label='Progressive House Journey (Y2K)')
 
+
+derive('slow_wobble', 'deep_dubstep', 'Electronic',
+       'Slow wobble dubstep (deep, bass-led): half-time 140 where the bass IS the song - a clean sine sub on the root '
+       '(a semitone away now and then) and one wobble on top that moves slowly: one sweep per bar, per half bar or per '
+       'beat, a dotted-1/8 bounce, or a single sweep that opens across the whole note. Lots of space - phrases stop and '
+       'the sub carries on alone. Kick on 1, snare on 3, a few rims and hats in a dub echo, almost nothing else',
+       'Slow Wobble Dubstep (bass-led)', exact_pools=True,
+       sounds={'bass': 'slowwob'}, drop_tracks=('lead', 'arp'),
+       roots=[4, 5, 2, 3, 9], simplicity=0.85, repetition=0.95,
+       wobble_rates=[4, 2, 2, 1, 0.75], wobble_rates_alt=[2, 1, 1, 0.75, 0.5], wobble_lens=[16, 8, 8, 4], wobble_rest=0.25,
+       pools=dict(bass=['slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'wobble', 'darkwob'],
+                  chords=['stab', 'dubstab', 'stab_dark'], pad=['warmpad', 'darkpad', 'drone']))
+
 derive('celtic_new_age', 'new_age_chant', 'Classic',
        'Celtic new age: misty, layered and serene - a wordless choir stacked into lush chords, a harp rippling '
        'beneath, a low whistle or flute drifting over the top and a slow, soft heartbeat drum, in dorian and aeolian - '
