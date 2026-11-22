@@ -2096,6 +2096,9 @@ def compose(opts):
             for a, nx in zip(keep, keep[1:] + [None]):
                 gap = (nx.beat - a.beat) if nx is not None else 4.0
                 a.dur = max(a.dur, min(4.0, gap) * 0.95)
+    _late = fix_clashes(evs, tracks, key, st, sections)  # (2.8) late stages (calm leads, answers, extra arps, layer
+    if _late:                                            # copies) can land held notes on a rub - tune those too
+        st['tuned_notes'] = (st.get('tuned_notes') or 0) + _late
     if st.get('dj_fx'):                                  # DJ edits: pitched hat moves, down / up-tuned lead notes, slowdowns
         dj_effects(evs, fx, tracks, sections, float(st['dj_fx']), random.Random(opts.seed * 73 + 11), st.get('dj_slow'))
     if st.get('chopped'):                                # chopped & screwed: the DJ catches a beat twice

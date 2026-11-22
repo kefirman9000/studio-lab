@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.8.0
+- **Listening check** over 120 random genres (preview render, loudness, peaks, clipping, band balance, stereo width,
+  silence, genre fit, melody-against-chord rubs). No errors, no clipping, every genre at 100% fit, loudness on target.
+- **Ambient melodies no longer rub against the pads.** Held melody notes were tuned to the harmony early on, but later
+  stages (calm long-note leads, answer phrases, extra arpeggios, layer copies) could still land a note a semitone
+  above a pad note. The tuner now runs again after those stages: ambient went from up to 10% of held notes rubbing to
+  under 1%. Neighbouring genres were already clean.
+- **Faster previews with delay throws.** A fading echo tail left the signal full of near-zero numbers (denormals) that
+  made the reverb on the delay return crawl: 4.7 s for one effect, now 0.2 s. Slam previews about 20% faster.
+
 ## 2.7.0
 - **The genre test suite passes again** (it had been failing since 2.4.0, which hid real bugs). Fixes along the way:
   - **Trap and drill 808s were marked "not sliding".** The songs slid fine. The check only knew the plain "808", so a song

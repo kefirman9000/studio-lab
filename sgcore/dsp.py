@@ -181,6 +181,9 @@ def make_ir(decay, predelay=0.02, bright=1.0):
 
 
 def reverb(x, ir):
+    # (2.8) flush denormals first: a fading feedback tail (delay throws) leaves most samples at ~1e-300, and those
+    # crawl through the FFT - one delay return took 4.7 s instead of 0.15 s
+    x = np.where(np.abs(x) < 1e-12, 0, x).astype(x.dtype, copy=False)
     out = np.empty_like(x)
     for c in range(2):
         out[c] = signal.oaconvolve(x[c], np.asarray(ir[c], dtype=x.dtype))[:x.shape[1]]
