@@ -342,7 +342,7 @@ AUDIT_228 = {
     'dream_synthscape': {'bass': ('set', ['roundbass', 'sinebass', 'dreambass', 'junobass'])},
     'ethereal_wave': {'pad': ('add', ['glasspad', 'choir_wide', 'warmpad_wide']),
                       'lead': ('add', ['formantchop', 'vocalchop', 'softlead_wide'])},
-    'switchup_bass': {'arp': ('add', ['pluck', 'bell', 'acid', 'modseq', 'technoseq'])},
+    'switchup_bass': {'arp': ('add', ['pluck', 'acid', 'modseq', 'technoseq'])},
 }
 
 

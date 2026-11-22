@@ -4865,10 +4865,9 @@ style('cinematic_journey_low', 'Orchestral', 'Cinematic Journey - Dark & Low: th
 # replaced by the genre's own sound for that part.
 BELLS = {'bell', 'celesta', 'sf:glock', 'sf:musicbox', 'sf:tubular', 'glock', 'musicbox', 'tubular', 'sf:celesta'}
 MALLETS = {'marimba', 'kalimba', 'vibes', 'steeldrum', 'sf:marimba', 'sf:vibes', 'sf:kalimba', 'sf:steeldrum', 'sf:xylophone'}
-BELL_OK = {'festive_cinematic', 'drill_space', 'idm_jungle_theme', 'rolling_atmos_bass', 'uk_tribal_techno', 'aarti', 'witch_house', 'anime_opening', 'latin_trap', 'adventure', 'ambient', 'braindance', 'brostep', 'chamber_pop', 'chillstep', 'cinematic', 'cloud_rap',
-           'deep_dubstep', 'deep_dubstep_minimal', 'downtempo', 'dubstep', 'epic_choir', 'epic_orchestral', 'fantasy_rpg', 'film_piano',
+BELL_OK = {'festive_cinematic', 'drill_space', 'idm_jungle_theme', 'uk_tribal_techno', 'aarti', 'witch_house', 'anime_opening', 'latin_trap', 'adventure', 'ambient', 'braindance', 'chamber_pop', 'chillstep', 'cinematic', 'cloud_rap', 'downtempo', 'epic_choir', 'epic_orchestral', 'fantasy_rpg', 'film_piano',
            'hauntology', 'hauntology_dark', 'hauntology_sunlit', 'holiday', 'hybrid_trailer', 'impressionism', 'lofi',
-           'neoclassical', 'orchestral', 'orchestral_hiphop', 'plugg', 'rage', 'riddim', 'symphonic_finale',
+           'neoclassical', 'orchestral', 'orchestral_hiphop', 'plugg', 'rage', 'symphonic_finale',
            'tension', 'trap', 'waltz'}
 MALLET_OK = {'festive_cinematic', 'drill_space', 'idm_jungle_theme', 'balearic_chill', 'tropical_house', 'uk_funky', 'witch_house', 'adventure', 'afro_house', 'afrobeats', 'amapiano', 'ambient', 'bossa_nova', 'braindance', 'chamber_pop',
              'chillstep', 'cinematic', 'city_pop', 'cloud_rap', 'cumbia', 'dancehall', 'deep_dubstep', 'deep_dubstep_minimal', 'downtempo',
@@ -12075,3 +12074,228 @@ style('euphoric_trance', 'Electronic',
                  arp=['trancepluck', 'trancebell', 'superpluck', 'pluckbell', 'dxbell', 'nordpluck', 'icebell'],
                  lead=['supersaw_lead', 'hypersaw', 'supersaw_lead_octave', 'emolead', 'formantlead']),
       label='Euphoric Trance')
+
+
+# ---- (2.4) genre inheritance: a new genre starts from its closest relative and overrides only what makes it itself --
+def derive(name, parent, category, desc, label, sounds=None, drop_tracks=(), pools=None, add_tracks=(), **kw):
+    """Define a genre as a child of `parent`: everything is copied, then `sounds` ({part name: instrument}) swaps the
+    parts' sounds, `drop_tracks` removes parts, `pools` replaces the sound lists of the roles given, and **kw overrides
+    any style field (bpm, drums, bass, progs, form ...). Goes through style() like every genre."""
+    import copy
+    base = copy.deepcopy(STYLES[parent])
+    for k in ('name', 'category', 'desc', 'pools', 'label'):
+        base.pop(k, None)
+    tracks = [dict(t, p=dict(t.get('p') or {})) for t in base.pop('tracks') if t['name'] not in drop_tracks]
+    for t in tracks:
+        if sounds and t['name'] in sounds:
+            t['inst'], t['p'] = sounds[t['name']], {}
+    base.update(kw)
+    base['tracks'] = kw.get('tracks', tracks) + list(add_tracks)
+    pp = copy.deepcopy(POOLS.get(parent) or {})
+    pp.update(pools or {})
+    for t in base['tracks']:                              # each part's own (new) sound leads its list
+        lst = pp.get(t['layer'])
+        if t['name'] == t['layer'] and lst is not None:
+            pp[t['layer']] = [t['inst']] + [x for x in lst if x != t['inst']]
+    base['parent'] = parent
+    style(name, category, desc, pools=pp or None, label=label, **base)
+
+
+derive('shangaan_electro', 'afro_house', 'Electronic',
+       'Shangaan electro: South African township dance at a breakneck 178-190 - a fast four-on-the-floor kick, bright '
+       'Casio-style marimba and kalimba riffs racing in interlocking 16ths, a bouncy short bass, whistles and '
+       'woodblocks - joyful, dizzying, made for footwork dancing', 'Shangaan Electro',
+       sounds={'lead': 'marimba_octave', 'arp': 'kalimba', 'chords': 'bitpiano', 'pad': 'organ'},
+       bpm=(178, 190), scales=['major', 'mixolydian'], swing=0.5,
+       progs={'major': [[0, 3, 4, 0], [0, 4, 3, 4], [0, 0, 3, 4]], 'mixolydian': [[0, 6, 3, 0]]},
+       drums=dict(kick=['X...X...X...X...'], clap=['....x.......x...', '....x.......x.x.'], shaker=['xxxxxxxxxxxxxxxx'],
+                  woodblock=['x..x..x...x..x..', 'x..x.x..x..x.x..'], conga=['..x..x....x..x..'], ohat=['..x...x...x...x.']),
+       bass=['R..R..R.R..R..R.', 'R.R..R.R..R.R..R'], bass_gate=0.5, chord_rh=['..x...x...x...x.', 'x..x..x..x..x...'],
+       lead_rh=['x.xxx.x.xx.x.xx.', 'xx.x.xx.x.xx.x.x', 'x.x.x.xxx.x.x.x.'], arp=dict(rate=4, mode='updown', oct=5),
+       pools=dict(lead=['marimba_octave', 'marimba', 'kalimba_octave', 'chip', 'bell', 'whistlelead'],
+                  arp=['kalimba', 'marimba', 'pluck', 'bell', 'kalimba_octave'], chords=['bitpiano', 'organ', 'epiano_bright', 'stab']))
+
+derive('kuduro', 'gqom', 'Electronic',
+       'Kuduro: Angolan street-dance music at 130-140 - a hard, broken kick-and-rim pattern, booming toms, clattering '
+       'claps, a stabbing synth riff and chopped vocal shouts over a rubbery sub - raw, energetic and frantic',
+       'Kuduro', sounds={'chords': 'stab', 'lead': 'vocalchop'},
+       bpm=(130, 140), scales=['minor', 'phrygian'],
+       drums=dict(kick=['X..X..X.X..X..X.', 'X..X..X...X.X...'], tom=['......x.......x.', '...x......x...x.'],
+                  clap=['....X.......X...', '....X..x....X.x.'], shaker=['x.xxx.xxx.xxx.xx'], rim=['..x..x..x..x..x.']),
+       bass=['R..R..R.R..R..R.', 'R..R...RR..R..R.'], bass_gate=0.6, chord_rh=['x..x..x.x.......', '...x..x...x.x...'],
+       pools=dict(chords=['stab', 'stab_dark', 'organ_dark', 'samplerstab', 'dancestab'],
+                  lead=['vocalchop', 'vox', 'formantchop', 'acid', 'chopwob']))
+
+derive('dream_pop', 'shoegaze', 'Classic',
+       'Dream pop: hazy, slow-motion pop at 70-100 - chorused clean guitars ringing in arpeggios, a soft breathy lead, '
+       'floating major-seventh and add9 chords, a gentle round bass and a soft kit drenched in reverb - tender and '
+       'weightless (where shoegaze is a wall of fuzz, dream pop is a mist)', 'Dream Pop',
+       sounds={'chords': 'jangle', 'arp': 'jangle', 'pad': 'glasspad', 'lead': 'softlead'},
+       bpm=(70, 100), scales=['major', 'lydian'], reverb=3.4, chord_size=4,
+       progs={'major': [[0, 5, 3, 4], [3, 0, 3, 4], [0, 2, 5, 3]], 'lydian': [[0, 1, 0, 1]]},
+       pools=dict(chords=['jangle', 'cleanguitar', 'epiano', 'glasskeys', 'polysynth'],
+                  arp=['jangle', 'cleanguitar', 'glasskeys', 'celesta'], pad=['glasspad', 'warmpad_wide', 'choir_wide', 'shimmerpad'],
+                  lead=['softlead', 'softlead_wide', 'whistlelead', 'flute']))
+
+derive('darksynth', 'dark_synthwave', 'Electronic',
+       'Darksynth: synthwave turned menacing at 100-125 - a pounding gated snare and punchy kick, a distorted, driving '
+       'saw bass in 16ths, dark detuned supersaw chords, a screaming lead and horror-movie arps in phrygian and harmonic '
+       'minor - aggressive, cinematic, neon-noir', 'Darksynth',
+       sounds={'bass': 'moogbass_driven', 'chords': 'supersaw_dark', 'lead': 'leadsaw'},
+       bpm=(100, 125), scales=['phrygian', 'harmonic_minor', 'minor'],
+       progs={'phrygian': [[0, 1, 0, 6], [0, 5, 1, 0]], 'harmonic_minor': [[0, 5, 3, 4], [0, 3, 4, 4]], 'minor': [[0, 5, 6, 4]]},
+       bass=['RRRRRRRRRRRRRRRR', 'RR.RRR.RRR.RRR.R'], bass_gate=0.7, master=dict(lufs=-8.5, air=1.4, low=1.3),
+       pools=dict(bass=['moogbass_driven', 'sawbass_dark', 'sawbass', 'reese', 'fmbass'],
+                  chords=['supersaw_dark', 'supersaw', 'synthbrass_dark', 'cs80brass', 'organ_dark'],
+                  lead=['leadsaw', 'supersaw_lead_dark', 'screamlead', 'analoglead'], arp=['pluck_saw_dark', 'pluck_saw', 'acid', 'technoseq']))
+
+derive('mallsoft', 'vaporwave', 'Electronic',
+       'Mallsoft: vaporwave heard from the far end of an empty shopping mall at 50-70 - muzak electric piano and soft '
+       'jazz chords smeared with huge reverb, a distant sax, faint footsteps of a beat or none at all - nostalgic, '
+       'liminal, half asleep', 'Mallsoft',
+       sounds={'chords': 'epiano_tape', 'lead': 'sax', 'pad': 'warmpad_tape'},
+       bpm=(50, 70), reverb=4.5, chord_size=4, drums=dict(kick=['X.......X.......', ''], snare=['', '........x.......'],
+                                                           chat=['', '..x...x...x...x.']),
+       master=dict(lufs=-13.0, air=0.4, low=0.8, lofi=True, wobble=0.5, vintage_lp=9000),
+       pools=dict(chords=['epiano_tape', 'epiano', 'rhodes', 'vibes', 'm1piano'], pad=['warmpad_tape', 'warmpad', 'strings', 'solina'],
+                  lead=['sax', 'flute_tape', 'vibes', 'epiano_dark']))
+
+derive('highlife', 'afrobeat', 'Classic',
+       'Highlife: Ghanaian and Nigerian dance-band music at 110-130 - bright interlocking clean guitars in sweet major '
+       'keys, a melodic walking bass, a horn section answering the vocal line, a bell pattern and congas over a '
+       'relaxed, swaying groove - joyful and elegant', 'Highlife',
+       sounds={'chords': 'cleanguitar', 'arp': 'cleanguitar', 'lead': 'brass', 'pad': 'organ'},
+       bpm=(110, 130), scales=['major', 'mixolydian'], swing=0.54,
+       progs={'major': [[0, 3, 4, 0], [0, 4, 0, 3], [0, 3, 0, 4]], 'mixolydian': [[0, 6, 3, 0]]},
+       bass=['R..A..F.R...O.A.', 'R...F.A.R..F..A.'],
+       pools=dict(chords=['cleanguitar', 'guitar', 'jangle', 'organ'], arp=['cleanguitar', 'jangle', 'guitar', 'marimba'],
+                  lead=['brass', 'trumpet', 'sax', 'discohorn']))
+
+derive('soukous', 'afrobeat', 'Classic',
+       'Soukous: Congolese dance music at 130-150 - glittering high guitars racing in fast cascading arpeggios (the '
+       'sebene), a rolling, bouncing bass, a crisp snare on every off-beat and a driving hi-hat - bright, fast, '
+       'irresistible', 'Soukous',
+       sounds={'chords': 'jangle', 'arp': 'cleanguitar', 'lead': 'cleanguitar'},
+       bpm=(130, 150), scales=['major'], progs={'major': [[0, 3, 4, 3], [0, 4, 0, 4], [0, 3, 0, 4]]},
+       drums=dict(kick=['X...X...X...X...'], snare=['..x...x...x...x.', '..x...x...x.x.x.'], chat=['xxxxxxxxxxxxxxxx'],
+                  conga=['x..x..x...x..x..'], shaker=['x.x.x.x.x.x.x.x.']),
+       bass=['R..R.F..R..R.F.A', 'R.F.R..AR.F.R..O'], lead_rh=['x.x.x.x.x.x.x.x.', 'xxxxx.x.xxxxx.x.'],
+       arp=dict(rate=4, mode='updown', oct=5),
+       pools=dict(arp=['cleanguitar', 'jangle', 'guitar'], lead=['cleanguitar', 'guitar', 'jangle', 'brass']))
+
+derive('balkan_brass', 'klezmer', 'Classic',
+       'Balkan brass band: a roaring street brass band at 120-160 - trumpets wailing ornamented melodies in phrygian '
+       'dominant, a tuba pumping the bass, horns and saxes stabbing the off-beats, a big bass drum and snare driving '
+       'it forward - wild, festive, breathless', 'Balkan Brass',
+       sounds={'lead': 'trumpet', 'chords': 'brass', 'pad': 'horn', 'arp': 'sax', 'bass': 'tuba'},
+       bpm=(120, 160),
+       drums=dict(kick=['X.......X.......', 'X.....X.X.......'], snare=['..x...x...x...x.', '..x.x.x...x.x.x.'],
+                  chat=['x.x.x.x.x.x.x.x.']),
+       pools=dict(lead=['trumpet', 'clarinet', 'sax', 'brass'], chords=['brass', 'accordion', 'horn', 'synthbrass'],
+                  arp=['sax', 'clarinet', 'trumpet'], bass=['tuba', 'ebass']))
+
+derive('neoperreo', 'reggaeton', 'Electronic',
+       'Neoperreo: underground reggaeton gone dark and digital at 88-100 - a stripped, crushed dembow beat, a '
+       'distorted 808, eerie bell and synth riffs, glitchy chopped vocals and lots of empty space - minimal, '
+       'hypnotic, nocturnal', 'Neoperreo',
+       sounds={'bass': '808dist', 'chords': 'darkbell', 'lead': 'vocalchop', 'arp': 'pluck_saw_dark', 'pad': 'darkpad'},
+       scales=['minor', 'phrygian'], master=dict(lufs=-9.0, air=0.9, low=1.4),
+       progs={'minor': [[0, 0, 5, 6], [0, 5, 0, 6]], 'phrygian': [[0, 1, 0, 1]]},
+       pools=dict(bass=['808dist', '808_dark', '808', '808_driven'], chords=['darkbell', 'bell_dark', 'polysynth', 'darkpiano'],
+                  lead=['vocalchop', 'formantchop', 'darkbell', 'chip'], pad=['darkpad', 'warmpad_tape', 'choir_dark']))
+
+derive('gregorian_chant', 'new_age_chant', 'Orchestral',
+       'Gregorian chant: a unison choir of low voices singing a free-flowing modal melody over a held drone, in the '
+       'echo of a stone church - no beat, no harmony beyond the drone, just the line rising and falling in dorian, '
+       'phrygian or mixolydian - meditative and timeless', 'Gregorian Chant',
+       sounds={'lead': 'choir_dark', 'chords': 'drone', 'pad': 'organ_dark'}, drop_tracks=('kick', 'snare', 'chat', 'arp', 'texture', 'bass'),
+       bpm=(60, 72), scales=['dorian', 'phrygian', 'mixolydian'], drums={}, reverb=5.0, sc_depth=0.0, chord_size=2,
+       progs={'dorian': [[0, 0, 0, 0]], 'phrygian': [[0, 0, 0, 0]], 'mixolydian': [[0, 0, 6, 0]]},
+       chord_rh=['x---------------'], lead_rh=['x---x---x---x---', 'x-------x---x---', 'x---x-x-x-------'],
+       master=dict(lufs=-16.0, air=0.8, low=0.8),
+       pools=dict(lead=['choir_dark', 'choir', 'humchoir'], chords=['drone', 'organ_dark', 'humchoir'], pad=['organ_dark', 'drone', 'choir_dark']))
+
+derive('horror', 'tension', 'Orchestral',
+       'Horror / dread: a slow, creeping score - low strings and a creaking organ holding clustered, dissonant '
+       'chords, a detuned music box picking out a broken lullaby, a dark choir breathing in the background and '
+       'sudden stabs from the timpani - unsettling and claustrophobic', 'Horror / Dread',
+       sounds={'chords': 'creeporgan', 'arp': 'celesta', 'pad': 'choir_dark', 'lead': 'violin'},
+       bpm=(50, 72), scales=['phrygian', 'harmonic_minor'],
+       progs={'phrygian': [[0, 1, 0, 1], [0, 1, 6, 1]], 'harmonic_minor': [[0, 4, 0, 5], [0, 3, 4, 4]]},
+       pools=dict(chords=['creeporgan', 'tremolo', 'strings_dark', 'organ_dark'], arp=['celesta', 'bell_dark', 'glassharmonica', 'harp'],
+                  pad=['choir_dark', 'strings_dark', 'drone'], lead=['violin', 'cello', 'glassharmonica', 'choir_dark']))
+
+derive('wonder', 'storybook_score', 'Orchestral',
+       'Wonder / discovery: a score for the moment something magical appears - shimmering celesta and harp arpeggios, '
+       'warm sustained strings rising in lydian, a soaring horn and flute melody and a gentle swell of choir - '
+       'awe-struck, glowing and hopeful', 'Wonder / Discovery',
+       scales=['lydian', 'major'], progs={'lydian': [[0, 1, 0, 1], [0, 1, 5, 4]], 'major': [[0, 3, 5, 4], [0, 5, 3, 4]]})
+
+
+# ---- (2.4) Celtic: the jig plus reels, slow airs, Celtic punk, sea shanties, a highland pipe band, Celtic new age ---
+derive('celtic_reel', 'celtic_jig', 'Classic',
+       'Celtic reel (4/4): the fastest dance in the session - fiddle and tin whistle tearing through a running AABB '
+       'tune in even 8ths and 16ths, a driving bodhrán, a pumping guitar and a banjo or mandolin picking along',
+       'Celtic Reel (4/4)', meter=None, bpm=(104, 120),
+       drums={'bodhran': ['X.xxX.xxX.xxX.xx', 'X..xX.x.X..xX.x.', 'X.xxX.x.X.xxX.xx'], 'tip': ['..x...x...x...x.', '......x.......x.']},
+       bass=['R.......F.......', 'R...F...R...F...'], chord_rh=['x.xxx.xxx.xxx.xx', 'x.x.x.x.x.x.x.x.'],
+       lead_rh=['xxxxxxxxxxxxxxxx', 'x-xxxxxxx-xxxxxx', 'xxxxxxxx-xxxxxxx', 'x-x-xxxxx-x-xxxx'],
+       sounds={'arp': 'banjo'}, arp=dict(rate=2, mode='updown', oct=5, prob=0.6))
+
+derive('celtic_slow_air', 'celtic_jig', 'Classic',
+       'Celtic slow air: a lament played freely and slowly - pipes or a low whistle carrying a long, ornamented melody '
+       'over harp arpeggios, a held drone and the softest bodhrán, in dorian or aeolian - lonely, beautiful, timeless',
+       'Celtic Slow Air', exact_pools=True, meter=None, bpm=(58, 72), scales=['dorian', 'minor', 'major'], reverb=3.4,
+       progs={'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]], 'minor': [[0, 5, 6, 0], [0, 3, 5, 6]], 'major': [[0, 3, 0, 4]]},
+       drums={'bodhran': ['X...............', 'X.......X.......', ''], 'tip': ['', '........x.......']},
+       bass=['R---------------'], chord_rh=['x---------------', 'x-------x-------'],
+       lead_rh=['x-------x---x---', 'x-----x-x-------', 'x---x---x-------', 'x-------x-x-x---'],
+       sounds={'lead': 'pipes', 'chords': 'harp', 'arp': 'harp'}, drop_tracks=('whistle',),
+       arp=dict(rate=2, mode='updown', oct=5), master=dict(lufs=-15.0, air=1.2, low=0.7),
+       pools=dict(lead=['pipes', 'flute_soft', 'violin', 'tinwhistle'], chords=['harp', 'acguitar', 'sf:nylon'], arp=['harp', 'acguitar']))
+
+derive('celtic_punk', 'punk', 'Classic',
+       'Celtic punk: punk rock at full tilt with a pub-session heart - thrashing double-time drums and distorted '
+       'guitars, a tin whistle and accordion carrying a folk tune over the top, a banjo hammering along - rowdy, '
+       'anthemic, shout-along', 'Celtic Punk',
+       bpm=(160, 190), scales=['major', 'mixolydian', 'dorian'],
+       progs={'major': [[0, 3, 4, 0], [0, 4, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 3, 0]], 'dorian': [[0, 6, 0, 3]]},
+       sounds={'lead': 'tinwhistle'},
+       add_tracks=[T('arp', 'arp', 'banjo', pan=0.3, rev=0.15, db=-22), T('pad', 'pad', 'accordion', pan=-0.25, rev=0.2, db=-24)],
+       pools=dict(lead=['tinwhistle', 'accordion', 'violin', 'pipes'], arp=['banjo', 'mandolin', 'acguitar'],
+                  pad=['accordion', 'organ', 'humchoir']))
+
+derive('sea_shanty', 'folk_jam', 'Classic',
+       'Sea shanty: a working song for hauling ropes - a heavy stomp on 1 and 3 and claps on 2 and 4, an accordion '
+       'and fiddle carrying a call-and-response tune, a hum of voices and a plucked mandolin, in minor or dorian - '
+       'rousing and swaying', 'Sea Shanty',
+       bpm=(88, 108), scales=['minor', 'dorian', 'major'],
+       progs={'minor': [[0, 6, 0, 4], [0, 5, 6, 0]], 'dorian': [[0, 6, 0, 6]], 'major': [[0, 4, 0, 4]]},
+       drums={'kick': ['X.......X.......'], 'snare': ['....X.......X...'], 'tamb': ['', '..x...x...x...x.']},
+       drop_tracks=('shaker',), sounds={'lead': 'accordion', 'pad': 'humchoir', 'arp': 'mandolin', 'chords': 'accordion', 'bass': 'upright'},
+       lead_rh=['x-x-x---x-x-x---', 'x---x-x-x---x---', 'x-xxx---x-xxx---'], kit='soft', reverb=2.4,
+       pools=dict(lead=['accordion', 'violin', 'tinwhistle'], pad=['humchoir', 'choir', 'accordion'], arp=['mandolin', 'banjo', 'acguitar'],
+                  chords=['accordion', 'acguitar', 'dreadnought'], bass=['upright', 'tuba']))
+
+derive('highland_pipes', 'celtic_jig', 'Classic',
+       'Highland pipe band: bagpipes playing a proud march in mixolydian over their own humming drones, a corps of '
+       'snare drums rattling rudiments and rolls, tenor drums and a booming bass drum on the beat - stirring and loud',
+       'Highland Pipe Band', exact_pools=True, meter=None, bpm=(86, 100), scales=['mixolydian'],
+       progs={'mixolydian': [[0, 0, 0, 0], [0, 6, 0, 0], [0, 0, 6, 0]]},
+       drums={'kick': ['X.......X.......', 'X...X...X...X...'], 'snare': ['X.xxX.x.X.xxX.x.', 'xxxxX.xxxxxxX.xx', 'X.x.X.xxX.x.Xxxx'],
+              'tom': ['x...x...x...x...', 'x.....x.x.......']},
+       lead_rh=['x--xx-x-x--xx-x-', 'x-x-x--xx-x-x---', 'x--xx-x-x-x-x---'], kick_track='kick', snare_tracks=['snare'], kit='acoustic',
+       tracks=[T('kick', 'kick', 'kick', rev=0.35, db=-14), T('snare', 'snare', 'snare', rev=0.3, db=-20),
+               T('tom', 'top', 'tom', rev=0.3, db=-24),
+               T('pad', 'pad', 'drone', rev=0.35, db=-22), T('lead', 'lead', 'pipes', rev=0.3, db=-15)],
+       pools=dict(lead=['pipes'], pad=['drone', 'pipes']), drum_voice={}, master=dict(lufs=-11.0, air=1.2, low=0.9))
+
+derive('celtic_new_age', 'new_age_chant', 'Classic',
+       'Celtic new age: misty, layered and serene - a wordless choir stacked into lush chords, a harp rippling '
+       'beneath, a low whistle or flute drifting over the top and a slow, soft heartbeat drum, in dorian and aeolian - '
+       'like a fog rolling off green hills', 'Celtic New Age (choir & harp)', exact_pools=True,
+       bpm=(66, 84), scales=['dorian', 'minor', 'major'], reverb=4.0,
+       progs={'dorian': [[0, 6, 3, 0], [0, 3, 6, 0]], 'minor': [[0, 5, 6, 0], [0, 5, 2, 6]], 'major': [[0, 4, 5, 3]]},
+       sounds={'lead': 'flute_soft', 'chords': 'choir_wide', 'pad': 'warmpad_wide', 'arp': 'harp'},
+       pools=dict(lead=['flute_soft', 'tinwhistle', 'pipes', 'violin'], chords=['choir_wide', 'humchoir', 'choir'],
+                  arp=['harp', 'celesta', 'acguitar'], bass=['sinebass', 'upright'], pad=['warmpad_wide', 'glasspad', 'humchoir']))

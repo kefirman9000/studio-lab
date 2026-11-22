@@ -1,5 +1,23 @@
 # Changelog
 
+## 2.4.0
+**Songs that don't repeat their shape, 22 new genres, fewer bells in dubstep**
+
+- **Every song gets its own arrangement.** 225 of the genres had a single layout, so every song in them had the same shape. Now each song reshapes its genre's own layout with moves arrangers actually make, and about 1 in 4 still plays it as written.
+  - **Verse / chorus songs:** a pre-chorus build into the chorus, the hook first (cold open), a radio edit, a drums-out breakdown in place of the bridge, a double final chorus that adds layers, a longer or shorter intro, or a cold ending.
+  - **Club tracks:** a long DJ intro, a longer breakdown, a fake-out build, a switch-up final drop, an extended last drop, a short third drop, or a 32-bar drop split in two with the second half varied.
+  - **A/B forms:** an extra varied A, a longer C, or B first.
+  - Pop now comes out in 10 different shapes in 12 songs. Genres modelled on reference records, generated layouts, classical forms and genres that already rotate their own layouts keep their exact layouts.
+- **22 new genres:**
+  - *Celtic* (its own group, with the jig): **Celtic Reel (4/4)**, **Celtic Slow Air**, **Celtic Punk**, **Sea Shanty**, **Highland Pipe Band**, **Celtic New Age** (choir and harp).
+  - *Electronic*: **Shangaan Electro** (180+ BPM marimba riffs), **Kuduro**, **Neoperreo** (dark, minimal dembow), **Darksynth**, **Mallsoft**.
+  - *Classic*: **Dream Pop**, **Highlife**, **Soukous**, **Balkan Brass**.
+  - *Orchestral*: **Gregorian Chant**, **Horror / Dread**, **Wonder / Discovery**.
+- **Fewer bells in dubstep.** Dubstep, deep dubstep, riddim, brostep and switch-up bass no longer reach for bells: a bell now turns up in about 1 in 8 dubstep songs, and not at all in the others. Grime and chillstep keep theirs, since bell melodies belong to those sounds.
+- **Genres can now be built from a close relative.** A new genre inherits everything from its parent and overrides only what makes it itself. The new genres are built this way.
+- **The genre export** (*docs/GENRE_KNOWLEDGE.txt*) now has a contents index and the full pattern notation: ghost notes, approach and neighbour notes, boogie chord tones, 12-step bars for 3/4 and 6/8. Each genre also shows its parent genre, harmony (chord size, voicing, chord colours, harmonic rhythm), melody settings, and whether its layout varies per song.
+
+
 ## 2.3.1
 *(Euphoric Trance and the sound check below were committed after the 2.3.0 release had already been built, so they ship here.)*
 

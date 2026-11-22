@@ -12,7 +12,8 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 from sgcore import compose  # noqa: E402,F401  (imports the pools fully widened, as the app uses them)
-from sgcore.styles import STYLES, LABELS, FORMS, POOLS  # noqa: E402
+from sgcore.styles import STYLES, LABELS, FORMS, POOLS, ABS_FORMS  # noqa: E402
+from sgcore.compose import GENRE_COLORS  # noqa: E402
 from sgcore.genre_groups import GROUPS  # noqa: E402
 from sgcore.instruments import INSTRUMENT_INFO  # noqa: E402
 
@@ -77,6 +78,10 @@ def form_text(st):
     bpm = sum(st['bpm']) / 2
     out.append(f'= {tot} bars, about {int(tot * 4 * 60 / bpm // 60)}:{int(tot * 4 * 60 / bpm % 60):02d} at {bpm:.0f} BPM'
                + ('' if not st.get('forms') else f'   (other layouts it can pick: {", ".join(st["forms"])})'))
+    if not st.get('form_gen') and not st.get('exact_form') and st.get('category') != 'Orchestral' \
+            and len(st.get('forms') or []) < 2 and not (isinstance(f, str) and f in ABS_FORMS):
+        out.append('(each song reshapes this layout: pre-choruses, a cold open, radio edit, double final chorus, '
+                   'DJ intro, longer breakdown, fake-out, switch-up or third drop ... about 1 in 4 plays it as written)')
     return out
 
 
@@ -89,6 +94,18 @@ def genre(k):
              + (f'   meter {st["meter"]}' if st.get('meter') else ''))
     keys = f'   preferred roots: {", ".join(PC[r] for r in st["roots"])}' if st.get('roots') else ''
     L.append(f'Scales: {", ".join(st.get("scales") or [])}{keys}')
+    if st.get('parent'):
+        L.append(f'Built from: {LABELS.get(st["parent"], st["parent"])} [{st["parent"]}] (its own changes on top)')
+    col = GENRE_COLORS.get(k)
+    L.append('Harmony: ' + ', '.join(x for x in (
+        f'{st.get("chord_size", 3)}-note chords', f'{st.get("voicing", "close")} voicing',
+        f'chord colours {"/".join(col)}' if col else '',
+        f'one chord every {st.get("chord_bars", 1)} bar' + ('s' if st.get('chord_bars', 1) != 1 else ''),
+        'sometimes two bars per chord' if st.get('slow_chords') else '') if x))
+    L.append('Melody: ' + ', '.join(x for x in (
+        f'lead register octave {st.get("lead_oct", 5)}',
+        f'repetition {st["repetition"]}' if st.get('repetition') is not None else 'repetition: genre default',
+        f'{len(st.get("lead_rh") or [])} lead rhythms to choose from') if x))
     pt = progs_text(st)
     if pt:
         L.append('Chord progressions:')
@@ -150,8 +167,13 @@ def main():
     ver = open(os.path.join(ROOT, 'VERSION')).read().strip()
     out = [f'STUDIO LAB - GENRE KNOWLEDGE  (version {ver}, {len(STYLES)} genres)', '',
            'How to read it:',
-           '  Patterns are one bar of 16 steps (16th notes). Drums: X = accent, x = hit, . = rest.',
-           '  Bass: R = root, O = octave, F = fifth, - = hold. Chords / lead: x = a note starts, - = held.',
+           '  Patterns are one bar: 16 steps (16th notes) in 4/4; 12 steps in 3/4, 6/8 and 12/8 (the genre shows its meter).',
+           '  An empty pattern means the part rests in songs that pick it. "..." = more patterns than shown.',
+           '  Drums: X = accent, x = hit, o = ghost note (soft), . = rest.',
+           '  Bass: R = root, O = octave up, F = fifth, A = approach note into the next chord (a fifth, octave or step),',
+           '        u / d = a half step above / below the root, 3 5 6 7 = boogie chord tones (3rd, 5th, 6th, flat 7th),',
+           '        x = a plain hit on the root, - = hold, . = rest.',
+           '  Chords / lead: x = a note starts, - = held, . = rest.',
            '  Chord progressions are scale degrees as roman numerals (minor: i ii° III iv v VI VII).',
            '  Song structure: each section, its length and which parts play; [flags] = what the section does',
            '  (drop, build, filter_in, layer_in/out, alt = variation, fade, gap = a drop-out ...).',
@@ -159,6 +181,13 @@ def main():
     cats = {}
     for k, st in STYLES.items():
         cats.setdefault(st['category'], []).append(k)
+    out += ['CONTENTS (search for a genre id in [brackets] to jump to it)', '']
+    for cat in ('Electronic', 'Classic', 'Orchestral'):
+        for g, members in GROUPS.get(cat, []):
+            m = [k for k in members if k in STYLES and STYLES[k]['category'] == cat]
+            if m:
+                out.append(f'  {cat} > {g}: ' + ', '.join(f'{LABELS.get(k, k)} [{k}]' for k in m))
+    out.append('')
     for cat in ('Electronic', 'Classic', 'Orchestral'):
         ids = cats.get(cat, [])
         out += ['=' * 72, f'{cat.upper()}  ({len(ids)} genres)', '=' * 72, '']

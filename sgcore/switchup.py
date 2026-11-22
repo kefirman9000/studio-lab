@@ -19,7 +19,7 @@ SCENE_POOLS = {
     'bass_mid': ['reese', 'growl', 'fmbass', 'wobble', 'acid', 'sawbass', 'neuro', 'chopwob', 'techneuro', 'hoover_dark'],
     'chords': ['noisestab', 'ravestab', 'samplerstab', 'stab', 'mpckeys', 'darksample', 'ravestab2', 'organ', 'soulhorn'],
     'lead': ['vocalchop', 'formantchop', 'etherchop', 'housevox', 'pluckvox', 'scratch', 'formantlead', 'screech', 'vocalbounce'],
-    'arp': ['fmperc', 'modseq', 'pluck', 'bell', 'acid'],
+    'arp': ['fmperc', 'modseq', 'pluck', 'acid', 'technoseq'],
 }
 FX_MENU = [
     {}, {'crush': 0.6}, {'phaser': 0.7}, {'wah': 0.6}, {'flanger': 0.55}, {'drive': 0.7}, {'trem': 0.5},
