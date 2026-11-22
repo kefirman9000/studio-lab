@@ -853,8 +853,8 @@ class Renderer:
             if kind == 'none':
                 return buf
             if kind == 'vinyl':
-                buf[0] = fx_vinyl(self.length) * 0.6
-                buf[1] = fx_vinyl(self.length) * 0.6
+                buf[0] = fx_vinyl(self.length) * 0.4
+                buf[1] = fx_vinyl(self.length) * 0.4
                 return buf
             for c in range(2):
                 if kind == 'air':                           # a soft high breath that swells very slowly

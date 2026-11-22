@@ -572,11 +572,12 @@ def fx_impact():
 
 
 def fx_vinyl(n):
+    # (2.10.1) quieter and sparser: about a third of the crackles at half the level, the hiss ~8 dB down
     crackle = np.zeros(n)
-    hits = _rng().random(n) < 0.00035
+    hits = _rng().random(n) < 0.00012
     crackle[hits] = _rng().standard_normal(hits.sum()) * _rng().random(hits.sum())
-    crackle = bp(crackle, 900, 7000) * 3
-    hiss = lp(noise(n), 5000) * 0.04
+    crackle = bp(crackle, 900, 7000) * 1.5
+    hiss = lp(noise(n), 5000) * 0.016
     return crackle + hiss
 
 
