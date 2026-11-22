@@ -15,7 +15,7 @@ for pid in ids:
         import pedalboard
         from pedalboard import load_plugin
         from mido import Message
-        for p in paths[:2]:
+        for p in [q for q in paths if q.endswith('.vst3')][:1] or paths[:1]:
             try:
                 names = pedalboard.VST3Plugin.get_plugin_names_for_file(p) if p.endswith('.vst3') else [None]
             except Exception:
@@ -23,11 +23,15 @@ for pid in ids:
             for nm in names[:3]:
                 try:
                     pl = load_plugin(p, plugin_name=nm) if nm else load_plugin(p)
-                    params = {k: (str(v.raw_value), v.string_value if hasattr(v, 'string_value') else '', list(getattr(v, 'valid_values', []) or [])[:12])
+                    params = {k: (str(v.raw_value), v.string_value if hasattr(v, 'string_value') else '', list(getattr(v, 'valid_values', []) or [])[:40])
                               for k, v in pl.parameters.items()}
                     out = pl([Message('note_on', note=48, velocity=100, time=0), Message('note_off', note=48, time=1.0)],
                              duration=1.5, sample_rate=44100, num_channels=2)
-                    r[nm or os.path.basename(p)] = dict(is_instrument=getattr(pl, 'is_instrument', None), n_params=len(params),
+                    progs = None
+                    for key in ('program', 'Program', 'preset', 'Preset', 'patch', 'Patch'):
+                        if key in pl.parameters:
+                            progs = list(getattr(pl.parameters[key], 'valid_values', []) or [])[:400]
+                    r[nm or os.path.basename(p)] = dict(programs=progs, is_instrument=getattr(pl, 'is_instrument', None), n_params=len(params),
                                                        peak=float(np.abs(out).max()), params=params)
                     print(pid, nm, 'params', len(params), 'peak', float(np.abs(out).max()))
                 except Exception as e:

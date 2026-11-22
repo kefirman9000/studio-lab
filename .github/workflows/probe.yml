@@ -14,8 +14,8 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: pip install -r requirements.txt pedalboard mido
-      - run: python tools/probe_packs.py probe_out
-      - run: python tools/probe_plugins.py probe_out ${{ vars.PROBE_IDS || '' }} || true
+      - run: mkdir -p probe_out
+      - run: python tools/probe_plugins.py probe_out obxf || true
       - name: Commit the results to this branch
         run: |
           mkdir -p probe_results && cp probe_out/*.json probe_results/

@@ -66,9 +66,16 @@ PACKS = [
          bundles=[r'^airwindows ?consolidated$'],
          assets={'windows': [r'airwindows.*win.*\.zip$', r'win.*(x64|64).*\.zip$', r'win.*\.zip$'],
                  'mac': [r'mac.*\.(zip|dmg)$'], 'linux': [r'linux.*{arch}.*\.zip$', r'linux.*\.zip$']}),
+    dict(id='obxf', name='OB-Xf', maker='Surge Synth Team', license='GPL-3.0', repo='surge-synthesizer/OB-Xf',
+         page='https://surge-synth-team.org/ob-xf/', size='~25 MB', tags=r'^v\d',
+         plays='Oberheim-style analog poly: brass stabs, big warm pads, 80s chords, fat unison leads and basses '
+               '(synthwave, synthpop, italo, 80s pop, trance, progressive house, Y2K anthem trance)',
+         bundles=[r'^ob ?xf$', r'^obxf$'],
+         assets={'windows': [r'^ob-xf-windows-v?\d.*\.zip$'], 'mac': [r'^ob-xf-macos-.*\.dmg$'],
+                 'linux': [r'^ob-xf-linux-v?\d.*\.zip$']}),
 ]
 BY_ID = {p['id']: p for p in PACKS}
-# packs no longer offered (no genre used them, and their nightly builds tripped scans); kept only for the tests and so an
+# packs no longer offered (no genre used them); kept only for the tests and so an
 # existing install is recognised and can be removed
 _UNUSED_PACKS = [
     dict(id='sixsines', name='Six Sines', maker='BaconPaul (Surge Synth Team)', license='GPL-3.0', repo='baconpaul/six-sines',
@@ -82,12 +89,6 @@ _UNUSED_PACKS = [
          plays='morphing mono synth: fat basses, sequenced leads, acid-ish lines',
          bundles=[r'^monique$'],
          assets={'windows': [r'win.*\.zip$'], 'mac': [r'mac.*\.(dmg|zip)$'], 'linux': [r'linux.*{arch}.*\.(zip|tar\.gz)$', r'linux.*\.(zip|tar\.gz)$']}),
-    dict(id='obxf', name='OB-Xf', maker='Surge Synth Team', license='GPL-3.0', repo='surge-synthesizer/OB-Xf',
-         page='https://surge-synth-team.org/ob-xf/', size='~20 MB',
-         plays='Oberheim-style analog poly: brass, big pads, 80s stabs, warm leads (factory presets need its installer)',
-         bundles=[r'^ob xf$', r'^obxf$'],
-         assets={'windows': [r'win(dows)?(?!.*arm).*\.zip$'], 'mac': [r'mac.*\.(dmg|zip)$'],
-                 'linux': [r'linux.*{arch}.*\.zip$', r'linux(?!.*arm).*\.zip$']}),
     dict(id='odin2', name='Odin 2', maker='TheWaveWarden', license='GPL-3.0', repo='TheWaveWarden/odin2',
          page='https://thewavewarden.com/odin2', size='~20 MB',
          plays='hybrid synth: growls, wobble and reese basses, analog leads, evolving pads',
@@ -110,8 +111,21 @@ KNOWN = [
          plays='wavetable synth (free plan): modern pads, plucks, basses, future bass and melodic dubstep leads - free account needed'),
     dict(id='tyrelln6', name='TyrellN6', url='https://u-he.com/products/tyrelln6/',
          plays='Juno-style analog poly (free): warm chillwave / synthwave pads, plucks and basses'),
+    dict(id='vaporizer2', name='Vaporizer2', url='https://www.vast-dynamics.com/?q=products',
+         plays='free hybrid wavetable synth (open source, GPL): modern trance and progressive leads, plucks, supersaw pads and '
+               'growl / wobble basses - only offered as a 400 MB installer, so install it yourself, then save a sound in it'),
+    dict(id='cardinal', name='Cardinal (modular)', url='https://cardinal.kx.studio/',
+         plays='free open-source modular synth rack: evolving modular pads, generative sequences and drones for ambient, IDM and '
+               'spacious breaks electronica - the download is over 1 GB, so install it yourself, then save a sound in it'),
+    dict(id='geonkick', name='Geonkick', url='https://geonkick.org/',
+         plays='free percussion synth: designed kicks, 808s, snares and claps for techno, trance, house and dubstep - '
+               'Windows only has an installer, so install it yourself, then save a kit sound in it'),
+    dict(id='drumgizmo', name='DrumGizmo', url='https://drumgizmo.org/',
+         plays='free multi-mic acoustic drum sampler with big real kits for rock, metal and indie - install it and a kit '
+               'yourself (Studio Lab already plays its own real acoustic kits without it)'),
     dict(id='sfizz', name='sfizz (SFZ sampler)', url='https://sfz.tools/sfizz/',
-         plays='plays free SFZ instrument libraries (e.g. the Salamander grand piano, free guitars and drums) - its '
+         plays='plays free SFZ instrument libraries (free guitars, drums, pianos) - Studio Lab already plays the Salamander grand '
+               'and the other real libraries itself; its '
                'installer is an app, so install it yourself, then save a sound in it'),
     dict(id='byod', name='BYOD (Build Your Own Distortion)', url='https://chowdsp.com/products.html',
          plays='guitar distortion - pick it as an effect on guitar parts (only offered with an installer, so install it yourself)'),
@@ -139,7 +153,7 @@ def pick_asset(pack, releases, osname=None):
     """From a GitHub releases list (newest first) choose the asset for this OS. Stable releases win over pre-releases."""
     osname = osname or host_os()
     pats = [re.compile(p.replace('{arch}', _arch_re()), re.I) for p in pack['assets'].get(osname, [])]
-    rels = [r for r in releases if not r.get('draft')]
+    rels = [r for r in releases if not r.get('draft') and re.search(pack.get('tags', ''), r.get('tag_name', ''))]   # 'tags': numbered releases only, no nightlies
     for stable_only in (True, False):
         for rel in rels:
             if stable_only and rel.get('prerelease'):
