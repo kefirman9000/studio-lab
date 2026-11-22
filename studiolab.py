@@ -162,21 +162,21 @@ def _engine_boot(port):
                     say(line[14:])
                 elif line.startswith('STUDIOLAB_URL ') and not found:
                     found.append(line[14:])
-                elif line.startswith('STUDIOLAB_RESTART'):    # an update was installed: a new engine, same window
-                    threading.Thread(target=_swap_engine, daemon=True).start()
+                elif line.startswith('STUDIOLAB_RESTART'):    # an update was installed: (2.9.7) restart the whole app -
+                    _restart_app()                            # a fresh window (the same-window swap could hang)
                 elif line:
                     tail[:] = (tail + [line])[-6:]
-        def _swap_engine():                           # (2.4.3) the updated engine starts behind the loading screen,
-            from sgcore import appwindow                  # then the same window loads it - no closing and reopening
-            appwindow.show_splash('Updating… starting the new version')
-            time.sleep(0.6)                               # (the old engine lets go of its port)
-            try:                                          # (2.9.6) progress lines never reload the screen or wait on it
-                new_url = boot(appwindow.say_splash)
-                appwindow.say_splash('Opening…')
-                appwindow.open_url_in_window(new_url)
-            except Exception as e:                        # the new engine didn't start: say so, then restart fully
-                appwindow.show_splash('Restarting Studio Lab… (%s)' % e)
-                subprocess.Popen([sys.executable] + sys.argv, cwd=here, creationflags=0x08000000 if os.name == 'nt' else 0)
+        def _restart_app():
+            try:
+                from sgcore import appwindow
+                appwindow.say_splash('Updated - restarting Studio Lab…')
+            except Exception:
+                pass
+            flags = (0x00000008 | 0x00000200) if os.name == 'nt' else 0     # DETACHED_PROCESS | NEW_PROCESS_GROUP
+            try:
+                subprocess.Popen([sys.executable] + sys.argv, cwd=here, creationflags=flags, close_fds=True,
+                                 stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            finally:
                 _quit()
         threading.Thread(target=read, daemon=True).start()   # (keeps reading for good: a full pipe stalls the engine)
         while not found:

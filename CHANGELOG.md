@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.9.7
+- **Updates restart Studio Lab in a fresh window again** (as before 2.4.3): after an update installs, the app closes and opens the new version. The same-window swap could hang on the loading screen on Windows.
+
 ## 2.9.6
 - **Fixed: an update restarting in the same window got stuck on the loading screen.** While the new version started, every progress line reloaded the loading screen and then waited on the window to answer - which on Windows can hang forever. The loading screen now loads once and progress lines never wait on the window. (The update INTO this version still runs the old code: if it sticks one last time, close Studio Lab and open it again.)
 - New genre: **Choir Rap (minor, churchy)** - a dark church-choir hip-hop beat around 92-100 BPM, learned from choir-rap stems: a clean guitar / sample loop on slow minor changes, a big choir on the tonic and the fifth, a deep sub on a 3+3+2 rhythm, tape strings arriving late and a two-note half-step figure on top, the parts coming in one at a time.
