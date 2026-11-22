@@ -1,0 +1,20 @@
+name: probe
+on:
+  push:
+    branches: [probe-packs]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -r requirements.txt pedalboard mido
+      - run: python tools/probe_packs.py probe_out
+      - run: python tools/probe_plugins.py probe_out ${{ vars.PROBE_IDS || '' }} || true
+      - uses: actions/upload-artifact@v4
+        with: {name: probe, path: probe_out}
