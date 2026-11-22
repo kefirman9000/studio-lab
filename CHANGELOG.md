@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.11
+- Pipe band sounds like a group again: 4 pipers, each drifting slightly ahead and behind on their own, a few cents apart and wandering in pitch independently, so the chanters beat against each other like a real band.
+- Bagpipe tone: no more sitar twang - the pitch scoop at each phrase start is nearly gone, note changes are quicker (2.5 ms) and the tone EQ is broad instead of ringing.
+
 ## 2.4.10
 - Bagpipes: the white noise / crunch is gone. The reed no longer gets breath noise while it plays (any of it came out as hiss, about 35 dB less now) - only a tiny puff to start each phrase.
 - Bagpipes: notes now glide into each other (about 5 ms instead of an instant snap) and each phrase eases in softly instead of a hard 8-bit-style start. Timing is unchanged.

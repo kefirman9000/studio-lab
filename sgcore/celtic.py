@@ -169,7 +169,7 @@ def _chanter_raw(d, b0, n, seed, rate=SR, turb_amt=0.06):
     turbulence (time constants and the turbulence band set in real time / Hz, whatever the rate)."""
     from . import fastdsp as F
     t = np.arange(n) / rate
-    crow = 1 + 0.04 * np.exp(-t / 0.01)
+    crow = 1 + 0.008 * np.exp(-t / 0.006)
     br = np.full(n, b0) * (0.7 + 0.3 * np.clip(t / 0.02, 0, 1))       # started exactly as pipe_part starts a phrase
     turb = lp(np.random.default_rng(seed).standard_normal(n), 3000 * SR / rate) * turb_amt
     turb = turb + np.random.default_rng(seed + 1).standard_normal(n) * 0.1 * np.exp(-t / 0.01)     # the first puff of air
@@ -462,11 +462,20 @@ def pipe_band(notes, length, tonic=None, players=3):
     out = np.zeros((2, length))
     rnd = np.random.default_rng(len(notes) * 7 + players)
     for k in range(players):
-        dt = (rnd.random() - 0.5) * 0.02                                # +-10 ms at the note changes: humans, not a flanger
-        cents = (k - (players - 1) / 2) * 1.5 + (rnd.random() - 0.5) * 1.0   # within ~2 cents: unison, not chorus
-        nk = [(max(0.0, t + dt), d, m) for (t, d, m) in notes]
-        rp = _CH['pos'] + (k - (players - 1) / 2) * 0.012               # every piper's reed is a little different: a
-        y = pipe_part(nk, length, tonic, cents=cents, seed=k + 1, reed_pos=rp)   # different harmonic balance, not a copy
+        # (2.4.11) a real group, not one piper copied: every piper drifts ahead and behind on their own (a slow sway of
+        # up to ~12 ms plus a few ms per note, never out of order), sits a few cents off the others and wanders in pitch
+        # on their own - that slow beating between chanters is what makes a band sound like a band
+        dt0 = (rnd.random() - 0.5) * 0.012
+        sw_f, sw_p = 0.12 + rnd.random() * 0.15, rnd.random() * 2 * np.pi
+        nk, prev = [], -1.0
+        for (t, d, m) in notes:
+            tt = t + dt0 + 0.007 * np.sin(2 * np.pi * sw_f * t + sw_p) + (rnd.random() - 0.5) * 0.006
+            tt = max(0.0, tt, prev + 0.006)
+            nk.append((tt, d, m))
+            prev = tt
+        cents = (k - (players - 1) / 2) / max(1, players - 1) * 7.0 + (rnd.random() - 0.5) * 2.0   # spread over ~7 cents
+        rp = _CH['pos'] + (k - (players - 1) / 2) * 0.02               # every piper's reed is a little different: a
+        y = pipe_part(nk, length, tonic, cents=cents, seed=k + 1, reed_pos=rp, life=4.0)   # different harmonic balance, not a copy
         pan = (k - (players - 1) / 2) / max(1, players - 1) * 0.9       # spread wide (summed close, near-copies flange)
         out[0] += y * np.sqrt(0.5 * (1 - pan))
         out[1] += y * np.sqrt(0.5 * (1 + pan))
@@ -474,7 +483,7 @@ def pipe_band(notes, length, tonic=None, players=3):
     return _hall(out)                                                    # (no saturation: it added crunch)
 
 
-def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None):
+def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None, life=2.0):
     """The Highland chanter as it really plays: ONE reed sounding continuously through each phrase. Each note's pitch
     holds until the next note starts (the chanter never stops between notes - the gracenotes are what separate them),
     the reed only catches (the crow) at the start of a phrase, and a phrase ends only at a real silence.
@@ -510,20 +519,20 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None):
             s1 = n if k == len(ph) - 1 else max(s0 + 1, int(ph[k + 1][0] * R) - a * OS)
             ji = PIPE_JI.get((m - tonic) % 12, 0.0) if tonic is not None else 0.0
             # at twice the rate, the bore tuned (at the normal rate) for half the pitch sounds exactly this pitch
-            d, b0 = _tuned_delay(float(mtof(m)) * 2 ** ((ji + cents + 4.5) / 1200), 'chanter_os')   # +4.5: the crow/drift pull it flat
+            d, b0 = _tuned_delay(float(mtof(m)) * 2 ** ((ji + cents + 2.0) / 1200), 'chanter_os')   # +2: the drift pulls it a touch flat
             delay[s0:s1] = d
             breath[s0:s1] = b0
         first = max(0, int(ph[0][0] * R) - a * OS)
         delay[:first] = delay[first]
         breath[:first] = breath[first]
-        w = int(0.005 * R)
-        delay = np.convolve(delay, np.ones(w) / w, mode='same')       # ~5 ms: a smooth move between notes, no crackle
+        w = int(0.0025 * R)
+        delay = np.convolve(delay, np.ones(w) / w, mode='same')       # ~2.5 ms: smooth, no crackle, but no sitar bend
         delay[:w] = delay[w]
         delay[-w:] = delay[-w - 1]
         t = np.arange(n) / R
-        delay *= 1 + 0.04 * np.exp(-t / 0.01)                        # the crow - once, at the start of the phrase
+        delay *= 1 + 0.008 * np.exp(-t / 0.006)                      # (2.4.11) a tiny crow: a big pitch sweep sounded like a sitar
         drift = lp(np.random.default_rng(a * 31 + seed).standard_normal(n), 0.8 * SR / R)
-        delay *= 2 ** (-(drift / (np.std(drift) + 1e-12) * 2.0) / 1200)   # this piper's reed: ~2 cents of slow life
+        delay *= 2 ** (-(drift / (np.std(drift) + 1e-12) * life) / 1200)   # this piper's reed: slow life in cents
         breath = breath * (0.7 + 0.3 * np.clip(t / 0.02, 0, 1))        # a step to 70 % sets the reed going, then it eases in
         fo = int(0.02 * R)
         breath[-fo:] *= np.linspace(1, 0, fo)
@@ -534,7 +543,7 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None):
                            _CH['refl'])
         y = resample_poly(y, 1, OS)[: b - a]                         # back to the normal rate, the fizz filtered off
         y = np.diff(y, prepend=y[0]) * 1.6 + 0.7 * y                 # radiation: brighter, but gently
-        y = eq(eq(eq(eq(y, 'peak', 1300, 1.4, 5.5), 'peak', 3200, 1.5, 4.0), 'peak', 2400, 1.2, 2.0), 'peak', 520, 1.0, 3.0)   # nasal bite + body
+        y = eq(eq(eq(y, 'peak', 1300, 0.8, 3.5), 'peak', 3000, 0.7, 2.5), 'peak', 520, 0.8, 3.0)   # broad: narrow peaks rang like a sitar   # nasal bite + body
         y = eq(y, 'peak', 6500, 0.8, -5.0)                           # tame the hard fizz up top
         out[a:a + len(y)] += hp(lp(y, 9000), 180) * 0.18
     return out

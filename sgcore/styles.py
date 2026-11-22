@@ -12286,7 +12286,7 @@ derive('sea_shanty', 'folk_jam', 'Classic',
 derive('highland_pipes', 'celtic_jig', 'Classic',
        'Highland pipe band: bagpipes playing a proud march in mixolydian over their own humming drones, a corps of '
        'snare drums rattling rudiments and rolls, tenor drums and a booming bass drum on the beat - stirring and loud',
-       'Highland Pipe Band', exact_pools=True, meter=None, bpm=(86, 100), scales=['mixolydian'], roots=[10], celtic_orn='pipes', pipers=3,
+       'Highland Pipe Band', exact_pools=True, meter=None, bpm=(86, 100), scales=['mixolydian'], roots=[10], celtic_orn='pipes', pipers=4,
        progs={'mixolydian': [[0, 0, 0, 0], [0, 6, 0, 0], [0, 0, 6, 0]]},
        drums={'kick': ['X.......X.......', 'X...X...X...X...'], 'snare': ['X.xxX.x.X.xxX.x.', 'xxxxX.xxxxxxX.xx', 'X.x.X.xxX.x.Xxxx'],
               'tom': ['x...x...x...x...', 'x.....x.x.......']},
