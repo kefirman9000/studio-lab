@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.12.0
+- **New genre: Afro Village Party (150-160)** (Electronic > Afro, Latin & Caribbean), built from the ten open-air party videos: a kick on every beat with snare, rim, shaker and conga accents on the 3-3-2 tresillo (the half-time sway the recordings all share), a punchy bouncing bass, bright clean-guitar riffs cascading in 16ths, a cheap-keyboard organ chopping the off-beats, a sung call line that answers itself every two bars, sunny major keys - and the DJ move from the videos: every 8 bars the kick and bass drop out for a bar or two while the voices and guitar carry on, then everything slams back in. Its rhythm and sounds stay its own (no swapping in other genres' grooves).
+- **New genre: Euro Club Bounce (128-132)** (House & Disco), from the DJ-controller clip: a hard four-on-the-floor, a fat bass rolling between every kick, off-beat open hats over 16th hats, wide detuned minor chords and a high one-note pluck hook, bass-heavy and laid out for a DJ set.
+- **New genre: Melodic Club Rap (160)** (Hip-Hop, Trap & Phonk), from the music-video clip: half-time at ~160 with a long sliding 808, a sung hook, rapid hats with rolls, dark bell chords and sudden full stops where the beat cuts out and slams back.
+- Written layouts can now keep 1-bar sections (used for the village-party drop-outs).
+
 ## 2.11.0
 - **Concert grand piano (Salamander Grand Piano V3)**: a new free real library in Sounds & instruments - a big, open Yamaha C5 concert grand, 5 velocity layers, 230 MB. Once installed it plays the piano in classical, film piano, neoclassical, romantic, cinematic, storybook, minimalism, jazz (jazz, modal, bebop, soul jazz, smooth jazz), neo-soul, gospel, piano house, ambient, chamber pop and emotive deep house; lo-fi / vintage genres keep the worn upright. Also in every part's Sound menu as "Concert grand piano (Salamander)". License CC-BY 3.0: free for anything, credit "Salamander Grand Piano by Alexander Holm".
 - **Muted trumpet (harmon) and muted French horn** added to the Brass & woodwinds library (same VSCO 2 source). The trumpet in jazz, modal jazz, jazz hop, jazz rap, lo-fi, trip hop, smooth jazz, electro swing, ethio jazz, soul jazz and neo-soul now plays with a harmon mute. Already installed? The library offers a small update.

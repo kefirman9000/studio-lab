@@ -352,7 +352,7 @@ OWN_GROOVE = {'reggae', 'dub', 'ska', 'reggaeton', 'dancehall', 'moombahton', 's
               'bossa_nova', 'samba', 'bachata', 'merengue', 'baile_funk', 'funk_150', 'brazilian_phonk', 'afrobeat', 'afrobeats',
               'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'bhajan', 'kirtan', 'aarti', 'santoor_raga', 'sitar_bhajan', 'tabla_bhajan', 'drum_kirtan', 'jugalbandi', 'qawwali', 'carnatic_kriti', 'ghazal', 'bollywood', 'klezmer', 'gamelan', 'rai', 'takht_maqam', 'raqs_sharqi', 'arab_pop', 'sufi_dhikr', 'son_cubano', 'flamenco_rumba', 'chicha', 'krautrock', 'rockabilly', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house',
               'baltimore_club', 'jersey_club', 'uk_drill', 'ukgarage', 'speed_garage', 'freestyle', 'electro', 'nola_brass',
-              'tango', 'celtic_jig', 'swing_tomtom', 'western_swing', 'country', 'outlaw_country', 'surf_rock'}
+              'tango', 'celtic_jig', 'swing_tomtom', 'western_swing', 'country', 'outlaw_country', 'surf_rock', 'afro_village_party'}
 
 
 def groove_family(st):
@@ -1440,7 +1440,7 @@ def compose(opts):
             form = form[1:]
     for (sname, nbars, layers, opts_s) in form:
         if not opts_s.get('build') and opts.structure != 'loop':
-            if st.get('form_gen'):                                  # (1.96) written layouts keep their 1- and 2-bar parts
+            if st.get('form_gen') or st.get('short_bars'):          # (1.96) written layouts keep their 1- and 2-bar parts
                 nbars = max(1, int(round(nbars * scale_len)))
             elif (st.get('name') or opts.style) in CLUB_COHERENT:     # (1.94) club records live on the 8-bar grid
                 nbars = max(8, int(round(nbars * scale_len / 8)) * 8)
