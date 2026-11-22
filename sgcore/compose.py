@@ -716,6 +716,16 @@ def resolve_style(opts, rnd=None, mood=None):
     if not kit_id:
         for k, v in st.get('kit_override', {}).items():
             kit[k] = {**kit.get(k, {}), **v}
+    if not kit_id and not getattr(opts, 'kit', None):    # (2.9.4) dubstep genres: one of several dubstep kits per song
+        from .pool_variety import DUB_KITS, DUB_KITS_FOR
+        ch = DUB_KITS_FOR.get(st.get('name') or opts.style)
+        if ch:
+            import random as _random
+            ks = (opts.sound_seed if opts.sound_seed is not None else opts.seed) or 0
+            pick = _random.Random(ks * 104729 + 3).choice(ch)
+            st['dub_kit'] = pick
+            for k, v in (DUB_KITS.get(pick) or {}).items():
+                kit[k] = {**kit.get(k, {}), **v}
     if st.get('kick_shape') and not getattr(opts, 'kit', None):    # the genre's own kick, whatever drum preset it sits on
         kit['kick'] = {**kit.get('kick', {}), **st['kick_shape']}
     st['kitparams'] = kit

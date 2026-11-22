@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.4
+- **The new wobbles and subs across the whole dubstep family:** Dubstep, Brostep, Riddim, Melodic Dubstep, Chillstep, Dark Dubstep (classic), Deep Dubstep Minimal / Rollers / Rolling, Early Dubstep and Steppy Halftime can now pick the slow, 'yoi', sweep, reese, bright, tearout and pitch-growl wobbles and the sleeper / diving / deep subs that fit them, and the dark atmosphere and flutter pads. Dubstep's and Brostep's signature-sound checks accept the new wobbles.
+- **Dubstep drum kits:** every dubstep-family song now picks one of several kits - the genre's own, **deep-dark** (short tight kick, crisp bright snare), **soundsystem** (deep long kick, fat snare), **slam** (hard driven kick, cracking snare; Brostep / Riddim), **rimshot** (early-2000s dry kick, tight rimmy snare, short hats) or **smooth** (Melodic / Chillstep). Re-roll the sounds to change it; picking a kit yourself still wins.
+
 ## 2.9.3
 - **Studio Lab is a normal Windows program now, however you got it.** On its first start it puts a **Studio Lab** shortcut with its icon in the Start menu (and one on the desktop), carrying the app's own taskbar identity - so you can right-click it, or the open Studio Lab window, and choose **Pin to taskbar**, and the pinned icon and the window are one taskbar button with the Studio Lab icon (not Python's). This covers running from a downloaded folder and older installs that were only ever updated in place; the installer already did this. To remake them any time: **Make Studio Lab Shortcuts (Windows).bat**, or `studiolab.py shortcuts`. Checked on a real Windows machine in the installer self-test.
 - Tests: lint warnings fixed; Dream Pop's melody sits in the wash on purpose (like Shoegaze).

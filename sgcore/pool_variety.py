@@ -419,12 +419,23 @@ def _variety_252():
             continue
         plan[g] = [_CELTIC_SLOW, _CELTIC] if g in ('celtic_slow_air', 'celtic_new_age', 'clarsach_air') else [_CELTIC]
     # (2.9.1) the new deep / grimy / tearout wobbles for the dubstep family
-    for g, add in (('dubstep', dict(bass=['slowwob', 'yoiwob', 'brightwob', 'reesewob', 'sleepersub'])),
+    for g, add in (('dubstep', dict(bass=['slowwob', 'yoiwob', 'brightwob', 'reesewob', 'pitchgrowl', 'sweepwob'],
+                                    pad=['dddpad', 'virusflutter'])),
                    ('deep_dubstep', dict(bass=['slowwob', 'yoiwob', 'sweepwob', 'sleepersub', 'divesub', 'pitchgrowl'],
                                          pad=['dddpad', 'virusflutter'])),
                    ('deep_dubstep_rolling', dict(bass=['slowwob', 'reesewob', 'sleepersub', 'divesub'], pad=['dddpad'])),
-                   ('brostep', dict(bass=['brightwob', 'tearwob'])),
-                   ('riddim', dict(bass=['tearwob', 'brightwob']))):
+                   ('brostep', dict(bass=['brightwob', 'tearwob', 'pitchgrowl', 'yoiwob'])),
+                   ('riddim', dict(bass=['tearwob', 'brightwob', 'yoiwob'])),
+                   # (2.9.4) the rest of the dubstep family
+                   ('melodic_dubstep', dict(bass=['sweepwob', 'yoiwob', 'slowwob'], pad=['virusflutter', 'dddpad'])),
+                   ('chillstep', dict(bass=['slowwob', 'sweepwob', 'yoiwob'], pad=['virusflutter'])),
+                   ('dark_dubstep_classic', dict(bass=['slowwob', 'reesewob', 'pitchgrowl', 'sleepersub', 'divesub'],
+                                                 pad=['dddpad', 'virusflutter'])),
+                   ('deep_dubstep_minimal', dict(bass=['deepsub', 'sleepersub', 'divesub', 'slowwob'], pad=['dddpad'])),
+                   ('deep_dubstep_rollers', dict(bass=['slowwob', 'reesewob', 'yoiwob', 'sleepersub'], pad=['dddpad', 'virusflutter'])),
+                   ('early_dubstep', dict(bass=['slowwob', 'reesewob', 'sweepwob', 'divesub'], pad=['dddpad'])),
+                   ('steppy_halftime', dict(bass=['deepsub', 'sleepersub', 'slowwob'])),
+                   ('slow_wobble', dict(pad=['dddpad', 'virusflutter']))):
         plan.setdefault(g, []).append(add)
     for g, adds in plan.items():
         pools = POOLS.get(g)
@@ -454,3 +465,30 @@ for _g in ('techno', 'festival_techno', 'hard_techno', 'uk_tribal_techno', 'euph
     KIT_ALTS[_g] = ['techno', 'techno_classic', 'punchy', '909', 'hard']
 KIT_ALTS['acid_house'] = ['808', '909', '909_classic', 'cr78', '707']
 KIT_ALTS['psytrance'] = ['punchy', 'techno', 'trance']
+
+
+# (2.9.4) dubstep drum kits: each dubstep-family song picks one (re-roll the sounds to change it; choosing a kit in the
+# app still wins). 'own' keeps the genre's designed kit.
+DUB_KITS = {
+    # deep-dark: a short, tight kick gone in ~0.2 s and a crisp, bright snare (measured from a deep-dark sample pack)
+    'ddd': {'kick': {'pitch': 50, 'punch': 140, 'sweep': 40, 'decay': 5, 'drive': 1.4, 'len': 0.22, 'click': 0.3},
+            'snare': {'tone': 230, 'snap': 1.7, 'body': 0.6, 'decay': 7, 'nlo': 1800, 'nhi': 12000, 'crack': 0.8, 'len': 0.24}},
+    # soundsystem: a deep, long, round kick and a fat snare with body
+    'soundsystem': {'kick': {'pitch': 46, 'punch': 100, 'sweep': 30, 'decay': 10, 'drive': 1.3, 'len': 0.5, 'click': 0.15},
+                    'snare': {'tone': 180, 'snap': 1.2, 'body': 1.0, 'decay': 14, 'nlo': 1200, 'nhi': 9000, 'len': 0.32}},
+    # festival slam: a hard, driven kick and a loud cracking snare
+    'slam': {'kick': {'pitch': 54, 'punch': 300, 'sweep': 25, 'decay': 4, 'drive': 6.0, 'len': 0.4, 'click': 0.7},
+             'snare': {'tone': 220, 'snap': 2.0, 'body': 0.9, 'decay': 10, 'crack': 1.0, 'drive': 3.0, 'nlo': 1500, 'nhi': 11000, 'len': 0.3}},
+    # early 2000s: a dry mid kick, a tight rimmy snare and short hats
+    'rimshot': {'kick': {'pitch': 52, 'punch': 120, 'sweep': 35, 'decay': 7, 'drive': 1.6, 'len': 0.3, 'click': 0.2},
+                'snare': {'tone': 260, 'snap': 1.0, 'body': 0.4, 'decay': 9, 'nlo': 2500, 'nhi': 10000, 'len': 0.2},
+                'chat': {'decay': 120, 'hp': 9000}},
+    # smooth: a soft-clicked kick and a snappy, airy snare (melodic / chill)
+    'smooth': {'kick': {'pitch': 50, 'punch': 110, 'sweep': 45, 'decay': 8, 'drive': 1.2, 'len': 0.35, 'click': 0.25},
+               'snare': {'tone': 200, 'snap': 1.4, 'body': 0.7, 'decay': 16, 'nlo': 1500, 'nhi': 13000, 'len': 0.35}},
+}
+_DEEP_KITS = ['own', 'own', 'ddd', 'soundsystem', 'rimshot']
+DUB_KITS_FOR = {g: _DEEP_KITS for g in ('dubstep', 'deep_dubstep', 'slow_wobble', 'dark_dubstep_classic', 'deep_dubstep_minimal',
+                                          'deep_dubstep_rollers', 'deep_dubstep_rolling', 'early_dubstep', 'steppy_halftime')}
+DUB_KITS_FOR.update({'brostep': ['own', 'own', 'slam', 'ddd'], 'riddim': ['own', 'own', 'slam', 'ddd', 'rimshot'],
+                     'melodic_dubstep': ['own', 'own', 'smooth', 'soundsystem'], 'chillstep': ['own', 'own', 'smooth', 'soundsystem']})
