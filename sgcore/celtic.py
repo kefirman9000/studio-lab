@@ -589,7 +589,7 @@ def _brighten(x):
     return y * (rx / ry) if ry > 1e-9 else y
 
 
-def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None, life=2.0):
+def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None, life=2.0, voice='highland'):
     """The Highland chanter as it really plays: ONE reed sounding continuously through each phrase. Each note's pitch
     holds until the next note starts (the chanter never stops between notes - the gracenotes are what separate them),
     the reed only catches (the crow) at the start of a phrase, and a phrase ends only at a real silence.
@@ -620,14 +620,16 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None, life=
         n = (b - a) * OS
         delay = np.empty(n)
         breath = np.empty(n)
+        age = np.zeros(n)
         for k, (t0, dur, m) in enumerate(ph):
             s0 = max(0, int(t0 * R) - a * OS)
             s1 = n if k == len(ph) - 1 else max(s0 + 1, int(ph[k + 1][0] * R) - a * OS)
-            ji = PIPE_JI.get((m - tonic) % 12, 0.0) if tonic is not None else 0.0
+            ji = PIPE_JI.get((m - tonic) % 12, 0.0) if tonic is not None and voice != 'gaita' else 0.0
             # at twice the rate, the bore tuned (at the normal rate) for half the pitch sounds exactly this pitch
             d, b0 = _tuned_delay(float(mtof(m)) * 2 ** ((ji + cents + 2.0) / 1200), 'chanter_os')   # +2: the drift pulls it a touch flat
             delay[s0:s1] = d
             breath[s0:s1] = b0
+            age[s0:s1] = np.arange(s1 - s0) / R
         first = max(0, int(ph[0][0] * R) - a * OS)
         delay[:first] = delay[first]
         breath[:first] = breath[first]
@@ -639,6 +641,8 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None, life=
         delay *= 1 + 0.02 * np.exp(-t / 0.008)                       # the crow: half of 2.4.8's (the full one twanged)
         drift = lp(np.random.default_rng(a * 31 + seed).standard_normal(n), 0.8 * SR / R)
         delay *= 2 ** (-(drift / (np.std(drift) + 1e-12) * life) / 1200)   # this piper's reed: slow life in cents
+        if voice == 'gaita':                             # (2.5.1) the gaiteiro's vibrato, on the held notes only
+            delay *= 2 ** (-(7.0 * np.clip((age - 0.22) / 0.25, 0, 1) * np.sin(2 * np.pi * 5.3 * t)) / 1200)
         breath = breath * (0.7 + 0.3 * np.clip(t / 0.02, 0, 1))        # a step to 70 % sets the reed going, then it eases in
         fo = int(0.02 * R)
         breath[-fo:] *= np.linspace(1, 0, fo)
@@ -650,12 +654,22 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None, life=
         y = F.reed_conical(breath, turb, delay, _CH['pos'] if reed_pos is None else reed_pos, _CH['offset'], _CH['slope'],
                            _CH['refl'])
         y = resample_poly(y, 1, OS)[: b - a]                         # back to the normal rate, the fizz filtered off
-        y = np.diff(y, prepend=y[0]) * 3.0 + 0.4 * y                 # radiation: (2.4.14) all of 2.4.6's brightness
-        y = eq(eq(eq(eq(y, 'peak', 1150, 1.2, 3.5), 'peak', 1300, 1.1, 2.5), 'peak', 2800, 1.2, 3.5), 'peak', 3200, 1.1, 1.5)
-        y = eq(eq(y, 'peak', 520, 0.9, 1.5), 'peak', 300, 1.0, -2.0)   # (2.4.13) 2.4.6's nasal formants over 2.4.8's, less boom   # nasal bite + body
-        y = eq(eq(y, 'peak', 6500, 0.8, -1.5), 'highshelf', 3500, 0.7, 3.0)   # (2.4.14) open the top: it was muffled
-        y = eq(eq(y, 'highpass', 650, 0.7), 'peak', 2400, 0.6, 5.0)  # and the fundamental no longer drowns the reed's bright overtones
-        out[a:a + len(y)] += hp(lp(y, 14000), 220) * 0.19
+        if voice == 'small':                             # (2.5.1) Scottish smallpipes: the same reed, quiet and sweet
+            y = np.diff(y, prepend=y[0]) * 1.0 + 0.8 * y
+            y = eq(eq(eq(y, 'peak', 900, 1.0, 2.5), 'peak', 2200, 1.0, 1.5), 'highpass', 300, 0.7)
+            out[a:a + len(y)] += hp(lp(y, 5500), 150) * 0.3
+        elif voice == 'gaita':                           # (2.5.1) Galician gaita: open and singing, less nasal
+            y = np.diff(y, prepend=y[0]) * 2.0 + 0.6 * y
+            y = eq(eq(eq(y, 'peak', 1400, 1.1, 4.0), 'peak', 3000, 1.1, 3.0), 'peak', 500, 1.0, 1.5)
+            y = eq(eq(y, 'highshelf', 4000, 0.7, 1.0), 'highpass', 450, 0.7)
+            out[a:a + len(y)] += hp(lp(y, 11000), 200) * 0.22
+        else:
+            y = np.diff(y, prepend=y[0]) * 3.0 + 0.4 * y                 # radiation: (2.4.14) all of 2.4.6's brightness
+            y = eq(eq(eq(eq(y, 'peak', 1150, 1.2, 3.5), 'peak', 1300, 1.1, 2.5), 'peak', 2800, 1.2, 3.5), 'peak', 3200, 1.1, 1.5)
+            y = eq(eq(y, 'peak', 520, 0.9, 1.5), 'peak', 300, 1.0, -2.0)   # (2.4.13) 2.4.6's nasal formants over 2.4.8's, less boom   # nasal bite + body
+            y = eq(eq(y, 'peak', 6500, 0.8, -1.5), 'highshelf', 3500, 0.7, 3.0)   # (2.4.14) open the top: it was muffled
+            y = eq(eq(y, 'highpass', 650, 0.7), 'peak', 2400, 0.6, 5.0)  # and the fundamental no longer drowns the reed's bright overtones
+            out[a:a + len(y)] += hp(lp(y, 14000), 220) * 0.19
     return out
 
 
@@ -692,6 +706,55 @@ def _drone_voice(f, n, bag, tab, beat_hz=0.0, seed=0):
     y = tab[i0] * (1 - fr) + tab[(i0 + 1) % len(tab)] * fr
     buzz = bp(np.random.default_rng(seed).standard_normal(n), 1500, 4000) * np.exp(-frac * 8) * 0.006   # the reed, faintly
     return y + buzz
+
+
+def fold_to_chanter(notes, lo=67, hi=84):
+    """Notes moved by octaves into the range a chanter can actually play."""
+    out = []
+    for t, d, m in notes:
+        while m < lo:
+            m += 12
+        while m > hi:
+            m -= 12
+        out.append((t, d, m))
+    return out
+
+
+def other_pipes(notes, length, tonic, voice):
+    """(2.5.1) The other bagpipes, built on the Highland pipes' reed model: one piper (2 for a little life), the
+    chanter folded into its range, with the instrument's own drones underneath. (2, length)"""
+    notes = fold_to_chanter(notes)
+    out = np.zeros((2, length))
+    if not notes:
+        return out
+    for k, (pan, cents, dt) in enumerate(((-0.25, -1.5, 0.0), (0.25, 1.5, 0.006))):
+        nk = [(t + dt, d, m) for (t, d, m) in notes]
+        y = pipe_part(nk, length, tonic, cents=cents, seed=k + 11, life=2.5, voice=voice) * (1.0 if k == 0 else 0.6)
+        out[0] += y * np.sqrt(0.5 * (1 - pan))
+        out[1] += y * np.sqrt(0.5 * (1 + pan))
+    out /= 1.3
+    t0 = notes[0][0]
+    t1 = max(t + d for t, d, _ in notes)
+    a = int(t0 * SR)
+    n = min(length - a, int((t1 - t0 + 0.4) * SR))
+    if n > 0:
+        t = np.arange(n) / SR
+        w = lp(np.random.default_rng(13).standard_normal(n), 1.5)
+        bag = w / (np.std(w) + 1e-12) * 0.5
+        ch = 60 + (tonic if tonic is not None else 9) % 12
+        ch = ch + 12 if ch < 66 else ch
+        env = np.minimum(t / 0.4, 1) * np.clip((t[-1] - t) / 0.3, 0, 1)
+        if voice == 'gaita':                           # the roncon: one deep bass drone, two octaves under the tonic
+            dr = _drone_voice(float(mtof(ch - 24)), n, bag, _drone_table(True), 0.0, 5)
+            dr = np.vstack([dr, dr]) * 0.05
+        else:                                          # smallpipes: three soft drones (bass, baritone, tenor)
+            ft = float(mtof(ch - 12))
+            tt, tb = _drone_table(False), _drone_table(True)
+            l_ = 0.5 * _drone_voice(ft, n, bag, tt, 0.0, 6) + 0.5 * _drone_voice(ft / 2, n, bag, tb, 0.0, 7)
+            r_ = 0.5 * _drone_voice(ft * 1.5, n, bag, tt, 0.2, 8) + 0.5 * _drone_voice(ft / 2, n, bag, tb, 0.0, 7)
+            dr = np.vstack([lp(l_, 2000), lp(r_, 2000)]) * 0.035
+        out[:, a:a + n] += dr * env
+    return out
 
 
 def drone_part(notes, length, tonic=None):

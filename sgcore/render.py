@@ -782,6 +782,13 @@ class Renderer:
                 n = min(self.length, y.shape[1])
                 buf[:, :n] = y[:, :n] * 0.5
             return buf
+        if tcfg['inst'] in ('gaita', 'smallpipes'):           # (2.5.1) the other bagpipes: the same reed model
+            from .celtic import other_pipes
+            notes = sorted(((self.t_of(e.beat, human=False), max(0.03, self._dsec(e.beat, e.dur)), e.midi)
+                            for e in evs if e.midi is not None), key=lambda x: x[0])
+            buf[:] = other_pipes(notes, self.length, getattr(self.song.get('key'), 'root', None),
+                                 'gaita' if tcfg['inst'] == 'gaita' else 'small')
+            return buf
         if tcfg['inst'] in ('bagpipe', 'bagpipe_bright', 'bagpipe_drones'):    # (2.4.3) the pipes: one continuous reed per phrase, unbroken drones
             from .celtic import drone_part
             notes = sorted(((self.t_of(e.beat, human=False), max(0.03, self._dsec(e.beat, e.dur)), e.midi)

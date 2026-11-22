@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.5.1
+- The gaita and the Scottish smallpipes are rebuilt on the Highland pipes' physical reed model (they were simple synth reeds): one continuous reed per phrase, folded into the chanter's range, with their own drones - the gaita open and singing with vibrato over a single deep roncón, the smallpipes quiet and sweet over three soft drones.
+
 ## 2.5.0
 **More Celtic**
 - New sounds: **clarsach** (wire-strung Gaelic harp), **cittern**, **Scottish smallpipes**, **gaita** (Galician bagpipe with its roncón drone), **bombarde** (Breton oboe) and **melodeon** (button accordion). They join the pools of the Celtic genres.
