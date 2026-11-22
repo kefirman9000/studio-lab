@@ -250,6 +250,11 @@ def c_bagpipe_drones(m, dur, p, glide=None, mod=None):
     return _ms_stereo(y, 150)
 
 
+def c_bagpipe_bright(m, dur, p, glide=None, mod=None):
+    """The bright Highland bagpipe: the same chanter with its overtones pushed forward (see _brighten)."""
+    return _brighten(c_bagpipe(m, dur, p, glide, mod))
+
+
 def c_synthpipes(m, dur, p, glide=None, mod=None):
     """Synth pipes: a bagpipe-flavoured EDM lead - a stack of detuned pulses and saws shaped like a chanter (the same
     formants and crow), its own fifth-and-root drone underneath, and a gracenote flick a fourth up at the start of
@@ -333,6 +338,7 @@ NEW = {
     'concertina': (c_concertina, 'Concertina (free reeds)', 21, ('lead', 'chords', 'pad')),
     'uilleann': (c_uilleann, 'Uilleann pipes (chanter + drones)', 109, ('lead', 'pad')),
     'bagpipe': (c_bagpipe, 'Great Highland bagpipe (chanter)', 109, ('lead',)),
+    'bagpipe_bright': (c_bagpipe_bright, 'Great Highland bagpipe, bright (more edge and overtones)', 109, ('lead',)),
     'bagpipe_drones': (c_bagpipe_drones, 'Highland bagpipe drones', 109, ('pad',)),
     'synthpipes': (c_synthpipes, 'Synth pipes (bagpipe-style EDM lead)', 109, ('lead', 'arp')),
 }
@@ -453,12 +459,13 @@ def ornament_pass(evs, tracks, sections, st, bpm, seed, tonic=None):
 PIPE_JI = {0: 0.0, 2: 3.9, 4: -13.7, 5: -2.0, 7: 2.0, 9: -15.6, 10: -31.2, 11: -11.7}
 
 
-def pipe_band(notes, length, tonic=None, players=3):
+def pipe_band(notes, length, tonic=None, players=3, bright=False):
     """A pipe band's chanters: several pipers on the same line, never quite together - each a few cents apart, a few
     ms early or late, on their own reed - summed and soft-saturated the way the reeds blend into one wall. (2, length)."""
     if players <= 1:
         y = pipe_part(notes, length, tonic)
-        return _hall(np.vstack([y, y]))
+        out = _hall(np.vstack([y, y]))
+        return _brighten(out) if bright else out
     out = np.zeros((2, length))
     rnd = np.random.default_rng(len(notes) * 7 + players)
     for k in range(players):
@@ -481,7 +488,16 @@ def pipe_band(notes, length, tonic=None, players=3):
         out[1] += y * np.sqrt(0.5 * (1 + pan))
     out /= players ** 0.7
     out = soft(out * 1.2, 1.1) / 1.05               # (2.4.13) between 2.4.6's and 2.4.8's blend of the reeds into one wall
-    return _hall(out)
+    out = _hall(out)
+    return _brighten(out) if bright else out
+
+
+def _brighten(x):
+    """(2.4.15) The bright pipes: the same band with the overtones pushed well forward - the fundamental of even the top
+    notes thinned, a strong 3-4 kHz edge and an open top - at the same loudness."""
+    y = eq(eq(eq(x, 'highpass', 900, 0.6), 'peak', 3500, 0.8, 4.0), 'highshelf', 3000, 0.7, 5.0)
+    ry, rx = np.sqrt(np.mean(y ** 2)), np.sqrt(np.mean(x ** 2))
+    return y * (rx / ry) if ry > 1e-9 else y
 
 
 def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None, life=2.0):

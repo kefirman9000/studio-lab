@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.15
+- New sound: **Great Highland bagpipe, bright** - the same pipe band with its overtones pushed well forward (more edge, open top, same loudness). Picked by Highland Pipe Band and the Celtic genres alongside the regular bagpipe, or choose it yourself for the lead.
+- Highland Pipe Band: the drones are 5 dB lower, so the chanters sit on top.
+
 ## 2.4.14
 - Bagpipes much brighter, not muffled: the low fundamental no longer drowns the reed's overtones, the top end is opened up (all of 2.4.6's brightness, a high shelf, a 2.4 kHz presence lift, the old fizz-tamer mostly removed) and the hall's reflections are brighter too.
 

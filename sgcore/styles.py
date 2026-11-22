@@ -12267,7 +12267,7 @@ derive('celtic_punk', 'punk', 'Classic',
        progs={'major': [[0, 3, 4, 0], [0, 4, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 3, 0]], 'dorian': [[0, 6, 0, 3]]},
        sounds={'lead': 'tinwhistle'},
        add_tracks=[T('arp', 'arp', 'banjo', pan=0.3, rev=0.15, db=-22), T('pad', 'pad', 'accordion', pan=-0.25, rev=0.2, db=-24)],
-       pools=dict(lead=['tinwhistle', 'fiddle', 'concertina', 'uilleann', 'synthpipes', 'bagpipe'], arp=['banjo', 'mandolin', 'acguitar'],
+       pools=dict(lead=['tinwhistle', 'fiddle', 'concertina', 'uilleann', 'synthpipes', 'bagpipe', 'bagpipe_bright'], arp=['banjo', 'mandolin', 'acguitar'],
                   pad=['accordion', 'organ', 'humchoir']))
 
 derive('sea_shanty', 'folk_jam', 'Classic',
@@ -12293,8 +12293,8 @@ derive('highland_pipes', 'celtic_jig', 'Classic',
        lead_rh=['x--xx-x-x--xx-x-', 'x-x-x--xx-x-x---', 'x--xx-x-x-x-x---'], kick_track='kick', snare_tracks=['snare'], kit='acoustic',
        tracks=[T('kick', 'kick', 'tenor_drum', rev=0.35, db=-15), T('snare', 'snare', 'pipe_snare', rev=0.3, db=-19),
                T('tom', 'top', 'tenor_drum', rev=0.3, db=-23),
-               T('pad', 'pad', 'bagpipe_drones', rev=0.25, db=-6), T('lead', 'lead', 'bagpipe', rev=0.22, db=-13)],
-       pools=dict(lead=['bagpipe'], pad=['bagpipe_drones']), drum_voice={'kick': dict(pitch=62), 'tom': dict(pitch=120)},
+               T('pad', 'pad', 'bagpipe_drones', rev=0.25, db=-11), T('lead', 'lead', 'bagpipe', rev=0.22, db=-13)],
+       pools=dict(lead=['bagpipe', 'bagpipe_bright'], pad=['bagpipe_drones']), drum_voice={'kick': dict(pitch=62), 'tom': dict(pitch=120)},
        master=dict(lufs=-10.5, air=1.3, low=0.9))
 
 derive('celtic_new_age', 'new_age_chant', 'Classic',
