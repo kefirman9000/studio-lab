@@ -3,6 +3,13 @@ import json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from sgcore import vstpacks
+import urllib.request
+def _gj(url, timeout=20):
+    req = urllib.request.Request(url, headers={'User-Agent': 'StudioLab', 'Accept': 'application/vnd.github+json',
+                                               'Authorization': 'Bearer ' + os.environ.get('GH_TOKEN', '')})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return json.loads(r.read().decode())
+vstpacks._get_json = _gj
 OUT = sys.argv[1]
 ids = sys.argv[2:]
 res = {}
