@@ -154,7 +154,6 @@ def i_crwth(m, dur, p, glide=None, mod=None):
     gate = int(max(dur, 0.05) * SR)
     env = _va.adsr(gate, 0.03, 0.1, 0.85, 0.15)
     n = len(env)
-    t = np.arange(n) / SR
     rng = _rng()
     jit = np.cumsum(rng.standard_normal(n)) * 0.0008
     jit -= np.linspace(jit[0], jit[-1], n)

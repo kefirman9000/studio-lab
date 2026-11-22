@@ -216,6 +216,9 @@ if __name__ == '__main__':
         rest = [a for a in sys.argv[2:] if not a.startswith('--')]
         out = rest[0] if rest else os.path.join(os.path.dirname(os.path.abspath(__file__)), 'songs')
         print(daisy.render(out, voice=voice)['files'])
+    elif len(sys.argv) > 1 and sys.argv[1] == 'shortcuts':  # (2.9.3) Windows: (re)make the Start menu + desktop shortcuts
+        from sgcore.winshortcut import make_shortcuts
+        print('\n'.join(make_shortcuts(os.path.dirname(os.path.abspath(__file__)), force=True)) or 'Windows only')
     elif len(sys.argv) > 1 and sys.argv[1] in ('vsts', 'vst'):
         from sgcore.cli import vsts_main
         vsts_main(sys.argv[2:])
@@ -223,6 +226,11 @@ if __name__ == '__main__':
         port = int(os.environ.get('STUDIOLAB_PORT', '8765'))
         if '--serve' in sys.argv:                         # (2.2.3) the engine on its own, for the app window
             _serve(port)
+        try:                                              # (2.9.3) Windows: Start menu + desktop shortcuts with the icon,
+            from sgcore.winshortcut import ensure_shortcuts   # pinnable to the taskbar (once, in the background)
+            ensure_shortcuts(os.path.dirname(os.path.abspath(__file__)))
+        except Exception:
+            pass
         if '--browser' not in sys.argv and '--no-browser' not in sys.argv and _window_setting() != 'browser':
             from sgcore import appwindow                  # the window opens at once with a loading screen
             if appwindow.splash_window(_engine_boot(port), _quit):

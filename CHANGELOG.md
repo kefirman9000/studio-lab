@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.3
+- **Studio Lab is a normal Windows program now, however you got it.** On its first start it puts a **Studio Lab** shortcut with its icon in the Start menu (and one on the desktop), carrying the app's own taskbar identity - so you can right-click it, or the open Studio Lab window, and choose **Pin to taskbar**, and the pinned icon and the window are one taskbar button with the Studio Lab icon (not Python's). This covers running from a downloaded folder and older installs that were only ever updated in place; the installer already did this. To remake them any time: **Make Studio Lab Shortcuts (Windows).bat**, or `studiolab.py shortcuts`. Checked on a real Windows machine in the installer self-test.
+- Tests: lint warnings fixed; Dream Pop's melody sits in the wash on purpose (like Shoegaze).
+
 ## 2.9.2
 Learned from a deep-dark dubstep sample pack and five more reference tracks:
 - New basses: **diving sub** (dives an octave, sags a semitone or two, or dives and comes back), **mono analog zap** (a saw diving from two octaves up through a closing filter) and **pitch-wobbling growl** (a moaning mid-bass whose pitch bends with the LFO).

@@ -21,7 +21,7 @@ import zlib
 
 import numpy as np
 
-from .dsp import SR, mtof, lp, hp, bp, eq, soft, adsr, saw, square, sine, tri, svf_sweep
+from .dsp import SR, mtof, lp, hp, bp, eq, soft, saw, square, sine, svf_sweep
 from .instruments import INSTRUMENTS, INSTRUMENT_INFO, ROLE_CHOICES, GM_PROGRAM, _bass_exc, _guitar_body, _ms_stereo
 from . import va as _va
 

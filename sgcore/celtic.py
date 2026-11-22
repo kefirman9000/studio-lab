@@ -260,7 +260,6 @@ def c_synthpipes(m, dur, p, glide=None, mod=None):
     formants and crow), its own fifth-and-root drone underneath, and a gracenote flick a fourth up at the start of
     every note - big, bright, Celtic festival lead."""
     f = float(mtof(m))
-    r = _rng('synthpipes', m, dur)
     env = _gate(dur, 0.005, 0.08, 0.92, 0.08)
     n = len(env)
     t = np.arange(n) / SR

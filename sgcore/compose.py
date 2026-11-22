@@ -184,7 +184,7 @@ GENRE_COLORS = {'jazz_hop': ['9', '7', '9', 'add9'], 'celtic_jig': ['triad', 'su
                 'gospel': ['7', '9', '6', '7'], 'rnb': ['7', '9', '9', 'add9'], 'swing': ['6', '7', '9'], 'motown': ['triad', '7'],
                 'country': ['triad'], 'bluegrass': ['triad'], 'tango': ['triad', '7'], 'salsa': ['triad', '7', '6'],
                 'kpop': ['triad', 'add9', '7'], 'afro_house': ['7', '9', 'triad'], 'melodic_techno': ['triad', 'sus2', 'add9no3'],
-                'soul_ballad': ['triad', '7', '6'], 'waltz': ['triad'], 'celtic_jig': ['triad', 'sus2'], 'ska': ['triad', '7'],
+                'soul_ballad': ['triad', '7', '6'], 'waltz': ['triad'], 'ska': ['triad', '7'],
                 'cumbia': ['triad'], 'dancehall': ['triad', '7'], 'hauntology': ['add9', '7', 'triad', 'sus2'],
                 'braindance': ['add9', 'sus2', '7', 'add9no3'], 'liquid_dnb': ['7', '9', 'add9'], 'neurofunk': ['triad', 'add9no3'],
                 'melodic_dubstep': ['triad', 'add9', 'sus2'], 'brostep': ['triad'], 'memphis_phonk': ['triad'], 'switchup_808': ['add9', 'add9', 'triad'], 'switchup_808_dj': ['add9', 'add9', 'triad'], 'switchup_808_hard': ['triad', 'add9'], 'idm_jungle_theme': ['add9', '7', 'triad'], 'math_rock': ['add9', '7', 'add9', 'sus2'], 'sunrise_chillwave': ['add9', 'sus2', '7', 'add9'], 'hazy_downtempo': ['add9', '7', 'sus2'], 'analog_arp_drive': ['add9', 'sus2', 'triad'], 'velvet_pop': ['7', 'add9', '9'], 'drill_space': ['9', '7', 'add9'], 'switchup_mallets': ['add9', 'triad'], 'phonk': ['triad'], 'house_phonk': ['triad'], 'brazilian_phonk': ['triad'], 'jam_band': ['triad', '7', 'sus4'],
