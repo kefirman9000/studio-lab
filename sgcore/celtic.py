@@ -350,7 +350,7 @@ def _step(m, scale, up):
     return m + (2 if up else -2)
 
 
-def ornament_pass(evs, tracks, sections, st, bpm, seed):
+def ornament_pass(evs, tracks, sections, st, bpm, seed, tonic=None):
     """Cuts, taps and rolls (trad) or Highland gracenotes (pipes) on every lead-layer part - see the module docstring."""
     import random
     style = st.get('celtic_orn')
@@ -379,6 +379,16 @@ def ornament_pass(evs, tracks, sections, st, bpm, seed):
     sec_beat = 60.0 / max(40, bpm)
     g = 0.045 / sec_beat                                            # a grace note: ~45 ms, in beats
     new = []
+    ch_notes = None
+    if style == 'pipes' and tonic is not None:          # (2.4.6) the Highland chanter has exactly nine notes: low G to
+        t = 60 + tonic % 12                               # high A (mixolydian + the low G) - the tune is fitted onto them
+        if t < 66:
+            t += 12
+        ch_notes = [t - 2, t, t + 2, t + 4, t + 5, t + 7, t + 9, t + 10, t + 12]
+        for e in evs:
+            if e.track in leads and e.midi is not None:
+                same = [c for c in ch_notes if c % 12 == e.midi % 12]
+                e.midi = min(same or ch_notes, key=lambda c: abs(c - e.midi))
     lead_evs = sorted((e for e in evs if e.track in leads), key=lambda e: (e.track, e.beat))
     prev = {}
     for e in lead_evs:
@@ -387,19 +397,25 @@ def ornament_pass(evs, tracks, sections, st, bpm, seed):
         if style == 'pipes':                             # Highland piping: the ornament follows the melody
             if e.dur < 2.5 * g or rnd.random() > 0.35 + 0.65 * amt:
                 continue
-            top = max(m for m in range(e.midi, e.midi + 13) if m % 12 in scale)      # 'high G': the top of the scale
-            if top == e.midi:
-                top = _step(e.midi, scale, True)
-            lo = _step(e.midi, scale, False)
+            if ch_notes:                                  # the real gracenotes: high G (high A on the top notes)
+                top = ch_notes[7] if e.midi < ch_notes[7] else ch_notes[8]
+                i_ = ch_notes.index(e.midi) if e.midi in ch_notes else 1
+                lo = ch_notes[max(0, i_ - 1)]
+            else:
+                top = max(m for m in range(e.midi, e.midi + 13) if m % 12 in scale)
+                if top == e.midi:
+                    top = _step(e.midi, scale, True)
+                lo = _step(e.midi, scale, False)
             on_beat = abs(e.beat - round(e.beat)) < 0.01
             fig = []
             if p is not None and p.midi == e.midi:                # a repeated note: the chanter can't stop, so it
                 fig = [top] if rnd.random() < 0.6 else [top, e.midi, lo]   # MUST be split - a gracenote or a strike
             elif e.dur > 6 * g and on_beat and amt > 0.6 and rnd.random() < 0.25 * amt:
-                low = min(m for m in range(e.midi - 12, e.midi + 1) if m % 12 in scale)
-                fig = [top, low, _step(low, scale, True)]          # a taorluath-like figure into a long strong note
+                low = ch_notes[0] if ch_notes else min(m for m in range(e.midi - 12, e.midi + 1) if m % 12 in scale)
+                fig = [top, low, ch_notes[3] if ch_notes else _step(low, scale, True)]   # a taorluath-like figure (D grace)
             elif e.dur > 4 * g and on_beat and rnd.random() < 0.35 + 0.3 * amt:
-                fig = [top, e.midi, _step(e.midi, scale, True)]   # a doubling
+                up = ch_notes[min(8, ch_notes.index(e.midi) + 1)] if ch_notes and e.midi in ch_notes else _step(e.midi, scale, True)
+                fig = [top, e.midi, up]                            # a doubling
             elif p is not None and p.midi > e.midi:
                 fig = [p.midi if p.midi > e.midi + 2 else top]     # going down: a cut from the note above
             else:
@@ -440,8 +456,8 @@ def pipe_band(notes, length, tonic=None, players=3):
     out = np.zeros((2, length))
     rnd = np.random.default_rng(len(notes) * 7 + players)
     for k in range(players):
-        dt = (rnd.random() - 0.5) * 0.016                               # +-8 ms
-        cents = (k - (players - 1) / 2) * 5.0 + (rnd.random() - 0.5) * 3
+        dt = (rnd.random() - 0.5) * 0.006                               # +-3 ms: a good band plays as one
+        cents = (k - (players - 1) / 2) * 1.5 + (rnd.random() - 0.5) * 1.0   # within ~2 cents: unison, not chorus
         nk = [(max(0.0, t + dt), d, m) for (t, d, m) in notes]
         y = pipe_part(nk, length, tonic, cents=cents, seed=k + 1)
         pan = (k - (players - 1) / 2) / max(1, players - 1) * 0.6       # spread across the field, centre heavy
@@ -502,17 +518,58 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0):
     return out
 
 
-def drone_part(notes, length):
-    """The drones, unbroken under the whole pipe part: one continuous run from the first drone note to the last
-    (they don't stop for the tune), on the first note's pitch."""
+def _drone_table(bass, N=4096):
+    """One period of a drone reed on a long cylindrical pipe: odd harmonics strong, even ones weak, gently falling."""
+    k = np.arange(1, 64)
+    amp = k ** (-1.15 if bass else -0.95) * np.where(k % 2 == 1, 1.0, 0.35 if bass else 0.5)
+    amp *= np.exp(-k / (14.0 if bass else 22.0))
+    ph = np.random.default_rng(3 if bass else 5).random(len(k)) * 2 * np.pi
+    x = np.arange(N) / N
+    tab = (amp[:, None] * np.sin(2 * np.pi * k[:, None] * x[None, :] + ph[:, None])).sum(0)
+    return tab / np.max(np.abs(tab))
+
+
+def _drone_voice(f, n, bag, tab, beat_hz=0.0, seed=0):
+    phase = np.cumsum(f * 2 ** (bag / 1200) + beat_hz) / SR
+    frac = phase % 1.0
+    pos = frac * len(tab)
+    i0 = pos.astype(np.int64) % len(tab)
+    fr = pos - np.floor(pos)
+    y = tab[i0] * (1 - fr) + tab[(i0 + 1) % len(tab)] * fr
+    buzz = bp(np.random.default_rng(seed).standard_normal(n), 1500, 4000) * np.exp(-frac * 8) * 0.025   # the reed, faintly
+    return y + buzz
+
+
+def drone_part(notes, length, tonic=None):
+    """The Highland drones, unbroken under the whole pipe part: two tenors an octave below the chanter's low A and a
+    bass an octave below them, all on the tonic. The tenors are a third of a hertz apart, so they beat slowly; the
+    three share the bag's slow pressure wobble. (2, length)"""
+    out = np.zeros((2, length))
     if not notes:
-        return np.zeros((2, length))
+        return out
     t0 = notes[0][0]
     t1 = max(t + d for t, d, _ in notes)
-    y = np.asarray(c_bagpipe_drones(notes[0][2], max(0.5, t1 - t0), {}), float)
-    out = np.zeros((2, length))
+    if tonic is not None:
+        ch = 60 + tonic % 12
+        ch = ch + 12 if ch < 66 else ch
+        tenor = ch - 12
+    else:
+        tenor = notes[0][2] + 12
     a = int(t0 * SR)
-    k = min(length - a, y.shape[1])
-    if k > 0:
-        out[:, a:a + k] = y[:, :k]
+    n = min(length - a, int((t1 - t0 + 0.4) * SR))
+    if n <= 0:
+        return out
+    t = np.arange(n) / SR
+    bag = lp(np.cumsum(np.random.default_rng(11).standard_normal(n)) * 0.002, 2) * 40 + 0.6 * np.sin(2 * np.pi * 0.07 * t)
+    bag -= bag.mean()
+    ft = float(mtof(tenor))
+    tt, tb = _drone_table(False), _drone_table(True)
+    ten1 = _drone_voice(ft, n, bag, tt, 0.0, 1)
+    ten2 = _drone_voice(ft, n, bag, tt, 0.33, 2)
+    bass = _drone_voice(ft / 2, n, bag, tb, 0.0, 3)
+    env = np.minimum(t / 0.4, 1) * np.clip((t[-1] - t) / 0.3, 0, 1)
+    left = lp(0.55 * ten1 + 0.35 * ten2 + 0.75 * bass, 4500)
+    right = lp(0.35 * ten1 + 0.55 * ten2 + 0.75 * bass, 4500)
+    y = soft(np.vstack([left, right]) * 0.9, 1.1) * env * 0.12
+    out[:, a:a + n] = y
     return out

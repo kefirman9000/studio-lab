@@ -789,7 +789,7 @@ class Renderer:
                 k_ = self.song.get('key')
                 buf[:] = pipe_band(notes, self.length, getattr(k_, 'root', None), int(self.st.get('pipers') or 1))
             else:
-                buf[:] = drone_part(notes, self.length)
+                buf[:] = drone_part(notes, self.length, getattr(self.song.get('key'), 'root', None))
             return buf
         if tcfg['inst'] == 'texture':
             buf[0] = fx_texture(self.length)

@@ -12293,7 +12293,7 @@ derive('highland_pipes', 'celtic_jig', 'Classic',
        lead_rh=['x--xx-x-x--xx-x-', 'x-x-x--xx-x-x---', 'x--xx-x-x-x-x---'], kick_track='kick', snare_tracks=['snare'], kit='acoustic',
        tracks=[T('kick', 'kick', 'tenor_drum', rev=0.35, db=-15), T('snare', 'snare', 'pipe_snare', rev=0.3, db=-19),
                T('tom', 'top', 'tenor_drum', rev=0.3, db=-23),
-               T('pad', 'pad', 'bagpipe_drones', rev=0.3, db=-18), T('lead', 'lead', 'bagpipe', rev=0.22, db=-13)],
+               T('pad', 'pad', 'bagpipe_drones', rev=0.25, db=-6), T('lead', 'lead', 'bagpipe', rev=0.22, db=-13)],
        pools=dict(lead=['bagpipe'], pad=['bagpipe_drones']), drum_voice={'kick': dict(pitch=62), 'tom': dict(pitch=120)},
        master=dict(lufs=-10.5, air=1.3, low=0.9))
 

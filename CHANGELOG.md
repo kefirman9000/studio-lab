@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.4.6
+**Pipe band fixes: the drones' pitch, the chanter's range, the pipers' unison**
+
+- **The drones were an octave too low.** They droned at 58 and 116 Hz, which comes across as a sub-bass rumble. Now the tenors sit an octave below the chanter's low A and the bass an octave below them, as on real pipes. They're rebuilt as cylindrical-pipe reeds (odd harmonics strong, the bass darker), with the two tenors a third of a hertz apart so they beat slowly, a shared bag-pressure wobble and a faint reed buzz. They're balanced about 8 dB under the chanters.
+- **The tune stays on the real chanter.** The Highland chanter has exactly nine notes, low G to high A. Tunes used to run far above that and squeal. Now every note is fitted onto those nine, and the gracenotes are the real ones (high G, or high A on the top notes).
+- **The pipers play in unison**, within about 2 cents and 3 ms of each other, instead of a chorus that beat against itself.
+
+
 ## 2.4.5
 - **The pipe band is a band now.** Three modelled chanters play the tune together, the way a real band does: a few cents apart, a few milliseconds early or late, each on its own reed, spread across the stereo field and soft-saturated together. That gives the thick, slightly chorused wall of reed a real pipe band has, instead of one solo piper.
 - Stronger nasal chanter formants (around 1.1 and 2.8 kHz), more present drones, and a louder, brighter master for the pipe band.

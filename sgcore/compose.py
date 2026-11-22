@@ -2051,7 +2051,7 @@ def compose(opts):
         from .celtic import ornament_pass
         if getattr(opts, 'ornaments', None) is not None:
             st['_orn_amount'] = opts.ornaments
-        ornament_pass(evs, tracks, sections, st, bpm, opts.seed)
+        ornament_pass(evs, tracks, sections, st, bpm, opts.seed, tonic=key.root)
     if st.get('euphoric'):                               # (2.3) euphoric trance: chord-aware lead harmony, piano breakdown
         from .trance2 import euphoric_pass
         euphoric_pass(evs, tracks, sections, st)
