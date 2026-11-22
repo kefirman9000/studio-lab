@@ -69,6 +69,17 @@ jobs:
           if (-not (Test-Path "$app\runtime\python\pythonw.exe")) { throw 'not installed' }
           if (-not (Test-Path "$app\StudioLab.exe")) { throw 'no StudioLab.exe launcher' }
           if (-not (Test-Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Studio Lab.lnk")) { throw 'no Start menu shortcut' }
+          # (2.9.3) the app's own shortcut maker (for folder / updated installs): Start menu + desktop, icon, taskbar id
+          & "$app\runtime\python\python.exe" "$app\studiolab.py" shortcuts
+          if ($LASTEXITCODE -ne 0) { throw 'shortcut maker failed' }
+          $sm = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs"
+          $item = (New-Object -ComObject Shell.Application).Namespace($sm).ParseName('Studio Lab.lnk')
+          $id = $item.ExtendedProperty('System.AppUserModel.ID')
+          "shortcut AppUserModelID: $id"
+          if ($id -ne 'StudioLab.App') { throw "shortcut has no Studio Lab taskbar id ($id)" }
+          $lnk = (New-Object -ComObject WScript.Shell).CreateShortcut("$sm\Studio Lab.lnk")
+          "shortcut target: $($lnk.TargetPath)  icon: $($lnk.IconLocation)"
+          if (-not $lnk.TargetPath.EndsWith('StudioLab.exe')) { throw 'shortcut does not start StudioLab.exe' }
           $env:STUDIOLAB_NO_FFMPEG = '1'
           & "$app\runtime\python\python.exe" "$app\studiolab.py" generate --style house --length 0.3 --formats mp3 --out "$env:RUNNER_TEMP\out"
           if (-not (Get-ChildItem "$env:RUNNER_TEMP\out\*.mp3")) { throw 'no mp3' }
