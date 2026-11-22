@@ -12487,6 +12487,45 @@ derive('anthem_trance_2000', 'club_trance_2000s', 'Electronic',
        # the reference's top end is far more controlled than a modern club master (its air sits ~6 dB under the mids)
        master={'tone': [0, -1.8, -8.7, -13.7, -16.5, -16.3, -16.2, -15.6, -19.6], 'lufs': -9.0, 'air': 0.4, 'low': 1.2})
 
+
+# (2.9.9) spacious progressive-breaks electronica around 128-130 (a beat-scene record plus its producer's notes):
+# warbly, slightly detuned modular-style pads and soaring leads, weather / wind / fire field recordings, a big
+# breakbeat with a flurry of percussion that arrives only after a long atmospheric opening, Am - Fmaj7 colour chords
+# that never resolve, a dark rolled-off top - and one continuous, flowing arrangement with no hard cuts
+FORMS['warped_electronica'] = [('intro', 16, {'pad', 'fx'}, {'filter_in': True}),                 # haze and weather
+                               ('verse', 8, {'pad', 'fx', 'chords', 'bass'}, {'layer_in': True}),  # the chords and sub
+                               ('verse', 8, {'pad', 'fx', 'chords', 'bass', 'lead'}, {}),         # the voice / lead
+                               ('build', 8, {'pad', 'chords', 'bass', 'lead', 'top', 'fx'}, {'build': True}),
+                               ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead', 'arp', 'fx'},
+                                {'drop': True, 'crash': True}),                                   # the breaks arrive
+                               ('break', 8, {'pad', 'chords', 'lead', 'fx'}, {'alt': True}),     # a breath, not a cut
+                               ('build', 8, {'pad', 'chords', 'lead', 'top', 'fx'}, {'build': True}),   # climbing back
+                               ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead', 'arp', 'fx'},
+                                {'drop': True, 'alt': True}),                                     # the emotional peak
+                               ('outro', 16, {'pad', 'chords', 'fx'}, {'layer_out': True, 'fade': True})]   # release
+derive('warped_electronica', 'wonky_beats', 'Electronic',
+       'Spacious progressive-breaks electronica (around 128-130): warbly, slightly detuned modular-style pads and soaring '
+       'leads, weather, wind and fire field recordings, a long atmospheric opening before an energetic breakbeat with a '
+       'flurry of percussion arrives, melancholic Am - Fmaj7 colour chords that never resolve, a warm, rolled-off top - '
+       'vast yet intimate, one continuous, flowing arrangement with no hard cuts',
+       'Spacious breaks electronica (128-130)', exact_pools=True, form='warped_electronica', exact_form=True,
+       bpm=(127, 131), scales=['minor'], roots=[9, 4, 2, 7], swing=0.53, human=0.01, chord_size=4, chord_bars=2,
+       # Am - Fmaj7 - Dm - Em and their colours (chord_size 4: the 7ths)
+       progs={'minor': [[0, 5, 3, 4], [0, 5, 0, 5], [0, 5, 3, 0], [5, 0, 3, 4]]}, own_progs=True, groove=None,
+       drums={'kick': ['X.....x...X..x..', 'X.x.......X.....', 'X.....x.x.X...x.'], 'snare': ['....X..o.o..X..o', '....X.......X.o.'],
+              'chat': ['x.xxx.x.x.xxx.xx', 'xxx.xxx.xxx.xxx.', 'x.x.x.x.x.x.x.x.'], 'rim': ['..x...x...x..x..', '...x..x.x....x..']},
+       chord_rh=['x-------x-------', 'x---------------', 'x-------x---x---'], chord_center=60,
+       lead_rh=['x-------x-------', 'x---------------', '....x-------x---'], lead_oct=5,
+       sounds={'chords': 'jpmorph', 'pad': 'lushpad', 'lead': 'glidelead', 'arp': 'fmpluck'},
+       add_tracks=[T('texture', 'fx', 'texture', rev=0.6, db=-27)], texture_kind=['rain', 'wind', 'fire', 'wind', 'rain'],
+       pools=dict(bass=['sinebass', 'deepsub', 'moogbass', 'reese'],
+                  chords=['jpmorph', 'polysynth', 'virusflutter', 'epiano'],     # poly-synth chords, slightly unstable
+                  pad=['lushpad', 'vocalpad', 'warmpad', 'dddpad', 'glasspad'],
+                  arp=['fmpluck', 'pluck', 'viruspluck', 'hypnopluck'],
+                  lead=['glidelead', 'dreamlead', 'softlead', 'pluckvox']),
+       # space and feeling over loudness: a wide, deep image and room to breathe
+       master=dict(lufs=-11.0, air=0.0, low=2.0, width=1.25, lofi=True, wobble=2.6))
+
 derive('celtic_new_age', 'new_age_chant', 'Classic',
        'Celtic new age: misty, layered and serene - a wordless choir stacked into lush chords, a harp rippling '
        'beneath, a low whistle or flute drifting over the top and a slow, soft heartbeat drum, in dorian and aeolian - '

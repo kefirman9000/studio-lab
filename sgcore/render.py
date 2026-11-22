@@ -846,8 +846,9 @@ class Renderer:
         if tcfg['inst'] == 'texture':
             # (2.9.1) the background texture is no longer the same washing-waves noise in every song: about half the
             # songs have none, the others get one of a few kinds (unless a genre insists on its own)
-            kind = self.st.get('texture_kind') or random.Random(self.song['seed'] * 31 + 11).choice(
-                ['none', 'none', 'none', 'none', 'waves', 'air', 'rain', 'vinyl'])
+            kind = self.st.get('texture_kind') or ['none', 'none', 'none', 'none', 'waves', 'air', 'rain', 'vinyl']
+            if isinstance(kind, (list, tuple)):              # (2.9.9) a genre can give its own list to pick from
+                kind = random.Random(self.song['seed'] * 31 + 11).choice(list(kind))
             self.song['texture_kind'] = kind
             if kind == 'none':
                 return buf
@@ -860,6 +861,19 @@ class Renderer:
                     t = np.arange(self.length) / SR
                     x = bp(np.random.default_rng(self.song['seed'] + c).standard_normal(self.length), 3000, 9000) * 0.5
                     buf[c] = x * (0.4 + 0.6 * np.sin(2 * np.pi * t / 23.0 + c) ** 2)
+                elif kind == 'wind':                        # (2.9.9) wind: low, slowly gusting band-passed noise
+                    t = np.arange(self.length) / SR
+                    rng_ = np.random.default_rng(self.song['seed'] * 5 + c)
+                    gust = 0.35 + 0.65 * (0.5 + 0.5 * np.sin(2 * np.pi * t / (9.0 + 2 * c) + c)) ** 2
+                    buf[c] = (lp(bp(rng_.standard_normal(self.length), 150, 1400), 900) * 0.9 +
+                              bp(rng_.standard_normal(self.length), 1800, 4500) * 0.08) * gust
+                elif kind == 'fire':                        # (2.9.9) fire: a warm roar with crackles and pops
+                    rng_ = np.random.default_rng(self.song['seed'] * 7 + c)
+                    roar = lp(rng_.standard_normal(self.length), 500) * 0.35
+                    pops = np.zeros(self.length)
+                    hits = rng_.random(self.length) < 0.0005
+                    pops[hits] = rng_.standard_normal(int(hits.sum())) * rng_.random(int(hits.sum()))
+                    buf[c] = roar + bp(pops, 800, 6000) * 2.5
                 elif kind == 'rain':                        # light rain: a soft bed and scattered drops
                     rng_ = np.random.default_rng(self.song['seed'] * 3 + c)
                     bed = bp(rng_.standard_normal(self.length), 1500, 7000) * 0.25

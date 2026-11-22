@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.9
+- New genre: **Spacious breaks electronica (128-130)** - from a progressive-breaks record and your production notes: a long atmospheric opening of haze and weather, the chords and sub, then a soaring lead, before an energetic breakbeat with a flurry of percussion arrives; warbly, slightly unstable poly-synth chords and pads, melancholic Am - Fmaj7 - Dm - Em-style colour chords that never resolve, one continuous flowing arrangement (parts layer in and out, no hard cuts), a warm rolled-off top, a wide deep image and a quieter master that leaves room to breathe.
+- New background textures: **wind** (slow gusts) and **fire** (a warm roar with crackles), next to rain, air, waves and vinyl. A genre can now give its own list of textures to pick from.
+
 ## 2.9.8
 - New genre: **Anthem Trance (2000 club mix)** - measured from a 2000 trance remake: 138-140 BPM minor, built for the DJ - a filtered beat-only start, the rolling bass and then the percussion layering in, the riff, a short drop-out, a long breakdown that starts dark and empty and climbs (pad, chords, melody, snare build) into a 32-bar peak, a breath and a rebuild into a second peak, and a beat-and-bass outro. A controlled, darker top end like the records of the time.
 
