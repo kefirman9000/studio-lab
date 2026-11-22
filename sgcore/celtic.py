@@ -469,7 +469,7 @@ def pipe_band(notes, length, tonic=None, players=3):
         sw_f, sw_p = 0.12 + rnd.random() * 0.15, rnd.random() * 2 * np.pi
         nk, prev = [], -1.0
         for (t, d, m) in notes:
-            tt = t + dt0 + 0.007 * np.sin(2 * np.pi * sw_f * t + sw_p) + (rnd.random() - 0.5) * 0.006
+            tt = t + dt0 + 0.005 * np.sin(2 * np.pi * sw_f * t + sw_p) + (rnd.random() - 0.5) * 0.005   # a bit tighter, as 2.4.6
             tt = max(0.0, tt, prev + 0.006)
             nk.append((tt, d, m))
             prev = tt
@@ -480,7 +480,7 @@ def pipe_band(notes, length, tonic=None, players=3):
         out[0] += y * np.sqrt(0.5 * (1 - pan))
         out[1] += y * np.sqrt(0.5 * (1 + pan))
     out /= players ** 0.7
-    out = soft(out * 1.08, 1.05)                    # (2.4.12) 2.4.8's blend of the reeds into one wall, lighter
+    out = soft(out * 1.2, 1.1) / 1.05               # (2.4.13) between 2.4.6's and 2.4.8's blend of the reeds into one wall
     return _hall(out)
 
 
@@ -545,10 +545,11 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0, reed_pos=None, life=
         y = F.reed_conical(breath, turb, delay, _CH['pos'] if reed_pos is None else reed_pos, _CH['offset'], _CH['slope'],
                            _CH['refl'])
         y = resample_poly(y, 1, OS)[: b - a]                         # back to the normal rate, the fizz filtered off
-        y = np.diff(y, prepend=y[0]) * 1.6 + 0.7 * y                 # radiation: brighter, but gently
-        y = eq(eq(eq(eq(y, 'peak', 1300, 1.1, 5.0), 'peak', 3200, 1.1, 3.5), 'peak', 2400, 1.0, 1.5), 'peak', 520, 0.9, 3.0)   # 2.4.8's nasal bite + body, a little broader   # nasal bite + body
+        y = np.diff(y, prepend=y[0]) * 2.3 + 0.55 * y                # radiation: (2.4.13) most of 2.4.6's brightness back
+        y = eq(eq(eq(eq(y, 'peak', 1150, 1.2, 3.5), 'peak', 1300, 1.1, 2.5), 'peak', 2800, 1.2, 3.5), 'peak', 3200, 1.1, 1.5)
+        y = eq(eq(y, 'peak', 520, 0.9, 1.5), 'peak', 300, 1.0, -2.0)   # (2.4.13) 2.4.6's nasal formants over 2.4.8's, less boom   # nasal bite + body
         y = eq(y, 'peak', 6500, 0.8, -5.0)                           # tame the hard fizz up top
-        out[a:a + len(y)] += hp(lp(y, 9000), 180) * 0.18
+        out[a:a + len(y)] += hp(lp(y, 10000), 190) * 0.16
     return out
 
 

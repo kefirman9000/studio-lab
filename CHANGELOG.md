@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.13
+- Bagpipes: some of 2.4.6's sound back on top of 2.4.12 - brighter, reedier radiation, 2.4.6's nasal formants layered with 2.4.8's, less low boom, the reeds blended a bit harder into one wall, and the pipers a little tighter together. Still the 4-piper group, still no hiss.
+
 ## 2.4.12
 - Bagpipes: the best of 2.4.8 and 2.4.11. The 4-piper group sound stays; 2.4.8's character comes back - the reed's breath (slow now, so it adds life without hiss), the crow at each phrase start (half as strong, so no twang), the nasal bite, the reeds blending into one wall, and the hall's space (only the later, softer reflections, so no tunnel).
 
