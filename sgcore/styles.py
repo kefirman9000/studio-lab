@@ -12418,6 +12418,41 @@ derive('slow_wobble', 'deep_dubstep', 'Electronic',
        pools=dict(bass=['slowwob', 'yoiwob', 'sweepwob', 'reesewob', 'pitchgrowl', 'brightwob', 'wobble', 'darkwob'],   # wobbles only: the main character
                   chords=['stab', 'dubstab', 'stab_dark', 'virusflutter'], pad=['dddpad', 'virusflutter', 'warmpad', 'darkpad', 'drone']))
 
+
+# (2.9.6) minor-key choir rap, learned from church-choir rap stems at ~98 BPM: a clean guitar / sample loop alone at
+# first, the choir coming in on long tonic and fifth chords, a deep sub on a 3+3+2 rhythm, tape strings late, and a
+# two-note semitone figure on top - every part arriving one at a time
+FORMS['choir_rap'] = [('intro', 4, {'chords'}, {}),                                          # the guitar / sample loop alone
+                      ('intro', 4, {'chords', 'pad'}, {}),                                   # the choir comes in
+                      ('verse', 8, {'kick', 'snare', 'top', 'bass', 'chords'}, {'crash': True}),
+                      ('hook', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'pad'}, {}),
+                      ('verse', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {}),     # the tape strings
+                      ('hook', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'crash': True}),
+                      ('break', 4, {'pad', 'arp'}, {'alt': True}),                            # everything drops but the choir
+                      ('hook', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'crash': True}),
+                      ('outro', 4, {'chords', 'pad'}, {'fade': True})]
+derive('choir_rap', 'modern_gospel', 'Classic',
+       'Choir rap (minor): a dark, churchy hip-hop beat around 92-100 BPM - a clean guitar or sample loop on slow '
+       'minor changes (i - VI - ii dim - III, or i - VI - iv - V), a big choir holding the tonic and the fifth, a deep sub '
+       'on a 3+3+2 rhythm, tape-keyboard strings arriving late and a two-note half-step figure floating on top; the '
+       'parts come in one at a time and the choir is left alone in the break',
+       'Choir Rap (minor, churchy)', exact_pools=True,
+       sounds={'chords': 'cleanguitar', 'pad': 'choir_wide', 'arp': 'mellotron', 'lead': 'softlead', 'bass': '808'},
+       bpm=(92, 100), scales=['minor', 'harmonic_minor'], roots=[11, 4, 9, 2], swing=0.53, form='choir_rap', chord_size=3,
+       chord_bars=2, own_progs=True,
+       progs={'minor': [[0, 5, 1, 2], [0, 5, 3, 4], [0, 3, 5, 4], [0, 5, 1, 4]],
+              'harmonic_minor': [[0, 5, 3, 4], [0, 5, 1, 4], [0, 3, 4, 0]]},
+       drums={'kick': ['X.....X...X.....', 'X.....X.X.......', 'X.......X.X.....'], 'snare': [BACKBEAT], 'clap': [BACKBEAT],
+              'chat': ['x.x.x.x.x.x.x.x.', 'x.x.x.xxx.x.x.x.', 'x...x...x...x...']},
+       bass=['R-----R-----A---', 'R-----F-----R---', 'R-----R-----d---'], bass_mode='808', bass_lo=28,
+       chord_rh=['x---x---x---x---', 'x-x-x---x-x-x---', 'x-------x-------'], chord_center=59,
+       lead_rh=['x---------------', '........x-------', 'x-------x-------'], lead_oct=5,
+       pools=dict(chords=['cleanguitar', 'acguitar', 'piano', 'organ', 'epiano'],
+                  pad=['choir_wide', 'choir', 'choir_dark', 'humchoir', 'organ'],
+                  arp=['mellotron', 'mellotron_flute', 'strings', 'solina'],
+                  lead=['softlead', 'squarelead', 'mellotron_flute', 'vocalead', 'organ'],
+                  bass=['808', 'sinebass', 'deepsub', 'moogbass']))
+
 derive('celtic_new_age', 'new_age_chant', 'Classic',
        'Celtic new age: misty, layered and serene - a wordless choir stacked into lush chords, a harp rippling '
        'beneath, a low whistle or flute drifting over the top and a slow, soft heartbeat drum, in dorian and aeolian - '

@@ -110,7 +110,7 @@ def make_shortcuts(root, desktop=True, force=False):
     ps = "$ErrorActionPreference = 'Stop'\nAdd-Type -TypeDefinition @'\n" + _CS + "\n'@\n" + calls + '\n'
     enc = base64.b64encode(ps.encode('utf-16-le')).decode('ascii')
     subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden',
-                    '-EncodedCommand', enc], check=True, timeout=120, capture_output=True,
+                    '-EncodedCommand', enc], check=True, timeout=120, capture_output=True, stdin=subprocess.DEVNULL,
                    creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
     return want
 

@@ -39,7 +39,9 @@ def vary_layout(form, st, seed, available):
     club = not song and any(s[3].get('drop') or s[0] == 'drop' for s in form)
     moves = []
     if song:
-        menu = ['pre', 'cold_open', 'radio', 'breakdown', 'double_end', 'intro', 'cold_end']
+        menu = ['pre', 'cold_open', 'radio', 'breakdown', 'double_end', 'intro', 'cold_end',
+                # (2.9.6) moves learned from the stems of real pop / indie songs
+                'drums_intro', 'bare_verse', 'stop', 'bass_bridge', 'interlude', 'lead_end']
     elif club:
         menu = ['dj_intro', 'long_break', 'fake', 'switch', 'extend_last', 'third_drop', 'split_drop']
     else:
@@ -108,6 +110,52 @@ def _apply(mv, form, avail, rnd):
         o.pop('fade', None)
         o['cad'] = True
         return f[:-1] + [(last[0], last[1], last[2], o)]
+    # ---- (2.9.6) learned from real songs' stems ----
+    if mv == 'drums_intro':                               # two bars of the beat alone before anything else comes in
+        drums = {'kick', 'snare', 'top'} & avail
+        if not drums or f[0][0] != 'intro' or not drums & f[0][2] or f[0][2] <= drums:
+            return None                                   # (only where the intro already has the beat, plus more)
+        return [_sec('intro', 2, drums)] + f
+    if mv == 'bare_verse':                                # the first verse is just beat, bass and melody: the
+        i = next((k for k, s in enumerate(f) if s[0] == 'verse'), None)   # chords / pads hold back for the chorus
+        if i is None:
+            return None
+        v = f[i]
+        bare = v[2] - {'chords', 'pad', 'arp'}
+        if bare == v[2] or not bare & {'kick', 'snare', 'bass'}:
+            return None
+        return f[:i] + [(v[0], v[1], bare, v[3])] + f[i + 1:]
+    if mv == 'stop':                                      # a 2-bar stop - the drums cut out - right before verse 2
+        vs = [k for k, s in enumerate(f) if s[0] == 'verse']
+        if len(vs) < 2:
+            return None
+        i = vs[1]
+        held = f[i][2] - {'kick', 'snare', 'top'}
+        if not held:
+            return None
+        return f[:i] + [_sec('break', 2, held, alt=True)] + f[i:]
+    if mv == 'bass_bridge':                               # the bridge strips down to beat, bass and one synth line
+        i = next((k for k, s in enumerate(f) if s[0] == 'bridge'), None)
+        if i is None:
+            return None
+        b = f[i]
+        line = ({'arp'} & avail) or ({'lead'} & avail)
+        new = ({'kick', 'snare', 'bass'} & avail) | set(list(line)[:1])
+        if not new or new == b[2]:
+            return None
+        return f[:i] + [(b[0], b[1], new, dict(b[3], alt=True))] + f[i + 1:]
+    if mv == 'interlude':                                 # an instrumental interlude after the second chorus
+        cs = [k for k, s in enumerate(f) if s[0] == 'chorus']
+        if len(cs) < 2:
+            return None
+        c = f[cs[1]]
+        lay = (c[2] - {'lead'}) | ({'arp'} & avail)
+        return f[:cs[1] + 1] + [_sec('verse', 8, lay, alt=True)] + f[cs[1] + 1:]
+    if mv == 'lead_end':                                  # the song ends on the melody alone (a cappella ending)
+        if f[-1][0] != 'outro' or 'lead' not in avail:
+            return None
+        o = dict(f[-1][3])
+        return f[:-1] + [('outro', f[-1][1], {'lead'} | ({'pad'} & avail), o)]
     if mv == 'dj_intro':                                  # a long, layered DJ intro
         if f[0][0] != 'intro' or f[0][1] >= 16:
             return None

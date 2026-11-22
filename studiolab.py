@@ -170,11 +170,10 @@ def _engine_boot(port):
             from sgcore import appwindow                  # then the same window loads it - no closing and reopening
             appwindow.show_splash('Updating… starting the new version')
             time.sleep(0.6)                               # (the old engine lets go of its port)
-            try:
-                new_url = boot(lambda m: appwindow.show_splash(m))
-                w = appwindow.WINDOW.get('win')
-                if w is not None:
-                    w.load_url(new_url)
+            try:                                          # (2.9.6) progress lines never reload the screen or wait on it
+                new_url = boot(appwindow.say_splash)
+                appwindow.say_splash('Opening…')
+                appwindow.open_url_in_window(new_url)
             except Exception as e:                        # the new engine didn't start: say so, then restart fully
                 appwindow.show_splash('Restarting Studio Lab… (%s)' % e)
                 subprocess.Popen([sys.executable] + sys.argv, cwd=here, creationflags=0x08000000 if os.name == 'nt' else 0)

@@ -121,17 +121,45 @@ document.getElementById('sec').textContent=s>2?s+' s':''},500);</script></body><
 WINDOW = {}          # the app window (for an in-place restart after an update)
 
 
-def show_splash(msg):
-    """(2.4.3) Back to the loading screen in the same window (an update restarting the engine)."""
+def say_splash(msg):
+    """Put a line on the loading screen WITHOUT waiting on the window: pywebview's evaluate_js can hang on Windows
+    (above all while a page is loading), and the update restart used to wait on it forever - stuck on 'loading'."""
     import json
+    w = WINDOW.get('win')
+    if w is None:
+        return
+
+    def _s():
+        try:
+            w.evaluate_js('say(%s)' % json.dumps(str(msg)))
+        except Exception:
+            pass
+    threading.Thread(target=_s, daemon=True).start()
+
+
+def show_splash(msg):
+    """(2.4.3) Back to the loading screen in the same window (an update restarting the engine). (2.9.6) Loads the
+    screen once and never blocks; later lines go through say_splash."""
     w = WINDOW.get('win')
     if w is None:
         return
     try:
         w.load_html(SPLASH)
-        w.evaluate_js('say(%s)' % json.dumps(msg))
     except Exception:
         pass
+    import time
+    time.sleep(0.4)                                       # (let the screen load before talking to it)
+    say_splash(msg)
+
+
+def open_url_in_window(url):
+    """(2.9.6) Swap the window to the (new) engine's page, and point the save dialogs at it."""
+    w = WINDOW.get('win')
+    b = WINDOW.get('bridge')
+    if b is not None:
+        b.base = url.split('?')[0]
+    if w is not None:
+        w.load_url(url)
 
 
 def splash_window(boot, quit_app):
@@ -157,6 +185,7 @@ def splash_window(boot, quit_app):
         win = webview.create_window('Studio Lab', html=SPLASH, width=w, height=h, min_size=(900, 600), js_api=bridge, **kw)
     bridge.window = win
     WINDOW['win'] = win
+    WINDOW['bridge'] = bridge
 
     def go():
         import json

@@ -31,7 +31,7 @@ GROUPS = {
         ('Pop & Indie', ['dream_pop', 'pop', 'bedroom_pop', 'velvet_pop', 'chamber_pop', 'city_pop', 'holiday', 'sophisti_pop', 'psych_pop', 'musical_theatre', 'anime_opening', 'shakuhachi_pop']),
         ('Funk & Disco', ['funk', 'disco', 'disco_funk', 'smooth_funk', 'electro_funk', 'afrobeat']),
         ('Soul, R&B & Gospel', ['motown', 'soul_ballad', 'gospel', 'modern_gospel', 'rnb', 'neo_soul', 'new_jack_swing', 'uk_rnb_swing', 'quiet_storm', 'slow_jam']),
-        ('Hip-Hop', ['boombap', 'beat_tape_cinematic', 'jazz_rap', 'g_funk', 'smooth_90s_rap', 'soul_sample_rap', 'bay_rap', 'futuristic_bounce', 'jazz_hop']),
+        ('Hip-Hop', ['boombap', 'beat_tape_cinematic', 'jazz_rap', 'g_funk', 'smooth_90s_rap', 'soul_sample_rap', 'choir_rap', 'bay_rap', 'futuristic_bounce', 'jazz_hop']),
         ('Jazz', ['jazz', 'bebop', 'modal_jazz', 'soul_jazz', 'fusion', 'smooth_jazz', 'gypsy_jazz', 'ragtime', 'ethio_jazz', 'exotica', 'smooth_jazz_horns']),
         ('Swing & Big Band', ['swing', 'swing_tomtom', 'big_band_50s', 'western_swing', 'nola_brass']),
         ('Celtic', ['celtic_jig', 'celtic_reel', 'celtic_hornpipe', 'slip_jig', 'strathspey', 'celtic_polka', 'celtic_session', 'celtic_slow_air', 'celtic_punk', 'sea_shanty', 'highland_pipes', 'pipes_orchestra', 'breton_an_dro', 'galician_muineira', 'clarsach_air', 'celtic_new_age']),

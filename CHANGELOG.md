@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.9.6
+- **Fixed: an update restarting in the same window got stuck on the loading screen.** While the new version started, every progress line reloaded the loading screen and then waited on the window to answer - which on Windows can hang forever. The loading screen now loads once and progress lines never wait on the window. (The update INTO this version still runs the old code: if it sticks one last time, close Studio Lab and open it again.)
+- New genre: **Choir Rap (minor, churchy)** - a dark church-choir hip-hop beat around 92-100 BPM, learned from choir-rap stems: a clean guitar / sample loop on slow minor changes, a big choir on the tonic and the fifth, a deep sub on a 3+3+2 rhythm, tape strings arriving late and a two-note half-step figure on top, the parts coming in one at a time.
+- **Song structures learned from real pop / indie stems** - new arrangement moves for verse / chorus genres: two bars of the beat alone before the intro; a bare first verse (beat, bass and melody - the chords wait for the chorus); a 2-bar drum stop right before verse 2; a bridge stripped to beat, bass and one synth line; an instrumental interlude after the second chorus; and an ending on the melody alone.
+
 ## 2.9.5
 From a trance / techno / house construction-kit pack (128-138 BPM):
 - New sounds: **wide mid saw bass** (the rubbery, wide 3-note house rolls between the kicks) and a **bright trance chord stab** (wide supersaw, a third-of-a-second decay). House, Tech House and Techno can pick the bass; House and the trance genres the stab.
