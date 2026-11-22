@@ -385,15 +385,15 @@ _TRANCE = dict(
     pad=['sawchoir', 'reversepad', 'trancepad_wide', 'gatepad', 'shimmerpad', 'gatedchoir', 'trancestrings', 'dreampad'],
     lead=['squarelead', 'risinglead', 'anthemlead', 'supersaw_lead_octave', 'dreamlead', 'tranceflute', 'formantlead',
           'emolead', 'screamlead'],
-    chords=['viruspluck', 'reversepad', 'supersaw_wide', 'gatepad', 'upstab', 'fmpluck', 'hypersaw', 'sawchoir'],
+    chords=['viruspluck', 'reversepad', 'supersaw_wide', 'gatepad', 'upstab', 'fmpluck', 'hypersaw', 'sawchoir', 'pumpchord'],
     bass=['tribass', 'offbass', 'rollbass', 'fmroll', 'sawbass_driven'])
 _PSY = dict(bass=['tribass', 'psybass', 'psyroll'], arp=['acid_squelch', 'acidlead', 'viruspluck', 'psylead'],
             lead=['acidlead', 'psylead', 'squarelead'])
-_TECHNO = dict(arp=['acid_dist', 'acid_squelch', 'technoseq', 'modseq', 'berlinseq', 'hypnoseq', 'viruspluck'],
+_TECHNO = dict(bass=['widesawbass'], arp=['acid_dist', 'acid_squelch', 'technoseq', 'modseq', 'berlinseq', 'hypnoseq', 'viruspluck'],
                lead=['acidlead', 'acid_dist'], pad=['reversepad', 'darkpad_wide', 'hypnopad'])
 _ACID = dict(bass=['acid_squelch', 'acid_dist'], arp=['acid_squelch', 'acidlead', 'acid_dist', 'sh101', 'acidsquare'],
              lead=['acidlead', 'acid_squelch', 'hoover'], chords=['housechord', 'samplerstab', 'm1piano'])
-_HOUSE = dict(lead=['acidlead'], arp=['acid_squelch', 'fmpluck'])
+_HOUSE = dict(lead=['acidlead'], arp=['acid_squelch', 'fmpluck'], bass=['widesawbass'], chords=['pumpchord'])
 _CELTIC = dict(arp=['tenor_banjo', 'dadgad', 'clarsach', 'cittern'], chords=['dadgad', 'cittern'],
                lead=['tenor_banjo', 'melodeon'])
 _CELTIC_SLOW = dict(lead=['crwth', 'smallpipes'], chords=['dadgad', 'clarsach'], arp=['clarsach', 'dadgad'])

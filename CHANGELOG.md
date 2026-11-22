@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.9.5
+From a trance / techno / house construction-kit pack (128-138 BPM):
+- New sounds: **wide mid saw bass** (the rubbery, wide 3-note house rolls between the kicks) and a **bright trance chord stab** (wide supersaw, a third-of-a-second decay). House, Tech House and Techno can pick the bass; House and the trance genres the stab.
+- New grooves from the kits: Uplifting Trance's double off-beat bass and 16th 'speed' hats; House's 3-note rolling bass, pre-offbeat hats and 8th shakers; Tech House's double off-beat and rolling basses and a broken hat groove; Progressive House's double off-beat bass and pre-offbeat hats.
+
 ## 2.9.4
 - **The new wobbles and subs across the whole dubstep family:** Dubstep, Brostep, Riddim, Melodic Dubstep, Chillstep, Dark Dubstep (classic), Deep Dubstep Minimal / Rollers / Rolling, Early Dubstep and Steppy Halftime can now pick the slow, 'yoi', sweep, reese, bright, tearout and pitch-growl wobbles and the sleeper / diving / deep subs that fit them, and the dark atmosphere and flutter pads. Dubstep's and Brostep's signature-sound checks accept the new wobbles.
 - **Dubstep drum kits:** every dubstep-family song now picks one of several kits - the genre's own, **deep-dark** (short tight kick, crisp bright snare), **soundsystem** (deep long kick, fat snare), **slam** (hard driven kick, cracking snare; Brostep / Riddim), **rimshot** (early-2000s dry kick, tight rimmy snare, short hats) or **smooth** (Melodic / Chillstep). Re-roll the sounds to change it; picking a kit yourself still wins.

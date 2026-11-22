@@ -295,3 +295,46 @@ for _name, _fn, _info, _roles, _gm in (
     for _role in _roles:
         if _name not in ROLE_CHOICES.setdefault(_role, []):
             ROLE_CHOICES[_role].append(_name)
+
+
+# ---- (2.9.5) from a trance / techno / house construction-kit pack ----
+
+def v_widesawbass(m, dur, p, glide=None, mod=None):
+    """Wide mid saw bass (house / tech house): a short, punchy stack of detuned saws spread wide in stereo above a
+    small mono sub, a filter blip on every note - the rubbery 3-note rolls that sit between the kicks."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.3), 0.02) * SR)
+    env = _va.adsr(gate, 0.001, 0.1, 0.35, 0.03)
+    n = len(env)
+    t = np.arange(n) / SR
+    fo = f if f > 60 else f * 2
+    L = _va.saw(np.full(n, fo * 2 ** (-14 / 1200)), n, 0.1) + 0.6 * _va.saw(np.full(n, fo * 2 ** (5 / 1200)), n, 0.5)
+    R = _va.saw(np.full(n, fo * 2 ** (14 / 1200)), n, 0.3) + 0.6 * _va.saw(np.full(n, fo * 2 ** (-5 / 1200)), n, 0.8)
+    cut = 250 * (p.get('cut', 3200) / 250) ** np.exp(-t / 0.05)
+    y = _va.vcf(np.vstack([L, R]) * 0.45, cut, 0.3, 1.3)
+    y = _hpf(y, 140)
+    sub = np.sin(2 * np.pi * (f if f < 90 else f / 2) * t) * 0.5
+    return (y + np.vstack([sub, sub])) * env * 0.6
+
+
+def v_pumpchord(m, dur, p, glide=None, mod=None):
+    """Bright trance chord stab: a wide supersaw chord note with a third-of-a-second decay - the off-beat chord stabs
+    of a 138 trance kit (the mix's sidechain gives it the pump)."""
+    f = float(mtof(m))
+    gate = int(max(dur, 0.05) * SR)
+    env = _va.adsr(gate, 0.004, p.get('d', 0.3), 0.25, 0.12)
+    n = len(env)
+    x = _va.jp_supersaw(f, n, 0.6, 0.9, 1.0)
+    y = _va.vcf(x, p.get('cut', 7000), 0.15, 1.05)
+    return _hpf(y, 220) * env * 0.5
+
+
+for _name, _fn, _info, _roles, _gm in (
+        ('widesawbass', v_widesawbass, 'Wide mid saw bass (house rolls)', ('bass',), 38),
+        ('pumpchord', v_pumpchord, 'Bright wide trance chord stab', ('chords', 'arp'), 81)):
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES.setdefault(_role, []):
+            ROLE_CHOICES[_role].append(_name)
