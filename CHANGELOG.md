@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.4.7
+- **Fixed: bagpipe drones drifting out of tune.** Their bag-pressure sway was a random walk that wandered up to nearly a semitone flat or sharp over a song, which is why the drones sounded out of tune only some of the time. It now holds within about 1 cent, as a steady piper does.
+- **The pipes no longer stop inside a tune:** a note holds over short rests, as on a real chanter, and the reed only starts again after a real silence.
+
+
 ## 2.4.6
 **Pipe band fixes: the drones' pitch, the chanter's range, the pipers' unison**
 

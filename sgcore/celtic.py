@@ -479,7 +479,7 @@ def pipe_part(notes, length, tonic=None, cents=0.0, seed=0):
     phrases, cur = [], [notes[0]]
     for nt in notes[1:]:
         last = cur[-1]
-        if nt[0] - (last[0] + last[1]) > 0.25:
+        if nt[0] - (last[0] + last[1]) > 1.5:              # pipes never stop inside a tune: a note holds over a rest
             phrases.append(cur)
             cur = [nt]
         else:
@@ -560,8 +560,8 @@ def drone_part(notes, length, tonic=None):
     if n <= 0:
         return out
     t = np.arange(n) / SR
-    bag = lp(np.cumsum(np.random.default_rng(11).standard_normal(n)) * 0.002, 2) * 40 + 0.6 * np.sin(2 * np.pi * 0.07 * t)
-    bag -= bag.mean()
+    w = lp(np.random.default_rng(11).standard_normal(n), 1.5)        # the bag's pressure: a slow, BOUNDED sway (a steady
+    bag = w / (np.std(w) + 1e-12) * 0.5 + 0.4 * np.sin(2 * np.pi * 0.07 * t)   # piper holds the drones within ~1 cent)
     ft = float(mtof(tenor))
     tt, tb = _drone_table(False), _drone_table(True)
     ten1 = _drone_voice(ft, n, bag, tt, 0.0, 1)
