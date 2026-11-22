@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.9.8
+- New genre: **Anthem Trance (2000 club mix)** - measured from a 2000 trance remake: 138-140 BPM minor, built for the DJ - a filtered beat-only start, the rolling bass and then the percussion layering in, the riff, a short drop-out, a long breakdown that starts dark and empty and climbs (pad, chords, melody, snare build) into a 32-bar peak, a breath and a rebuild into a second peak, and a beat-and-bass outro. A controlled, darker top end like the records of the time.
+
 ## 2.9.7
 - **Updates restart Studio Lab in a fresh window again** (as before 2.4.3): after an update installs, the app closes and opens the new version. The same-window swap could hang on the loading screen on Windows.
 

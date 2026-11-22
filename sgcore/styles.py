@@ -12453,6 +12453,40 @@ derive('choir_rap', 'modern_gospel', 'Classic',
                   lead=['softlead', 'squarelead', 'mellotron_flute', 'vocalead', 'organ'],
                   bass=['808', 'sinebass', 'deepsub', 'moogbass']))
 
+
+# (2.9.8) the turn-of-the-millennium anthem-trance club mix, measured from a 2000 trance remake (140 BPM, minor): a
+# filtered beat-only start, the bass and then the percussion layering in, the riff arriving, a short drop-out, a long
+# breakdown that starts dark and empty and climbs (pad -> chords -> melody -> snare build), a 32-bar peak, a short
+# breath and a rebuild into a second peak, then a beat-and-bass DJ outro
+_AT = {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead', 'fx'}
+FORMS['anthem_trance_2000'] = [
+    ('intro', 8, {'kick', 'top'}, {'filter_in': True}),
+    ('verse', 8, {'kick', 'bass', 'top'}, {}),
+    ('verse', 16, {'kick', 'bass', 'top', 'snare'}, {'layer_in': True}),
+    ('verse', 16, {'kick', 'bass', 'top', 'snare', 'arp'}, {'crash': True}),                  # the riff
+    ('break', 8, {'arp', 'pad', 'fx'}, {'alt': True}),                                        # a short drop-out
+    ('verse', 8, {'kick', 'bass', 'top', 'snare', 'arp'}, {}),
+    ('break', 8, {'pad'}, {}),                                                                # the long breakdown: dark,
+    ('break', 8, {'pad', 'chords'}, {}),                                                      # then the chords,
+    ('break', 8, {'pad', 'chords', 'lead'}, {}),                                              # then the melody,
+    ('build', 8, {'pad', 'chords', 'lead', 'snare', 'fx'}, {'build': True}),                  # then the snare build
+    ('drop', 32, _AT, {'drop': True, 'crash': True}),                                         # the peak
+    ('break', 8, {'pad', 'arp', 'fx'}, {'alt': True}),                                        # a breath
+    ('build', 16, {'kick', 'top', 'arp', 'pad', 'fx'}, {'build': True}),                      # the beat rebuilds
+    ('drop', 24, _AT, {'drop': True, 'crash': True, 'alt': True}),                            # the second peak
+    ('outro', 16, {'kick', 'bass', 'top'}, {'layer_out': True}),                              # the DJ outro
+    ('outro', 8, {'kick', 'top'}, {'layer_out': True}),
+]
+derive('anthem_trance_2000', 'club_trance_2000s', 'Electronic',
+       'Anthem trance club mix (around 2000): 138-140 BPM in a minor key, built for the DJ - a filtered beat-only start, '
+       'the rolling bass and then the percussion layering in, the riff arriving, a short drop-out, then a long breakdown '
+       'that starts dark and empty and climbs (pad, then chords, then the melody, then a snare build) into a 32-bar peak, '
+       'a short breath and a rebuild into a second peak, and a beat-and-bass outro for mixing out',
+       'Anthem Trance (2000 club mix)', form='anthem_trance_2000', exact_form=True, bpm=(138, 140),
+       progs={'minor': [[0, 5, 2, 6], [5, 2, 6, 0], [0, 5, 6, 4], [0, 5, 2, 4]]}, filter_arc=True,
+       # the reference's top end is far more controlled than a modern club master (its air sits ~6 dB under the mids)
+       master={'tone': [0, -1.8, -8.7, -13.7, -16.5, -16.3, -16.2, -15.6, -19.6], 'lufs': -9.0, 'air': 0.4, 'low': 1.2})
+
 derive('celtic_new_age', 'new_age_chant', 'Classic',
        'Celtic new age: misty, layered and serene - a wordless choir stacked into lush chords, a harp rippling '
        'beneath, a low whistle or flute drifting over the top and a slow, soft heartbeat drum, in dorian and aeolian - '
