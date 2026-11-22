@@ -205,3 +205,76 @@ def svf_lp(x, cut, sr, q=0.707):
     for c in range(x.shape[0]):
         out[c] = _svf_lp_kernel(np.ascontiguousarray(x[c], np.float64), g, 1.0 / q)
     return out
+
+
+@njit(cache=True, fastmath=True)
+def reed_conical(breath, noise, delay, pos, offset, slope, refl):
+    """(2.4.3) A reed on a conical bore (a digital waveguide, like the classic saxophone model): two delay lines meet at
+    the reed; each sample the reed opens or closes with the pressure across it (a clipped reed table), the bell
+    reflects the wave back through a gentle low-pass. Conical = every harmonic (oboe, chanter). breath: (n,) mouth /
+    bag pressure, delay: (n,) total bore length in samples (pitch), pos: where the reed sits along it."""
+    n = breath.shape[0]
+    size = 4096
+    d0 = np.zeros(size)
+    d1 = np.zeros(size)
+    w = 0
+    prev = 0.0
+    out = np.zeros(n)
+    for i in range(n):
+        L = delay[i]
+        L0 = (1.0 - pos) * L
+        L1 = pos * L
+        r0 = w - L0
+        i0 = int(math.floor(r0))
+        f0 = r0 - i0
+        a0 = d0[i0 % size] * (1.0 - f0) + d0[(i0 + 1) % size] * f0
+        r1 = w - L1
+        i1 = int(math.floor(r1))
+        f1 = r1 - i1
+        a1 = d1[i1 % size] * (1.0 - f1) + d1[(i1 + 1) % size] * f1
+        lp_ = 0.5 * (a0 + prev)                        # the bell: a one-zero low-pass on the reflection
+        prev = a0
+        temp = -refl * lp_
+        o = temp - a1
+        bp_ = breath[i] * (1.0 + noise[i])
+        pd = bp_ - o
+        reed = offset + slope * pd
+        if reed > 1.0:
+            reed = 1.0
+        elif reed < -1.0:
+            reed = -1.0
+        d1[w % size] = temp
+        d0[w % size] = bp_ - pd * reed - temp
+        out[i] = o
+        w += 1
+    return out
+
+
+@njit(cache=True, fastmath=True)
+def reed_cylindrical(breath, noise, delay, offset, slope, refl):
+    """A reed on a cylindrical bore (the classic clarinet model): one delay line, so mostly odd harmonics - the
+    hollow, buzzing hum of a bagpipe drone."""
+    n = breath.shape[0]
+    size = 8192
+    d = np.zeros(size)
+    w = 0
+    prev = 0.0
+    out = np.zeros(n)
+    for i in range(n):
+        r = w - delay[i]
+        i0 = int(math.floor(r))
+        f = r - i0
+        a = d[i0 % size] * (1.0 - f) + d[(i0 + 1) % size] * f
+        lp_ = 0.5 * (a + prev)
+        prev = a
+        pd = -refl * lp_ - breath[i] * (1.0 + noise[i])
+        reed = offset + slope * pd
+        if reed > 1.0:
+            reed = 1.0
+        elif reed < -1.0:
+            reed = -1.0
+        o = breath[i] + pd * reed
+        d[w % size] = o
+        out[i] = o
+        w += 1
+    return out

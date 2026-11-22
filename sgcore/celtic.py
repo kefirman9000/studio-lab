@@ -125,22 +125,148 @@ def c_uilleann(m, dur, p, glide=None, mod=None):
     return hp(y * env + dr * env * float(p.get('drone', 1.0)), 60) * 0.2
 
 
+def _reed(fv, n, r, pw=0.16):
+    """A double reed: a narrow, slightly asymmetric pulse (the reed slamming shut) with reed buzz - noise gated by the
+    reed's own cycle, so the hiss pulses at the note's pitch instead of floating on top of it."""
+    ph = np.cumsum(fv) / SR
+    frac = ph % 1.0
+    pulse = np.where(frac < pw, 1.0, -pw / (1 - pw))
+    pulse = lp(pulse, 9000) * 0.75 + saw(fv, n) * 0.25
+    gate = np.exp(-frac * 9.0)                                    # buzz bursts at each reed closure
+    buzz = hp(r.standard_normal(n), 2500) * gate * 0.22
+    return pulse + buzz
+
+
+_CH = dict(pos=0.33, offset=0.7, slope=0.3, refl=0.9)      # chanter reed + bore: stable across the whole chanter range
+_DR = dict(offset=0.7, slope=-0.3, refl=0.95)                # drone reeds
+
+
+def _f0(y):
+    y = y[len(y) // 3:]
+    y = y - y.mean()
+    if len(y) < 2000 or np.abs(y).max() < 1e-4:
+        return 0.0
+    m = min(len(y), 6000)
+    ac = np.correlate(y[:m], y[:m], 'full')[m - 1:]
+    lo, hi = int(SR / 2500), int(SR / 50)
+    seg = ac[lo:hi]
+    if seg.max() <= 0:
+        return 0.0
+    peaks = [j for j in range(1, len(seg) - 1) if seg[j] >= seg[j - 1] and seg[j] >= seg[j + 1] and seg[j] > 0.85 * seg.max()]
+    k = lo + (peaks[0] if peaks else int(np.argmax(seg)))            # the first strong peak: no octave errors
+    if 1 <= k < len(ac) - 1:                                       # parabolic peak: sub-sample accuracy
+        a, b, c = ac[k - 1], ac[k], ac[k + 1]
+        d = a - 2 * b + c
+        k = k + (0.5 * (a - c) / d if d else 0.0)
+    return SR / k
+
+
+_TUNED = {}
+
+
+def _chanter_raw(d, b0, n, seed):
+    """The chanter's bore output for n samples: bore length d, bag pressure b0 - with the crow and the turbulence."""
+    from . import fastdsp as F
+    t = np.arange(n) / SR
+    crow = 1 + 0.04 * np.exp(-t / 0.01)
+    br = np.full(n, b0) * np.clip(t / 0.004, 0, 1)
+    turb = lp(np.random.default_rng(seed).standard_normal(n), 3000) * 0.06
+    return F.reed_conical(br, turb, d * crow, _CH['pos'], _CH['offset'], _CH['slope'], _CH['refl'])
+
+
+def _tuned_delay(f, kind):
+    """(bore length, breath) that really sound at f: short test notes, measured and corrected, cached per pitch. A note
+    that overblows (jumps an octave) is blown a little softer until it locks - as a piper would."""
+    from . import fastdsp as F
+    key = (kind, round(f, 2))
+    if key in _TUNED:
+        return _TUNED[key]
+    n = int(0.25 * SR)
+    b0 = 0.65 if kind == 'chanter' else 0.6
+    d = SR / f - 3.0 if kind == 'chanter' else SR / f / 2 - 1.0
+    for _ in range(10):
+        br = np.full(n, b0)
+        br[:150] = np.linspace(0, b0, 150)
+        if kind == 'chanter':
+            y = _chanter_raw(d, b0, n, 7)
+        else:
+            y = F.reed_cylindrical(br, np.zeros(n), np.full(n, d), _DR['offset'], _DR['slope'], _DR['refl'])
+        got = _f0(y)
+        if not got or got <= 0:
+            break
+        if got > 1.6 * f and b0 > 0.4:                               # overblown: ease off the bag
+            b0 -= 0.04
+            continue
+        d = max(4.0, d * got / f)
+        if abs(1200 * np.log2(got / f)) < 2:
+            break
+    _TUNED[key] = (d, b0)
+    return d, b0
+
+
 def c_bagpipe(m, dur, p, glide=None, mod=None):
+    """Great Highland bagpipe chanter - a physical model: a double reed driving a conical bore (a digital waveguide),
+    blown by a bag at constant high pressure (no dynamics, the pitch locks in by itself), the reed's turbulence in the
+    air stream, a quick 'crow' as the reed catches, then the chanter's bright radiation from the sole and holes."""
     f = float(mtof(m))
-    env = _gate(dur, 0.003, 0.01, 1.0, 0.015)                     # no dynamics: on, or off
-    n = len(env)
-    y = _chanter(f, n, 9.0, 7500)
-    return hp(soft(y * 1.4, 1.2), 300) * env * 0.2
+    n = int((max(dur, 0.03) + 0.02) * SR)
+    d, b0 = _tuned_delay(f, 'chanter')
+    y = _chanter_raw(d, b0, n, 7)                                  # the reed catching (crow), turbulence, the bag's pressure
+    if _f0(y[: int(0.25 * SR)]) > 1.6 * f if n > int(0.12 * SR) else False:   # (safety) overblown: blow softer
+        y = _chanter_raw(d, b0 - 0.08, n, 7)
+    y = np.diff(y, prepend=y[0]) * 3.0 + 0.4 * y                  # radiated sound: the bore's output, brighter (holes / sole)
+    y = eq(eq(y, 'peak', 2600, 1.2, 3.0), 'peak', 300, 1.0, -4.0)
+    tail = int(0.02 * SR)
+    y[-tail:] *= np.linspace(1, 0, tail)
+    return hp(lp(y, 10000), 200) * 0.16
 
 
 def c_bagpipe_drones(m, dur, p, glide=None, mod=None):
+    """The Highland drones - three physical-model reeds on cylindrical bores (the hollow, odd-harmonic hum): two tenors
+    on the tonic, a hair apart so they beat slowly, and a bass an octave below, all fed by the same bag."""
+    from . import fastdsp as F
+    from .instruments import _ms_stereo
     f = float(mtof(m))
+    r = _rng('drones', m, dur)
     n = int((dur + 0.4) * SR)
     t = np.arange(n) / SR
-    x = sum(a * (square(f * r * 2 ** (c / 1200), n, pw=0.2) * 0.6 + saw(f * r * 2 ** (c / 1200), n) * 0.4)
-            for r, a, c in ((1.0, 1.0, 0), (1.0, 0.9, 3), (0.5, 0.8, -2)))          # two tenors, one bass
-    env = np.minimum(t / 0.25, 1) * np.clip((dur + 0.4 - t) / 0.3, 0, 1)
-    return eq(lp(x, 3000), 'peak', 1000, 1.5, 4.0) * env * 0.07
+    out = np.zeros(n)
+    for ratio, amp, cents in ((1.0, 1.0, 0.0), (1.0, 0.85, 1.8), (0.5, 1.0, -0.8)):
+        fk = f * ratio * 2 ** (cents / 1200)
+        d0, b0 = _tuned_delay(fk, 'drone')
+        d = d0 * (1 + 0.0004 * np.sin(2 * np.pi * 0.09 * t + r.random() * 6))
+        br = np.full(n, b0) * np.clip(t / 0.05, 0, 1)
+        y = F.reed_cylindrical(br, lp(r.standard_normal(n), 2000) * 0.03, d, _DR['offset'], _DR['slope'], _DR['refl'])
+        out += amp * (y - y.mean())
+    out = np.diff(out, prepend=out[0]) * 2.0 + 0.5 * out
+    env = np.minimum(t / 0.35, 1) * np.clip((dur + 0.4 - t) / 0.3, 0, 1)
+    y = lp(out, 5000) * env * 0.05
+    return _ms_stereo(y, 150)
+
+
+def c_synthpipes(m, dur, p, glide=None, mod=None):
+    """Synth pipes: a bagpipe-flavoured EDM lead - a stack of detuned pulses and saws shaped like a chanter (the same
+    formants and crow), its own fifth-and-root drone underneath, and a gracenote flick a fourth up at the start of
+    every note - big, bright, Celtic festival lead."""
+    f = float(mtof(m))
+    r = _rng('synthpipes', m, dur)
+    env = _gate(dur, 0.005, 0.08, 0.92, 0.08)
+    n = len(env)
+    t = np.arange(n) / SR
+    g0 = f * 2 ** ((glide - m) / 12) if glide is not None else None
+    bend = 500 * np.clip(1 - t / 0.035, 0, 1) ** 2                  # the gracenote flick, a fourth up, into the note
+    if g0 is not None:
+        fbase = g0 + (f - g0) * np.clip(t / 0.08, 0, 1)
+    else:
+        fbase = np.full(n, f)
+    x = np.zeros(n)
+    for c in (-14, -6, 0, 6, 14):
+        fv = fbase * 2 ** ((bend + c) / 1200)
+        x += square(fv, n, pw=0.2) * 0.5 + saw(fv, n) * 0.5
+    x = eq(eq(eq(x / 5, 'peak', 1200, 1.4, 6.0), 'peak', 2500, 1.6, 5.0), 'peak', 4100, 2.0, 3.0)
+    drone = (saw(f / 2, n) + 0.7 * saw(f / 2 * 1.5, n)) * 0.18           # root and fifth an octave down
+    y = lp(x + lp(drone, 1800), 9000)
+    return hp(soft(y * 1.3, 1.2), 120) * env * 0.2
 
 
 # ------------------------------------------------------------------------------------------------------------ drums
@@ -202,6 +328,7 @@ NEW = {
     'uilleann': (c_uilleann, 'Uilleann pipes (chanter + drones)', 109, ('lead', 'pad')),
     'bagpipe': (c_bagpipe, 'Great Highland bagpipe (chanter)', 109, ('lead',)),
     'bagpipe_drones': (c_bagpipe_drones, 'Highland bagpipe drones', 109, ('pad',)),
+    'synthpipes': (c_synthpipes, 'Synth pipes (bagpipe-style EDM lead)', 109, ('lead', 'arp')),
 }
 for _n, (_fn, _info, _gm, _roles) in NEW.items():
     INSTRUMENTS[_n] = _fn
@@ -279,3 +406,70 @@ def ornament_pass(evs, tracks, sections, st, bpm, seed):
         elif e.dur >= 0.4 and rnd.random() < 0.12:                       # a tap
             new.append(Ev(e.track, e.beat - g, g, _step(e.midi, scale, False), e.vel * 0.8))
     evs.extend(x for x in new if x.beat >= 0)
+
+
+# ------------------------------------------------------------------------------- whole-part pipes (2.4.3, rendering)
+def pipe_part(notes, length):
+    """The Highland chanter as it really plays: ONE reed sounding continuously through each phrase. Each note's pitch
+    holds until the next note starts (the chanter never stops between notes - the gracenotes are what separate them),
+    the reed only catches (the crow) at the start of a phrase, and a phrase ends only at a real silence.
+    notes: [(start_s, dur_s, midi)] sorted; returns (length,) mono."""
+    from . import fastdsp as F
+    out = np.zeros(length)
+    if not notes:
+        return out
+    phrases, cur = [], [notes[0]]
+    for nt in notes[1:]:
+        last = cur[-1]
+        if nt[0] - (last[0] + last[1]) > 0.25:
+            phrases.append(cur)
+            cur = [nt]
+        else:
+            cur.append(nt)
+    phrases.append(cur)
+    for ph in phrases:
+        a = int(ph[0][0] * SR)
+        b = min(length, int((ph[-1][0] + ph[-1][1]) * SR) + int(0.03 * SR))
+        if b - a < 64:
+            continue
+        n = b - a
+        delay = np.empty(n)
+        breath = np.empty(n)
+        for k, (t0, dur, m) in enumerate(ph):
+            s0 = max(0, int(t0 * SR) - a)
+            s1 = n if k == len(ph) - 1 else max(s0 + 1, int(ph[k + 1][0] * SR) - a)
+            d, b0 = _tuned_delay(float(mtof(m)), 'chanter')
+            delay[s0:s1] = d
+            breath[s0:s1] = b0
+        first = max(0, int(ph[0][0] * SR) - a)
+        delay[:first] = delay[first]
+        breath[:first] = breath[first]
+        delay = np.convolve(delay, np.ones(24) / 24, mode='same')    # ~0.5 ms: a finger lifting, not a splice
+        delay[:24] = delay[24]
+        delay[-24:] = delay[-25]
+        t = np.arange(n) / SR
+        delay *= 1 + 0.04 * np.exp(-t / 0.01)                        # the crow - once, at the start of the phrase
+        breath = breath * np.clip(t / 0.004, 0, 1)
+        breath[-int(0.02 * SR):] *= np.linspace(1, 0, int(0.02 * SR))
+        turb = lp(np.random.default_rng(a).standard_normal(n), 3000) * 0.06
+        y = F.reed_conical(breath, turb, delay, _CH['pos'], _CH['offset'], _CH['slope'], _CH['refl'])
+        y = np.diff(y, prepend=y[0]) * 3.0 + 0.4 * y
+        y = eq(eq(y, 'peak', 2600, 1.2, 3.0), 'peak', 300, 1.0, -4.0)
+        out[a:b] += hp(lp(y, 10000), 200) * 0.16
+    return out
+
+
+def drone_part(notes, length):
+    """The drones, unbroken under the whole pipe part: one continuous run from the first drone note to the last
+    (they don't stop for the tune), on the first note's pitch."""
+    if not notes:
+        return np.zeros((2, length))
+    t0 = notes[0][0]
+    t1 = max(t + d for t, d, _ in notes)
+    y = np.asarray(c_bagpipe_drones(notes[0][2], max(0.5, t1 - t0), {}), float)
+    out = np.zeros((2, length))
+    a = int(t0 * SR)
+    k = min(length - a, y.shape[1])
+    if k > 0:
+        out[:, a:a + k] = y[:, :k]
+    return out

@@ -162,12 +162,23 @@ def _engine_boot(port):
                     say(line[14:])
                 elif line.startswith('STUDIOLAB_URL ') and not found:
                     found.append(line[14:])
-                elif line.startswith('STUDIOLAB_RESTART'):    # an update was installed: start the whole app again
-                    subprocess.Popen([sys.executable] + sys.argv, cwd=here,
-                                     creationflags=0x08000000 if os.name == 'nt' else 0)
-                    _quit()
+                elif line.startswith('STUDIOLAB_RESTART'):    # an update was installed: a new engine, same window
+                    threading.Thread(target=_swap_engine, daemon=True).start()
                 elif line:
                     tail[:] = (tail + [line])[-6:]
+        def _swap_engine():                           # (2.4.3) the updated engine starts behind the loading screen,
+            from sgcore import appwindow                  # then the same window loads it - no closing and reopening
+            appwindow.show_splash('Updating… starting the new version')
+            time.sleep(0.6)                               # (the old engine lets go of its port)
+            try:
+                new_url = boot(lambda m: appwindow.show_splash(m))
+                w = appwindow.WINDOW.get('win')
+                if w is not None:
+                    w.load_url(new_url)
+            except Exception as e:                        # the new engine didn't start: say so, then restart fully
+                appwindow.show_splash('Restarting Studio Lab… (%s)' % e)
+                subprocess.Popen([sys.executable] + sys.argv, cwd=here, creationflags=0x08000000 if os.name == 'nt' else 0)
+                _quit()
         threading.Thread(target=read, daemon=True).start()   # (keeps reading for good: a full pipe stalls the engine)
         while not found:
             if p.poll() is not None:

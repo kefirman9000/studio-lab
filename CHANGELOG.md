@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.4.3
+- **A real bagpipe.** The Great Highland bagpipe is now a **physical model**: a simulated double reed driving a conical bore, blown by a bag at constant pressure.
+  - The pitch locks in by itself and the reed buzzes naturally. Every note is tuned and checked automatically, and notes that would overblow are eased off, as a piper would.
+  - The chanter plays **as one continuous reed through each phrase**: each pitch holds until the next note, and the gracenotes are what separate the notes, as on real pipes. Before, every note started its own attack, which sounded synthetic.
+  - The **drones** are three modelled reeds on cylindrical bores (two tenors beating slowly against each other and a bass). They run unbroken under the whole tune.
+- **Synth pipes:** a new bagpipe-style EDM lead, with a detuned stack shaped like a chanter, its own root-and-fifth drone and a gracenote flick into every note. Celtic punk can pick it.
+- **Fixed: Play with changes.** It now plays the moment it's ready; before, it quietly added a new card, so it looked like nothing happened. It also keeps the song's own sounds on every part you didn't change, so it's the same song with only your changes.
+- **Updates restart in the same window.** After an update, the window shows the loading screen, starts the new version behind it and switches straight back to the app, with no closing and reopening. (Changes to the window itself, which are rare, still apply at the next launch.)
+
+
 ## 2.4.2
 **The rest of the Celtic dance forms, and 9/8**
 

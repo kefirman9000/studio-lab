@@ -12267,7 +12267,7 @@ derive('celtic_punk', 'punk', 'Classic',
        progs={'major': [[0, 3, 4, 0], [0, 4, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 3, 0]], 'dorian': [[0, 6, 0, 3]]},
        sounds={'lead': 'tinwhistle'},
        add_tracks=[T('arp', 'arp', 'banjo', pan=0.3, rev=0.15, db=-22), T('pad', 'pad', 'accordion', pan=-0.25, rev=0.2, db=-24)],
-       pools=dict(lead=['tinwhistle', 'fiddle', 'concertina', 'uilleann'], arp=['banjo', 'mandolin', 'acguitar'],
+       pools=dict(lead=['tinwhistle', 'fiddle', 'concertina', 'uilleann', 'synthpipes', 'bagpipe'], arp=['banjo', 'mandolin', 'acguitar'],
                   pad=['accordion', 'organ', 'humchoir']))
 
 derive('sea_shanty', 'folk_jam', 'Classic',

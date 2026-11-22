@@ -1222,12 +1222,14 @@ function mixTag(r){ const m=r.mix_report; if(!m) return '';
 // (2.0) one Play button that fits the situation: replay the last song, or - once you have changed something - the same
 // song (same seed, same picks, your note edits) rendered again with your changes. Generate makes a new song.
 let LASTR=null, LASTKEY='';
-const PLAY_SKIP=['seed','avoid','favorites','title','sound_seed'];
+const PLAY_SKIP=['seed','avoid','favorites','title','sound_seed','vst_rig'];   // (bookkeeping, not your settings)
 function playKey(o){ const c=JSON.parse(JSON.stringify(o||{})); PLAY_SKIP.forEach(k=>delete c[k]);
   const srt=x=>Array.isArray(x)?x.map(srt):(x&&typeof x==='object')?Object.fromEntries(Object.keys(x).sort().map(k=>[k,srt(x[k])])):x;
   return JSON.stringify(srt(c)); }
 function playOpts(){ const o=options(), L=LASTR.options||{}; o.seed=LASTR.seed; if(L.title&&!o.title) o.title=L.title;
-  o.instruments=Object.assign({}, L.instruments||{}, o.instruments||{}); if(L.sound_seed!=null&&o.sound_seed==null) o.sound_seed=L.sound_seed;
+  o.instruments=Object.assign({}, L.instruments||{}, o.instruments||{});
+  if(L.sound_seed!=null) o.sound_seed=L.sound_seed; else delete o.sound_seed;   // the song's own sounds on every part you didn't change
+  if(L.avoid) o.avoid=L.avoid;                                                 // (same seed + same avoid list = the same picks)
   ['note_edits','automation','lanes','part_seeds'].forEach(k=>{ if(L[k]&&o[k]==null) o[k]=L[k]; }); return o; }
 function changed(){ if(!LASTR) return false; try{ return playKey(playOpts())!==playKey(Object.assign({}, LASTR.options||{}, {instruments:Object.assign({}, (LASTR.options||{}).instruments||{})})); }catch(e){ return false; } }
 let _upT=null;
@@ -2426,7 +2428,7 @@ async function updates(manual){
     ${u.error?`<p class="hint">${esc(u.error)}</p>`:''}${u.available?`<pre>${(u.notes||'').replace(/</g,'&lt;')}</pre><button class="btn p" id="doUpd">Update now</button>`:(!u.error?'<p>You have the latest version.</p>':'')}
     <div style="text-align:right;margin-top:12px"><button class="btn s" onclick="closeModal()">Close</button></div>`;
   if(u.available) $('#doUpd').onclick=async()=>{ $('#doUpd').disabled=true; $('#doUpd').textContent='Updating…'; const r=await api('/api/update/apply',{});
-    $('#modalBox').innerHTML=`<p>${r.message}</p><p class="hint">The app restarts by itself — this page reloads in a few seconds.</p>`; if(r.ok) setTimeout(()=>location.reload(),5000); };
+    $('#modalBox').innerHTML=`<p>${r.message}</p><p class="hint">Studio Lab restarts itself in this window — back in a few seconds.</p>`; if(r.ok) setTimeout(()=>location.reload(),5000); };
   $('#modal').classList.add('on');
 }
 function renderTabs(){
@@ -2531,7 +2533,10 @@ async function init(){
     lastRun={seed:+$('#seed').value||1, preview}; };
   $('#prevBtn').onclick=()=>{ freshSeed(true); run(true,1); };
   $('#playBtn').onclick=()=>{ if(!LASTR) return;
-    if(changed()){ $('#status').textContent='Same song, with your changes…'; run(true,1,playOpts()); return; }
+    if(changed()){ $('#status').textContent='Same song, with your changes…';
+      run(true,1,playOpts(),null,r=>{ addResult(r);                            // ... and it plays as soon as it's ready
+        setTimeout(()=>{ const b=document.querySelector(`.res[data-rid="${CSS.escape(String(r.id))}"] .play`); if(b) b.click(); },60); });
+      return; }
     const card=document.querySelector(`.res[data-rid="${CSS.escape(String(LASTR.id))}"] .play`); if(card) card.click(); };
   $('#varBtn').onclick=()=>{ freshSeed(true); run(true,4); if(!$('#seedLock').checked) lastRun.seed=(+$('#seed').value||1); };
   $('#fullBtn').onclick=()=>{ freshSeed(false); run(false,1); };

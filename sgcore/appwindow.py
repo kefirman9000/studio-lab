@@ -118,6 +118,22 @@ document.getElementById('sec').textContent=s>2?s+' s':''},500);</script></body><
     '%BARS%', ''.join(f'<i style="animation-delay:{i * 0.09:.2f}s"></i>' for i in range(9)))
 
 
+WINDOW = {}          # the app window (for an in-place restart after an update)
+
+
+def show_splash(msg):
+    """(2.4.3) Back to the loading screen in the same window (an update restarting the engine)."""
+    import json
+    w = WINDOW.get('win')
+    if w is None:
+        return
+    try:
+        w.load_html(SPLASH)
+        w.evaluate_js('say(%s)' % json.dumps(msg))
+    except Exception:
+        pass
+
+
 def splash_window(boot, quit_app):
     """(2.1) Open the window at once with a loading screen, run boot(say) - the slow part: loading the sound engine and
     starting the server - behind it, then swap in the app. Returns False if there is no pywebview (the caller starts
@@ -140,6 +156,7 @@ def splash_window(boot, quit_app):
     except TypeError:
         win = webview.create_window('Studio Lab', html=SPLASH, width=w, height=h, min_size=(900, 600), js_api=bridge, **kw)
     bridge.window = win
+    WINDOW['win'] = win
 
     def go():
         import json
