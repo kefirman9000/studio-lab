@@ -15,7 +15,6 @@
   - *Orchestral*: **Gregorian Chant**, **Horror / Dread**, **Wonder / Discovery**.
 - **Fewer bells in dubstep.** Dubstep, deep dubstep, riddim, brostep and switch-up bass no longer reach for bells: a bell now turns up in about 1 in 8 dubstep songs, and not at all in the others. Grime and chillstep keep theirs, since bell melodies belong to those sounds.
 - **Genres can now be built from a close relative.** A new genre inherits everything from its parent and overrides only what makes it itself. The new genres are built this way.
-- **The genre export** (*docs/GENRE_KNOWLEDGE.txt*) now has a contents index and the full pattern notation: ghost notes, approach and neighbour notes, boogie chord tones, 12-step bars for 3/4 and 6/8. Each genre also shows its parent genre, harmony (chord size, voicing, chord colours, harmonic rhythm), melody settings, and whether its layout varies per song.
 
 
 ## 2.3.1

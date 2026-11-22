@@ -1,4 +1,4 @@
-"""Writes docs/GENRE_KNOWLEDGE.txt: everything Studio Lab knows about every genre, for review.
+"""Writes docs/GENRE_KNOWLEDGE.txt (not kept in the repo): everything Studio Lab knows about every genre, for review.
 
     python tools/genre_knowledge.py
 
