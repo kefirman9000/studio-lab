@@ -21,16 +21,16 @@ json.dump(rel, open(os.path.join(OUT, 'releases.json'), 'w'), indent=1)
 print(json.dumps({k: (v[0] if isinstance(v, list) and v else v) for k, v in rel.items()}, indent=1)[:20000])
 # sample libraries: file lists with blob sha + size
 for repo, d in (('sgossner/VSCO-2-CE', 'vsco'), ('sfzinstruments/SalamanderGrandPiano', 'salamander')):
-    subprocess.run(['git', 'clone', '-q', '--depth', '1', '--filter=blob:none', '--no-checkout', f'https://github.com/{repo}', d], check=True)
-    head = subprocess.run(['git', '-C', d, 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
-    ls = subprocess.run(['git', '-C', d, 'ls-tree', '-r', '-l', 'HEAD'], capture_output=True, text=True).stdout
-    rows = []
-    for line in ls.splitlines():
-        meta, path = line.split('\t', 1)
-        mode, typ, sha, size = meta.split()
-        rows.append(dict(p=path, sha=sha, s=int(size) if size.isdigit() else 0))
-    json.dump(dict(repo=repo, commit=head, files=rows), open(os.path.join(OUT, d + '_files.json'), 'w'))
+    info = gj(f'https://api.github.com/repos/{repo}')
+    br = info['default_branch']
+    head = gj(f'https://api.github.com/repos/{repo}/commits/{br}')['sha']
+    tree = gj(f'https://api.github.com/repos/{repo}/git/trees/{head}?recursive=1')
+    rows = [dict(p=t['path'], sha=t['sha'], s=t.get('size', 0)) for t in tree['tree'] if t['type'] == 'blob']
+    json.dump(dict(repo=repo, commit=head, truncated=tree.get('truncated'), lfs_hint=any(r_['s'] < 200 and r_['p'].lower().endswith(('.wav', '.flac')) for r_ in rows), files=rows),
+              open(os.path.join(OUT, d + '_files.json'), 'w'))
     tops = {}
     for r_ in rows:
         k = '/'.join(r_['p'].split('/')[:2]); tops.setdefault(k, [0, 0]); tops[k][0] += 1; tops[k][1] += r_['s']
-    print(repo, head, len(rows), 'files'); [print('  ', k, v[0], '%.0f MB' % (v[1] / 1e6)) for k, v in sorted(tops.items())]
+    print(repo, head, len(rows), 'files', 'truncated', tree.get('truncated'))
+    for k, v in sorted(tops.items()):
+        print('  ', k, v[0], '%.0f MB' % (v[1] / 1e6))
