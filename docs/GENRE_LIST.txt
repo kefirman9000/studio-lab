@@ -1,6 +1,6 @@
-STUDIO LAB - ALL 354 GENRES  (version 2.2.7)
+STUDIO LAB - ALL 359 GENRES  (version 2.3.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 2.2
+* = new in 2.3
 
 ========================================================================
 ELECTRONIC  (189)
@@ -218,7 +218,7 @@ Hauntology  (7)
     Hauntology - cold dystopian synths  [hauntology_cold]
 
 ========================================================================
-CLASSIC  (133)
+CLASSIC  (137)
 ========================================================================
 
 Rock & Metal  (30)
@@ -317,7 +317,7 @@ Swing & Big Band  (5)
     Western Swing  [western_swing]
     New Orleans brass band  [nola_brass]
 
-Country, Folk & Blues  (10)
+Country, Folk & Blues  (9)
     Country (classic / honky-tonk)  [country]
     Modern Country  [modern_country]
     Country Waltz (3/4)  [country_waltz]
@@ -325,9 +325,15 @@ Country, Folk & Blues  (10)
     Spaghetti Western  [western]
     Bluegrass  [bluegrass]
     folk  [folk]
-    Celtic Jig (6/8)  [celtic_jig]
     blues  [blues]
     Acoustic folk-rock jam  [folk_jam]
+
+Celtic  (5)
+    Celtic Jig (6/8)  [celtic_jig]
+    Irish reel  [celtic_reel]
+    Celtic slow air  [celtic_air]
+    Highland pipe band  [pipe_band]
+    Celtic punk  [celtic_punk]
 
 Latin & Caribbean  (15)
     Bossa Nova  [bossa_nova]
@@ -383,7 +389,7 @@ Hindu devotional  (9)
     Carnatic kriti (veena & mridangam)  [carnatic_kriti]
 
 ========================================================================
-ORCHESTRAL  (32)
+ORCHESTRAL  (33)
 ========================================================================
 
 Film & Trailer  (9)
@@ -397,12 +403,13 @@ Film & Trailer  (9)
     Festive cinematic Christmas (full orchestra)  [festive_cinematic]
     Storybook film score  [storybook_score]
 
-Epic  (5)
+Epic  (6)
     Epic Orchestral  [epic_orchestral]
     Epic Battle  [epic_battle]
     Dark Choral Epic  [epic_choir]
     Heroic Anthem  [heroic_anthem]
     Grand Symphonic Finale  [symphonic_finale]
+    Epic Celtic score  [epic_celtic]
 
 Solo Piano  (1)
     Solo Piano Miniature  [piano_miniature]

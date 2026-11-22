@@ -1,4 +1,4 @@
-# Studio Lab genres (354)
+# Studio Lab genres (359)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
@@ -248,7 +248,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hauntology II (sunlit tape) | `hauntology_sunlit` | 82-96 | Hauntology II - sunlit tape: warm detuned analog chords and a wobbling mono-synth melody over a mellow hip-hop break, nostalgic and bright, like a 1970s nature film on a stretched cassette |
 | Hauntology III (dark film haze) | `hauntology_dark` | 64-80 | Hauntology III - dark film haze: slower and eerier - long detuned drones, a ghostly choir, sparse heavy drums, bells half-buried in hiss, a melody that sounds remembered wrong |
 
-## Classic (133)
+## Classic (137)
 
 ### Rock & Metal (30)
 
@@ -367,20 +367,29 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Swing-era big band (hot, tom-tom) | `swing_tomtom` | 100-120 | Swing-era big band (hot, tom-tom drive): a fast 1930s flag-waver in a minor key driven by the floor-tom groove, riffing trumpets and trombones, the sax section answering, a hot clarinet lead, a drum break and a roaring shout chorus |
 | Western Swing | `western_swing` | 110-160 | Western swing / Texas swing: swung country dance band - twin fiddles, pedal steel, sixth-chord piano and guitar comping, walking upright bass, brushed swing drums |
 
-### Country, Folk & Blues (10)
+### Country, Folk & Blues (9)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Acoustic folk-rock jam | `folk_jam` | 100-116 | Laid-back acoustic folk-rock jam (early-70s American style): strummed acoustic guitars and mandolin, a melodic walking bass, brushes-and-tambourine drums, a gentle singing lead and harmonies feel - one long warm groove that slowly fills out, no breakdowns |
 | Bluegrass | `bluegrass` | 112-150 | Bluegrass: Scruggs banjo rolls, the mandolin chop on 2 and 4, boom-chick guitar with G-runs, fiddle and the band taking breaks in turn |
 | Blues | `blues` | 80-120 | Blues shuffle: 12-bar form, swung grooves, piano, organ and expressive lead guitar |
-| Celtic Jig (6/8) | `celtic_jig` | 104-124 | Celtic jig (6/8): fiddle and tin whistle in unison on an AABB tune, bodhrán, bouncing guitar, a soft pipe drone |
 | Country (classic / honky-tonk) | `country` | 92-132 | Classic country / honky-tonk (Nashville, Bakersfield): boom-chick upright bass with walk-ups, strummed acoustic, chicken-pickin' Telecaster, honky-tonk piano fills, fiddle melody and pedal-steel swells and slides |
 | Country Waltz (3/4) | `country_waltz` | 84-112 | Country waltz (3/4, 50s honky-tonk ballad): a slow oom-pah-pah of upright bass and strummed guitar, brushed drums, weeping fiddle and pedal steel trading the melody, honky-tonk piano |
 | Folk | `folk` | 80-116 | Folk / acoustic: strummed guitar, warm piano, gentle percussion, flute melody |
 | Modern Country | `modern_country` | 76-108 | Modern country / Nashville pop: big clean drums, driving 16th acoustic strum, electric bass on the root, twangy Telecaster riffs and pedal-steel swells, a big singalong chorus |
 | Outlaw Country | `outlaw_country` | 100-140 | Outlaw country: the freight-train boom-chicka-boom - palm-muted guitar on every 8th, slapback twang and a low baritone guitar melody, steady upright bass, brushed snare, harmonica |
 | Spaghetti Western | `western` | 88-120 | Spaghetti western: twangy reverb guitar, lonely trumpet, whistled tune, choir and galloping hooves |
+
+### Celtic (5)
+
+| Genre | id | BPM | Current description |
+|---|---|---|---|
+| Celtic Jig (6/8) | `celtic_jig` | 104-124 | Celtic jig (6/8): fiddle and tin whistle in unison on an AABB tune, bodhrán, bouncing guitar, a soft pipe drone |
+| Celtic punk | `celtic_punk` | 150-178 | Celtic punk: a stomping, fast punk band - pounding drums, thrashed power chords, a driving bass - with bagpipes, tin whistle, fiddle and accordion carrying the Irish tune on top. Pub-singalong energy at full volume |
+| Celtic slow air | `celtic_air` | 60-74 | Celtic slow air: a lonely, ornamented melody on uilleann pipes or low whistle, sung with no strict time over a pipe drone, harp and hammered dulcimer, strings swelling in the second half - misty, aching, ancient |
+| Highland pipe band | `pipe_band` | 84-96 | Highland pipe band: massed Highland bagpipes over their roaring drones, played on the pipes' own scale (concert B-flat), busy rope-tension snare rudiments, tenor drum flourishes and a bass drum marking the march |
+| Irish reel | `celtic_reel` | 100-118 | Irish reel: a fast tune in running notes on fiddle and tin whistle in unison, played AABB, a driving bouzouki backing, bodhrán rolling under it and a pipe drone - session-pub energy |
 
 ### Latin & Caribbean (15)
 
@@ -453,7 +462,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Kirtan - drums & sitar (speeding up) | `drum_kirtan` | 90-100 | Kirtan - drums & sitar: the dholak, bongos and kartal start it off alone, then the sitar calls each line and the group answers, over a harmonium and drone - speeding up chant by chant, with drum breaks between, until it is a wild, ecstatic drum-driven chant |
 | Sitar & tabla jugalbandi | `jugalbandi` | 84-104 | Sitar & tabla jugalbandi (devotional duet): the sitar opens alone over the drone with a slow alap; the tabla joins for the composition (gat); then they trade - the tabla answers each sitar phrase with a solo of its own - before playing together, faster and faster, into a blazing jhala |
 
-## Orchestral (32)
+## Orchestral (33)
 
 ### Film & Trailer (9)
 
@@ -469,12 +478,13 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Hybrid Trailer | `hybrid_trailer` | 90-120 | Hybrid trailer: pulsing spiccato ostinatos, braams, taiko, distorted synth bass, huge choir |
 | Storybook film score | `storybook_score` | 72-100 | Storybook film score: a gentle, nostalgic piano theme over warm strings, flute and glockenspiel answers, harp arpeggios, a lilting waltz-like lift and hopeful major-key harmony |
 
-### Epic (5)
+### Epic (6)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
 | Dark Choral Epic | `epic_choir` | 60-84 | Dark choral epic ("Dies Irae" / sacred horror): a massive choir over pipe organ, droning double basses and tuba, tolling tubular bells, timpani and orchestral bass drum - slow, monumental, apocalyptic |
 | Epic Battle | `epic_battle` | 128-150 | Epic battle music: war drums in driving 16ths, relentless low-string and spiccato ostinatos, staccato low-brass hits, chanting choir and screaming horns - phrygian darkness at full force |
+| Epic Celtic score | `epic_celtic` | 80-104 | Epic Celtic film score: a full orchestra and choir behind a soaring uilleann-pipes and tin-whistle theme, driving string ostinatos, war drums with bodhrán and taiko, harp and bouzouki glinting through - highland glory |
 | Epic Orchestral | `epic_orchestral` | 84-112 | Epic orchestral (movie-trailer scale): driving string ostinatos over double basses and celli, horns and trombones carrying a huge theme, tuba and low brass underneath, choir, taiko and timpani - SUPER EPIC |
 | Grand Symphonic Finale | `symphonic_finale` | 96-132 | Grand symphonic finale (late-Romantic scale): full brass chorale over tremolo strings, thundering timpani rolls, cymbal crashes, double basses and tuba - the last, enormous page of a symphony |
 | Heroic Anthem | `heroic_anthem` | 92-124 | Heroic anthem: a soaring major-key fanfare on horns and trumpets, sweeping violins, marching snare, cymbals and timpani over trombones, tuba and a rock-solid string bass - triumphant and huge |

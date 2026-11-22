@@ -35,7 +35,8 @@ GROUPS = {
         ('Jazz', ['jazz', 'bebop', 'modal_jazz', 'soul_jazz', 'fusion', 'smooth_jazz', 'gypsy_jazz', 'ragtime', 'ethio_jazz', 'exotica', 'smooth_jazz_horns']),
         ('Swing & Big Band', ['swing', 'swing_tomtom', 'big_band_50s', 'western_swing', 'nola_brass']),
         ('Country, Folk & Blues', ['country', 'modern_country', 'country_waltz', 'outlaw_country', 'western', 'bluegrass',
-                                   'folk', 'celtic_jig', 'blues', 'folk_jam']),
+                                   'folk', 'blues', 'folk_jam']),
+        ('Celtic', ['celtic_jig', 'celtic_reel', 'celtic_air', 'pipe_band', 'celtic_punk']),
         ('Latin & Caribbean', ['bossa_nova', 'salsa', 'cumbia', 'tango', 'reggae', 'ska', 'soca', 'groovy_soca', 'dub', 'corridos_tumbados', 'bachata', 'merengue', 'samba', 'son_cubano', 'flamenco_rumba']),
         ('World', ['raga_fusion', 'japanese_zen', 'bhangra', 'klezmer', 'gamelan', 'rai']),
         ('South Asian', ['qawwali', 'bollywood', 'ghazal']),
@@ -46,7 +47,7 @@ GROUPS = {
     'Orchestral': [
         ('Film & Trailer', ['cinematic_journey', 'cinematic_journey_low', 'cinematic', 'film_piano', 'adventure', 'tension',
                             'hybrid_trailer', 'festive_cinematic', 'storybook_score']),
-        ('Epic', ['epic_orchestral', 'epic_battle', 'epic_choir', 'heroic_anthem', 'symphonic_finale']),
+        ('Epic', ['epic_orchestral', 'epic_battle', 'epic_choir', 'heroic_anthem', 'symphonic_finale', 'epic_celtic']),
         ('Solo Piano', ['piano_miniature']),
         ('Ambient & Experimental', ['field_ambient', 'fourth_world']),
         ('Fantasy & Games', ['fantasy_rpg']),

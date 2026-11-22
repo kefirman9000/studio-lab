@@ -113,6 +113,7 @@ RIGS = {
     'grungegtr': dict(amp='fuzz', gain=14.0, cab='worn', out=-5.6),
     'telegtr': dict(amp='clean', gain=1.6, cab='combo', comp=True, slap=True, spring=0.18, width=0.55, out=-4.6),
     'jangle': dict(amp='clean', gain=1.2, cab='combo', comp=True, chorus=True, spring=0.12, width=0.8, out=-7.0),
+    'wahgtr': dict(amp='clean', gain=2.2, cab='combo', comp=True, wah=True, spring=0.06, width=0.6, out=-5.0),   # (2.4) funk
 }
 
 
@@ -165,6 +166,13 @@ def guitar_rig(buf, rig, spb=0.5):
     if rig.get('comp'):                                   # a compressor in front: the country / clean "snap"
         env = np.maximum(lp(np.abs(y), 30), 1e-4)
         y = y * np.minimum(1.0, (env / 0.35) ** (-0.6))
+        y = y / (np.max(np.abs(y)) + 1e-9)
+    if rig.get('wah'):                                    # (2.4) envelope wah: each pick stroke sweeps the pedal open
+        from .dsp import svf_sweep
+        env = lp(np.max(np.abs(y), axis=0), 22)
+        env = np.clip(env / (np.percentile(env, 98) + 1e-9), 0, 1)
+        cut = 420.0 * (2600.0 / 420.0) ** env
+        y = np.vstack([0.8 * svf_sweep(y[c], cut, q=3.2, mode='bandpass', block=128) * 3.0 + 0.2 * y[c] for c in range(2)])
         y = y / (np.max(np.abs(y)) + 1e-9)
     if rig.get('chorus'):
         n = y.shape[1]

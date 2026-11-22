@@ -1,5 +1,36 @@
 # Changelog
 
+## 2.4.0
+**Sixteen new instruments and a Celtic tab**
+
+- **Celtic genres** (Classic > Celtic):
+  - **Irish reel**: fiddle and tin whistle running the tune in unison, AABB, Irish bouzouki backing, rolling bodhrán and a
+    pipe drone, in D, G, A or E like a real session.
+  - **Highland pipe band**: massed Highland bagpipes over their roaring drones, on the pipes' own scale (concert B-flat),
+    with a snare roll to strike in, busy pipe-band snare rudiments, tenor-drum flourishes and the bass drum marking the march.
+  - **Celtic slow air**: a lonely, ornamented air on uilleann pipes or low whistle over a drone, harp and hammered
+    dulcimer, strings swelling in the second half.
+  - **Celtic punk**: a stomping punk band with bagpipes, tin whistle, fiddle and accordion carrying the tune.
+  - **Epic Celtic score** (Orchestral > Epic): orchestra and choir behind a soaring pipes-and-whistle theme, string
+    ostinatos, taiko, timpani and bodhrán, with harp and bouzouki glinting through.
+  - The Celtic jig moved into the new Celtic group.
+- **New instruments**, each added to the rotation of the genres it belongs to:
+  - **Tonewheel organ** with a real **rotary speaker**: drawbars, key click and percussion; horn and drum spin separately
+    (slow chorale under chords, fast for solos). Gospel, soul, R&B, jazz, funk, reggae and jam band.
+  - **Rock organ**: the tonewheel overdriven, rotor on fast. Rock, boogie, garage and Celtic punk.
+  - **Wah funk guitar**: chicken-scratch through an envelope wah. Funk, disco, G-funk, nu-disco, French house and afrobeat.
+  - **12-string guitar**: jangling octave courses. Folk, indie, psych pop, jam band and shoegaze.
+  - **Lap steel / slide guitar**: blues, country, western and surf. **Dobro** (resonator, slide): bluegrass, country and blues.
+  - **Ukulele**: tropical house, pop, bedroom pop, hopecore and reggae.
+  - **Irish bouzouki** and **hammered dulcimer**: Celtic, folk, fantasy and Christmas.
+  - **Highland bagpipes** (a chanter with grace notes on every note) and **didgeridoo** (lip drone, moving mouth formants,
+    breath pulses): Celtic, ambient and world.
+  - **Donk bass**: bassline, UK bounce, speed garage, bass house and hardcore.
+  - **Glitch chopper**: stutters, pitch-stepped slices and reversed grains. IDM, glitch pop, hyperpop and breakcore.
+  - **Omnichord** (shimmering strum-plate synth): chillwave, bedroom pop, lo-fi and vaporwave.
+  - **Stylophone**: synth-pop, electro, krautrock and post-punk. **Toy piano**: storybook, hauntology and Christmas.
+- Every new instrument is tuned to within a few cents of the note it plays.
+
 ## 2.3.0
 - **Electronic genres play electronic basses.** Bass guitars, upright and acoustic basses (finger, pick, slap, sampled or
   modelled) no longer turn up under electronic tracks. They were in about 40 electronic genres' bass rotations (deep house,
