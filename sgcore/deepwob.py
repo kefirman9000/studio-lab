@@ -252,7 +252,6 @@ def pitchgrowl(m, dur, p, glide=None, mod=None):
     f = float(mtof(m))
     env = _env(dur, a=0.02, d=0.1, s=1.0, r=0.08)
     n = len(env)
-    t = np.arange(n) / SR
     lfo = _lfo(n, _rate(mod, p, 2.0), 'sine')
     fo = (f if f > 50 else f * 2) * 2 * 2 ** ((lfo - 0.5) * 2.0 / 12)
     x = np.zeros((2, n))
