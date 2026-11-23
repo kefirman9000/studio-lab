@@ -255,6 +255,10 @@ canvas.wave{width:100%;height:46px;display:block;margin:10px 0 6px;cursor:pointe
 #editor .seg.edab button:disabled{opacity:.4;cursor:default}
 #editor .btn.pulse{box-shadow:0 0 0 0 color-mix(in srgb,var(--acc) 60%,transparent);animation:edpulse 1.6s infinite}
 @keyframes edpulse{70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+#editor .edlen{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 8px}
+#editor .seg.edver{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+#editor .seg.edver button{background:var(--panel2);border:0;padding:6px 10px;color:inherit;cursor:pointer;font-size:12px;white-space:nowrap}
+#editor .seg.edver button.on{background:color-mix(in srgb,var(--acc) 28%,var(--panel))}
 #editor .snd.changed{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,var(--panel))}
 #editor .snd .edrev{margin-left:auto;visibility:hidden}#editor .snd.changed .edrev{visibility:visible}
 #edCard .acts,#edCard .tweak,#edCard .info,#edCard .dragrow,#edCard .plugrec,#edCard .files,#edCard .tags,#edCard [data-x=apply]{display:none!important}
@@ -429,6 +433,8 @@ select:focus,input[type=number]:focus,input[type=text]:focus{border-color:color-
       <div class="outs" id="outs"></div>
       <div class="lenrow"><span class="hint">Full song length</span><div class="seg" id="lenPreset"></div>
         <label class="hint" style="margin-left:auto" title="When you click Full song, hear a short preview of the same song within seconds while the full version renders"><input type="checkbox" id="quickFirst"> quick preview first</label></div>
+      <div class="lenrow"><span class="hint" title="Full song also saves the same song in these lengths - same melody, sounds and mix, its sections rearranged">Also export</span>
+        <label class="hint"><input type="checkbox" id="verRadio"> 📻 radio edit</label><label class="hint"><input type="checkbox" id="verExt"> 🪩 extended mix</label></div>
       <div class="prog" id="progBar"><i></i></div>
       <div class="status" id="status">Ready.</div>
       <div class="queue" id="queueBox" style="display:none"></div>
@@ -1143,6 +1149,7 @@ async function run(preview, count, opts, section, onResult, varyPart, extra){
   if(extra) Object.assign(body, extra);
   if(!preview && section==null && (count||1)===1 && !onResult && !varyPart && !(extra&&extra.from_queue) && quickFirst()) body.quick_first=true;
   if(body.from_queue) delete body.from_queue;
+  if(!preview && section==null && (count||1)===1 && !varyPart && !o.version){ const v=exportVersions(); if(v.length) body.versions=v; }
   const {job}=await api('/api/generate', body);
   const seen=new Set();
   const poll=async()=>{
@@ -1163,6 +1170,7 @@ async function run(preview, count, opts, section, onResult, varyPart, extra){
   poll();
 }
 // (2.17) 'Full song' plays a short preview of the same song first while the rest renders (can be switched off)
+function exportVersions(){ const v=[]; try{ if(localStorage.getItem('sl_ver_radio')==='1') v.push('radio'); if(localStorage.getItem('sl_ver_ext')==='1') v.push('extended'); }catch(e){} return v; }
 function quickFirst(){ try{ return localStorage.getItem('sl_quickfirst')!=='0'; }catch(e){ return true; } }
 // (1.90) render queue: full songs, each with the settings it had when you queued it, rendered one after another
 const QUEUE=[]; let qRunning=null, qDone=0;
@@ -1298,7 +1306,7 @@ function addResult(r, target){
   const el=document.createElement('div');el.className='res new'; el.dataset.rid=r.id; el._r=r;
   if(!target){ LASTR=r; LASTKEY=playKey(r.options||{}); setTimeout(updPlay,0); }
   const url=r.urls.mp3||r.urls.wav;
-  const title=(r.name?'“'+esc(r.name)+'” · ':'')+styleName(r.style)+(r.quick?' — quick preview (full song rendering…)':r.preview?'':' — full song');
+  const title=(r.name?'“'+esc(r.name)+'” · ':'')+styleName(r.style)+(r.quick?' — quick preview (full song rendering…)':r.preview?'':r.version==='radio'?' — 📻 radio edit':r.version==='extended'?' — 🪩 extended mix':' — full song');
   const inst=Object.entries(r.instruments||{}).map(([k,v])=>`${k}: <span>${v}</span>`).join(' · ');
   const fusion=r.fusion?Object.entries(r.fusion).map(([p,s])=>`${p}←<span>${styleName(s)}</span>`).join(' · '):'';
   el.innerHTML=`<div class="top"><button class="play">▶</button><div style="min-width:0"><div class="tt">${title}</div>
@@ -1771,6 +1779,7 @@ function setupTimeline(el, r){
   // (2.18) inside the editor the section edits and the sound edits are one set of changes
   const baseOpts=()=>el._baseOpts?el._baseOpts():r.options;
   el._secEdits=()=>edits;
+  el._setSecEdits=v=>{ edits=JSON.parse(JSON.stringify(v)); sel=null; draw(); panel(); };
   const info=e=>base[e.src+':'+(e.copy||0)]||bySrc[e.src]||{name:'?',bars:8,layers:[]};
   const bars=e=>e.bars||info(e).bars;
   const draw=()=>{
@@ -1778,8 +1787,9 @@ function setupTimeline(el, r){
     edits.forEach((e,i)=>{ const s=info(e); const b=document.createElement('div');
       const kind=/drop|chorus|hook|climax|theme/.test(s.name)?' drop':(/build|rise/.test(s.name)?' build':'');
       const ed=e.seeds||e.vary||e.mute&&e.mute.length||e.bars||(e.copy||0)>0;
-      b.className='blk'+kind+(i===sel?' sel':'')+(ed?' edited':''); b.style.flex=bars(e); b.textContent=s.name; b.title=`${s.name} · ${bars(e)} bars — click to edit`;
+      b.className='blk'+kind+(i===sel?' sel':'')+(ed?' edited':''); b.style.flex=bars(e); b.textContent=e.label||s.name; b.title=`${e.label||s.name} · ${bars(e)} bars — click to edit`;
       b.onclick=()=>{sel=i;draw();panel()}; tl.appendChild(b); });
+    if(el._onSec) try{ el._onSec(); }catch(_){}
   };
   const panel=()=>{
     const box=el.querySelector('.sedbox'); if(sel==null){box.innerHTML='';return}
@@ -1998,6 +2008,10 @@ function openEditor(r, ctx){
       <button class="mini" data-e="undo" title="Back to the original song">↺ Undo all</button>
       <div class="edchanges" id="edChanges"></div>
     </div>
+    <div class="edlen"><span class="hint">Length</span>
+      <div class="seg edver"><button data-ver="radio" title="About 3 minutes: shorter intro and outro, a solo / second verse trimmed - the same song">📻 Radio edit</button><button data-ver="original" title="The song as it was made">Original</button><button data-ver="extended" title="Dance music: a DJ-friendly drums intro and outro and one more drop. Songs: one more verse and chorus">🪩 Extended mix</button></div>
+      <button class="mini" data-ver="shorter" title="About one section shorter">− Shorter</button><button class="mini" data-ver="longer" title="The last chorus / drop once more">+ Longer</button>
+      <b id="edDur"></b><span class="hint" id="edVerNote"></span></div>
     <div id="edCard"></div>
     <div class="tabs etabs"><button data-et="sounds" class="${tab==='sounds'?'on':''}">🎚 Sounds</button><button data-et="notes" class="${tab==='notes'?'on':''}">🎼 Notes &amp; volume</button></div>
     <div id="edSounds" style="${tab==='sounds'?'':'display:none'}">
@@ -2031,7 +2045,7 @@ function openEditor(r, ctx){
     if(kitPick) o.kit=kitPick; else delete o.kit;
     if(Object.keys(edOct).length) o.octaves=Object.assign({}, edOct); else delete o.octaves;
     if(Object.keys(tlev).length) o.track_levels=Object.assign({}, tlev); else delete o.track_levels;
-    const se=secEdits(); if(se) o.sections=JSON.parse(JSON.stringify(se)); else if(!OO.sections) delete o.sections;
+    const se=secEdits(); if(se){ o.sections=JSON.parse(JSON.stringify(se)); delete o.version; } else if(!OO.sections) delete o.sections;
     return o; };
   ED.opts=opts; if(card) card._baseOpts=opts;
   // every change compared with the ORIGINAL song, listed in the bar
@@ -2098,6 +2112,21 @@ function openEditor(r, ctx){
   box.querySelector('[data-e=full]').onclick=()=>run(false,1,opts(),null,res=>{ addResult(res); reopen(res,curTab()); });
   box.querySelector('[data-e=undo]').onclick=()=>{ if(!diff().length) return; openEditor(orig); };
   box.querySelectorAll('[data-rev]').forEach(b=>b.onclick=()=>{ const id=b.dataset.rev; diff().filter(c=>c.id===id).forEach(undoOne); });
+  // length: radio edit / original / extended mix / shorter / longer - rearranges this song's own sections
+  const fmt=sec=>Math.floor(sec/60)+':'+String(Math.round(sec%60)).padStart(2,'0');
+  const showDur=()=>{ const e=card&&card._secEdits?card._secEdits():null; if(!e||!r.sections) return;
+    const bars=x=>x.bars||((r.sections.find(y=>y.src===x.src&&(y.copy||0)===(x.copy||0))||r.sections.find(y=>y.src===x.src)||{}).bars||8);
+    const tot=e.reduce((a,x)=>a+bars(x),0)*4*60/(r.bpm||120); $('#edDur').textContent=fmt(tot); };
+  if(card) card._onSec=()=>{ showDur(); changed(); };
+  box.querySelectorAll('[data-ver]').forEach(b=>b.onclick=async()=>{ const v=b.dataset.ver; b.disabled=true;
+    try{ const o=opts(); const cur=card&&card._secEdits?card._secEdits():null; if(cur) o.sections=cur;
+      const R=await api('/api/versions',{options:o, version:v});
+      if(R.error){ $('#edVerNote').textContent=R.error; return; }
+      if(card&&card._setSecEdits) card._setSecEdits(R.sections);
+      box.querySelectorAll('.edver [data-ver]').forEach(x=>x.classList.toggle('on', x.dataset.ver===v));
+      $('#edVerNote').textContent=v==='original'?'':' · press 🎧 Hear changes, or ⬇ Full song'; }
+    finally{ b.disabled=false; } });
+  showDur();
   ED_CUR=ED; changed();
   if(ctx.autoplay) setTimeout(()=>abPlay('e'), 300);
   if(ctx.scroll!=null) setTimeout(()=>{ ed.scrollTop=ctx.scroll; }, 60);
@@ -2753,6 +2782,8 @@ async function init(){
     const card=document.querySelector(`.res[data-rid="${CSS.escape(String(LASTR.id))}"] .play`); if(card) card.click(); };
   $('#varBtn').onclick=()=>{ freshSeed(true); run(true,4); if(!$('#seedLock').checked) lastRun.seed=(+$('#seed').value||1); };
   $('#fullBtn').onclick=()=>{ freshSeed(false); run(false,1); };
+  [['#verRadio','sl_ver_radio'],['#verExt','sl_ver_ext']].forEach(([id,k])=>{ const c=$(id); if(!c) return; try{ c.checked=localStorage.getItem(k)==='1'; }catch(e){}
+    c.onchange=()=>{ try{ localStorage.setItem(k, c.checked?'1':'0'); }catch(e){} }; });
   { const q=$('#quickFirst'); if(q){ q.checked=quickFirst(); q.onchange=()=>{ try{ localStorage.setItem('sl_quickfirst', q.checked?'1':'0'); }catch(e){} }; } }
   $('#queueBtn').onclick=()=>queueAdd(freshSeed);
   $('#batchBtn').onclick=()=>batchModal(freshSeed);

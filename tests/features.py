@@ -1368,6 +1368,29 @@ def test_editor_changes_only_what_you_pick():
     print('ok  editor: a pick changes only its part; edited versions never overwrite the original')
 
 
+def test_song_versions():
+    """(2.19) Radio edit / extended mix: the same song's sections rearranged - near 3 minutes, never cutting the first
+    real chorus or the last one, no build-up into nothing; extended is longer with DJ intro / outro for dance music."""
+    from sgcore.compose import Options, compose
+    for style in ('pop', 'synthwave', 'house', 'jazz', 'country', 'uplifting_trance', 'gospel'):
+        o = compose(Options(style=style, seed=5))
+        sec = lambda s: s['total_bars'] * 4 * 60.0 / s['bpm']
+        r = compose(Options(style=style, seed=5, version='radio'))
+        e = compose(Options(style=style, seed=5, version='extended'))
+        assert sec(r) <= max(sec(o), 250), f'{style}: radio edit {sec(r):.0f} s'
+        assert sec(r) >= min(sec(o), 120), f'{style}: radio edit cut too much ({sec(r):.0f} s)'
+        assert sec(e) > sec(o), f'{style}: the extended mix is not longer'
+        names = [x['name'] for x in r['sections']]
+        assert names[-1] == o['sections'][-1]['name'], f'{style}: the radio edit lost its ending'
+        for a, b in zip(r['sections'], r['sections'][1:]):
+            assert not (a['opts'].get('build') and b['opts'].get('build')), f'{style}: two build-ups in a row'
+        if style in ('house', 'uplifting_trance'):
+            first = {x.track for x in e['events'] if x.beat < 16 * 4}
+            assert first and first <= {'kick', 'clap', 'snare', 'chat', 'ohat', 'shaker', 'conga', 'ride', 'perc', 'tom', 'rim', 'crash', 'top'}, \
+                f'{style}: the DJ intro plays {sorted(first)}'
+    print('ok  versions: radio edit ~3 min, extended mix with DJ intro / outro, same song')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -1412,6 +1435,7 @@ def main():
     test_new_genres_and_daisy()
     test_storage_cleanup()
     test_editor_changes_only_what_you_pick()
+    test_song_versions()
     print('all good')
 
 

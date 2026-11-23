@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.19.0
+Radio edit, original and extended mix of the same song - in the editor and when you export.
+- **Also export 📻 radio edit / 🪩 extended mix** (under the Full song buttons): ⬇ Full song also saves the same song in those lengths, next to the original (`…_radio-edit`, `…_extended-mix`). Your ticks are remembered.
+- **Length in the song editor**: 📻 Radio edit · Original · 🪩 Extended mix, plus − Shorter and + Longer, with the running time shown. The new arrangement appears on the timeline, where you can keep editing it, then 🎧 Hear changes or ⬇ Full song.
+- **They're the same song.** A version only changes which of the song's own sections play and how long the intro and outro run, so the melody, chords, bass, drums, sounds and mix stay the same (a few hi-hat and arp details follow the new neighbouring sections).
+  - **Radio edit** aims for about 3 minutes: a short intro and outro first, then, only while it's still too long, trims the second verse, the solo or bridge, and repeated choruses. It never cuts the first real chorus or drop or the last one, and never leaves a build-up leading into nothing.
+  - **Extended mix**: dance music gets a 16-bar DJ intro (drums only) and DJ outro (drums and bass) for mixing, plus one more build and drop. Songs get one more verse and chorus before the ending.
+- An edited song (sections changed) now always gets its own file instead of replacing the original.
+
 ## 2.18.0
 A cleaner Sounds & instruments window with one button for everything, and a reworked song editor (its "play with changes" button really plays your changes now).
 - **Sounds & instruments → ✅ Setup**: one checklist of every sound Studio Lab can use - recorded instruments, the General MIDI library, free synths and effects, plugin support - with a ring showing how much is ready.

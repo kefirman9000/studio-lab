@@ -849,12 +849,39 @@ class Handler(BaseHTTPRequestHandler):
                             SEED_AVOID.pop(next(iter(SEED_AVOID)))
                 items.append(dict(options=oi, outputs=outputs, preview=preview, section=section,
                                   loop=bool(body.get('loop')) and section is not None))
+            vers = [v for v in (body.get('versions') or []) if v in ('radio', 'extended')]
+            if vers and not preview and section is None and n == 1 and not o.get('version'):
+                # (2.19) the same song as a radio edit / extended mix too: same seed, its own sections rearranged
+                for v in vers:
+                    items.append(dict(options=dict(items[0]['options'], version=v), outputs=outputs, preview=False,
+                                      section=None, loop=False))
             if body.get('quick_first') and not preview and section is None and n == 1:
                 # (2.17) a short preview of the very same song first (same seed and picks), so there's something to hear
                 # in seconds; the full song follows in the same job
                 items.insert(0, dict(options=dict(items[0]['options']), outputs=['wav'], preview=True, section=None,
                                      loop=False, quick=True, weight=0.2))
             return self._json({'job': submit(items)})
+        if p == '/api/versions':                         # (2.19) editor: radio edit / extended mix / shorter / longer
+            from .compose import compose
+            from .versions import version_edits, duration
+            o = dict(body.get('options') or {})
+            cur = o.pop('sections', None)
+            o.pop('version', None)
+            song = compose(Options.from_dict(o))
+            base = {}
+            for x in song['sections']:
+                base.setdefault(x['src'], (x['name'], x['bars'], sorted(x['layers']), x['opts']))
+            base_form = [base[i] for i in sorted(base)]
+            dance = song['st'].get('category') == 'Electronic' or any(f[3].get('drop') for f in base_form)
+            v = str(body.get('version') or 'original')
+            if v == 'original':
+                edits = [dict(src=i, copy=0) for i in range(len(base_form))]
+            else:
+                start = cur if v in ('shorter', 'longer') and cur else None
+                edits = version_edits(base_form, song['bpm'], v, edits=start, dance=dance) or \
+                    [dict(src=i, copy=0) for i in range(len(base_form))]
+            return self._json(dict(sections=edits, seconds=round(duration(edits, base_form, song['bpm'])),
+                                   names={i: f[0] for i, f in enumerate(base_form)}, bars={i: f[1] for i, f in enumerate(base_form)}))
         if p == '/api/rank':                          # (2.16) batch: compose candidates (no rendering) and score them
             from .compose import compose
             from . import polish

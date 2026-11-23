@@ -98,6 +98,7 @@ class Options:
     ending: str = 'auto'          # auto | hit (final chord + crash) | fade
     vocal_guide: bool = False     # also play the vocal guide melody (it is always in the MIDI export)
     skip_intro: bool = False      # start the song on its first main section (no intro)
+    version: str = None           # (2.19) None/'original' | 'radio' (radio edit, ~3 min) | 'extended' (extended mix)
     bends: str = None             # meend / gamak on sitar, veena, bansuri ...: 'off', 'subtle', 'more' (None = genre default)
     vocals: str = None            # sung vocals on the vocal melody: 'ooh', 'aah' or 'lyrics' (None = no singing)
     voice: str = 'female'         # the singer: 'female', 'male', 'choir' or 'robot'
@@ -1450,6 +1451,10 @@ def compose(opts):
                 nbars = max(4, int(round(nbars * scale_len / 4)) * 4)
         base_form.append((sname, nbars, layers, opts_s))
     edits = opts.sections or [dict(src=i, copy=0) for i in range(len(base_form))]
+    if not opts.sections and getattr(opts, 'version', None) in ('radio', 'extended'):
+        from .versions import version_edits             # (2.19) radio edit / extended mix of this very song
+        edits = version_edits(base_form, bpm, opts.version,
+                              dance=st.get('category') == 'Electronic' or any(f[3].get('drop') for f in base_form)) or edits
     edits = [e for e in edits if 0 <= int(e.get('src', -1)) < len(base_form)] or [dict(src=i, copy=0) for i in range(len(base_form))]
     vl_prev = {}                          # last chord / pad voicing, for voice leading
     _ps = lambda part, k: ps.get(part) if ps.get(part) is not None else opts.seed * 1009 + k
