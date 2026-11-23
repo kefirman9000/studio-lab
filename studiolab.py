@@ -175,6 +175,11 @@ def _engine_boot(port):
             except Exception:
                 pass
             flags = (0x00000008 | 0x00000200) if os.name == 'nt' else 0     # DETACHED_PROCESS | NEW_PROCESS_GROUP
+            try:
+                from sgcore import appwindow as _aw
+                _aw.clear_heartbeat()
+            except Exception:
+                pass
             env2 = dict(os.environ, STUDIOLAB_WAIT_PID=str(os.getpid()))   # (2.13.3) the new app waits for this one
             env2.pop('STUDIOLAB_CHILD', None)
             env2.pop('STUDIOLAB_PARENT', None)
@@ -235,6 +240,42 @@ def _wait_for_old_app(port):
     time.sleep(1.5)                                                  # the old web view's helper processes
 
 
+def _guard_instance():
+    """(2.14.2) Two Studio Lab windows share one web view profile, and a frozen earlier copy (a window that hung or
+    never closed properly) makes the next start freeze too. So: if an earlier copy is still answering, bring it to the
+    front instead of opening a second one; if it has stopped answering, close it (and its engine) first."""
+    if os.name != 'nt':
+        return
+    import json
+    import subprocess
+    import time
+    from sgcore import appwindow
+    try:
+        with open(appwindow.INSTANCE) as f:
+            old = json.load(f)
+    except Exception:
+        old = None
+    if old and old.get('pid') and old['pid'] != os.getpid() and old.get('ctime') and \
+            appwindow.proc_ctime(old['pid']) == old['ctime']:             # the very same process is still running
+        age = time.time() - float(old.get('t') or 0)
+        if age < 25:                                                   # it is alive and answering: show it
+            try:
+                import ctypes
+                u = ctypes.windll.user32
+                h = u.FindWindowW(None, 'Studio Lab')
+                if h:
+                    u.ShowWindow(h, 9)                                 # SW_RESTORE
+                    u.SetForegroundWindow(h)
+                    os._exit(0)
+            except Exception:
+                pass
+        else:                                                          # frozen: close it and everything it started
+            subprocess.run(['taskkill', '/PID', str(old['pid']), '/T', '/F'], capture_output=True,
+                           creationflags=0x08000000)
+            time.sleep(2.0)                                            # (its web view helpers let go of the profile)
+    appwindow.heartbeat(first=True)
+
+
 def _window_setting():
     try:
         import json
@@ -274,8 +315,10 @@ if __name__ == '__main__':
         except Exception:
             pass
         if '--browser' not in sys.argv and '--no-browser' not in sys.argv and _window_setting() != 'browser':
+            _guard_instance()                             # (2.14.2) never two windows / never behind a frozen one
             from sgcore import appwindow                  # the window opens at once with a loading screen
             if appwindow.splash_window(_engine_boot(port), _quit):
+                appwindow.clear_heartbeat()
                 _quit()
         from sgcore.app import run
         run(port=port, open_browser='--no-browser' not in sys.argv,

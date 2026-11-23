@@ -61,6 +61,19 @@ class Bridge:
     def __init__(self, base):
         self.base = base.rstrip('/')
         self.window = None
+        self.boot = dict(msg='Starting…', url=None, error=None)     # (2.14.2) read by the loading screen itself
+
+    def alive(self):
+        """The page calls this every few seconds: proof the window is really responsive (see studiolab.py's guard
+        against a frozen earlier copy)."""
+        heartbeat()
+        return True
+
+    def boot_status(self):
+        """The loading screen asks for this every half second. Page -> Python is the direction pywebview handles
+        reliably; pushing into a still-loading page from Python threads (evaluate_js / load_url) could hang it."""
+        heartbeat()
+        return dict(self.boot)
 
     def save(self, href, name=None):
         import re
@@ -97,6 +110,52 @@ class Bridge:
         return True
 
 
+INSTANCE = os.path.join(updater.ROOT, '.appwindow', 'instance.json')
+
+
+def proc_ctime(pid):
+    """A process's creation time (Windows), so a reused process id is never mistaken for Studio Lab."""
+    if os.name != 'nt':
+        return None
+    try:
+        import ctypes
+        from ctypes import wintypes
+        k = ctypes.windll.kernel32
+        h = k.OpenProcess(0x1000, False, int(pid))        # PROCESS_QUERY_LIMITED_INFORMATION
+        if not h:
+            return None
+        c, e, kt, ut = (wintypes.FILETIME() for _ in range(4))
+        ok = k.GetProcessTimes(h, ctypes.byref(c), ctypes.byref(e), ctypes.byref(kt), ctypes.byref(ut))
+        k.CloseHandle(h)
+        return (c.dwHighDateTime << 32) | c.dwLowDateTime if ok else None
+    except Exception:
+        return None
+
+
+def heartbeat(first=False):
+    """(2.14.2) This window is alive: pid, creation time and the time, refreshed by the page itself."""
+    import json
+    import time
+    try:
+        os.makedirs(os.path.dirname(INSTANCE), exist_ok=True)
+        tmp = INSTANCE + '.tmp'
+        with open(tmp, 'w') as f:
+            json.dump(dict(pid=os.getpid(), ctime=proc_ctime(os.getpid()), t=time.time(), start=first), f)
+        os.replace(tmp, INSTANCE)
+    except Exception:
+        pass
+
+
+def clear_heartbeat():
+    try:
+        import json
+        with open(INSTANCE) as f:
+            if json.load(f).get('pid') == os.getpid():
+                os.remove(INSTANCE)
+    except Exception:
+        pass
+
+
 SPLASH = """<!doctype html><html><head><meta charset="utf-8"><style>
 html,body{margin:0;height:100%;background:#0d0f14;color:#e7e9ef;font:14px "Segoe UI Variable Text","Segoe UI",-apple-system,system-ui,sans-serif;
   display:flex;align-items:center;justify-content:center;overflow:hidden;user-select:none}
@@ -113,8 +172,11 @@ h1{margin:0;font-size:22px;font-weight:650;letter-spacing:.02em}
 </style></head><body><div class="box"><div class="mark"></div><h1>Studio Lab</h1>
 <div class="bars">%BARS%</div><div id="msg">Starting…</div><div id="sec" style="color:#5d6375;font-size:12px"></div></div>
 <script>function say(m){document.getElementById('msg').textContent=m}
-var t0=Date.now();setInterval(function(){var s=Math.round((Date.now()-t0)/1000);
-document.getElementById('sec').textContent=s>2?s+' s':''},500);</script></body></html>""".replace(
+var t0=Date.now(),gone=false,busy=false;setInterval(function(){var s=Math.round((Date.now()-t0)/1000);
+document.getElementById('sec').textContent=s>2?s+' s':'';
+if(gone||busy||!(window.pywebview&&window.pywebview.api&&window.pywebview.api.boot_status))return;busy=true;
+window.pywebview.api.boot_status().then(function(b){busy=false;if(!b||gone)return;if(b.error){say('Studio Lab could not start: '+b.error);return;}
+if(b.msg)say(b.msg);if(b.url){gone=true;say('Opening…');location.replace(b.url);}}).catch(function(){busy=false;});},400);</script></body></html>""".replace(
     '%BARS%', ''.join(f'<i style="animation-delay:{i * 0.09:.2f}s"></i>' for i in range(9)))
 
 
@@ -149,13 +211,16 @@ def say_splash(msg):
     """Put a line on the loading screen WITHOUT waiting on the window: pywebview's evaluate_js can hang on Windows
     (above all while a page is loading), and the update restart used to wait on it forever - stuck on 'loading'."""
     import json
+    b = WINDOW.get('bridge')
+    if b is not None:
+        b.boot['msg'] = str(msg)
     w = WINDOW.get('win')
     if w is None:
         return
 
     def _s():
         try:
-            w.evaluate_js('say(%s)' % json.dumps(str(msg)))
+            w.evaluate_js('typeof say==="function"&&say(%s)' % json.dumps(str(msg)))
         except Exception:
             pass
     threading.Thread(target=_s, daemon=True).start()
@@ -212,27 +277,27 @@ def splash_window(boot, quit_app):
     WINDOW['bridge'] = bridge
 
     def go():
-        import json
-
-        def say(m):                                   # never wait on the window: a hung evaluate_js (pywebview on
-            def _s():                                  # Windows) must not stop the start-up
-                try:
-                    win.evaluate_js('say(%s)' % json.dumps(str(m)))
-                except Exception:
-                    pass
-            threading.Thread(target=_s, daemon=True).start()
+        def say(m):                                   # (2.14.2) the loading screen reads this itself - nothing is
+            bridge.boot['msg'] = str(m)                # pushed into the window from here
         try:
             url = boot(say)
             bridge.base = url.split('?')[0]
-            say('Opening…')
-            win.load_url(url)
+            bridge.boot['url'] = url                  # the loading screen opens it
         except Exception as e:                            # show what went wrong instead of a window that never loads
-            say('Studio Lab could not start: %s' % e)
+            bridge.boot['error'] = str(e)
+    store = os.path.join(updater.ROOT, '.appwindow', 'webview')       # (2.14.2) Studio Lab's own web view profile,
+    try:                                                             # not one shared with (or closed by) other apps
+        os.makedirs(store, exist_ok=True)
+    except OSError:
+        store = None
     try:
         try:
-            webview.start(go, private_mode=False)
+            webview.start(go, private_mode=False, storage_path=store)
         except TypeError:
-            webview.start(go)
+            try:
+                webview.start(go, private_mode=False)
+            except TypeError:
+                webview.start(go)
     except Exception:                                     # no usable web view (e.g. WebView2 missing): the usual way
         return False
     quit_app()

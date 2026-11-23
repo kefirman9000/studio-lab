@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.14.2
+- **Start-up freezes**: three changes.
+  - The loading screen now asks the app for its progress and opens the studio itself, instead of the app pushing messages and the studio's address into a window that was still loading - on Windows that push could hang the window for good.
+  - Studio Lab's window uses its own web view profile (in the app folder), so another program using - or closing - the shared web view can't take it down. Your settings come back from settings.json as before.
+  - Only one Studio Lab window at a time: opening it again brings the open one to the front, and if an earlier copy has frozen (its window stopped answering), it is closed first, together with its engine, instead of making the new start freeze behind it.
+
 ## 2.14.1
 - **The genre list is reorganised** into smaller, clearer shelves, each running from the best-known genre to its offshoots. Electronic: House · Disco, French & Nu-Disco · Techno · Trance · Psytrance · Dubstep · UK Garage, Grime & Bass · Future Bass & Wave · Drum & Bass & Jungle · Breaks, Rave & Hard Dance · Trap & Rap · Phonk · 808 Switch-ups & Bass Warp · Club: Jersey, Baltimore, Footwork · Pop, R&B & Hopecore · Afro & Amapiano · Latin, Brazilian & Caribbean · Chill & Lo-fi · Ambient & Synthscapes · Synthwave & Video Game · Hauntology. Classic: Rock · Punk · Metal · Surf, Rockabilly & Spooky · Pop & Indie · Soul, R&B & Gospel · Funk & Disco · Hip-Hop · Jazz · Swing & Big Band · Country, Folk & Blues · Celtic · Latin · Caribbean · African · Middle East, Balkan & Klezmer · South Asian · Indian Classical & Devotional · East & Southeast Asian. Orchestral: Film & Trailer · Epic · Fantasy, Games & Holiday · Classical Eras · Piano, Ambient & Experimental. Only the list changed - every genre sounds exactly as before.
 

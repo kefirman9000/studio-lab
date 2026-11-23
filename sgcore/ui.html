@@ -621,6 +621,8 @@ function syncPrefs(){ clearTimeout(_prefT); _prefT=setTimeout(()=>{ try{ const p
   S.setItem=function(k,v){ set.call(this,k,v); if(this===window.localStorage&&String(k).startsWith('sl_')) syncPrefs(); };
   S.removeItem=function(k){ rm.call(this,k); if(this===window.localStorage&&String(k).startsWith('sl_')) syncPrefs(); }; }catch(e){} })();
 window.addEventListener('resize',()=>syncPrefs());
+// (2.14.2) tell the app window we're alive (a frozen window stops doing this, and the next start closes it)
+setInterval(()=>{ try{ if(window.pywebview&&window.pywebview.api&&window.pywebview.api.alive) window.pywebview.api.alive(); }catch(e){} },5000);
 async function api(path, body){
   const h={'X-Studio-Token':TOKEN};
   const r=await fetch(path, body?{method:'POST',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify(body)}:{headers:h, credentials:'same-origin'});
