@@ -13116,7 +13116,7 @@ derive('vocal_stepper_140', 'deep_dubstep_rolling', 'Electronic',
        'Vocal stepper 140: half-time dubstep at 140 with soul - a kick on 1 (and often the "and" of 2), the snare on 3, '
        'swung hats, a heavy held sub that swells on a slow half-note wobble, minor chord loops that move every bar or '
        'two, and chopped vocal phrases thrown into long reverbs and echoes; drops of 16-32 bars, short 8-bar breaks',
-       'Vocal Stepper 140', sounds={'bass': 'stepsub', 'lead': 'vocalchop'}, bpm=(138, 142), swing=0.57,
+       'Vocal Stepper 140', sounds={'bass': 'deepsub', 'lead': 'vocalchop'}, bpm=(138, 142), swing=0.57,
        form='vocal_stepper', learned_balance='dubstep', chord_bars=1,
        exact_pools=True, keep_sounds=0.85, exact_form=True, drop_tracks=('midbass',),
        progs={'minor': [[0, 3, 5, 5], [0, 5, 3, 6], [0, 6, 5, 3], [0, 0, 5, 3]]}, own_progs=True, scales=['minor'],
@@ -13126,5 +13126,5 @@ derive('vocal_stepper_140', 'deep_dubstep_rolling', 'Electronic',
                   shaker=['..x...x.x.x...x.'], rim=['...x......x...x.']),
        bass=['R-------R-------', 'R---------------', 'R-----R---R-----'], bass_mode='wobble',
        wobble_rates=[2, 2, 1, 2 / 3, 2], wobble_rates_alt=[1, 2 / 3, 2, 1], wobble_lens=[16, 8, 8, 16],
-       pools=dict(bass=['stepsub', 'deepsub', 'subwob', 'slowwob'], lead=['vocalchop', 'vox', 'formantchop', 'chopwob'],
+       pools=dict(bass=['deepsub', 'subwob', 'slowwob', 'stepsub'], lead=['vocalchop', 'vox', 'formantchop', 'chopwob'],
                   chords=['epiano', 'warmpad', 'stab', 'organ', 'darkpad']))

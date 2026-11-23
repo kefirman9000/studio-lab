@@ -245,6 +245,10 @@ PHRASE_PLANS = [[0, 1, 0, 1, 0, 1, 2, 3], [0, 1, 0, 2, 0, 1, 0, 3], [0, 0, 1, 1,
 
 
 
+# (2.20.2) sounds that are a nice surprise but wear thin when they come up all the time: still in their genres' pools,
+# picked about this often compared with the other sounds (a favourite you starred is never held back)
+RARE_SOUNDS = {'stepsub': 0.4}
+
 def is_808(inst):
     """An 808 of any flavour (808, its distorted / long / punchy variants, drill 808, wobble 808)."""
     inst = str(inst or '')
@@ -467,7 +471,7 @@ def apply_variety(st, opts, rnd):
             recent = set((getattr(opts, 'avoid', None) or {}).get(role, []))
             favs = set(getattr(opts, 'favorites', None) or ())
             w = [(1.4 if i == 0 and not club else 1.0) * (0.25 if x in recent else 1.0) * (2.5 if x in favs else 1.0)
-                 for i, x in enumerate(pool)]
+                 * (1.0 if x in favs else RARE_SOUNDS.get(x, 1.0)) for i, x in enumerate(pool)]
             choice = rr.choices(pool, w)[0]
             choice = _GTR_UP.get(opts.style, {}).get(choice, choice)     # (2.0) the rig guitars play the old guitar picks
             if choice != t['inst']:                   # (the genre's level for this part stays: every part is levelled to it)
@@ -2668,7 +2672,7 @@ def add_layer_tracks(st, opts):
                 pool = [i for i in pool if inst_family(i) == inst_family(t['inst']) and sound_kind(i) == sound_kind(t['inst'])]
                 if not pool:                                                        # (trance leads: saw + pluck is the idiom)
                     continue
-            inst = r.choice(pool)
+            inst = r.choices(pool, [RARE_SOUNDS.get(i, 1.0) for i in pool])[0]
             octv = 12 if inst in OCT_UP and role in ('lead', 'arp') else (-12 if inst in OCT_DOWN and role == 'lead' else 0)
         picks += 1
         layer_hp = None

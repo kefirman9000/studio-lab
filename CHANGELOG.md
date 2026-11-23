@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.20.2
+
+- The stepper sub (stepsub, the swelling "womp" bass) came up too often: it stays in its genres, but is now picked far
+  less (about 2 songs in 100 in the 140 genres), and Vocal Stepper 140 now leads with a plain deep sub. Starring it as a
+  favourite still brings it back as often as you like.
+
 ## 2.20.1
 
 - Learned mix balance now measures the render the same way the records were measured (an RMS envelope, not raw
