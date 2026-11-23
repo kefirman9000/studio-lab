@@ -400,7 +400,7 @@ def _search_tags(st):
 
 
 def meta():
-    from .genre_groups import group_of, rank, order
+    from .genre_groups import display_group as group_of, display_rank as rank, display_order as order   # (2.14.1)
     by_cat = {c: [] for c in CATEGORIES}
     for k, v in sorted(STYLES.items(), key=lambda kv: rank(kv[0])):
         by_cat[v['category']].append(dict(id=k, name=label(k), desc=v['desc'], bpm=v['bpm'], group=group_of(k),

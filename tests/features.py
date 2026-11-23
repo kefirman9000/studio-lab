@@ -261,6 +261,10 @@ def test_amen_and_groups():
     r = drum_mod(x, 'rev')
     assert r[0] == 0 and r[-1] == x[0] and len(drum_mod(x, 'pt:12')) < len(x)      # fades in, ends on the hit
     assert set(GROUP_OF) == set(STYLES)                       # every genre is filed in exactly one group
+    from sgcore.genre_groups import DISPLAY, DISPLAY_OF
+    shown = [g for cat in DISPLAY.values() for _, ids in cat for g in ids]
+    assert len(shown) == len(set(shown)) and set(DISPLAY_OF) == set(STYLES)   # (2.14.1) and on exactly one display shelf
+    assert all(STYLES[g]['category'] == cat for cat in DISPLAY for _, ids in DISPLAY[cat] for g in ids)
     assert sum(len(ids) for cat in GROUPS.values() for _, ids in cat) == len(STYLES)
     for cat, gs in GROUPS.items():
         assert all(STYLES[k]['category'] == cat for _, ids in gs for k in ids)

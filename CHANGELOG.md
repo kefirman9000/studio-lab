@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.14.1
+- **The genre list is reorganised** into smaller, clearer shelves, each running from the best-known genre to its offshoots. Electronic: House · Disco, French & Nu-Disco · Techno · Trance · Psytrance · Dubstep · UK Garage, Grime & Bass · Future Bass & Wave · Drum & Bass & Jungle · Breaks, Rave & Hard Dance · Trap & Rap · Phonk · 808 Switch-ups & Bass Warp · Club: Jersey, Baltimore, Footwork · Pop, R&B & Hopecore · Afro & Amapiano · Latin, Brazilian & Caribbean · Chill & Lo-fi · Ambient & Synthscapes · Synthwave & Video Game · Hauntology. Classic: Rock · Punk · Metal · Surf, Rockabilly & Spooky · Pop & Indie · Soul, R&B & Gospel · Funk & Disco · Hip-Hop · Jazz · Swing & Big Band · Country, Folk & Blues · Celtic · Latin · Caribbean · African · Middle East, Balkan & Klezmer · South Asian · Indian Classical & Devotional · East & Southeast Asian. Orchestral: Film & Trailer · Epic · Fantasy, Games & Holiday · Classical Eras · Piano, Ambient & Experimental. Only the list changed - every genre sounds exactly as before.
+
 ## 2.14.0
 Songs whose musical decisions feel intentional rather than independent random choices - the top three items of the improvement list:
 - **Motivic development**: the lead's phrases no longer repeat word for word. In each pair of four-bar phrases the second one *answers* the first: it comes home to the tonic, moves the motif up a step (a sequence), echoes its opening cell twice (fragmentation) or shifts it an 8th later (rhythmic displacement). Later choruses / drops develop differently from the first, and the last hook climbs to a high point. This builds on the song's one-tune motif (verse lower and sparser, chorus hookier). Written cadences in classical forms and maqam / raga lines keep their own shapes.
