@@ -69,8 +69,8 @@ def learned_family(st, opts):
 
 
 def learned_balance_targets(st, opts):
-    if getattr(opts, 'part_levels', None) and any(getattr(opts, 'part_levels').values()):
-        return None                                      # you set the part levels yourself: yours win
+    # (2.20.3) your own part levels no longer switch this off: the balance is measured as if you hadn't moved them,
+    # and your changes are applied on top - so -6 dB on a part is -6 dB, and the other parts stay where they were
     fam = learned_family(st, opts)
     return dict(LEARNED_BALANCE[fam], family=fam) if fam else None
 
@@ -1381,6 +1381,7 @@ class Renderer:
         music = np.zeros((2, L), dtype=np.float32)          # (1.97) chords, pads, arps: a bus that makes room for the lead
         lead_mono = np.zeros(L, dtype=np.float32)
         learned = learned_balance_targets(st, opts)          # (2.20) bass / lead held back until the balance is checked
+        neutral_off = {}                                     # bus -> what to add to undo your level changes (for measuring)
         bassbus = np.zeros((2, L), dtype=np.float32) if learned else None
         leadbus = np.zeros((2, L), dtype=np.float32) if learned else None
         rev_send = np.zeros((2, L), dtype=np.float32)
@@ -1555,14 +1556,16 @@ class Renderer:
                 for s0, s1 in hpsweeps:
                     sweep_region(buf, s0, s1, 'hp', 30, 900)
             target = tcfg['db'] if tcfg['db'] is not None else ROLE_DB.get(tcfg['layer'], -22)
+            user_db = 0.0
             try:                                          # your per-part level (Mix & master)
-                target += max(-24.0, min(9.0, float((getattr(opts, 'part_levels', None) or {}).get(tcfg['layer'], 0))))
+                user_db += max(-24.0, min(9.0, float((getattr(opts, 'part_levels', None) or {}).get(tcfg['layer'], 0))))
             except (TypeError, ValueError):
                 pass
             try:                                          # ... and this one sound's own level (song editor)
-                target += max(-24.0, min(9.0, float((getattr(opts, 'track_levels', None) or {}).get(name, 0))))
+                user_db += max(-24.0, min(9.0, float((getattr(opts, 'track_levels', None) or {}).get(name, 0))))
             except (TypeError, ValueError):
                 pass
+            target += user_db
             cur = active_rms_db(buf)
             if cur > -110:
                 g = 10 ** ((target - cur) / 20)
@@ -1669,6 +1672,12 @@ class Renderer:
                 buf = sub_harmonics(buf, float(st.get('sub_harmonics_amt', 0.12)))   # the bass reads on small speakers
             if tcfg['layer'] == 'lead' and np.any(buf):
                 lead_mono[:buf.shape[1]] += buf.mean(axis=0)[:L]
+            if learned and user_db:                       # the learned balance measures the song without your changes
+                bus = {'kick': 'drums', 'snare': 'drums', 'top': 'drums', 'chords': 'music', 'pad': 'music',
+                       'arp': 'music', 'bass': 'bass', 'lead': 'lead'}.get(tcfg['layer'])
+                if bus:
+                    neutral_off.setdefault(bus, np.zeros((2, L), dtype=np.float32))
+                    neutral_off[bus] += buf * np.float32(10 ** (-user_db / 20) - 1)
             if tcfg['layer'] in ('kick', 'snare', 'top'):
                 drums += buf
             elif tcfg['layer'] in ('chords', 'pad', 'arp'):
@@ -1759,7 +1768,10 @@ class Renderer:
         # in real records of this family (measured on stems); a partial, capped nudge - the genre's own levels lead
         self.learned_balance = None
         if learned:
-            g_b, g_s = learned_balance(drums, bassbus, music, leadbus, learned)
+            nz = lambda k, x: x + neutral_off[k] if k in neutral_off else x     # noqa: E731
+            g_b, g_s = learned_balance(nz('drums', drums), nz('bass', bassbus), nz('music', music), nz('lead', leadbus),
+                                       learned)
+            neutral_off.clear()
             self.learned_balance = (round(20 * np.log10(g_b), 1), round(20 * np.log10(g_s), 1))
             if g_b != 1.0:
                 bassbus *= np.float32(g_b)

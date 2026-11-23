@@ -1453,7 +1453,9 @@ def test_learned_from_stems():
                     ('vocal_stepper_140', 'dubstep'), ('uplifting_trance', None), ('pop', None), ('trap', None)):
         assert fam(g) == want, (g, fam(g))
     o = Options(style='house'); o.part_levels = {'bass': 3}
-    assert render.learned_balance_targets(dict(STYLES['house'], name='house'), o) is None   # your levels win
+    # (2.20.3) your levels no longer switch the balance off - it is measured without them and they go on top
+    # (tests.genres checks that -6 dB on the lead stem is exactly -6 dB)
+    assert render.learned_balance_targets(dict(STYLES['house'], name='house'), o) is not None
     sr = render.SR; n = sr * 12
     rng = np.random.default_rng(1)
     drums = np.tile(rng.standard_normal(n).astype(np.float32) * 0.1, (2, 1))

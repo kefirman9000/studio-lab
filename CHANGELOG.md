@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.20.3
+
+- Fixed: turning a part down barely changed it in house, techno, dubstep and boom bap. Setting any part level switched
+  the learned mix balance off, so the synths jumped back up ~5 dB and cancelled most of your change (a -6 dB lead came
+  out about -0.7 dB, and the chords got louder). The balance now always applies, measured as if you hadn't moved
+  anything, and your levels go on top: -6 dB on the lead is exactly -6 dB, and the other parts stay put.
+- This also unblocks the 2.20.1 and 2.20.2 updates, which had not been released.
+
 ## 2.20.2
 
 - The stepper sub (stepsub, the swelling "womp" bass) came up too often: it stays in its genres, but is now picked far
