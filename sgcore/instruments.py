@@ -8070,3 +8070,5 @@ from . import celtic  # noqa: E402,F401
 from . import synths25  # noqa: E402,F401
 from . import deepwob as _deepwob  # noqa: E402
 _deepwob.register()
+from . import stemsynths as _stemsynths  # noqa: E402  (2.20) synths modelled on measured stems
+_stemsynths.register()

@@ -199,6 +199,25 @@ def analyze_reference(x, sr, a):
     return a
 
 
+AGG = 'min'
+
+
+def _agg(ds):
+    """(2.20) One distance per genre from its fingerprints. The plain minimum let genres with many stored records win
+    far too often (more tries at being close by chance), so a genre counts its close fingerprints together."""
+    ds = sorted(ds)
+    if AGG == 'min' or len(ds) == 1:
+        return ds[0]
+    if AGG.startswith('logn'):
+        return ds[0] + float(AGG[4:] or 0.15) * np.log(len(ds))
+    if AGG == 'mean2':
+        return float(np.mean(ds[:2]))
+    if AGG.startswith('soft'):
+        T = float(AGG[4:] or 0.3)
+        return float(-T * np.log(np.mean(np.exp(-(np.array(ds) - ds[0]) / T))) + ds[0])
+    return ds[0]
+
+
 def suggest(features, styles, labels=None, top=6):
     """features: analyze() output + drum_feel(). -> [dict(id, name, score, why)] best first."""
     bpm = features.get('bpm') or 120
@@ -217,8 +236,8 @@ def suggest(features, styles, labels=None, top=6):
             r = h.get('ratio', 1.0)
             b = (h.get('bpm_exact') or bpm * r)
             dist = max(0, lo - b, b - hi) + (0 if r == 1.0 else W['pen2'] if r in (2.0, 0.5) else W['pen3'])
-            fd = min(_fp_distance(dict(h, spectrum=features.get('spectrum')), g) - (W['rec_bonus'] if g.get('src') == 'record' else 0)
-                     for g in fps) if (fps and h.get('kick')) else None
+            fd = _agg([_fp_distance(dict(h, spectrum=features.get('spectrum')), g) - (W['rec_bonus'] if g.get('src') == 'record' else 0)
+                       for g in fps]) if (fps and h.get('kick')) else None
             val = W['tempo'] * float(np.exp(-dist / 7.0)) + (W['fp'] - W['fp_slope'] * fd if fd is not None else 0)
             if best_h is None or val > best_h[0]:
                 best_h = (val, h, dist, fd)
@@ -272,8 +291,8 @@ def suggest(features, styles, labels=None, top=6):
                         bpm=int(round(b_fit))))     # (1.90) the tempo reading that fits this genre (half / double / x1.5)
     out.sort(key=lambda r: -r['score'])
     best = out[0]['score'] if out else 1.0
-    for r in out:
-        r['match'] = int(round(100 * r['score'] / max(best, 1e-9)))
+    for r in out:                                        # (2.20) closeness to the best match, 0-100: the old ratio of
+        r['match'] = int(round(100 * np.exp(-max(0.0, best - r['score']) / 1.2)))   # scores blew up when the best was ~0
     return out[:top]
 
 

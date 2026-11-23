@@ -1,15 +1,16 @@
-STUDIO LAB - ALL 405 GENRES  (version 2.19.0)
+STUDIO LAB - ALL 408 GENRES  (version 2.19.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
 * = new in 2.19
 
 ========================================================================
-ELECTRONIC  (207)
+ELECTRONIC  (210)
 ========================================================================
 
-House & Disco  (31)
+House & Disco  (32)
     house  [house]
     Deep House  [deep_house]
     Tech House  [tech_house]
+    Rolling Pump House  [rolling_pump_house]
     Progressive House  [progressive_house]
     Acid House  [acid_house]
     Afro House  [afro_house]
@@ -39,8 +40,9 @@ House & Disco  (31)
     Brazilian bass  [brazilian_bass]
     Progressive House Journey (Y2K)  [progressive_journey]
 
-Techno & Trance  (27)
+Techno & Trance  (28)
     techno  [techno]
+    Peak-Time Techno  [peak_time_techno]
     minimal  [minimal]
     Melodic Techno  [melodic_techno]
     Euphoric Trance  [euphoric_trance]
@@ -68,8 +70,9 @@ Techno & Trance  (27)
     Hard techno (150)  [hard_techno]
     Dub techno  [dub_techno]
 
-Dubstep, Garage & Bass  (28)
+Dubstep, Garage & Bass  (29)
     Dubstep (classic UK)  [dubstep]
+    Vocal Stepper 140  [vocal_stepper_140]
     Switch-up Bass  [switchup_bass]
     Wave (ethereal half-time, 808 sub, vocal chops)  [ethereal_wave]
     Brostep  [brostep]

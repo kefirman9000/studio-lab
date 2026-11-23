@@ -1025,7 +1025,7 @@ style('jazz', 'Classic', 'Jazz / swing: walking bass, ride-cymbal swing, piano c
 style('boombap', 'Classic', 'Boom bap hip hop: dusty swung drums, chopped piano loops, jazzy horn lines, deep bass doubled by upright',
       bpm=(84, 96), scales=['minor', 'dorian'], swing=0.58, human=0.008,
       progs={'minor': [[0, 5, 3, 4], [0, 0, 5, 6]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 4]]}, chord_size=4,
-      kit='soft', form='lofi',
+      kit='soft', form='lofi', delay_beats=1.0,       # (2.20) the keys echo in quarters, as in measured boom-bap stems
       drums={'kick': ['X.....x.X.....x.', 'X......XX.......'], 'snare': [BACKBEAT], 'chat': ['x.x.x.x.x.x.x.x.'],
              'rim': ['..............o.']}, snare_tracks=['snare'],
       bass=['R.....R.R.......', 'R-----..R-....A.'], chord_rh=['x--x--..x---....', 'x---..x-..x-....'],
@@ -1033,7 +1033,7 @@ style('boombap', 'Classic', 'Boom bap hip hop: dusty swung drums, chopped piano 
       tracks=[T('kick', 'kick', 'kick', db=-12), T('snare', 'snare', 'snare', rev=0.15), T('chat', 'top', 'chat', db=-28),
               T('rim', 'top', 'rim', db=-30), T('bass', 'bass', 'sinebass', db=-15),
               T('bass_up', 'bass', 'upright', db=-22, double_of='bass', octave=12),
-              T('chords', 'chords', 'piano', rev=0.2, sc=0.8, chops=True), T('lead', 'lead', 'sax', rev=0.3, dly=0.1, db=-23),
+              T('chords', 'chords', 'piano', rev=0.3, dly=0.22, sc=0.8, chops=True), T('lead', 'lead', 'sax', rev=0.3, dly=0.15, db=-23),
               T('vinyl', 'fx', 'vinyl', db=-40)],
       master=dict(lufs=-10.0, air=-1.5, low=1.5, lofi=True),
       sampler=True,
@@ -13040,3 +13040,91 @@ derive('christmas_finale', 'christmas_carol_choir', 'Orchestral',
 _XMAS_FILM = ('christmas_memory_theme', 'christmas_sneak', 'christmas_flight', 'christmas_finale')
 BELL_OK.update(_XMAS_FILM)
 MALLET_OK.update(_XMAS_FILM)
+
+
+# ---- (2.20) learned from ~60 real songs' stems (tools/stem_study.py): new synths in the genres they were measured on,
+# and three genres built from what the stems showed (patterns, levels, form lengths and sidechain from the medians).
+for _g in ('house', 'deep_house', 'tech_house', 'garage_house', 'bass_house', 'nineties_club_house'):
+    if _g in POOLS and 'rollbass' not in POOLS[_g].get('bass', []):
+        POOLS[_g].setdefault('bass', []).append('rollbass')
+for _g in ('house', 'tech_house', 'techno', 'acid_house', 'nineties_club_house'):
+    if _g in POOLS and 'pumpstab' not in POOLS[_g].get('chords', []):
+        POOLS[_g].setdefault('chords', []).append('pumpstab')
+for _g in ('deep_dubstep', 'deep_dubstep_minimal', 'deep_dubstep_rolling', 'deep_dubstep_rollers', 'early_dubstep',
+           'steppy_halftime', 'sub_pressure_140'):
+    if _g in POOLS and 'stepsub' not in POOLS[_g].get('bass', []):
+        POOLS[_g].setdefault('bass', []).append('stepsub')
+for _g in ('boombap', 'jazz_hop', 'jazz_rap', 'wonky_beats', 'lofi'):
+    if _g in POOLS and 'dustkeys' not in POOLS[_g].get('chords', []):
+        POOLS[_g].setdefault('chords', []).append('dustkeys')
+
+# measured: house / techno records reach the first drop at bar ~16, total ~104 bars, 8-bar breaks
+FORMS['rolling_house'] = [('intro', 8, {'kick', 'top'}, {'filter_in': True}),
+                          ('groove', 8, {'kick', 'top', 'snare', 'bass'}, {}),
+                          ('drop', 32, {'kick', 'top', 'snare', 'bass', 'chords', 'lead'}, {'drop': True}),
+                          ('break', 8, {'top', 'pad', 'chords'}, {'alt': True}),
+                          ('build', 8, {'top', 'snare', 'pad', 'chords'}, {'build': True}),
+                          ('drop', 32, {'kick', 'top', 'snare', 'bass', 'chords', 'lead', 'arp'}, {'drop': True}),
+                          ('outro', 8, {'kick', 'top'}, {'fade': True})]
+derive('rolling_pump_house', 'tech_house', 'Electronic',
+       'Rolling pump house: club house at 124-128 built the way the records measure - the drums lead, a sub-heavy bass '
+       'rolls in 16ths (three of every four) or bounces on the off-beats, and short detuned chord stabs sit way under the '
+       'drums, ducking hard on every kick (an 8-20 dB pump that snaps back within a 16th or two); off-beat open hats over '
+       'quiet 16th ticks, the clap on 2 and 4 with a ghost or two, nearly straight swing', 'Rolling Pump House',
+       sounds={'bass': 'rollbass', 'chords': 'pumpstab'}, bpm=(124, 128), swing=0.52, form='rolling_house',
+       exact_pools=True, keep_sounds=0.8, exact_form=True,
+       sc_depth=0.8, sc_release=0.3, learned_balance='house',
+       drums=dict(kick=['X...X...X...X...'], clap=['....X.......X...', '....X..x....X...', '....X.......X..x'],
+                  ohat=['..x...x...x...x.'], chat=['...x...x...x...x', '.x.x.x.x.x.x.x.x'], shaker=['x.xxx.xxx.xxx.xx']),
+       bass=['.RRR.RRR.RRR.RRR', '..R...R...R...R.', '..RR..RR..RR..RR', 'RRRRRRRRRRRRRRRR'], bass_gate=0.55,
+       chord_rh=['..x.......x.....', '...x......x.....', '..x...x...x...x.', 'x.......x.......'],
+       pools=dict(bass=['rollbass', 'techbass', 'sinebass', 'organbass', 'fmbass'],
+                  chords=['pumpstab', 'stab', 'organ', 'houseorgan', 'chordmemory']))
+
+# measured: the 128-130 techno records - claps (or snares) on every beat, an off-beat bass, a ride / hats in 16ths
+FORMS['peak_techno'] = [('intro', 16, {'kick', 'top'}, {'filter_in': True}),
+                        ('groove', 16, {'kick', 'top', 'snare', 'bass'}, {}),
+                        ('drop', 24, {'kick', 'top', 'snare', 'bass', 'chords', 'arp'}, {'drop': True}),
+                        ('break', 16, {'top', 'pad', 'chords'}, {'alt': True}),
+                        ('build', 8, {'top', 'snare', 'pad'}, {'build': True}),
+                        ('drop', 24, {'kick', 'top', 'snare', 'bass', 'chords', 'arp', 'lead'}, {'drop': True}),
+                        ('outro', 16, {'kick', 'top'}, {'fade': True})]
+derive('peak_time_techno', 'techno', 'Electronic',
+       'Peak-time techno: driving 128-130 four-on-the-floor where a clap lands on every beat, an off-beat sub bass '
+       'answers each kick, rides and hats run in 16ths and one short, detuned stab or a single-note hook pumps under '
+       'heavy sidechain - very little melody, long 16-bar intros and outros for mixing, a 16-bar break and one build',
+       'Peak-Time Techno', sounds={'bass': 'rollbass', 'chords': 'pumpstab'}, bpm=(128, 130), swing=0.5,
+       form='peak_techno', sc_depth=0.75, sc_release=0.32, learned_balance='techno',
+       exact_pools=True, keep_sounds=0.8, exact_form=True,
+       drums=dict(kick=['X...X...X...X...'], clap=['X...X...X...X...', '....X...X...X...'],
+                  ride=['x.xxx.xxx.xxx.xx', 'xxxxxxxxxxxxxxxx'], ohat=['..x...x...x...x.'], chat=['.x.x.x.x.x.x.x.x']),
+       bass=['..R...R...R...R.', '..RR..RR..RR..RR', '..R...R...R...RR'], bass_gate=0.5,
+       chord_rh=['..x...........x.', 'x.......x.......', '..x.......x.....'],
+       pools=dict(bass=['rollbass', 'techbass', 'sinebass', 'acid'], chords=['pumpstab', 'stab', 'organ_dark', 'stab_dark']))
+
+# measured: the vocal 140 records - drops 24-32 bars, 8-bar breaks, ~128 bars, the first drop at bar 16; sub-heavy
+# held bass with a half-note swell; chopped vocals in long reverb; minor chord loops changing every couple of bars
+FORMS['vocal_stepper'] = [('intro', 16, {'kick', 'top', 'pad', 'lead'}, {'filter_in': True}),
+                          ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True}),
+                          ('break', 8, {'pad', 'chords', 'lead'}, {'alt': True}),
+                          ('build', 8, {'kick', 'top', 'pad', 'chords'}, {'build': True}),
+                          ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'lead', 'arp'}, {'drop': True}),
+                          ('break', 8, {'pad', 'lead'}, {'alt': True}),
+                          ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'lead'}, {'drop': True}),
+                          ('outro', 8, {'top', 'pad'}, {'fade': True})]
+derive('vocal_stepper_140', 'deep_dubstep_rolling', 'Electronic',
+       'Vocal stepper 140: half-time dubstep at 140 with soul - a kick on 1 (and often the "and" of 2), the snare on 3, '
+       'swung hats, a heavy held sub that swells on a slow half-note wobble, minor chord loops that move every bar or '
+       'two, and chopped vocal phrases thrown into long reverbs and echoes; drops of 16-32 bars, short 8-bar breaks',
+       'Vocal Stepper 140', sounds={'bass': 'stepsub', 'lead': 'vocalchop'}, bpm=(138, 142), swing=0.57,
+       form='vocal_stepper', learned_balance='dubstep', chord_bars=1,
+       exact_pools=True, keep_sounds=0.85, exact_form=True, drop_tracks=('midbass',),
+       progs={'minor': [[0, 3, 5, 5], [0, 5, 3, 6], [0, 6, 5, 3], [0, 0, 5, 3]]}, own_progs=True, scales=['minor'],
+       drums=dict(kick=['X.....X.........', 'X.....X...x.....', 'X...........x...'],
+                  snare=['........X.......', '........X......o'],
+                  chat=['x...x...x...x...', 'x.x.x.x.x.x.x.x.', '..x...x...x...x.'],
+                  shaker=['..x...x.x.x...x.'], rim=['...x......x...x.']),
+       bass=['R-------R-------', 'R---------------', 'R-----R---R-----'], bass_mode='wobble',
+       wobble_rates=[2, 2, 1, 2 / 3, 2], wobble_rates_alt=[1, 2 / 3, 2, 1], wobble_lens=[16, 8, 8, 16],
+       pools=dict(bass=['stepsub', 'deepsub', 'subwob', 'slowwob'], lead=['vocalchop', 'vox', 'formantchop', 'chopwob'],
+                  chords=['epiano', 'warmpad', 'stab', 'organ', 'darkpad']))

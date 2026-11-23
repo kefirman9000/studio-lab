@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (405 genres)
+# Studio Lab - technical genre rules (408 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -46,8 +46,8 @@ Classic / NYC house: four-on-the-floor 909, the bouncy M1 organ bass, offbeat pi
   - ohat (top): `ohat`  dB · pan=0.15
   - chat (top): `chat` -29 dB · pan=-0.2
   - shaker (top): `shaker` -31 dB · pan=0.35
-  - bass (bass): `organbass` -13 dB · sc=1.0 · alternatives ['sawbass', 'fmbass', 'moogbass', 'junobass', 'moogbass_driven', 'moogbass_dark', 'rubberbass']
-  - chords (chords): `m1piano` -18 dB · rev=0.25 · dly=0.15 · sc=0.9 · alternatives ['organ', 'stab', 'epiano', 'junopoly', 'chordmemory', 'discofilter', 'organ_dark', 'm1piano_dark', 'discohorn']
+  - bass (bass): `organbass` -13 dB · sc=1.0 · alternatives ['sawbass', 'fmbass', 'moogbass', 'junobass', 'moogbass_driven', 'moogbass_dark', 'rubberbass', 'rollbass']
+  - chords (chords): `m1piano` -18 dB · rev=0.25 · dly=0.15 · sc=0.9 · alternatives ['organ', 'stab', 'epiano', 'junopoly', 'chordmemory', 'discofilter', 'organ_dark', 'm1piano_dark', 'discohorn', 'pumpstab']
   - pad (pad): `warmpad` -21 dB · rev=0.35 · sc=1.0 · alternatives ['strings', 'solina', 'glasspad', 'glasspad_wide', 'glasspad_dark']
   - arp (arp): `houseorgan` -27 dB · pan=-0.25 · rev=0.25 · dly=0.3 · sc=0.8 · alternatives ['organ', 'stab', 'piano', 'stab_wide', 'piano_dark']
   - lead (lead): `m1piano`  dB · pan=0.1 · rev=0.3 · dly=0.3 · sc=0.5 · alternatives ['organ', 'stab', 'epiano', 'vocalchop', 'm1piano_dark', 'epiano_bright', 'vocalbounce']
@@ -76,7 +76,7 @@ Deep house: warm organ & Rhodes 7th chords, round sub, shuffled shakers
   - rim (top): `rim` -30 dB · pan=0.3
   - ohat (top): `ohat` -28 dB · pan=-0.15
   - shaker (top): `shaker` -30 dB · pan=0.25
-  - bass (bass): `sinebass`  dB · sc=0.8 · alternatives ['fmbass', 'sf:fingerbass', 'organbass', 'junobass', 'deepbass', 'deepfmbass', 'fmbass_driven', 'fmbass_dark', 'rubberbass']
+  - bass (bass): `sinebass`  dB · sc=0.8 · alternatives ['fmbass', 'sf:fingerbass', 'organbass', 'junobass', 'deepbass', 'deepfmbass', 'fmbass_driven', 'fmbass_dark', 'rubberbass', 'rollbass']
   - chords (chords): `rhodes`  dB · rev=0.3 · dly=0.15 · sc=0.7 · alternatives ['epiano', 'organ', 'wurli', 'stab', 'piano', 'junopoly', 'chordmemory', 'piano_tape', 'organ_dark', 'rhodestrem']
   - pad (pad): `warmpad`  dB · rev=0.4 · sc=0.8 · alternatives ['strings', 'choir', 'glasspad', 'junopad', 'junopad_wide', 'glasspad_dark']
   - arp (arp): `epiano` -27 dB · pan=0.2 · rev=0.3 · dly=0.3 · sc=0.5 · alternatives ['piano', 'pluck', 'mhpluck', 'epiano_bright', 'mhpluck_wide']
@@ -106,8 +106,8 @@ Tech house: rolling, rubbery filtered bassline, 909 groove with congas, rims and
   - shaker (top): `shaker` -29 dB · pan=0.3
   - conga (top): `conga` -27 dB · pan=-0.3
   - rim (top): `rim` -30 dB · pan=0.2
-  - bass (bass): `techbass`  dB · sc=1.0 · alternatives ['sawbass', 'fmbass', 'organbass', 'sinebass', 'junobass', 'deepfmbass', 'fmbass_driven', 'fmbass_dark', 'rubberbass']
-  - chords (chords): `organ` -24 dB · rev=0.3 · dly=0.3 · sc=0.8 · alternatives ['stab', 'epiano', 'piano', 'houseorgan', 'chordmemory', 'piano_tape', 'epiano_dark']
+  - bass (bass): `techbass`  dB · sc=1.0 · alternatives ['sawbass', 'fmbass', 'organbass', 'sinebass', 'junobass', 'deepfmbass', 'fmbass_driven', 'fmbass_dark', 'rubberbass', 'rollbass']
+  - chords (chords): `organ` -24 dB · rev=0.3 · dly=0.3 · sc=0.8 · alternatives ['stab', 'epiano', 'piano', 'houseorgan', 'chordmemory', 'piano_tape', 'epiano_dark', 'pumpstab']
   - arp (arp): `pluck_saw` -29 dB · pan=0.25 · dly=0.35 · sc=0.6 · alternatives ['pluck', 'stab', 'acid', 'fmbleep', 'acid_dark', 'stab_dark']
   - lead (lead): `stab`  dB · rev=0.3 · dly=0.35 · sc=0.5 · alternatives ['organ', 'pluck_saw', 'acid', 'stab_dark', 'acid_driven', 'vocalbounce']
   - bongo (top): `conga` -29 dB · pan=0.4
@@ -165,7 +165,7 @@ Acid house: squelching 303 lines, raw 909 drums, rave stabs
   - ohat (top): `ohat` -26 dB
   - chat (top): `chat` -29 dB · pan=0.2
   - bass (bass): `acid` -15 dB · dly=0.2 · sc=0.6 · alternatives ['sawbass', 'moogbass', 'fmbass', 'sh101', 'sh101_dark', 'moogbass_driven']
-  - chords (chords): `stab` -25 dB · rev=0.3 · dly=0.3 · alternatives ['organ', 'piano', 'polysynth', 'polysynth_soft', 'piano_dark']
+  - chords (chords): `stab` -25 dB · rev=0.3 · dly=0.3 · alternatives ['organ', 'piano', 'polysynth', 'polysynth_soft', 'piano_dark', 'pumpstab']
   - pad (pad): `warmpad` -28 dB · rev=0.4 · alternatives ['strings', 'glasspad', 'choir', 'choir_wide', 'choir_dark']
   - arp (arp): `pluck_saw` -28 dB · pan=-0.25 · dly=0.4 · alternatives ['acid', 'pluck', 'stab', 'sh101', 'acid_dark', 'sh101_dark', 'fmacid']
   - lead (lead): `acid` -22 dB · rev=0.3 · alternatives ['stab', 'hoover', 'leadsaw', 'leadsaw_soft', 'hoover_dark']
@@ -471,8 +471,8 @@ Emotive melodic deep house (extended mix): a deep, round 122 bpm kick with a lon
   - chat (top): `chat` -29 dB · pan=-0.2
   - tamb (top): `tamb` -28 dB · pan=0.3
   - rim (top): `rim` -30 dB · pan=-0.3
-  - bass (bass): `sinebass` -12 dB · sc=0.8 · alternatives ['moogbass', 'organbass', '808', 'junobass', 'moogbass_dark', 'sinebass_suboct']
-  - chords (chords): `stab` -21 dB · rev=0.3 · dly=0.25 · sc=0.6 · alternatives ['warmpad', 'organ', 'm1piano', 'houseorgan', 'chordmemory', 'organ_driven', 'organ_dark']
+  - bass (bass): `sinebass` -12 dB · sc=0.8 · alternatives ['moogbass', 'organbass', '808', 'junobass', 'moogbass_dark', 'sinebass_suboct', 'rollbass']
+  - chords (chords): `stab` -21 dB · rev=0.3 · dly=0.25 · sc=0.6 · alternatives ['warmpad', 'organ', 'm1piano', 'houseorgan', 'chordmemory', 'organ_driven', 'organ_dark', 'pumpstab']
   - pad (pad): `warmpad` -29 dB · rev=0.4 · sc=0.8 · alternatives ['strings', 'glasspad', 'solina', 'solina_wide', 'glasspad_wide']
   - arp (arp): `organ` -28 dB · pan=0.25 · rev=0.25 · dly=0.3 · sc=0.6 · alternatives ['stab', 'm1piano', 'twang', 'stab_dark', 'stab_wide']
   - lead (lead): `organ` -24 dB · rev=0.3 · dly=0.3 · sc=0.4 · alternatives ['stab', 'epiano', 'stab_wide', 'vocalbounce']
@@ -501,7 +501,7 @@ Bass house / UK bass: a punchy four-on-the-floor around 126 with shuffled hats, 
   - snare (snare): `snare` -20 dB
   - chat (top): `chat` -27 dB · pan=0.15
   - ohat (top): `ohat` -28 dB · pan=-0.15
-  - bass (bass): `bhbass` -11 dB · sc=0.8 · alternatives ['wobble', 'fmbass', 'growl', 'reese', 'fuzzbass', 'reese_dark', 'rubberbass']
+  - bass (bass): `bhbass` -11 dB · sc=0.8 · alternatives ['wobble', 'fmbass', 'growl', 'reese', 'fuzzbass', 'reese_dark', 'rubberbass', 'rollbass']
   - chords (chords): `houseorgan` -22 dB · rev=0.25 · sc=0.6 · alternatives ['organ', 'stab', 'm1piano', 'epiano', 'stab_wide', 'organ_driven']
   - pad (pad): `warmpad` -30 dB · rev=0.4 · alternatives ['strings', 'glasspad', 'solina', 'strings_dark', 'warmpad_tape']
   - arp (arp): `stab` -28 dB · dly=0.25 · alternatives ['pluck', 'pluck_saw', 'organ', 'organ_driven', 'pluck_saw_wide']
@@ -623,7 +623,7 @@ Garage-house pop (2010s UK): a 2-step garage beat at house tempo (~122) with shu
   - chat (top): `chat` -27 dB · pan=0.2
   - shaker (top): `shaker` -31 dB · pan=-0.3
   - rim (top): `rim` -29 dB
-  - bass (bass): `organbass` -12 dB · sc=0.6 · alternatives ['sinebass', 'fmbass', 'moogbass', 'junobass', 'fmbass_driven', 'fmbass_dark']
+  - bass (bass): `organbass` -12 dB · sc=0.6 · alternatives ['sinebass', 'fmbass', 'moogbass', 'junobass', 'fmbass_driven', 'fmbass_dark', 'rollbass']
   - chords (chords): `stab` -22 dB · rev=0.3 · sc=0.5 · alternatives ['organ', 'epiano', 'piano', 'houseorgan', 'chordmemory', 'piano_tape', 'epiano_dark', 'rhodestrem', 'discohorn']
   - pad (pad): `warmpad` -28 dB · rev=0.45 · alternatives ['strings', 'glasspad', 'solina', 'solina_wide', 'glasspad_wide']
   - arp (arp): `epiano` -28 dB · dly=0.3 · alternatives ['pluck', 'piano', 'vibes', 'piano_dark', 'pluck_octave']
@@ -963,6 +963,37 @@ Festive house (Christmas club): a four-on-the-floor around 122-126 - sleigh bell
 - **Mix** {'lufs': -9.0, 'air': 2.0, 'low': 1.0} · reverb 1.8 · sc_depth 0.55
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'forms': ['edm', 'house_dj', 'house_song'], 'forms_variants': True, 'exact_pools': True, 'keep_sounds': 0.8, 'own_progs': True, 'parent': 'house'}
 
+### Rolling Pump House (`rolling_pump_house`)
+
+Rolling pump house: club house at 124-128 built the way the records measure - the drums lead, a sub-heavy bass rolls in 16ths (three of every four) or bounces on the off-beats, and short detuned chord stabs sit way under the drums, ducking hard on every kick (an 8-20 dB pump that snaps back within a 16th or two); off-beat open hats over quiet 16th ticks, the clap on 2 and 4 with a ghost or two, nearly straight swing
+
+- **Tempo** 124-128 BPM · **scales** minor, dorian · swing 0.52 (unit 16) · humanise 0.0
+- **Progressions** [[0, 0, 0, 0], [0, 0, 5, 6], [0, 3, 0, 3]] · chord_bars 1 · chord size 3
+- **Song form** `rolling_house`: intro 8 [kick, top] (filter_in) -> groove 8 [bass, kick, snare, top] -> drop 32 [bass, chords, kick, lead, snare, top] (drop) -> break 8 [chords, pad, top] (alt) -> build 8 [chords, pad, snare, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 8 [kick, top] (fade) · form_scale 1
+- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...` / `....X..x....X...` / `....X.......X..x`; **ohat** `..x...x...x...x.`; **chat** `...x...x...x...x` / `.x.x.x.x.x.x.x.x`; **shaker** `x.xxx.xxx.xxx.xx`
+- **Drum kit** (synth preset) · preset `punchy`
+- **Bass** `.RRR.RRR.RRR.RRR` / `..R...R...R...R.` / `..RR..RR..RR..RR` / `RRRRRRRRRRRRRRRR` · mode `pattern` · lowest note 31
+- **Chord rhythm** `..x.......x.....` / `...x......x.....` / `..x...x...x...x.` / `x.......x.......`
+- **Arp** {'rate': 1, 'mode': 'random', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `x.x.....x.x.....` / `..x.x.....x.x...` / `x...x.x.........` / `x.x.x...........`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `groove_locked` · density `dense` · feel `tight_swing` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `underground_club` · texture `club_punchy` · rhythm `on_the_grid` · harmony `static_vamp` · energy `flat_hypnotic`
+- **Instruments**
+  - kick (kick): `kick`  dB
+  - clap (snare): `clap`  dB · rev=0.2
+  - ohat (top): `ohat` -27 dB
+  - shaker (top): `shaker` -29 dB · pan=0.3
+  - conga (top): `conga` -27 dB · pan=-0.3
+  - rim (top): `rim` -30 dB · pan=0.2
+  - bass (bass): `rollbass`  dB · sc=1.0 · alternatives ['techbass', 'sinebass', 'organbass', 'fmbass']
+  - chords (chords): `pumpstab` -24 dB · rev=0.3 · dly=0.3 · sc=0.8 · alternatives ['stab', 'organ', 'houseorgan', 'chordmemory']
+  - arp (arp): `pluck_saw` -29 dB · pan=0.25 · dly=0.35 · sc=0.6 · alternatives ['pluck', 'stab', 'acid', 'fmbleep', 'acid_dark', 'stab_dark']
+  - lead (lead): `stab`  dB · rev=0.3 · dly=0.35 · sc=0.5 · alternatives ['organ', 'pluck_saw', 'acid', 'stab_dark', 'acid_driven', 'vocalbounce']
+  - bongo (top): `conga` -29 dB · pan=0.4
+  - tamb (top): `tamb` -31 dB · pan=-0.35
+- **Mix** {'lufs': -8.5, 'air': 1.5, 'low': 1.5} · reverb 1.6 · sc_depth 0.8
+- **Other rules** {'sc_release': 0.3, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.55, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'drum_voice': {'bongo': {'pitch': 380}}, 'forms': ['groove', 'house_dj'], 'forms_variants': True, 'polymeter': 0.35, 'exact_pools': True, 'keep_sounds': 0.8, 'exact_form': True, 'learned_balance': 'house', 'parent': 'tech_house'}
+
 ## Techno & Trance
 
 ### Trance (`trance`)
@@ -1044,7 +1075,7 @@ Peak-time techno: distorted kick, rolling 16th bass, dub stabs drowned in delay
   - chat (top): `chat` -29 dB · pan=-0.25
   - ride (top): `ride` -30 dB · pan=0.3
   - bass (bass): `sawbass`  dB · sc=1.0 · alternatives ['fmbass', 'reese', 'moogbass', 'rumble', 'sh101', 'sawbass_dark', 'moogbass_driven', 'tonalbass']
-  - chords (chords): `stab`  dB · rev=0.35 · dly=0.55 · sc=0.8 · alternatives ['organ', 'warmpad', 'polysynth', 'dubstab', 'pingchord', 'stab_wide', 'polysynth_tape', 'warehousestab']
+  - chords (chords): `stab`  dB · rev=0.35 · dly=0.55 · sc=0.8 · alternatives ['organ', 'warmpad', 'polysynth', 'dubstab', 'pingchord', 'stab_wide', 'polysynth_tape', 'warehousestab', 'pumpstab']
   - pad (pad): `warmpad`  dB · rev=0.4 · sc=1.0 · alternatives ['strings', 'choir', 'glasspad', 'darkpad', 'atmos', 'choir_wide', 'strings_dark']
   - arp (arp): `pluck_saw` -28 dB · pan=0.2 · rev=0.2 · dly=0.4 · sc=0.9 · alternatives ['acid', 'pluck', 'stab', 'technoseq', 'sh101', 'fmbleep', 'pluck_saw_dark', 'stab_dark', 'fmacid']
   - lead (lead): `stab` -22 dB · pan=-0.15 · rev=0.4 · dly=0.4 · sc=0.6 · alternatives ['acid', 'leadsaw', 'pluck_saw', 'stab_dark', 'pluck_saw_dark']
@@ -1787,6 +1818,35 @@ Anthem trance club mix (around 2000): 138-140 BPM in a minor key, built for the 
 - **Other rules** {'sc_release': 0.35, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 52, 'punch': 150, 'decay': 9, 'drive': 2.0, 'click': 0.45}}, 'snare_tracks': ['clap'], 'bass_gate': 0.5, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'rev_predelay': 0.04, 'rev_hp': 220, 'repetition': 0.8, 'filter_arc': True, 'sc_arc': True, 'exact_form': True, 'parent': 'club_trance_2000s'}
 - **Sound brief** Tight 909 kick, clap, open + 16th hats, ride; galloping off-beat rolling bass; punchy tech-trance riff synth with dotted delay; gated supersaw chords; wide trance pad; breathy vocal-like lead in the breakdown
 
+### Peak-Time Techno (`peak_time_techno`)
+
+Peak-time techno: driving 128-130 four-on-the-floor where a clap lands on every beat, an off-beat sub bass answers each kick, rides and hats run in 16ths and one short, detuned stab or a single-note hook pumps under heavy sidechain - very little melody, long 16-bar intros and outros for mixing, a 16-bar break and one build
+
+- **Tempo** 128-130 BPM · **scales** minor · swing 0.5 (unit 16) · humanise 0.0
+- **Progressions** [[0, 0, 0, 0], [0, 0, 5, 5], [0, 6, 0, 5]] · chord_bars 1 · chord size 3
+- **Song form** `peak_techno`: intro 16 [kick, top] (filter_in) -> groove 16 [bass, kick, snare, top] -> drop 24 [arp, bass, chords, kick, snare, top] (drop) -> break 16 [chords, pad, top] (alt) -> build 8 [pad, snare, top] (build) -> drop 24 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [kick, top] (fade) · form_scale 1
+- **Drums** **kick** `X...X...X...X...`; **clap** `X...X...X...X...` / `....X...X...X...`; **ride** `x.xxx.xxx.xxx.xx` / `xxxxxxxxxxxxxxxx`; **ohat** `..x...x...x...x.`; **chat** `.x.x.x.x.x.x.x.x`
+- **Drum kit** (synth preset) · preset `punchy`
+- **Bass** `..R...R...R...R.` / `..RR..RR..RR..RR` / `..R...R...R...RR` · mode `pattern` · lowest note 31
+- **Chord rhythm** `..x...........x.` / `x.......x.......` / `..x.......x.....`
+- **Arp** {'rate': 1, 'mode': 'random', 'oct': 5}
+- **Lead rhythm** `x...x...x.......` / `..x...x...x...x.` / `x.......x-------` / `x...x...x...x...`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `hypnotic_minimal` · density `medium` · feel `robotic` · melody `minimal_motivic` · bass `rolling_groove` · drop `long_build` · variation `low` · culture `underground_club` · texture `wet_and_spacious` · rhythm `on_the_grid` · harmony `static_vamp` · energy `flat_hypnotic`
+- **Instruments**
+  - kick (kick): `kick`  dB
+  - clap (snare): `clap` -20 dB · rev=0.3
+  - ohat (top): `ohat`  dB · pan=0.1
+  - chat (top): `chat` -29 dB · pan=-0.25
+  - ride (top): `ride` -30 dB · pan=0.3
+  - bass (bass): `rollbass`  dB · sc=1.0 · alternatives ['techbass', 'sinebass', 'acid']
+  - chords (chords): `pumpstab`  dB · rev=0.35 · dly=0.55 · sc=0.8 · alternatives ['stab', 'organ_dark', 'stab_dark']
+  - pad (pad): `warmpad`  dB · rev=0.4 · sc=1.0 · alternatives ['strings', 'choir', 'glasspad', 'darkpad', 'atmos', 'choir_wide', 'strings_dark']
+  - arp (arp): `pluck_saw` -28 dB · pan=0.2 · rev=0.2 · dly=0.4 · sc=0.9 · alternatives ['acid', 'pluck', 'stab', 'technoseq', 'sh101', 'fmbleep', 'pluck_saw_dark', 'stab_dark', 'fmacid']
+  - lead (lead): `stab` -22 dB · pan=-0.15 · rev=0.4 · dly=0.4 · sc=0.6 · alternatives ['acid', 'leadsaw', 'pluck_saw', 'stab_dark', 'pluck_saw_dark']
+- **Mix** {'lufs': -8.5, 'air': 1.5, 'low': 1.5} · reverb 2.6 · sc_depth 0.75
+- **Other rules** {'sc_release': 0.32, 'delay_beats': 0.75, 'kit_override': {'kick': {'drive': 3.2}}, 'snare_tracks': ['clap'], 'bass_gate': 0.5, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'filter_arc': True, 'sc_arc': True, 'rumble': 0.8, 'polymeter': 0.6, 'learned_balance': 'techno', 'exact_pools': True, 'keep_sounds': 0.8, 'exact_form': True, 'parent': 'techno'}
+
 ## Dubstep, Garage & Bass
 
 ### Future Bass (`future_bass`)
@@ -1928,7 +1988,7 @@ Steppy halftime / acid step: deep, techy half-time at 140 - a steady stepping ki
   - rim (top): `rim` -27 dB · pan=0.2 · dly=0.3
   - chat (top): `chat` -29 dB · pan=-0.2
   - shaker (top): `shaker` -31 dB · pan=0.3
-  - bass (bass): `sinebass` -11 dB · alternatives ['808', 'reese', 'reese_dark', 'reese_driven']
+  - bass (bass): `sinebass` -11 dB · alternatives ['808', 'reese', 'reese_dark', 'reese_driven', 'stepsub']
   - arp (arp): `acid` -21 dB · rev=0.3 · dly=0.35 · alternatives ['pluck', 'stab', 'acid_dark']
   - chords (chords): `stab` -27 dB · rev=0.5 · dly=0.55 · alternatives ['organ', 'warmpad', 'warmpad_wide', 'warmpad_tape']
   - lead (lead): `stab` -22 dB · rev=0.5 · dly=0.5 · alternatives ['acid', 'organ', 'stab_wide', 'acid_dark']
@@ -1986,7 +2046,7 @@ Sub pressure 140: a dark, minimal 140 groove that is almost all sub - a heavy, h
   - snare (snare): `snare` -16 dB · rev=0.3
   - chat (top): `chat` -29 dB
   - rim (top): `rim` -28 dB · dly=0.35
-  - bass (bass): `sinebass` -8 dB · alternatives ['808', 'midbass', 'sinebass_suboct', 'sinebass_driven']
+  - bass (bass): `sinebass` -8 dB · alternatives ['808', 'midbass', 'sinebass_suboct', 'sinebass_driven', 'stepsub']
   - chords (chords): `stab` -28 dB · rev=0.5 · dly=0.5 · alternatives ['organ', 'warmpad', 'warmpad_tape', 'stab_dark']
   - arp (arp): `pluck` -30 dB · rev=0.5 · dly=0.5 · alternatives ['stab', 'organ', 'organ_dark']
   - lead (lead): `stab` -25 dB · rev=0.5 · dly=0.45 · alternatives ['organ', 'softlead', 'stab_dark', 'stab_wide']
@@ -2076,7 +2136,7 @@ Deep dubstep (soundsystem): half-time 140, kick on 1 and snare on 3, a mono sub 
   - shaker (top): `shaker` -32 dB · pan=-0.3
   - chat (top): `chat` -30 dB · pan=-0.2
   - ohat (top): `ohat` -31 dB · pan=0.3 · rev=0.3
-  - bass (bass): `wobble` -10 dB · sc=0.3 · alternatives ['sinebass', 'growl', 'reese', 'darkwob', 'subwob', 'squarewob', 'tonesub']
+  - bass (bass): `wobble` -10 dB · sc=0.3 · alternatives ['sinebass', 'growl', 'reese', 'darkwob', 'subwob', 'squarewob', 'tonesub', 'stepsub']
   - chords (chords): `stab` -27 dB · rev=0.5 · dly=0.5 · alternatives ['organ', 'warmpad', 'epiano', 'darkpad', 'horrorstab']
   - pad (pad): `warmpad` -33 dB · rev=0.6 · alternatives ['strings', 'choir', 'glasspad', 'darkpad', 'eeriepad']
   - arp (arp): `organ` -32 dB · pan=0.3 · rev=0.6 · dly=0.55 · alternatives ['pluck', 'grimesquare']
@@ -2109,7 +2169,7 @@ Deep / minimal dubstep: half-time 140 with the kick on 1 and the snare on 3, spa
   - shaker (top): `shaker` -31 dB · pan=-0.3
   - chat (top): `chat` -30 dB · pan=-0.2 · dly=0.2
   - ohat (top): `ohat` -31 dB · pan=0.3 · rev=0.3
-  - bass (bass): `sinebass` -11 dB · alternatives ['wobble', '808', 'moogbass', 'darkwob', 'subwob', 'sinebass_driven', 'moogbass_driven']
+  - bass (bass): `sinebass` -11 dB · alternatives ['wobble', '808', 'moogbass', 'darkwob', 'subwob', 'sinebass_driven', 'moogbass_driven', 'stepsub']
   - chords (chords): `stab` -26 dB · rev=0.55 · dly=0.65 · alternatives ['organ', 'warmpad', 'epiano', 'pingchord', 'warmpad_tape', 'organ_driven']
   - pad (pad): `warmpad` -32 dB · rev=0.6 · alternatives ['strings', 'glasspad', 'choir', 'glasspad_dark', 'strings_wide']
   - arp (arp): `organ` -32 dB · pan=0.3 · rev=0.6 · dly=0.55 · alternatives ['pluck', 'vibes', 'organ_dark', 'pluck_dark']
@@ -2141,7 +2201,7 @@ Deep dubstep - rollers: 140 half-time and steppers, a huge rolling sub that move
   - chat (top): `chat` -30 dB · pan=-0.2
   - shaker (top): `shaker` -33 dB · pan=0.35
   - woodblock (top): `woodblock` -30 dB · pan=-0.3
-  - bass (bass): `wobble` -10 dB · sc=0.4 · alternatives ['sinebass', 'reese', 'growl', 'darkwob', 'subwob', 'reese_dark']
+  - bass (bass): `wobble` -10 dB · sc=0.4 · alternatives ['sinebass', 'reese', 'growl', 'darkwob', 'subwob', 'reese_dark', 'stepsub']
   - chords (chords): `stab` -26 dB · rev=0.4 · dly=0.3 · alternatives ['organ', 'epiano', 'polysynth', 'polysynth_tape', 'epiano_dark']
   - pad (pad): `warmpad` -33 dB · rev=0.5 · alternatives ['choir', 'strings', 'glasspad', 'strings_wide', 'strings_dark']
   - arp (arp): `acid` -27 dB · pan=0.2 · rev=0.2 · dly=0.3 · alternatives ['pluck_saw', 'bell', 'pluck', 'pluck_wide', 'bell_tape']
@@ -2203,7 +2263,7 @@ Rolling deep dubstep: modern soundsystem half-time at 140 - kick on 1, snare on 
   - rim (top): `rim` -27 dB · pan=0.3 · rev=0.3 · dly=0.3
   - shaker (top): `shaker` -29 dB · pan=-0.35
   - chat (top): `chat` -29 dB · pan=0.15
-  - bass (bass): `sinebass` -11 dB · alternatives ['808', 'moogbass', 'darkwob', 'subwob', 'moogbass_dark', 'moogbass_driven']
+  - bass (bass): `sinebass` -11 dB · alternatives ['808', 'moogbass', 'darkwob', 'subwob', 'moogbass_dark', 'moogbass_driven', 'stepsub']
   - midbass (bass): `reese` -21 dB · sc=0.4
   - chords (chords): `stab` -26 dB · rev=0.5 · dly=0.6 · alternatives ['organ', 'warmpad', 'epiano', 'organ_driven', 'stab_wide']
   - pad (pad): `warmpad` -31 dB · rev=0.6 · alternatives ['strings', 'glasspad', 'choir', 'strings_wide', 'strings_dark']
@@ -2294,7 +2354,7 @@ Early dubstep (2005-07 "stepper" era): half-time 140 with a kick on 1, snare on 
   - chat (top): `chat` -28 dB · pan=-0.2
   - shaker (top): `shaker` -31 dB · pan=0.3
   - rim (top): `rim` -29 dB · pan=0.25
-  - bass (bass): `squarewob` -11 dB · sc=0.3 · alternatives ['wobble', 'tonesub', 'sinebass', 'subwob', 'dubsub']
+  - bass (bass): `squarewob` -11 dB · sc=0.3 · alternatives ['wobble', 'tonesub', 'sinebass', 'subwob', 'dubsub', 'stepsub']
   - chords (chords): `stab` -26 dB · rev=0.4 · dly=0.4 · alternatives ['organ', 'horrorstab', 'darkpad', 'polysynth']
   - pad (pad): `warmpad` -31 dB · rev=0.6 · alternatives ['darkpad', 'strings', 'eeriepad', 'solina']
   - arp (arp): `pluck` -30 dB · dly=0.4 · alternatives ['grimesquare', 'marimba', 'bell', 'chip', 'stab']
@@ -2630,6 +2690,37 @@ Slow wobble dubstep (deep, bass-led): half-time 140 where the bass IS the song -
 - **Mix** {'tone': [0.0, -6.1, -9.9, -16.8, -17.9, -11.9, -12.6, -19.5, -26.9], 'lufs': -11.0, 'air': 0.5, 'low': 2.2, 'width': 0.35} · reverb 2.8 · sc_depth 0.15
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'drive': 1.4, 'decay': 5, 'pitch': 50, 'punch': 140}, 'snare': {'snap': 1.7, 'decay': 7, 'tone': 230}}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 56, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'dub': 0.5, 'dub_beats': 0.75, 'own_progs': True, 'wobble_rates': [4, 2, 2, 1.5, 1.5, 1, 0.75, 1.3333333333333333], 'wobble_rates_alt': [2, 1.5, 1, 0.6666666666666666, 0.75, 0.5, 0.3333333333333333], 'wobble_lens': [16, 8, 8, 4], 'pedal_sub': True, 'repetition': 0.95, 'simplicity': 0.85, 'exact_pools': True, 'roots': [5, 6, 3, 2, 4, 9], 'wobble_rest': 0.25, 'parent': 'deep_dubstep'}
 - **Sound brief** Mono sine sub on the tonic (flat 2nd now and then) + a growling mid-bass on an LFO in 8ths / 16ths; punchy kick on 1, snare on 3 with a plate; rims, shakers and hats into a tape delay; one dark stab / bell motif; long drums-only intro; no snare rolls. Classic UK half-time: kick on beat 1, snare on beat 3. Balance: the sub carries the weight (felt more than heard, kept mono and clean below ~100 Hz), the mid-bass carries the movement - when the mid-bass talks the sub stays plain
+
+### Vocal Stepper 140 (`vocal_stepper_140`)
+
+Vocal stepper 140: half-time dubstep at 140 with soul - a kick on 1 (and often the "and" of 2), the snare on 3, swung hats, a heavy held sub that swells on a slow half-note wobble, minor chord loops that move every bar or two, and chopped vocal phrases thrown into long reverbs and echoes; drops of 16-32 bars, short 8-bar breaks
+
+- **Tempo** 138-142 BPM · **scales** minor · swing 0.57 (unit 16) · humanise 0.005
+- **Progressions** {'minor': [[0, 3, 5, 5], [0, 5, 3, 6], [0, 6, 5, 3], [0, 0, 5, 3]]} · chord_bars 1 · chord size 3
+- **Song form** `vocal_stepper`: intro 16 [kick, lead, pad, top] (filter_in) -> drop 32 [bass, chords, kick, lead, snare, top] (drop) -> break 8 [chords, lead, pad] (alt) -> build 8 [chords, kick, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> break 8 [lead, pad] (alt) -> drop 16 [bass, chords, kick, lead, snare, top] (drop) -> outro 8 [pad, top] (fade) · form_scale 1
+- **Drums** **kick** `X.....X.........` / `X.....X...x.....` / `X...........x...`; **snare** `........X.......` / `........X......o`; **chat** `x...x...x...x...` / `x.x.x.x.x.x.x.x.` / `..x...x...x...x.`; **shaker** `..x...x.x.x...x.`; **rim** `...x......x...x.`
+- **Drum kit** (synth preset) · preset `punchy`
+- **Bass** `R-------R-------` / `R---------------` / `R-----R---R-----` · mode `wobble` · lowest note 26
+- **Chord rhythm** `....x...........` / `........x.......` / `....x.......x...`
+- **Arp** {'rate': 4, 'mode': 'random', 'oct': 4, 'prob': 0.25}
+- **Lead rhythm** `x-------........` / `........x---....` / `x---....x-......`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `minimal_motivic` · bass `wobble_modulated` · drop `long_build` · variation `low` · culture `uk_soundsystem` · texture `wet_and_spacious` · rhythm `half_time` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -12 dB
+  - snare (snare): `snare` -16 dB · rev=0.35 · dly=0.1
+  - rim (top): `rim` -27 dB · pan=0.3 · rev=0.3 · dly=0.3
+  - shaker (top): `shaker` -29 dB · pan=-0.35
+  - chat (top): `chat` -29 dB · pan=0.15
+  - bass (bass): `stepsub` -11 dB · alternatives ['deepsub', 'subwob', 'slowwob']
+  - chords (chords): `stab` -26 dB · rev=0.5 · dly=0.6 · alternatives ['epiano', 'warmpad', 'organ', 'darkpad']
+  - pad (pad): `warmpad` -31 dB · rev=0.6 · alternatives ['strings', 'glasspad', 'choir', 'strings_wide', 'strings_dark']
+  - arp (arp): `bell` -31 dB · pan=0.3 · rev=0.55 · dly=0.5 · alternatives ['celesta', 'pluck', 'vibes', 'pluck_wide', 'bell_dark']
+  - lead (lead): `vocalchop` -25 dB · pan=-0.2 · rev=0.5 · dly=0.5 · alternatives ['vox', 'formantchop', 'chopwob']
+  - texture (fx): `texture` -35 dB · rev=0.6
+- **Mix** {'lufs': -10.0, 'air': 0.4, 'low': 2.4, 'width': 1.3} · reverb 2.8 · sc_depth 0.15
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'drive': 1.6, 'decay': 8, 'pitch': 48}, 'snare': {'snap': 1.6, 'decay': 7, 'tone': 200}}, 'snare_tracks': ['snare'], 'bass_gate': 0.95, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'repetition': 0.9, 'learned_balance': 'dubstep', 'exact_pools': True, 'keep_sounds': 0.85, 'exact_form': True, 'own_progs': True, 'wobble_rates': [2, 2, 1, 0.6666666666666666, 2], 'wobble_rates_alt': [1, 0.6666666666666666, 2, 1], 'wobble_lens': [16, 8, 8, 16], 'parent': 'deep_dubstep_rolling'}
+- **Sound brief** Sine sub + a filtered reese / growl mid-bass layered on it; rolling 16th shakers, rims and hats; half-time kick and snare; dark stabs and one motif; wide reverbs
 
 ## Drum & Bass, Breaks & Hard
 
@@ -3733,7 +3824,7 @@ Wonky / beat-scene bass (purple sound): a lazy, drunken hip-hop swing around 86-
   - chat (top): `chat` -28 dB · pan=0.2
   - rim (top): `rim` -29 dB · pan=-0.25
   - bass (bass): `sinebass` -10 dB · sc=0.3 · alternatives ['moogbass', 'reese', '808', 'sinebass_suboct', 'sinebass_driven']
-  - chords (chords): `polysynth` -21 dB · rev=0.35 · alternatives ['epiano', 'synthbrass', 'stab', 'epiano_tape', 'polysynth_soft']
+  - chords (chords): `polysynth` -21 dB · rev=0.35 · alternatives ['epiano', 'synthbrass', 'stab', 'epiano_tape', 'polysynth_soft', 'dustkeys']
   - pad (pad): `glasspad` -28 dB · rev=0.5 · alternatives ['warmpad', 'solina', 'warmpad_tape', 'solina_wide']
   - arp (arp): `chip` -29 dB · dly=0.3 · alternatives ['pluck', 'pluck_saw', 'acid', 'pluck_octave']
   - lead (lead): `whine` -19 dB · rev=0.3 · dly=0.3 · alternatives ['leadsaw', 'talkbox', 'softlead', 'softlead_wide', 'leadsaw_octave']
@@ -5012,7 +5103,7 @@ Lo-fi hip hop: swung boom-bap, jazzy 7th/9th Rhodes chords, warm bass, vinyl + t
   - rim (top): `rim` -30 dB · pan=0.25
   - chat (top): `chat` -24 dB · pan=-0.15
   - bass (bass): `sinebass`  dB · sc=0.6 · alternatives ['sf:acbass', 'sf:fingerbass', '808', 'sinebass_suboct', 'sinebass_driven']
-  - chords (chords): `rhodes`  dB · rev=0.25 · sc=0.8 · alternatives ['epiano', 'piano', 'sf:nylon', 'guitar', 'organ', 'wurli', 'lofikeys', 'nylon', 'glasskeys', 'dustpiano', 'lofikeys_dark', 'epiano_dark']
+  - chords (chords): `rhodes`  dB · rev=0.25 · sc=0.8 · alternatives ['epiano', 'piano', 'sf:nylon', 'guitar', 'organ', 'wurli', 'lofikeys', 'nylon', 'glasskeys', 'dustpiano', 'lofikeys_dark', 'epiano_dark', 'dustkeys']
   - lead (lead): `pluck`  dB · pan=0.2 · rev=0.3 · dly=0.2 · alternatives ['epiano', 'flute', 'sax', 'kalimba', 'bell', 'sf:cleanguitar', 'vibes', 'tapeflute', 'pluck_octave', 'kalimba_octave']
   - vinyl (fx): `vinyl` -40 dB
 - **Mix** {'lufs': -12.0, 'air': -3.0, 'low': 1.5, 'lofi': True} · reverb 1.6 · sc_depth 0.35
@@ -7968,11 +8059,11 @@ Boom bap hip hop: dusty swung drums, chopped piano loops, jazzy horn lines, deep
   - rim (top): `rim` -30 dB
   - bass (bass): `sinebass` -15 dB · alternatives ['sf:acbass', 'upright', 'moogbass']
   - bass_up (bass): `upright` -22 dB
-  - chords (chords): `piano`  dB · rev=0.2 · sc=0.8 · alternatives ['epiano', 'wurli', 'organ', 'dustpiano']
-  - lead (lead): `sax` -23 dB · rev=0.3 · dly=0.1 · alternatives ['flute', 'brass', 'piano']
+  - chords (chords): `piano`  dB · rev=0.3 · dly=0.22 · sc=0.8 · alternatives ['epiano', 'wurli', 'organ', 'dustpiano', 'dustkeys']
+  - lead (lead): `sax` -23 dB · rev=0.3 · dly=0.15 · alternatives ['flute', 'brass', 'piano']
   - vinyl (fx): `vinyl` -40 dB
 - **Mix** {'lufs': -10.0, 'air': -1.5, 'low': 1.5, 'lofi': True} · reverb 2.0 · sc_depth 0.3
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'sampler': True}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 1.0, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'sampler': True}
 
 ### Jazz-hop (`jazz_hop`)
 
@@ -7996,7 +8087,7 @@ Jazz-hop: crisp swung boom-bap drums under lush 9th-chord piano and Rhodes, a wa
   - shaker (top): `shaker` -31 dB · pan=-0.3
   - rim (top): `rim` -30 dB
   - bass (bass): `upright` -14 dB · alternatives ['sinebass', 'moogbass']
-  - chords (chords): `epiano` -20 dB · rev=0.3 · alternatives ['piano', 'wurli', 'rhodes']
+  - chords (chords): `epiano` -20 dB · rev=0.3 · alternatives ['piano', 'wurli', 'rhodes', 'dustkeys']
   - pad (pad): `strings` -29 dB · rev=0.5 · alternatives ['warmpad', 'solina']
   - arp (arp): `piano` -26 dB · pan=0.25 · rev=0.3 · alternatives ['harp']
   - lead (lead): `flute` -18 dB · rev=0.35 · dly=0.2 · alternatives ['sax', 'trumpet', 'piano']
@@ -8084,7 +8175,7 @@ Jazz rap: a dusty swung break, upright bass walking under jazzy 9th-chord Rhodes
   - chat (top): `chat` -28 dB
   - rim (top): `rim` -30 dB
   - bass (bass): `upright` -14 dB · alternatives ['sf:acbass', 'sinebass', 'sf:fingerbass']
-  - chords (chords): `epiano` -19 dB · rev=0.2 · alternatives ['piano', 'wurli', 'vibes', 'lofikeys', 'rhodes', 'dustpiano']
+  - chords (chords): `epiano` -19 dB · rev=0.2 · alternatives ['piano', 'wurli', 'vibes', 'lofikeys', 'rhodes', 'dustpiano', 'dustkeys']
   - arp (arp): `vibes` -25 dB · pan=0.25 · rev=0.3 · alternatives ['piano', 'epiano', 'marimba']
   - lead (lead): `trumpet` -21 dB · pan=-0.15 · rev=0.3 · dly=0.1 · alternatives ['sax', 'flute', 'vibes', 'piano']
   - vinyl (fx): `vinyl` -40 dB

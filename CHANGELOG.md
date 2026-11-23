@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.20.0 - learned from real stems
+
+Studied the stems and MIDI of ~60 real records (house, techno, 140 dubstep, hip-hop) with a new analyser
+(tools/stem_study.py: tempo to 0.1 BPM, drum grids and swing, 8-bar structure, bass register and wobble, synth tone,
+sidechain pump, echo, mix tone) and changed the app from what it measured. Only measurements are used, no audio.
+
+- Mix balance learned from the records: house, techno, dubstep and boom bap now sit bass and synths against the drums
+  the way the records do (house synths ~15 dB under the drums instead of ~5). Partial, capped nudge; your own part
+  levels always win; trance, melodic, vocal and pop styles are left alone.
+- 4 new synths modelled on the stems: rollbass (rolling house bass), stepsub (140 half-time sub with half-note swell),
+  pumpstab (detuned house/techno stab), dustkeys (dark boom-bap keys) - added to the matching genres' sound pools.
+- 3 new genres from the measured grids, forms and sidechain: Rolling Pump House, Peak-Time Techno, Vocal Stepper 140
+  (408 genres).
+- Boom bap: quarter-note echo on keys and lead (6 of 15 measured keys stems had one).
+- Genre match % no longer goes negative.
+- tools/stem_report.py: per-song report for multitracks and .stem.mp4 files.
+
 ## 2.19.0
 Radio edit, original and extended mix of the same song - in the editor and when you export.
 - **Also export 📻 radio edit / 🪩 extended mix** (under the Full song buttons): ⬇ Full song also saves the same song in those lengths, next to the original (`…_radio-edit`, `…_extended-mix`). Your ticks are remembered.

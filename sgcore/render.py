@@ -29,6 +29,72 @@ HELD = 0.75     # notes held this many beats or longer (pads, sustained chords) 
 ROLE_DB = {'kick': -13, 'snare': -17, 'top': -25, 'bass': -15, 'chords': -21, 'pad': -23, 'arp': -25, 'lead': -19, 'fx': -26}
 CUT_KEYS = ('cut', 'bright')
 
+# (2.20) How bass and synths sit against the drums in the full (kick + bass) sections of real records, measured on the
+# stems of ~60 records (tools/stem_study.py): median dB of each stem against the drums stem.
+#   house / techno, 115-130 four on the floor (13 records): bass -7.5, synths (everything melodic) -17.8
+#   140 half-time dubstep (13): bass +1.3, synths -12.4
+#   hip-hop / boom bap 80-100 (16): bass -2.2, synths -9.3
+# The app's renders sat with the synths 5-6 dB under the drums in house (real: ~17), so a house track read as a synth
+# track. The nudge is partial (60 %) and capped, and leaves trance, melodic and vocal-led genres alone.
+LEARNED_BALANCE = {
+    'house': dict(bass=-7.5, synth=-15.0),
+    'techno': dict(bass=-6.5, synth=-15.0),
+    'dubstep': dict(bass=1.0, synth=-12.0),
+    'hiphop': dict(bass=-2.5, synth=-9.5),
+}
+LEARNED_SKIP = ('trance', 'melodic', 'progressive', 'vocal', 'piano', 'disco', 'funk', 'soul', 'organic', 'jazz', 'afro',
+                'christmas', 'gospel', 'orchestral', 'cinematic', 'pop', 'french', 'italo', 'balearic', 'ambient', 'lofi',
+                'bigroom', 'swing', 'mallet', 'brazilian', 'choir', 'emotive', 'festival', 'euphoric')
+
+
+def learned_family(st, opts):
+    from .genre_groups import group_of
+    name = st.get('name') or getattr(opts, 'style', '') or ''
+    if st.get('learned_balance') in LEARNED_BALANCE:     # a genre built from the study says which family it is
+        return st['learned_balance']
+    if st.get('learned_balance') is False or any(w in name for w in LEARNED_SKIP):
+        return None
+    g = group_of(name)
+    lo, hi = st.get('bpm', (120, 120))
+    if g == 'House & Disco' and 110 <= lo and hi <= 132:
+        return 'house'
+    if g == 'Techno & Trance' and 'techno' in name:
+        return 'techno'
+    if g.startswith('Dubstep') and 'dubstep' in name and 135 <= lo and hi <= 150:
+        return 'dubstep'
+    if g in ('Hip-Hop', 'Hip-Hop, Trap & Phonk') and hi <= 100 and lo >= 75 and \
+            not any(w in name for w in ('trap', 'drill', 'phonk', 'rage', 'cloud', 'drift')):
+        return 'hiphop'
+    return None
+
+
+def learned_balance_targets(st, opts):
+    if getattr(opts, 'part_levels', None) and any(getattr(opts, 'part_levels').values()):
+        return None                                      # you set the part levels yourself: yours win
+    fam = learned_family(st, opts)
+    return dict(LEARNED_BALANCE[fam], family=fam) if fam else None
+
+
+def learned_balance(drums, bass, music, lead, tgt, strength=0.6, cap=8.0):
+    """Gains (linear) for the bass bus and the synth buses, measured where kick and bass both play."""
+    hop = int(SR * 0.25)
+
+    def blocks(x):
+        n = x.shape[1] // hop
+        return (x[:, :n * hop].reshape(2, n, hop) ** 2).mean(axis=(0, 2)) if n else np.zeros(0)
+    d, b, m, l_ = blocks(drums), blocks(bass), blocks(music), blocks(lead)
+    n = min(len(d), len(b), len(m), len(l_))
+    if n < 16 or d.max() <= 0 or b.max() <= 0:
+        return 1.0, 1.0
+    d, b, sy = d[:n], b[:n], m[:n] + l_[:n]
+    full = (d > d.max() * 10 ** -2.0) & (b > b.max() * 10 ** -2.5)
+    if full.sum() < 8:
+        return 1.0, 1.0
+    lv = lambda v: 10 * np.log10(np.mean(v[full]) + 1e-20)
+    gb = float(np.clip(strength * (tgt['bass'] - (lv(b) - lv(d))), -cap, cap))
+    gs = float(np.clip(strength * (tgt['synth'] - (lv(sy) - lv(d))), -cap, cap)) if sy[full].mean() > 0 else 0.0
+    return 10 ** (gb / 20), 10 ** (gs / 20)
+
 
 def chorus(buf, mix=0.5, rate=0.8, depth_ms=3.0, base_ms=12.0):
     """Stereo chorus (Juno-style): a slowly wobbling delayed copy, opposite phase left and right."""
@@ -1307,6 +1373,9 @@ class Renderer:
         drums = np.zeros((2, L), dtype=np.float32)
         music = np.zeros((2, L), dtype=np.float32)          # (1.97) chords, pads, arps: a bus that makes room for the lead
         lead_mono = np.zeros(L, dtype=np.float32)
+        learned = learned_balance_targets(st, opts)          # (2.20) bass / lead held back until the balance is checked
+        bassbus = np.zeros((2, L), dtype=np.float32) if learned else None
+        leadbus = np.zeros((2, L), dtype=np.float32) if learned else None
         rev_send = np.zeros((2, L), dtype=np.float32)
         self._duck_on = _va.analog() and st.get('category') != 'Orchestral' and getattr(opts, 'send_duck', 'auto') != 'off'
         self._lead_key = np.zeros(L, dtype=np.float32)
@@ -1597,6 +1666,10 @@ class Renderer:
                 drums += buf
             elif tcfg['layer'] in ('chords', 'pad', 'arp'):
                 music += buf
+            elif bassbus is not None and tcfg['layer'] == 'bass':
+                bassbus += buf
+            elif leadbus is not None and tcfg['layer'] == 'lead':
+                leadbus += buf
             else:
                 mix += buf
             if stems_dir:
@@ -1673,6 +1746,21 @@ class Renderer:
             hold = max(1, int(1 + 3 * c))
             dm = np.round(np.asarray(drums, np.float64) * q) / q
             drums = np.repeat(dm[:, ::hold], hold, axis=1)[:, :drums.shape[1]].astype(np.float32)
+        # ---- (2.20) learned balance: in the full sections, bass and the synths sit against the drums the way they do
+        # in real records of this family (measured on stems); a partial, capped nudge - the genre's own levels lead
+        self.learned_balance = None
+        if learned:
+            g_b, g_s = learned_balance(drums, bassbus, music, leadbus, learned)
+            self.learned_balance = (round(20 * np.log10(g_b), 1), round(20 * np.log10(g_s), 1))
+            if g_b != 1.0:
+                bassbus *= np.float32(g_b)
+            if g_s != 1.0:
+                music *= np.float32(g_s)
+                leadbus *= np.float32(g_s)
+            self.log(f'   learned balance ({learned["family"]}): bass {self.learned_balance[0]:+.1f} dB, synths {self.learned_balance[1]:+.1f} dB')
+            mix += bassbus
+            mix += leadbus
+            del bassbus, leadbus
         # ---- music bus (1.97): chords, pads and arps dip at the lead's own frequency while the lead plays
         self.lead_over_music = None
         if np.any(music):

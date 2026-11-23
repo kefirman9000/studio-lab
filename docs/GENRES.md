@@ -1,10 +1,10 @@
-# Studio Lab genres (405)
+# Studio Lab genres (408)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (207)
+## Electronic (210)
 
-### House & Disco (31)
+### House & Disco (32)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -35,12 +35,13 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Outsider house (murky, lo-fi) | `outsider_house` | 120-128 | Outsider house: murky, warped, lo-fi house at 120-128 - a kick that stumbles instead of marching, hissy 8th-note hats, a muffled bass loop and smeared, detuned chords, all heard through worn tape and a low-passed haze - hypnotic, foggy and a bit broken |
 | Progressive House | `progressive_house` | 122-130 | Progressive house: emotive plucks, wide supersaws, long builds and big drops |
 | Progressive House Journey (Y2K) | `progressive_journey` | 128-131 | Progressive house journey (around 2000): one long, hypnotic DJ track at 128-131 that builds by adding a part at a time - percussion alone, then a rolling detuned bass filtering in, claps and a widescreen evolving pad, a dark hypnotic pluck looping under delays, muted stabs, and only late a sparse gliding lead; two breakdowns, a peak, then the parts leave one by one. Soft round kick, pumping sidechain, slow filter sweeps, warm controlled top end |
+| Rolling Pump House | `rolling_pump_house` | 124-128 | Rolling pump house: club house at 124-128 built the way the records measure - the drums lead, a sub-heavy bass rolls in 16ths (three of every four) or bounces on the off-beats, and short detuned chord stabs sit way under the drums, ducking hard on every kick (an 8-20 dB pump that snaps back within a 16th or two); off-beat open hats over quiet 16th ticks, the clap on 2 and 4 with a ghost or two, nearly straight swing |
 | Tech House | `tech_house` | 124-128 | Tech house: rolling, rubbery filtered bassline, 909 groove with congas, rims and shakers, percussive organ and synth stabs - minimal melody, all groove |
 | Tokyo deep house | `tokyo_deep_house` | 120-125 | Tokyo deep house / city house: a clean four-on-the-floor around 122 with brushed shakers and offbeat hats, a melodic, walking deep-house bass, jazzy Rhodes and piano chords with 9ths and 11ths, airy strings and a breathy melody - elegant, nocturnal and urban |
 | Tropical house | `tropical_house` | 100-115 | Tropical house: a relaxed four-on-the-floor around 105, soft snaps and shakers, warm piano chords, marimba and steel-pan plucks, a pan-flute or sax hook - sunny, laid-back and summery |
 | UK bounce house (bassline, vocal chops) | `uk_bounce_house` | 122-126 | UK bounce house: a four-on-the-floor groove at 122-126 with busy, shuffling percussion and crisp claps, a rubbery, bouncing bassline doing most of the work, chopped vocal hooks answering it and short organ / piano stabs - radio-friendly, warm and made for dancing |
 
-### Techno & Trance (27)
+### Techno & Trance (28)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -60,6 +61,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Melodic Techno | `melodic_techno` | 120-128 | Melodic techno: rolling 16th basslines, hypnotic arpeggios, big emotional pads and plucks |
 | Minimal | `minimal` | 124-128 | Minimal techno: sparse clicks and blips, deep sub, lots of space and delay |
 | New Beat | `new_beat` | 100-116 | New beat (late-80s Belgium): slow, heavy, stomping four-on-the-floor at ~100-115 BPM, industrial EBM drums, dark acid-tinged bass and sampled stabs - hypnotic and menacing |
+| Peak-Time Techno | `peak_time_techno` | 128-130 | Peak-time techno: driving 128-130 four-on-the-floor where a clap lands on every beat, an off-beat sub bass answers each kick, rides and hats run in 16ths and one short, detuned stab or a single-note hook pumps under heavy sidechain - very little melody, long 16-bar intros and outros for mixing, a 16-bar break and one build |
 | Progressive Trance (emotional) | `progressive_trance` | 128-136 | Emotional progressive trance / melodic progressive house: simple emotive chords, a big singable lead, long builds, a piano breakdown and a clean, wide drop - melody over complexity |
 | Progressive psytrance (deep, hypnotic, 136) | `progressive_psy` | 134-138 | Progressive psytrance: 134-138 BPM, deep and hypnotic - a short, tight kick on every beat and the rolling psy bass playing three short, plucky notes between every kick (a clean sine sub under a filtered saw, retriggered on every note), filtered acid lines and atmospheric pads evolving slowly over long 32-bar sections, few melodies, a dark, smooth top end and a dry, mono low end; built from the groove outward |
 | Progressive trance - early 2010s (emotional, instrumental) | `progressive_trance_2010s` | 128-130 | Progressive trance, early 2010s (instrumental): a rounded 129 bpm four-on-the-floor, a crisp layered clap on 2 and 4, off-beat hats with 16ths in the energetic parts, shakers and rides; a clean three-layer bass (sine sub on the roots, a round short mid-bass and the rolling off-beat notes) pumping against the kick; warm wide analog pads, a bright digital pluck in delayed arpeggios, a smooth layered supersaw lead with a simple rising-and-falling hook, high bell-like counter-lines; minor-key chords that move slowly with suspensions; an extended DJ arrangement where every section adds a layer, a long, exposed breakdown and a full melodic drop - no vocals or choirs |
@@ -72,7 +74,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Uplifting Trance | `uplifting_trance` | 134-140 | Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw leads and plucky arps, a long piano / pad breakdown that explodes into the drop |
 | Vocal-trance club remix (late 2000s, instrumental) | `vocal_trance_remix` | 128-130 | Vocal-trance club remix, late 2000s (instrumental): 129 BPM, a punchy kick with a driving rolling 16th bass, off-beat hats and claps, a tight, gated tech-trance riff in the first drop, a long DJ intro that adds a layer every 16 bars, then a huge breakdown - pads, a piano / pluck theme and an airy vocal-like pad where the singer would be - a filter-sweep build and a full drop with the lead on top; a big, loud master with real contrast between the breakdown and the drops |
 
-### Dubstep, Garage & Bass (28)
+### Dubstep, Garage & Bass (29)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -103,6 +105,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | UK Garage | `ukgarage` | 130-134 | UK garage / 2-step: skippy shuffled drums, organ stabs, vocal chops, sub bass |
 | UK bassline (140) | `bassline_140` | 136-142 | UK bassline (Northern / speed-garage style): a bouncy four-on-the-floor around 138-142 with shuffled garage hats, a warbling, organ-like wobble bass that bounces in octaves and talks between the kicks, bright stabs and a chopped vocal-style hook - cheeky, fast and built for the rave |
 | UK funky | `uk_funky` | 126-132 | UK funky: London house at 130 with a soca and Afro swing - a house kick under syncopated snares, tribal toms and congas, a bouncy sub bass, warm keys and vocal hooks |
+| Vocal Stepper 140 | `vocal_stepper_140` | 138-142 | Vocal stepper 140: half-time dubstep at 140 with soul - a kick on 1 (and often the "and" of 2), the snare on 3, swung hats, a heavy held sub that swells on a slow half-note wobble, minor chord loops that move every bar or two, and chopped vocal phrases thrown into long reverbs and echoes; drops of 16-32 bars, short 8-bar breaks |
 | Wave (ethereal half-time, 808 sub, vocal chops) | `ethereal_wave` | 140-155 | Wave (ethereal half-time): floating, melancholic bass music at 140-155 - a long intro of airy pads and breathy vocal chops with no low end, then the drop: a huge held 808 sub that slides between its notes and carries the whole track, half-time drums with the snare on the 3 and busy trap hats with rolls, washed-out maj7 chords pumping hard against the kick, glassy plucks and chops drifting in a huge reverb; slow harmony that hangs on one or two chords - dreamy, heavy and wide open |
 
 ### Drum & Bass, Breaks & Hard (20)

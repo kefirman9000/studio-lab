@@ -1436,7 +1436,36 @@ def main():
     test_storage_cleanup()
     test_editor_changes_only_what_you_pick()
     test_song_versions()
+    test_learned_from_stems()
     print('all good')
+
+
+def test_learned_from_stems():
+    """(2.20) The stem-study changes: the mix nudge goes to the right genres only, moves the right way, and the four
+    stem-modelled synths land near what the records measured."""
+    import numpy as np
+    from sgcore import render, stemsynths
+    from sgcore.compose import Options
+    from sgcore.styles import STYLES
+    fam = lambda g: render.learned_family(dict(STYLES[g], name=g), Options(style=g))
+    for g, want in (('house', 'house'), ('tech_house', 'house'), ('techno', 'techno'), ('deep_dubstep', 'dubstep'),
+                    ('boombap', 'hiphop'), ('rolling_pump_house', 'house'), ('peak_time_techno', 'techno'),
+                    ('vocal_stepper_140', 'dubstep'), ('uplifting_trance', None), ('pop', None), ('trap', None)):
+        assert fam(g) == want, (g, fam(g))
+    o = Options(style='house'); o.part_levels = {'bass': 3}
+    assert render.learned_balance_targets(dict(STYLES['house'], name='house'), o) is None   # your levels win
+    sr = render.SR; n = sr * 12
+    rng = np.random.default_rng(1)
+    drums = np.tile(rng.standard_normal(n).astype(np.float32) * 0.1, (2, 1))
+    bass = drums * 0.5; synth = drums * 0.5                        # both 6 dB under the drums
+    gb, gs = render.learned_balance(drums, bass, synth, synth * 0, render.LEARNED_BALANCE['house'])
+    assert gb < 1 and gs < 1 and gs < gb, (gb, gs)                 # house: synths go well down, bass a little
+    for name in ('rollbass', 'stepsub', 'pumpstab', 'dustkeys'):
+        y = getattr(stemsynths, name)(33 if 'bass' in name or 'sub' in name else 57, 0.5, {})
+        assert y.shape[0] == 2 and np.isfinite(y).all() and 0.05 < np.abs(y).max() <= 1.5, name
+    y = stemsynths.stepsub(33, 2.0, {})[0]
+    f = np.abs(np.fft.rfft(y)); hz = np.fft.rfftfreq(len(y), 1 / sr)
+    assert (f[hz < 60] ** 2).sum() > 0.5 * (f ** 2).sum()             # the stepper sub is mostly sub, like the stems
 
 
 if __name__ == '__main__':
