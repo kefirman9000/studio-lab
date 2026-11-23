@@ -2042,6 +2042,9 @@ def compose(opts):
     st['evolved'] = _ev.evolve_drops(evs, sections, st, opts, tracks)
     from . import develop as _dv                         # (2.14) the lead's phrases develop instead of repeating
     st['developed'] = _dv.develop_melody(evs, sections, st, opts, key, tracks)
+    from . import polish as _pl                          # (2.16) leaps turn back, the bass walks into new chords
+    st['leaps_turned'] = _pl.recover_leaps(evs, st, opts, key)
+    st['approaches'] = _pl.bass_approaches(evs, sections, st, opts, key)
     if (st.get('name') or opts.style) in CLUB_COHERENT and (st.get('name') or opts.style) not in CLUB_TRANCE \
             and getattr(opts, 'call_response', 'auto') == 'auto':
         st['no_answer'] = True                           # (1.94) house / techno: no second sound answering the hook
@@ -2057,6 +2060,7 @@ def compose(opts):
     st['phrase_moves'] = _ev.phrase_evolution(evs, sections, st, opts, tracks, CLUB_COHERENT, CLUB_TRANCE)   # (1.94)
     st['drop_space'] = _ev.drop_space(evs, sections, st, opts, tracks, CLUB_DUBSTEP - {'melodic_dubstep', 'chillstep'})   # (1.95.1)
     st['entries'] = _dv.layer_entries(evs, sections, st, opts, tracks)   # (2.14) parts come in one at a time
+    st['callbacks'] = _pl.callbacks(evs, sections, st, opts, key)          # (2.16) the song quotes itself
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     _sw = _ev.structure_moves(evs, sections, st, opts, tracks, POOLS_.get(opts.style, {}).get('bass') or [], fx)
@@ -2069,6 +2073,7 @@ def compose(opts):
         fit_registers(evs, tracks)                        # each part in its instrument's sweet spot
     apply_octaves(evs, tracks, getattr(opts, 'octaves', None))
     _dv.humanize_parts(evs, tracks, st, opts)             # (2.14) played parts get their own touch
+    _pl.seat_orchestra(st)                                # (2.16) concert-hall seats for the orchestra
     for sec in sections:                                  # bass-warp switch-ups: the 808 jumps up, the sub drops out
         bm = sec['opts'].get('bass_mod')                     # ... or a whole section of distorted, growling 808
         if bm and str(tracks.get('bass', {}).get('inst', '')).startswith('808'):

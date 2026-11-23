@@ -844,6 +844,16 @@ class Handler(BaseHTTPRequestHandler):
                 items.append(dict(options=oi, outputs=outputs, preview=preview, section=section,
                                   loop=bool(body.get('loop')) and section is not None))
             return self._json({'job': submit(items)})
+        if p == '/api/rank':                          # (2.16) batch: compose candidates (no rendering) and score them
+            from .compose import compose
+            from . import polish
+            out = []
+            for i, o in enumerate((body.get('options') or [])[:200]):
+                try:
+                    out.append(dict(i=i, score=polish.song_score(compose(Options.from_dict(o)))))
+                except Exception as e:
+                    out.append(dict(i=i, score=-1, error=str(e)[:200]))
+            return self._json({'scores': out})
         if p == '/api/open' and body.get('path') == 'plugins':
             from .vsthost import PLUGIN_DIR
             os.makedirs(PLUGIN_DIR, exist_ok=True)

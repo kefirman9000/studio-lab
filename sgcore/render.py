@@ -1485,9 +1485,14 @@ class Renderer:
                 buf = buf - lo_ * (0.45 * self._dodge[None, :buf.shape[1]])   # sidechain of their own)
             if duck is not None and tcfg['sc']:
                 if sc_mult is not None:                   # the pumping deepens in the drops, eases in the breakdown
-                    buf *= (1 - duck * np.minimum(1.0, sc_depth * tcfg['sc'] * sc_mult).astype(np.float32))[None, :]
+                    g_ = (1 - duck * np.minimum(1.0, sc_depth * tcfg['sc'] * sc_mult).astype(np.float32))[None, :]
                 else:
-                    buf *= (1 - duck * np.float32(min(1.0, sc_depth * tcfg['sc'])))[None, :]
+                    g_ = (1 - duck * np.float32(min(1.0, sc_depth * tcfg['sc'])))[None, :]
+                if st.get('category') != 'Electronic' and not st.get('pump') and tcfg['layer'] != 'bass':
+                    lo_ = lp(buf, 180, 2).astype(np.float32)   # (2.16) outside club music only the low band ducks
+                    buf = buf + lo_ * (g_ - 1)                 # under the kick: a cleaner bottom, no audible pumping
+                else:
+                    buf *= g_
             for s0, s1 in tapestops:
                 if tcfg['layer'] != 'fx':
                     tape_stop(buf, s0, s1)

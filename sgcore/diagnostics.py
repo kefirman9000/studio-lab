@@ -234,7 +234,29 @@ def build(jobs=None, note=''):
     parts += _section('Plugins', _plugins)
     parts += _section('Recent jobs (generate / preview / installs)', lambda: _jobs(jobs or {}))
     parts += _section('Recent log', lambda: list(LINES)[-400:] or ['(empty)'])
+    parts += _section('Start-up log (startup.log)', _startup)
+    parts += _section('Last update', _update_state)
     return redact('\n'.join(parts) + '\n')
+
+
+def _startup():
+    """(2.16) The window's start-up log: how far the last start got, and any request that kept the page waiting."""
+    try:
+        with open(os.path.join(ROOT, 'startup.log'), encoding='utf-8', errors='replace') as f:
+            return f.read().splitlines()[-200:] or ['(empty)']
+    except OSError:
+        return ['(no startup.log yet)']
+
+
+def _update_state():
+    out = []
+    for fn in ('.update_pending.json', '.update_rolled_back.json'):
+        try:
+            with open(os.path.join(ROOT, fn)) as f:
+                out.append(f'{fn}: {f.read()[:400]}')
+        except OSError:
+            pass
+    return out or ['(nothing pending)']
 
 
 # ----------------------------------------------------------------------------- short technical summary (copy & paste)

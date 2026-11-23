@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.16.0
+First batch of the improvement list.
+- **Melodies turn back after a leap**: after a jump of a fourth or more, the next note now steps back the other way - the oldest rule of good tunes - instead of zig-zagging or climbing on.
+- **The bass walks into chord changes** (rock, country, funk, soul, pop, jazz ... - played-bass genres): the last 8th before a new chord often becomes a scale step or half step leading into the new root.
+- **Songs quote themselves**: the bridge can open with the verse tune a fourth higher, and the outro can bring back the intro's figure.
+- **Orchestra seating**: orchestral parts sit where they would in a concert hall - violins left, violas centre, celli and basses right, harp far left, celesta right, horns behind on the left, trumpets / trombones / tuba behind on the right, timpani and percussion at the back (a touch more distant) - wherever the genre didn't place a part itself.
+- **Cleaner low end outside club music**: in non-electronic genres the duck under the kick now only takes the low band (under 180 Hz) of the other parts, so the bottom is clear without any audible pumping.
+- **Batch generator: 🏆 make 3× as many, render only the best**: every candidate is composed (no rendering, well under a second each), scored - the genre check, how singable and shapely the tune is (range, steps vs leaps, one clear high point, a rhythm that comes back), how much the sections differ - and only the best third per genre is queued for rendering.
+- **Updates can't leave you stuck**: after an update, the first start checks the new version actually comes up; if it doesn't, Studio Lab puts the previous version back by itself and starts that instead.
+- **Problem reports** (Options → Report a problem) now include the start-up log and the update state.
+
 ## 2.15.1
 **Four more classic family-film Christmas score genres** (Orchestral → Christmas), in the style of the big 90s holiday-comedy scores:
 - **Christmas Memory Theme** - the tender, nostalgic carol: celesta alone, a children's choir humming long notes, an oboe / flute tune over warm strings and harp, major-seventh and borrowed minor-iv chords, a soaring climax, back to the celesta.

@@ -82,6 +82,7 @@ def apply():
             return dict(ok=True, message=out.stdout.strip() or 'Updated', version=local_version())
     if not r or '/' not in r or any(c in r for c in ' ?#\\'):
         return dict(ok=False, message='No valid update source configured')
+    _prev_version = local_version()
     data = _get(f'https://github.com/{r}/archive/refs/heads/{branch()}.zip', timeout=120)
     zf = zipfile.ZipFile(io.BytesIO(data))
     top = zf.namelist()[0].split('/')[0]
@@ -116,6 +117,14 @@ def apply():
             except Exception:
                 pass
         return dict(ok=False, message=f'Update failed and was rolled back: {e}')
+    try:                                                # (2.16) the next start checks the new version works - and
+        import json                                     # goes back to this one by itself if it doesn't
+        old = _prev_version
+        with open(os.path.join(ROOT, '.update_pending.json'), 'w') as f:
+            json.dump(dict(prev=old, new=local_version(), files=[[os.path.relpath(b, ROOT), os.path.relpath(d, ROOT)] for b, d in saved],
+                           t=__import__('time').time()), f)
+    except Exception:
+        pass
     try:                                                # (2.2.6) compile now, so the next start doesn't have to
         import compileall
         compileall.compile_dir(os.path.join(ROOT, 'sgcore'), quiet=1,
@@ -132,3 +141,49 @@ def restart():
         finally:
             os._exit(0)
     os.execv(sys.executable, [sys.executable] + sys.argv)
+
+
+PENDING = os.path.join(ROOT, '.update_pending.json')
+
+
+def update_pending():
+    try:
+        import json
+        with open(PENDING) as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def update_started_ok():
+    """The new version came up: the safety net is no longer needed."""
+    try:
+        os.remove(PENDING)
+    except OSError:
+        pass
+
+
+def roll_back():
+    """(2.16) The freshly installed version would not start: put the previous version's files back."""
+    p = update_pending()
+    if not p:
+        return None
+    root = os.path.realpath(ROOT)
+    n = 0
+    for bk, dst in p.get('files') or []:
+        b, d = os.path.realpath(os.path.join(ROOT, bk)), os.path.realpath(os.path.join(ROOT, dst))
+        if os.path.commonpath([b, root]) != root or os.path.commonpath([d, root]) != root:
+            continue
+        try:
+            shutil.copy2(b, d)
+            n += 1
+        except OSError:
+            pass
+    update_started_ok()
+    try:
+        import json
+        with open(os.path.join(ROOT, '.update_rolled_back.json'), 'w') as f:
+            json.dump(dict(bad=p.get('new'), back_to=p.get('prev')), f)
+    except Exception:
+        pass
+    return dict(files=n, back_to=p.get('prev'), bad=p.get('new'))

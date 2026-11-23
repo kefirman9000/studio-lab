@@ -198,9 +198,32 @@ def _engine_boot(port):
                 raise RuntimeError('the engine is taking over 5 minutes to load - details are in ' + logp)   # anew)
             time.sleep(0.1)
         url = found[0]
-
+        try:
+            from sgcore import updater as _up              # (2.16) the new version started: update confirmed
+            _up.update_started_ok()
+        except Exception:
+            pass
         return url
-    return boot
+
+    def safe_boot(say):                                # (2.16) a just-installed update that can't start is rolled back
+        try:                                           # and the previous version started instead
+            return boot(say)
+        except Exception as e:
+            try:
+                from sgcore import updater as _up
+                if not _up.update_pending():
+                    raise
+                rb = _up.roll_back()
+            except Exception:
+                raise e
+            say(f"The update to {rb.get('bad')} didn't start - going back to {rb.get('back_to')}…")
+            try:
+                for c in _CHILD:
+                    c.kill()
+            except Exception:
+                pass
+            return boot(say)
+    return safe_boot
 
 
 def _wait_for_old_app(port):
