@@ -571,7 +571,7 @@ def orchestra_note(st, plugins, cat, used):
         real = True
     if not real:
         return (f'Orchestral parts ({what}) used the built-in General MIDI library. For a real orchestra with no setup, download the '
-                'free Strings and Brass & woodwinds libraries in 🎻 Real instruments - every section is used automatically.')
+                'free Strings and Brass & woodwinds libraries in 🎻 Recorded instruments - every section is used automatically.')
     return None                                         # the real libraries play the orchestra; a plugin stays optional
     if cat == 'Orchestral' or len(parts) >= 2:
         return (f'Orchestral parts ({what}) used the built-in General MIDI library. For real orchestra sounds install the free '

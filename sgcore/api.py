@@ -14,6 +14,10 @@ from .render import Renderer, master
 OUTPUTS = ('wav', 'mp3', 'midi', 'stems', 'lmms', 'waveform', 'pack', 'daw', 'final_only')
 
 
+# options the song editor changes on an existing song (sounds, levels, notes, volume lines ...)
+EDIT_KEYS = ('instruments', 'track_levels', 'note_edits', 'automation', 'lanes', 'octaves', 'kit', 'sound_seed', 'part_seeds')
+
+
 def have_ffmpeg():
     """MP3 export available: ffmpeg on PATH, or the lameenc encoder (bundled with the installer)."""
     return dsp.mp3_encoder() is not None
@@ -306,11 +310,19 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
         info['previewed_section'] = int(section)
     elif preview:
         song = preview_window(song)
+        if song.get('preview_of'):                       # (2.18) where the excerpt sits in the song (seconds)
+            info['preview_at'] = round(song['preview_of'][0] * 4 * 60.0 / song['bpm'], 3)
     from .names import song_name, slug
     name = song_name(full_song)
     info['name'] = name
     title = slug(name) + '_' + song_title(song) + ('_loop' if loop else '') + (f'_sec{int(section)}_{abs(hash(json.dumps(opts.sections, sort_keys=True, default=str))) % 10**6}'
                                 if section is not None else ('_preview' if preview else ''))
+    edits = {k: getattr(opts, k, None) for k in EDIT_KEYS}
+    edits = {k: v for k, v in edits.items() if v}
+    if edits and any(os.path.exists(os.path.join(outdir, title + x)) for x in ('.wav', '.mp3', '.flac', '_settings.json')):
+        # (2.18) an edited version of a song that's already on disk gets its own file: never overwrites the original
+        import hashlib
+        title += '_edit-' + hashlib.sha1(json.dumps(edits, sort_keys=True, default=str).encode()).hexdigest()[:6]
     os.makedirs(outdir, exist_ok=True)
     log(f"== \"{name}\"")
     log(f"== {info['style']} | {info['key']} | {info['bpm']} BPM | {info['duration']} | seed {opts.seed}")

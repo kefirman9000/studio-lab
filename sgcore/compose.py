@@ -441,8 +441,9 @@ def apply_variety(st, opts, rnd):
         pool = POOLS.get(owner, {}).get(role)
         if role not in part_rng:                      # seeded per part + genre, so genres don't all pick alike
             sd = ps.get(part) if ps.get(part) is not None else opts.seed * 1009 + PART_K[part]
-            part_rng[role] = random.Random(f'{sd}-{role}-{owner}-variety' + _snd(opts))
-        rr = part_rng[role]
+            part_rng[role] = f'{sd}-{role}-{owner}-variety' + _snd(opts)
+        # (2.18) every part draws from its own stream: picking one part's sound (editor) never changes the others
+        rr = random.Random(part_rng[role] + ('' if t['name'] == role else '-' + t['name']))
         free = role not in (opts.instruments or {}) and not t.get('user_pick') and not chip_locked and not t.get('double_of') \
             and (t['name'] == role or st.get('composer') or t.get('switch_of'))     # a genre's named extra parts keep their sound
         keep_sig = owner in SIGNATURE_STRICT and role in SIGNATURE_ROLES.get(owner, ('bass', 'lead'))
@@ -3165,7 +3166,12 @@ def add_section_switch_tracks(st, opts, rnd):
         if role == 'lead' and (st.get('name') or opts.style) in SIGNATURE_STRICT and mode == 'auto':
             continue                                     # rap / R&B: the hook sound stays the hook sound
         main = next((t for t in st['tracks'] if t['layer'] == role and t['name'] == role), None)
-        if not main or role in (opts.instruments or {}) or main.get('user_pick') or str(main['inst']).startswith(('vst:', 'user:')):
+        if not main:
+            continue
+        if role in (opts.instruments or {}) or main.get('user_pick') or str(main['inst']).startswith(('vst:', 'user:')):
+            # (2.18) a part you picked never switches - but it keeps its place in the draw, so picking one part's sound
+            # in the editor doesn't move the switches of the other parts
+            cands.append((role, main, None))
             continue
         pool = list(POOLS.get(st.get('name') or opts.style, {}).get(role) or [])
         if len(set(pool)) == 1:                         # the genre has exactly one sound for this part (phonk cowbell)
@@ -3180,6 +3186,10 @@ def add_section_switch_tracks(st, opts, rnd):
             cands.append((role, main, alts))
     rnd.shuffle(cands)
     for role, main, alts in cands[:n_roles]:
+        if alts is None:                                 # your pick: draw as if it were there, add nothing
+            rnd.random()
+            rnd.random()
+            continue
         w = [0.3 if x in recent.get(role, []) else 1.0 for x in alts]
         picks = []
         for k in range(2 if (mode == 'lots' or rnd.random() < 0.4) and len(alts) >= 2 and not club else 1):

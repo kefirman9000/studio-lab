@@ -1,6 +1,6 @@
-STUDIO LAB - ALL 405 GENRES  (version 2.17.0)
+STUDIO LAB - ALL 405 GENRES  (version 2.18.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 2.17
+* = new in 2.18
 
 ========================================================================
 ELECTRONIC  (207)

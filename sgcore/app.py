@@ -289,13 +289,14 @@ def worker():
                 info['options'] = item['options']
                 if not item.get('section'):
                     remember_instruments(item['options'].get('style'), info.get('inst_ids'))
+                info['id'] = uuid.uuid4().hex[:8]
                 rel = lambda v: '/files/' + os.path.relpath(v, out_dir()).replace(os.sep, '/')
-                info['urls'] = {k: rel(v) for k, v in info['files'].items() if k != 'waveform' and isinstance(v, str) and os.path.isfile(v)}
+                info['urls'] = {k: rel(v) + '?v=' + info['id'] for k, v in info['files'].items()   # (2.18) a fresh address every render:
+                                if k != 'waveform' and isinstance(v, str) and os.path.isfile(v)}             # no stale cached audio
                 info['part_urls'] = {k: rel(v) for k, v in (info.get('parts') or {}).items()}
                 if not item['preview'] and isinstance(info['files'].get('wav') or info['files'].get('mp3'), str):
                     info['project'] = project_base(info['files'].get('wav') or info['files'].get('mp3'))   # for ⭐ Keep
                 info.pop('parts', None)
-                info['id'] = uuid.uuid4().hex[:8]
                 if item.get('quick'):
                     info['quick'] = True
                     job['log'].append('Quick preview ready - the full song is rendering now…')
@@ -1004,6 +1005,27 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({'path': appwindow.make_shortcut()})
             except Exception as e:
                 return self._json({'error': str(e)})
+        if p == '/api/sounds/check':                     # (2.18) one checklist of every sound source
+            from . import soundsetup
+            return self._json(soundsetup.check(deep=bool(body.get('deep'))))
+        if p == '/api/sounds/get_all':                   # (2.18) get / check & repair everything automatic, one job
+            from . import soundsetup
+            ref = {}
+            only = [str(x) for x in body['only']] if isinstance(body.get('only'), list) else None
+
+            def job(log):
+                def prog(f):
+                    j = JOBS.get(ref.get('id'))
+                    if j:
+                        j['progress'] = f
+                st_ = load_settings()
+                res = soundsetup.get_all(log, prog, apps=body.get('apps', True) is not False, only=only,
+                                         vt_key=st_.get('vt_key') or None,
+                                         require_vt=bool(st_.get('vt_require', bool(st_.get('vt_key')))))
+                detected(refresh=True)
+                return res
+            ref['id'] = bg_job(job)
+            return self._json({'job': ref['id']})
         if p == '/api/soundlib':
             from . import soundfont, samplelibs
             return self._json({'installed': soundfont.installed(), 'path': soundfont.library_path(), 'real': samplelibs.status()})

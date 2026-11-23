@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.18.0
+A cleaner Sounds & instruments window with one button for everything, and a reworked song editor (its "play with changes" button really plays your changes now).
+- **Sounds & instruments → ✅ Setup**: one checklist of every sound Studio Lab can use - recorded instruments, the General MIDI library, free synths and effects, plugin support - with a ring showing how much is ready.
+  - **⬇ Get everything** downloads and installs every free item that can be installed automatically, in one go, with one progress bar. One failure doesn't stop the rest, and pressing it again retries what failed. Closing the window doesn't stop it.
+  - **🔍 Check & repair** looks inside every installed library and plugin for missing or damaged files and fixes them.
+  - Single items still have their own **Get** button. Things the app can't install for you (BBC Symphony Orchestra, LABS, Vital, TAL …) are listed separately as optional, with a link. Once BBC SO or LABS is found, **✨ Detect my instruments** appears right there.
+  - Shorter tab names: Setup · Browse · Recorded · Free synths · My plugins · Orchestra · My samples · DAWs.
+- **Song editor, reworked**:
+  - **Fixed: "Play with changes" played the original song.** The edited version was saved over the original's file at the same address, so the player kept the old audio. Edited versions now get their own file, and every render a fresh address.
+  - The actions stay at the top while you scroll: **▶ Original / ▶ Edited** (flips between them at the same spot; key **B**), **🎧 Hear changes**, **⬇ Full song**, **🎲 New sounds**, **↺ Undo all**.
+  - **Every change is listed** at the top ("Bass → Saw bass", "Kick -6 dB", "sections", "4 note edits"); click one to undo just that. Changed parts are highlighted, each with its own ↺.
+  - Sound, level, section and note changes are now one set: before, "Full song with edits" in the section panel dropped your sound changes, and the editor's own full-song button dropped your section changes.
+  - Hearing your changes keeps your tab and scroll position and starts playing the edited version straight away.
+  - The duplicate buttons from the song card are gone from inside the editor.
+- **A sound you pick changes only that part**: picking a sound for one part used to also reshuffle the sounds of other parts, and which parts switch sounds between sections. Each part now draws its choices on its own. (So the same seed can pick slightly different sounds than in 2.17.)
+
 ## 2.17.0
 Second batch of the improvement list: safer updates, faster renders, a check for every genre.
 - **Updates only install tested versions**: a release is now made only after the full test suite has passed on that exact commit, and the app updates from the latest release (not the newest code on the branch). Every download is checked against the release's SHA-256 checksum before anything is replaced; a download that doesn't match is refused. (Want the newest code anyway? Set `"channel": "latest"` in `update.json`.)

@@ -1340,6 +1340,34 @@ def test_storage_cleanup():
     print('ok  storage clean-up: previews, trimmed / deleted / kept songs, other files untouched')
 
 
+def test_editor_changes_only_what_you_pick():
+    """(2.18) The song editor: picking one part's sound leaves every other part exactly as it was, and an edited
+    version gets its own file (it used to overwrite the original, so 'Play with changes' played stale audio)."""
+    import tempfile
+    from sgcore.compose import Options, compose
+    from sgcore.api import generate
+
+    def sig(s):
+        d = {}
+        for e in s['events']:
+            d.setdefault(e.track, []).append((round(e.beat, 3), e.midi, round(e.dur, 3)))
+        return d, {t['name']: t['inst'] for t in s['st']['tracks']}
+    for style, role in (('house', 'bass'), ('house', 'pad'), ('pop', 'pad'), ('synthwave', 'lead')):
+        A, ia = sig(compose(Options(style=style, seed=5)))
+        B, ib = sig(compose(Options(style=style, seed=5, instruments={role: 'marimba'})))
+        other = [k for k in set(ia) | set(ib) if not (k == role or k.startswith(role + '_') or ia.get(k) == ib.get(k))]
+        assert not other, f'{style}: picking the {role} sound also changed {other}'
+        moved = [k for k in A if not (k == role or k.startswith(role + '_')) and A.get(k) != B.get(k)
+                 and k not in ('answer', 'lead_layer')]
+        assert not moved, f'{style}: picking the {role} sound changed the notes of {moved}'
+    with tempfile.TemporaryDirectory() as d:
+        a = generate(dict(style='house', seed=5), d, outputs=['wav'], preview=True, log=lambda *x: None)
+        b = generate(dict(style='house', seed=5, instruments={'bass': 'flute'}), d, outputs=['wav'], preview=True, log=lambda *x: None)
+        assert a['files']['wav'] != b['files']['wav'] and os.path.isfile(a['files']['wav']), 'the edit overwrote the original'
+        assert 'preview_at' in b
+    print('ok  editor: a pick changes only its part; edited versions never overwrite the original')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -1383,6 +1411,7 @@ def main():
     test_drummer_percussion_and_beat_feels()
     test_new_genres_and_daisy()
     test_storage_cleanup()
+    test_editor_changes_only_what_you_pick()
     print('all good')
 
 
