@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.14.3
+- **Faster, lighter start with many plugins installed**: your startup.log shows the sound engine is ready in under a second, so the stalls came after that - from the plugin bookkeeping.
+  - Each plugin's fingerprint (used to notice a reinstall) used to read *every file* inside the plugin - thousands for Cardinal or the big sample players - several times per page load. It now looks only at the plugin's program files and remembers the answer.
+  - The plugin list is read once per page load instead of once per part menu.
+  - The background check of new plugins (instrument or effect?) runs one plugin at a time, with a pause between, at low priority - and big sample players and racks (BBC SO, LABS, Kontakt, Cardinal ...) are no longer loaded just to ask; they're instruments. Because the fingerprint changed, each plugin is checked once more, quietly, after this update.
+- Any request that keeps the page waiting more than 1.5 s is now written to startup.log, so if a start is still slow the log says exactly what it was waiting for.
+
 ## 2.14.2
 - **Start-up freezes**: three changes.
   - The loading screen now asks the app for its progress and opens the studio itself, instead of the app pushing messages and the studio's address into a window that was still loading - on Windows that push could hang the window for good.

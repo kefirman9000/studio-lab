@@ -26,19 +26,38 @@ BROKEN = os.path.join(SOUNDS, '.broken_plugins.json')
 LOAD_FAIL = ('Failed to load plugin', 'Unable to scan plugin', 'crashed while loading', 'unsupported plugin format')
 
 
+_SIG_CACHE = {}
+
+
 def _sig(path):
-    """Fingerprint of a plugin file/bundle: its files and sizes (changes when the plugin is reinstalled or repaired)."""
+    """Fingerprint of a plugin file/bundle (changes when the plugin is reinstalled or repaired). (2.14.3) Only the
+    plugin's program files count, not every resource in the bundle - big plugins (Cardinal, sample players) hold
+    thousands of files and walking them all on every start made the app crawl - and it's remembered for a minute."""
+    now = time.time()
+    hit = _SIG_CACHE.get(path)
+    if hit and now - hit[0] < 60:
+        return hit[1]
     try:
         if os.path.isfile(path):
-            return str(os.path.getsize(path))
-        items = []
-        for root, dirs, files in os.walk(path):
-            for f in files:
-                fp = os.path.join(root, f)
-                items.append(f'{os.path.relpath(fp, path)}:{os.path.getsize(fp)}')
-        return hashlib.sha1('\n'.join(sorted(items)).encode()).hexdigest()[:16]
+            sig = str(os.path.getsize(path))
+        else:
+            items, n = [], 0
+            base = path.rstrip(os.sep).count(os.sep)
+            for root, dirs, files in os.walk(path):
+                if root.count(os.sep) - base >= 3:
+                    dirs[:] = []
+                for f in files:
+                    if f.lower().endswith(('.vst3', '.dll', '.so', '.dylib', '.plist')) or os.sep + 'MacOS' in root:
+                        fp = os.path.join(root, f)
+                        items.append(f'{os.path.relpath(fp, path)}:{os.path.getsize(fp)}')
+                        n += 1
+                if n > 64:
+                    break
+            sig = hashlib.sha1('\n'.join(sorted(items)).encode()).hexdigest()[:16]
     except OSError:
-        return '0'
+        sig = '0'
+    _SIG_CACHE[path] = (now, sig)
+    return sig
 
 
 def bundle_ok(path):
@@ -103,8 +122,9 @@ def _probes():
 def instrument_names():
     """Names of installed plugins already checked to be instruments (effects are left out of the Sound menus)."""
     pr = _probes()
+    bad = broken()
     return sorted({p['name'] for p in find_plugins() if pr.get(p['path'], {}).get('inst')
-                   and pr[p['path']].get('sig') == _sig(p['path']) and p['path'] not in broken()})
+                   and pr[p['path']].get('sig') == _sig(p['path']) and p['path'] not in bad})
 
 
 PROBE_STATUS = {'running': False, 'done': 0, 'total': 0, 'current': ''}
@@ -205,11 +225,16 @@ def probe_all(log=None, limit=200):
     pr = _probes()
     n = 0
     todo = [p for p in find_plugins()[:limit] if pr.get(p['path'], {}).get('sig') != _sig(p['path'])]
+    big = re.compile(r'bbc|spitfire|labs|kontakt|cardinal|omnisphere|keyscape|superior|addictive|opus|ample|decent ?sampler', re.I)
+    for p in [p for p in todo if big.search(p['name'])]:  # (2.14.3) big sample players / racks are instruments - no need
+        pr[p['path']] = dict(sig=_sig(p['path']), inst=True, ok=True, named=True)   # to load gigabytes just to ask
+    todo = [p for p in todo if not big.search(p['name'])]
     PROBE_STATUS.update(running=bool(todo), done=0, total=len(todo), current='')
     for p in todo:
         PROBE_STATUS.update(current=p['name'])
         sig = _sig(p['path'])
-        r = probe(p['path'])
+        r = probe(p['path'], low=True)
+        time.sleep(1.0)                                   # one at a time, with a pause: no burst at start-up
         pr[p['path']] = dict(sig=sig, inst=bool(r.get('ok') and r.get('is_instrument')), ok=bool(r.get('ok')))
         if not r.get('ok') and any(k in str(r.get('error')) for k in LOAD_FAIL):
             mark_broken(p['path'], r.get('error'))
@@ -249,8 +274,20 @@ def _search_dirs():
     return [PLUGIN_DIR] + list(plugin_dirs())
 
 
-def find_plugins():
-    """VST3 bundles/files (all OS) and Audio Units (macOS) on this computer."""
+_FIND = {'t': 0.0, 'v': None}
+
+
+def find_plugins(max_age=20):
+    """VST3 bundles/files (all OS) and Audio Units (macOS) on this computer. (2.14.3) Remembered for a few seconds:
+    one page load asks for it once per part menu."""
+    if _FIND['v'] is not None and time.time() - _FIND['t'] < max_age:
+        return [dict(p) for p in _FIND['v']]
+    out = _find_plugins()
+    _FIND.update(t=time.time(), v=out)
+    return [dict(p) for p in out]
+
+
+def _find_plugins():
     out, seen = [], set()
     for d in _search_dirs():
         if not os.path.isdir(d):
@@ -274,7 +311,7 @@ def find_plugins():
     return sorted(out, key=lambda p: p['name'].lower())
 
 
-def _run(job, timeout):
+def _run(job, timeout, low=False):
     d = tempfile.mkdtemp(prefix='sl_vst_')
     path = os.path.join(d, 'job.json')
     with open(path, 'w') as f:
@@ -282,8 +319,11 @@ def _run(job, timeout):
     env = dict(os.environ)
     env['PYTHONPATH'] = ROOT + os.pathsep + env.get('PYTHONPATH', '')
     try:
+        kw = dict(NOWIN)
+        if low and os.name == 'nt':                       # (2.14.3) background checks never compete with you
+            kw['creationflags'] = kw.get('creationflags', 0) | 0x00004000      # BELOW_NORMAL_PRIORITY_CLASS
         subprocess.run([sys.executable, '-m', 'sgcore.vst_worker', path], cwd=ROOT, env=env, timeout=timeout,
-                       capture_output=True, **NOWIN)
+                       capture_output=True, **(kw or NOWIN))
     except subprocess.TimeoutExpired:
         return {'ok': False, 'error': 'the plugin took too long and was stopped'}, d
     try:
@@ -293,8 +333,8 @@ def _run(job, timeout):
         return {'ok': False, 'error': 'the plugin crashed while loading or playing'}, d
 
 
-def probe(path, list_params=False):
-    res, d = _run(dict(mode='probe', path=path, list_params=list_params), timeout=60)
+def probe(path, list_params=False, low=False):
+    res, d = _run(dict(mode='probe', path=path, list_params=list_params), timeout=60, low=low)
     shutil.rmtree(d, ignore_errors=True)
     return res
 

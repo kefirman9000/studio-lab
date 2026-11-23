@@ -78,6 +78,12 @@ def detected(refresh=False, max_age=300):
                 _DETECT['res'] = _DETECT['res'] or dict(found={}, other=[], dirs=[])
             _DETECT['t'] = time.time()
             try:
+                from . import vsthost as _vh
+                _vh._FIND['t'] = 0.0                     # (2.14.3) a fresh plugin list after a rescan / install
+                _vh._SIG_CACHE.clear()
+            except Exception:
+                pass
+            try:
                 from . import vstrigs
                 vstrigs.plugins_on_disk(refresh=True)
             except Exception:
@@ -527,6 +533,13 @@ def open_path(p):
     return True
 
 
+def _slow(path, t0):
+    """(2.14.3) Requests that keep the page waiting go into startup.log, so a slow start can be traced."""
+    dt = time.time() - t0
+    if dt > 1.5:
+        print(f'slow request {str(path).split("?")[0]} {dt:.1f}s', flush=True)
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
@@ -621,6 +634,20 @@ class Handler(BaseHTTPRequestHandler):
         self._deny()                     # no cross-origin access, ever
 
     def do_GET(self):
+        t0 = time.time()
+        try:
+            return self._do_GET()
+        finally:
+            _slow(self.path, t0)
+
+    def do_POST(self):
+        t0 = time.time()
+        try:
+            return self._do_POST()
+        finally:
+            _slow(self.path, t0)
+
+    def _do_GET(self):
         u = urlparse(self.path)
         p = u.path
         if not self._host_ok():
@@ -683,7 +710,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._file(full)
         self.send_error(404)
 
-    def do_POST(self):
+    def _do_POST(self):
         p = urlparse(self.path).path
         if not self._authorized(need_header=True):
             return self._deny()
