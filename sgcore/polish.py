@@ -11,7 +11,7 @@
 """
 import random
 
-from .develop import step, HOOKS
+from .develop import step
 
 PLAYED_BASS = ('Classic',)
 
