@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.20.1
+
+- Learned mix balance now measures the render the same way the records were measured (an RMS envelope, not raw
+  power), so it no longer over-cuts the bass. Measured after the fix, against the real-record medians
+  (bass / synths vs drums): house -9.2 / -11.9 dB (records -7.5 / -17.8; before -6.3 / -5.0), deep dubstep +2.8 / -13.3
+  (records +1.3 / -12.4; before +5.1 / -16.2), boom bap -4.0 / -9.0 (records -2.2 / -9.3).
+- Exported stems now include the learned balance, so they still add up to the mix.
+
 ## 2.20.0 - learned from real stems
 
 Studied the stems and MIDI of ~60 real records (house, techno, 140 dubstep, hip-hop) with a new analyser

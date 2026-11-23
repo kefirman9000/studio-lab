@@ -527,6 +527,16 @@ def write_wav_float(path, x):
         f.write(data)
 
 
+
+
+def scale_wav_float(path, g):
+    """Scale a stem written by write_wav_float in place (its header is always 58 bytes)."""
+    if g == 1.0 or not os.path.exists(path):
+        return
+    m = np.memmap(path, dtype='<f4', mode='r+', offset=58)
+    m *= np.float32(g)
+    m.flush()
+    del m
 def write_wav(path, x, rng=None, bits=16):
     """Stereo WAV. 16-bit gets TPDF dither (the noise that keeps quiet fades smooth at 16 bits); 24-bit needs none."""
     rng = rng or RNG

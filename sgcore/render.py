@@ -76,23 +76,30 @@ def learned_balance_targets(st, opts):
 
 
 def learned_balance(drums, bass, music, lead, tgt, strength=0.6, cap=8.0):
-    """Gains (linear) for the bass bus and the synth buses, measured where kick and bass both play."""
-    hop = int(SR * 0.25)
+    """Gains (linear) for the bass bus and the synth buses, measured where kick and bass both play - the same way the
+    records were measured (tools/stem_study.py): the average of an ~12 ms RMS envelope of each stem, in dB."""
+    hop = max(1, int(SR * 256 / 22050))
+    blk = int(SR * 0.25) // hop                          # 0.25 s blocks decide which parts of the song are 'full'
 
-    def blocks(x):
-        n = x.shape[1] // hop
-        return (x[:, :n * hop].reshape(2, n, hop) ** 2).mean(axis=(0, 2)) if n else np.zeros(0)
-    d, b, m, l_ = blocks(drums), blocks(bass), blocks(music), blocks(lead)
-    n = min(len(d), len(b), len(m), len(l_))
-    if n < 16 or d.max() <= 0 or b.max() <= 0:
+    def envl(x):
+        m = x.mean(axis=0) if x.ndim > 1 else x
+        n = len(m) // (hop * blk) * blk
+        return np.sqrt((m[:n * hop].reshape(n, hop).astype(np.float64) ** 2).mean(1) + 1e-12)
+    d, b, sy = envl(drums), envl(bass), envl(music + lead)
+    n = min(len(d), len(b), len(sy)) // blk * blk
+    if n < 16 * blk:
         return 1.0, 1.0
-    d, b, sy = d[:n], b[:n], m[:n] + l_[:n]
-    full = (d > d.max() * 10 ** -2.0) & (b > b.max() * 10 ** -2.5)
-    if full.sum() < 8:
+    d, b, sy = d[:n], b[:n], sy[:n]
+    pw = lambda e: (e.reshape(-1, blk) ** 2).mean(1)
+    D, B = pw(d), pw(b)
+    if D.max() <= 1e-11 or B.max() <= 1e-11:
         return 1.0, 1.0
-    lv = lambda v: 10 * np.log10(np.mean(v[full]) + 1e-20)
+    full = np.repeat((D > D.max() * 10 ** -2.0) & (B > B.max() * 10 ** -2.5), blk)
+    if full.sum() < 8 * blk:
+        return 1.0, 1.0
+    lv = lambda e: 20 * np.log10(e[full].mean() + 1e-9)
     gb = float(np.clip(strength * (tgt['bass'] - (lv(b) - lv(d))), -cap, cap))
-    gs = float(np.clip(strength * (tgt['synth'] - (lv(sy) - lv(d))), -cap, cap)) if sy[full].mean() > 0 else 0.0
+    gs = float(np.clip(strength * (tgt['synth'] - (lv(sy) - lv(d))), -cap, cap)) if pw(sy).max() > 1e-11 else 0.0
     return 10 ** (gb / 20), 10 ** (gs / 20)
 
 
@@ -1675,7 +1682,9 @@ class Renderer:
             if stems_dir:
                 path = os.path.join(stems_dir, f'{ti + 1:02d}_{name}.wav')
                 write_wav_float(path, buf)
-                stems.append(dict(name=name, layer=tcfg['layer'], inst=tcfg['inst'], path=path))
+                stems.append(dict(name=name, layer=tcfg['layer'], inst=tcfg['inst'], path=path,
+                                  lb=('bass' if tcfg['layer'] == 'bass' else 'synth')
+                                  if learned and tcfg['layer'] in ('bass', 'chords', 'pad', 'arp', 'lead') else None))
             self.log(f'   rendered {name:<11} {len(evs):5d} notes  {time.time() - t0:5.1f}s')
             if progress:
                 progress((ti + 1) / (n_tracks + 3))
@@ -1757,6 +1766,10 @@ class Renderer:
             if g_s != 1.0:
                 music *= np.float32(g_s)
                 leadbus *= np.float32(g_s)
+            from .dsp import scale_wav_float
+            for sm in stems:                                 # the exported stems still add up to the mix
+                if sm.get('lb'):
+                    scale_wav_float(sm['path'], g_b if sm['lb'] == 'bass' else g_s)
             self.log(f'   learned balance ({learned["family"]}): bass {self.learned_balance[0]:+.1f} dB, synths {self.learned_balance[1]:+.1f} dB')
             mix += bassbus
             mix += leadbus
