@@ -12850,3 +12850,110 @@ derive('afro_wobble', 'afro_village_synth', 'Electronic',
 for _t in STYLES['afro_wobble']['tracks']:
     if _t['name'] == 'bass':
         _t.update(db=-12, p={})
+
+
+# ---- (2.15) more Christmas genres, grown from the Christmas ones already here: the big-band swing, 60s wall-of-sound
+# and rockabilly Christmas records, an orchestral sleigh-ride gallop, a music-box lullaby, a church carol with choir and
+# organ, and cosy lo-fi and festive house Christmas for the electronic side - every one with its sleigh bells
+derive('christmas_swing', 'big_band_50s', 'Classic',
+       'Christmas swing (big band crooner era): a swinging 4/4 around 120-150 - walking upright bass, brushed ride and '
+       'snare, a punchy brass section answering a warm sax or trumpet melody, sparkling celesta fills and sleigh bells '
+       'shaking on every beat - the cosy fireside big-band Christmas record', 'Christmas Swing (big band)', exact_pools=True, keep_sounds=0.8,
+       add_tracks=[T('sleigh', 'top', 'sleigh', pan=0.3, rev=0.3, db=-28), T('cel', 'arp', 'celesta', double_of='arp', octave=12, keep_inst=True, pan=-0.25, rev=0.35, db=-29)],
+       drums=dict(STYLES['big_band_50s']['drums'], sleigh=['x...x...x...x...', 'x.x.x.x.x.x.x.x.']),
+       bpm=(118, 148), scales=['major'], reverb=2.6,
+       progs={'major': [[0, 5, 1, 4], [0, 3, 1, 4], [2, 5, 1, 4], [0, 0, 3, 4]]}, own_progs=True,
+       pools=dict(arp=['celesta', 'piano', 'vibes', 'glock'], lead=['sax', 'trumpet', 'clarinet', 'sf:tenorsax', 'vibes']))
+
+derive('christmas_wall_of_sound', 'holiday', 'Classic',
+       'Christmas wall of sound (60s girl-group Christmas pop): a huge, echoing 4/4 around 125-140 - the boom, boom-boom, '
+       'crack drum beat, sleigh bells and tambourine on every 8th, castanet clicks, hammering piano 8ths, a wall of '
+       'strings, glockenspiel doubling the hook and a sax break, all drenched in reverb', 'Christmas Wall of Sound (60s pop)', exact_pools=True, keep_sounds=0.8,
+       add_tracks=[T('cast', 'top', 'woodblock', pan=-0.35, rev=0.4, db=-30), T('glock', 'lead', 'glock', double_of='lead', octave=12, keep_inst=True, pan=0.25, rev=0.45, db=-30)],
+       drums=dict(kick=['X.....X.X.......', 'X.....X.X...X...'], snare=['............X...', '....X.......X...'],
+                  sleigh=['x.x.x.x.x.x.x.x.'], tamb=['x.x.x.x.x.x.x.x.'], cast=['..x...x...x..xx.', 'x..x..x...x...x.']),
+       bpm=(124, 140), swing=0.5, reverb=3.8, scales=['major'],
+       chord_rh=['x.x.x.x.x.x.x.x.', 'xxxxxxxxxxxxxxxx'], lead_rh=['x---x-x-x-------', 'x-x-x---x-x-x---', 'x-------x---x---'],
+       progs={'major': [[0, 5, 3, 4], [0, 3, 4, 0], [0, 5, 1, 4]]}, own_progs=True,
+       pools=dict(chords=['piano', 'piano', 'epiano', 'harp'], pad=['strings', 'choir', 'horn'], arp=['glock', 'celesta', 'vibes'],
+                  lead=['sax', 'brass', 'strings', 'violin', 'trumpet']),
+       master=dict(lufs=-12.0, air=1.4, low=0.9))
+
+derive('christmas_rockabilly', 'rockabilly', 'Classic',
+       'Rockin\' Christmas (rockabilly): a fast, bouncing shuffle around 150-175 - slapped upright bass, twangy electric '
+       'lead with slapback echo, boogie piano, a snappy snare, sleigh bells on every beat and a big ending - the rock\'n\'roll '
+       'Christmas party record', 'Rockin\' Christmas (rockabilly)', exact_pools=True, keep_sounds=0.8,
+       add_tracks=[T('sleigh', 'top', 'sleigh', pan=0.3, rev=0.25, db=-27)],
+       drums=dict(STYLES['rockabilly']['drums'], sleigh=['x...x...x...x...', 'x.x.x.x.x.x.x.x.']),
+       bpm=(150, 176), scales=['major'],
+       pools=dict(arp=['piano', 'twang', 'celesta'], lead=['twang', 'sax', 'guitar']))
+
+derive('sleigh_ride_gallop', 'christmas_mischief', 'Orchestral',
+       'Sleigh-ride gallop (light orchestral): a bright major-key 2/4 gallop around 130-150 - woodblock hooves '
+       'clip-clopping, sleigh bells driving 8ths, bouncing pizzicato and spiccato strings, a cheeky trumpet tune with '
+       'flutes and celesta doubling it, horn calls, a snare and a whip-crack crash at the big moments - pure '
+       'winter-holiday fun', 'Sleigh-Ride Gallop (orchestral)', exact_pools=True, keep_sounds=0.8,
+       add_tracks=[T('hooves', 'top', 'woodblock', pan=-0.3, rev=0.3, db=-27), T('whip', 'top', 'crash', pan=0.25, rev=0.4, db=-32)],
+       sounds={'lead': 'trumpet', 'chords': 'pizz', 'arp': 'flute'},
+       drums=dict(timp=['X.......X.......', 'X...X...X...X...'], snare=['....x.......x...', '..x.x...x.x.x...'],
+                  sleigh=['x.x.x.x.x.x.x.x.', 'xxxxxxxxxxxxxxxx'], hooves=['x..x..x.x..x..x.', 'X..x..X.X..x..X.'],
+                  whip=['X...............', '']),
+       bpm=(128, 150), scales=['major'],
+       progs={'major': [[0, 4, 0, 4], [0, 3, 4, 0], [0, 5, 1, 4], [3, 4, 0, 0]]}, own_progs=True,
+       bass=['R...F...R...F...', 'R.F.R.F.R.F.R.F.'], chord_rh=['..x...x...x...x.', 'x.x.x.x.x.x.x.x.'],
+       lead_rh=['x.x.x.x.x---x.x.', 'x-x-x---x-x-x---', 'xxx.x.x.x-------', 'x.x.x.x.x.x.x---'],
+       pools=dict(lead=['trumpet', 'flute', 'violin', 'clarinet'], chords=['pizz', 'spiccato', 'strings'],
+                  arp=['flute', 'celesta', 'glock', 'clarinet']),
+       master=dict(lufs=-15.5, air=0.6, low=0.8, gentle=True, max_gr=2.0))
+
+derive('christmas_lullaby', 'christmas_joyful', 'Orchestral',
+       'Christmas lullaby (music box): a hushed, rocking 3/4 around 66-84 - a music-box melody tinkling up high, a harp '
+       'rippling underneath, a soft string bed and a breathy flute, the faintest sleigh bells and celesta - a candle-lit '
+       'Christmas Eve cradle song', 'Christmas Lullaby (music box)', exact_pools=True, keep_sounds=0.8,
+       sounds={'lead': 'musicbox', 'chords': 'harp', 'pad': 'strings', 'arp': 'celesta', 'horns': 'flute', 'glock': 'flute'},
+       drop_tracks=('timp', 'bass_cb'),
+       bpm=(66, 84), reverb=4.2, rubato=0.2, key_change=False, form_scale=0.85,
+       drums={'sleigh': ['x...........', '............']}, kick_track='sleigh',
+       chord_rh=['x...x...x...', 'x...........'], bass=['R...........', 'R.....F.....'],
+       pools=dict(lead=['musicbox', 'celesta', 'flute', 'glock'], chords=['harp', 'pizz', 'piano'], pad=['strings', 'choir', 'humchoir'],
+                  arp=['celesta', 'harp', 'musicbox']),
+       master=dict(lufs=-19.0, air=0.6, low=0.4, gentle=True, max_gr=1.0))
+
+derive('christmas_carol_choir', 'christmas_magic', 'Orchestral',
+       'Christmas carol (church choir): a stately, joyful hymn-like carol around 72-92 in a major key - a full choir '
+       'singing the tune in chords, a pipe organ underneath, church bells ringing out at the start of each verse, '
+       'timpani swells and a brass fanfare for the last verse - candles, stone arches, a midnight service',
+       'Christmas Carol (choir & organ)', exact_pools=True, keep_sounds=0.8,
+       sounds={'lead': 'choir', 'chords': 'organ', 'pad': 'strings', 'arp': 'churchbell', 'flute': 'horn', 'vibes': 'organ'},
+       bpm=(72, 92), scales=['major'], rubato=0.1, reverb=4.6,
+       progs={'major': [[0, 3, 4, 0], [0, 4, 5, 3], [3, 0, 4, 0], [0, 5, 3, 4]]}, own_progs=True,
+       chord_rh=['x---x---x---x---', 'x-------x-------'], lead_rh=['x---x---x---x---', 'x---x-x-x-------', 'x-------x---x---'],
+       arp=dict(rate=4, mode='down', oct=5, prob=0.6),
+       pools=dict(lead=['choir', 'kidchoir', 'choir_wide'], chords=['organ', 'strings'], pad=['strings', 'choir', 'horn'],
+                  arp=['churchbell', 'tubular', 'harp']),
+       master=dict(lufs=-17.0, air=0.6, low=0.7, gentle=True, max_gr=1.2))
+
+derive('christmas_lofi', 'lofi', 'Electronic',
+       'Christmas lo-fi (cosy beats): a dusty, laid-back hip-hop beat around 72-88 - warm Rhodes chords with jazzy 7ths '
+       'and 9ths, a soft celesta or music-box tune, gentle sleigh bells on the beat, a round sub bass, vinyl crackle and '
+       'tape wobble - snow outside, cocoa inside', 'Christmas Lo-fi (cosy)', exact_pools=True, keep_sounds=0.8,
+       add_tracks=[T('sleigh', 'top', 'sleigh', pan=0.3, rev=0.3, db=-31)],
+       drums=dict(STYLES['lofi']['drums'], sleigh=['x...x...x...x...', '..x...x...x...x.']),
+       sounds={'lead': 'celesta'},
+       pools=dict(lead=['celesta', 'musicbox', 'glock', 'epiano', 'flute', 'vibes'],
+                  chords=['rhodes', 'epiano', 'piano', 'lofikeys', 'dustpiano']))
+
+derive('christmas_house', 'house', 'Electronic',
+       'Festive house (Christmas club): a four-on-the-floor around 122-126 - sleigh bells riding the off-beats, a '
+       'bouncing organ bass, bright house piano chords in a major key, a choir pad, glockenspiel sparkle doubling the '
+       'hook and a big filtered build into every drop - the office-party, lights-on Christmas banger', 'Festive House (Christmas)', exact_pools=True, keep_sounds=0.8,
+       add_tracks=[T('sleigh', 'top', 'sleigh', pan=0.3, rev=0.25, db=-28), T('glock', 'lead', 'glock', double_of='lead', octave=12, keep_inst=True, pan=-0.25, rev=0.35, db=-29)],
+       drums=dict(STYLES['house']['drums'], sleigh=['..x...x...x...x.', 'x.x.x.x.x.x.x.x.']),
+       sounds={'pad': 'choir'}, scales=['major'], bpm=(122, 126),
+       progs={'major': [[0, 5, 3, 4], [0, 4, 5, 3], [3, 4, 0, 0]]}, own_progs=True,
+       pools=dict(pad=['choir', 'strings', 'warmpad'], lead=['m1piano', 'brass', 'organ', 'epiano']))
+
+_XMAS_NEW = ('christmas_swing', 'christmas_wall_of_sound', 'christmas_rockabilly', 'sleigh_ride_gallop', 'christmas_lullaby',
+             'christmas_carol_choir', 'christmas_lofi', 'christmas_house')
+BELL_OK.update(_XMAS_NEW + ('christmas_joyful', 'christmas_magic', 'christmas_mischief'))
+MALLET_OK.update(_XMAS_NEW)

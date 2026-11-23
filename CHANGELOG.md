@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.15.0
+**Eight new Christmas genres**, grown from the Christmas ones already here - each with its sleigh bells, and its own sounds kept:
+- **Christmas Swing (big band)** - walking upright bass, brushed swing, a brass section answering a sax or trumpet tune, celesta sparkle.
+- **Christmas Wall of Sound (60s pop)** - the boom, boom-boom, crack beat, sleigh bells and tambourine on every 8th, castanet clicks, hammering piano, a wall of strings, glockenspiel doubling the hook, lots of echo.
+- **Rockin' Christmas (rockabilly)** - a fast shuffle with slapped upright, twangy lead, boogie piano and sleigh bells.
+- **Sleigh-Ride Gallop (orchestral)** - a bright 2/4 gallop with woodblock hooves, sleigh bells, pizzicato, a cheeky trumpet tune doubled by celesta, horn calls and whip-crack crashes.
+- **Christmas Lullaby (music box)** - a hushed, rocking 3/4 with a music-box tune, harp, soft strings and flute.
+- **Christmas Carol (choir & organ)** - a stately carol: full choir on the tune, pipe organ (the real one when the Keys library is installed), church bells, timpani swells.
+- **Christmas Lo-fi (cosy)** - dusty beats, warm Rhodes 7ths and 9ths, a celesta / music-box tune, gentle sleigh bells and vinyl.
+- **Festive House (Christmas)** - four-on-the-floor in a major key with sleigh bells on the off-beats, house piano, a choir pad and glockenspiel on the hook.
+
+Each tab now has a **Christmas** shelf in the genre list (Holiday moved there too). Bells and mallets are welcome in all the Christmas genres, electronic ones included.
+
 ## 2.14.3
 - **Faster, lighter start with many plugins installed**: your startup.log shows the sound engine is ready in under a second, so the stalls came after that - from the plugin bookkeeping.
   - Each plugin's fingerprint (used to notice a reinstall) used to read *every file* inside the plugin - thousands for Cardinal or the big sample players - several times per page load. It now looks only at the plugin's program files and remembers the answer.
