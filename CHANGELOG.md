@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.17.0
+Second batch of the improvement list: safer updates, faster renders, a check for every genre.
+- **Updates only install tested versions**: a release is now made only after the full test suite has passed on that exact commit, and the app updates from the latest release (not the newest code on the branch). Every download is checked against the release's SHA-256 checksum before anything is replaced; a download that doesn't match is refused. (Want the newest code anyway? Set `"channel": "latest"` in `update.json`.)
+- **Quick preview first**: ⬇ Full song now plays a short preview of the very same song within seconds, while the full version renders in the same job. Switch it off with "quick preview first" under the buttons.
+- **Faster renders**: filter sweeps that hold still run as one long pass instead of hundreds of tiny ones, silent stretches of a part are skipped, the phaser runs its four stages in one go, the multiband squash uses one filter fewer, the auto-wah steps in 3 ms. Same sound (differences are 40-50 dB down) - except the phaser, which loses a faint buzz its old stepped feedback added.
+- **Less memory on long songs**: the rendered-part cache now has a size limit (1.2 GB by default, `STUDIOLAB_CACHE_MB` to change) instead of holding up to 40 full parts.
+- **A check for every genre** (all 405, in about half a minute, run on every push): tempo inside the genre's range, the key in one of its scales, playable note ranges, a sensible length, every part the song form brings in actually plays, the same seed gives exactly the same song, and each drum part still follows the genre's written patterns (and the chords stay in key) as closely as before. It also keeps the genre counts in the README and genre lists true.
+- **Docs up to date**: README, docs/GENRES.md, GENRE_LIST.txt and GENRE_SPEC.md regenerated - 405 genres.
+
 ## 2.16.0
 First batch of the improvement list.
 - **Melodies turn back after a leap**: after a jump of a fourth or more, the next note now steps back the other way - the oldest rule of good tunes - instead of zig-zagging or climbing on.

@@ -1,12 +1,12 @@
-STUDIO LAB - ALL 383 GENRES  (version 2.5.2)
+STUDIO LAB - ALL 405 GENRES  (version 2.17.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 2.5
+* = new in 2.17
 
 ========================================================================
-ELECTRONIC  (196)
+ELECTRONIC  (207)
 ========================================================================
 
-House & Disco  (29)
+House & Disco  (31)
     house  [house]
     Deep House  [deep_house]
     Tech House  [tech_house]
@@ -23,6 +23,7 @@ House & Disco  (29)
     Future Funk  [future_funk]
     Eurodance  [eurodance]
     Big Room  [bigroom]
+    Festive House (Christmas)  [christmas_house]
     Bass house / UK bass  [bass_house]
     Nu-disco / disco lounge  [nu_disco]
     Tokyo deep house  [tokyo_deep_house]
@@ -36,8 +37,9 @@ House & Disco  (29)
     Tropical house  [tropical_house]
     Hi-NRG (80s)  [hi_nrg]
     Brazilian bass  [brazilian_bass]
+    Progressive House Journey (Y2K)  [progressive_journey]
 
-Techno & Trance  (26)
+Techno & Trance  (27)
     techno  [techno]
     minimal  [minimal]
     Melodic Techno  [melodic_techno]
@@ -50,6 +52,7 @@ Techno & Trance  (26)
     Festival techno (big-room trance, 2011-14)  [festival_techno]
     Progressive Trance (emotional)  [progressive_trance]
     Club trance remix (2000s, riff & breakdown)  [club_trance_2000s]
+    Anthem Trance (2000 club mix)  [anthem_trance_2000]
     Festival psy-trance (big-room / psy hybrid)  [festival_psy]
     Progressive trance - early 2010s (emotional, instrumental)  [progressive_trance_2010s]
     Vocal-trance club remix (late 2000s, instrumental)  [vocal_trance_remix]
@@ -65,7 +68,7 @@ Techno & Trance  (26)
     Hard techno (150)  [hard_techno]
     Dub techno  [dub_techno]
 
-Dubstep, Garage & Bass  (27)
+Dubstep, Garage & Bass  (28)
     Dubstep (classic UK)  [dubstep]
     Switch-up Bass  [switchup_bass]
     Wave (ethereal half-time, 808 sub, vocal chops)  [ethereal_wave]
@@ -74,6 +77,7 @@ Dubstep, Garage & Bass  (27)
     Melodic Dubstep  [melodic_dubstep]
     Chillstep  [chillstep]
     Deep Dubstep (soundsystem)  [deep_dubstep]
+    Slow Wobble Dubstep (bass-led)  [slow_wobble]
     Dark dubstep (sub-weight, 2009-12)  [dark_dubstep_classic]
     Deep Dubstep - sparse & eerie  [deep_dubstep_minimal]
     Deep dubstep - rollers (sub-weight)  [deep_dubstep_rollers]
@@ -116,12 +120,13 @@ Drum & Bass, Breaks & Hard  (20)
     Big beat  [big_beat]
     UK hardcore / happy hardcore  [uk_hardcore]
 
-Hip-Hop, Trap & Phonk  (30)
+Hip-Hop, Trap & Phonk  (32)
     Trap  [trap]
     UK Drill  [uk_drill]
     UK road rap  [uk_road_rap]
     Rage  [rage]
     Plugg / Pluggnb  [plugg]
+    Melodic Club Rap (160)  [melodic_club_rap]
     Cloud Rap  [cloud_rap]
     Luxury Rap  [luxury_rap]
     Orchestral Hip Hop  [orchestral_hiphop]
@@ -143,6 +148,7 @@ Hip-Hop, Trap & Phonk  (30)
     Chopped & screwed (Houston slab)  [screwed_slab]
     Beat-switch trap  [switch_trap]
     Wonky / beat-scene bass  [wonky_beats]
+    Spacious breaks electronica (128-130)  [warped_electronica]
     Baltimore club  [baltimore_club]
     Witch house  [witch_house]
     Latin trap  [latin_trap]
@@ -162,7 +168,7 @@ Pop, R&B & Hopecore  (12)
     Latin freestyle (80s)  [freestyle]
     80s synth R&B  [synth_rnb]
 
-Afro, Latin & Caribbean  (11)
+Afro, Latin & Caribbean  (15)
     Shangaan Electro  [shangaan_electro]
     Kuduro  [kuduro]
     Neoperreo  [neoperreo]
@@ -174,10 +180,15 @@ Afro, Latin & Caribbean  (11)
     Baile Funk  [baile_funk]
     Funk 150 / mandelao  [funk_150]
     Gqom  [gqom]
+    Afro Village Party (150-160)  [afro_village_party]
+    Afro Village Party - Synth (150-160)  [afro_village_synth]
+    Afro Wobble (dubstep, 150-160)  [afro_wobble]
+    Bass Amapiano (deep log drum)  [bass_amapiano]
 
-Chill, Lo-fi & Ambient  (20)
+Chill, Lo-fi & Ambient  (21)
     Mallsoft  [mallsoft]
     Lo-fi Hip Hop  [lofi]
+    Christmas Lo-fi (cosy)  [christmas_lofi]
     Sunlit electronica (analog band, guitars, 112-122)  [sunlit_electronica]
     Daydream downtempo (dusty breaks, guitar haze, 74-95)  [daydream_downtempo]
     Downtempo  [downtempo]
@@ -225,10 +236,10 @@ Hauntology  (7)
     Hauntology - cold dystopian synths  [hauntology_cold]
 
 ========================================================================
-CLASSIC  (152)
+CLASSIC  (156)
 ========================================================================
 
-Rock & Metal  (30)
+Rock & Metal  (31)
     rock  [rock]
     Indie Rock  [indie_rock]
     90s alt rock  [alt_rock_90s]
@@ -259,8 +270,9 @@ Rock & Metal  (30)
     Garage rock (60s, fuzz & organ)  [garage_rock]
     Rockabilly (slap bass & twang)  [rockabilly]
     Post-punk  [post_punk]
+    Rockin' Christmas (rockabilly)  [christmas_rockabilly]
 
-Pop & Indie  (12)
+Pop & Indie  (13)
     Dream Pop  [dream_pop]
     pop  [pop]
     Bedroom / indie pop  [bedroom_pop]
@@ -273,6 +285,7 @@ Pop & Indie  (12)
     Musical theatre / Broadway  [musical_theatre]
     Anime opening (J-rock)  [anime_opening]
     80s adult pop - gated drums & shakuhachi  [shakuhachi_pop]
+    Christmas Wall of Sound (60s pop)  [christmas_wall_of_sound]
 
 Funk & Disco  (6)
     funk  [funk]
@@ -294,13 +307,14 @@ Soul, R&B & Gospel  (10)
     Quiet Storm  [quiet_storm]
     90s R&B Slow Jam  [slow_jam]
 
-Hip-Hop  (9)
+Hip-Hop  (10)
     Boom Bap  [boombap]
     Cinematic beat tape (instrumental hip hop)  [beat_tape_cinematic]
     Jazz Rap  [jazz_rap]
     G-Funk (West Coast)  [g_funk]
     Mid-90s smooth rap  [smooth_90s_rap]
     Soul-sample hip-hop  [soul_sample_rap]
+    Choir Rap (minor, churchy)  [choir_rap]
     West-coast slap rap  [bay_rap]
     Futuristic hip-hop bounce (early 2000s)  [futuristic_bounce]
     Jazz-hop  [jazz_hop]
@@ -318,12 +332,13 @@ Jazz  (11)
     Exotica / tiki lounge  [exotica]
     Smooth jazz - horns & shakuhachi  [smooth_jazz_horns]
 
-Swing & Big Band  (5)
+Swing & Big Band  (6)
     Big Band Swing  [swing]
     Swing-era big band (hot, tom-tom)  [swing_tomtom]
     50s big band (brassy, smooth)  [big_band_50s]
     Western Swing  [western_swing]
     New Orleans brass band  [nola_brass]
+    Christmas Swing (big band)  [christmas_swing]
 
 Celtic  (16)
     Celtic Jig (6/8)  [celtic_jig]
@@ -411,7 +426,7 @@ Hindu devotional  (9)
     Carnatic kriti (veena & mridangam)  [carnatic_kriti]
 
 ========================================================================
-ORCHESTRAL  (35)
+ORCHESTRAL  (42)
 ========================================================================
 
 Film & Trailer  (11)
@@ -444,10 +459,17 @@ Ambient & Experimental  (2)
 Fantasy & Games  (1)
     Fantasy RPG  [fantasy_rpg]
 
-Christmas & Holiday  (3)
+Christmas & Holiday  (10)
     Christmas orchestral - joyful  [christmas_joyful]
     Christmas orchestral - magical (celesta)  [christmas_magic]
     Christmas orchestral - mischief  [christmas_mischief]
+    Sleigh-Ride Gallop (orchestral)  [sleigh_ride_gallop]
+    Christmas Lullaby (music box)  [christmas_lullaby]
+    Christmas Carol (choir & organ)  [christmas_carol_choir]
+    Christmas Memory Theme (family film)  [christmas_memory_theme]
+    Christmas Sneak (tiptoeing burglars)  [christmas_sneak]
+    Christmas Flight (soaring)  [christmas_flight]
+    Christmas Finale (bells & choir)  [christmas_finale]
 
 Classical Eras  (12)
     Gregorian Chant  [gregorian_chant]

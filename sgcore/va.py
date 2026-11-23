@@ -119,13 +119,17 @@ def vcf(x, cut, res=0.2, drive=1.2, block=96, tone=True):
     out = np.empty_like(chans)
     for c in range(chans.shape[0]):
         z1, z2 = np.zeros(2), np.zeros(2)
-        for s in range(0, n, block):
+        s = 0
+        while s < n:                                 # (2.17) a steady cutoff runs as one long segment (far fewer calls)
             e = min(n, s + block)
             fc = float(np.clip(cut[s], 25.0, SR * 0.42))
+            while e < n and abs(float(np.clip(cut[e], 25.0, SR * 0.42)) - fc) < 0.004 * fc and e - s < 128 * block:
+                e = min(n, e + block)
             b1, a1 = _biquad_lp(fc, q1)
             b2, a2 = _biquad_lp(fc, 0.54)
             y, z1 = signal.lfilter(b1, a1, chans[c, s:e], zi=z1)
             out[c, s:e], z2 = signal.lfilter(b2, a2, y, zi=z2)
+            s = e
     out *= 1.0 / (1.0 + 0.35 * float(res))                  # resonance thins the body: make up a little level
     return out if x.ndim == 2 else out[0]
 

@@ -279,8 +279,10 @@ def worker():
                 def log(*a):
                     job['log'].append(' '.join(str(x) for x in a))
 
-                def prog(p, i=i):
-                    job['progress'] = (i + p) / len(job['items'])
+                ws = [float(it.get('weight', 1.0)) for it in job['items']]
+
+                def prog(p, i=i, ws=ws):
+                    job['progress'] = (sum(ws[:i]) + ws[i] * p) / sum(ws)
                 sub = os.path.join(out_dir(), 'previews') if item['preview'] else out_dir()
                 info = generate(item['options'], sub, outputs=item['outputs'], preview=item['preview'], log=log, progress=prog,
                                 prefs=plugin_prefs(), section=item.get('section'), loop=item.get('loop', False))
@@ -294,6 +296,9 @@ def worker():
                     info['project'] = project_base(info['files'].get('wav') or info['files'].get('mp3'))   # for ⭐ Keep
                 info.pop('parts', None)
                 info['id'] = uuid.uuid4().hex[:8]
+                if item.get('quick'):
+                    info['quick'] = True
+                    job['log'].append('Quick preview ready - the full song is rendering now…')
                 job['results'].append(info)
             job['status'] = 'done'
         except Exception as e:
@@ -843,6 +848,11 @@ class Handler(BaseHTTPRequestHandler):
                             SEED_AVOID.pop(next(iter(SEED_AVOID)))
                 items.append(dict(options=oi, outputs=outputs, preview=preview, section=section,
                                   loop=bool(body.get('loop')) and section is not None))
+            if body.get('quick_first') and not preview and section is None and n == 1:
+                # (2.17) a short preview of the very same song first (same seed and picks), so there's something to hear
+                # in seconds; the full song follows in the same job
+                items.insert(0, dict(options=dict(items[0]['options']), outputs=['wav'], preview=True, section=None,
+                                     loop=False, quick=True, weight=0.2))
             return self._json({'job': submit(items)})
         if p == '/api/rank':                          # (2.16) batch: compose candidates (no rendering) and score them
             from .compose import compose

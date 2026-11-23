@@ -1,4 +1,4 @@
-# Studio Lab - technical genre rules (347 genres)
+# Studio Lab - technical genre rules (405 genres)
 
 Generated from the code (`sgcore/styles.py` and friends) - this is exactly what the generator follows. Every genre lists its tempo, scales, feel, song form, patterns, sounds and mix.
 
@@ -32,9 +32,9 @@ Classic / NYC house: four-on-the-floor 909, the bouncy M1 organ bass, offbeat pi
 - **Tempo** 120-127 BPM · **scales** minor, dorian · swing 0.55 (unit 16) · humanise 0.002
 - **Progressions** {'minor': [[0, 5, 2, 6], [0, 3, 4, 3], [0, 6, 5, 6], [5, 3, 0, 4]], 'dorian': [[0, 3, 0, 3], [0, 3, 6, 4], [0, 6, 2, 3]]} · chord_bars 1 · chord size 4
 - **Song form** `edm`: intro 8 [chords, kick, pad, top] (filter_in) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> build 8 [arp, chords, pad, top] (build) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> break 8 [chords, lead, pad] (alt, crash) -> build 8 [arp, chords, lead, top] (build, alt) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, kick, pad, top] (fade, crash) · form_scale 1
-- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `.o.o.o.o.o.o.o.o` / `oooooooooooooooo`; **shaker** `o.o.o.o.o.o.o.o.`; **conga** `..o..x.....o.x..` / `......x..x....o.`
+- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `.o.o.o.o.o.o.o.o` / `oooooooooooooooo` / `.ox..ox..ox..ox.`; **shaker** `o.o.o.o.o.o.o.o.` / `xoxoxoxoxoxoxoxo`; **conga** `..o..x.....o.x..` / `......x..x....o.`
 - **Drum kit** 909 · preset `909`
-- **Bass** `..R...R...R...R.` / `..R..R..O.R...R.` / `..R...R-..R...O.` · mode `pattern` · lowest note 31
+- **Bass** `..R...R...R...R.` / `..R..R..O.R...R.` / `..R...R-..R...O.` / `.RRR.RRR.R.R.RRR` · mode `pattern` · lowest note 31
 - **Chord rhythm** `..x...x.x...x..x` / `...x..x....x..x.` / `x..x..x...x..x..`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
 - **Lead rhythm** `x.x.x-..x-x.x-..` / `x-..x.x-..x.x-..` / `..x.x..x..x.x...` / `x--.x--.x-x-x---`
@@ -91,9 +91,9 @@ Tech house: rolling, rubbery filtered bassline, 909 groove with congas, rims and
 - **Tempo** 124-128 BPM · **scales** minor, dorian · swing 0.56 (unit 16) · humanise 0.0
 - **Progressions** [[0, 0, 0, 0], [0, 0, 5, 6], [0, 3, 0, 3]] · chord_bars 1 · chord size 3
 - **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
-- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **shaker** `oxoxoxoxoxoxoxox` / `oxxoxxoxoxxoxxox`; **conga** `..o..x.o...o.x..` / `x..o.x...o.ox...` / `..o.x..o.o..x.o.`; **rim** `...o.......o..o.` / `.o....o..o....o.` / `...o..o....o.o..`; **bongo** `.x.x..x..x.x..xx` / `...x.x.x...x.xx.` / `x.x..x.x.x..x.x.`; **tamb** `..x...x...x...x.` / `..x...x...x.x.x.`
+- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **shaker** `oxoxoxoxoxoxoxox` / `oxxoxxoxoxxoxxox` / `X..oX.oxX..oX...`; **conga** `..o..x.o...o.x..` / `x..o.x...o.ox...` / `..o.x..o.o..x.o.`; **rim** `...o.......o..o.` / `.o....o..o....o.` / `...o..o....o.o..`; **bongo** `.x.x..x..x.x..xx` / `...x.x.x...x.xx.` / `x.x..x.x.x..x.x.`; **tamb** `..x...x...x...x.` / `..x...x...x.x.x.`
 - **Drum kit** 909 · preset `punchy`
-- **Bass** `..RR..R...RO..R.` / `..R.R..R..R..RO.` / `.RR..R.R.RR..R..` · mode `pattern` · lowest note 31
+- **Bass** `..RR..R...RO..R.` / `..R.R..R..R..RO.` / `.RR..R.R.RR..R..` / `..RR..RR..RR..RR` / `.RRR.R.R.RRR.R.R` · mode `pattern` · lowest note 31
 - **Chord rhythm** `......x.........` / `...x......x.....`
 - **Arp** {'rate': 1, 'mode': 'random', 'oct': 5, 'prob': 0.5}
 - **Lead rhythm** `x.x.....x.x.....` / `..x.x.....x.x...` / `x...x.x.........` / `x.x.x...........`
@@ -122,9 +122,9 @@ Progressive house: emotive plucks, wide supersaws, long builds and big drops
 - **Tempo** 122-130 BPM · **scales** minor · swing 0.52 (unit 16) · humanise 0.0
 - **Progressions** [[0, 5, 2, 6], [5, 3, 0, 4], [0, 6, 5, 3]] · chord_bars 1 · chord size 3
 - **Song form** `trance`: intro 16 [bass, kick, pad, top] (filter_in) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> drop 16 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop) -> break 24 [arp, chords, fx, lead, pad] (alt, crash) -> build 8 [arp, chords, lead, pad, top] (build) -> drop 32 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop) -> outro 16 [bass, kick, top] · form_scale 1
-- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `x.x.x.x.x.x.x.x.`; **ride** `..o...o...o...o.`
+- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `x.x.x.x.x.x.x.x.` / `.ox..ox..ox..ox.`; **ride** `..o...o...o...o.`
 - **Drum kit** 909 · preset `punchy`
-- **Bass** `..R...R...R...R.` / `..RO..RO..RO..RO` · mode `pattern` · lowest note 31
+- **Bass** `..R...R...R...R.` / `..RO..RO..RO..RO` / `..RR..RR..RR..RR` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------`
 - **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5}
 - **Lead rhythm** `x.x.x.x.x.x.x...` / `x-x-x-..x-x-x-x-` / `x.x.x...x.x.x...` / `x---x---x-------`
@@ -901,6 +901,68 @@ Brazilian bass: deep, bouncy house at 124 - four-on-the-floor with a tight clap,
 - **Mix** {'lufs': -8.5, 'air': 1.4, 'low': 1.5} · reverb 2.0 · sc_depth 0.55
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.5, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
 
+### Progressive House Journey (Y2K) (`progressive_journey`)
+
+Progressive house journey (around 2000): one long, hypnotic DJ track at 128-131 that builds by adding a part at a time - percussion alone, then a rolling detuned bass filtering in, claps and a widescreen evolving pad, a dark hypnotic pluck looping under delays, muted stabs, and only late a sparse gliding lead; two breakdowns, a peak, then the parts leave one by one. Soft round kick, pumping sidechain, slow filter sweeps, warm controlled top end
+
+- **Tempo** 128-131 BPM · **scales** minor, phrygian · swing 0.5 (unit 16) · humanise 0.0
+- **Progressions** {'minor': [[0, 0, 5, 6], [0, 6, 0, 6], [0, 5, 6, 0]], 'phrygian': [[0, 1, 0, 1], [0, 1, 6, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `progressive_journey`: intro 16 [kick, top] (filter_in) -> intro 16 [bass, kick, top] (filter_in) -> verse 8 [bass, fx, kick, top] -> verse 16 [bass, kick, pad, snare, top] (crash) -> verse 16 [arp, bass, kick, pad, snare, top] -> build 8 [arp, bass, fx, kick, pad, top] (build) -> break 16 [arp, fx, pad] (alt) -> verse 16 [arp, bass, chords, kick, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, lead, pad, snare, top] -> build 8 [arp, bass, chords, fx, kick, lead, snare, top] (build) -> break 8 [chords, fx, lead, pad] (alt) -> drop 24 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop, crash) -> drop 8 [arp, bass, chords, fx, kick, pad, snare, top] (alt) -> outro 16 [arp, bass, kick, top] (layer_out) -> outro 8 [kick, top] (layer_out) · form_scale 1
+- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...` / `....X.......X..x`; **ohat** `..x...x...x...x.`; **chat** `x.x.x.x.x.x.x.x.` / `xxx.xxx.xxx.xxx.`; **shaker** `oxoxoxoxoxoxoxox` / `.x.x.x.x.x.x.x.x`; **ride** `` / `..o...o...o...o.`
+- **Drum kit** (synth preset) · preset `909`
+- **Bass** `..R.R.R...R.R.R.` / `..RR..RR..RR..RR` / `R.RRR.RRR.RRR.RR` · mode `pattern` · lowest note 31
+- **Chord rhythm** `..x.....x.....x.` / `..x.......x.....`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.85}
+- **Lead rhythm** `x---------x-----` / `x-------x---x---` / `x---------------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `groove_locked` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `melodic_bass` · drop `long_build` · variation `progressive` · culture `underground_club` · texture `wet_and_spacious` · rhythm `on_the_grid` · harmony `static_vamp` · energy `flat_hypnotic`
+- **Instruments**
+  - kick (kick): `kick` -9 dB
+  - clap (snare): `clap` -21 dB · rev=0.35
+  - ohat (top): `ohat` -30 dB
+  - chat (top): `chat` -34 dB · pan=-0.2
+  - shaker (top): `shaker` -35 dB · pan=0.35
+  - ride (top): `ride` -36 dB · pan=0.25
+  - bass (bass): `nordroll` -15 dB · sc=1.0 · alternatives ['rollbass', 'sawbass', 'moogbass', 'junobass', 'tribass', 'deepbass']
+  - pad (pad): `jpmorph` -21 dB · rev=0.55 · sc=0.9 · alternatives ['trancepad', 'warmpad', 'darkpad', 'lushpad', 'vocalpad_dark', 'gatepad', 'sawchoir', 'reversepad']
+  - arp (arp): `hypnopluck` -23 dB · pan=-0.15 · rev=0.4 · dly=0.45 · sc=0.8 · alternatives ['viruspluck', 'technoseq', 'sylpluck', 'pluck_dark', 'hypnoseq', 'berlinseq', 'acid']
+  - chords (chords): `deepstab` -24 dB · pan=0.15 · rev=0.4 · dly=0.35 · sc=0.9 · alternatives ['dubstab', 'stab_dark', 'techstab', 'obstab', 'samplerstab', 'jpmorph']
+  - lead (lead): `glidelead` -21 dB · rev=0.5 · dly=0.4 · sc=0.6 · alternatives ['squarelead', 'leadsaw_soft', 'softlead', 'progpluck', 'vocalead', 'dreamlead']
+- **Mix** {'lufs': -10.0, 'air': 0.8, 'low': 1.0} · reverb 3.2 · sc_depth 0.7
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.55, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'roots': [2, 9, 4], 'slow_chords': 0.5, 'exact_form': True, 'filter_arc': True, 'sc_arc': True, 'kick_shape': {'pitch': 48, 'punch': 150, 'sweep': 30, 'decay': 10, 'drive': 1.4, 'len': 0.32, 'click': 0.25}}
+
+### Festive House (Christmas) (`christmas_house`)
+
+Festive house (Christmas club): a four-on-the-floor around 122-126 - sleigh bells riding the off-beats, a bouncing organ bass, bright house piano chords in a major key, a choir pad, glockenspiel sparkle doubling the hook and a big filtered build into every drop - the office-party, lights-on Christmas banger
+
+- **Tempo** 122-126 BPM · **scales** major · swing 0.55 (unit 16) · humanise 0.002
+- **Progressions** {'major': [[0, 5, 3, 4], [0, 4, 5, 3], [3, 4, 0, 0]]} · chord_bars 1 · chord size 4
+- **Song form** `edm`: intro 8 [chords, kick, pad, top] (filter_in) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> build 8 [arp, chords, pad, top] (build) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> break 8 [chords, lead, pad] (alt, crash) -> build 8 [arp, chords, lead, top] (build, alt) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, kick, pad, top] (fade, crash) · form_scale 1
+- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `.o.o.o.o.o.o.o.o` / `oooooooooooooooo` / `.ox..ox..ox..ox.`; **shaker** `o.o.o.o.o.o.o.o.` / `xoxoxoxoxoxoxoxo`; **conga** `..o..x.....o.x..` / `......x..x....o.`; **sleigh** `..x...x...x...x.` / `x.x.x.x.x.x.x.x.`
+- **Drum kit** (synth preset) · preset `909`
+- **Bass** `..R...R...R...R.` / `..R..R..O.R...R.` / `..R...R-..R...O.` / `.RRR.RRR.R.R.RRR` · mode `pattern` · lowest note 31
+- **Chord rhythm** `..x...x.x...x..x` / `...x..x....x..x.` / `x..x..x...x..x..`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
+- **Lead rhythm** `x.x.x-..x-x.x-..` / `x-..x.x-..x.x-..` / `..x.x..x..x.x...` / `x--.x--.x-x-x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `tension_release` · density `dense` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `underground_club` · texture `club_punchy` · rhythm `swung_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick`  dB
+  - clap (snare): `clap`  dB · rev=0.18
+  - ohat (top): `ohat`  dB · pan=0.15
+  - chat (top): `chat` -29 dB · pan=-0.2
+  - shaker (top): `shaker` -31 dB · pan=0.35
+  - bass (bass): `organbass` -13 dB · sc=1.0 · alternatives ['sawbass', 'fmbass', 'moogbass', 'junobass', 'moogbass_driven', 'moogbass_dark', 'rubberbass']
+  - chords (chords): `m1piano` -18 dB · rev=0.25 · dly=0.15 · sc=0.9 · alternatives ['organ', 'stab', 'epiano', 'junopoly', 'chordmemory', 'discofilter', 'organ_dark', 'm1piano_dark', 'discohorn']
+  - pad (pad): `choir` -21 dB · rev=0.35 · sc=1.0 · alternatives ['strings', 'warmpad']
+  - arp (arp): `houseorgan` -27 dB · pan=-0.25 · rev=0.25 · dly=0.3 · sc=0.8 · alternatives ['organ', 'stab', 'piano', 'stab_wide', 'piano_dark']
+  - lead (lead): `m1piano`  dB · pan=0.1 · rev=0.3 · dly=0.3 · sc=0.5 · alternatives ['brass', 'organ', 'epiano']
+  - conga (top): `conga` -29 dB · pan=-0.3
+  - sleigh (top): `sleigh` -28 dB · pan=0.3 · rev=0.25
+  - glock (lead): `glock` -29 dB · pan=-0.25 · rev=0.35
+- **Mix** {'lufs': -9.0, 'air': 2.0, 'low': 1.0} · reverb 1.8 · sc_depth 0.55
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'forms': ['edm', 'house_dj', 'house_song'], 'forms_variants': True, 'exact_pools': True, 'keep_sounds': 0.8, 'own_progs': True, 'parent': 'house'}
+
 ## Techno & Trance
 
 ### Trance (`trance`)
@@ -1084,9 +1146,9 @@ Uplifting trance: emotional minor-key anthems, rolling off-beat bass, supersaw l
 - **Tempo** 134-140 BPM · **scales** minor · swing 0.5 (unit 16) · humanise 0.0
 - **Progressions** [[5, 3, 0, 4], [0, 5, 2, 6], [0, 5, 3, 4], [5, 6, 0, 0], [0, 3, 5, 4], [0, 0, 2, 3]] · chord_bars 1 · chord size 4
 - **Song form** `trance`: intro 16 [bass, kick, pad, top] (filter_in) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> drop 16 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop) -> break 24 [arp, chords, fx, lead, pad] (alt, crash) -> build 8 [arp, chords, lead, pad, top] (build) -> drop 32 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop) -> outro 16 [bass, kick, top] · form_scale 1.25
-- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `x.x.x.x.x.x.x.x.`; **ride** `x.x.x.x.x.x.x.x.`
+- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `x.x.x.x.x.x.x.x.` / `xoxoxoxoxoxoxoxo`; **ride** `x.x.x.x.x.x.x.x.`
 - **Drum kit** trance · preset `909`
-- **Bass** `.RRR.RRR.RRR.RRR` / `..R...R...R...R.` · mode `pattern` · lowest note 31
+- **Bass** `.RRR.RRR.RRR.RRR` / `..R...R...R...R.` / `..RR..RR..RR..RR` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------` / `..x...x...x...x.`
 - **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5}
 - **Lead rhythm** `x-x-x-x-x---x---` / `x--x--x-x-------` / `x-x-x---x-x-x---` / `x-------x---x---`
@@ -1631,6 +1693,100 @@ Festival techno (big-room trance, 2011-14): 134-138 BPM, a punchy four-on-the-fl
 - **Other rules** {'sc_release': 0.4, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.5, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'filter_arc': True, 'sc_arc': True, 'rev_hp': 250, 'exact_pools': True, 'polymeter': 0.35}
 - **Sound brief** Punchy 909 kick, bass on the 16ths after the kick (ducked hard); very wide supersaw stab; hard-sync hook; build pad; riser and impact into each drop
 
+### Euphoric UK Techno (`euphoric_uk_techno`)
+
+Euphoric UK techno: a simple energetic broken kick and heavy sub, slowly building - pads, rave stabs, plucks and a soaring lead stack up into a euphoric ending
+
+- **Tempo** 126-130 BPM · **scales** major, mixolydian, dorian · swing 0.5 (unit 16) · humanise 0.0
+- **Progressions** {'major': [[0, 4, 5, 3], [5, 3, 0, 4], [0, 3, 4, 4]], 'mixolydian': [[0, 6, 3, 0]], 'dorian': [[0, 3, 0, 6]]} · chord_bars 1 · chord size 3
+- **Song form** `euphoric_uk`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 8 [bass, pad, top] (alt) -> build 16 [arp, bass, kick, pad, snare, top] (crash) -> build 16 [arp, bass, chords, kick, pad, snare, top] (crash) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> drop 16 [arp, bass, chords, fx, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, fx, lead, pad] (fade) · form_scale 1
+- **Drums** **kick** `X.....X...X.....` / `X..X......X.....` / `X.....X.X...X...`; **clap** `....X.......X...`; **chat** `..x...x...x...x.` / `x.xxx.xxx.xxx.xx` / `xxxxxxxxxxxxxxxx`; **ohat** `..x...x...x...x.`; **shaker** `x.xxx.xxx.xxx.xx`
+- **Drum kit** techno · preset `909`
+- **Bass** `R.....R...R.....` / `R..R......R.....` / `R.....R.R...R...` · mode `pattern` · lowest note 28
+- **Chord rhythm** `x--x--x---x--x--` / `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'up', 'oct': 5}
+- **Lead rhythm** `x-------x---x---` / `x---x---x-x-x---` / `x-----------x-x-`
+- **Build-ups** default `filter` · choices ['filter', 'hats', 'drumless', 'wash', 'pulse', 'tapestop', 'pickup', 'ride']
+- **Traits** arrangement `hypnotic_minimal` · density `medium` · feel `robotic` · melody `minimal_motivic` · bass `rolling_groove` · drop `groove_drop` · variation `low` · culture `underground_club` · texture `dry_and_upfront` · rhythm `on_the_grid` · harmony `simple_pop_harmony` · energy `flat_hypnotic`
+- **Instruments**
+  - kick (kick): `kick` -11 dB
+  - clap (snare): `clap` -21 dB · rev=0.3
+  - chat (top): `chat` -28 dB
+  - ohat (top): `ohat` -27 dB
+  - shaker (top): `shaker` -31 dB
+  - bass (bass): `tonesub` -14 dB · sc=0.7 · alternatives ['sawbass', 'fmbass', 'reese']
+  - chords (chords): `stab` -23 dB · rev=0.45 · dly=0.3 · sc=0.6 · alternatives ['supersaw', 'noisestab', 'warmpad']
+  - pad (pad): `warmpad` -26 dB · rev=0.6 · sc=0.6 · alternatives ['pwmpad', 'strings', 'choir', 'glasspad']
+  - arp (arp): `pluck` -24 dB · dly=0.4 · sc=0.4 · alternatives ['pluck_saw', 'modseq', 'technoseq']
+  - lead (lead): `supersaw_lead` -20 dB · rev=0.5 · dly=0.3 · sc=0.35 · alternatives ['formantlead', 'leadsaw', 'progpluck']
+- **Mix** {'lufs': -9.5, 'air': 1.3, 'low': 1.4} · reverb 2.0 · sc_depth 0.55
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.7, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'filter_arc': True, 'sc_arc': True, 'groove': 'techno_shuffle'}
+
+### Euphoric Trance (`euphoric_trance`)
+
+Euphoric trance: the full uplifting arc at 138-142 - a long DJ intro, a first drop with a simple lead, then a long emotional breakdown where the melody moves to piano over wide pads, a tense build of snare rolls and rising filters, and a climax far bigger than the first drop: a huge supersaw lead with a chord-aware harmony joining it, bright 16th arps, rolling off-beat bass and pumping 7-voice supersaw chords
+
+- **Tempo** 138-142 BPM · **scales** minor · swing 0.5 (unit 16) · humanise 0.0
+- **Progressions** [[0, 5, 2, 6], [0, 5, 2, 6], [5, 3, 0, 6], [0, 5, 3, 6], [2, 6, 0, 5], [0, 3, 5, 6]] · chord_bars 1 · chord size 3
+- **Song form** `euphoric_trance`: intro 16 [bass, kick, top] (filter_in) -> intro 16 [arp, bass, fx, kick, pad, top] -> verse 16 [arp, bass, chords, kick, pad, snare, top] (crash) -> build 16 [arp, bass, chords, fx, kick, snare, top] (build) -> drop 16 [arp, bass, chords, fx, kick, lead, snare, top] (drop, crash) -> break 8 [chords, fx, lead, pad] (alt) -> break 16 [chords, fx, lead, pad] (alt, piano_lead) -> build 16 [arp, chords, fx, lead, pad, snare] (build, piano_lead) -> drop 32 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop, crash, harm=half) -> drop 32 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop, crash, harm=full, alt) -> outro 32 [arp, bass, kick, pad, top] (layer_out) · form_scale 1
+- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `x.x.x.x.x.x.x.x.` / `xxxxxxxxxxxxxxxx`; **ride** `..x...x...x...x.`; **shaker** `x.xxx.xxx.xxx.xx`
+- **Drum kit** (synth preset) · preset `909`
+- **Bass** `..R...R...R...R.` / `.RRR.RRR.RRR.RRR` · mode `pattern` · lowest note 30
+- **Chord rhythm** `x---------------` / `..x...x...x...x.` / `x-------x-------`
+- **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
+- **Lead rhythm** `x-------x---x---` / `x-----x-----x---` / `x---x---x-x-x---` / `x-------x-x-----`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `tension_release` · density `dense` · feel `robotic` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `underground_club` · texture `massive_reverb` · rhythm `on_the_grid` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -11 dB
+  - clap (snare): `clap` -19 dB · rev=0.35
+  - ohat (top): `ohat` -26 dB
+  - chat (top): `chat` -30 dB
+  - ride (top): `ride` -32 dB
+  - shaker (top): `shaker` -33 dB · pan=-0.2
+  - bass (bass): `rollbass` -14 dB · sc=0.75 · alternatives ['sawbass', 'fmbass', 'moogbass']
+  - chords (chords): `supersaw_wide` -22 dB · rev=0.5 · dly=0.15 · sc=0.8 · alternatives ['supersaw', 'hypersaw', 'trancestrings', 'pianosaw']
+  - pad (pad): `trancepad_wide` -26 dB · rev=0.7 · sc=0.45 · alternatives ['trancepad', 'pwmpad', 'warmpad', 'choir', 'atmos', 'strings']
+  - arp (arp): `trancepluck` -24 dB · pan=0.15 · rev=0.4 · dly=0.45 · sc=0.5 · alternatives ['trancebell', 'superpluck', 'pluckbell', 'dxbell', 'nordpluck', 'icebell']
+  - lead (lead): `supersaw_lead` -17 dB · rev=0.55 · dly=0.35 · sc=0.45 · alternatives ['hypersaw', 'supersaw_lead_octave', 'emolead', 'formantlead']
+  - harm (lead): `supersaw` -22 dB · rev=0.5 · dly=0.25 · sc=0.45
+  - lead_piano (lead): `piano` -18 dB · rev=0.65 · dly=0.3
+- **Mix** {'tone': [-0.5, 0, -5.5, -7.5, -12.0, -7.0, -9.5, -10.0, -16.0], 'lufs': -8.3, 'air': 2.0, 'low': 1.1} · reverb 3.6 · sc_depth 0.65
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.45, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'roots': [6, 9, 2, 4], 'euphoric': True, 'no_rotation': True, 'exact_pools': True, 'filter_arc': True, 'sc_arc': True, 'exact_form': True, 'repetition': 0.75, 'rev_predelay': 0.04, 'rev_hp': 240}
+- **Sound brief** Layered supersaw lead + chord-aware harmony; 7-voice supersaw chords; evolving pad; pluck / FM-bell 16th arp with ping-pong delay; rolling off-beat bass + clean sub; piano melody in the breakdown
+
+### Anthem Trance (2000 club mix) (`anthem_trance_2000`)
+
+Anthem trance club mix (around 2000): 138-140 BPM in a minor key, built for the DJ - a filtered beat-only start, the rolling bass and then the percussion layering in, the riff arriving, a short drop-out, then a long breakdown that starts dark and empty and climbs (pad, then chords, then the melody, then a snare build) into a 32-bar peak, a short breath and a rebuild into a second peak, and a beat-and-bass outro for mixing out
+
+- **Tempo** 138-140 BPM · **scales** minor · swing 0.5 (unit 16) · humanise 0.002
+- **Progressions** {'minor': [[0, 5, 2, 6], [5, 2, 6, 0], [0, 5, 6, 4], [0, 5, 2, 4]]} · chord_bars 1 · chord size 3
+- **Song form** `anthem_trance_2000`: intro 8 [kick, top] (filter_in) -> verse 8 [bass, kick, top] -> verse 16 [bass, kick, snare, top] (layer_in) -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 8 [arp, fx, pad] (alt) -> verse 8 [arp, bass, kick, snare, top] -> break 8 [pad] -> break 8 [chords, pad] -> break 8 [chords, lead, pad] -> build 8 [chords, fx, lead, pad, snare] (build) -> drop 32 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop, crash) -> break 8 [arp, fx, pad] (alt) -> build 16 [arp, fx, kick, pad, top] (build) -> drop 24 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop, crash, alt) -> outro 16 [bass, kick, top] (layer_out) -> outro 8 [kick, top] (layer_out) · form_scale 1
+- **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `xxxxxxxxxxxxxxxx` / `oxoxoxoxoxoxoxox`; **ride** `..x...x...x...x.`; **crash** `X...............`
+- **Drum kit** (synth preset) · preset `909`
+- **Bass** `.RRR.RRR.RRR.RRR` / `..RR..RR..RR..RR` / `.RRR.RRR.RRR.RO.` · mode `pattern` · lowest note 33
+- **Chord rhythm** `x-x-x-x-x-x-x-x-` / `xx.xx.xx.x.xx.x.`
+- **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
+- **Lead rhythm** `x-------x---x---` / `x---x---x-x-x---` / `x-----------x---` / `x-x-x---x-------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `tension_release` · density `dense` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `underground_club` · texture `wet_and_spacious` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -10 dB
+  - clap (snare): `clap` -21 dB · rev=0.3
+  - ohat (top): `ohat` -26 dB
+  - chat (top): `chat` -27 dB · pan=-0.2
+  - ride (top): `ride` -29 dB · pan=0.25
+  - crash (top): `crash` -27 dB · rev=0.3
+  - bass (bass): `rollbass` -13 dB · sc=1.0 · alternatives ['sawbass', 'moogbass', 'moogbass_dark', 'sawbass_driven']
+  - chords (chords): `supersaw`  dB · rev=0.4 · dly=0.15 · sc=0.9 · alternatives ['hypersaw', 'stab', 'techstab', 'supersaw_wide', 'stab_dark']
+  - pad (pad): `trancepad` -25 dB · rev=0.6 · sc=0.9 · alternatives ['vocalpad', 'strings', 'lushpad', 'atmos', 'gatepad', 'strings_dark', 'vocalpad_wide', 'vowelpad']
+  - arp (arp): `techstab` -22 dB · pan=0.1 · rev=0.3 · dly=0.45 · sc=0.7 · alternatives ['superpluck', 'acid', 'pluck_saw', 'nordpluck', 'acid_dark', 'acid_driven', 'sawharp']
+  - lead (lead): `emolead` -19 dB · rev=0.6 · dly=0.4 · sc=0.4 · alternatives ['breathlead', 'supersaw_lead', 'hypersaw', 'progpluck', 'supersaw_lead_octave', 'supersaw_lead_dark', 'risinglead']
+  - texture (fx): `texture` -38 dB
+- **Mix** {'tone': [0, -1.8, -8.7, -13.7, -16.5, -16.3, -16.2, -15.6, -19.6], 'lufs': -9.0, 'air': 0.4, 'low': 1.2} · reverb 3.0 · sc_depth 0.7
+- **Other rules** {'sc_release': 0.35, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 52, 'punch': 150, 'decay': 9, 'drive': 2.0, 'click': 0.45}}, 'snare_tracks': ['clap'], 'bass_gate': 0.5, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'rev_predelay': 0.04, 'rev_hp': 220, 'repetition': 0.8, 'filter_arc': True, 'sc_arc': True, 'exact_form': True, 'parent': 'club_trance_2000s'}
+- **Sound brief** Tight 909 kick, clap, open + 16th hats, ride; galloping off-beat rolling bass; punchy tech-trance riff synth with dotted delay; gated supersaw chords; wide trance pad; breathy vocal-like lead in the breakdown
+
 ## Dubstep, Garage & Bass
 
 ### Future Bass (`future_bass`)
@@ -1685,8 +1841,8 @@ Dark / UK dubstep: half-time at 140, deep clean sub with a slow wobbling mid-bas
   - bass (bass): `wobble` -19 dB · sc=0.7 · alternatives ['reese', 'growl', 'fmbass', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'fmgrowl', 'talkgrowl', 'reese_driven']
   - chords (chords): `warmpad` -27 dB · rev=0.6 · sc=0.5 · alternatives ['supersaw', 'strings', 'epiano', 'strings_wide', 'supersaw_wide']
   - pad (pad): `choir` -28 dB · rev=0.6 · sc=0.5 · alternatives ['warmpad', 'strings', 'warmpad_tape', 'strings_dark']
-  - arp (arp): `bell` -27 dB · rev=0.4 · dly=0.35 · alternatives ['celesta', 'pluck_saw', 'vibes', 'bell_tape', 'bell_dark']
-  - lead (lead): `stab` -22 dB · rev=0.5 · dly=0.4 · sc=0.4 · alternatives ['organ', 'bell', 'softlead', 'softlead_wide', 'softlead_octave']
+  - arp (arp): `pluck_saw` -27 dB · rev=0.4 · dly=0.35 · alternatives ['vibes', 'pluck_saw_wide', 'pluck_saw_dark']
+  - lead (lead): `stab` -22 dB · rev=0.5 · dly=0.4 · sc=0.4 · alternatives ['organ', 'softlead', 'stab_wide', 'organ_dark']
   - texture (fx): `texture` -36 dB · rev=0.5
 - **Mix** {'lufs': -8.0, 'air': 1.2, 'low': 1.8, 'tone': [0.0, -7.5, -10.0, -15.4, -16.4, -14.1, -12.9, -15.6, -20.6]} · reverb 3.0 · sc_depth 0.5
 - **Other rules** {'sc_release': 0.3, 'delay_beats': 0.75, 'kit_override': {'kick': {'drive': 2.0, 'punch': 200, 'decay': 6}, 'snare': {'snap': 1.5, 'decay': 10}}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'sub_layer': True, 'forms': ['halftime', 'dubstep_vip', 'dubstep_fake', 'dubstep_club'], 'forms_variants': True}
@@ -1744,7 +1900,7 @@ Rolling atmospheric bass: a wonky, swung beat around 120-130 with a lazy, drunk 
   - bass (bass): `reese` -12 dB · sc=0.4 · alternatives ['sinebass', 'midbass', 'moogbass', 'moogbass_dark', 'moogbass_driven']
   - chords (chords): `epiano` -23 dB · rev=0.55 · dly=0.25 · alternatives ['wurli', 'warmpad', 'polysynth', 'polysynth_wide', 'warmpad_wide']
   - pad (pad): `glasspad` -26 dB · rev=0.7 · alternatives ['warmpad', 'choir', 'solina', 'atmosbell', 'choir_wide', 'choir_dark']
-  - arp (arp): `pluck` -27 dB · pan=0.3 · rev=0.6 · dly=0.4 · alternatives ['bell', 'epiano', 'epiano_tape', 'bell_tape']
+  - arp (arp): `pluck` -27 dB · pan=0.3 · rev=0.6 · dly=0.4 · alternatives ['epiano', 'pluck_wide', 'pluck_octave']
   - lead (lead): `softlead` -21 dB · rev=0.6 · dly=0.4 · alternatives ['polysynth', 'epiano', 'pluck', 'epiano_bright', 'polysynth_soft']
   - texture (fx): `texture` -36 dB
 - **Mix** {'lufs': -10.5, 'air': -0.5, 'low': 3.0, 'width': 1.5, 'lofi': True, 'wobble': 0.6} · reverb 3.2 · sc_depth 0.35
@@ -1862,7 +2018,7 @@ Brostep: festival dubstep - snarling growls, wobbles and FM stabs trading bars i
   - bass (bass): `growl` -13 dB · sc=0.7 · alternatives ['wobble', 'screech', 'reese', 'vowelwob', 'multiwob', 'tablewob', 'chopwob', 'fmgrowl', 'talkgrowl', 'reese_driven', 'wobble_dark']
   - chords (chords): `warmpad` -27 dB · rev=0.5 · sc=0.6 · alternatives ['synthbrass', 'supersaw', 'strings', 'stab', 'synthbrass_dark', 'stab_dark']
   - pad (pad): `choir` -28 dB · rev=0.5 · sc=0.6 · alternatives ['warmpad', 'glasspad', 'strings', 'glasspad_dark', 'warmpad_tape']
-  - arp (arp): `pluck_saw` -28 dB · rev=0.3 · dly=0.4 · alternatives ['bell', 'pluck', 'stab', 'pluck_saw_dark', 'stab_dark']
+  - arp (arp): `pluck_saw` -28 dB · rev=0.3 · dly=0.4 · alternatives ['pluck', 'stab', 'pluck_saw_dark']
   - lead (lead): `supersaw_lead` -19 dB · rev=0.3 · sc=0.4 · alternatives ['analoglead', 'synthbrass', 'talkgrowl2', 'wavetable', 'hoover', 'synthbrass_dark']
 - **Mix** {'tone': [0.0, -5.3, -10.6, -15.2, -15.9, -17.8, -18.1, -18.2, -20.5], 'lufs': -7.5, 'air': 1.6, 'low': 2.0, 'drive': 0.25} · reverb 2.2 · sc_depth 0.65
 - **Other rules** {'sc_release': 0.25, 'delay_beats': 0.75, 'kit_override': {'kick': {'drive': 3.5, 'punch': 220, 'decay': 6}, 'snare': {'snap': 2.0, 'decay': 9, 'drive': 1.5}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'sub_layer': True, 'bass_switch': ['wobble', 'screech'], 'switch_bars': 1, 'forms': ['halftime', 'dubstep_vip', 'dubstep_fake', 'dubstep_club'], 'forms_variants': True}
@@ -1923,8 +2079,8 @@ Deep dubstep (soundsystem): half-time 140, kick on 1 and snare on 3, a mono sub 
   - bass (bass): `wobble` -10 dB · sc=0.3 · alternatives ['sinebass', 'growl', 'reese', 'darkwob', 'subwob', 'squarewob', 'tonesub']
   - chords (chords): `stab` -27 dB · rev=0.5 · dly=0.5 · alternatives ['organ', 'warmpad', 'epiano', 'darkpad', 'horrorstab']
   - pad (pad): `warmpad` -33 dB · rev=0.6 · alternatives ['strings', 'choir', 'glasspad', 'darkpad', 'eeriepad']
-  - arp (arp): `bell` -32 dB · pan=0.3 · rev=0.6 · dly=0.55 · alternatives ['pluck', 'organ', 'celesta', 'grimesquare']
-  - lead (lead): `stab` -25 dB · pan=-0.15 · rev=0.5 · dly=0.5 · alternatives ['organ', 'bell', 'softlead', 'grimesquare', 'dubsiren']
+  - arp (arp): `organ` -32 dB · pan=0.3 · rev=0.6 · dly=0.55 · alternatives ['pluck', 'grimesquare']
+  - lead (lead): `stab` -25 dB · pan=-0.15 · rev=0.5 · dly=0.5 · alternatives ['organ', 'softlead', 'grimesquare', 'dubsiren']
   - texture (fx): `texture` -37 dB · rev=0.6
 - **Mix** {'tone': [0.0, -6.1, -9.9, -16.8, -17.9, -11.9, -12.6, -19.5, -26.9], 'lufs': -11.0, 'air': 0.5, 'low': 2.2, 'width': 0.35} · reverb 2.8 · sc_depth 0.15
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'drive': 1.5, 'decay': 8, 'pitch': 47, 'punch': 110}, 'snare': {'snap': 1.4, 'decay': 9, 'tone': 190}}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 56, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'dub': 0.5, 'dub_beats': 0.75, 'own_progs': True, 'wobble_rates': [2, 4, 8, 2, 1], 'wobble_rates_alt': [1, 0.5, 0.5, 1, 0.3333333333333333], 'wobble_lens': [16, 16, 8, 8, 4], 'pedal_sub': True, 'repetition': 0.9, 'simplicity': 0.5, 'exact_pools': True}
@@ -1956,8 +2112,8 @@ Deep / minimal dubstep: half-time 140 with the kick on 1 and the snare on 3, spa
   - bass (bass): `sinebass` -11 dB · alternatives ['wobble', '808', 'moogbass', 'darkwob', 'subwob', 'sinebass_driven', 'moogbass_driven']
   - chords (chords): `stab` -26 dB · rev=0.55 · dly=0.65 · alternatives ['organ', 'warmpad', 'epiano', 'pingchord', 'warmpad_tape', 'organ_driven']
   - pad (pad): `warmpad` -32 dB · rev=0.6 · alternatives ['strings', 'glasspad', 'choir', 'glasspad_dark', 'strings_wide']
-  - arp (arp): `bell` -32 dB · pan=0.3 · rev=0.6 · dly=0.55 · alternatives ['celesta', 'pluck', 'vibes', 'bell_dark', 'pluck_dark']
-  - lead (lead): `stab` -25 dB · pan=-0.15 · rev=0.55 · dly=0.55 · alternatives ['organ', 'bell', 'softlead', 'organ_driven', 'organ_dark']
+  - arp (arp): `organ` -32 dB · pan=0.3 · rev=0.6 · dly=0.55 · alternatives ['pluck', 'vibes', 'organ_dark', 'pluck_dark']
+  - lead (lead): `stab` -25 dB · pan=-0.15 · rev=0.55 · dly=0.55 · alternatives ['organ', 'softlead', 'organ_driven', 'softlead_octave']
   - texture (fx): `texture` -35 dB · rev=0.6
 - **Mix** {'lufs': -10.5, 'air': 0.6, 'low': 2.2} · reverb 3.2 · sc_depth 0.1
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'drive': 1.4, 'decay': 7, 'pitch': 46}, 'snare': {'snap': 1.4, 'decay': 8, 'tone': 190}}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.95, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'repetition': 0.9, 'simplicity': 0.5}
@@ -2414,6 +2570,67 @@ Dark dubstep (sub-weight, 2009-12): half-time 140-144 with the snare on beat 3 a
 - **Other rules** {'sc_release': 0.25, 'delay_beats': 0.75, 'kit_override': {'kick': {'drive': 1.8, 'decay': 9, 'pitch': 50, 'punch': 130}, 'snare': {'snap': 1.5, 'decay': 10, 'tone': 200}}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 57, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'dub': 0.35, 'dub_beats': 0.75, 'own_progs': True, 'wobble_rates': [2, 1, 2, 4, 1], 'wobble_rates_alt': [4, 2, 8, 4, 2], 'wobble_lens': [16, 16, 8, 8, 4], 'repetition': 0.85, 'exact_pools': True, 'forms': ['dark_dubstep_classic', 'dubstep_deep_club'], 'forms_variants': True}
 - **Sound brief** Half-time 140: kick on 1 with syncopated extras, snare on 3; huge mono sine sub (loudest element) under a dark slow LFO wobble (low-passed, never bright); grime square riff; horror stabs; dub siren into a tape echo; very mono, dark top end
 
+### Switch-up Bass (`switchup_bass`)
+
+Switch-up bass: one broken UK-bass rhythm from the first bar to the last and a huge one-note sub riding the kick - while everything on top switches every section: new mid-basses, stabs, vocal chops and samples, crushed, phased, wah'd or filtered down dark, with drop-outs where the sub stops dead
+
+- **Tempo** 130-134 BPM · **scales** minor, phrygian · swing 0.53 (unit 16) · humanise 0.003
+- **Progressions** {'minor': [[0, 0, 0, 0], [0, 0, 5, 5], [0, 0, 6, 6]], 'phrygian': [[0, 0, 1, 1], [0, 0, 0, 1]]} · chord_bars 1 · chord size 2
+- **Song form** `switchup_bass`: intro 8 [chords, fx, kick, top] (filter_in) -> drop 16 [arp, bass, chords, kick, snare, top] (drop, crash) -> drop 8 [arp, bass, kick, lead, snare, top] (drop) -> break 4 [chords, fx, kick, lead, top] (gap) -> drop 16 [bass, chords, kick, lead, snare, top] (drop, crash) -> drop 16 [arp, bass, kick, lead, snare, top] (drop) -> drop 8 [bass, chords, kick, snare, top] (drop) -> break 4 [fx, kick, lead, top] (gap) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (drop, crash) -> drop 8 [arp, bass, chords, kick, snare, top] (drop) -> outro 8 [bass, kick, top] (fade) · form_scale 1
+- **Drums** **kick** `X..X.X.......XX.`; **clap** `....X.......X...`; **chat** `x...x...x.....x.`; **shaker** `x.x.x.x.x.x.x.x.`; **rim** `..x.....x..x....`
+- **Drum kit** (synth preset) · preset `punchy`
+- **Bass** `R..R.R.......RR.` · mode `pattern` · lowest note 33
+- **Chord rhythm** `x..x.x.......x..` / `x.......x.......` / `..x...x...x...x.`
+- **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.55}
+- **Lead rhythm** `x..x............` / `....x.x.....x...` / `x.x.....x.x.....`
+- **Build-ups** default `(category default)` · choices ['none'] · transitions ['gap', 'none'] · drops land plainly
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `uk_soundsystem` · texture `dry_and_upfront` · rhythm `swung_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -11 dB
+  - clap (snare): `clap` -19 dB · rev=0.2
+  - chat (top): `chat` -28 dB · pan=0.15
+  - shaker (top): `shaker` -32 dB · pan=-0.2
+  - rim (top): `rim` -30 dB · pan=0.3
+  - bass (bass): `tonesub` -8 dB · sc=0.5 · alternatives ['dubsub', 'sinebass_suboct']
+  - bass_mid (bass): `reese` -21 dB · sc=0.6
+  - chords (chords): `noisestab` -22 dB · rev=0.3 · dly=0.25 · sc=0.5 · alternatives ['ravestab', 'samplerstab', 'darksample']
+  - arp (arp): `fmperc` -25 dB · pan=0.2 · dly=0.3 · alternatives ['modseq']
+  - lead (lead): `vocalchop` -21 dB · rev=0.35 · dly=0.3 · alternatives ['formantchop', 'housevox']
+  - texture (fx): `texture` -36 dB
+- **Mix** {'lufs': -9.5, 'air': 1.0, 'low': 1.6} · reverb 1.2 · sc_depth 0.45
+- **Other rules** {'sc_release': 0.12, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.8, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True, 'own_progs': True, 'scene_switch': True, 'bass_rhythm': 'kick', 'repetition': 0.8, 'exact_pools': True}
+- **Sound brief** Huge one-note sub on the kick; switching mid-bass layer (reese / growl / FM / wobble); rave stabs, vocal chops and samples with a new effect every section; broken UK-bass drums that never change
+
+### Slow Wobble Dubstep (bass-led) (`slow_wobble`)
+
+Slow wobble dubstep (deep, bass-led): half-time 140 where the bass IS the song - a clean sine sub on the root (a semitone away now and then) and one wobble on top that moves slowly: one sweep per bar, per half bar or per beat, a dotted-1/8 bounce, or a single sweep that opens across the whole note. Lots of space - phrases stop and the sub carries on alone. Kick on 1, snare on 3, a few rims and hats in a dub echo, almost nothing else
+
+- **Tempo** 138-142 BPM · **scales** phrygian, minor · swing 0.56 (unit 16) · humanise 0.005
+- **Progressions** {'phrygian': [[0, 0, 0, 0], [0, 0, 0, 1], [0, 1, 0, 0], [0, 0, 1, 0]], 'minor': [[0, 0, 0, 0], [0, 0, 5, 0], [0, 0, 0, 6]]} · chord_bars 2 · chord size 3
+- **Song form** `deep_dubstep`: intro 12 [fx, pad, top] (filter_in) -> intro 4 [chords, fx, pad, top] -> drop 32 [bass, chords, fx, kick, lead, snare, top] (drop) -> drop 32 [arp, bass, chords, fx, kick, lead, snare, top] -> break 8 [chords, fx, pad, top] (alt) -> break 8 [bass, fx, kick, pad] (alt) -> build 4 [pad, top] (build) -> drop 32 [arp, bass, chords, fx, kick, lead, snare, top] (drop, alt) -> drop 24 [bass, chords, fx, kick, lead, snare, top] (alt) -> outro 8 [fx, pad, top] (fade) · form_scale 1
+- **Drums** **kick** `X.........X.....` / `X.........x.....` / `X.....x...X.....` / `X..........X....`; **snare** `........X.......` / `........X......o`; **rim** `x...X.o.....x...X...x...x...Xo..` / `x...X...x.......X...............` / `...x......x...x.` / `....x.......X.o.................`; **shaker** `..x...x.x.x...x.` / `..x.x...x...x.x.`; **chat** `X...x...X....x..X...x...X....x..` / `X...o.x...o....oxoo.o...o.......` / `Xx..o.xoo...o.o...o.o.o.o...o...` / `..x...x...x...x.` / `oo..x...Xxo.x...oo..x...ooooXxoo` / `X..o....o..xo.X.Xx.Xo...o..xo.X.` / `x...x...Xoo.x.Xxx...x...x...x...`; **ohat** `................................` / `..............................x.` / `......x.........`
+- **Drum kit** (synth preset) · preset `punchy`
+- **Bass** `R---------------` / `R---------------` / `R-------R-------` / `R-----------R---` · mode `wobble` · lowest note 28
+- **Chord rhythm** `....x...........` / `........x.......` / `x-------........` / `....x.......x...`
+- **Arp** {'rate': 4, 'mode': 'random', 'oct': 4, 'prob': 0.2}
+- **Lead rhythm** `x-------........` / `........x---....` / `x---....x-......` / `....x-------....`
+- **Build-ups** default `(category default)` · choices ['pause', 'none', 'pause', 'drumless'] · transitions ['gap', 'none', 'none', 'crash'] · drops land plainly
+- **Traits** arrangement `atmospheric_drift` · density `sparse` · feel `loose_human` · melody `minimal_motivic` · bass `wobble_modulated` · drop `groove_drop` · variation `low` · culture `uk_soundsystem` · texture `wet_and_spacious` · rhythm `half_time` · harmony `static_vamp` · energy `slow_build`
+- **Instruments**
+  - kick (kick): `kick` -12 dB
+  - snare (snare): `snare` -15 dB · rev=0.4
+  - rim (top): `rim` -27 dB · pan=0.25 · rev=0.3
+  - shaker (top): `shaker` -32 dB · pan=-0.3
+  - chat (top): `chat` -30 dB · pan=-0.2
+  - ohat (top): `ohat` -31 dB · pan=0.3 · rev=0.3
+  - bass (bass): `slowwob` -10 dB · sc=0.3 · alternatives ['yoiwob', 'sweepwob', 'reesewob', 'pitchgrowl', 'brightwob', 'wobble', 'darkwob']
+  - chords (chords): `stab` -27 dB · rev=0.5 · dly=0.5 · alternatives ['dubstab', 'stab_dark', 'virusflutter']
+  - pad (pad): `warmpad` -33 dB · rev=0.6 · alternatives ['dddpad', 'virusflutter', 'darkpad', 'drone']
+  - texture (fx): `texture` -37 dB · rev=0.6
+- **Mix** {'tone': [0.0, -6.1, -9.9, -16.8, -17.9, -11.9, -12.6, -19.5, -26.9], 'lufs': -11.0, 'air': 0.5, 'low': 2.2, 'width': 0.35} · reverb 2.8 · sc_depth 0.15
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'drive': 1.4, 'decay': 5, 'pitch': 50, 'punch': 140}, 'snare': {'snap': 1.7, 'decay': 7, 'tone': 230}}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 56, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'dub': 0.5, 'dub_beats': 0.75, 'own_progs': True, 'wobble_rates': [4, 2, 2, 1.5, 1.5, 1, 0.75, 1.3333333333333333], 'wobble_rates_alt': [2, 1.5, 1, 0.6666666666666666, 0.75, 0.5, 0.3333333333333333], 'wobble_lens': [16, 8, 8, 4], 'pedal_sub': True, 'repetition': 0.95, 'simplicity': 0.85, 'exact_pools': True, 'roots': [5, 6, 3, 2, 4, 9], 'wobble_rest': 0.25, 'parent': 'deep_dubstep'}
+- **Sound brief** Mono sine sub on the tonic (flat 2nd now and then) + a growling mid-bass on an LFO in 8ths / 16ths; punchy kick on 1, snare on 3 with a plate; rims, shakers and hats into a tape delay; one dark stab / bell motif; long drums-only intro; no snare rolls. Classic UK half-time: kick on beat 1, snare on beat 3. Balance: the sub carries the weight (felt more than heard, kept mono and clean below ~100 Hz), the mid-bass carries the movement - when the mid-bass talks the sub stays plain
+
 ## Drum & Bass, Breaks & Hard
 
 ### Electro (`electro`)
@@ -2613,7 +2830,7 @@ IDM jungle - moody theme: a long, atmospheric synth intro - warm, detuned pads a
   - texture (fx): `texture` -36 dB · rev=0.6
 - **Mix** {'lufs': -11.0, 'air': 0.4, 'low': 1.6, 'width': 0.7} · reverb 3.0 · sc_depth 0.15
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'key_change': True, 'own_progs': True, 'edit_any': 0.2, 'granular': 0.55, 'calm_lead': 1.0, 'repetition': 0.9}
-- **Sound brief** Detuned analog pads (Juno / Prophet); a melancholy mono synth theme; fretless / fingered bass guitar played busily and melodically; a chopped Amen-type break with heavy edits (rushes, ratchets, reverses); dark reverb
+- **Sound brief** Detuned analog pads (Juno / Prophet); a melancholy mono synth theme; fretless / fingered bass guitar played busily and melodically; a chopped jungle-type break with heavy edits (rushes, ratchets, reverses); dark reverb
 
 ### Drill & bass - spacey (intricate breaks, jazz colours) (`drill_space`)
 
@@ -2735,7 +2952,7 @@ Hardcore / gabber (90s Rotterdam): 170-200 BPM four-on-the-floor of heavily dist
 
 ### Breakbeat Hardcore / Rave (`rave_hardcore`)
 
-Breakbeat hardcore / early UK rave (1990-93): Amen-style breaks over a four-on-the-floor kick, piano stabs, hoover and Mentasm leads, pitched-up vocal chops - funky, chaotic, euphoric
+Breakbeat hardcore / early UK rave (1990-93): Classic jungle breaks over a four-on-the-floor kick, piano stabs, hoover and rave hoover leads, pitched-up vocal chops - funky, chaotic, euphoric
 
 - **Tempo** 135-155 BPM · **scales** minor, major · swing 0.52 (unit 16) · humanise 0.0
 - **Progressions** {'minor': [[0, 5, 3, 4], [0, 5, 6, 4]], 'major': [[0, 4, 5, 3], [0, 3, 4, 4]]} · chord_bars 1 · chord size 3
@@ -2819,7 +3036,7 @@ Funky breaks / glitch electro (late-90s big beat & nu-skool breaks): a chopped, 
   - lead (lead): `whine` -17 dB · rev=0.25 · dly=0.25 · alternatives ['talkbox', 'softlead', 'leadsaw', 'leadsaw_octave', 'softlead_octave']
 - **Mix** {'lufs': -9.5, 'air': -0.5, 'low': 4.0, 'width': 0.75} · reverb 1.4 · sc_depth 0.35
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_glide': True, 'riff_lo': 40, 'riff_chorus': 0.55}
-- **Sound brief** Chopped funk break (Think / Hot Pants style) with edits; rubbery FM / Moog bass with slides; warped portamento lead; distorted palm-muted guitar riff doubled by the bass; Rhodes stabs; acid squelch fills
+- **Sound brief** Chopped funk break (classic funk-break style) with edits; rubbery FM / Moog bass with slides; warped portamento lead; distorted palm-muted guitar riff doubled by the bass; Rhodes stabs; acid squelch fills
 
 ### Jump-up DnB (`jump_up`)
 
@@ -3109,6 +3326,36 @@ Orchestral hip hop / drill: dramatic string stabs, choir, pizzicato, sliding 808
 - **Mix** {'lufs': -9.0, 'air': 1.5, 'low': 2.0} · reverb 2.0 · sc_depth 0.15
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': ''}
 - **Sound brief** String section stabs (staccato); Strings legato / choir (pad); Pizzicato; Violin or horn theme; 808
+
+### Cinematic dark trap (`cinematic_trap`)
+
+Cinematic dark trap: menacing orchestral strings, choirs and bells over booming sliding 808s, tight hats with triplet rolls and hard half-time snares - villain-movie energy
+
+- **Tempo** 130-150 BPM · **scales** minor, harmonic_minor, phrygian · swing 0.5 (unit 16) · humanise 0.0
+- **Progressions** {'minor': [[0, 0, 5, 4], [0, 5, 3, 4], [0, 6, 5, 6]], 'harmonic_minor': [[0, 5, 0, 4], [0, 0, 5, 4]], 'phrygian': [[0, 1, 0, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `trap`: intro 8 [chords, pad] (filter_in) -> hook 16 [bass, chords, kick, lead, pad, snare, top] (drop) -> verse 16 [bass, chords, kick, snare, top] (crash) -> hook 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [chords, lead, pad] (alt) -> hook 16 [bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, pad] (fade) · form_scale 1
+- **Drums** **kick** `X.....X...X.....` / `X......X..X...X.` / `X..X......X.....`; **snare** `........X.......`; **clap** `........X.......`; **ohat** `..............x.` / `................`
+- **Drum kit** (synth preset) · preset `808`
+- **Bass** `R.......R.......` · mode `808` · lowest note 26
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'up', 'oct': 5}
+- **Lead rhythm** `x.x.x.x.x...x...` / `x..x..x.x.......` / `x---x---x-x-....` / `x-------x---x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `808_slide` · drop `long_build` · variation `sectional` · culture `street` · texture `wet_and_spacious` · rhythm `half_time` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -14 dB
+  - snare (snare): `snare` -14 dB · rev=0.2
+  - clap (snare): `clap` -20 dB · rev=0.2
+  - chat (top): `chat` -26 dB · pan=0.15
+  - ohat (top): `ohat` -29 dB · pan=-0.2
+  - bass (bass): `808` -12 dB · sc=0.5 · alternatives ['808_dark', '808_driven']
+  - chords (chords): `strings` -21 dB · rev=0.5 · alternatives ['tremolo', 'choir', 'piano', 'strings_wide', 'choir_dark']
+  - pad (pad): `choir` -27 dB · rev=0.6 · alternatives ['strings', 'darkpad', 'warmpad', 'warmpad_tape', 'warmpad_wide']
+  - arp (arp): `spiccato` -25 dB · pan=0.2 · rev=0.35 · alternatives ['pizz', 'harp']
+  - lead (lead): `leadsaw` -18 dB · rev=0.45 · dly=0.3 · alternatives ['piano', 'violin', 'churchbell', 'piano_tape', 'leadsaw_octave']
+- **Mix** {'lufs': -8.5, 'air': 1.4, 'low': 2.0} · reverb 2.8 · sc_depth 0.25
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': ''}
+- **Sound brief** Dark staccato / sustained strings; choir; tubular bells / music box; sliding 808; tight trap hats and claps
 
 ### Jersey Club (`jersey_club`)
 
@@ -3866,6 +4113,65 @@ Dark drill (Brooklyn-style, UK drill production): ~143 BPM, a deep, distorted 80
 - **Other rules** {'sc_release': 0.12, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 56, 'punch': 150, 'decay': 22, 'drive': 2.0, 'len': 0.15, 'click': 0.7}, 'snare': {'crack': 0.7, 'tone': 210, 'drive': 1.5}, 'chat': {'bits': 10}}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': '', 'pitch_rolls': True, 'own_progs': True, 'no_rotation': True, 'no_layers': True, 'keep_fx': ['tapestop'], 'warp_808': 0.2, 'oct808': 0.08, 'fifth808': 0.06, 'glide808': 0.7, 'hi_bass': {'at': 38, 'pool': ['wob808'], 'p': {'cut': 1600}, 'db': -15, 'only_marked': True}, 'switchups': {'weights': {'leap': 1.2, 'roll': 1.0, 'plain': 1.2, 'grind': 0.6}}, 'dj_fx': 0.3, 'repetition': 0.85}
 - **Sound brief** Deep distorted 808 with long slides, changing pattern every section; short hard drill kick; cracking snare on 3 with off-kilter extras; sparse skippy hats + triplet rolls; dark eerie lo-fi sample loop; bell / choir in hooks; a wobble-bass section
 
+### Spacious breaks electronica (128-130) (`warped_electronica`)
+
+Spacious progressive-breaks electronica (around 128-130): warbly, slightly detuned modular-style pads and soaring leads, weather, wind and fire field recordings, a long atmospheric opening before an energetic breakbeat with a flurry of percussion arrives, melancholic Am - Fmaj7 colour chords that never resolve, a warm, rolled-off top - vast yet intimate, one continuous, flowing arrangement with no hard cuts
+
+- **Tempo** 127-131 BPM · **scales** minor · swing 0.53 (unit 16) · humanise 0.01
+- **Progressions** {'minor': [[0, 5, 3, 4], [0, 5, 0, 5], [0, 5, 3, 0], [5, 0, 3, 4]]} · chord_bars 2 · chord size 4
+- **Song form** `warped_electronica`: intro 16 [bass, fx, pad] (filter_in) -> verse 8 [arp, bass, chords, fx, pad] (layer_in) -> verse 8 [bass, chords, fx, lead, pad] -> build 8 [bass, chords, fx, lead, pad, top] (build) -> drop 32 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop, crash) -> break 8 [chords, fx, lead, pad] (alt) -> build 8 [chords, fx, lead, pad, top] (build) -> drop 32 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop, alt) -> outro 16 [chords, fx, pad] (layer_out, fade) · form_scale 1
+- **Drums** **kick** `X.....x...X..x..` / `X.x.......X.....` / `X.....x.x.X...x.`; **snare** `....X..o.o..X..o` / `....X.......X.o.`; **chat** `x.xxx.x.x.xxx.xx` / `xxx.xxx.xxx.xxx.` / `x.x.x.x.x.x.x.x.`; **rim** `..x...x...x..x..` / `...x..x.x....x..`
+- **Drum kit** (synth preset) · preset `punchy`
+- **Bass** `R-------..R-....` / `R---..R-R-------` · mode `pattern` · lowest note 28
+- **Chord rhythm** `x-------x-------` / `x---------------` / `x-------x---x---`
+- **Arp** {'rate': 4, 'mode': 'random', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `x-------x-------` / `x---------------` / `....x-------x---`
+- **Build-ups** default `(category default)` · choices ['pause', 'drumless', 'none'] · transitions ['none', 'gap', 'tapestop']
+- **Traits** arrangement `atmospheric_drift` · density `medium` · feel `drifting` · melody `nostalgic_simple` · bass `sub_only` · drop `long_build` · variation `sectional` · culture `street` · texture `tape_degraded` · rhythm `swung_16ths` · harmony `functional_tonal` · energy `slow_build`
+- **Instruments**
+  - kick (kick): `kick` -14 dB
+  - snare (snare): `snare` -17 dB · rev=0.3
+  - chat (top): `chat` -31 dB · pan=0.25
+  - rim (top): `rim` -31 dB · pan=-0.3 · rev=0.3
+  - bass (bass): `sinebass` -10 dB · alternatives ['deepsub']
+  - chords (chords): `polysynth` -16 dB · rev=0.5 · alternatives ['modularpad', 'jpmorph']
+  - pad (pad): `modularpad` -18 dB · rev=0.65 · alternatives ['lushpad', 'vocalpad']
+  - arp (arp): `modularseq` -23 dB · pan=0.2 · rev=0.5 · dly=0.45 · alternatives ['fmpluck', 'hypnopluck']
+  - lead (lead): `modularlead` -15 dB · rev=0.55 · dly=0.35 · alternatives ['glidelead', 'dreamlead']
+  - texture (fx): `texture` -26 dB · rev=0.6
+- **Mix** {'lufs': -11.0, 'air': 0.0, 'low': 2.0, 'width': 1.25, 'lofi': True, 'wobble': 2.6} · reverb 2.2 · sc_depth 0.25
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 55, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'groove': None, 'lead_glide': True, 'exact_pools': True, 'exact_form': True, 'roots': [9, 4, 2, 7], 'own_progs': True, 'keep_sounds': 0.85, 'no_rotation': True, 'texture_kind': ['rain', 'wind', 'fire', 'wind', 'rain'], 'parent': 'wonky_beats'}
+- **Sound brief** Drunk-swung drums with late snares and stuttered hats; sine / Moog sub; detuned poly-synth chords with pitch drift; gliding square / saw lead; tape warble and glitches
+
+### Melodic Club Rap (160) (`melodic_club_rap`)
+
+Melodic club rap (around 160, half-time): a catchy sung hook over a long, sustained 808 that slides between notes, a hard kick and a half-time snare on beat 3, rapid hi-hats with rolls, sparse dark minor synth and bell chords, and dramatic full stops where everything cuts out before slamming back in - glossy, punchy, built for short dance clips
+
+- **Tempo** 156-164 BPM · **scales** minor · swing 0.5 (unit 16) · humanise 0.0
+- **Progressions** {'minor': [[0, 3, 5, 4], [0, 5, 3, 6], [0, 0, 5, 6], [0, 5, 6, 4]]} · chord_bars 1 · chord size 4
+- **Song form** `trap`: intro 8 [chords, pad] (filter_in) -> hook 16 [bass, chords, kick, lead, pad, snare, top] (drop) -> verse 16 [bass, chords, kick, snare, top] (crash) -> hook 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [chords, lead, pad] (alt) -> hook 16 [bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, pad] (fade) · form_scale 1
+- **Drums** **kick** `X.....X...X..X..` / `X..X......X.....` / `X.....X.X.....X.`; **snare** `........X.......`; **clap** `........X.......`; **ohat** `..............x.` / ``
+- **Drum kit** (synth preset) · preset `default`
+- **Bass** `R---------------` / `R-------R---F---` / `R-----------R---` · mode `808` · lowest note 28
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'up', 'oct': 6, 'prob': 0.8}
+- **Lead rhythm** `x-x-x---x-x-x---` / `x---x-x-x-------` / `x-x-x-x-x---x---` / `x-------x-x-x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `808_slide` · drop `long_build` · variation `sectional` · culture `street` · texture `club_punchy` · rhythm `half_time` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -13 dB
+  - snare (snare): `snare` -18 dB · rev=0.25
+  - clap (snare): `clap` -21 dB · rev=0.3
+  - chat (top): `chat` -27 dB · pan=0.15
+  - ohat (top): `ohat` -30 dB · pan=-0.2
+  - bass (bass): `808long` -10 dB · alternatives ['slide808', '808', '808_driven']
+  - chords (chords): `polysynth` -20 dB · rev=0.45 · dly=0.2 · alternatives ['glasspad', 'darkbell', 'warmpad']
+  - pad (pad): `darkpad` -28 dB · rev=0.5 · alternatives ['glasspad', 'choir_dark']
+  - lead (lead): `vocalead` -14 dB · rev=0.35 · dly=0.25 · alternatives ['vocalchop', 'vox', 'softlead']
+- **Mix** {'lufs': -9.0, 'air': 1.4, 'low': 1.8} · reverb 2.2 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': '', 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [10, 5, 3, 8], 'own_progs': True, 'switchups': {'moves': ('plain', 'gap', 'stop', 'leap', 'dive', 'roll'), 'weights': {'plain': 4.0, 'stop': 1.3}}, 'parent': 'plugg'}
+- **Sound brief** Warm saw / poly "plugg" pad, music-box bells, soft sine lead, 808 with slides
+
 ## Pop, R&B & Hopecore
 
 ### Synth-pop (`synthpop`)
@@ -3922,6 +4228,36 @@ Hyperpop: maximal, bright and glitchy - distorted 808s, supersaws, chiptune spar
   - lead (lead): `supersaw_lead`  dB · rev=0.3 · sc=0.5 · alternatives ['chip', 'vox', 'leadsaw', 'supersaw_lead_octave', 'leadsaw_octave']
 - **Mix** {'lufs': -7.5, 'air': 3.0, 'low': 1.0} · reverb 2.0 · sc_depth 0.6
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 66, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': True, 'kick_track': 'kick', 'suggest': ''}
+
+### 80s synth R&B (`synth_rnb`)
+
+80s synth R&B: gated-reverb drum machine, pulsing 8th-note synth bass, bright poly synth and synth-brass stabs, glossy pads and a soaring, high melodic hook - a modern take on 80s pop-soul
+
+- **Tempo** 100-124 BPM · **scales** minor, dorian · swing 0.5 (unit 16) · humanise 0.0
+- **Progressions** {'minor': [[0, 5, 2, 6], [5, 6, 0, 0], [0, 6, 5, 6], [3, 4, 0, 0]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 4]]} · chord_bars 1 · chord size 4
+- **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
+- **Drums** **kick** `X.......X.......` / `X.......X.X.....` / `X...X...X...X...`; **snare** `....X.......X...`; **clap** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.` / `xxxxxxxxxxxxxxxx`; **tamb** `..x...x...x...x.`
+- **Drum kit** (synth preset) · preset `linn`
+- **Bass** `R.R.R.R.R.R.R.R.` / `R.O.R.O.R.O.R.O.` / `RRRRRRRRRRRRRRRR` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x---------------` / `x-------x-------` / `x--x--x-x--x--x-`
+- **Arp** {'rate': 1, 'mode': 'up', 'oct': 5}
+- **Lead rhythm** `x-x-x---x-x-x---` / `x---x-x-x-------` / `..x-x-x-x---x---` / `x-x-x-x-x---x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `robotic` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `sectional` · culture `radio_pop` · texture `wet_and_spacious` · rhythm `on_the_grid` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -12 dB
+  - snare (snare): `snare` -14 dB · rev=0.3
+  - clap (snare): `clap` -21 dB
+  - chat (top): `chat` -28 dB · pan=0.2
+  - tamb (top): `tamb` -30 dB · pan=-0.25
+  - bass (bass): `sawbass` -14 dB · sc=0.5 · alternatives ['moogbass', 'fmbass', 'dxbass', 'junobass', 'fmbass_dark', 'moogbass_driven']
+  - chords (chords): `polysynth` -21 dB · rev=0.4 · sc=0.4 · alternatives ['junopoly', 'supersaw', 'epiano', 'supersaw_dark', 'polysynth_wide']
+  - pad (pad): `synthbrass` -26 dB · rev=0.35 · sc=0.4 · alternatives ['solina', 'jupiterpad', 'warmpad', 'warmpad_wide', 'jupiterpad_tape']
+  - arp (arp): `pluck_saw` -27 dB · pan=-0.25 · rev=0.3 · dly=0.3 · alternatives ['polysynth', 'dxbell', 'epiano', 'epiano_bright', 'epiano_tape']
+  - lead (lead): `supersaw_lead` -18 dB · rev=0.4 · dly=0.3 · alternatives ['leadsaw', 'moog_lead', 'sax', 'softlead', 'supersaw_lead_dark', 'softlead_octave']
+- **Mix** {'lufs': -9.0, 'air': 2.0, 'low': 1.2} · reverb 2.6 · sc_depth 0.3
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.6, 'chord_center': 63, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Sound brief** LinnDrum-style gated snare; Juno / DX7 poly synths; synth brass stabs; arpeggiated synth bass; airy high vocal lead
 
 ### K-pop (`kpop`)
 
@@ -4071,7 +4407,7 @@ Hopecore breaks (fast): the loud breakbeat side - bright, uplifting internet-cor
   - lead (lead): `supersaw_lead` -19 dB · rev=0.4 · dly=0.3 · sc=0.3 · alternatives ['chip', 'leadsaw', 'bell', 'leadsaw_octave']
 - **Mix** {'lufs': -9.0, 'air': 2.0, 'low': 1.4, 'width': 1.2} · reverb 2.4 · sc_depth 0.45
 - **Other rules** {'sc_release': 0.35, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
-- **Sound brief** Chopped Amen / Think break + punchy kick; 808; bright piano and supersaw chords; chiptune and bell arps; soaring saw or square lead; stutter / glitch edits
+- **Sound brief** Chopped jungle / funk break + punchy kick; 808; bright piano and supersaw chords; chiptune and bell arps; soaring saw or square lead; stutter / glitch edits
 
 ### Hopecore (dreamy, slow) (`hopecore_dreamy`)
 
@@ -4240,9 +4576,9 @@ Amapiano: log-drum basslines, jazzy piano chords, rolling shakers, deep groove
   - shaker (top): `shaker` -27 dB · pan=0.3
   - woodblock (top): `woodblock` -27 dB · pan=-0.3
   - chat (top): `chat` -29 dB
-  - bass (bass): `logdrum` -13 dB · sc=0.5
+  - bass (bass): `logdrum` -13 dB · sc=0.5 · alternatives ['logdrum_sine', 'logdrum_deep']
   - chords (chords): `piano`  dB · rev=0.3 · sc=0.4 · alternatives ['epiano', 'organ', 'wurli', 'organ_dark', 'epiano_bright']
-  - pad (pad): `warmpad` -27 dB · rev=0.5 · alternatives ['strings', 'choir', 'glasspad', 'glasspad_wide', 'glasspad_dark']
+  - pad (pad): `warmpad` -27 dB · rev=0.5 · alternatives ['strings', 'choir', 'glasspad', 'amapad_saw', 'glasspad_wide', 'glasspad_dark']
   - arp (arp): `kalimba` -26 dB · rev=0.3 · dly=0.3 · alternatives ['marimba', 'vibes', 'pluck', 'afropluck', 'marimba_tape']
   - lead (lead): `flute`  dB · rev=0.3 · dly=0.3 · alternatives ['sax', 'piano', 'kalimba', 'piano_dark', 'piano_tape']
 - **Mix** {'lufs': -9.5, 'air': 1.0, 'low': 2.0} · reverb 2.0 · sc_depth 0.3
@@ -4417,6 +4753,212 @@ Gqom (Durban): dark, raw and broken - no four-on-the-floor, but syncopated kicks
   - lead (lead): `vox` -21 dB · rev=0.3 · dly=0.25 · alternatives ['stab', 'whine', 'stab_wide', 'stab_dark']
 - **Mix** {'lufs': -9.5, 'air': 0.9, 'low': 1.6} · reverb 2.0 · sc_depth 0.1
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+
+### Shangaan Electro (`shangaan_electro`)
+
+Shangaan electro: South African township dance at a breakneck 178-190 - a fast four-on-the-floor kick, bright Casio-style marimba and kalimba riffs racing in interlocking 16ths, a bouncy short bass, whistles and woodblocks - joyful, dizzying, made for footwork dancing
+
+- **Tempo** 178-190 BPM · **scales** major, mixolydian · swing 0.5 (unit 16) · humanise 0.004
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 3, 4], [0, 0, 3, 4]], 'mixolydian': [[0, 6, 3, 0]]} · chord_bars 1 · chord size 4
+- **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
+- **Drums** **kick** `X...X...X...X...`; **clap** `....x.......x...` / `....x.......x.x.`; **shaker** `xxxxxxxxxxxxxxxx`; **woodblock** `x..x..x...x..x..` / `x..x.x..x..x.x..`; **conga** `..x..x....x..x..`; **ohat** `..x...x...x...x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R..R..R.R..R..R.` / `R.R..R.R..R.R..R` · mode `pattern` · lowest note 31
+- **Chord rhythm** `..x...x...x...x.` / `x..x..x..x..x...`
+- **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
+- **Lead rhythm** `x.xxx.x.xx.x.xx.` / `xx.x.xx.x.xx.x.x` / `x.x.x.xxx.x.x.x.`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `groove_locked` · density `medium` · feel `tight_swing` · melody `call_and_response` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `underground_club` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `flat_hypnotic`
+- **Instruments**
+  - kick (kick): `kick` -13 dB
+  - clap (snare): `clap` -21 dB · rev=0.3
+  - shaker (top): `shaker` -27 dB · pan=0.3
+  - conga (top): `conga` -23 dB · pan=-0.25
+  - woodblock (top): `woodblock` -29 dB · pan=0.2
+  - ohat (top): `ohat` -28 dB
+  - bass (bass): `sinebass` -13 dB · sc=0.5 · alternatives ['fmbass', 'sawbass', '808', 'deepbass', 'deepfmbass', 'deepbass_dark', 'sawbass_driven']
+  - chords (chords): `bitpiano` -24 dB · rev=0.4 · sc=0.5 · alternatives ['organ', 'epiano_bright', 'stab']
+  - pad (pad): `organ` -28 dB · rev=0.5 · alternatives ['choir', 'warmpad', 'strings', 'strings_dark', 'strings_wide']
+  - arp (arp): `kalimba` -24 dB · rev=0.3 · dly=0.3 · alternatives ['marimba', 'pluck', 'bell', 'kalimba_octave']
+  - lead (lead): `marimba_octave` -19 dB · rev=0.3 · dly=0.25 · alternatives ['marimba', 'kalimba_octave', 'chip', 'bell', 'whistlelead']
+- **Mix** {'lufs': -9.5, 'air': 1.4, 'low': 1.6} · reverb 2.0 · sc_depth 0.3
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.5, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afro_house'}
+- **Sound brief** Kalimba / marimba (hooks); Congas, shakers; Deep bass; Pads; Vocal chants
+
+### Kuduro (`kuduro`)
+
+Kuduro: Angolan street-dance music at 130-140 - a hard, broken kick-and-rim pattern, booming toms, clattering claps, a stabbing synth riff and chopped vocal shouts over a rubbery sub - raw, energetic and frantic
+
+- **Tempo** 130-140 BPM · **scales** minor, phrygian · swing 0.5 (unit 16) · humanise 0.003
+- **Progressions** {'minor': [[0, 0, 0, 0], [0, 0, 6, 6]], 'phrygian': [[0, 1, 0, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
+- **Drums** **kick** `X..X..X.X..X..X.` / `X..X..X...X.X...`; **tom** `......x.......x.` / `...x......x...x.`; **clap** `....X.......X...` / `....X..x....X.x.`; **shaker** `x.xxx.xxx.xxx.xx`; **rim** `..x..x..x..x..x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R..R..R.R..R..R.` / `R..R...RR..R..R.` · mode `pattern` · lowest note 26
+- **Chord rhythm** `x..x..x.x.......` / `...x..x...x.x...`
+- **Arp** {'rate': 2, 'mode': 'up', 'oct': 5, 'prob': 0.3}
+- **Lead rhythm** `x...x.......x...` / `x.x.....x.......` / `....x.......x...`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `groove_locked` · density `sparse` · feel `tight_swing` · melody `call_and_response` · bass `rolling_groove` · drop `long_build` · variation `progressive` · culture `underground_club` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `static_vamp` · energy `flat_hypnotic`
+- **Instruments**
+  - kick (kick): `kick` -12 dB
+  - tom (top): `tom` -19 dB · pan=-0.2
+  - clap (snare): `clap` -20 dB · rev=0.3
+  - shaker (top): `shaker` -29 dB · pan=0.3
+  - rim (top): `rim` -26 dB · pan=-0.3
+  - bass (bass): `sinebass` -14 dB · alternatives ['808', 'reese', 'sinebass_driven', 'sinebass_suboct']
+  - chords (chords): `stab` -28 dB · rev=0.5 · alternatives ['stab_dark', 'organ_dark', 'samplerstab', 'dancestab']
+  - lead (lead): `vocalchop` -21 dB · rev=0.3 · dly=0.25 · alternatives ['vox', 'formantchop', 'acid', 'chopwob']
+- **Mix** {'lufs': -9.5, 'air': 0.9, 'low': 1.6} · reverb 2.0 · sc_depth 0.1
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.6, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'gqom'}
+
+### Neoperreo (`neoperreo`)
+
+Neoperreo: underground reggaeton gone dark and digital at 88-100 - a stripped, crushed dembow beat, a distorted 808, eerie bell and synth riffs, glitchy chopped vocals and lots of empty space - minimal, hypnotic, nocturnal
+
+- **Tempo** 88-100 BPM · **scales** minor, phrygian · swing 0.5 (unit 16) · humanise 0.0
+- **Progressions** {'minor': [[0, 0, 5, 6], [0, 5, 0, 6]], 'phrygian': [[0, 1, 0, 1]]} · chord_bars 1 · chord size 3
+- **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
+- **Drums** **kick** `X...X...X...X...` / `X...X...X...X..x` / `X...X..xX...X...`; **snare** `...X..X....X..X.` / `...X..X....X..XX` / `...X..X..x.X..X.` / `...X..X....X.XX.`; **chat** `x.x.x.x.x.x.x.x.` / `x.xxx.x.x.xxx.x.`; **tamb** `....x.......x...`; **conga** `..o...o...o...o.` / `..o..oo...o..oo.`
+- **Drum kit** (synth preset) · preset `808`
+- **Bass** `R.......R.......` · mode `808` · lowest note 28
+- **Chord rhythm** `x..x..x...x..x..` / `x---------------`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 4, 'rh': ['x..x..x...x.x...', 'x..x..x.x.x..x..']}
+- **Lead rhythm** `x.x.x..x..x.x...` / `x..x..x.x.x.....` / `..x.x.x.x..x....` / `x-x-x---x-------`
+- **Build-ups** default `(category default)` · choices ['pause', 'stops', 'none'] · transitions ['gap', 'none', 'crash']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `robotic` · melody `call_and_response` · bass `808_slide` · drop `long_build` · variation `sectional` · culture `underground_club` · texture `club_punchy` · rhythm `on_the_grid` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -13 dB
+  - snare (snare): `snare` -17 dB · rev=0.15
+  - chat (top): `chat` -28 dB
+  - tamb (top): `tamb` -28 dB · pan=0.3
+  - conga (top): `conga` -27 dB · pan=-0.3
+  - bass (bass): `808dist` -13 dB · alternatives ['808_dark', '808', '808_driven']
+  - chords (chords): `darkbell` -25 dB · rev=0.25 · dly=0.2 · alternatives ['bell_dark', 'polysynth', 'darkpiano']
+  - pad (pad): `darkpad` -27 dB · rev=0.4 · alternatives ['warmpad_tape', 'choir_dark']
+  - arp (arp): `pluck_saw_dark` -22 dB · pan=-0.2 · rev=0.2 · alternatives ['acguitar', 'sf:nylon', 'guitar', 'pluck_saw', 'pluck_saw_wide']
+  - lead (lead): `vocalchop`  dB · rev=0.3 · dly=0.25 · alternatives ['formantchop', 'darkbell', 'chip']
+- **Mix** {'lufs': -9.0, 'air': 0.9, 'low': 1.4} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'slides': 0.0, 'parent': 'reggaeton'}
+
+### Afro Village Party (150-160) (`afro_village_party`)
+
+African village dance party (150-160): the music a DJ plays to a packed open-air crowd - a kick on every beat, snare, rim and shaker accents on the 3-3-2 tresillo that make it sway in half-time, a punchy, bouncing bass, bright clean guitar riffs cascading in fast 16ths, a cheap-keyboard organ chopping the off-beats, a sung, step-wise call-and-response line in long notes, in sunny major keys - and every 8 bars the kick and bass drop out for a bar while the voices carry on, then everything slams back in
+
+- **Tempo** 150-162 BPM · **scales** major, mixolydian, minor · swing 0.52 (unit 16) · humanise 0.006
+- **Progressions** {'major': [[0, 3, 4, 3], [0, 4, 0, 4], [0, 3, 0, 4], [0, 0, 3, 4]], 'mixolydian': [[0, 6, 3, 0], [0, 6, 0, 6]], 'minor': [[0, 5, 6, 0], [0, 3, 4, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `afro_village`: intro 8 [arp, chords, top] (filter_in) -> verse 15 [arp, bass, chords, kick, snare, top] (crash) -> break 1 [arp, lead, top] -> chorus 15 [arp, bass, chords, kick, lead, pad, snare, top] (drop, crash) -> break 1 [chords, lead] -> verse 16 [arp, bass, kick, lead, snare, top] (alt, crash) -> break 2 [arp, top] -> chorus 15 [arp, bass, chords, kick, lead, pad, snare, top] (drop, crash) -> break 1 [lead] -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (alt, crash) -> outro 8 [arp, chords, top] (layer_out, fade) · form_scale 1
+- **Drums** **kick** `X...X...X...X...` / `X...X...X..xX...`; **snare** `x..X..X.x..X..X.` / `X..x..x.X..x..x.` / `...X..X....X..X.`; **chat** `x.xxx.xxx.xxx.xx` / `x..x..x.x..x..x.`; **shaker** `xxxxxxxxxxxxxxxx` / `x.xxx.xxx.xxx.xx`; **conga** `x..o..x.x..o..x.` / `..o.x..o..o.x..o`; **tom** `......x.......x.` / `...x..x....x..x.`
+- **Drum kit** (synth preset) · preset `acoustic`
+- **Bass** `R..R..R.R..R..R.` / `R..R..F.R..R..F.` / `R...R..RR...R..R` · mode `pattern` · lowest note 33
+- **Chord rhythm** `..x...x...x...x.` / `x.x.x.x.x.x.x.x.` / `..x..x..x...x.x.`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'rh': ['xxx.xxx.xxx.xx.x', 'x.xxx.xxx.xxx.xx', 'xx.xxx.xxx.xxxx.']}
+- **Lead rhythm** `x---x---x-------` / `x-x-x---x-x-x---` / `x--x--x-x-------` / `x---x---x---x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `live_drums` · melody `call_and_response` · bass `rolling_groove` · drop `long_build` · variation `sectional` · culture `underground_club` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -12 dB
+  - snare (snare): `snare` -17 dB · rev=0.2
+  - chat (top): `chat` -29 dB · pan=0.2
+  - shaker (top): `shaker` -30 dB · pan=-0.3
+  - conga (top): `conga` -24 dB · pan=0.3
+  - tom (top): `tom` -25 dB · pan=-0.15
+  - bass (bass): `ebass` -16.5 dB · alternatives ['fmbass', 'organbass', 'sinebass']
+  - chords (chords): `organ` -17 dB · pan=-0.2 · rev=0.2 · alternatives ['houseorgan', 'epiano', 'accordion', 'synthbrass']
+  - pad (pad): `choir` -25 dB · rev=0.45 · alternatives ['humchoir', 'warmpad']
+  - arp (arp): `cleanguitar` -17 dB · pan=0.25 · rev=0.2 · dly=0.15 · alternatives ['afropluck', 'jangle', 'marimba', 'balafon', 'kalimba']
+  - lead (lead): `vocalead` -17 dB · rev=0.35 · dly=0.2 · alternatives ['vox', 'pluckvox', 'whistlelead', 'synthbrass', 'accordion']
+- **Mix** {'lufs': -9.5, 'air': 0.9, 'low': 0.9} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'soukous', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [5, 0, 9, 2, 7], 'own_progs': True, 'groove': None}
+
+### Bass Amapiano (deep log drum) (`bass_amapiano`)
+
+Bass amapiano (deep, 110-116): four-on-the-floor South African house where the log drum is the star - a deep, saturated, near-sine log drum that scoops into each note, sustains and slides, playing melodic bass lines and talking on long notes - over laid-back, swung shakers, congas and light hats that roll behind the beat, a soft detuned-saw pad breathing on a slow filter LFO with a little pitch warble, scooping saw stabs or short plucky keys, side-chain on nearly everything and a tight mono low end; long builds, sparse drops, lots of space
+
+- **Tempo** 110-116 BPM · **scales** minor, dorian · swing 0.58 (unit 16) · humanise 0.006
+- **Progressions** {'minor': [[0, 5, 3, 4], [0, 3, 6, 5], [0, 0, 5, 6]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]} · chord_bars 1 · chord size 4
+- **Song form** `bass_amapiano`: intro 16 [chords, pad, top] (filter_in) -> verse 16 [chords, kick, pad, snare, top] (layer_in) -> build 8 [chords, kick, pad, top] (build) -> drop 16 [bass, kick, pad, snare, top] (drop, crash) -> drop 16 [bass, chords, kick, lead, pad, snare, top] (alt) -> break 8 [bass, pad] -> verse 8 [chords, kick, pad, top] -> build 8 [chords, kick, lead, pad, top] (build) -> drop 16 [bass, chords, kick, lead, pad, snare, top] (drop, crash) -> drop 16 [bass, chords, kick, pad, snare, top] (alt) -> outro 16 [bass, kick, pad, top] (layer_out, fade) · form_scale 1
+- **Drums** **kick** `X...X...X...X...`; **clap** `....x.......x...` / `........x.......`; **shaker** `oxoxoxoxoxoxoxox` / `oxoXoxoxoxoXoxox`; **conga** `..o.x..o..o.x..o` / `......x.o.....x.`; **chat** `..x...x...x...x.` / `..x...x...x.x.x.`; **rim** `...x......x...x.` / `......x.......x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R-.F-.R---.O-.F-` / `R--.R--.F-.A--O.` / `..R-.F-.R--.O---` / `R---F---.A-.R-..` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x.........x.....` / `...x......x..x..` / `x..x......x.....`
+- **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `x.x...x.........` / `....x.x...x.....` / `x-------x---....`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `call_and_response` · bass `rolling_groove` · drop `long_build` · variation `sectional` · culture `underground_club` · texture `dry_and_upfront` · rhythm `swung_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -14 dB
+  - clap (snare): `clap` -22 dB · rev=0.25 · sc=0.3
+  - shaker (top): `shaker` -26 dB · pan=0.3 · sc=0.3
+  - conga (top): `conga` -25 dB · pan=-0.3 · sc=0.3
+  - chat (top): `chat` -29 dB · pan=0.15 · sc=0.3
+  - rim (top): `rim` -28 dB · pan=-0.2 · rev=0.2
+  - bass (bass): `logdrum_sine` -11 dB · sc=0.45 · alternatives ['logdrum_deep', 'logdrum_talk', 'logdrum']
+  - chords (chords): `epiano` -20 dB · rev=0.3 · dly=0.2 · sc=0.5 · alternatives ['amastab_saw', 'rhodes', 'piano', 'wurli', 'm1piano']
+  - pad (pad): `amapad_saw` -23 dB · rev=0.6 · dly=0.25 · sc=0.6 · alternatives ['warmpad', 'glasspad', 'junopoly', 'lushpad']
+  - lead (lead): `pluck` -20 dB · rev=0.35 · dly=0.3 · sc=0.5 · alternatives ['analoglead_soft', 'epiano', 'kalimba', 'pluckvox']
+- **Mix** {'lufs': -9.5, 'air': 0.8, 'low': 2.0} · reverb 2.0 · sc_depth 0.45
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.95, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'exact_pools': True, 'exact_form': True, 'keep_sounds': 0.85, 'no_rotation': True, 'riff_locked': True, 'roots': [5, 2, 0, 9, 7], 'bass_glide': 0.45, 'own_progs': True, 'parent': 'amapiano'}
+
+### Afro Village Party - Synth (150-160) (`afro_village_synth`)
+
+African village party, synth version (150-160): the same packed open-air dance - a kick on every beat, tresillo accents that sway in half-time, a call line answered every two bars, the kick and bass dropping out every 8 bars and slamming back - but all electronic: a drum-machine kit with claps, rimshots, cowbell and synth toms, a punchy FM / analog synth bass, cheap-keyboard synth chords chopping the off-beats, bright saw and digital plucks cascading in 16ths (no guitars) and a square-wave or synth-brass lead
+
+- **Tempo** 150-162 BPM · **scales** major, mixolydian, minor · swing 0.52 (unit 16) · humanise 0.006
+- **Progressions** {'major': [[0, 3, 4, 3], [0, 4, 0, 4], [0, 3, 0, 4], [0, 0, 3, 4]], 'mixolydian': [[0, 6, 3, 0], [0, 6, 0, 6]], 'minor': [[0, 5, 6, 0], [0, 3, 4, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `afro_village`: intro 8 [arp, chords, top] (filter_in) -> verse 15 [arp, bass, chords, kick, snare, top] (crash) -> break 1 [arp, lead, top] -> chorus 15 [arp, bass, chords, kick, lead, pad, snare, top] (drop, crash) -> break 1 [chords, lead] -> verse 16 [arp, bass, kick, lead, snare, top] (alt, crash) -> break 2 [arp, top] -> chorus 15 [arp, bass, chords, kick, lead, pad, snare, top] (drop, crash) -> break 1 [lead] -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (alt, crash) -> outro 8 [arp, chords, top] (layer_out, fade) · form_scale 1
+- **Drums** **kick** `X...X...X...X...` / `X...X...X..xX...`; **clap** `x..X..X.x..X..X.` / `...X..X....X..X.`; **rim** `..x...x...x...x.` / `x..x..x.x..x..x.`; **chat** `x.xxx.xxx.xxx.xx` / `xxxxxxxxxxxxxxxx`; **cowbell808** `x..x..x...x.x...` / `..x...x...x...x.`; **tom** `......x.......x.` / `...x..x....x..x.`
+- **Drum kit** (synth preset) · preset `808`
+- **Bass** `R..R..R.R..R..R.` / `R..R..F.R..R..F.` / `R...R..RR...R..R` · mode `pattern` · lowest note 33
+- **Chord rhythm** `..x...x...x...x.` / `x.x.x.x.x.x.x.x.` / `..x..x..x...x.x.`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'rh': ['xxx.xxx.xxx.xx.x', 'x.xxx.xxx.xxx.xx', 'xx.xxx.xxx.xxxx.']}
+- **Lead rhythm** `x---x---x-------` / `x-x-x---x-x-x---` / `x--x--x-x-------` / `x---x---x---x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `live_drums` · melody `call_and_response` · bass `rolling_groove` · drop `long_build` · variation `sectional` · culture `underground_club` · texture `club_punchy` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -12 dB
+  - clap (snare): `clap` -18 dB · rev=0.2
+  - rim (top): `rim` -26 dB · pan=-0.25
+  - chat (top): `chat` -29 dB · pan=0.2
+  - cowbell808 (top): `cowbell808` -30 dB · pan=0.3
+  - tom (top): `tom` -25 dB · pan=-0.15
+  - bass (bass): `fmbass` -15 dB · alternatives ['junobass', 'sh101', 'tribass', 'sawbass']
+  - chords (chords): `junopoly` -18 dB · pan=-0.2 · rev=0.25 · alternatives ['polysynth', 'synthbrass', 'stab', 'dancestab', 'houseorgan']
+  - pad (pad): `warmpad` -26 dB · rev=0.45 · alternatives ['amapad_saw', 'junopoly', 'sawchoir']
+  - arp (arp): `pluck_saw` -18 dB · pan=0.25 · rev=0.2 · dly=0.2 · alternatives ['viruspluck', 'nordpluck', 'superpluck', 'dxbell', 'pluckbell', 'trancebell']
+  - lead (lead): `squarelead` -17 dB · rev=0.35 · dly=0.25 · alternatives ['synthbrass', 'analoglead', 'glidelead', 'talkbox', 'chip']
+- **Mix** {'lufs': -9.0, 'air': 1.2, 'low': 1.1} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afro_village_party', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [5, 0, 9, 2, 7], 'own_progs': True, 'groove': None}
+
+### Afro Wobble (dubstep, 150-160) (`afro_wobble`)
+
+Afro wobble (150-160): the African village party groove on synths - a kick on every beat, tresillo claps and rims, bright synth plucks and a synth call line - crossed with dubstep: verses with no bass at all, snare-roll builds, a one-bar stop, then drops where a huge wobble bass takes over, womping in beats, dotted 8ths and half bars and gliding between notes
+
+- **Tempo** 150-162 BPM · **scales** major, mixolydian, minor · swing 0.52 (unit 16) · humanise 0.006
+- **Progressions** {'major': [[0, 3, 4, 3], [0, 4, 0, 4], [0, 3, 0, 4], [0, 0, 3, 4]], 'mixolydian': [[0, 6, 3, 0], [0, 6, 0, 6]], 'minor': [[0, 5, 6, 0], [0, 3, 4, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `afro_wobble`: intro 8 [arp, chords, top] (filter_in) -> verse 16 [arp, chords, kick, lead, snare, top] (crash) -> build 8 [arp, chords, snare, top] (build) -> break 1 [lead] -> drop 16 [arp, bass, kick, lead, snare, top] (drop, crash) -> break 1 [chords, lead] -> verse 8 [arp, chords, kick, lead, snare, top] (alt, crash) -> build 8 [arp, chords, lead, snare, top] (build) -> break 1 [lead] -> drop 16 [arp, bass, chords, kick, snare, top] (drop, alt, crash) -> outro 8 [arp, chords, top] (layer_out, fade) · form_scale 1
+- **Drums** **kick** `X...X...X...X...` / `X...X...X..xX...`; **clap** `x..X..X.x..X..X.` / `...X..X....X..X.`; **rim** `..x...x...x...x.` / `x..x..x.x..x..x.`; **chat** `x.xxx.xxx.xxx.xx` / `xxxxxxxxxxxxxxxx`; **cowbell808** `x..x..x...x.x...` / `..x...x...x...x.`; **tom** `......x.......x.` / `...x..x....x..x.`
+- **Drum kit** (synth preset) · preset `808`
+- **Bass** `R..R..R.R..R..R.` / `R..R..F.R..R..F.` / `R...R..RR...R..R` · mode `pattern` · lowest note 33
+- **Chord rhythm** `..x...x...x...x.` / `x.x.x.x.x.x.x.x.` / `..x..x..x...x.x.`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'rh': ['xxx.xxx.xxx.xx.x', 'x.xxx.xxx.xxx.xx', 'xx.xxx.xxx.xxxx.']}
+- **Lead rhythm** `x---x---x-------` / `x-x-x---x-x-x---` / `x--x--x-x-------` / `x---x---x---x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `live_drums` · melody `call_and_response` · bass `rolling_groove` · drop `long_build` · variation `sectional` · culture `underground_club` · texture `club_punchy` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -12 dB
+  - clap (snare): `clap` -18 dB · rev=0.2
+  - rim (top): `rim` -26 dB · pan=-0.25
+  - chat (top): `chat` -29 dB · pan=0.2
+  - cowbell808 (top): `cowbell808` -30 dB · pan=0.3
+  - tom (top): `tom` -25 dB · pan=-0.15
+  - bass (bass): `yoiwob` -12 dB · alternatives ['slowwob', 'brightwob', 'tearwob', 'pitchgrowl', 'sweepwob', 'wobble', 'reesewob']
+  - chords (chords): `junopoly` -18 dB · pan=-0.2 · rev=0.25 · alternatives ['polysynth', 'synthbrass', 'stab', 'dancestab', 'houseorgan']
+  - pad (pad): `warmpad` -26 dB · rev=0.45 · alternatives ['amapad_saw', 'junopoly', 'sawchoir']
+  - arp (arp): `pluck_saw` -18 dB · pan=0.25 · rev=0.2 · dly=0.2 · alternatives ['viruspluck', 'nordpluck', 'superpluck', 'dxbell', 'pluckbell', 'trancebell']
+  - lead (lead): `squarelead` -17 dB · rev=0.35 · dly=0.25 · alternatives ['synthbrass', 'analoglead', 'glidelead', 'talkbox', 'chip']
+- **Mix** {'lufs': -9.0, 'air': 1.0, 'low': 1.4} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afro_village_synth', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [5, 0, 9, 2, 7], 'own_progs': True, 'groove': None, 'wobble_rates': [1, 0.75, 0.75, 0.5, 2, 1.5], 'wobble_rates_alt': [0.75, 0.5, 0.3333333333333333, 0.25, 1], 'wobble_lens': [4, 4, 8, 2], 'wobble_rest': 0.15, 'wobble_glide': 0.4}
 
 ## Chill, Lo-fi & Ambient
 
@@ -4942,6 +5484,90 @@ Dreamy synthscape: a chill, effects-washed synth space - warm pulsing chords bre
 - **Other rules** {'sc_release': 0.35, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'own_progs': True, 'sus_degrees': [4], 'kick_shape': {'pitch': 50, 'punch': 22, 'sweep': 30, 'decay': 9, 'click': 0.0, 'drive': 1.0, 'len': 0.4}, 'gentle': True, 'exact_pools': True, 'lead_glide': True, 'no_layers': True, 'no_dodge': True, 'bass_stutter': True, 'song_variations': {'palette': [{'name': 'sine', 'chords': 'sinepad', 'pad': 'dreampad', 'arp': 'sinepulse', 'lead': 'whistlelead', 'bass': 'roundbass', 'arp_mid': 'sinepluck', 'arp_hi': 'glintchime'}, {'name': 'glass', 'chords': 'glasskeys', 'pad': 'shimmerpad', 'arp': 'tapebell', 'lead': 'bloomlead', 'bass': 'roundbass', 'arp_mid': 'sinepluck', 'arp_hi': 'glintchime'}, {'name': 'tape', 'chords': 'dustpiano', 'pad': 'warblepad', 'arp': 'warmpulse', 'lead': 'tapeflute', 'bass': 'sinebass', 'arp_mid': 'tapebell', 'arp_hi': 'glintchime'}, {'name': 'choir', 'chords': 'humchoir', 'pad': 'sinepad', 'arp': 'sinepluck', 'lead': 'glidetone', 'bass': 'roundbass', 'arp_mid': 'tapebell', 'arp_hi': 'glintchime'}, {'name': 'warm', 'chords': 'rnbpad', 'pad': 'dreampad_dark', 'arp': 'warmpulse', 'lead': 'sinelead_tape', 'bass': 'roundbass', 'arp_mid': 'sinepluck', 'arp_hi': 'atmosbell'}], 'pulse': [{'name': 'triplet rock', 'track': 'arp', 'step': 0.3333333333333333, 'mode': 'updown', 'center': 56, 'span': 4, 'vel': 0.8, 'prob': 1.0}, {'name': 'triplet climb', 'track': 'arp', 'step': 0.3333333333333333, 'mode': 'up', 'center': 58, 'span': 7, 'vel': 0.75, 'prob': 1.0}, {'name': 'eighths', 'track': 'arp', 'step': 0.5, 'mode': 'updown', 'center': 57, 'span': 5, 'vel': 0.8, 'prob': 1.0}, {'name': 'dotted', 'track': 'arp', 'step': 0.75, 'mode': 'down', 'center': 60, 'span': 7, 'vel': 0.8, 'prob': 1.0}, {'name': 'quarter swell', 'track': 'arp', 'step': 1.0, 'mode': 'updown', 'center': 55, 'span': 5, 'vel': 0.85, 'prob': 1.0}], 'mid': [{'name': 'mid line', 'track': 'arp_mid', 'step': 0.6666666666666666, 'mode': 'updown', 'center': 74, 'vel': 0.5, 'prob': 0.85}, {'name': 'mid eighths', 'track': 'arp_mid', 'step': 0.5, 'mode': 'down', 'center': 72, 'vel': 0.45, 'prob': 0.7}, {'name': 'no mid'}], 'sparkle': [{'name': 'falling glitter', 'track': 'arp_hi', 'step': 0.3333333333333333, 'mode': 'down', 'center': 88, 'vel': 0.7, 'prob': 0.9, 'fade': 0.6, 'phrase': 8}, {'name': 'rising glitter', 'track': 'arp_hi', 'step': 0.3333333333333333, 'mode': 'up', 'center': 86, 'vel': 0.6, 'prob': 0.8, 'fade': 0.5, 'phrase': 4}, {'name': 'slow stars', 'track': 'arp_hi', 'step': 1.0, 'mode': 'random', 'center': 90, 'vel': 0.55, 'prob': 0.6}, {'name': 'no sparkle'}], 'form': [{'name': 'swell', 'form': 'synthscape'}, {'name': 'drift', 'form': 'synthscape_drift'}, {'name': 'two waves', 'form': 'synthscape_two'}, {'name': 'loop', 'form': 'synthscape_loop'}], 'bpm': [{'name': 'slow', 'bpm': (94, 102)}, {'name': 'mid', 'bpm': (104, 112)}, {'name': 'mid', 'bpm': (104, 112)}, {'name': 'lifted', 'bpm': (112, 120)}], 'harmony': [{'name': 'major vamp', 'scales': ['major'], 'progs': {'major': [[0, 0, 4, 4], [5, 0, 4, 0], [5, 0, 4, 4], [0, 5, 4, 0]]}}, {'name': 'minor loop', 'scales': ['minor'], 'progs': {'minor': [[0, 5, 2, 6], [0, 5, 2, 4], [0, 5, 2, 3]]}}, {'name': 'lydian float', 'scales': ['lydian'], 'progs': {'lydian': [[0, 1, 0, 1], [0, 1, 5, 1], [0, 0, 1, 1]]}}, {'name': 'dorian haze', 'scales': ['dorian'], 'progs': {'dorian': [[0, 3, 0, 3], [0, 6, 3, 0], [0, 1, 0, 3]]}}, {'name': 'mixolydian glow', 'scales': ['mixolydian'], 'progs': {'mixolydian': [[0, 6, 3, 0], [0, 6, 0, 6], [0, 3, 6, 0]]}}, {'name': 'major steps', 'scales': ['major'], 'progs': {'major': [[0, 2, 3, 3], [3, 4, 5, 5], [0, 3, 5, 4]]}}], 'bass': [{'name': 'stutter entrances', 'bass_stutter': True}, {'name': 'stutter entrances', 'bass_stutter': True}, {'name': 'long roots', 'bass_stutter': False, 'bass': ['R---------------']}, {'name': 'soft pulse', 'bass_stutter': False, 'bass': ['R-------R-------']}], 'lead': [{'name': 'flowing', 'lead_rh': ['x---x-x---x-----', 'x-----x-x---x---', 'x---x---x-x-x---', '........x---x---']}, {'name': 'sparse', 'lead_rh': ['x-----------....', '........x-------', '................', 'x-------........']}, {'name': 'busy', 'lead_rh': ['x-x-x---x-x-x---', 'x--x--x-x---x---', '..x-x-x-x---x---']}]}, 'arps2': [{'track': 'arp', 'step': 0.3333333333333333, 'mode': 'updown', 'center': 56, 'span': 4, 'vel': 0.8, 'prob': 1.0}, {'track': 'arp_mid', 'step': 0.6666666666666666, 'mode': 'updown', 'center': 74, 'vel': 0.5, 'prob': 0.85}, {'track': 'arp_hi', 'step': 0.3333333333333333, 'mode': 'down', 'center': 88, 'vel': 0.7, 'prob': 0.9, 'fade': 0.6, 'phrase': 8}], 'no_rotation': True, 'repetition': 0.8}
 - **Sound brief** A muffled soft kick in quarters; warm round poly synth pulsing chord tones (sidechained); a soft wide pad; a sine / triangle bass in the low-mid register; tiny bell glints with long reverb and delay; a gliding sine lead; tape hiss; everything low-passed (~3 kHz) and washed in a long hall
 
+### Mallsoft (`mallsoft`)
+
+Mallsoft: vaporwave heard from the far end of an empty shopping mall at 50-70 - muzak electric piano and soft jazz chords smeared with huge reverb, a distant sax, faint footsteps of a beat or none at all - nostalgic, liminal, half asleep
+
+- **Tempo** 50-70 BPM · **scales** major, dorian · swing 0.52 (unit 16) · humanise 0.01
+- **Progressions** {'major': [[3, 2, 1, 4], [1, 4, 0, 5], [3, 4, 2, 5]], 'dorian': [[0, 3, 6, 2]]} · chord_bars 1 · chord size 4
+- **Song form** `lofi`: intro 4 [chords, fx] (filter_in) -> A 16 [bass, chords, fx, kick, snare, top] -> B 16 [bass, chords, fx, kick, lead, snare, top] -> C 8 [bass, chords, fx, lead] (alt) -> A 16 [bass, chords, fx, kick, lead, snare, top] -> outro 4 [chords, fx] (fade) · form_scale 1
+- **Drums** **kick** `X.......X.......` / ``; **snare** `` / `........x.......`; **chat** `` / `..x...x...x...x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R-----..R-..F...` / `R-------A-------` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'up', 'oct': 5}
+- **Lead rhythm** `x-----x-x-------` / `....x---x---x---` / `x---x---x-------` / `x---------------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `atmospheric_drift` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `sub_only` · drop `long_build` · variation `sectional` · culture `bedroom_lofi` · texture `tape_degraded` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `slow_build`
+- **Instruments**
+  - kick (kick): `kick`  dB
+  - snare (snare): `snare`  dB · rev=0.5
+  - chat (top): `chat` -30 dB
+  - bass (bass): `sinebass`  dB · alternatives ['fmbass', '808', 'moogbass', 'sinebass_driven', 'moogbass_driven']
+  - chords (chords): `epiano_tape`  dB · rev=0.5 · dly=0.2 · alternatives ['epiano', 'rhodes', 'vibes', 'm1piano']
+  - pad (pad): `warmpad_tape`  dB · rev=0.6 · alternatives ['warmpad', 'strings', 'solina']
+  - lead (lead): `sax`  dB · rev=0.5 · dly=0.3 · alternatives ['flute_tape', 'vibes', 'epiano_dark']
+  - vinyl (fx): `vinyl` -42 dB
+- **Mix** {'lufs': -13.0, 'air': 0.4, 'low': 0.8, 'lofi': True, 'wobble': 0.5, 'vintage_lp': 9000} · reverb 4.5 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.02, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'sampler': True, 'parent': 'vaporwave'}
+
+### Synthscape vignette (one-minute miniature) (`vignette_synthscape`)
+
+Synthscape vignette: a one-minute synth miniature - a hushed opening, then everything drops in at once over a soft quarter-note heartbeat and a high bass walking the V pedal, warm maj7 chord tones pulsing in triplets against it, then a long tail that only thins and fades. Very dark and muffled (almost nothing above 1 kHz), no sub, close and soft - like a synth heard through the wall
+
+- **Tempo** 106-114 BPM · **scales** major · swing 0.5 (unit 16) · humanise 0.006
+- **Progressions** {'major': [[4, 4, 5, 0], [0, 4, 4, 5], [4, 4, 4, 5], [4, 5, 0, 4]]} · chord_bars 1 · chord size 5
+- **Song form** `synthscape_vignette`: intro 4 [arp, chords, fx, pad] (level=0.27) -> B 12 [arp, bass, chords, fx, kick, lead, pad] -> outro 8 [arp, chords, fx, pad] (level=0.27) -> outro 3 [chords, fx, pad] (level=0.22, fade) · form_scale 1
+- **Drums** **kick** `x...x...x...x...`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R...R...R...R...` · mode `pattern` · lowest note 44
+- **Chord rhythm** `x---------------`
+- **Arp** {'rate': 4, 'mode': 'updown', 'oct': 3, 'prob': 1e-06}
+- **Lead rhythm** `x---x-x---x-----` / `x-----x-x---x---` / `x---x---x-x-x---` / `........x---x---`
+- **Build-ups** default `(category default)` · choices ['swell'] · transitions ['none']
+- **Traits** arrangement `atmospheric_drift` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `sectional` · culture `bedroom_lofi` · texture `lofi_degraded` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `slow_build`
+- **Instruments**
+  - kick (kick): `kick` -30 dB
+  - bass (bass): `roundbass` -15 dB
+  - chords (chords): `sinepad` -20 dB · rev=0.55 · sc=0.3 · alternatives ['humchoir', 'glasskeys', 'dustpiano']
+  - pad (pad): `dreampad` -28 dB · rev=0.7 · sc=0.8 · alternatives ['sinepad', 'humchoir', 'shimmerpad', 'warblepad', 'dreampad_dark']
+  - arp (arp): `sinepulse` -18 dB · rev=0.5 · dly=0.2 · sc=0.12 · alternatives ['warmpulse', 'tapebell', 'glasskeys']
+  - lead (lead): `whistlelead` -18 dB · rev=0.5 · dly=0.3 · alternatives ['bloomlead', 'tapeflute', 'glidetone', 'sinelead_tape']
+  - arp_mid (arp): `sinepluck` -34 dB · pan=-0.15 · rev=0.7 · dly=0.45
+  - arp_hi (arp): `glintchime` -31 dB · pan=0.15 · rev=0.85 · dly=0.55
+  - texture (fx): `texture` -46 dB
+- **Mix** {'tone': [-40.0, -16.0, 0.0, -1.5, -13.0, -23.0, -38.0, -50.0, -60.0], 'lufs': -14.0, 'air': -5.0, 'low': -3.0, 'sub_cut': 90, 'width': 0.95, 'lofi': True, 'wobble': 0.6, 'vintage_lp': 2600} · reverb 3.6 · sc_depth 0.35
+- **Other rules** {'sc_release': 0.35, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'own_progs': True, 'sus_degrees': [4], 'kick_shape': {'pitch': 50, 'punch': 22, 'sweep': 30, 'decay': 9, 'click': 0.0, 'drive': 1.0, 'len': 0.4}, 'gentle': True, 'exact_pools': True, 'lead_glide': True, 'no_layers': True, 'no_dodge': True, 'bass_stutter': False, 'song_variations': {'palette': [{'name': 'sine', 'chords': 'sinepad', 'pad': 'dreampad', 'arp': 'sinepulse', 'lead': 'whistlelead', 'bass': 'roundbass', 'arp_mid': 'sinepluck', 'arp_hi': 'glintchime'}, {'name': 'glass', 'chords': 'glasskeys', 'pad': 'shimmerpad', 'arp': 'tapebell', 'lead': 'bloomlead', 'bass': 'roundbass', 'arp_mid': 'sinepluck', 'arp_hi': 'glintchime'}, {'name': 'tape', 'chords': 'dustpiano', 'pad': 'warblepad', 'arp': 'warmpulse', 'lead': 'tapeflute', 'bass': 'sinebass', 'arp_mid': 'tapebell', 'arp_hi': 'glintchime'}, {'name': 'choir', 'chords': 'humchoir', 'pad': 'sinepad', 'arp': 'sinepluck', 'lead': 'glidetone', 'bass': 'roundbass', 'arp_mid': 'tapebell', 'arp_hi': 'glintchime'}, {'name': 'warm', 'chords': 'rnbpad', 'pad': 'dreampad_dark', 'arp': 'warmpulse', 'lead': 'sinelead_tape', 'bass': 'roundbass', 'arp_mid': 'sinepluck', 'arp_hi': 'atmosbell'}], 'pulse': [{'name': 'triplet rock', 'track': 'arp', 'step': 0.3333333333333333, 'mode': 'updown', 'center': 56, 'span': 4, 'vel': 0.8, 'prob': 1.0}, {'name': 'triplet climb', 'track': 'arp', 'step': 0.3333333333333333, 'mode': 'up', 'center': 58, 'span': 7, 'vel': 0.75, 'prob': 1.0}, {'name': 'eighths', 'track': 'arp', 'step': 0.5, 'mode': 'updown', 'center': 57, 'span': 5, 'vel': 0.8, 'prob': 1.0}, {'name': 'dotted', 'track': 'arp', 'step': 0.75, 'mode': 'down', 'center': 60, 'span': 7, 'vel': 0.8, 'prob': 1.0}, {'name': 'quarter swell', 'track': 'arp', 'step': 1.0, 'mode': 'updown', 'center': 55, 'span': 5, 'vel': 0.85, 'prob': 1.0}], 'mid': [{'name': 'mid line', 'track': 'arp_mid', 'step': 0.6666666666666666, 'mode': 'updown', 'center': 70, 'vel': 0.45, 'prob': 0.8}, {'name': 'no mid'}], 'sparkle': [{'name': 'no sparkle'}, {'name': 'no sparkle'}, {'name': 'slow stars', 'track': 'arp_hi', 'step': 1.0, 'mode': 'random', 'center': 84, 'vel': 0.45, 'prob': 0.5}], 'form': [{'name': 'one minute', 'form': 'synthscape_vignette'}, {'name': 'one minute', 'form': 'synthscape_vignette'}, {'name': 'a little longer', 'form': 'synthscape_vignette_long'}], 'bpm': [{'name': 'as sent', 'bpm': (108, 112)}, {'name': 'a touch slower', 'bpm': (102, 108)}, {'name': 'a touch faster', 'bpm': (112, 116)}], 'harmony': [{'name': 'V pedal', 'scales': ['major'], 'progs': {'major': [[4, 4, 5, 0], [0, 4, 4, 5], [4, 4, 4, 5], [4, 5, 0, 4], [5, 4, 0, 4]]}}, {'name': 'V pedal', 'scales': ['major'], 'progs': {'major': [[4, 4, 5, 0], [0, 4, 4, 5], [4, 4, 4, 5], [4, 5, 0, 4], [5, 4, 0, 4]]}}, {'name': 'home vamp', 'scales': ['major'], 'progs': {'major': [[0, 0, 4, 4], [0, 4, 5, 4]]}}, {'name': 'mixolydian glow', 'scales': ['mixolydian'], 'progs': {'mixolydian': [[0, 6, 0, 6], [6, 6, 0, 0]]}}], 'bass': [{'name': 'quarter pulse', 'bass_stutter': False, 'bass': ['R...R...R...R...']}, {'name': 'quarter pulse', 'bass_stutter': False, 'bass': ['R...R...R...R...']}, {'name': 'half notes', 'bass_stutter': False, 'bass': ['R-------R-------']}, {'name': 'stutter entrances', 'bass_stutter': True}], 'lead': [{'name': 'flowing', 'lead_rh': ['x---x-x---x-----', 'x-----x-x---x---', 'x---x---x-x-x---', '........x---x---']}, {'name': 'sparse', 'lead_rh': ['x-----------....', '........x-------', '................', 'x-------........']}, {'name': 'busy', 'lead_rh': ['x-x-x---x-x-x---', 'x--x--x-x---x---', '..x-x-x-x---x---']}]}, 'arps2': [{'track': 'arp', 'step': 0.3333333333333333, 'mode': 'updown', 'center': 56, 'span': 4, 'vel': 0.8, 'prob': 1.0}, {'track': 'arp_mid', 'step': 0.6666666666666666, 'mode': 'updown', 'center': 74, 'vel': 0.5, 'prob': 0.85}, {'track': 'arp_hi', 'step': 0.3333333333333333, 'mode': 'down', 'center': 88, 'vel': 0.7, 'prob': 0.9, 'fade': 0.6, 'phrase': 8}], 'no_rotation': True, 'repetition': 0.8, 'parent': 'dream_synthscape'}
+- **Sound brief** A muffled soft kick in quarters; warm round poly synth pulsing chord tones (sidechained); a soft wide pad; a sine / triangle bass in the low-mid register; tiny bell glints with long reverb and delay; a gliding sine lead; tape hiss; everything low-passed (~3 kHz) and washed in a long hall
+
+### Christmas Lo-fi (cosy) (`christmas_lofi`)
+
+Christmas lo-fi (cosy beats): a dusty, laid-back hip-hop beat around 72-88 - warm Rhodes chords with jazzy 7ths and 9ths, a soft celesta or music-box tune, gentle sleigh bells on the beat, a round sub bass, vinyl crackle and tape wobble - snow outside, cocoa inside
+
+- **Tempo** 72-88 BPM · **scales** major, dorian · swing 0.6 (unit 16) · humanise 0.012
+- **Progressions** {'major': [[1, 4, 0, 5], [3, 2, 1, 4], [0, 5, 1, 4], [3, 4, 2, 5]], 'dorian': [[0, 3, 6, 2], [0, 3, 0, 4], [3, 4, 0, 0], [0, 6, 3, 4]]} · chord_bars 1 · chord size 5
+- **Song form** `lofi`: intro 4 [chords, fx] (filter_in) -> A 16 [bass, chords, fx, kick, snare, top] -> B 16 [bass, chords, fx, kick, lead, snare, top] -> C 8 [bass, chords, fx, lead] (alt) -> A 16 [bass, chords, fx, kick, lead, snare, top] -> outro 4 [chords, fx] (fade) · form_scale 1
+- **Drums** **kick** `X.....x...X.....` / `X......xX.....x.` / `X.x.......X..x..`; **snare** `....X.......X...`; **rim** `......o.......o.` / `..........o.....`; **chat** `x.ox.ox.x.ox.oxo` / `x.x.x.x.x.x.x.x.`; **sleigh** `x...x...x...x...` / `..x...x...x...x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.....R...F.....` / `R-----..A.R.....` / `R-------F---A---` · mode `pattern` · lowest note 33
+- **Chord rhythm** `x-------x-------` / `x--------..x----` / `x---------------`
+- **Arp** {'rate': 2, 'mode': 'up', 'oct': 5}
+- **Lead rhythm** `x--.x-x---......` / `..x-x-x-x---....` / `x---..x-x-x-----` / `....x-x-x---x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `atmospheric_drift` · density `sparse` · feel `loose_human` · melody `long_lyrical` · bass `sub_only` · drop `long_build` · variation `sectional` · culture `bedroom_lofi` · texture `lofi_degraded` · rhythm `swung_16ths` · harmony `functional_tonal` · energy `slow_build`
+- **Instruments**
+  - kick (kick): `kick` -15 dB
+  - snare (snare): `snare`  dB · rev=0.2
+  - rim (top): `rim` -30 dB · pan=0.25
+  - chat (top): `chat` -24 dB · pan=-0.15
+  - bass (bass): `sinebass`  dB · sc=0.6 · alternatives ['sf:acbass', 'sf:fingerbass', '808', 'sinebass_suboct', 'sinebass_driven']
+  - chords (chords): `rhodes`  dB · rev=0.25 · sc=0.8 · alternatives ['epiano', 'piano', 'lofikeys', 'dustpiano']
+  - lead (lead): `celesta`  dB · pan=0.2 · rev=0.3 · dly=0.2 · alternatives ['musicbox', 'glock', 'epiano', 'flute', 'vibes']
+  - vinyl (fx): `vinyl` -40 dB
+  - sleigh (top): `sleigh` -31 dB · pan=0.3 · rev=0.3
+- **Mix** {'lufs': -12.0, 'air': -3.0, 'low': 1.5, 'lofi': True} · reverb 1.6 · sc_depth 0.35
+- **Other rules** {'sc_release': 0.6, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.015, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'sampler': True, 'exact_pools': True, 'keep_sounds': 0.8, 'parent': 'lofi'}
+
 ## Footwork & Juke
 
 ### Footwork (160) (`footwork`)
@@ -5317,6 +5943,35 @@ Darkwave / EBM: cold 80s machines - a driving 16th-note sequenced bass, stomping
 - **Mix** {'lufs': -10.0, 'air': 1.2, 'low': 1.1} · reverb 2.0 · sc_depth 0.15
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.5, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
 
+### Darksynth (`darksynth`)
+
+Darksynth: synthwave turned menacing at 100-125 - a pounding gated snare and punchy kick, a distorted, driving saw bass in 16ths, dark detuned supersaw chords, a screaming lead and horror-movie arps in phrygian and harmonic minor - aggressive, cinematic, neon-noir
+
+- **Tempo** 100-125 BPM · **scales** phrygian, harmonic_minor, minor · swing 0.5 (unit 16) · humanise 0.004
+- **Progressions** {'phrygian': [[0, 1, 0, 6], [0, 5, 1, 0]], 'harmonic_minor': [[0, 5, 3, 4], [0, 3, 4, 4]], 'minor': [[0, 5, 6, 4]]} · chord_bars 1 · chord size 4
+- **Song form** `synthwave`: intro 8 [arp, chords, kick, pad, top] (filter_in) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> solo 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [arp, chords, pad, top] (fade) · form_scale 1
+- **Drums** **kick** `X...X...X...X...` / `X.......X.......` / `X.......X.x.....`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.` / `x...x...x...x...`
+- **Drum kit** (synth preset) · preset `punchy`
+- **Bass** `RRRRRRRRRRRRRRRR` / `RR.RRR.RRR.RRR.R` · mode `pattern` · lowest note 28
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
+- **Lead rhythm** `x-------x---x---` / `x---x---x-------` / `x-----x-x-------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `long_build` · variation `sectional` · culture `underground_club` · texture `wet_and_spacious` · rhythm `straight_16ths` · harmony `modal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -14 dB
+  - snare (snare): `snare` -17 dB · rev=0.45
+  - chat (top): `chat` -29 dB · pan=0.2
+  - bass (bass): `moogbass_driven` -14 dB · sc=0.4 · alternatives ['sawbass_dark', 'sawbass', 'reese', 'fmbass']
+  - chords (chords): `supersaw_dark` -22 dB · rev=0.45 · sc=0.5 · alternatives ['supersaw', 'synthbrass_dark', 'cs80brass', 'organ_dark']
+  - pad (pad): `solina` -25 dB · rev=0.55 · alternatives ['warmpad', 'choir', 'glasspad', 'jupiterpad', 'solina_wide', 'glasspad_wide']
+  - arp (arp): `pluck_saw` -26 dB · pan=0.2 · rev=0.3 · dly=0.35 · alternatives ['pluck_saw_dark', 'acid', 'technoseq']
+  - lead (lead): `leadsaw` -19 dB · rev=0.45 · dly=0.3 · alternatives ['supersaw_lead_dark', 'screamlead', 'analoglead']
+  - texture (fx): `texture` -34 dB
+- **Mix** {'lufs': -8.5, 'air': 1.4, 'low': 1.3} · reverb 2.8 · sc_depth 0.25
+- **Other rules** {'sc_release': 0.5, 'delay_beats': 0.75, 'kit_override': {'snare': {'tone': 190, 'snap': 1.0, 'decay': 14}}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'dark_synthwave'}
+- **Sound brief** Pulsing analog bass (16ths or octaves); dark supersaw / poly chords; string machine; mono saw lead; gated-reverb snare; low air, heavy low end
+
 ## Hauntology
 
 ### Hauntology (`hauntology`)
@@ -5551,12 +6206,12 @@ Rock: driving drums, distorted power-chord guitars, solid bass, lead guitar
   - chat (top): `chat` -27 dB · pan=0.2
   - ride (top): `ride` -32 dB · pan=-0.3
   - bass (bass): `ebass` -15 dB · alternatives ['sf:fingerbass', 'sf:pickbass', 'moogbass', 'pickbass']
-  - chords (chords): `guitar`  dB · alternatives ['sf:odguitar', 'sf:distguitar', 'mutedgtr']
+  - chords (chords): `rhythmgtr`  dB · alternatives ['sf:odguitar', 'sf:distguitar', 'mutedgtr']
   - pad (pad): `organ` -28 dB · rev=0.3 · alternatives ['strings', 'warmpad', 'solina']
-  - arp (arp): `guitar` -27 dB · pan=0.4 · alternatives ['piano', 'sf:cleanguitar', 'mutedgtr']
+  - arp (arp): `rhythmgtr` -27 dB · pan=0.4 · alternatives ['piano', 'sf:cleanguitar', 'mutedgtr']
   - lead (lead): `guitar`  dB · rev=0.35 · dly=0.25 · alternatives ['sf:odguitar', 'organ', 'sf:distguitar']
 - **Mix** {'lufs': -9.5, 'air': 1.5, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.85, 'chord_center': 52, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 4, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.85, 'chord_center': 52, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 4, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pools': {}}
 
 ### Metal (`metal`)
 
@@ -5580,11 +6235,11 @@ Metal: palm-muted power chords, double-kick drums, shredding lead guitar
   - chat (top): `chat` -28 dB
   - ride (top): `ride` -30 dB
   - bass (bass): `ebass` -15 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'moogbass', 'pickbass']
-  - chords (chords): `guitar` -16 dB · alternatives ['sf:distguitar', 'sf:odguitar', 'mutedgtr']
-  - arp (arp): `guitar` -26 dB · pan=0.4 · alternatives ['sf:distguitar', 'spiccato', 'mutedgtr']
-  - lead (lead): `guitar`  dB · rev=0.3 · dly=0.2 · alternatives ['sf:distguitar', 'sf:odguitar', 'organ']
+  - chords (chords): `metalgtr` -16 dB · alternatives ['sf:distguitar', 'sf:odguitar', 'mutedgtr']
+  - arp (arp): `metalgtr` -26 dB · pan=0.4 · alternatives ['sf:distguitar', 'spiccato', 'mutedgtr']
+  - lead (lead): `guitar` -10 dB · rev=0.3 · dly=0.2 · alternatives ['sf:distguitar', 'sf:odguitar', 'organ']
 - **Mix** {'lufs': -9.0, 'air': 1.5, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 60, 'punch': 200, 'sweep': 60, 'decay': 14, 'drive': 2.0, 'len': 0.25, 'click': 0.9}}, 'snare_tracks': ['snare'], 'bass_gate': 0.8, 'chord_center': 48, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 4, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'riff_lo': 38, 'riff_chorus': 0.35}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 60, 'punch': 200, 'sweep': 60, 'decay': 14, 'drive': 2.0, 'len': 0.25, 'click': 0.9}}, 'snare_tracks': ['snare'], 'bass_gate': 0.8, 'chord_center': 48, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 4, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'riff_lo': 38, 'riff_chorus': 0.35, 'pools': {}}
 
 ### Symphonic Metal (`symphonic_metal`)
 
@@ -5608,12 +6263,12 @@ Symphonic metal: double-kick drums and power chords under choir, string ostinato
   - chat (top): `chat` -28 dB
   - ride (top): `ride` -30 dB
   - bass (bass): `ebass` -15 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'moogbass']
-  - chords (chords): `guitar` -16 dB · alternatives ['sf:distguitar', 'sf:odguitar', 'mutedgtr']
+  - chords (chords): `metalgtr` -16 dB · alternatives ['sf:distguitar', 'sf:odguitar', 'mutedgtr']
   - pad (pad): `choir` -22 dB · rev=0.5 · alternatives ['strings', 'organ', 'horn', 'tremolo']
   - arp (arp): `spiccato` -25 dB · pan=0.3 · rev=0.3 · alternatives ['harp', 'piano', 'pizz']
   - lead (lead): `violin` -17 dB · rev=0.4 · dly=0.2 · alternatives ['guitar', 'sf:distguitar', 'choir', 'horn', 'flute']
 - **Mix** {'lufs': -9.5, 'air': 1.5, 'low': 1.0} · reverb 2.6 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.8, 'chord_center': 48, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'riff_lo': 38, 'riff_chorus': 0.35}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.8, 'chord_center': 48, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'riff_lo': 38, 'riff_chorus': 0.35, 'pools': {}}
 - **Sound brief** Distorted guitars; Choir (pad); Strings spiccato (ostinato); Violin / guitar / horn lead; Organ
 
 ### Punk (`punk`)
@@ -5638,10 +6293,10 @@ Punk rock: fast down-picked power chords, driving 8th-note bass, pounding drums,
   - chat (top): `chat` -27 dB
   - crash (top): `crash` -28 dB
   - bass (bass): `ebass` -15 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'moogbass', 'pickbass']
-  - chords (chords): `guitar`  dB · pan=-0.2 · alternatives ['sf:distguitar', 'sf:odguitar', 'mutedgtr']
+  - chords (chords): `rhythmgtr`  dB · pan=-0.2 · alternatives ['sf:distguitar', 'sf:odguitar', 'mutedgtr']
   - lead (lead): `guitar` -18 dB · pan=0.2 · rev=0.2 · alternatives ['sf:odguitar', 'sf:distguitar', 'organ']
 - **Mix** {'lufs': -9.0, 'air': 1.5, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.85, 'chord_center': 50, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'riff_lo': 40, 'riff_chorus': 0.0}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.85, 'chord_center': 50, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'riff_lo': 40, 'riff_chorus': 0.0, 'pools': {}}
 - **Sound brief** Distorted guitars (down-picked); Bass guitar (8ths); Drums
 
 ### Indie Rock (`indie_rock`)
@@ -5665,12 +6320,12 @@ Indie rock: jangly clean guitars in 8ths, melodic bass, straight-ahead drums, a 
   - chat (top): `chat` -28 dB
   - ride (top): `ride` -32 dB
   - bass (bass): `ebass` -15 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'moogbass', 'pickbass']
-  - chords (chords): `guitar`  dB · pan=-0.25 · rev=0.25 · dly=0.15 · alternatives ['sf:cleanguitar', 'sf:odguitar', 'piano', 'wurli']
+  - chords (chords): `rhythmgtr`  dB · pan=-0.25 · rev=0.25 · dly=0.15 · alternatives ['sf:cleanguitar', 'sf:odguitar', 'piano', 'wurli']
   - pad (pad): `organ` -29 dB · rev=0.35 · alternatives ['warmpad', 'strings', 'solina', 'polysynth']
-  - arp (arp): `guitar` -24 dB · pan=0.3 · rev=0.3 · dly=0.25 · alternatives ['sf:cleanguitar', 'piano', 'mutedgtr']
+  - arp (arp): `jangle` -24 dB · pan=0.3 · rev=0.3 · dly=0.25 · alternatives ['sf:cleanguitar', 'piano', 'mutedgtr']
   - lead (lead): `guitar` -18 dB · rev=0.3 · dly=0.2 · alternatives ['sf:odguitar', 'sf:cleanguitar', 'leadsaw', 'piano']
 - **Mix** {'lufs': -10.0, 'air': 1.6, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pools': {}}
 - **Sound brief** Clean / chorus guitars (jangle); Arpeggiated lead guitar; Bass guitar; Drums; Synth or organ pad
 
 ### Math rock (tapped guitars, odd meters) (`math_rock`)
@@ -5757,12 +6412,12 @@ Jam band / 70s psychedelic jam rock: a composed head, then long modal jams on a 
   - tom (top): `tom` -23 dB · rev=0.35
   - tamb (top): `tamb` -30 dB · pan=0.3
   - bass (bass): `ebass` -15 dB · alternatives ['sf:fingerbass', 'moogbass', 'sf:pickbass', 'fretless']
-  - chords (chords): `acguitar`  dB · pan=-0.25 · rev=0.25 · alternatives ['guitar', 'sf:steelguitar', 'sf:cleanguitar', 'epiano', 'piano', 'wurli', 'dxbell']
+  - chords (chords): `dreadnought`  dB · pan=-0.25 · rev=0.25 · alternatives ['guitar', 'sf:steelguitar', 'sf:cleanguitar', 'epiano', 'piano', 'wurli', 'dxbell']
   - pad (pad): `organ` -27 dB · pan=0.25 · rev=0.3 · alternatives ['strings', 'solina', 'polysynth', 'pedalsteel']
   - arp (arp): `epiano` -25 dB · pan=0.2 · rev=0.3 · alternatives ['guitar', 'piano', 'pluck']
   - lead (lead): `guitar` -18 dB · rev=0.35 · dly=0.2 · alternatives ['sf:cleanguitar', 'epiano', 'pedalsteel', 'flute', 'sax']
 - **Mix** {'lufs': -11.0, 'air': 1.3, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.01, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.01, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pools': {}}
 - **Sound brief** Acoustic + clean electric guitars; Fender Rhodes; Hammond organ; Bass guitar (melodic); soft drums with tom fills
 
 ### Garage rock (60s, fuzz & organ) (`garage_rock`)
@@ -5787,11 +6442,11 @@ Garage rock (60s): raw, loud and simple - fuzz guitars bashing three chords, a c
   - tamb (top): `tamb` -24 dB · pan=0.3
   - crash (top): `crash` -27 dB
   - bass (bass): `ebass` -14 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'pickbass']
-  - chords (chords): `guitar` -14 dB · alternatives ['sf:distguitar', 'sf:odguitar']
+  - chords (chords): `rhythmgtr` -14 dB · alternatives ['sf:distguitar', 'sf:odguitar']
   - arp (arp): `organ` -19 dB · pan=-0.25 · rev=0.25 · alternatives ['guitar', 'twang']
   - lead (lead): `organ` -16 dB · rev=0.25 · alternatives ['guitar', 'harmonica']
 - **Mix** {'lufs': -10.0, 'air': 0.6, 'low': 0.8, 'vintage_lp': 9000} · reverb 1.3 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 52, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 52, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True, 'pools': {}}
 - **Sound brief** Fuzz guitar; combo organ (Farfisa / Vox Continental); bass; drums; tambourine
 
 ### Rockabilly (slap bass & twang) (`rockabilly`)
@@ -5814,11 +6469,11 @@ Rockabilly (50s): a slapped upright bass clicking on every beat, a brushed snare
   - snare (snare): `snare` -17 dB · rev=0.15
   - chat (top): `chat` -28 dB
   - bass (bass): `upright` -13 dB · alternatives ['sf:acbass']
-  - chords (chords): `acguitar` -22 dB · pan=-0.25 · alternatives ['guitar', 'piano']
+  - chords (chords): `dreadnought` -22 dB · pan=-0.25 · alternatives ['guitar', 'piano']
   - arp (arp): `piano` -25 dB · pan=0.25 · alternatives ['twang', 'guitar']
-  - lead (lead): `twang` -15 dB · rev=0.15 · dly=0.22 · alternatives ['guitar', 'sax']
+  - lead (lead): `telegtr` -15 dB · rev=0.15 · dly=0.22 · alternatives ['guitar', 'sax']
 - **Mix** {'lufs': -11.0, 'air': 0.8, 'low': 0.8, 'vintage_lp': 9000} · reverb 1.2 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True, 'slides': 0.3}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True, 'slides': 0.3, 'pools': {}}
 - **Sound brief** Slap upright bass; hollow-body electric (twang, slapback echo); acoustic rhythm guitar; brushed drums
 
 ### Post-punk (`post_punk`)
@@ -5842,12 +6497,12 @@ Post-punk (late 70s / early 80s): a melodic, chorus-drenched bass carrying the t
   - chat (top): `chat` -27 dB
   - tom (top): `tom` -24 dB · rev=0.3
   - bass (bass): `ebass` -12 dB · alternatives ['sf:pickbass', 'moogbass', 'pickbass']
-  - chords (chords): `guitar` -22 dB · pan=-0.3 · rev=0.3 · alternatives ['sf:cleanguitar', 'polysynth']
+  - chords (chords): `rhythmgtr` -22 dB · pan=-0.3 · rev=0.3 · alternatives ['sf:cleanguitar', 'polysynth']
   - pad (pad): `warmpad` -26 dB · rev=0.5 · alternatives ['solina', 'strings']
-  - arp (arp): `guitar` -23 dB · pan=0.3 · rev=0.3 · alternatives ['sf:cleanguitar', 'polysynth']
+  - arp (arp): `jangle` -23 dB · pan=0.3 · rev=0.3 · alternatives ['sf:cleanguitar', 'polysynth']
   - lead (lead): `guitar` -17 dB · rev=0.35 · dly=0.2 · alternatives ['sf:cleanguitar', 'leadsaw']
 - **Mix** {'lufs': -11.0, 'air': 1.0, 'low': 0.9} · reverb 1.9 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True, 'pools': {}}
 - **Sound brief** Melodic bass with chorus (high on the neck); trebly chorus guitar; cold synth pad; tight drums
 
 ### 90s alt rock (`alt_rock_90s`)
@@ -5873,13 +6528,13 @@ Post-punk (late 70s / early 80s): a melodic, chorus-drenched bass carrying the t
   - crash (top): `crash` -25 dB · rev=0.3
   - tamb (top): `tamb` -30 dB · pan=0.35
   - bass (bass): `ebass` -14 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'moogbass', 'pickbass']
-  - chords (chords): `guitar` -17 dB · pan=-0.35 · alternatives ['sf:distguitar', 'sf:odguitar', 'mutedgtr']
-  - chords_r (chords): `guitar` -18 dB · pan=0.35
-  - arp (arp): `guitar` -21 dB · pan=0.3 · rev=0.3 · alternatives ['sf:cleanguitar', 'acguitar', 'mutedgtr']
+  - chords (chords): `grungegtr` -17 dB · pan=-0.35 · alternatives ['sf:distguitar', 'sf:odguitar', 'mutedgtr']
+  - chords_r (chords): `grungegtr` -18 dB · pan=0.35
+  - arp (arp): `jangle` -21 dB · pan=0.3 · rev=0.3 · alternatives ['sf:cleanguitar', 'acguitar', 'mutedgtr']
   - pad (pad): `organ` -28 dB · rev=0.3 · alternatives ['strings', 'warmpad', 'solina']
   - lead (lead): `guitar` -19 dB · rev=0.35 · dly=0.2 · alternatives ['organ', 'piano', 'sf:distguitar']
 - **Mix** {'lufs': -12.0, 'air': 1.2, 'low': 1.0} · reverb 1.6 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.85, 'chord_center': 55, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.85, 'chord_center': 55, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True, 'pools': {}}
 - **Sound brief** Clean jangly guitar (Rickenbacker-ish, chorus); distorted power chords in the chorus; pick bass; big room kit; a little organ or lead guitar
 
 ### Jam-band rock (80s, upbeat) (`jam_rock_80s`)
@@ -5907,13 +6562,13 @@ Jam-band rock (80s, upbeat sing-along): a bright, bouncing major-key groove from
   - tom (top): `tom` -22 dB · pan=0.2 · rev=0.3
   - tamb (top): `tamb` -30 dB · pan=0.4
   - bass (bass): `ebass` -14 dB · alternatives ['sf:fingerbass', 'sf:pickbass', 'moogbass']
-  - chords (chords): `guitar` -21 dB · pan=-0.35 · rev=0.25 · alternatives ['sf:cleanguitar', 'acguitar', 'sf:distguitar', 'obstab']
+  - chords (chords): `rhythmgtr` -21 dB · pan=-0.35 · rev=0.25 · alternatives ['sf:cleanguitar', 'acguitar', 'sf:distguitar', 'obstab']
   - pad (pad): `epiano` -25 dB · rev=0.3 · alternatives ['organ', 'polysynth', 'warmpad']
   - arp (arp): `organ` -27 dB · pan=0.3 · rev=0.3 · alternatives ['piano', 'epiano', 'twang']
   - lead (lead): `guitar` -19 dB · pan=0.2 · rev=0.35 · dly=0.2 · alternatives ['sf:cleanguitar', 'organ', 'sf:distguitar']
   - solo_keys (lead): `epiano` -19 dB · pan=-0.1 · rev=0.3
 - **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.75, 'chord_center': 63, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'solos': ['lead', 'solo_keys', 'lead'], 'no_rotation': True}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.75, 'chord_center': 63, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'solos': ['lead', 'solo_keys', 'lead'], 'no_rotation': True, 'pools': {}}
 - **Sound brief** Two drum kits panned left / right; chorused clean rhythm guitar; melodic bass; DX7-style keys and organ; clean lead guitar noodling
 
 ### Lo-fi bedroom rock (`lofi_rock`)
@@ -5964,10 +6619,10 @@ Mid-80s boogie rock: a fast, bouncing two-beat shuffle around 170 driven by a ch
   - tamb (top): `tamb` -31 dB · pan=0.3
   - bass (bass): `ebass` -14 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'moogbass']
   - chords (chords): `organ` -17 dB · rev=0.25 · alternatives ['polysynth', 'epiano', 'piano']
-  - arp (arp): `guitar` -23 dB · pan=-0.3 · rev=0.3 · alternatives ['mutedgtr', 'piano', 'sf:cleanguitar']
+  - arp (arp): `rhythmgtr` -23 dB · pan=-0.3 · rev=0.3 · alternatives ['mutedgtr', 'piano', 'sf:cleanguitar']
   - lead (lead): `guitar` -19 dB · rev=0.3 · dly=0.2 · alternatives ['organ', 'synthbrass', 'sf:distguitar']
 - **Mix** {'lufs': -11.0, 'air': 1.4, 'low': 0.8, 'width': 1.0} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pools': {}}
 - **Sound brief** Combo organ / synth-organ riff (the hook); clean chorused Strat licks; root-fifth bass; big roomy kit
 
 ### Spooky 60s surf / TV theme (`spooky_surf`)
@@ -6021,11 +6676,11 @@ Nu-metal / alt-metal (late 90s - early 2000s): down-tuned, chugging power-chord 
   - chat (top): `chat` -27 dB
   - crash (top): `crash` -28 dB
   - bass (bass): `ebass` -14 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'moogbass', 'pickbass']
-  - chords (chords): `guitar` -14 dB · alternatives ['sf:distguitar', 'sf:odguitar', 'mutedgtr']
-  - arp (arp): `guitar` -24 dB · pan=0.4 · rev=0.3 · dly=0.2 · alternatives ['sf:distguitar', 'mutedgtr', 'piano']
+  - chords (chords): `metalgtr` -14 dB · alternatives ['sf:distguitar', 'sf:odguitar', 'mutedgtr']
+  - arp (arp): `metalgtr` -24 dB · pan=0.4 · rev=0.3 · dly=0.2 · alternatives ['sf:distguitar', 'mutedgtr', 'piano']
   - lead (lead): `guitar` -18 dB · rev=0.3 · dly=0.2 · alternatives ['sf:distguitar', 'sf:odguitar', 'organ']
 - **Mix** {'lufs': -8.5, 'air': 1.2, 'low': 1.4, 'width': 1.0} · reverb 1.2 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 46, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'own_progs': True, 'riff_lo': 33, 'riff_chorus': 0.6}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 46, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'own_progs': True, 'riff_lo': 33, 'riff_chorus': 0.6, 'pools': {}}
 - **Sound brief** Down-tuned 7-string chug riffs with rests; clanky slap bass; hip-hop-ish hard drums; eerie clean guitar; scratch noises
 
 ### Surf rock (60s) (`surf_rock`)
@@ -6168,11 +6823,11 @@ Boogie blues-rock (bar-band slide boogie): a heavy, swaggering shuffle around 95
   - ride (top): `ride` -29 dB
   - bass (bass): `ebass` -12 dB · alternatives ['sf:pickbass', 'sf:fingerbass']
   - riff (bass): `guitar` -19 dB · pan=-0.3 · rev=0.15
-  - chords (chords): `guitar` -16 dB · pan=0.3 · rev=0.15 · alternatives ['sf:odguitar', 'sf:distguitar']
+  - chords (chords): `rhythmgtr` -16 dB · pan=0.3 · rev=0.15 · alternatives ['sf:odguitar', 'sf:distguitar']
   - lead (lead): `guitar` -14 dB · rev=0.3 · alternatives ['sf:odguitar', 'harmonica', 'sax']
   - solo_sax (lead): `sax` -17 dB · rev=0.3
 - **Mix** {'lufs': -11.0, 'air': 0.0, 'low': 0.8} · reverb 1.4 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.75, 'chord_center': 52, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 4, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'roots': [4, 7, 9, 2], 'slides': 0.55, 'no_rotation': True, 'own_progs': True, 'riff_locked': True, 'bass_cycle': True, 'repetition': 0.75, 'solos': ['solo_sax']}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.75, 'chord_center': 52, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 4, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'roots': [4, 7, 9, 2], 'slides': 0.55, 'no_rotation': True, 'own_progs': True, 'riff_locked': True, 'bass_cycle': True, 'repetition': 0.75, 'solos': ['solo_sax'], 'pools': {}}
 - **Sound brief** Distorted slide guitar (open E / open G, bottleneck); overdriven rhythm guitar on the boogie riff; electric bass doubling it; tenor sax; straight-ahead rock kit with a heavy shuffle
 
 ### Shoegaze (`shoegaze`)
@@ -6196,12 +6851,12 @@ Shoegaze: a wall of sound - loud, washed-out, heavily distorted and reverbed gui
   - ride (top): `ride` -27 dB
   - crash (top): `crash` -28 dB
   - bass (bass): `ebass` -16 dB · alternatives ['sf:pickbass', 'sf:fingerbass']
-  - chords (chords): `guitar` -17 dB · rev=0.7 · alternatives ['sf:distguitar', 'sf:odguitar']
+  - chords (chords): `grungegtr` -17 dB · rev=0.7 · alternatives ['sf:distguitar', 'sf:odguitar']
   - pad (pad): `glasspad` -25 dB · rev=0.7 · alternatives ['warmpad', 'strings']
   - arp (arp): `guitar` -24 dB · pan=0.3 · rev=0.7 · dly=0.4 · alternatives ['sf:cleanguitar', 'polysynth']
   - lead (lead): `softlead` -22 dB · rev=0.7 · dly=0.4 · alternatives ['vox', 'whine']
 - **Mix** {'lufs': -10.5, 'air': 0.8, 'low': 1.0} · reverb 3.2 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pools': {}}
 
 ### Post-rock (`post_rock`)
 
@@ -6227,10 +6882,10 @@ Post-rock: long, instrumental slow builds - clean delayed guitars and tremolo-pi
   - bass (bass): `ebass` -16 dB · alternatives ['sf:pickbass', 'sf:fingerbass']
   - chords (chords): `guitar` -19 dB · rev=0.5 · dly=0.35 · alternatives ['sf:cleanguitar', 'piano']
   - pad (pad): `strings` -26 dB · rev=0.6 · alternatives ['glasspad', 'warmpad']
-  - arp (arp): `guitar` -23 dB · pan=0.3 · rev=0.5 · dly=0.4 · alternatives ['sf:cleanguitar', 'piano', 'glock']
+  - arp (arp): `jangle` -23 dB · pan=0.3 · rev=0.5 · dly=0.4 · alternatives ['sf:cleanguitar', 'piano', 'glock']
   - lead (lead): `guitar` -19 dB · rev=0.5 · dly=0.4 · alternatives ['violin', 'piano']
 - **Mix** {'lufs': -12.0, 'air': 1.2, 'low': 1.0} · reverb 2.8 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pools': {}}
 
 ### Pop-punk / emo (`pop_punk`)
 
@@ -6253,11 +6908,11 @@ Pop-punk / emo: fast and bright - a driving skate beat and off-beat snare, eight
   - chat (top): `chat` -27 dB
   - crash (top): `crash` -27 dB
   - bass (bass): `ebass` -15 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'pickbass']
-  - chords (chords): `guitar` -16 dB · alternatives ['sf:distguitar', 'sf:odguitar']
-  - arp (arp): `guitar` -26 dB · pan=0.4 · alternatives ['sf:cleanguitar', 'piano']
+  - chords (chords): `rhythmgtr` -16 dB · alternatives ['sf:distguitar', 'sf:odguitar']
+  - arp (arp): `jangle` -26 dB · pan=0.4 · alternatives ['sf:cleanguitar', 'piano']
   - lead (lead): `guitar` -18 dB · rev=0.25 · dly=0.15 · alternatives ['sf:distguitar', 'leadsaw']
 - **Mix** {'lufs': -9.0, 'air': 1.6, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pools': {}}
 
 ### Doom / stoner metal (`doom_metal`)
 
@@ -6281,11 +6936,11 @@ Doom / stoner metal: crushingly slow and heavy - huge, fuzzed-out down-tuned rif
   - ride (top): `ride` -28 dB
   - crash (top): `crash` -26 dB
   - bass (bass): `ebass` -14 dB · alternatives ['sf:pickbass', 'sawbass']
-  - chords (chords): `guitar` -15 dB · alternatives ['sf:distguitar', 'sf:odguitar']
-  - arp (arp): `guitar` -27 dB · pan=0.4 · alternatives ['sf:odguitar', 'organ']
+  - chords (chords): `metalgtr` -15 dB · alternatives ['sf:distguitar', 'sf:odguitar']
+  - arp (arp): `metalgtr` -27 dB · pan=0.4 · alternatives ['sf:odguitar', 'organ']
   - lead (lead): `guitar` -18 dB · rev=0.4 · dly=0.25 · alternatives ['sf:distguitar', 'organ']
 - **Mix** {'lufs': -9.5, 'air': 0.8, 'low': 1.6} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 50, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 50, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pools': {}}
 
 ### Stoner rock - raga / psych (sitar, tabla) (`stoner_raga`)
 
@@ -6320,7 +6975,7 @@ Stoner rock - raga / psych: slow, heavy fuzz-guitar riffs and a fuzzed bass lock
 
 ### Cybergrind / drum-machine deathgrind (`cybergrind`)
 
-Cybergrind (modelled on wecamewithbrokenteeth): songs about a minute long that never sit still - built on ~125 BPM but always switching: double-time drum-machine blasts, crushing half-time breakdowns (every one a new rhythm, tempo and riff) where the down-tuned guitars chug locked to the kick, slam grooves, dead stops and quiet chiptune moments in the middle of the song; every song gets its own order of parts, opening and ending
+Cybergrind: songs about a minute long that never sit still - built on ~125 BPM but always switching: double-time drum-machine blasts, crushing half-time breakdowns (every one a new rhythm, tempo and riff) where the down-tuned guitars chug locked to the kick, slam grooves, dead stops and quiet chiptune moments in the middle of the song; every song gets its own order of parts, opening and ending
 
 - **Tempo** 116-134 BPM · **scales** phrygian, minor, harmonic_minor · swing 0.5 (unit 16) · humanise 0.0
 - **Progressions** {'phrygian': [[0, 0, 1, 0], [0, 1, 0, 6]], 'minor': [[0, 0, 5, 6], [0, 6, 5, 0]], 'harmonic_minor': [[0, 1, 0, 4]]} · chord_bars 1 · chord size 2
@@ -6350,7 +7005,7 @@ Cybergrind (modelled on wecamewithbrokenteeth): songs about a minute long that n
 
 ### Slam / brutal deathcore (`slam`)
 
-Slam / brutal deathcore (modelled on Waking the Cadaver and Vulvodynia): a wall of hammer, bomb and gravity blasts and rolling double kick, mid-tempo slam grooves on the half-step b2 rub, pinch squeals, and breakdowns that pile up toward the end of the song - every one different: kick-locked chugs, half-time slams over double kick, stop-start hits, triplet grooves, quarter-note beatdowns, gallops and crawling drags; the lowest, heaviest one last; down-tuned quad-tracked guitars and a clicky triggered kit, mixed brutally loud
+Slam / brutal deathcore: a wall of hammer, bomb and gravity blasts and rolling double kick, mid-tempo slam grooves on the half-step b2 rub, pinch squeals, and breakdowns that pile up toward the end of the song - every one different: kick-locked chugs, half-time slams over double kick, stop-start hits, triplet grooves, quarter-note beatdowns, gallops and crawling drags; the lowest, heaviest one last; down-tuned quad-tracked guitars and a clicky triggered kit, mixed brutally loud
 
 - **Tempo** 128-146 BPM · **scales** phrygian, minor, harmonic_minor · swing 0.5 (unit 16) · humanise 0.0
 - **Progressions** {'phrygian': [[0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 6]], 'minor': [[0, 0, 0, 0], [0, 0, 6, 5]], 'harmonic_minor': [[0, 1, 0, 0]]} · chord_bars 1 · chord size 2
@@ -6376,6 +7031,66 @@ Slam / brutal deathcore (modelled on Waking the Cadaver and Vulvodynia): a wall 
 - **Mix** {'tone': [-6.0, 0.0, -5.6, -9.7, -10.0, -8.3, -8.4, -9.5, -17.3], 'lufs': -6.0, 'air': -1.0, 'low': 2.0, 'drive': 0.35, 'width': 1.0, 'max_gr': 5.0} · reverb 1.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {'kick': {'pitch': 58, 'punch': 260, 'sweep': 70, 'decay': 24, 'drive': 2.6, 'len': 0.11, 'click': 1.0}, 'snare': {'crack': 0.75, 'drive': 1.8}}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 42, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'form_gen': 'slam', 'own_progs': True, 'no_layers': True, 'riff_lo': 30, 'riff_chorus': 0.7}
 - **Sound brief** Triggered blast beats and rolling double kick, chinas and crashes; drop-tuned 7-string guitars quad-tracked, palm-muted chugs locked to the kick, pinch squeals; a distorted bass doubling the riffs
+
+### Grunge (`grunge`)
+
+Grunge: drop-D fuzz walls, quiet-loud dynamics (clean verses, crushing choruses), a heavy dry kit and minor, modal riffs - Seattle, early 90s
+
+- **Tempo** 92-128 BPM · **scales** minor, dorian, phrygian, mixolydian · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'major': [[0, 4, 5, 3], [0, 3, 0, 4], [5, 3, 0, 4], [0, 6, 3, 0], [4, 1, 1, 0]], 'mixolydian': [[0, 6, 3, 0], [0, 3, 6, 3]]} · chord_bars 1 · chord size 3
+- **Song form** `alt90`: intro 4 [arp, bass, kick, snare, top] -> verse 16 [arp, bass, kick, lead, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, kick, lead, snare, top] (crash) -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [arp, bass, pad, top] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 4 [bass, chords, kick, snare, top] (cad) · form_scale 1
+- **Drums** **kick** `X.....X.X.......` / `X.......X.X.....` / `X.....X...X..X..` / `X...X.......X...`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.` / `x.xxx.xxx.xxx.xx`; **ride** `x.x.x.x.x.x.x.x.`; **crash** `X...............` / `................`; **tamb** `....x.......x...`
+- **Drum kit** (synth preset) · preset `acoustic`
+- **Bass** `R.R.R.R.R.R.R.R.` / `R.R.R.R.R.R.F.F.` / `R...R.R.R...R.R.` · mode `pattern` · lowest note 33
+- **Chord rhythm** `x-x-x-x-x-x-x-x-` / `X---x-x-X---x-x-` / `x.x.x.x.x.x.x.x.`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 4}
+- **Lead rhythm** `x-x-x---x-x-----` / `x---x-x-x-x-x---` / `..x-x-x-x-------` / `x-x-x-x-x-------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `dense` · feel `live_drums` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -12 dB
+  - snare (snare): `snare` -14 dB · rev=0.25
+  - chat (top): `chat` -27 dB · pan=0.2
+  - ride (top): `ride` -30 dB · pan=-0.3
+  - crash (top): `crash` -25 dB · rev=0.3
+  - tamb (top): `tamb` -30 dB · pan=0.35
+  - bass (bass): `ebass` -14 dB
+  - chords (chords): `grungegtr` -17 dB · pan=-0.35 · alternatives ['rhythmgtr', 'sf:distguitar']
+  - chords_r (chords): `grungegtr` -18 dB · pan=0.35
+  - arp (arp): `jangle` -21 dB · pan=0.3 · rev=0.3 · alternatives ['cleanguitar', 'grungegtr']
+  - pad (pad): `organ` -28 dB · rev=0.3
+  - lead (lead): `grungegtr` -15 dB · rev=0.35 · dly=0.2 · alternatives ['rhythmgtr', 'sf:odguitar']
+- **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 1.0} · reverb 1.6 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.85, 'chord_center': 55, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True}
+- **Sound brief** Fuzz guitar (Big Muff into a worn 2x12), clean chorused verse guitar, pick bass, big dry kit
+
+### Rockin' Christmas (rockabilly) (`christmas_rockabilly`)
+
+Rockin' Christmas (rockabilly): a fast, bouncing shuffle around 150-175 - slapped upright bass, twangy electric lead with slapback echo, boogie piano, a snappy snare, sleigh bells on every beat and a big ending - the rock'n'roll Christmas party record
+
+- **Tempo** 150-176 BPM · **scales** major · swing 0.64 (unit 8) · humanise 0.007
+- **Progressions** [[0, 0, 0, 0, 3, 3, 0, 0, 4, 3, 0, 4], [0, 3, 0, 0, 3, 3, 0, 0, 4, 3, 0, 0]] · chord_bars 1 · chord size 3
+- **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
+- **Drums** **kick** `X.......X.......`; **snare** `....x.......x...` / `....x..x....x...`; **chat** `x.x.x.x.x.x.x.x.`; **sleigh** `x...x...x...x...` / `x.x.x.x.x.x.x.x.`
+- **Drum kit** (synth preset) · preset `acoustic`
+- **Bass** `R.......R.......` · mode `walk` · lowest note 28
+- **Chord rhythm** `x.x.x.x.x.x.x.x.` / `..x...x...x...x.`
+- **Arp** {'rate': 2, 'mode': 'up', 'oct': 4, 'prob': 0.5}
+- **Lead rhythm** `x.x.x-x-x---x---` / `x.xxx.x.x-x-x---` / `x-x.x-x.x---....`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `walking` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `triplet_feel` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -18 dB
+  - snare (snare): `snare` -17 dB · rev=0.15
+  - chat (top): `chat` -28 dB
+  - bass (bass): `upright` -13 dB · alternatives ['sf:acbass']
+  - chords (chords): `dreadnought` -22 dB · pan=-0.25 · alternatives ['acguitar', 'guitar', 'piano']
+  - arp (arp): `piano` -25 dB · pan=0.25 · alternatives ['twang', 'celesta']
+  - lead (lead): `telegtr` -15 dB · rev=0.15 · dly=0.22 · alternatives ['twang', 'sax', 'guitar']
+  - sleigh (top): `sleigh` -27 dB · pan=0.3 · rev=0.25
+- **Mix** {'lufs': -11.0, 'air': 0.8, 'low': 0.8, 'vintage_lp': 9000} · reverb 1.2 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True, 'slides': 0.3, 'exact_pools': True, 'keep_sounds': 0.8, 'parent': 'rockabilly'}
+- **Sound brief** Slap upright bass; hollow-body electric (twang, slapback echo); acoustic rhythm guitar; brushed drums
 
 ## Pop & Indie
 
@@ -6552,7 +7267,7 @@ Bedroom / indie pop: a bouncy drum machine with a syncopated kick, warm synth ba
   - lead (lead): `pluck` -19 dB · rev=0.35 · dly=0.25 · alternatives ['chip', 'bell', 'softlead', 'glasspad', 'guitar']
 - **Mix** {'lufs': -8.0, 'air': 1.0, 'low': 1.4, 'width': 0.6} · reverb 2.0 · sc_depth 0.15
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
-- **Sound brief** Drum machine (707 / Linn-ish) with a bouncy kick; warm synth bass; chorused clean electric guitar; soft poly synth; bubbly plucks / bells (KKB); glassy synth lead
+- **Sound brief** Drum machine (707 / Linn-ish) with a bouncy kick; warm synth bass; chorused clean electric guitar; soft poly synth; bubbly plucks / bells; glassy synth lead
 
 ### 80s adult pop - gated drums & shakuhachi (`shakuhachi_pop`)
 
@@ -6697,6 +7412,65 @@ Anime opening (J-rock / J-pop): fast and dramatic - driving rock drums, busy run
   - lead (lead): `supersaw_lead` -19 dB · rev=0.3 · dly=0.2 · alternatives ['guitar', 'violin', 'leadsaw']
 - **Mix** {'lufs': -9.0, 'air': 1.8, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'key_change': True}
+
+### Dream Pop (`dream_pop`)
+
+Dream pop: hazy, slow-motion pop at 70-100 - chorused clean guitars ringing in arpeggios, a soft breathy lead, floating major-seventh and add9 chords, a gentle round bass and a soft kit drenched in reverb - tender and weightless (where shoegaze is a wall of fuzz, dream pop is a mist)
+
+- **Tempo** 70-100 BPM · **scales** major, lydian · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'major': [[0, 5, 3, 4], [3, 0, 3, 4], [0, 2, 5, 3]], 'lydian': [[0, 1, 0, 1]]} · chord_bars 2 · chord size 4
+- **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
+- **Drums** **kick** `X.......X.X.....` / `X.....X.X.......`; **snare** `....X.......X...`; **ride** `x.x.x.x.x.x.x.x.`; **crash** `X...............` / `................`
+- **Drum kit** (synth preset) · preset `acoustic`
+- **Bass** `R.R.R.R.R.R.R.R.` / `R-R-R-R-F-F-R-R-` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x-------x-------` / `x---x---x---x---`
+- **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `x-------x-------` / `x---x---x-------` / `x---------------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `wet_and_spacious` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -15 dB
+  - snare (snare): `snare` -16 dB · rev=0.45
+  - ride (top): `ride` -27 dB
+  - crash (top): `crash` -28 dB
+  - bass (bass): `ebass` -16 dB · alternatives ['sf:pickbass', 'sf:fingerbass']
+  - chords (chords): `jangle` -17 dB · rev=0.7 · alternatives ['cleanguitar', 'epiano', 'glasskeys', 'polysynth']
+  - pad (pad): `glasspad` -25 dB · rev=0.7 · alternatives ['warmpad_wide', 'choir_wide', 'shimmerpad']
+  - arp (arp): `jangle` -24 dB · pan=0.3 · rev=0.7 · dly=0.4 · alternatives ['cleanguitar', 'glasskeys', 'celesta']
+  - lead (lead): `softlead` -22 dB · rev=0.7 · dly=0.4 · alternatives ['softlead_wide', 'whistlelead', 'flute']
+- **Mix** {'lufs': -10.5, 'air': 0.8, 'low': 1.0} · reverb 3.4 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'shoegaze'}
+
+### Christmas Wall of Sound (60s pop) (`christmas_wall_of_sound`)
+
+Christmas wall of sound (60s girl-group Christmas pop): a huge, echoing 4/4 around 125-140 - the boom, boom-boom, crack drum beat, sleigh bells and tambourine on every 8th, castanet clicks, hammering piano 8ths, a wall of strings, glockenspiel doubling the hook and a sax break, all drenched in reverb
+
+- **Tempo** 124-140 BPM · **scales** major · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'major': [[0, 5, 3, 4], [0, 3, 4, 0], [0, 5, 1, 4]]} · chord_bars 1 · chord size 4
+- **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
+- **Drums** **kick** `X.....X.X.......` / `X.....X.X...X...`; **snare** `............X...` / `....X.......X...`; **sleigh** `x.x.x.x.x.x.x.x.`; **tamb** `x.x.x.x.x.x.x.x.`; **cast** `..x...x...x..xx.` / `x..x..x...x...x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R...F...R...F...` / `R.......F.......` / `R...F...R...A...` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x.x.x.x.x.x.x.x.` / `xxxxxxxxxxxxxxxx`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 6}
+- **Lead rhythm** `x---x-x-x-------` / `x-x-x---x-x-x---` / `x-------x---x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `massive_reverb` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -19 dB
+  - snare (snare): `snare` -22 dB · rev=0.3
+  - sleigh (top): `sleigh` -28 dB · pan=0.25
+  - tamb (top): `tamb` -29 dB · pan=-0.25
+  - bass (bass): `ebass` -16 dB · alternatives ['sf:acbass', 'sf:fingerbass', 'sf:pickbass']
+  - chords (chords): `piano` -22 dB · rev=0.3 · alternatives ['epiano', 'harp']
+  - pad (pad): `strings` -25 dB · rev=0.4 · alternatives ['choir', 'horn']
+  - arp (arp): `celesta` -26 dB · pan=-0.2 · rev=0.35 · alternatives ['glock', 'vibes']
+  - lead (lead): `brass` -19 dB · rev=0.35 · alternatives ['sax', 'strings', 'violin', 'trumpet']
+  - cast (top): `woodblock` -30 dB · pan=-0.35 · rev=0.4
+  - glock (lead): `glock` -30 dB · pan=0.25 · rev=0.45
+- **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 0.9} · reverb 3.8 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'exact_pools': True, 'keep_sounds': 0.8, 'own_progs': True, 'parent': 'holiday'}
+- **Sound brief** Sleigh bells; Glockenspiel / celesta; Strings; Brass section; Pizzicato; Upright bass
 
 ## Funk & Disco
 
@@ -6969,7 +7743,7 @@ Motown / 60s soul: tambourine on every backbeat, melodic bass, piano and guitar 
   - lead (lead): `brass` -19 dB · rev=0.3 · alternatives ['sax', 'sf:tenorsax', 'strings', 'flute', 'sf:trumpet', 'trumpet']
 - **Mix** {'lufs': -11.0, 'air': 1.3, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
-- **Sound brief** Bass guitar (melodic, Jamerson-style); Piano; Rhythm guitar; Strings; Horn section; Tambourine
+- **Sound brief** Bass guitar (melodic, Motown-style); Piano; Rhythm guitar; Strings; Horn section; Tambourine
 
 ### R&B / Neo-soul (`rnb`)
 
@@ -7200,6 +7974,37 @@ Boom bap hip hop: dusty swung drums, chopped piano loops, jazzy horn lines, deep
 - **Mix** {'lufs': -10.0, 'air': -1.5, 'low': 1.5, 'lofi': True} · reverb 2.0 · sc_depth 0.3
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'sampler': True}
 
+### Jazz-hop (`jazz_hop`)
+
+Jazz-hop: crisp swung boom-bap drums under lush 9th-chord piano and Rhodes, a walking-ish upright, flute and sax melodies and soft strings - mellow, warm and melodic
+
+- **Tempo** 82-94 BPM · **scales** minor, dorian, major · swing 0.58 (unit 16) · humanise 0.008
+- **Progressions** {'minor': [[1, 4, 0, 5], [0, 3, 6, 2], [5, 1, 4, 0]], 'dorian': [[0, 3, 0, 3], [1, 4, 0, 0]], 'major': [[1, 4, 0, 5], [3, 2, 1, 4]]} · chord_bars 1 · chord size 4
+- **Song form** `lofi`: intro 4 [chords, fx] (filter_in) -> A 16 [bass, chords, fx, kick, snare, top] -> B 16 [bass, chords, fx, kick, lead, snare, top] -> C 8 [bass, chords, fx, lead] (alt) -> A 16 [bass, chords, fx, kick, lead, snare, top] -> outro 4 [chords, fx] (fade) · form_scale 1
+- **Drums** **kick** `X.....x.X.....x.` / `X......XX.....x.` / `X.....X...X.....`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.` / `x.xxx.x.x.xxx.x.`; **shaker** `..x...x...x...x.`; **rim** `..............o.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.....R.R.....A.` / `R-....R-..R...A.` / `R...F...R...A...` · mode `pattern` · lowest note 28
+- **Chord rhythm** `x---------x-....` / `x-----..x---....` / `..x-----x-------`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `x-x-..x-x-......` / `....x-x-x-x-....` / `x---x---..x-x---` / `x-x-x---x-------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `atmospheric_drift` · density `medium` · feel `live_drums` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `street` · texture `tape_degraded` · rhythm `swung_16ths` · harmony `jazz_extensions` · energy `slow_build`
+- **Instruments**
+  - kick (kick): `kick` -12 dB
+  - snare (snare): `snare` -15 dB · rev=0.2
+  - chat (top): `chat` -27 dB · pan=0.2
+  - shaker (top): `shaker` -31 dB · pan=-0.3
+  - rim (top): `rim` -30 dB
+  - bass (bass): `upright` -14 dB · alternatives ['sinebass', 'moogbass']
+  - chords (chords): `epiano` -20 dB · rev=0.3 · alternatives ['piano', 'wurli', 'rhodes']
+  - pad (pad): `strings` -29 dB · rev=0.5 · alternatives ['warmpad', 'solina']
+  - arp (arp): `piano` -26 dB · pan=0.25 · rev=0.3 · alternatives ['harp']
+  - lead (lead): `flute` -18 dB · rev=0.35 · dly=0.2 · alternatives ['sax', 'trumpet', 'piano']
+  - vinyl (fx): `vinyl` -40 dB
+- **Mix** {'lufs': -10.5, 'air': -0.5, 'low': 1.4, 'lofi': True} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Sound brief** Rhodes / grand piano 9ths and 11ths; upright or finger bass; flute, alto sax; crisp swung boom-bap drums; vinyl
+
 ### Cinematic beat tape (instrumental hip hop) (`beat_tape_cinematic`)
 
 Cinematic beat tape: instrumental hip hop around 86-96 BPM built like a film score from dusty samples - a head-nodding boom-bap break, a warm, round bass, and layer after layer of sampled strings, horns, choir and piano piling up into a big, swirling climax; warm and muffled, nothing harsh on top
@@ -7403,6 +8208,35 @@ Soul-sample hip-hop (mid-2000s): a slow, heavy, swung beat around 70-90 under a 
 - **Mix** {'lufs': -9.5, 'air': -0.5, 'low': 1.8, 'width': 0.5, 'lofi': True} · reverb 1.6 · sc_depth 0.25
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'sampler': True, 'no_rotation': True, 'repetition': 0.9}
 - **Sound brief** Heavy swung boom-bap drums; a chopped soul loop (piano / Rhodes + strings, pitched up); pitched vocal-like lead; deep simple bass; vinyl
+
+### Choir Rap (minor, churchy) (`choir_rap`)
+
+Choir rap (minor): a dark, churchy hip-hop beat around 92-100 BPM - a clean guitar or sample loop on slow minor changes (i - VI - ii dim - III, or i - VI - iv - V), a big choir holding the tonic and the fifth, a deep sub on a 3+3+2 rhythm, tape-keyboard strings arriving late and a two-note half-step figure floating on top; the parts come in one at a time and the choir is left alone in the break
+
+- **Tempo** 92-100 BPM · **scales** minor, harmonic_minor · swing 0.53 (unit 16) · humanise 0.008
+- **Progressions** {'minor': [[0, 5, 1, 2], [0, 5, 3, 4], [0, 3, 5, 4], [0, 5, 1, 4]], 'harmonic_minor': [[0, 5, 3, 4], [0, 5, 1, 4], [0, 3, 4, 0]]} · chord_bars 2 · chord size 3
+- **Song form** `choir_rap`: intro 4 [chords] -> intro 4 [chords, pad] -> verse 8 [bass, chords, kick, snare, top] (crash) -> hook 8 [bass, chords, kick, pad, snare, top] -> verse 8 [arp, bass, chords, kick, snare, top] -> hook 8 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> break 4 [arp, pad] (alt) -> hook 8 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 4 [chords, pad] (fade) · form_scale 1
+- **Drums** **kick** `X.....X...X.....` / `X.....X.X.......` / `X.......X.X.....`; **snare** `....X.......X...`; **clap** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.` / `x.x.x.xxx.x.x.x.` / `x...x...x...x...`
+- **Drum kit** (synth preset) · preset `acoustic`
+- **Bass** `R-----R-----A---` / `R-----F-----R---` / `R-----R-----d---` · mode `808` · lowest note 28
+- **Chord rhythm** `x---x---x---x---` / `x-x-x---x-x-x---` / `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'up', 'oct': 5, 'prob': 0.7}
+- **Lead rhythm** `x---------------` / `........x-------` / `x-------x-------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `live_drums` · melody `long_lyrical` · bass `808_slide` · drop `groove_drop` · variation `sectional` · culture `street` · texture `dry_and_upfront` · rhythm `swung_16ths` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -13 dB
+  - snare (snare): `snare` -16 dB · rev=0.35
+  - clap (snare): `clap` -21 dB · rev=0.3
+  - chat (top): `chat` -28 dB
+  - bass (bass): `808` -14 dB · sc=0.5 · alternatives ['sinebass', 'deepsub', 'moogbass']
+  - chords (chords): `cleanguitar` -20 dB · pan=-0.2 · rev=0.35 · alternatives ['acguitar', 'piano', 'organ', 'epiano']
+  - pad (pad): `choir_wide` -23 dB · rev=0.5 · alternatives ['choir', 'choir_dark', 'humchoir', 'organ']
+  - arp (arp): `mellotron` -25 dB · pan=0.2 · rev=0.3 · alternatives ['mellotron_flute', 'strings', 'solina']
+  - lead (lead): `softlead` -18 dB · rev=0.35 · alternatives ['squarelead', 'mellotron_flute', 'vocalead', 'organ']
+- **Mix** {'lufs': -10.0, 'air': 1.8, 'low': 1.5} · reverb 2.4 · sc_depth 0.3
+- **Other rules** {'sc_release': 0.5, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.92, 'chord_center': 59, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'exact_pools': True, 'roots': [11, 4, 9, 2], 'own_progs': True, 'parent': 'modern_gospel'}
+- **Sound brief** Choir pad; Hammond organ (Leslie) and piano; modern drums + claps; deep 808; organ or keys answering lines
 
 ## Jazz
 
@@ -7848,6 +8682,493 @@ New Orleans brass band / second line: a strutting, swung street parade - the bas
 - **Mix** {'lufs': -11.0, 'air': 1.5, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
 
+### Christmas Swing (big band) (`christmas_swing`)
+
+Christmas swing (big band crooner era): a swinging 4/4 around 120-150 - walking upright bass, brushed ride and snare, a punchy brass section answering a warm sax or trumpet melody, sparkling celesta fills and sleigh bells shaking on every beat - the cosy fireside big-band Christmas record
+
+- **Tempo** 118-148 BPM · **scales** major · swing 0.64 (unit 8) · humanise 0.006
+- **Progressions** {'major': [[0, 5, 1, 4], [0, 3, 1, 4], [2, 5, 1, 4], [0, 0, 3, 4]]} · chord_bars 1 · chord size 4
+- **Song form** `chart`: intro 4 [bass, chords, kick, pad, snare, top] -> head 16 [arp, bass, chords, kick, lead, pad, snare, top] -> head 16 [arp, bass, chords, kick, lead, pad, snare, top] -> solo 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> shout 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash, var=oct, drop) -> head 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> outro 4 [bass, chords, kick, pad, snare, top] (cad, chord_rh=X-------X-------) · form_scale 1
+- **Drums** **ride** `x...x.x.x...x.x.`; **chat** `....x.......x...`; **kick** `o...o...o...o...`; **snare** `................` / `.......x......x.` / `......x.......x.`; **crash** `X...............` / `................`; **sleigh** `x...x...x...x...` / `x.x.x.x.x.x.x.x.`
+- **Drum kit** (synth preset) · preset `acoustic`
+- **Bass** `R...R...F...R...` / `R...F...R...A...` · mode `walk` · lowest note 31
+- **Chord rhythm** `..X.......X.....` / `X.....X...X.....` / `......X.X.......` / `X-------........`
+- **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.35}
+- **Lead rhythm** `x-x.x.x-x---....` / `x---x-x-x-x-x---` / `..x-x.x-x-x-....` / `x-x-x---x-------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `dense` · feel `loose_human` · melody `long_lyrical` · bass `walking` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `wet_and_spacious` · rhythm `triplet_feel` · harmony `functional_tonal` · energy `peaks_and_valleys`
+- **Instruments**
+  - ride (top): `ride` -27 dB · pan=0.3
+  - chat (top): `chat` -30 dB · pan=-0.2
+  - kick (kick): `kick` -24 dB
+  - snare (snare): `snare` -22 dB · rev=0.2
+  - crash (top): `crash` -27 dB · rev=0.3
+  - bass (bass): `upright` -15 dB · alternatives ['sf:acbass', 'sf:fingerbass']
+  - chords (chords): `brass` -20 dB · rev=0.3 · alternatives ['sf:trumpetsection', 'synthbrass', 'horn']
+  - bones (chords): `trombone` -23 dB · pan=0.25 · rev=0.3
+  - pad (pad): `sax` -24 dB · pan=-0.2 · rev=0.35 · alternatives ['strings', 'brass', 'sf:tenorsax']
+  - arp (arp): `piano` -26 dB · pan=0.3 · rev=0.25 · alternatives ['celesta', 'vibes', 'glock']
+  - lead (lead): `trumpet` -17 dB · rev=0.35 · alternatives ['sax', 'clarinet', 'sf:tenorsax', 'vibes']
+  - solo_sax (lead): `sax` -17 dB · rev=0.35
+  - sleigh (top): `sleigh` -28 dB · pan=0.3 · rev=0.3
+  - cel (arp): `celesta` -29 dB · pan=-0.25 · rev=0.35
+- **Mix** {'lufs': -12.0, 'air': 1.0, 'low': 0.6} · reverb 2.6 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.85, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True, 'comp_snare': True, 'repetition': 0.7, 'solos': ['solo_sax'], 'exact_pools': True, 'keep_sounds': 0.8, 'own_progs': True, 'parent': 'big_band_50s'}
+- **Sound brief** Ride + hi-hat on 2 & 4; walking upright bass; piano comping; sax section pads; trumpets & trombones punches and shouts; trumpet / sax leads
+
+## Celtic
+
+### Celtic Jig (6/8) (`celtic_jig`)
+
+Celtic jig (6/8): a session in full flight - fiddle and tin whistle in unison on an ornamented AABB tune (cuts, taps and rolls), a chiming bouzouki and guitar, the bodhrán's low boom and high tipper strokes, a soft pipe drone - in D, G, A or E
+
+- **Tempo** 104-124 BPM · meter 6/8 · **scales** major, mixolydian, dorian · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
+- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
+- **Drums** **bodhran** `X.xX.xX.xX.x` / `X..X.xX..X.x` / `X.xx.xX.xX.x`; **tip** `..x..x..x..x` / `.....x.....x`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.....F.....` / `R..F..R..F..` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x.xx.xx.xx.x` / `x..x..x..x..`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `xxxxxxxxxxxx` / `x-xx-xx-xx-x` / `xxx-xxxxx-x-` / `x-xxxxx-xx-x`
+- **Build-ups** default `swell` · choices ['swell', 'cymbal', 'tomgroove', 'march', 'pickup', 'drumless', 'ride']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `emotional_swell` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - bodhran (kick role - the genre's low drum): `bodhran2` -17 dB · rev=0.2
+  - tip (snare): `bodhran2` -23 dB · rev=0.2
+  - bass (bass): `upright` -20 dB · alternatives ['sf:acbass']
+  - chords (chords): `bouzouki` -21 dB · pan=-0.25 · rev=0.25 · alternatives ['acguitar', 'guitar', 'sf:nylon', 'cittern']
+  - pad (pad): `drone` -31 dB · rev=0.3 · alternatives ['concertina', 'uilleann']
+  - arp (arp): `acguitar` -25 dB · pan=0.3 · rev=0.25 · alternatives ['harp', 'banjo', 'mandolin', 'bouzouki', 'clarsach', 'cittern']
+  - lead (lead): `fiddle` -16 dB · pan=-0.12 · rev=0.28 · alternatives ['tinwhistle', 'irish_flute', 'uilleann', 'concertina', 'accordion', 'melodeon']
+  - whistle (lead): `tinwhistle` -20 dB · pan=0.15 · rev=0.3
+- **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tip'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bodhran', 'suggest': '', 'roots': [2, 7, 9, 4], 'celtic_orn': 'trad', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'tip': {'tone': 'top'}}, 'no_rotation': True}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
+### Celtic Reel (4/4) (`celtic_reel`)
+
+Celtic reel (4/4): the fastest dance in the session - fiddle and tin whistle tearing through a running AABB tune in even 8ths and 16ths, a driving bodhrán, a pumping guitar and a banjo or mandolin picking along
+
+- **Tempo** 104-120 BPM · **scales** major, mixolydian, dorian · swing 0.55 (unit 8) · humanise 0.008
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
+- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
+- **Drums** **bodhran** `X.xxX.xxX.xxX.xx` / `X..xX.x.X..xX.x.` / `X.xxX.x.X.xxX.xx`; **tip** `..x...x...x...x.` / `......x.......x.`; **bones** `x.xxx.xxx.xxx.xx` / `x.x.x.xxx.x.x.xx` / ``
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.......F.......` / `R...F...R...F...` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x.xxx.xxx.xxx.xx` / `x.x.x.x.x.x.x.x.`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `xxxxxxxxxxxxxxxx` / `x-xxxxxxx-xxxxxx` / `xxxxxxxx-xxxxxxx` / `x-x-xxxxx-x-xxxx`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `swung_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - bodhran (kick role - the genre's low drum): `bodhran2` -17 dB · rev=0.2
+  - tip (snare): `bodhran2` -23 dB · rev=0.2
+  - bass (bass): `upright` -20 dB · alternatives ['sf:acbass']
+  - chords (chords): `bouzouki` -21 dB · pan=-0.25 · rev=0.25 · alternatives ['acguitar', 'guitar', 'sf:nylon', 'cittern']
+  - pad (pad): `drone` -31 dB · rev=0.3 · alternatives ['concertina', 'uilleann']
+  - arp (arp): `banjo` -25 dB · pan=0.3 · rev=0.25 · alternatives ['acguitar', 'harp', 'mandolin', 'bouzouki', 'clarsach', 'cittern']
+  - lead (lead): `fiddle` -16 dB · pan=-0.12 · rev=0.28 · alternatives ['tinwhistle', 'irish_flute', 'uilleann', 'concertina', 'accordion', 'melodeon']
+  - whistle (lead): `tinwhistle` -20 dB · pan=0.15 · rev=0.3
+  - bones (top): `bones` -27 dB · pan=0.25 · rev=0.15
+- **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tip'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bodhran', 'suggest': '', 'roots': [2, 7, 9, 4], 'celtic_orn': 'trad', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'tip': {'tone': 'top'}}, 'no_rotation': True, 'parent': 'celtic_jig'}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
+### Celtic Slow Air (`celtic_slow_air`)
+
+Celtic slow air: a lament played freely and slowly - pipes or a low whistle carrying a long, ornamented melody over harp arpeggios, a held drone and the softest bodhrán, in dorian or aeolian - lonely, beautiful, timeless
+
+- **Tempo** 58-72 BPM · **scales** dorian, minor, major · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]], 'minor': [[0, 5, 6, 0], [0, 3, 5, 6]], 'major': [[0, 3, 0, 4]]} · chord_bars 1 · chord size 3
+- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
+- **Drums** **bodhran** `X...............` / `X.......X.......` / ``; **tip** `` / `........x.......`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R---------------` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
+- **Lead rhythm** `x-------x---x---` / `x-----x-x-------` / `x---x---x-------` / `x-------x-x-x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `intimate_close` · rhythm `straight_16ths` · harmony `modal` · energy `peaks_and_valleys`
+- **Instruments**
+  - bodhran (kick role - the genre's low drum): `bodhran2` -17 dB · rev=0.2
+  - tip (snare): `bodhran2` -23 dB · rev=0.2
+  - bass (bass): `upright` -20 dB · alternatives ['sf:acbass']
+  - chords (chords): `harp` -21 dB · pan=-0.25 · rev=0.25 · alternatives ['acguitar', 'bouzouki', 'clarsach']
+  - pad (pad): `drone` -31 dB · rev=0.3 · alternatives ['concertina', 'uilleann']
+  - arp (arp): `harp` -25 dB · pan=0.3 · rev=0.25 · alternatives ['acguitar', 'clarsach']
+  - lead (lead): `uilleann` -16 dB · pan=-0.12 · rev=0.28 · alternatives ['lowwhistle', 'irish_flute', 'fiddle', 'smallpipes']
+- **Mix** {'lufs': -15.0, 'air': 1.2, 'low': 0.7} · reverb 3.4 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tip'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bodhran', 'suggest': '', 'roots': [2, 7, 9, 4], 'celtic_orn': 'trad', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'tip': {'tone': 'top'}}, 'no_rotation': True, 'exact_pools': True, 'parent': 'celtic_jig'}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
+### Celtic Punk (`celtic_punk`)
+
+Celtic punk: punk rock at full tilt with a pub-session heart - thrashing double-time drums and distorted guitars, a tin whistle and accordion carrying a folk tune over the top, a banjo hammering along - rowdy, anthemic, shout-along
+
+- **Tempo** 160-190 BPM · **scales** major, mixolydian, dorian · swing 0.5 (unit 16) · humanise 0.004
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 3, 0]], 'dorian': [[0, 6, 0, 3]]} · chord_bars 1 · chord size 3
+- **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
+- **Drums** **kick** `X...X...X...X...` / `X.X...X.X.X...X.`; **snare** `....X.......X...` / `..X...X...X...X.`; **chat** `x.x.x.x.x.x.x.x.`; **crash** `X...............`
+- **Drum kit** (synth preset) · preset `hard`
+- **Bass** `R.R.R.R.R.R.R.R.` · mode `pattern` · lowest note 28
+- **Chord rhythm** `x.x.x.x.x.x.x.x.` / `x-x-x-x-x-x-x-x-`
+- **Arp** {'rate': 2, 'mode': 'up', 'oct': 5}
+- **Lead rhythm** `x-x-x-x-x---x---` / `x---x---x-x-x---` / `x-x-x---x-x-x---`
+- **Riffs** `p.p.p.p.p.p.p.p.` / `x.x.x.x.x.x.x.x.` / `p.p.p.p.X-x.x.x.` / `X.x.x.x.q.q.q.q.`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `club_punchy` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -14 dB
+  - snare (snare): `snare` -15 dB · rev=0.2
+  - chat (top): `chat` -27 dB
+  - crash (top): `crash` -28 dB
+  - bass (bass): `ebass` -15 dB · alternatives ['sf:pickbass', 'sf:fingerbass', 'moogbass', 'pickbass']
+  - chords (chords): `rhythmgtr`  dB · pan=-0.2 · alternatives ['guitar', 'sf:distguitar', 'sf:odguitar', 'mutedgtr']
+  - lead (lead): `tinwhistle` -18 dB · pan=0.2 · rev=0.2 · alternatives ['fiddle', 'concertina', 'uilleann', 'synthpipes', 'bagpipe', 'bagpipe_bright', 'melodeon', 'gaita']
+  - arp (arp): `banjo` -22 dB · pan=0.3 · rev=0.15 · alternatives ['mandolin', 'acguitar', 'cittern']
+  - pad (pad): `accordion` -24 dB · pan=-0.25 · rev=0.2 · alternatives ['organ', 'humchoir']
+- **Mix** {'lufs': -9.0, 'air': 1.5, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.85, 'chord_center': 50, 'strum': 0.0, 'voicing': 'power', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'riff_lo': 40, 'riff_chorus': 0.0, 'roots': [2, 7, 9, 4], 'celtic_orn': 'trad', 'parent': 'punk'}
+- **Sound brief** Distorted guitars (down-picked); Bass guitar (8ths); Drums
+
+### Sea Shanty (`sea_shanty`)
+
+Sea shanty: a working song for hauling ropes - a heavy stomp on 1 and 3 and claps on 2 and 4, an accordion and fiddle carrying a call-and-response tune, a hum of voices and a plucked mandolin, in minor or dorian - rousing and swaying
+
+- **Tempo** 88-108 BPM · **scales** minor, dorian, major · swing 0.54 (unit 16) · humanise 0.012
+- **Progressions** {'minor': [[0, 6, 0, 4], [0, 5, 6, 0]], 'dorian': [[0, 6, 0, 6]], 'major': [[0, 4, 0, 4]]} · chord_bars 1 · chord size 3
+- **Song form** `folk_jam`: intro 4 [chords] -> verse 16 [bass, chords, kick, top] -> chorus 8 [bass, chords, kick, lead, snare, top] -> verse 16 [arp, bass, chords, kick, snare, top] -> chorus 8 [bass, chords, kick, lead, pad, snare, top] -> solo 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> verse 16 [arp, bass, chords, kick, pad, snare, top] -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [bass, chords, lead] (fade) · form_scale 1
+- **Drums** **kick** `X.......X.......`; **snare** `....X.......X...`; **tamb** `` / `..x...x...x...x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R...F...R...F...` / `R...A...F...R.A.` / `R.....R.R.....F.` · mode `walk` · lowest note 31
+- **Chord rhythm** `x.x.xxx.x.x.xxx.` / `x--x--x-x--x--x-`
+- **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `x-x-x---x-x-x---` / `x---x-x-x---x---` / `x-xxx---x-xxx---`
+- **Build-ups** default `(category default)` · choices ['pickup', 'none'] · transitions ['none', 'none', 'crash']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `walking` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `swung_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -17 dB
+  - snare (snare): `clap` -19 dB · rev=0.2
+  - tamb (top): `tamb` -27 dB · pan=0.3
+  - bass (bass): `upright` -16 dB · alternatives ['tuba']
+  - chords (chords): `concertina` -17 dB · rev=0.25 · alternatives ['accordion', 'acguitar', 'bouzouki']
+  - pad (pad): `humchoir` -28 dB · rev=0.3 · alternatives ['choir', 'concertina']
+  - arp (arp): `mandolin` -24 dB · pan=0.3 · rev=0.25 · alternatives ['banjo', 'bouzouki']
+  - lead (lead): `concertina` -20 dB · rev=0.3 · alternatives ['fiddle', 'accordion', 'tinwhistle']
+- **Mix** {'lufs': -12.5, 'air': 1.0, 'low': 0.6, 'width': 1.0, 'gentle': True} · reverb 2.4 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.014, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'roots': [2, 7, 9, 4], 'parent': 'folk_jam'}
+- **Sound brief** Strummed acoustic guitars + mandolin; melodic bass; brushed drums + tambourine; a gentle lead (organ / guitar)
+
+### Highland Pipe Band (`highland_pipes`)
+
+Highland pipe band: bagpipes playing a proud march in mixolydian over their own humming drones, a corps of snare drums rattling rudiments and rolls, tenor drums and a booming bass drum on the beat - stirring and loud
+
+- **Tempo** 86-100 BPM · **scales** mixolydian · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'mixolydian': [[0, 0, 0, 0], [0, 6, 0, 0], [0, 0, 6, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
+- **Drums** **kick** `X.......X.......` / `X...X...X...X...`; **snare** `X.xxX.x.X.xxX.x.` / `xxxxX.xxxxxxX.xx` / `X.x.X.xxX.x.Xxxx`; **tom** `x...x...x...x...` / `x.....x.x.......`
+- **Drum kit** (synth preset) · preset `acoustic`
+- **Bass** `R.....F.....` / `R..F..R..F..` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x.xx.xx.xx.x` / `x..x..x..x..`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `x--xx-x-x--xx-x-` / `x-x-x--xx-x-x---` / `x--xx-x-x-x-x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `sparse` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `tenor_drum` -15 dB · rev=0.35
+  - snare (snare): `pipe_snare` -19 dB · rev=0.3
+  - tom (top): `tenor_drum` -23 dB · rev=0.3
+  - pad (pad): `bagpipe_drones` -11 dB · rev=0.25
+  - lead (lead): `bagpipe` -13 dB · rev=0.22 · alternatives ['bagpipe_bright']
+- **Mix** {'lufs': -10.5, 'air': 1.3, 'low': 0.9} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'roots': [10], 'celtic_orn': 'pipes', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'kick': {'pitch': 62}, 'tom': {'pitch': 120}}, 'no_rotation': True, 'exact_pools': True, 'pipers': 4, 'parent': 'celtic_jig'}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
+### Pipes & Orchestra (`pipes_orchestra`)
+
+Pipes and orchestra: the Highland pipe band in front of a full orchestra - massed strings swelling under the chanters, horns answering the tune, a deep contrabass line and rolling timpani, the drones and the pipe-band drums driving it - epic, cinematic and proud
+
+- **Tempo** 86-100 BPM · **scales** mixolydian · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'mixolydian': [[0, 6, 3, 0], [0, 3, 6, 0], [0, 5, 6, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
+- **Drums** **kick** `X.......X.......` / `X...X...X...X...`; **snare** `X.xxX.x.X.xxX.x.` / `X.x.X.xxX.x.Xxxx`; **tom** `x...x...x...x...`; **timp** `X...............` / `X.......X.......` / `X.....x.X.......`
+- **Drum kit** (synth preset) · preset `acoustic`
+- **Bass** `R-------R-------` / `R-------F-------` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `x--xx-x-x--xx-x-` / `x-x-x--xx-x-x---` / `x--xx-x-x-x-x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `wet_and_spacious` · rhythm `straight_16ths` · harmony `modal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `tenor_drum` -15 dB · rev=0.35
+  - snare (snare): `pipe_snare` -19 dB · rev=0.3
+  - tom (top): `tenor_drum` -23 dB · rev=0.3
+  - pad (pad): `bagpipe_drones` -11 dB · rev=0.25 · alternatives ['strings', 'strings_wide']
+  - lead (lead): `bagpipe` -13 dB · rev=0.22 · alternatives ['bagpipe_bright']
+  - strings (pad): `strings` -19 dB · rev=0.45
+  - chords (chords): `horn` -22 dB · pan=-0.2 · rev=0.4 · alternatives ['brass', 'trombone']
+  - bass (bass): `contrabass` -20 dB · rev=0.3 · alternatives ['cello']
+  - timp (top): `timp` -21 dB · rev=0.4
+- **Mix** {'lufs': -11.5, 'air': 1.3, 'low': 1.0} · reverb 2.8 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 55, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'roots': [10], 'celtic_orn': 'pipes', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'kick': {'pitch': 62}, 'tom': {'pitch': 120}}, 'no_rotation': True, 'exact_pools': True, 'pipers': 4, 'parent': 'highland_pipes'}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
+### Breton An Dro (fest-noz) (`breton_an_dro`)
+
+Breton an dro: the hypnotic Breton line dance - a piercing bombarde calling the tune and a bagpipe answering, a jangling cittern, a driving bodhrán and a pounding bass on a short, looping minor tune that never lets up - a fest-noz in full swing
+
+- **Tempo** 116-132 BPM · **scales** dorian, minor · swing 0.5 (unit 8) · humanise 0.008
+- **Progressions** {'dorian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'minor': [[0, 6, 5, 6], [0, 5, 6, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
+- **Drums** **bodhran** `X.xxX.xxX.xxX.xx` / `X..xX.x.X..xX.x.` / `X.xxX.x.X.xxX.xx`; **tip** `..x...x...x...x.` / `......x.......x.`; **bones** `x.xxx.xxx.xxx.xx` / `x.x.x.xxx.x.x.xx` / ``
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.......F.......` / `R...F...R...F...` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x.xxx.xxx.xxx.xx` / `x.x.x.x.x.x.x.x.`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `xxxxxxxxxxxxxxxx` / `x-xxxxxxx-xxxxxx` / `xxxxxxxx-xxxxxxx` / `x-x-xxxxx-x-xxxx`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `modal` · energy `peaks_and_valleys`
+- **Instruments**
+  - bodhran (kick role - the genre's low drum): `bodhran2` -17 dB · rev=0.2
+  - tip (snare): `bodhran2` -23 dB · rev=0.2
+  - bass (bass): `upright` -20 dB · alternatives ['sf:acbass']
+  - chords (chords): `cittern` -21 dB · pan=-0.25 · rev=0.25 · alternatives ['bouzouki', 'acguitar']
+  - pad (pad): `drone` -31 dB · rev=0.3 · alternatives ['hurdygurdy']
+  - arp (arp): `cittern` -25 dB · pan=0.3 · rev=0.25 · alternatives ['mandolin', 'clarsach']
+  - lead (lead): `bombarde` -16 dB · pan=-0.12 · rev=0.28 · alternatives ['gaita', 'fiddle', 'melodeon']
+  - bones (top): `bones` -27 dB · pan=0.25 · rev=0.15
+- **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tip'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bodhran', 'suggest': '', 'roots': [9, 2, 7, 4], 'celtic_orn': 'trad', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'tip': {'tone': 'top'}}, 'no_rotation': True, 'parent': 'celtic_reel', 'exact_pools': True}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
+### Galician Muiñeira (gaita) (`galician_muineira`)
+
+Galician muiñeira (6/8): the dance of Galicia and Asturias - a gaita (the Galician bagpipe) singing a bright, leaping tune over its deep single drone, a snare-like tamboril and booming bombo drum, cittern and guitar chiming along - festive, sunlit and wild
+
+- **Tempo** 108-128 BPM · meter 6/8 · **scales** major, mixolydian · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
+- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
+- **Drums** **bodhran** `X.xX.xX.xX.x` / `X..X.xX..X.x` / `X.xx.xX.xX.x`; **tip** `..x..x..x..x` / `.....x.....x`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.....F.....` / `R..F..R..F..` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x.xx.xx.xx.x` / `x..x..x..x..`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `xxxxxxxxxxxx` / `x-xx-xx-xx-x` / `xxx-xxxxx-x-` / `x-xxxxx-xx-x`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - bodhran (kick role - the genre's low drum): `tenor_drum` -17 dB · rev=0.2
+  - tip (snare): `pipe_snare` -23 dB · rev=0.2
+  - bass (bass): `upright` -20 dB · alternatives ['sf:acbass']
+  - chords (chords): `cittern` -21 dB · pan=-0.25 · rev=0.25 · alternatives ['acguitar', 'bouzouki']
+  - pad (pad): `drone` -31 dB · rev=0.3 · alternatives ['hurdygurdy']
+  - arp (arp): `acguitar` -25 dB · pan=0.3 · rev=0.25 · alternatives ['cittern', 'clarsach']
+  - lead (lead): `gaita` -16 dB · pan=-0.12 · rev=0.28 · alternatives ['fiddle', 'irish_flute', 'melodeon']
+- **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tip'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bodhran', 'suggest': '', 'roots': [0, 2, 7], 'celtic_orn': 'trad', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'tip': {'tone': 'top'}}, 'no_rotation': True, 'exact_pools': True, 'parent': 'celtic_jig'}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
+### Clarsach Air (wire harp) (`clarsach_air`)
+
+Clarsach air: the old Gaelic harpers' music - a wire-strung harp ringing out a slow, stately tune and its own shimmering chords, the strings left to sound into each other, a soft drone beneath - ancient and glowing
+
+- **Tempo** 58-72 BPM · **scales** dorian, minor, major · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]], 'minor': [[0, 5, 6, 0], [0, 3, 5, 6]], 'major': [[0, 3, 0, 4]]} · chord_bars 1 · chord size 3
+- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
+- **Drums** **bodhran** `X...............` / `X.......X.......` / ``; **tip** `` / `........x.......`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R---------------` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
+- **Lead rhythm** `x-------x---x---` / `x-----x-x-------` / `x---x---x-------` / `x-------x-x-x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `intimate_close` · rhythm `straight_16ths` · harmony `modal` · energy `peaks_and_valleys`
+- **Instruments**
+  - bodhran (kick role - the genre's low drum): `bodhran2` -17 dB · rev=0.2
+  - tip (snare): `bodhran2` -23 dB · rev=0.2
+  - bass (bass): `upright` -20 dB · alternatives ['sf:acbass']
+  - chords (chords): `clarsach` -21 dB · pan=-0.25 · rev=0.25 · alternatives ['harp']
+  - pad (pad): `drone` -31 dB · rev=0.3 · alternatives ['humchoir']
+  - arp (arp): `clarsach` -25 dB · pan=0.3 · rev=0.25 · alternatives ['harp']
+  - lead (lead): `clarsach` -16 dB · pan=-0.12 · rev=0.28 · alternatives ['harp', 'lowwhistle']
+- **Mix** {'lufs': -15.0, 'air': 1.2, 'low': 0.7} · reverb 3.4 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tip'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bodhran', 'suggest': '', 'roots': [2, 7, 9, 4], 'celtic_orn': 'trad', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'tip': {'tone': 'top'}}, 'no_rotation': True, 'exact_pools': True, 'parent': 'celtic_slow_air'}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
+### Celtic New Age (choir & harp) (`celtic_new_age`)
+
+Celtic new age: misty, layered and serene - a wordless choir stacked into lush chords, a harp rippling beneath, a low whistle or flute drifting over the top and a slow, soft heartbeat drum, in dorian and aeolian - like a fog rolling off green hills
+
+- **Tempo** 66-84 BPM · **scales** dorian, minor, major · swing 0.52 (unit 16) · humanise 0.005
+- **Progressions** {'dorian': [[0, 6, 3, 0], [0, 3, 6, 0]], 'minor': [[0, 5, 6, 0], [0, 5, 2, 6]], 'major': [[0, 4, 5, 3]]} · chord_bars 1 · chord size 3
+- **Song form** `new_age_chant`: intro 4 [fx, kick, pad, top] -> A 16 [bass, fx, kick, pad, snare, top] -> B 20 [bass, chords, fx, kick, lead, pad, snare, top] -> climax 16 [arp, bass, chords, fx, kick, lead, pad, snare, top] (crash) -> outro 8 [fx, lead, pad] (fade) · form_scale 1
+- **Drums** **kick** `X.........X.....` / `X.....X...X.....`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R---------------` / `R-------R-------` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x---------------`
+- **Arp** {'rate': 1, 'mode': 'up', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `x-------x---x---` / `x---x---x-------` / `........x-------`
+- **Build-ups** default `(category default)` · choices ['none', 'pickup'] · transitions ['none', 'crash', 'none']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `tight_swing` · melody `long_lyrical` · bass `sub_only` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `massive_reverb` · rhythm `straight_16ths` · harmony `modal` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -13 dB
+  - snare (snare): `snare` -16 dB · rev=0.35
+  - chat (top): `chat` -28 dB
+  - bass (bass): `sinebass` -15 dB · alternatives ['upright']
+  - chords (chords): `choir_wide` -21 dB · rev=0.6 · alternatives ['humchoir', 'choir']
+  - pad (pad): `warmpad_wide` -26 dB · rev=0.6 · alternatives ['glasspad', 'humchoir']
+  - arp (arp): `harp` -29 dB · rev=0.5 · dly=0.3 · alternatives ['celesta', 'acguitar']
+  - lead (lead): `lowwhistle` -18 dB · rev=0.5 · dly=0.3 · alternatives ['irish_flute', 'uilleann', 'fiddle', 'smallpipes']
+  - texture (fx): `texture` -36 dB · rev=0.6
+- **Mix** {'lufs': -11.0, 'air': 0.8, 'low': 1.2, 'width': 1.2} · reverb 4.0 · sc_depth 0.15
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 56, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'own_progs': True, 'pedal_sub': True, 'repetition': 0.8, 'exact_pools': True, 'celtic_orn': 'trad', 'roots': [2, 4, 9], 'parent': 'new_age_chant'}
+- **Sound brief** Funk breakbeat (slow); male choir chant chords; shakuhachi / pan flute melody; deep pads; one pedal bass note
+
+### Celtic Hornpipe (`celtic_hornpipe`)
+
+Celtic hornpipe (4/4): slower and heavier than a reel, with the hornpipe's dotted, swung long-short lilt - fiddle or pipes carrying a strong, grounded tune that ends each strain on three firm beats, a heavier bodhrán, bouzouki chords - stately and dancing
+
+- **Tempo** 92-112 BPM · **scales** major, mixolydian, dorian · swing 0.63 (unit 8) · humanise 0.008
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
+- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
+- **Drums** **bodhran** `X...x.X.X...x.X.` / `X..xX...X..xX...` / `X...X.x.X...X.x.`; **tip** `..x...x...x...x.` / `....x.......x...`; **bones** `` / `x.x.x.x.x.x.x.x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.......F.......` / `R...F...R...F...` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x...x...x...x...` / `x.x.x.x.x.x.x.x.`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `x.x.x.x.x.x.x.x.` / `x.x.x.x.x---x---` / `x---x---x-------` / `x.xxx.x.x.x.x.x.`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `triplet_feel` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - bodhran (kick role - the genre's low drum): `bodhran2` -17 dB · rev=0.2
+  - tip (snare): `bodhran2` -23 dB · rev=0.2
+  - bass (bass): `upright` -20 dB · alternatives ['sf:acbass']
+  - chords (chords): `bouzouki` -21 dB · pan=-0.25 · rev=0.25 · alternatives ['acguitar', 'guitar', 'sf:nylon', 'cittern']
+  - pad (pad): `drone` -31 dB · rev=0.3 · alternatives ['concertina', 'uilleann']
+  - arp (arp): `banjo` -25 dB · pan=0.3 · rev=0.25 · alternatives ['acguitar', 'harp', 'mandolin', 'bouzouki', 'clarsach', 'cittern']
+  - lead (lead): `fiddle` -16 dB · pan=-0.12 · rev=0.28 · alternatives ['tinwhistle', 'irish_flute', 'uilleann', 'concertina', 'accordion', 'melodeon']
+  - whistle (lead): `tinwhistle` -20 dB · pan=0.15 · rev=0.3
+  - bones (top): `bones` -27 dB · pan=0.25 · rev=0.15
+- **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tip'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bodhran', 'suggest': '', 'roots': [2, 7, 9, 4], 'celtic_orn': 'trad', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'tip': {'tone': 'top'}}, 'no_rotation': True, 'parent': 'celtic_reel'}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
+### Slip Jig (9/8) (`slip_jig`)
+
+Slip jig (9/8): the graceful Irish dance in three groups of three (ONE-two-three TWO-two-three THREE-two-three) - fiddle and whistle flowing over a lighter bodhrán and a delicate guitar or harp, with cuts and rolls - elegant and lyrical
+
+- **Tempo** 74-84 BPM · meter 9/8 · **scales** major, mixolydian, dorian · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
+- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
+- **Drums** **bodhran** `X.xX.xX.xX.xX.xX.x` / `X..X..X..X..X..X..` / `X.xX..X.xX.xX..X.x`; **tip** `..x..x..x..x..x..x` / `.....x.....x.....x`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R........F........` / `R.....F..R.....F..` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x..x..x..x..x..x..` / `x........x........`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `xxxxxxxxxxxxxxxxxx` / `x-xx-xx-xx-xx-xx-x` / `x-xxxxx-xx-xxxxx-x` / `xxx-xxxxxxxx-xxxxx`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - bodhran (kick role - the genre's low drum): `bodhran2` -17 dB · rev=0.2
+  - tip (snare): `bodhran2` -23 dB · rev=0.2
+  - bass (bass): `upright` -20 dB · alternatives ['sf:acbass']
+  - chords (chords): `bouzouki` -21 dB · pan=-0.25 · rev=0.25 · alternatives ['acguitar', 'guitar', 'sf:nylon', 'cittern']
+  - pad (pad): `drone` -31 dB · rev=0.3 · alternatives ['concertina', 'uilleann']
+  - arp (arp): `harp` -25 dB · pan=0.3 · rev=0.25 · alternatives ['acguitar', 'banjo', 'mandolin', 'bouzouki', 'clarsach', 'cittern']
+  - lead (lead): `fiddle` -16 dB · pan=-0.12 · rev=0.28 · alternatives ['tinwhistle', 'irish_flute', 'uilleann', 'concertina', 'accordion', 'melodeon']
+  - whistle (lead): `tinwhistle` -20 dB · pan=0.15 · rev=0.3
+- **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tip'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bodhran', 'suggest': '', 'roots': [2, 7, 9, 4], 'celtic_orn': 'trad', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'tip': {'tone': 'top'}}, 'no_rotation': True, 'parent': 'celtic_jig'}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
+### Strathspey (Scottish) (`strathspey`)
+
+Scottish strathspey (4/4): slower and prouder than a reel, built on dotted rhythms and the Scotch snap (a short note snapped onto a long one) - fiddle leading over a drone, a firm bodhrán and bouzouki - dignified and a little martial
+
+- **Tempo** 88-106 BPM · **scales** major, mixolydian, dorian · swing 0.5 (unit 8) · humanise 0.008
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
+- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
+- **Drums** **bodhran** `X...X...X...X...` / `X..xX...X..xX...`; **tip** `....x.......x...`; **bones** ``
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.......R.......` / `R.......F.......` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x...x...x...x...` / `x--xx--xx--xx--x`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `xx--x--xxx--x---` / `x--xxx--x--xxx--` / `xx--xx--x--xx---` / `x--xx--xxx--x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - bodhran (kick role - the genre's low drum): `bodhran2` -17 dB · rev=0.2
+  - tip (snare): `bodhran2` -23 dB · rev=0.2
+  - bass (bass): `upright` -20 dB · alternatives ['sf:acbass']
+  - chords (chords): `bouzouki` -21 dB · pan=-0.25 · rev=0.25 · alternatives ['acguitar', 'guitar', 'sf:nylon', 'cittern']
+  - pad (pad): `drone` -31 dB · rev=0.3 · alternatives ['concertina', 'uilleann']
+  - arp (arp): `banjo` -25 dB · pan=0.3 · rev=0.25 · alternatives ['acguitar', 'harp', 'mandolin', 'bouzouki', 'clarsach', 'cittern']
+  - lead (lead): `fiddle` -16 dB · pan=-0.12 · rev=0.28 · alternatives ['tinwhistle', 'irish_flute', 'uilleann', 'concertina', 'accordion', 'melodeon']
+  - whistle (lead): `tinwhistle` -20 dB · pan=0.15 · rev=0.3
+  - bones (top): `bones` -27 dB · pan=0.25 · rev=0.15
+- **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tip'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bodhran', 'suggest': '', 'roots': [9, 2, 7, 4], 'celtic_orn': 'trad', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'tip': {'tone': 'top'}}, 'no_rotation': True, 'parent': 'celtic_reel'}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
+### Celtic Polka (`celtic_polka`)
+
+Celtic polka (2/4 feel): fast, bright and punchy - strong downbeats, an oom-pah guitar and bouzouki on the off-beats, accordion or fiddle carrying a bouncy tune, a lively bodhrán - the Kerry / Sliabh Luachra set dance
+
+- **Tempo** 116-136 BPM · **scales** major, mixolydian, dorian · swing 0.5 (unit 8) · humanise 0.008
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
+- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
+- **Drums** **bodhran** `X...x...X...x...` / `X.x.x...X.x.x...`; **tip** `..x...x...x...x.`; **bones** `` / `..x...x...x...x.`
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.......F.......` / `R...F...R...F...` · mode `pattern` · lowest note 31
+- **Chord rhythm** `..x...x...x...x.` / `x.x...x.x.x...x.`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `x.x.x.x.x.x.x---` / `xxx.x.x.xxx.x---` / `x.x.xxx.x.x.x.x.`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - bodhran (kick role - the genre's low drum): `bodhran2` -17 dB · rev=0.2
+  - tip (snare): `bodhran2` -23 dB · rev=0.2
+  - bass (bass): `upright` -20 dB · alternatives ['sf:acbass']
+  - chords (chords): `bouzouki` -21 dB · pan=-0.25 · rev=0.25 · alternatives ['acguitar', 'guitar', 'sf:nylon', 'cittern']
+  - pad (pad): `drone` -31 dB · rev=0.3 · alternatives ['concertina', 'uilleann']
+  - arp (arp): `banjo` -25 dB · pan=0.3 · rev=0.25 · alternatives ['acguitar', 'harp', 'mandolin', 'bouzouki', 'clarsach', 'cittern']
+  - lead (lead): `accordion` -16 dB · pan=-0.12 · rev=0.28 · alternatives ['fiddle', 'tinwhistle', 'irish_flute', 'uilleann', 'concertina', 'melodeon']
+  - whistle (lead): `tinwhistle` -20 dB · pan=0.15 · rev=0.3
+  - bones (top): `bones` -27 dB · pan=0.25 · rev=0.15
+- **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tip'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bodhran', 'suggest': '', 'roots': [2, 7, 9, 4], 'celtic_orn': 'trad', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'tip': {'tone': 'top'}}, 'no_rotation': True, 'parent': 'celtic_reel'}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
+### Celtic Session Set (`celtic_session`)
+
+Celtic session set: two or three tunes played as one unbroken medley, the way a pub session runs them - each tune AABB, then straight into the next in a new key with a lift in tempo, the energy climbing to the end
+
+- **Tempo** 104-120 BPM · **scales** major, mixolydian, dorian · swing 0.55 (unit 8) · humanise 0.008
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
+- **Song form** `session_set`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, snare, top] (alt, tune=2, tempo=1.05) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad, alt, tune=2, tempo=1.05) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt=False, tune=2, tempo=1.05) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt=False, cad, tune=2, tempo=1.05) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, tune=2, tempo=1.05) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad, alt, tune=2, tempo=1.05) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt=False, tune=2, tempo=1.05) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt=False, cad, tune=2, tempo=1.05) -> A 8 [arp, bass, chords, kick, lead, snare, top] (tune=3, tempo=1.09) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad, tune=3, tempo=1.09) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, tune=3, tempo=1.09) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad, tune=3, tempo=1.09) · form_scale 1
+- **Drums** **bodhran** `X.xxX.xxX.xxX.xx` / `X..xX.x.X..xX.x.` / `X.xxX.x.X.xxX.xx`; **tip** `..x...x...x...x.` / `......x.......x.`; **bones** `x.xxx.xxx.xxx.xx` / `x.x.x.xxx.x.x.xx` / ``
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R.......F.......` / `R...F...R...F...` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x.xxx.xxx.xxx.xx` / `x.x.x.x.x.x.x.x.`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `xxxxxxxxxxxxxxxx` / `x-xxxxxxx-xxxxxx` / `xxxxxxxx-xxxxxxx` / `x-x-xxxxx-x-xxxx`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `swung_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
+- **Instruments**
+  - bodhran (kick role - the genre's low drum): `bodhran2` -17 dB · rev=0.2
+  - tip (snare): `bodhran2` -23 dB · rev=0.2
+  - bass (bass): `upright` -20 dB · alternatives ['sf:acbass']
+  - chords (chords): `bouzouki` -21 dB · pan=-0.25 · rev=0.25 · alternatives ['acguitar', 'guitar', 'sf:nylon', 'cittern']
+  - pad (pad): `drone` -31 dB · rev=0.3 · alternatives ['concertina', 'uilleann']
+  - arp (arp): `banjo` -25 dB · pan=0.3 · rev=0.25 · alternatives ['acguitar', 'harp', 'mandolin', 'bouzouki', 'clarsach', 'cittern']
+  - lead (lead): `fiddle` -16 dB · pan=-0.12 · rev=0.28 · alternatives ['tinwhistle', 'irish_flute', 'uilleann', 'concertina', 'accordion', 'melodeon']
+  - whistle (lead): `tinwhistle` -20 dB · pan=0.15 · rev=0.3
+  - bones (top): `bones` -27 dB · pan=0.25 · rev=0.15
+- **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tip'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'open', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bodhran', 'suggest': '', 'roots': [2, 7, 9, 4], 'celtic_orn': 'trad', 'exact_form': True, 'pad_drone': True, 'drum_voice': {'tip': {'tone': 'top'}}, 'no_rotation': True, 'parent': 'celtic_reel', 'set_shift': {2: 5, 3: 7}}
+- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
+
 ## Country, Folk & Blues
 
 ### Blues (`blues`)
@@ -7898,12 +9219,12 @@ Folk / acoustic: strummed guitar, warm piano, gentle percussion, flute melody
   - tamb (snare): `tamb` -23 dB
   - shaker (top): `shaker` -29 dB
   - bass (bass): `upright` -17 dB · alternatives ['sf:acbass', 'sf:fingerbass']
-  - chords (chords): `acguitar`  dB · rev=0.2 · alternatives ['guitar', 'sf:nylon', 'piano', 'harp', 'nylon']
+  - chords (chords): `dreadnought`  dB · rev=0.2 · alternatives ['guitar', 'sf:nylon', 'piano', 'harp', 'nylon']
   - pad (pad): `strings` -27 dB · rev=0.4 · alternatives ['sf:slowstrings', 'organ', 'solina']
   - arp (arp): `piano` -26 dB · rev=0.3 · alternatives ['guitar', 'sf:nylon', 'harp']
   - lead (lead): `flute`  dB · rev=0.35 · alternatives ['violin', 'clarinet', 'oboe', 'guitar', 'sf:nylon', 'piano', 'harmonica']
 - **Mix** {'lufs': -13.0, 'air': 1.0, 'low': 0.5} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tamb'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.012, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tamb'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.012, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pools': {}}
 
 ### Spaghetti Western (`western`)
 
@@ -7934,34 +9255,6 @@ Spaghetti western: twangy reverb guitar, lonely trumpet, whistled tune, choir an
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 57, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
 - **Sound brief** Twangy electric guitar (lots of spring reverb); Trumpet / whistle melody; Choir; Woodblock hooves
 
-### Celtic Jig (6/8) (`celtic_jig`)
-
-Celtic jig (6/8): fiddle and tin whistle in unison on an AABB tune, bodhrán, bouncing guitar, a soft pipe drone
-
-- **Tempo** 104-124 BPM · meter 6/8 · **scales** major, mixolydian, dorian · swing 0.5 (unit 16) · humanise 0.008
-- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
-- **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
-- **Drums** **bodhran** `X.xX.xX.xX.x` / `X..X.xX..X.x` / `X.xx.xX.xX.x`; **tip** `..x..x..x..x` / `.....x.....x`
-- **Drum kit** (synth preset) · preset `soft`
-- **Bass** `R.....F.....` / `R..F..R..F..` · mode `pattern` · lowest note 31
-- **Chord rhythm** `x.xx.xx.xx.x` / `x..x..x..x..`
-- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
-- **Lead rhythm** `xxxxxxxxxxxx` / `x-xx-xx-xx-x` / `xxx-xxxxx-x-` / `x-xxxxx-xx-x`
-- **Build-ups** default `swell` · choices ['swell', 'cymbal', 'tomgroove', 'march', 'pickup', 'drumless', 'ride']
-- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `emotional_swell` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `peaks_and_valleys`
-- **Instruments**
-  - bodhran (kick role - the genre's low drum): `bodhran` -17 dB · rev=0.2
-  - tip (snare): `bodhran` -24 dB · rev=0.2
-  - bass (bass): `upright` -18 dB · alternatives ['sf:acbass', 'sf:fingerbass']
-  - chords (chords): `acguitar` -22 dB · pan=-0.25 · rev=0.25 · alternatives ['guitar', 'sf:nylon', 'harp', 'accordion']
-  - pad (pad): `drone` -30 dB · rev=0.3 · alternatives ['accordion', 'organ', 'pipes']
-  - arp (arp): `harp` -27 dB · pan=0.3 · rev=0.3 · alternatives ['guitar', 'banjo', 'mandolin']
-  - lead (lead): `violin` -17 dB · pan=-0.1 · rev=0.3 · alternatives ['tinwhistle', 'pipes', 'sf:fiddle', 'accordion', 'flute']
-  - whistle (lead): `tinwhistle` -20 dB · pan=0.15 · rev=0.3
-- **Mix** {'lufs': -12.0, 'air': 1.4, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['tip'], 'bass_gate': 0.7, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bodhran', 'suggest': '', 'pad_drone': True, 'drum_voice': {'tip': {'pitch': 140, 'decay': 16}}, 'no_rotation': True}
-- **Sound brief** Fiddle / tin whistle (tune); Bodhran; Acoustic guitar or bouzouki; Upright bass
-
 ### Country (classic / honky-tonk) (`country`)
 
 Classic country / honky-tonk (Nashville, Bakersfield): boom-chick upright bass with walk-ups, strummed acoustic, chicken-pickin' Telecaster, honky-tonk piano fills, fiddle melody and pedal-steel swells and slides
@@ -7982,13 +9275,13 @@ Classic country / honky-tonk (Nashville, Bakersfield): boom-chick upright bass w
   - snare (snare): `snare` -19 dB · rev=0.25
   - chat (top): `chat` -28 dB
   - bass (bass): `upright` -16 dB · alternatives ['sf:acbass', 'sf:fingerbass']
-  - chords (chords): `acguitar`  dB · pan=-0.25 · rev=0.2 · alternatives ['piano', 'banjo', 'sf:nylon']
-  - arp (arp): `twang` -24 dB · pan=0.3 · rev=0.3 · dly=0.12 · alternatives ['acguitar', 'banjo', 'sf:banjo']
+  - chords (chords): `dreadnought`  dB · pan=-0.25 · rev=0.2 · alternatives ['piano', 'banjo', 'sf:nylon']
+  - arp (arp): `telegtr` -24 dB · pan=0.3 · rev=0.3 · dly=0.12 · alternatives ['acguitar', 'banjo', 'sf:banjo']
   - keys (chords): `piano` -26 dB · pan=0.15 · rev=0.25
   - pad (pad): `pedalsteel` -25 dB · pan=0.2 · rev=0.4 · alternatives ['organ', 'strings', 'accordion']
   - lead (lead): `violin` -18 dB · rev=0.3 · alternatives ['sf:fiddle', 'twang', 'pedalsteel', 'harmonica', 'piano']
 - **Mix** {'lufs': -11.0, 'air': 1.5, 'low': 0.9} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.55, 'chord_center': 57, 'strum': 0.012, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'slides': 0.45}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.55, 'chord_center': 57, 'strum': 0.012, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'slides': 0.45, 'pools': {}}
 - **Sound brief** Acoustic steel guitar (strum); Telecaster licks; Fiddle; Pedal steel; Upright / electric bass; Pedal steel swells
 
 ### Bluegrass (`bluegrass`)
@@ -8007,7 +9300,7 @@ Bluegrass: Scruggs banjo rolls, the mandolin chop on 2 and 4, boom-chick guitar 
 - **Traits** arrangement `verse_chorus_pop` · density `sparse` · feel `tight_swing` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `none` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
 - **Instruments**
   - bass (bass): `upright` -16 dB · alternatives ['sf:acbass', 'sf:fingerbass']
-  - chords (chords): `mandolin` -22 dB · pan=0.3 · rev=0.12 · alternatives ['banjo', 'acguitar', 'sf:steelguitar']
+  - chords (chords): `dreadnought` -22 dB · pan=0.3 · rev=0.12 · alternatives ['banjo', 'acguitar', 'sf:steelguitar']
   - gtr (chords): `acguitar` -24 dB · pan=-0.3 · rev=0.15
   - arp (arp): `banjo` -23 dB · pan=-0.15 · rev=0.12 · alternatives ['sf:banjo', 'mandolin', 'acguitar']
   - lead (lead): `violin` -17 dB · rev=0.25 · alternatives ['sf:fiddle', 'harmonica', 'mandolin']
@@ -8015,7 +9308,7 @@ Bluegrass: Scruggs banjo rolls, the mandolin chop on 2 and 4, boom-chick guitar 
   - solo_mando (lead): `mandolin` -19 dB · pan=0.25 · rev=0.15
   - solo_gtr (lead): `acguitar` -19 dB · pan=-0.2 · rev=0.15
 - **Mix** {'lufs': -12.0, 'air': 1.5, 'low': 0.6} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.6, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'solos': ['solo_banjo', 'solo_mando', 'lead', 'solo_gtr'], 'g_run': True, 'no_rotation': True}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.6, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'solos': ['solo_banjo', 'solo_mando', 'lead', 'solo_gtr'], 'g_run': True, 'no_rotation': True, 'pools': {}}
 - **Sound brief** Banjo (rolls); Fiddle (lead); Mandolin chop; Acoustic guitar; Upright bass
 
 ### Modern Country (`modern_country`)
@@ -8039,12 +9332,12 @@ Modern country / Nashville pop: big clean drums, driving 16th acoustic strum, el
   - chat (top): `chat` -28 dB
   - tamb (top): `tamb` -29 dB · pan=0.3
   - bass (bass): `sf:fingerbass` -15 dB · alternatives ['upright', 'moogbass', 'ebass']
-  - chords (chords): `acguitar`  dB · pan=-0.25 · rev=0.2 · alternatives ['piano', 'sf:nylon', 'sf:steelguitar']
+  - chords (chords): `dreadnought`  dB · pan=-0.25 · rev=0.2 · alternatives ['piano', 'sf:nylon', 'sf:steelguitar']
   - pad (pad): `pedalsteel` -25 dB · pan=0.25 · rev=0.45 · alternatives ['organ', 'strings', 'accordion']
-  - arp (arp): `twang` -24 dB · pan=0.3 · rev=0.3 · dly=0.15 · alternatives ['acguitar', 'banjo', 'piano']
-  - lead (lead): `twang` -19 dB · rev=0.3 · dly=0.15 · alternatives ['pedalsteel', 'violin', 'sf:fiddle', 'harmonica']
+  - arp (arp): `telegtr` -24 dB · pan=0.3 · rev=0.3 · dly=0.15 · alternatives ['acguitar', 'banjo', 'piano']
+  - lead (lead): `telegtr` -19 dB · rev=0.3 · dly=0.15 · alternatives ['pedalsteel', 'violin', 'sf:fiddle', 'harmonica']
 - **Mix** {'lufs': -10.0, 'air': 1.8, 'low': 1.4} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 57, 'strum': 0.01, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'slides': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 57, 'strum': 0.01, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'slides': 0.4, 'pools': {}}
 - **Sound brief** Acoustic steel guitar (16th strum); Telecaster; pedal steel; electric bass; big clean kit; piano / B3 pads
 
 ### Country Waltz (3/4) (`country_waltz`)
@@ -8066,12 +9359,12 @@ Country waltz (3/4, 50s honky-tonk ballad): a slow oom-pah-pah of upright bass a
   - kick (kick): `kick` -20 dB
   - snare (snare): `snare` -24 dB · rev=0.3
   - bass (bass): `upright` -16 dB · alternatives ['sf:acbass', 'sf:fingerbass']
-  - chords (chords): `acguitar`  dB · pan=-0.2 · rev=0.25 · alternatives ['piano', 'sf:nylon', 'sf:steelguitar']
+  - chords (chords): `dreadnought`  dB · pan=-0.2 · rev=0.25 · alternatives ['piano', 'sf:nylon', 'sf:steelguitar']
   - keys (chords): `piano` -27 dB · pan=0.2 · rev=0.25
   - pad (pad): `pedalsteel` -24 dB · pan=0.25 · rev=0.45 · alternatives ['organ', 'strings', 'accordion']
   - lead (lead): `violin` -17 dB · rev=0.35 · alternatives ['sf:fiddle', 'pedalsteel', 'harmonica', 'twang']
 - **Mix** {'lufs': -13.0, 'air': 1.2, 'low': 0.8} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.6, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'slides': 0.5}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.6, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'slides': 0.5, 'pools': {}}
 - **Sound brief** Fiddle; pedal steel; acoustic guitar; upright bass; brushes; honky-tonk piano
 
 ### Outlaw Country (`outlaw_country`)
@@ -8095,9 +9388,9 @@ Outlaw country: the freight-train boom-chicka-boom - palm-muted guitar on every 
   - bass (bass): `upright` -15 dB · alternatives ['sf:acbass', 'sf:fingerbass']
   - chords (chords): `mutedgtr` -21 dB · pan=-0.2 · rev=0.15 · alternatives ['acguitar', 'sf:cleanguitar', 'clav']
   - pad (pad): `harmonica` -27 dB · pan=0.3 · rev=0.35 · alternatives ['organ', 'pedalsteel', 'strings']
-  - lead (lead): `twang` -18 dB · rev=0.25 · dly=0.12 · alternatives ['guitar', 'harmonica', 'violin']
+  - lead (lead): `telegtr` -18 dB · rev=0.25 · dly=0.12 · alternatives ['guitar', 'harmonica', 'violin']
 - **Mix** {'lufs': -11.0, 'air': 1.0, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.25, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.5, 'chord_center': 55, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 4, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'slides': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.25, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.5, 'chord_center': 55, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 4, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'slides': 0.4, 'pools': {}}
 - **Sound brief** Palm-muted acoustic ("boom-chicka"); baritone / Telecaster with slapback; upright bass; brushes; harmonica
 
 ### Acoustic folk-rock jam (`folk_jam`)
@@ -8121,12 +9414,12 @@ Laid-back acoustic folk-rock jam (early-70s American style): strummed acoustic g
   - tamb (top): `tamb` -27 dB · pan=0.3
   - shaker (top): `shaker` -31 dB · pan=-0.3
   - bass (bass): `ebass` -16 dB · alternatives ['upright', 'sf:fingerbass', 'sf:pickbass']
-  - chords (chords): `acguitar` -17 dB · rev=0.25 · alternatives ['sf:nylon', 'sf:steelguitar', 'piano']
+  - chords (chords): `dreadnought` -17 dB · rev=0.25 · alternatives ['sf:nylon', 'sf:steelguitar', 'piano']
   - pad (pad): `organ` -28 dB · rev=0.3 · alternatives ['strings', 'warmpad', 'solina']
   - arp (arp): `mandolin` -24 dB · pan=0.3 · rev=0.25 · alternatives ['banjo', 'acguitar', 'sf:steelguitar']
   - lead (lead): `guitar` -20 dB · rev=0.3 · alternatives ['organ', 'pedalsteel', 'harmonica', 'nylon']
 - **Mix** {'lufs': -12.5, 'air': 1.0, 'low': 0.6, 'width': 1.0, 'gentle': True} · reverb 1.8 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.014, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.014, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'pools': {}}
 - **Sound brief** Strummed acoustic guitars + mandolin; melodic bass; brushed drums + tambourine; a gentle lead (organ / guitar)
 
 ## Latin & Caribbean
@@ -8710,6 +10003,96 @@ Bhangra (Punjabi): the dhol drum driving its swung, galloping chaal rhythm, a br
   - lead (lead): `mandolin` -18 dB · rev=0.2 · dly=0.15 · alternatives ['sitar', 'pluck', 'flute']
 - **Mix** {'lufs': -10.0, 'air': 1.5, 'low': 1.2} · reverb 2.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['dhol_hi'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 6, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'dhol', 'suggest': ''}
+
+### Highlife (`highlife`)
+
+Highlife: Ghanaian and Nigerian dance-band music at 110-130 - bright interlocking clean guitars in sweet major keys, a melodic walking bass, a horn section answering the vocal line, a bell pattern and congas over a relaxed, swaying groove - joyful and elegant
+
+- **Tempo** 110-130 BPM · **scales** major, mixolydian · swing 0.54 (unit 16) · humanise 0.008
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 3], [0, 3, 0, 4]], 'mixolydian': [[0, 6, 3, 0]]} · chord_bars 1 · chord size 4
+- **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
+- **Drums** **kick** `X.....X...X..X..` / `X..x..X...X.....`; **snare** `..o.x..o.x.o..x.` / `....x..o..o.x..o`; **chat** `x.xxx.xxx.xxx.xx`; **ohat** `......x.......x.`; **shaker** `xxxxxxxxxxxxxxxx`; **woodblock** `x.x.xx.x.x.x....`; **conga** `..o.x..o..o.x..o`
+- **Drum kit** (synth preset) · preset `acoustic`
+- **Bass** `R..A..F.R...O.A.` / `R...F.A.R..F..A.` · mode `pattern` · lowest note 31
+- **Chord rhythm** `.x.x.x.x.x.x.x.x` / `x.xx.x.xx.xx.x.x`
+- **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
+- **Lead rhythm** `x-x-x---x-x-....` / `x...x...x.x.x---` / `..x-x-x---x-x-x-`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `groove_locked` · density `dense` · feel `live_drums` · melody `long_lyrical` · bass `rolling_groove` · drop `groove_drop` · variation `progressive` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `swung_16ths` · harmony `functional_tonal` · energy `flat_hypnotic`
+- **Instruments**
+  - kick (kick): `kick` -15 dB
+  - snare (snare): `snare` -17 dB · rev=0.15
+  - chat (top): `chat` -27 dB
+  - ohat (top): `ohat` -28 dB
+  - shaker (top): `shaker` -30 dB · pan=0.3
+  - woodblock (top): `woodblock` -28 dB · pan=-0.3
+  - conga (top): `conga` -26 dB · pan=0.35
+  - bass (bass): `ebass` -14 dB · alternatives ['sf:fingerbass', 'sf:pickbass']
+  - chords (chords): `cleanguitar` -22 dB · pan=-0.3 · alternatives ['guitar', 'jangle', 'organ']
+  - pad (pad): `organ` -26 dB · rev=0.25 · alternatives ['epiano', 'brass']
+  - arp (arp): `cleanguitar` -24 dB · pan=0.3 · alternatives ['jangle', 'guitar', 'marimba']
+  - lead (lead): `brass` -17 dB · rev=0.25 · alternatives ['trumpet', 'sax', 'discohorn']
+- **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afrobeat'}
+
+### Soukous (`soukous`)
+
+Soukous: Congolese dance music at 130-150 - glittering high guitars racing in fast cascading arpeggios (the sebene), a rolling, bouncing bass, a crisp snare on every off-beat and a driving hi-hat - bright, fast, irresistible
+
+- **Tempo** 130-150 BPM · **scales** major · swing 0.53 (unit 16) · humanise 0.008
+- **Progressions** {'major': [[0, 3, 4, 3], [0, 4, 0, 4], [0, 3, 0, 4]]} · chord_bars 1 · chord size 4
+- **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
+- **Drums** **kick** `X...X...X...X...`; **snare** `..x...x...x...x.` / `..x...x...x.x.x.`; **chat** `xxxxxxxxxxxxxxxx`; **conga** `x..x..x...x..x..`; **shaker** `x.x.x.x.x.x.x.x.`
+- **Drum kit** (synth preset) · preset `acoustic`
+- **Bass** `R..R.F..R..R.F.A` / `R.F.R..AR.F.R..O` · mode `pattern` · lowest note 31
+- **Chord rhythm** `.x.x.x.x.x.x.x.x` / `x.xx.x.xx.xx.x.x`
+- **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
+- **Lead rhythm** `x.x.x.x.x.x.x.x.` / `xxxxx.x.xxxxx.x.`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `groove_locked` · density `dense` · feel `live_drums` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `groove_drop` · variation `progressive` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `swung_16ths` · harmony `static_vamp` · energy `flat_hypnotic`
+- **Instruments**
+  - kick (kick): `kick` -15 dB
+  - snare (snare): `snare` -17 dB · rev=0.15
+  - chat (top): `chat` -27 dB
+  - ohat (top): `ohat` -28 dB
+  - shaker (top): `shaker` -30 dB · pan=0.3
+  - woodblock (top): `woodblock` -28 dB · pan=-0.3
+  - conga (top): `conga` -26 dB · pan=0.35
+  - bass (bass): `ebass` -14 dB · alternatives ['sf:fingerbass', 'sf:pickbass']
+  - chords (chords): `jangle` -22 dB · pan=-0.3 · alternatives ['mutedgtr', 'guitar', 'clav']
+  - pad (pad): `organ` -26 dB · rev=0.25 · alternatives ['epiano', 'brass']
+  - arp (arp): `cleanguitar` -24 dB · pan=0.3 · alternatives ['jangle', 'guitar']
+  - lead (lead): `cleanguitar` -17 dB · rev=0.25 · alternatives ['guitar', 'jangle', 'brass']
+- **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afrobeat'}
+
+### Balkan Brass (`balkan_brass`)
+
+Balkan brass band: a roaring street brass band at 120-160 - trumpets wailing ornamented melodies in phrygian dominant, a tuba pumping the bass, horns and saxes stabbing the off-beats, a big bass drum and snare driving it forward - wild, festive, breathless
+
+- **Tempo** 120-160 BPM · **scales** phrygian_dominant, ukrainian_dorian, harmonic_minor · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'phrygian_dominant': [[0, 0, 6, 0], [0, 3, 0, 0], [0, 1, 0, 0]], 'ukrainian_dorian': [[0, 0, 3, 0], [0, 3, 0, 4]], 'harmonic_minor': [[0, 3, 4, 0], [0, 0, 4, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `klezmer`: doina 8 [lead, pad] (filter_in) -> freylekhs 8 [bass, chords, kick, lead, snare, top] -> freylekhs 8 [arp, bass, chords, kick, lead, snare, top] -> trio 8 [arp, bass, chords, kick, snare, top] (alt) -> freylekhs 8 [bass, chords, kick, lead, snare, top] -> trio 8 [arp, bass, chords, kick, lead, snare, top] (alt) -> freylekhs 8 [arp, bass, chords, kick, lead, snare, top] (drop, cad) · form_scale 1
+- **Drums** **kick** `X.......X.......` / `X.....X.X.......`; **snare** `..x...x...x...x.` / `..x.x.x...x.x.x.`; **chat** `x.x.x.x.x.x.x.x.`
+- **Drum kit** (synth preset) · preset `acoustic`
+- **Bass** `R.......F.......` / `R.......O.......` · mode `pattern` · lowest note 31
+- **Chord rhythm** `....x.......x...` / `..x...x...x...x.`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.7}
+- **Lead rhythm** `x.x.x.x.x-x-x---` / `x.xxx.x.x-x-x---` / `xxxxx.x.x.x.x---`
+- **Build-ups** default `(category default)` · choices ['pickup'] · transitions ['none', 'crash']
+- **Traits** arrangement `verse_chorus_pop` · density `medium` · feel `loose_human` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `groove_drop` · variation `sectional` · culture `radio_pop` · texture `dry_and_upfront` · rhythm `straight_16ths` · harmony `static_vamp` · energy `peaks_and_valleys`
+- **Instruments**
+  - kick (kick): `kick` -17 dB
+  - snare (snare): `snare` -19 dB · rev=0.2
+  - chat (top): `chat` -28 dB
+  - bass (bass): `tuba` -15 dB · alternatives ['ebass']
+  - chords (chords): `brass` -21 dB · pan=-0.2 · rev=0.2 · alternatives ['accordion', 'horn', 'synthbrass']
+  - pad (pad): `horn` -25 dB · rev=0.4 · alternatives ['accordion', 'bandoneon', 'organ']
+  - arp (arp): `sax` -21 dB · pan=0.3 · rev=0.3 · alternatives ['clarinet', 'trumpet']
+  - lead (lead): `trumpet` -15 dB · rev=0.3 · alternatives ['clarinet', 'sax', 'brass']
+- **Mix** {'lufs': -12.0, 'air': 1.0, 'low': 0.7} · reverb 1.6 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'no_rotation': True, 'sec_tempo': {'doina': 0.5}, 'slides': 0.45, 'parent': 'klezmer'}
+- **Sound brief** Clarinet (lead); fiddle; accordion; tuba / bass; drum with cymbal
 
 ## South Asian
 
@@ -9456,6 +10839,30 @@ Hybrid trailer: pulsing spiccato ostinatos, braams, taiko, distorted synth bass,
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.6, 'chord_center': 57, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 4, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'taiko', 'suggest': ''}
 - **Sound brief** Strings spiccato (ostinato); Low brass braams; Horns (theme); Choir; Taiko + timpani; distorted synth bass
 
+### Storybook film score (`storybook_score`)
+
+Storybook film score: a gentle, nostalgic piano theme over warm strings, flute and glockenspiel answers, harp arpeggios, a lilting waltz-like lift and hopeful major-key harmony
+
+- **Tempo** 72-100 BPM · **scales** major, minor, lydian · swing 0.5 (unit 16) · humanise 0.014
+- **Progressions** {'major': [[3, 4, 2, 5], [0, 4, 5, 2], [3, 4, 0, 0], [5, 3, 4, 0]], 'minor': [[0, 5, 2, 6], [5, 6, 0, 0]], 'lydian': [[0, 1, 0, 1], [0, 1, 4, 0]]} · chord_bars 1 · chord size 4
+- **Song form** `orchestral`: intro 4 [chords, pad] (filter_in) -> A 16 [bass, chords, lead, pad] -> B 16 [arp, bass, chords, lead, pad] (alt) -> A 16 [arp, bass, chords, kick, lead, pad] -> outro 8 [bass, chords, pad] (fade) · form_scale 1
+- **Drum kit** (synth preset) · preset `default`
+- **Bass** `R---------------` / `R-------F-------` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
+- **Lead rhythm** `x---x-x-x-------` / `x-x-x---x---x---` / `....x-x-x---x---` / `x-----x-x-------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `narrative` · density `sparse` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `none` · variation `theme_and_variations` · culture `cinematic_score` · texture `intimate_close` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `emotional_arc`
+- **Instruments**
+  - bass (bass): `cello` -20 dB · rev=0.45 · alternatives ['sf:contrabass', 'strings']
+  - chords (chords): `strings` -21 dB · rev=0.5 · alternatives ['piano', 'sf:slowstrings']
+  - pad (pad): `choir` -30 dB · rev=0.55 · alternatives ['strings', 'warmpad']
+  - arp (arp): `harp` -23 dB · pan=-0.25 · rev=0.45 · alternatives ['piano', 'pizz']
+  - lead (lead): `piano` -17 dB · rev=0.4 · alternatives ['flute', 'violin', 'oboe', 'clarinet']
+- **Mix** {'lufs': -15.0, 'air': 1.2, 'low': 0.6} · reverb 3.4 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': ''}
+- **Sound brief** Solo piano theme; string ensemble; flute and oboe; glockenspiel / celesta; harp; light timpani swells
+
 ### Cinematic Journey (ultimate orchestral) (`cinematic_journey`)
 
 The ultimate orchestral generator - an epic cinematic journey for full symphony orchestra: shadowy tension (creeping low strings, timpani rolls, icy low piano) > aching solo-piano sorrow > heroic resolve (soaring violins, spiccato runs, noble horns, marcato low brass) > overwhelming tutti glory > fragile reflection > a long, luminous final chord. Rubato and dramatic tempo shifts, near-silence to fortissimo
@@ -9553,6 +10960,56 @@ Cinematic Journey - Dark & Low: the same story told from the bottom of the orche
 - **Mix** {'lufs': -15.0, 'air': -1.5, 'low': 3.4, 'gentle': True} · reverb 4.6 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'bdrum', 'suggest': '', 'composer': 'journey', 'low': True, 'rubato': 0.55}
 - **Sound brief** Solo piano; violins I (legato + high harmonics), violas, celli, basses; strings sustain / tremolo / spiccato; 4 horns, 3 trumpets, 3 trombones, tuba; flute, oboe, clarinet; timpani, gran cassa, clash cymbals
+
+### Horror / Dread (`horror`)
+
+Horror / dread: a slow, creeping score - low strings and a creaking organ holding clustered, dissonant chords, a detuned music box picking out a broken lullaby, a dark choir breathing in the background and sudden stabs from the timpani - unsettling and claustrophobic
+
+- **Tempo** 50-72 BPM · **scales** phrygian, harmonic_minor · swing 0.5 (unit 16) · humanise 0.02
+- **Progressions** {'phrygian': [[0, 1, 0, 1], [0, 1, 6, 1]], 'harmonic_minor': [[0, 4, 0, 5], [0, 3, 4, 4]]} · chord_bars 1 · chord size 3
+- **Song form** `orchestral`: intro 4 [chords, pad] (filter_in) -> A 16 [bass, chords, lead, pad] -> B 16 [arp, bass, chords, lead, pad] (alt) -> A 16 [arp, bass, chords, kick, lead, pad] -> outro 8 [bass, chords, pad] (fade) · form_scale 1
+- **Drums** **timp** `X...............` / `........X.......`
+- **Drum kit** (synth preset) · preset `default`
+- **Bass** `R---------------` / `R-------R---R---` · mode `pattern` · lowest note 26
+- **Chord rhythm** `x---------------`
+- **Arp** {'rate': 2, 'mode': 'random', 'oct': 6, 'prob': 0.35}
+- **Lead rhythm** `x-------........` / `....x-------....` / `x---x-----------` / `........x-------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `narrative` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `emotional_swell` · variation `theme_and_variations` · culture `cinematic_score` · texture `massive_reverb` · rhythm `straight_16ths` · harmony `modal` · energy `emotional_arc`
+- **Instruments**
+  - timp (kick role - the genre's low drum): `timp` -20 dB · rev=0.5
+  - bass (bass): `strings` -18 dB · rev=0.4 · alternatives ['cello', 'tremolo', 'sf:contrabass']
+  - chords (chords): `creeporgan` -23 dB · rev=0.5 · alternatives ['tremolo', 'strings_dark', 'organ_dark']
+  - pad (pad): `choir_dark` -23 dB · rev=0.6 · alternatives ['strings_dark', 'drone']
+  - arp (arp): `celesta` -25 dB · rev=0.6 · dly=0.4 · alternatives ['bell_dark', 'glassharmonica', 'harp']
+  - lead (lead): `violin` -20 dB · rev=0.55 · alternatives ['cello', 'glassharmonica', 'choir_dark']
+- **Mix** {'lufs': -16.0, 'air': 0.5, 'low': 1.0} · reverb 4.5 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.92, 'chord_center': 56, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'parent': 'tension'}
+- **Sound brief** Low strings tremolo; Celesta / music box; Choir; Timpani; sustained horns
+
+### Wonder / Discovery (`wonder`)
+
+Wonder / discovery: a score for the moment something magical appears - shimmering celesta and harp arpeggios, warm sustained strings rising in lydian, a soaring horn and flute melody and a gentle swell of choir - awe-struck, glowing and hopeful
+
+- **Tempo** 72-100 BPM · **scales** lydian, major · swing 0.5 (unit 16) · humanise 0.014
+- **Progressions** {'lydian': [[0, 1, 0, 1], [0, 1, 5, 4]], 'major': [[0, 3, 5, 4], [0, 5, 3, 4]]} · chord_bars 1 · chord size 4
+- **Song form** `orchestral`: intro 4 [chords, pad] (filter_in) -> A 16 [bass, chords, lead, pad] -> B 16 [arp, bass, chords, lead, pad] (alt) -> A 16 [arp, bass, chords, kick, lead, pad] -> outro 8 [bass, chords, pad] (fade) · form_scale 1
+- **Drum kit** (synth preset) · preset `default`
+- **Bass** `R---------------` / `R-------F-------` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x---------------` / `x-------x-------`
+- **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
+- **Lead rhythm** `x---x-x-x-------` / `x-x-x---x---x---` / `....x-x-x---x---` / `x-----x-x-------`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `narrative` · density `sparse` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `none` · variation `theme_and_variations` · culture `cinematic_score` · texture `intimate_close` · rhythm `straight_16ths` · harmony `modal` · energy `emotional_arc`
+- **Instruments**
+  - bass (bass): `cello` -20 dB · rev=0.45 · alternatives ['sf:contrabass', 'strings']
+  - chords (chords): `strings` -21 dB · rev=0.5 · alternatives ['piano', 'sf:slowstrings']
+  - pad (pad): `choir` -30 dB · rev=0.55 · alternatives ['strings', 'warmpad']
+  - arp (arp): `harp` -23 dB · pan=-0.25 · rev=0.45 · alternatives ['piano', 'pizz']
+  - lead (lead): `piano` -17 dB · rev=0.4 · alternatives ['flute', 'violin', 'oboe', 'clarinet']
+- **Mix** {'lufs': -15.0, 'air': 1.2, 'low': 0.6} · reverb 3.4 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.92, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'storybook_score'}
+- **Sound brief** Solo piano theme; string ensemble; flute and oboe; glockenspiel / celesta; harp; light timpani swells
 
 ## Epic
 
@@ -9689,7 +11146,7 @@ Heroic anthem: a soaring major-key fanfare on horns and trumpets, sweeping violi
 
 ### Grand Symphonic Finale (`symphonic_finale`)
 
-Grand symphonic finale (Tchaikovsky / Mahler scale): full brass chorale over tremolo strings, thundering timpani rolls, cymbal crashes, double basses and tuba - the last, enormous page of a symphony
+Grand symphonic finale (late-Romantic scale): full brass chorale over tremolo strings, thundering timpani rolls, cymbal crashes, double basses and tuba - the last, enormous page of a symphony
 
 - **Tempo** 96-132 BPM · **scales** major, minor, harmonic_minor · swing 0.5 (unit 16) · humanise 0.01
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 5, 3, 4], [0, 1, 4, 0]], 'minor': [[0, 5, 3, 4], [0, 3, 4, 0]], 'harmonic_minor': [[0, 3, 4, 0], [0, 5, 1, 4]]} · chord_bars 1 · chord size 4
@@ -9922,6 +11379,221 @@ Christmas orchestral, magical (family-film opening titles): a hushed, glittering
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 6, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'no_rotation': True, 'no_layers': True, 'colour_boost': 0.2, 'rubato': 0.25, 'repetition': 0.8}
 - **Sound brief** Celesta (melody, very high) + flutes doubling; harp arpeggios & glissandi; vibraphone; soft grand piano; string pad (violins / violas / celli); bass clarinet / basses; soft sleigh bells, triangle, timpani swell
 
+### Sleigh-Ride Gallop (orchestral) (`sleigh_ride_gallop`)
+
+Sleigh-ride gallop (light orchestral): a bright major-key 2/4 gallop around 130-150 - woodblock hooves clip-clopping, sleigh bells driving 8ths, bouncing pizzicato and spiccato strings, a cheeky trumpet tune with flutes and celesta doubling it, horn calls, a snare and a whip-crack crash at the big moments - pure winter-holiday fun
+
+- **Tempo** 128-150 BPM · **scales** major · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'major': [[0, 4, 0, 4], [0, 3, 4, 0], [0, 5, 1, 4], [3, 4, 0, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `christmas_trap`: intro 4 [bass, kick] (level=0.45) -> A 8 [bass, chords, kick, top] (level=0.6) -> A 8 [bass, chords, kick, lead, top] (level=0.68) -> B 8 [arp, bass, chords, kick, pad, snare, top] (alt, crash, level=0.78) -> build 8 [arp, bass, chords, kick, snare, top] (build, level=0.6, level_to=1.0) -> chase 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop, crash, level=1.0) -> sneak 8 [arp, bass, lead] (alt, level=0.32) -> chase 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop, crash, level=1.0) -> outro 4 [bass, chords, kick, pad] (level=1.0) · form_scale 1
+- **Drums** **timp** `X.......X.......` / `X...X...X...X...`; **snare** `....x.......x...` / `..x.x...x.x.x...`; **sleigh** `x.x.x.x.x.x.x.x.` / `xxxxxxxxxxxxxxxx`; **hooves** `x..x..x.x..x..x.` / `X..x..X.X..x..X.`; **whip** `X...............` / ``
+- **Drum kit** (synth preset) · preset `default`
+- **Bass** `R...F...R...F...` / `R.F.R.F.R.F.R.F.` · mode `pattern` · lowest note 31
+- **Chord rhythm** `..x...x...x...x.` / `x.x.x.x.x.x.x.x.`
+- **Arp** {'rate': 1, 'mode': 'random', 'oct': 5, 'prob': 0.7}
+- **Lead rhythm** `x.x.x.x.x---x.x.` / `x-x-x---x-x-x---` / `xxx.x.x.x-------` / `x.x.x.x.x.x.x---`
+- **Build-ups** default `(category default)` · choices ['swell', 'march', 'cymbal']
+- **Traits** arrangement `narrative` · density `dense` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `emotional_swell` · variation `theme_and_variations` · culture `cinematic_score` · texture `intimate_close` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `emotional_arc`
+- **Instruments**
+  - timp (kick role - the genre's low drum): `timp` -21 dB · rev=0.35
+  - snare (snare): `snare` -24 dB · rev=0.3
+  - sleigh (top): `sleigh` -31 dB · pan=0.3 · rev=0.25
+  - bass (bass): `cello` -19 dB · rev=0.3 · alternatives ['contrabass', 'pizz']
+  - bass_cb (bass): `contrabass` -26 dB · rev=0.3
+  - chords (chords): `pizz` -19 dB · rev=0.35 · alternatives ['spiccato', 'strings']
+  - pad (pad): `horn` -19 dB · rev=0.4 · alternatives ['brass', 'strings']
+  - brass (pad): `trombone` -24 dB · rev=0.35
+  - arp (arp): `flute` -27 dB · pan=-0.3 · rev=0.35 · alternatives ['celesta', 'glock', 'clarinet']
+  - lead (lead): `trumpet` -21 dB · pan=0.15 · rev=0.4 · alternatives ['flute', 'violin', 'clarinet']
+  - cel (lead): `celesta` -29 dB · pan=-0.15 · rev=0.4
+  - hooves (top): `woodblock` -27 dB · pan=-0.3 · rev=0.3
+  - whip (top): `crash` -32 dB · pan=0.25 · rev=0.4
+- **Mix** {'lufs': -15.5, 'air': 0.6, 'low': 0.8, 'gentle': True, 'max_gr': 2.0} · reverb 2.8 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.45, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'colour_boost': 0.15, 'no_rotation': True, 'no_layers': True, 'repetition': 0.8, 'exact_pools': True, 'keep_sounds': 0.8, 'own_progs': True, 'parent': 'christmas_mischief'}
+- **Sound brief** Celli + basses spiccato ostinato; violins spiccato stabs; French horns + trombones (blasts); flute / clarinet chromatic runs; celesta + flute sneaky motif; orchestral snare, timpani, sleigh bells, cymbals
+
+### Christmas Lullaby (music box) (`christmas_lullaby`)
+
+Christmas lullaby (music box): a hushed, rocking 3/4 around 66-84 - a music-box melody tinkling up high, a harp rippling underneath, a soft string bed and a breathy flute, the faintest sleigh bells and celesta - a candle-lit Christmas Eve cradle song
+
+- **Tempo** 66-84 BPM · meter 3/4 · **scales** major · swing 0.5 (unit 16) · humanise 0.012
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 5, 1, 4], [0, 3, 0, 4], [3, 4, 2, 5], [0, 4, 5, 3], [0, 0, 3, 0], [0, 4, 3, 0], [0, 5, 2, 3]]} · chord_bars 1 · chord size 3
+- **Song form** `christmas_joy`: intro 4 [arp, pad] (level=0.25) -> verse 16 [arp, bass, chords, kick, lead, top] (level=0.42) -> verse 16 [arp, bass, chords, kick, lead, pad, top] (level=0.55) -> bridge 8 [arp, bass, chords, lead] (alt, level=0.4) -> chorus 16 [arp, bass, chords, kick, lead, pad, top] (crash, level=0.7, level_to=0.88) -> chorus 16 [arp, bass, chords, kick, lead, pad, top] (crash, level=0.95, level_to=1.0) -> outro 4 [arp, bass, chords, kick, lead, pad] (level=1.0) · form_scale 0.85
+- **Drums** **sleigh** `x...........` / `............`
+- **Drum kit** (synth preset) · preset `default`
+- **Bass** `R...........` / `R.....F.....` · mode `pattern` · lowest note 33
+- **Chord rhythm** `x...x...x...` / `x...........`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 6, 'prob': 0.75}
+- **Lead rhythm** `x---x-x-x---` / `x-----x---x-` / `x-x-x-x-----` / `x---------x-` / `x-xx-xx-----`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `narrative` · density `medium` · feel `drifting` · melody `long_lyrical` · bass `rolling_groove` · drop `emotional_swell` · variation `theme_and_variations` · culture `cinematic_score` · texture `massive_reverb` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `emotional_arc`
+- **Instruments**
+  - sleigh (top): `sleigh` -32 dB · pan=0.3 · rev=0.3
+  - bass (bass): `cello` -17 dB · rev=0.35 · alternatives ['pizz', 'contrabass']
+  - chords (chords): `harp` -20 dB · rev=0.4 · alternatives ['pizz', 'piano']
+  - pad (pad): `strings` -20 dB · rev=0.55 · alternatives ['choir', 'humchoir']
+  - horns (pad): `flute` -23 dB · rev=0.45
+  - arp (arp): `celesta` -29 dB · pan=-0.3 · rev=0.45 · alternatives ['harp', 'musicbox']
+  - lead (lead): `musicbox` -19 dB · pan=0.1 · rev=0.45 · alternatives ['celesta', 'flute', 'glock']
+  - glock (lead): `flute` -29 dB · pan=0.2 · rev=0.45
+- **Mix** {'lufs': -19.0, 'air': 0.6, 'low': 0.4, 'gentle': True, 'max_gr': 1.0} · reverb 4.2 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.55, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'sleigh', 'suggest': '', 'key_change': False, 'no_rotation': True, 'no_layers': True, 'colour_boost': 0.25, 'repetition': 0.8, 'exact_pools': True, 'keep_sounds': 0.8, 'rubato': 0.2, 'parent': 'christmas_joyful'}
+- **Sound brief** Violins (melody) doubled by glockenspiel 8va; pizzicato / short strings (pah-pah); celli + basses (oom); celesta; children's choir (aah); French horns; sleigh bells; timpani; a cymbal at the big moments
+
+### Christmas Carol (choir & organ) (`christmas_carol_choir`)
+
+Christmas carol (church choir): a stately, joyful hymn-like carol around 72-92 in a major key - a full choir singing the tune in chords, a pipe organ underneath, church bells ringing out at the start of each verse, timpani swells and a brass fanfare for the last verse - candles, stone arches, a midnight service
+
+- **Tempo** 72-92 BPM · **scales** major · swing 0.5 (unit 16) · humanise 0.012
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 5, 3], [3, 0, 4, 0], [0, 5, 3, 4]]} · chord_bars 1 · chord size 3
+- **Song form** `christmas_magic`: intro 4 [arp, lead] (level=0.3) -> A 8 [arp, bass, lead, pad, top] (level=0.45) -> A 8 [arp, bass, chords, lead, pad, top] (level=0.55) -> B 8 [bass, chords, lead, pad, top] (alt, level=0.5) -> A 8 [arp, bass, chords, kick, lead, pad, top] (level=0.65, level_to=0.9) -> coda 4 [arp, lead, pad] (fade, level=0.45) · form_scale 1.5
+- **Drums** **timp** `X...............` / `................`; **sleigh** `x.x.x.x.x.x.x.x.` / `x...x...x...x...`; **tri** `x...............`
+- **Drum kit** (synth preset) · preset `default`
+- **Bass** `R---------------` / `R-------F-------` · mode `pattern` · lowest note 33
+- **Chord rhythm** `x---x---x---x---` / `x-------x-------`
+- **Arp** {'rate': 4, 'mode': 'down', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `x---x---x---x---` / `x---x-x-x-------` / `x-------x---x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `narrative` · density `medium` · feel `drifting` · melody `long_lyrical` · bass `rolling_groove` · drop `emotional_swell` · variation `theme_and_variations` · culture `cinematic_score` · texture `massive_reverb` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `emotional_arc`
+- **Instruments**
+  - timp (kick role - the genre's low drum): `timp` -27 dB · rev=0.5
+  - sleigh (top): `sleigh` -33 dB · pan=0.3 · rev=0.4
+  - tri (top): `crash` -36 dB · pan=-0.3 · rev=0.5
+  - bass (bass): `cello` -17 dB · rev=0.45 · alternatives ['contrabass', 'bassoon']
+  - bass_cb (bass): `contrabass` -21 dB · rev=0.45
+  - chords (chords): `organ` -26 dB · rev=0.5 · alternatives ['strings']
+  - vibes (chords): `organ` -32 dB · pan=0.25 · rev=0.5
+  - pad (pad): `strings` -22 dB · rev=0.55 · alternatives ['choir', 'horn']
+  - arp (arp): `churchbell` -23 dB · pan=-0.25 · rev=0.5 · alternatives ['tubular', 'harp']
+  - lead (lead): `choir` -19 dB · pan=0.1 · rev=0.5 · alternatives ['kidchoir', 'choir_wide']
+  - flute (lead): `horn` -24 dB · pan=-0.1 · rev=0.5
+- **Mix** {'lufs': -17.0, 'air': 0.6, 'low': 0.7, 'gentle': True, 'max_gr': 1.2} · reverb 4.6 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 6, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'no_rotation': True, 'no_layers': True, 'colour_boost': 0.2, 'rubato': 0.1, 'repetition': 0.8, 'exact_pools': True, 'keep_sounds': 0.8, 'own_progs': True, 'parent': 'christmas_magic'}
+- **Sound brief** Celesta (melody, very high) + flutes doubling; harp arpeggios & glissandi; vibraphone; soft grand piano; string pad (violins / violas / celli); bass clarinet / basses; soft sleigh bells, triangle, timpani swell
+
+### Christmas Memory Theme (family film) (`christmas_memory_theme`)
+
+Christmas memory theme (classic family-film score): the tender, nostalgic carol of a 90s holiday comedy - a celesta alone, then a children's choir humming long notes, an oboe or flute singing the tune over a warm string bed and harp, rich major-seventh and borrowed minor-iv chords, a soaring string climax with soft timpani and sleigh bells, then back to the celesta - bittersweet, homesick, snow falling
+
+- **Tempo** 68-84 BPM · **scales** major · swing 0.5 (unit 16) · humanise 0.012
+- **Progressions** {'major': [[0, 3, 0, 4], [3, 4, 2, 5], [0, 5, 3, 4], [0, 2, 3, 3]]} · chord_bars 1 · chord size 4
+- **Song form** `christmas_memory`: intro 4 [arp] (level=0.25) -> A 8 [arp, lead, pad] (level=0.35) -> A 8 [arp, bass, chords, lead, pad] (level=0.5) -> B 8 [bass, chords, lead, pad] (alt, level=0.55, level_to=0.75) -> A 8 [arp, bass, chords, lead, pad, top] (level=0.65) -> B 8 [bass, chords, lead, pad] (alt, level=0.7, level_to=0.85) -> A 8 [arp, bass, chords, kick, lead, pad, top] (level=0.9, level_to=1.0) -> coda 4 [arp, lead, pad] (fade, level=0.4, cad) · form_scale 1.0
+- **Drums** **timp** `X...............` / `................`; **sleigh** `x.x.x.x.x.x.x.x.` / `x...x...x...x...`; **tri** `x...............`
+- **Drum kit** (synth preset) · preset `default`
+- **Bass** `R---------------` / `R-------F-------` · mode `pattern` · lowest note 33
+- **Chord rhythm** `x---------------` / `x-------x-------` / `..x...x...x...x.`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.9}
+- **Lead rhythm** `x---x---x-------` / `x-------x---x---` / `x---x-x-x-------` / `x-----------x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `narrative` · density `medium` · feel `drifting` · melody `long_lyrical` · bass `rolling_groove` · drop `emotional_swell` · variation `theme_and_variations` · culture `cinematic_score` · texture `massive_reverb` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `emotional_arc`
+- **Instruments**
+  - timp (kick role - the genre's low drum): `timp` -27 dB · rev=0.5
+  - sleigh (top): `sleigh` -33 dB · pan=0.3 · rev=0.4
+  - tri (top): `crash` -36 dB · pan=-0.3 · rev=0.5
+  - bass (bass): `cello` -17 dB · rev=0.45 · alternatives ['contrabass', 'bassoon']
+  - bass_cb (bass): `contrabass` -21 dB · rev=0.45
+  - chords (chords): `strings` -26 dB · rev=0.5 · alternatives ['harp', 'piano']
+  - vibes (chords): `harp` -32 dB · pan=0.25 · rev=0.5
+  - pad (pad): `kidchoir` -22 dB · rev=0.55 · alternatives ['choir', 'strings']
+  - arp (arp): `celesta` -23 dB · pan=-0.25 · rev=0.5 · alternatives ['harp', 'glock', 'musicbox']
+  - lead (lead): `oboe` -19 dB · pan=0.1 · rev=0.5 · alternatives ['flute', 'violin', 'kidchoir']
+  - flute (lead): `flute` -24 dB · pan=-0.1 · rev=0.5
+- **Mix** {'lufs': -18.0, 'air': 0.8, 'low': 0.5, 'gentle': True, 'max_gr': 1.0} · reverb 4.4 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'no_rotation': True, 'no_layers': True, 'colour_boost': 0.35, 'rubato': 0.3, 'repetition': 0.8, 'exact_pools': True, 'keep_sounds': 0.85, 'own_progs': True, 'parent': 'christmas_magic'}
+- **Sound brief** Celesta (melody, very high) + flutes doubling; harp arpeggios & glissandi; vibraphone; soft grand piano; string pad (violins / violas / celli); bass clarinet / basses; soft sleigh bells, triangle, timpani swell
+
+### Christmas Sneak (tiptoeing burglars) (`christmas_sneak`)
+
+Christmas sneak (burglars tiptoeing): the comic creeping cue of a holiday family film - plucked pizzicato strings and a staccato bassoon tiptoeing up and down a minor scale, a sly clarinet, celesta and glockenspiel winks, soft timpani footsteps, a muted brass sting and a cymbal crash when someone gets caught - sneaky, mischievous, a little spooky
+
+- **Tempo** 96-116 BPM · **scales** minor, harmonic_minor · swing 0.5 (unit 16) · humanise 0.008
+- **Progressions** {'minor': [[0, 0, 5, 4], [0, 1, 0, 4], [0, 3, 4, 0], [0, 5, 1, 4]], 'harmonic_minor': [[0, 0, 4, 4], [0, 1, 4, 0]]} · chord_bars 1 · chord size 3
+- **Song form** `christmas_sneak`: intro 4 [bass] (level=0.35) -> A 8 [bass, chords, kick] (level=0.45) -> A 8 [bass, chords, kick, lead, top] (level=0.5) -> B 8 [arp, bass, kick, lead] (alt, level=0.55) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (level=0.7, crash) -> coda 2 [bass, pad] (level=0.8, cad) · form_scale 2.0
+- **Drums** **timp** `X.......X.......` / `X...X...X...X...`; **snare** `` / `............x...`; **sleigh** `....x.......x...` / ``
+- **Drum kit** (synth preset) · preset `default`
+- **Bass** `R...F...R...F...` / `R.u.R.d.R...F...` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x...x...x...x...` / `x.x...x.x...x...` / `..x...x...x...x.`
+- **Arp** {'rate': 1, 'mode': 'random', 'oct': 5, 'prob': 0.7}
+- **Lead rhythm** `x.x.x.x.x.......` / `x...x.x.x.x.x...` / `x.x.x.....x.x...` / `..x.x.x.x.x.x...`
+- **Build-ups** default `(category default)` · choices ['swell', 'march', 'cymbal']
+- **Traits** arrangement `narrative` · density `medium` · feel `loose_human` · melody `rhythmic_stabs` · bass `rolling_groove` · drop `emotional_swell` · variation `theme_and_variations` · culture `cinematic_score` · texture `intimate_close` · rhythm `straight_16ths` · harmony `functional_tonal` · energy `emotional_arc`
+- **Instruments**
+  - timp (kick role - the genre's low drum): `timp` -21 dB · rev=0.35
+  - snare (snare): `snare` -24 dB · rev=0.3
+  - sleigh (top): `sleigh` -31 dB · pan=0.3 · rev=0.25
+  - bass (bass): `pizz` -19 dB · rev=0.3 · alternatives ['contrabass', 'cello']
+  - bass_cb (bass): `contrabass` -26 dB · rev=0.3
+  - chords (chords): `pizz` -19 dB · rev=0.35 · alternatives ['spiccato']
+  - pad (pad): `horn` -19 dB · rev=0.4 · alternatives ['strings']
+  - brass (pad): `trombone` -24 dB · rev=0.35
+  - arp (arp): `celesta` -27 dB · pan=-0.3 · rev=0.35 · alternatives ['glock', 'clarinet']
+  - lead (lead): `bassoon` -21 dB · pan=0.15 · rev=0.4 · alternatives ['clarinet', 'oboe', 'flute']
+  - cel (lead): `clarinet` -29 dB · pan=-0.15 · rev=0.4
+- **Mix** {'lufs': -17.0, 'air': 0.4, 'low': 0.8, 'gentle': True, 'max_gr': 1.5} · reverb 2.8 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.3, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 4, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'colour_boost': 0.15, 'no_rotation': True, 'no_layers': True, 'repetition': 0.8, 'exact_pools': True, 'keep_sounds': 0.85, 'parent': 'christmas_mischief'}
+- **Sound brief** Celli + basses spiccato ostinato; violins spiccato stabs; French horns + trombones (blasts); flute / clarinet chromatic runs; celesta + flute sneaky motif; orchestral snare, timpani, sleigh bells, cymbals
+
+### Christmas Flight (soaring) (`christmas_flight`)
+
+Christmas flight (soaring over the snowy town): a sweeping, fast 3/4 for full orchestra - rushing string runs and harp glissandi, horns and trumpets carrying a big heroic tune, the children's choir soaring above, glockenspiel and celesta glitter, sleigh bells, crashing cymbals and timpani rolls, key changing upward to a triumphant last chorus - pure holiday-movie wonder
+
+- **Tempo** 150-176 BPM · meter 3/4 · **scales** major · swing 0.5 (unit 16) · humanise 0.012
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 5, 1, 4], [0, 3, 0, 4], [3, 4, 2, 5], [0, 4, 5, 3], [0, 0, 3, 0], [0, 4, 3, 0], [0, 5, 2, 3]]} · chord_bars 1 · chord size 3
+- **Song form** `christmas_joy`: intro 4 [arp, pad] (level=0.25) -> verse 16 [arp, bass, chords, kick, lead, top] (level=0.42) -> verse 16 [arp, bass, chords, kick, lead, pad, top] (level=0.55) -> bridge 8 [arp, bass, chords, lead] (alt, level=0.4) -> chorus 16 [arp, bass, chords, kick, lead, pad, top] (crash, level=0.7, level_to=0.88) -> chorus 16 [arp, bass, chords, kick, lead, pad, top] (crash, level=0.95, level_to=1.0) -> outro 4 [arp, bass, chords, kick, lead, pad] (level=1.0) · form_scale 1.6
+- **Drums** **timp** `X.....X.....` / `X..X..X.....`; **sleigh** `xxxxxxxxxxxx` / `x.x.x.x.x.x.`
+- **Drum kit** (synth preset) · preset `default`
+- **Bass** `R.....F.....` / `R...........` / `R.....O.....` · mode `pattern` · lowest note 33
+- **Chord rhythm** `....x...x...` / `..x.x...x.x.` / `x.....x.....`
+- **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 1.0}
+- **Lead rhythm** `x---x-x-x---` / `x-----x---x-` / `x-x-x-x-----` / `x---------x-` / `x-xx-xx-----`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `narrative` · density `medium` · feel `loose_human` · melody `long_lyrical` · bass `rolling_groove` · drop `emotional_swell` · variation `theme_and_variations` · culture `cinematic_score` · texture `massive_reverb` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `emotional_arc`
+- **Instruments**
+  - timp (kick role - the genre's low drum): `timp` -25 dB · rev=0.4
+  - sleigh (top): `sleigh` -32 dB · pan=0.3 · rev=0.3
+  - bass (bass): `cello` -17 dB · rev=0.35 · alternatives ['pizz', 'contrabass']
+  - bass_cb (bass): `contrabass` -24 dB · rev=0.35
+  - chords (chords): `strings` -20 dB · rev=0.4 · alternatives ['tremolo', 'spiccato']
+  - pad (pad): `kidchoir` -20 dB · rev=0.55 · alternatives ['choir', 'brass']
+  - horns (pad): `trumpet` -23 dB · rev=0.45
+  - arp (arp): `harp` -29 dB · pan=-0.3 · rev=0.45 · alternatives ['celesta', 'glock', 'flute']
+  - lead (lead): `horn` -19 dB · pan=0.1 · rev=0.45 · alternatives ['trumpet', 'violin', 'strings']
+  - glock (lead): `glock` -29 dB · pan=0.2 · rev=0.45
+- **Mix** {'lufs': -15.5, 'air': 0.6, 'low': 0.9, 'gentle': True, 'max_gr': 2.0} · reverb 3.8 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.55, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'key_change': True, 'no_rotation': True, 'no_layers': True, 'colour_boost': 0.25, 'repetition': 0.8, 'exact_pools': True, 'keep_sounds': 0.85, 'parent': 'christmas_joyful'}
+- **Sound brief** Violins (melody) doubled by glockenspiel 8va; pizzicato / short strings (pah-pah); celli + basses (oom); celesta; children's choir (aah); French horns; sleigh bells; timpani; a cymbal at the big moments
+
+### Christmas Finale (bells & choir) (`christmas_finale`)
+
+Christmas finale (bells and choir): the grand happy ending of a holiday family film - church bells and tubular bells pealing, the full choir and orchestra singing out a carol-like tune, brass fanfares answering, cymbals and timpani, the strings soaring, a key change up and one huge held final chord - everyone home for Christmas
+
+- **Tempo** 76-92 BPM · **scales** major · swing 0.5 (unit 16) · humanise 0.012
+- **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 5, 3], [3, 0, 4, 0], [0, 5, 3, 4]]} · chord_bars 1 · chord size 3
+- **Song form** `christmas_finale`: intro 4 [arp, pad] (level=0.4) -> A 8 [arp, bass, chords, lead, pad] (level=0.55) -> A 8 [arp, bass, chords, kick, lead, pad, top] (level=0.75, level_to=0.9) -> B 4 [bass, chords, pad] (alt, level=0.7) -> A 8 [arp, bass, chords, kick, lead, pad, top] (level=1.0, crash) -> coda 4 [arp, bass, chords, kick, lead, pad] (level=1.0, cad) · form_scale 2.0
+- **Drums** **timp** `X.......X.......` / `X...X...X...X...`; **sleigh** `x.x.x.x.x.x.x.x.` / ``; **tri** `X...............` / ``
+- **Drum kit** (synth preset) · preset `default`
+- **Bass** `R---------------` / `R-------F-------` · mode `pattern` · lowest note 33
+- **Chord rhythm** `x---x---x---x---` / `x-------x-------`
+- **Arp** {'rate': 4, 'mode': 'down', 'oct': 5, 'prob': 0.6}
+- **Lead rhythm** `x---x---x---x---` / `x---x-x-x-------` / `x-------x---x---`
+- **Build-ups** default `(category default)` · choices ['roll', 'triplet', 'hats', 'drumless', 'halftime', 'wash', 'pulse', 'tapestop', 'stops', 'pickup']
+- **Traits** arrangement `narrative` · density `medium` · feel `drifting` · melody `long_lyrical` · bass `rolling_groove` · drop `emotional_swell` · variation `theme_and_variations` · culture `cinematic_score` · texture `massive_reverb` · rhythm `straight_16ths` · harmony `simple_pop_harmony` · energy `emotional_arc`
+- **Instruments**
+  - timp (kick role - the genre's low drum): `timp` -27 dB · rev=0.5
+  - sleigh (top): `sleigh` -33 dB · pan=0.3 · rev=0.4
+  - tri (top): `crash` -36 dB · pan=-0.3 · rev=0.5
+  - bass (bass): `cello` -17 dB · rev=0.45 · alternatives ['contrabass', 'bassoon']
+  - bass_cb (bass): `contrabass` -21 dB · rev=0.45
+  - chords (chords): `organ` -26 dB · rev=0.5 · alternatives ['strings', 'brass']
+  - vibes (chords): `organ` -32 dB · pan=0.25 · rev=0.5
+  - pad (pad): `strings` -22 dB · rev=0.55 · alternatives ['brass', 'horn']
+  - arp (arp): `tubular` -23 dB · pan=-0.25 · rev=0.5 · alternatives ['churchbell', 'glock']
+  - lead (lead): `choir` -19 dB · pan=0.1 · rev=0.5 · alternatives ['kidchoir', 'choir_wide']
+  - flute (lead): `brass` -24 dB · pan=-0.1 · rev=0.5
+- **Mix** {'lufs': -15.0, 'air': 0.6, 'low': 0.9, 'gentle': True, 'max_gr': 2.0} · reverb 4.6 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.92, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 6, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'no_rotation': True, 'no_layers': True, 'colour_boost': 0.2, 'rubato': 0.1, 'repetition': 0.8, 'exact_pools': True, 'keep_sounds': 0.8, 'own_progs': True, 'parent': 'christmas_carol_choir', 'key_change': True}
+- **Sound brief** Celesta (melody, very high) + flutes doubling; harp arpeggios & glissandi; vibraphone; soft grand piano; string pad (violins / violas / celli); bass clarinet / basses; soft sleigh bells, triangle, timpani swell
+
 ## Classical Eras
 
 ### Orchestral (`orchestral`)
@@ -10045,9 +11717,9 @@ Viennese waltz (3/4): oom-pah-pah strings, lilting violin melody, harp and woodw
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.5, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': ''}
 - **Sound brief** Violins (melody); String section short (pah-pah); Celli + basses (oom); Harp; Flute / clarinet
 
-### Classical (Mozart era) (`classical_period`)
+### Classical (late 1700s) (`classical_period`)
 
-Classical period (Mozart / Haydn): elegant homophony - a clear singing melody over Alberti-bass and string accompaniment, 4+4-bar phrases, functional cadences, pairs of winds, horns and timpani
+Classical period (late 1700s): elegant homophony - a clear singing melody over Alberti-bass and string accompaniment, 4+4-bar phrases, functional cadences, pairs of winds, horns and timpani
 
 - **Tempo** 100-140 BPM · **scales** major, minor · swing 0.5 (unit 16) · humanise 0.006
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 1, 4, 0], [0, 5, 1, 4], [0, 3, 1, 4]], 'minor': [[0, 3, 4, 0], [0, 5, 3, 4]]} · chord_bars 1 · chord size 3
@@ -10073,7 +11745,7 @@ Classical period (Mozart / Haydn): elegant homophony - a clear singing melody ov
 
 ### Romantic Orchestra (`romantic`)
 
-Romantic orchestra (Tchaikovsky / Brahms): expansive lyrical themes with rubato, rich chromatic harmony, full strings with continuous vibrato, horns and woodwinds, swelling ppp-to-fff dynamics
+Romantic orchestra (late 1800s): expansive lyrical themes with rubato, rich chromatic harmony, full strings with continuous vibrato, horns and woodwinds, swelling ppp-to-fff dynamics
 
 - **Tempo** 60-92 BPM · **scales** minor, major, harmonic_minor · swing 0.5 (unit 16) · humanise 0.012
 - **Progressions** {'minor': [[0, 5, 3, 4], [0, 3, 6, 4], [0, 6, 5, 4]], 'major': [[0, 5, 3, 4], [0, 2, 3, 4], [0, 4, 5, 2]], 'harmonic_minor': [[0, 3, 4, 5], [0, 5, 1, 4]]} · chord_bars 1 · chord size 4
@@ -10098,7 +11770,7 @@ Romantic orchestra (Tchaikovsky / Brahms): expansive lyrical themes with rubato,
 
 ### Impressionism (`impressionism`)
 
-Impressionism (Debussy / Ravel): modal and lydian colours, parallel gliding chords, blurred harmony, harp and flute over muted strings and piano washes, flexible pulse - atmosphere over function
+Impressionism (early 1900s): modal and lydian colours, parallel gliding chords, blurred harmony, harp and flute over muted strings and piano washes, flexible pulse - atmosphere over function
 
 - **Tempo** 56-80 BPM · **scales** lydian, dorian, mixolydian · swing 0.5 (unit 16) · humanise 0.012
 - **Progressions** {'lydian': [[0, 1, 0, 1], [0, 1, 2, 1], [0, 6, 1, 0]], 'dorian': [[0, 3, 0, 6], [0, 1, 0, 3]], 'mixolydian': [[0, 6, 0, 6]]} · chord_bars 2 · chord size 4
@@ -10121,7 +11793,7 @@ Impressionism (Debussy / Ravel): modal and lydian colours, parallel gliding chor
 
 ### Minimalism (`minimalism`)
 
-Minimalism (Reich / Glass / Adams): a steady pulse of repeating cells on marimba, piano and strings, shifting by gradual additive / phasing processes over slow diatonic harmony
+Minimalism (1970s-80s): a steady pulse of repeating cells on marimba, piano and strings, shifting by gradual additive / phasing processes over slow diatonic harmony
 
 - **Tempo** 120-160 BPM · **scales** minor, major, dorian · swing 0.5 (unit 16) · humanise 0.002
 - **Progressions** {'minor': [[0, 5, 3, 4], [0, 6, 5, 6]], 'major': [[0, 4, 5, 3], [0, 3, 0, 4]], 'dorian': [[0, 3, 0, 3]]} · chord_bars 4 · chord size 3
@@ -10144,7 +11816,7 @@ Minimalism (Reich / Glass / Adams): a steady pulse of repeating cells on marimba
 
 ### Baroque organ toccata (`baroque_organ`)
 
-Baroque organ toccata (Bach style): a big church pipe organ playing free, dramatic flourishes - fast 16th-note runs and broken chords over long pedal notes, sudden full-organ chords, pauses where the church rings out, harmonic minor and rubato throughout
+Baroque organ toccata (Baroque style): a big church pipe organ playing free, dramatic flourishes - fast 16th-note runs and broken chords over long pedal notes, sudden full-organ chords, pauses where the church rings out, harmonic minor and rubato throughout
 
 - **Tempo** 66-84 BPM · **scales** harmonic_minor, minor · swing 0.5 (unit 16) · humanise 0.006
 - **Progressions** {'harmonic_minor': [[0, 4, 0, 4], [0, 3, 4, 0], [0, 6, 4, 0]], 'minor': [[0, 5, 3, 4]]} · chord_bars 1 · chord size 4
@@ -10168,7 +11840,7 @@ Baroque organ toccata (Bach style): a big church pipe organ playing free, dramat
 
 ### Minuet & trio (`minuet`)
 
-Minuet & trio (3/4, Mozart / Haydn / Bach): an elegant courtly dance in binary phrases with ornamented repeats, a quieter contrasting trio, then the minuet da capo - strings, harpsichord or fortepiano, a pair of horns
+Minuet & trio (3/4): an elegant courtly dance in binary phrases with ornamented repeats, a quieter contrasting trio, then the minuet da capo - strings, harpsichord or fortepiano, a pair of horns
 
 - **Tempo** 104-132 BPM · meter 3/4 · **scales** major, minor · swing 0.5 (unit 16) · humanise 0.006
 - **Progressions** {'major': [[0, 4, 0, 4], [0, 3, 4, 0], [0, 1, 4, 0], [0, 5, 1, 4]], 'minor': [[0, 4, 0, 4], [0, 3, 4, 0]]} · chord_bars 1 · chord size 3
@@ -10189,3 +11861,25 @@ Minuet & trio (3/4, Mozart / Haydn / Bach): an elegant courtly dance in binary p
 - **Mix** {'lufs': -16.0, 'air': 1.0, 'low': 0.5} · reverb 2.2 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': [], 'bass_gate': 0.6, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'repetition': 0.65}
 - **Sound brief** Violins (melody); harpsichord / fortepiano; violas & celli (pah-pah); basses; a pair of horns
+
+### Gregorian Chant (`gregorian_chant`)
+
+Gregorian chant: a unison choir of low voices singing a free-flowing modal melody over a held drone, in the echo of a stone church - no beat, no harmony beyond the drone, just the line rising and falling in dorian, phrygian or mixolydian - meditative and timeless
+
+- **Tempo** 60-72 BPM · **scales** dorian, phrygian, mixolydian · swing 0.52 (unit 16) · humanise 0.005
+- **Progressions** {'dorian': [[0, 0, 0, 0]], 'phrygian': [[0, 0, 0, 0]], 'mixolydian': [[0, 0, 6, 0]]} · chord_bars 1 · chord size 2
+- **Song form** `new_age_chant`: intro 4 [fx, kick, pad, top] -> A 16 [bass, fx, kick, pad, snare, top] -> B 20 [bass, chords, fx, kick, lead, pad, snare, top] -> climax 16 [arp, bass, chords, fx, kick, lead, pad, snare, top] (crash) -> outro 8 [fx, lead, pad] (fade) · form_scale 1
+- **Drum kit** (synth preset) · preset `soft`
+- **Bass** `R---------------` / `R-------R-------` · mode `pattern` · lowest note 31
+- **Chord rhythm** `x---------------`
+- **Arp** {'rate': 1, 'mode': 'up', 'oct': 5, 'prob': 0.5}
+- **Lead rhythm** `x---x---x---x---` / `x-------x---x---` / `x---x-x-x-------`
+- **Build-ups** default `(category default)` · choices ['none', 'pickup'] · transitions ['none', 'crash', 'none']
+- **Traits** arrangement `narrative` · density `sparse` · feel `tight_swing` · melody `long_lyrical` · bass `rolling_groove` · drop `none` · variation `theme_and_variations` · culture `concert_hall` · texture `massive_reverb` · rhythm `straight_16ths` · harmony `static_vamp` · energy `emotional_arc`
+- **Instruments**
+  - chords (chords): `drone` -21 dB · rev=0.6 · alternatives ['organ_dark', 'humchoir']
+  - pad (pad): `organ_dark` -26 dB · rev=0.6 · alternatives ['drone', 'choir_dark']
+  - lead (lead): `choir_dark` -18 dB · rev=0.5 · dly=0.3 · alternatives ['choir', 'humchoir']
+- **Mix** {'lufs': -16.0, 'air': 0.8, 'low': 0.8} · reverb 5.0 · sc_depth 0.0
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 56, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'own_progs': True, 'pedal_sub': True, 'repetition': 0.8, 'parent': 'new_age_chant'}
+- **Sound brief** Funk breakbeat (slow); male choir chant chords; shakuhachi / pan flute melody; deep pads; one pedal bass note

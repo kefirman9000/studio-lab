@@ -1,19 +1,25 @@
 name: release
+# (2.17) A version is published only after the whole test run on that exact commit passed - the app updates from
+# these releases (not from the branch), so a commit whose tests fail never reaches anyone.
 on:
-  push:
+  workflow_run:
+    workflows: [test]
+    types: [completed]
     branches: [main]
-    paths: ['VERSION', '.github/workflows/release.yml']
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
   release:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     outputs:
       ver: ${{ steps.v.outputs.ver }}
       exists: ${{ steps.v.outputs.exists }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - name: Read version
         id: v
         env:
@@ -27,6 +33,7 @@ jobs:
         run: |
           VER="${{ steps.v.outputs.ver }}"
           git archive --format=zip --prefix=studio-lab/ -o "studio-lab-${VER}.zip" HEAD
+          sha256sum "studio-lab-${VER}.zip" | cut -d' ' -f1 > "studio-lab-${VER}.zip.sha256"
       - name: Release notes from CHANGELOG
         if: steps.v.outputs.exists == '0'
         run: |
@@ -47,7 +54,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           VER="${{ steps.v.outputs.ver }}"
-          gh release create "v${VER}" "studio-lab-${VER}.zip" "Update Studio Lab.bat" --target "$GITHUB_SHA" --title "Studio Lab ${VER}" --notes-file notes.md
+          gh release create "v${VER}" "studio-lab-${VER}.zip" "studio-lab-${VER}.zip.sha256" "Update Studio Lab.bat" --target "$(git rev-parse HEAD)" --title "Studio Lab ${VER}" --notes-file notes.md
 
   installers:
     needs: release

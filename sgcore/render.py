@@ -77,20 +77,26 @@ def track_fx(buf, tcfg, spb):
         lfo = 0.5 - 0.5 * np.cos(2 * np.pi * 0.35 * t)
         fc = 250 * (3200 / 250) ** lfo
         fb = np.zeros(2)
-        blk = 64
-        z = np.zeros((4, 2))
+        blk = 256                                    # (2.17) ~6 ms steps (the sweep is 0.35 Hz), silent stretches skipped
+        z = np.zeros((2, 4))                         # (2.17) the four all-pass stages run as one 4th-order filter per block
         out = np.empty_like(x)
         for s0 in range(0, n, blk):
             e = min(n, s0 + blk)
+            if not x[:, s0:e].any() and not z.any() and not fb.any():
+                out[:, s0:e] = 0
+                continue
             w = np.tan(np.pi * fc[s0] / SR)
             a1 = (w - 1) / (w + 1)
-            seg = x[:, s0:e] + 0.5 * fb[:, None]
-            for st_ in range(4):
-                for c in range(2):
-                    seg[c], zz = signal.lfilter([a1, 1.0], [1.0, a1], seg[c], zi=[z[st_, c]])
-                    z[st_, c] = zz[0]
+            bb = np.array([1.0]); aa = np.array([1.0])
+            for _ in range(4):
+                bb = np.convolve(bb, [a1, 1.0]); aa = np.convolve(aa, [1.0, a1])
+            seg = x[:, s0:e] + 0.0 * fb[:, None]         # (2.17) the old held-sample 'feedback' stepped every block (a buzz); off
+            seg, z = signal.lfilter(bb, aa, seg, axis=-1, zi=z)
             out[:, s0:e] = seg
-            fb = seg[:, -1]
+            fb = seg[:, -1].copy()
+            if np.abs(seg).max() < 1e-7 and np.abs(z).max() < 1e-7:      # rung out: back to rest
+                z[:] = 0
+                fb[:] = 0
         y = x + amt * out
         x = y / (1 + amt)
     if tcfg.get('flanger'):
@@ -109,28 +115,32 @@ def track_fx(buf, tcfg, spb):
         env = env / (np.percentile(env, 98) + 1e-9)
         fc = 400 * (2600 / 400) ** np.clip(env, 0, 1)
         out = np.empty_like(x)
-        blk = 64
+        blk = 128                                    # (2.17) ~3 ms steps, silent stretches skipped
         for c in range(2):
             zi = np.zeros(2)
             for s0 in range(0, n, blk):
                 e = min(n, s0 + blk)
+                if not zi.any() and not x[c, s0:e].any():
+                    out[c, s0:e] = 0
+                    continue
                 b, a = _bp_coeffs(float(fc[s0]), 4.0)
                 out[c, s0:e], zi = signal.lfilter(b, a, x[c, s0:e], zi=zi)
+                if np.abs(zi).max() < 1e-9 and not x[c, s0:e].any():
+                    zi = np.zeros(2)
         x = x * (1 - amt) + out * amt * 2.5
     if tcfg.get('ott'):                                  # multiband squash ('OTT'): quiet details pulled up, peaks held
         amt = float(tcfg['ott'])                         # down, per band - the dense, forward synth sound of EDM
         bands_ = [(None, 200), (200, 2500), (2500, None)]
         out = np.zeros_like(x)
-        for lo_, hi_ in bands_:
-            if lo_ is None:
-                bnd = signal.sosfiltfilt(signal.butter(2, hi_ / (SR / 2), output='sos'), x, axis=-1)
-            elif hi_ is None:
-                bnd = signal.sosfiltfilt(signal.butter(2, lo_ / (SR / 2), 'high', output='sos'), x, axis=-1)
-            else:
-                bnd = signal.sosfiltfilt(signal.butter(2, [lo_ / (SR / 2), hi_ / (SR / 2)], 'band', output='sos'), x, axis=-1)
+        lo_b = signal.sosfiltfilt(signal.butter(2, 200 / (SR / 2), output='sos'), x, axis=-1).astype(np.float32)
+        hi_b = signal.sosfiltfilt(signal.butter(2, 2500 / (SR / 2), 'high', output='sos'), x, axis=-1).astype(np.float32)
+        mid_b = x - lo_b - hi_b                          # (2.17) the mid band is what's left: one filter fewer, sums back exactly
+        for (lo_, hi_), bnd in zip(bands_, (lo_b, mid_b, hi_b)):
             k = max(16, int(0.012 * SR))
             env = np.sqrt(np.maximum(uniform_filter1d((bnd ** 2).mean(axis=0), k), 0.0)) + 1e-6
-            ref = float(np.percentile(env[env > env.max() * 0.01], 70)) if np.any(env > env.max() * 0.01) else 1.0
+            live = env[::32]
+            live = live[live > env.max() * 0.01]
+            ref = float(np.percentile(live, 70)) if len(live) else 1.0
             g = np.clip((ref / env) ** (0.5 * amt), 0.25, 4.0)
             out += bnd * g[None, :]
         r0 = np.sqrt(np.mean(x ** 2)) + 1e-9
@@ -377,11 +387,21 @@ def auto_lp(buf, cut, block=256):
     x = np.asarray(buf, np.float64)
     out = x.copy()
     zi = np.zeros((2, 2))
-    for s0 in range(0, n, block):
+    s0 = 0
+    while s0 < n:                                        # (2.17) steady cutoffs run as one long segment, silence skipped
         e = min(n, s0 + block)
-        b, a = biquad('lowpass', float(min(cut[s0], SR * 0.45)), 0.707)
+        f0 = float(min(cut[s0], SR * 0.45))
+        while e < n and abs(float(min(cut[e], SR * 0.45)) - f0) < 0.005 * f0 and e - s0 < 64 * block:
+            e = min(n, e + block)
+        if not zi.any() and not x[:, s0:e].any():
+            s0 = e
+            continue
+        b, a = biquad('lowpass', f0, 0.707)
         for c in range(2):
             out[c, s0:e], zi[c] = signal.lfilter(b, a, x[c, s0:e], zi=zi[c])
+        if np.abs(zi).max() < 1e-10 and not x[:, s0:e].any():
+            zi[:] = 0
+        s0 = e
     return out
 
 # ----------------------------------------------------------------------------- (1.92.4) parallel part rendering
@@ -1399,8 +1419,7 @@ class Renderer:
                     hitc, ck_new = None, None
                 if hitc is not None and ck_new:
                     TRACK_CACHE[ck_new] = hitc.copy()
-                    while len(TRACK_CACHE) > 40:
-                        TRACK_CACHE.popitem(last=False)
+                    _trim_cache()
             from_worker = pool is not None and name in par
             if hitc is not None:                          # (1.87) unchanged since the last preview: reuse it
                 if ck and ck in TRACK_CACHE:              # (1.92.4) ... or rendered by a worker process
@@ -1418,8 +1437,7 @@ class Renderer:
                         del self.cache[k_]
                 if ck:
                     TRACK_CACHE[ck] = buf.copy()
-                    while len(TRACK_CACHE) > 40:
-                        TRACK_CACHE.popitem(last=False)
+                    _trim_cache()
             fxname = (getattr(opts, 'part_fx', None) or {}).get(tcfg['layer'])
             if fxname and tcfg['layer'] != 'fx' and np.any(buf):
                 try:                                      # your effect plugin on this part (own process)
@@ -2577,6 +2595,16 @@ def is_drum_layer(tcfg):
 
 
 TRACK_CACHE = __import__('collections').OrderedDict()   # (1.87) rendered parts, reused by the next preview
+CACHE_BYTES = int(float(os.environ.get('STUDIOLAB_CACHE_MB', '1200')) * 1024 * 1024)
+
+
+def _trim_cache():
+    """(2.17) Keep the cache of rendered parts under a memory budget (1.2 GB by default), not a count: 40 full-length
+    parts of a 6-minute song came to ~5 GB."""
+    tot = sum(getattr(v, 'nbytes', 0) for v in TRACK_CACHE.values())
+    while TRACK_CACHE and (tot > CACHE_BYTES or len(TRACK_CACHE) > 40):
+        _, v = TRACK_CACHE.popitem(last=False)
+        tot -= getattr(v, 'nbytes', 0)
 RENDER_VERSION = '1.87'
 SC_SHAPE_GROUP = {'House & Disco': 'pump', 'Techno & Trance': 'classic', 'Drum & Bass, Breaks & Hard': 'tight',
                   'Dubstep, Garage & Bass': 'tight', 'Pop, R&B & Hopecore': 'classic'}

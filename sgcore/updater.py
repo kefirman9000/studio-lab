@@ -52,6 +52,20 @@ def _get(url, timeout=15):
         return r.read()
 
 
+def channel():
+    """(2.17) 'stable' (default): only published releases - each one passed the full test run first. 'latest': the
+    newest code on the branch, straight away (for testing)."""
+    return 'latest' if _config().get('channel') == 'latest' else 'stable'
+
+
+def _latest_release(r):
+    rel = json.loads(_get(f'https://api.github.com/repos/{r}/releases/latest').decode())
+    ver = (rel.get('tag_name') or '').lstrip('v')
+    zipa = next((a for a in rel.get('assets') or [] if a.get('name') == f'studio-lab-{ver}.zip'), None)
+    sha = next((a for a in rel.get('assets') or [] if a.get('name') == f'studio-lab-{ver}.zip.sha256'), None)
+    return dict(version=ver, notes=rel.get('body') or '', zip=zipa, sha=sha)
+
+
 def check():
     """Returns dict(current, latest, available, notes, error)."""
     cur = local_version()
@@ -59,13 +73,19 @@ def check():
     if not r or '/' not in r:
         return dict(current=cur, latest=None, available=False, error='No update source configured (update.json)')
     try:
+        if channel() == 'stable':
+            rel = _latest_release(r)
+            if not rel['zip']:
+                return dict(current=cur, latest=rel['version'], available=False, notes='', error='The latest release has no download yet - try again in a few minutes')
+            return dict(current=cur, latest=rel['version'], available=_vt(rel['version']) > _vt(cur), notes=rel['notes'][:4000],
+                        error=None, channel='stable')
         latest = _get(f'https://raw.githubusercontent.com/{r}/{branch()}/VERSION').decode().strip()
         notes = ''
         try:
             notes = _get(f'https://raw.githubusercontent.com/{r}/{branch()}/CHANGELOG.md').decode()[:4000]
         except Exception:
             pass
-        return dict(current=cur, latest=latest, available=_vt(latest) > _vt(cur), notes=notes, error=None)
+        return dict(current=cur, latest=latest, available=_vt(latest) > _vt(cur), notes=notes, error=None, channel='latest')
     except Exception as e:
         return dict(current=cur, latest=None, available=False, error=f'Could not reach GitHub: {e}')
 
@@ -83,7 +103,23 @@ def apply():
     if not r or '/' not in r or any(c in r for c in ' ?#\\'):
         return dict(ok=False, message='No valid update source configured')
     _prev_version = local_version()
-    data = _get(f'https://github.com/{r}/archive/refs/heads/{branch()}.zip', timeout=120)
+    if channel() == 'stable':                           # (2.17) the published, tested release - checksum-verified
+        import hashlib
+        rel = _latest_release(r)
+        if not rel['zip']:
+            return dict(ok=False, message='The latest release has no download yet - try again in a few minutes')
+        data = _get(rel['zip']['browser_download_url'], timeout=180)
+        want = None
+        if rel['sha']:
+            want = _get(rel['sha']['browser_download_url']).decode().split()[0].strip().lower()
+        elif str(rel['zip'].get('digest', '')).startswith('sha256:'):
+            want = rel['zip']['digest'][7:].lower()
+        if not want:
+            return dict(ok=False, message='The release has no published checksum - not installed')
+        if hashlib.sha256(data).hexdigest() != want:
+            return dict(ok=False, message='The download did not match its published checksum - not installed (try again)')
+    else:
+        data = _get(f'https://github.com/{r}/archive/refs/heads/{branch()}.zip', timeout=120)
     zf = zipfile.ZipFile(io.BytesIO(data))
     top = zf.namelist()[0].split('/')[0]
     backup = os.path.join(ROOT, '.backup')

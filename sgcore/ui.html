@@ -403,7 +403,8 @@ select:focus,input[type=number]:focus,input[type=text]:focus{border-color:color-
         <button class="btn s" id="surpriseBtn" title="Random style, fusion and mood">✦ Surprise me</button>
       </div>
       <div class="outs" id="outs"></div>
-      <div class="lenrow"><span class="hint">Full song length</span><div class="seg" id="lenPreset"></div></div>
+      <div class="lenrow"><span class="hint">Full song length</span><div class="seg" id="lenPreset"></div>
+        <label class="hint" style="margin-left:auto" title="When you click Full song, hear a short preview of the same song within seconds while the full version renders"><input type="checkbox" id="quickFirst"> quick preview first</label></div>
       <div class="prog" id="progBar"><i></i></div>
       <div class="status" id="status">Ready.</div>
       <div class="queue" id="queueBox" style="display:none"></div>
@@ -1116,6 +1117,8 @@ async function run(preview, count, opts, section, onResult, varyPart, extra){
   if(varyPart) body.vary_part=varyPart;
   if(section!=null) body.section=section;
   if(extra) Object.assign(body, extra);
+  if(!preview && section==null && (count||1)===1 && !onResult && !varyPart && !(extra&&extra.from_queue) && quickFirst()) body.quick_first=true;
+  if(body.from_queue) delete body.from_queue;
   const {job}=await api('/api/generate', body);
   const seen=new Set();
   const poll=async()=>{
@@ -1135,6 +1138,8 @@ async function run(preview, count, opts, section, onResult, varyPart, extra){
   };
   poll();
 }
+// (2.17) 'Full song' plays a short preview of the same song first while the rest renders (can be switched off)
+function quickFirst(){ try{ return localStorage.getItem('sl_quickfirst')!=='0'; }catch(e){ return true; } }
 // (1.90) render queue: full songs, each with the settings it had when you queued it, rendered one after another
 const QUEUE=[]; let qRunning=null, qDone=0;
 function queueAdd(fresh){ if(fresh) fresh(false); const o=JSON.parse(JSON.stringify(options()));
@@ -1142,7 +1147,7 @@ function queueAdd(fresh){ if(fresh) fresh(false); const o=JSON.parse(JSON.string
 let qPaused=false;
 function queueSave(){ try{ localStorage.setItem('sl_queue', JSON.stringify(QUEUE.slice(0,500))); }catch(e){} }
 function queueNext(){ if(busy||!QUEUE.length||qPaused){ if(!busy) qRunning=null; drawQueue(); queueSave(); return; }
-  const it=QUEUE.shift(); qRunning=it; queueSave(); drawQueue(); run(false,1,it.o,null,null,null,it.outputs?{outputs:it.outputs}:null).then(()=>{}); qDone++; }
+  const it=QUEUE.shift(); qRunning=it; queueSave(); drawQueue(); run(false,1,it.o,null,null,null,Object.assign({from_queue:true},it.outputs?{outputs:it.outputs}:{})).then(()=>{}); qDone++; }
 function drawQueue(){ const b=$('#queueBox'); if(!b) return; const any=QUEUE.length||qRunning;
   b.style.display=any?'block':'none'; if(!any) return;
   b.innerHTML=`<div class="hint">Render queue${qDone?` · ${qDone} started`:''}</div>`+
@@ -1269,7 +1274,7 @@ function addResult(r, target){
   const el=document.createElement('div');el.className='res new'; el.dataset.rid=r.id; el._r=r;
   if(!target){ LASTR=r; LASTKEY=playKey(r.options||{}); setTimeout(updPlay,0); }
   const url=r.urls.mp3||r.urls.wav;
-  const title=(r.name?'“'+esc(r.name)+'” · ':'')+styleName(r.style)+(r.preview?'':' — full song');
+  const title=(r.name?'“'+esc(r.name)+'” · ':'')+styleName(r.style)+(r.quick?' — quick preview (full song rendering…)':r.preview?'':' — full song');
   const inst=Object.entries(r.instruments||{}).map(([k,v])=>`${k}: <span>${v}</span>`).join(' · ');
   const fusion=r.fusion?Object.entries(r.fusion).map(([p,s])=>`${p}←<span>${styleName(s)}</span>`).join(' · '):'';
   el.innerHTML=`<div class="top"><button class="play">▶</button><div style="min-width:0"><div class="tt">${title}</div>
@@ -2606,6 +2611,7 @@ async function init(){
     const card=document.querySelector(`.res[data-rid="${CSS.escape(String(LASTR.id))}"] .play`); if(card) card.click(); };
   $('#varBtn').onclick=()=>{ freshSeed(true); run(true,4); if(!$('#seedLock').checked) lastRun.seed=(+$('#seed').value||1); };
   $('#fullBtn').onclick=()=>{ freshSeed(false); run(false,1); };
+  { const q=$('#quickFirst'); if(q){ q.checked=quickFirst(); q.onchange=()=>{ try{ localStorage.setItem('sl_quickfirst', q.checked?'1':'0'); }catch(e){} }; } }
   $('#queueBtn').onclick=()=>queueAdd(freshSeed);
   $('#batchBtn').onclick=()=>batchModal(freshSeed);
   $('#surpriseBtn').onclick=()=>{
