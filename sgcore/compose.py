@@ -122,6 +122,7 @@ class Options:
     chord_speed: str = None       # None = style | slow (chords last twice as long) | fast (change twice as often)
     synth_character: str = 'analog'   # analog (velocity shapes the tone, every note its own take, ladder filter) | classic (before 1.77)
     motif: str = 'song'           # song (verse / chorus / alt melodies grow from one motif) | free (each written on its own)
+    development: str = 'auto'     # (2.14) phrases develop (answer / sequence / fragment / displace), parts enter in turn | off
     rotation: str = 'auto'        # instrument rotation between sections: auto | off | some | lots
     avoid: dict = field(default_factory=dict)          # role -> instruments your recent songs used (picked less often)
     title: str = None             # song name (front of every exported file name); None = an invented name that fits the song
@@ -2039,6 +2040,8 @@ def compose(opts):
     from . import evolve as _ev                          # (1.85) songs that develop instead of looping (before the
     from .styles import POOLS as POOLS_                  # layers copy the notes, so a doubled lead climbs with it)
     st['evolved'] = _ev.evolve_drops(evs, sections, st, opts, tracks)
+    from . import develop as _dv                         # (2.14) the lead's phrases develop instead of repeating
+    st['developed'] = _dv.develop_melody(evs, sections, st, opts, key, tracks)
     if (st.get('name') or opts.style) in CLUB_COHERENT and (st.get('name') or opts.style) not in CLUB_TRANCE \
             and getattr(opts, 'call_response', 'auto') == 'auto':
         st['no_answer'] = True                           # (1.94) house / techno: no second sound answering the hook
@@ -2053,6 +2056,7 @@ def compose(opts):
     st['polymeter_len'] = _ev.polymeter(evs, sections, st, opts, tracks)   # (1.93) techno: 3 / 5 / 7-step loops against 4/4
     st['phrase_moves'] = _ev.phrase_evolution(evs, sections, st, opts, tracks, CLUB_COHERENT, CLUB_TRANCE)   # (1.94)
     st['drop_space'] = _ev.drop_space(evs, sections, st, opts, tracks, CLUB_DUBSTEP - {'melodic_dubstep', 'chillstep'})   # (1.95.1)
+    st['entries'] = _dv.layer_entries(evs, sections, st, opts, tracks)   # (2.14) parts come in one at a time
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     _sw = _ev.structure_moves(evs, sections, st, opts, tracks, POOLS_.get(opts.style, {}).get('bass') or [], fx)
@@ -2064,6 +2068,7 @@ def compose(opts):
     if not st.get('composer'):
         fit_registers(evs, tracks)                        # each part in its instrument's sweet spot
     apply_octaves(evs, tracks, getattr(opts, 'octaves', None))
+    _dv.humanize_parts(evs, tracks, st, opts)             # (2.14) played parts get their own touch
     for sec in sections:                                  # bass-warp switch-ups: the 808 jumps up, the sub drops out
         bm = sec['opts'].get('bass_mod')                     # ... or a whole section of distorted, growling 808
         if bm and str(tracks.get('bass', {}).get('inst', '')).startswith('808'):

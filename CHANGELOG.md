@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.14.0
+Songs whose musical decisions feel intentional rather than independent random choices - the top three items of the improvement list:
+- **Motivic development**: the lead's phrases no longer repeat word for word. In each pair of four-bar phrases the second one *answers* the first: it comes home to the tonic, moves the motif up a step (a sequence), echoes its opening cell twice (fragmentation) or shifts it an 8th later (rhythmic displacement). Later choruses / drops develop differently from the first, and the last hook climbs to a high point. This builds on the song's one-tune motif (verse lower and sparser, chorus hookier). Written cadences in classical forms and maqam / raga lines keep their own shapes.
+- **Per-part human feel**: played instruments (keys, guitars, winds, bowed strings, mallets, bass guitar, upright, orchestral parts) get their own velocity spread, slightly varied note lengths and a dynamic swell over each four-bar phrase, and their timing breathes; synths and drum machines stay nearly exact (their timing looseness is cut to about a third).
+- **Density that changes who plays**: in a song's first long section the supporting parts (pad, arp, counter-line) come in one at a time, and the bar before a big chorus / drop often takes a breath - pads, arps and chords drop out for two beats. Genres whose layout already stages its parts (the reference-built ones) are left as written.
+- **Character traits steer all three**: Variation (low / progressive / theme and variations), Melodic behaviour (minimal motivic, call and response ...), Human feel (robotic switches the per-part feel off, loose / drifting makes it stronger) and Density (sparse / evolving: parts enter one by one more often, dense: fewer breaths).
+- A new **Phrasing** setting (next to Melody theme) switches it all off for plain repeats.
+
 ## 2.13.4
 - **Orchestra detection no longer bogs the plugin down**: while BBC Symphony Orchestra (or any orchestra plugin) is open, Studio Lab now only copies its state every few seconds - and less often by itself if the plugin is slow to hand it over - and does all the work of recognising the instrument in the app instead of next to the plugin, so the plugin's window stays responsive.
 - **You can see it working**: each instrument appears in the log as soon as it is picked up ("✓ found celli spiccato"), sounds it can't name are listed too, and every 20 seconds it reports that it is still watching and how many sounds it has. Leave each instrument loaded for a few seconds so it is caught; whatever is loaded when you close the window is always saved.

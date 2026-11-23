@@ -515,7 +515,8 @@ class Renderer:
         t = self._bt(b) + self._rubato(beat)
         if human and st.get('human'):
             # deterministic per position, so editing one section never shifts the feel of another
-            t += random.Random(self.song['seed'] * 1000003 + int(round(beat * 960))).gauss(0, st['human'])
+            hm = (st.get('human_mult') or {}).get(track, 1.0) if track else 1.0   # (2.14) per part: played vs machine
+            t += random.Random(self.song['seed'] * 1000003 + int(round(beat * 960))).gauss(0, st['human'] * hm)
         return max(0.0, t)
 
     def _bt(self, b):
