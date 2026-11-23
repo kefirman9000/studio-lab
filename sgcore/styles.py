@@ -12957,3 +12957,86 @@ _XMAS_NEW = ('christmas_swing', 'christmas_wall_of_sound', 'christmas_rockabilly
              'christmas_carol_choir', 'christmas_lofi', 'christmas_house')
 BELL_OK.update(_XMAS_NEW + ('christmas_joyful', 'christmas_magic', 'christmas_mischief'))
 MALLET_OK.update(_XMAS_NEW)
+
+
+# ---- (2.15.1) more classic family-film Christmas score: the nostalgic memory theme, the tiptoeing burglar sneak, the
+# soaring flight over the snowy town and the bells-and-choir finale (the 1990 holiday-comedy score sound - generic)
+FORMS['christmas_memory'] = [('intro', 4, {'arp'}, {'level': 0.25}),                       # celesta alone
+                             ('A', 8, {'arp', 'pad', 'lead'}, {'level': 0.35}),              # the choir hums in
+                             ('A', 8, {'bass', 'arp', 'pad', 'chords', 'lead'}, {'level': 0.5}),
+                             ('B', 8, {'bass', 'pad', 'chords', 'lead'}, {'alt': True, 'level': 0.55, 'level_to': 0.75}),
+                             ('A', 8, {'top', 'bass', 'arp', 'pad', 'chords', 'lead'}, {'level': 0.65}),
+                             ('B', 8, {'bass', 'pad', 'chords', 'lead'}, {'alt': True, 'level': 0.7, 'level_to': 0.85}),
+                             ('A', 8, {'kick', 'top', 'bass', 'arp', 'pad', 'chords', 'lead'}, {'level': 0.9, 'level_to': 1.0}),   # the climax
+                             ('coda', 4, {'arp', 'pad', 'lead'}, {'fade': True, 'level': 0.4, 'cad': True})]
+derive('christmas_memory_theme', 'christmas_magic', 'Orchestral',
+       'Christmas memory theme (classic family-film score): the tender, nostalgic carol of a 90s holiday comedy - a '
+       'celesta alone, then a children\'s choir humming long notes, an oboe or flute singing the tune over a warm string '
+       'bed and harp, rich major-seventh and borrowed minor-iv chords, a soaring string climax with soft timpani and '
+       'sleigh bells, then back to the celesta - bittersweet, homesick, snow falling', 'Christmas Memory Theme (family film)',
+       exact_pools=True, keep_sounds=0.85, form='christmas_memory', form_scale=1.0,
+       sounds={'lead': 'oboe', 'arp': 'celesta', 'pad': 'kidchoir', 'chords': 'strings', 'flute': 'flute', 'vibes': 'harp'},
+       bpm=(68, 84), scales=['major'], rubato=0.3, reverb=4.4, chord_size=4, colour_boost=0.35,
+       progs={'major': [[0, 3, 0, 4], [3, 4, 2, 5], [0, 5, 3, 4], [0, 2, 3, 3]]}, own_progs=True,
+       lead_rh=['x---x---x-------', 'x-------x---x---', 'x---x-x-x-------', 'x-----------x---'], lead_oct=5,
+       pools=dict(lead=['oboe', 'flute', 'violin', 'kidchoir'], arp=['celesta', 'harp', 'glock', 'musicbox'],
+                  pad=['kidchoir', 'choir', 'strings'], chords=['strings', 'harp', 'piano']))
+
+FORMS['christmas_sneak'] = [('intro', 4, {'bass'}, {'level': 0.35}),
+                            ('A', 8, {'kick', 'bass', 'chords'}, {'level': 0.45}),              # the creeping pizzicato
+                            ('A', 8, {'kick', 'top', 'bass', 'chords', 'lead'}, {'level': 0.5}),   # the bassoon tiptoes in
+                            ('B', 8, {'kick', 'bass', 'arp', 'lead'}, {'alt': True, 'level': 0.55}),
+                            ('A', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'lead', 'arp'}, {'level': 0.7, 'crash': True}),
+                            ('coda', 2, {'bass', 'pad'}, {'level': 0.8, 'cad': True})]
+derive('christmas_sneak', 'christmas_mischief', 'Orchestral',
+       'Christmas sneak (burglars tiptoeing): the comic creeping cue of a holiday family film - plucked pizzicato '
+       'strings and a staccato bassoon tiptoeing up and down a minor scale, a sly clarinet, celesta and glockenspiel '
+       'winks, soft timpani footsteps, a muted brass sting and a cymbal crash when someone gets caught - sneaky, '
+       'mischievous, a little spooky', 'Christmas Sneak (tiptoeing burglars)',
+       exact_pools=True, keep_sounds=0.85, form='christmas_sneak', form_scale=2.0,
+       sounds={'chords': 'pizz', 'lead': 'bassoon', 'arp': 'celesta', 'cel': 'clarinet', 'bass': 'pizz', 'pad': 'horn'},
+       bpm=(96, 116), scales=['minor', 'harmonic_minor'], swing=0.5,
+       drums=dict(timp=['X.......X.......', 'X...X...X...X...'], snare=['', '............x...'],
+                  sleigh=['....x.......x...', '']),
+       bass=['R...F...R...F...', 'R.u.R.d.R...F...'], bass_gate=0.3,
+       chord_rh=['x...x...x...x...', 'x.x...x.x...x...', '..x...x...x...x.'],
+       lead_rh=['x.x.x.x.x.......', 'x...x.x.x.x.x...', 'x.x.x.....x.x...', '..x.x.x.x.x.x...'], lead_oct=4,
+       pools=dict(lead=['bassoon', 'clarinet', 'oboe', 'flute'], chords=['pizz', 'spiccato'], bass=['pizz', 'contrabass', 'cello'],
+                  arp=['celesta', 'glock', 'clarinet'], pad=['horn', 'strings']),
+       master=dict(lufs=-17.0, air=0.4, low=0.8, gentle=True, max_gr=1.5))
+
+derive('christmas_flight', 'christmas_joyful', 'Orchestral',
+       'Christmas flight (soaring over the snowy town): a sweeping, fast 3/4 for full orchestra - rushing string runs '
+       'and harp glissandi, horns and trumpets carrying a big heroic tune, the children\'s choir soaring above, '
+       'glockenspiel and celesta glitter, sleigh bells, crashing cymbals and timpani rolls, key changing upward to a '
+       'triumphant last chorus - pure holiday-movie wonder', 'Christmas Flight (soaring)',
+       exact_pools=True, keep_sounds=0.85,
+       sounds={'lead': 'horn', 'chords': 'strings', 'arp': 'harp', 'pad': 'kidchoir', 'glock': 'glock', 'horns': 'trumpet'},
+       bpm=(150, 176), reverb=3.8,
+       drums={'timp': ['X.....X.....', 'X..X..X.....'], 'sleigh': ['xxxxxxxxxxxx', 'x.x.x.x.x.x.']},
+       arp=dict(rate=1, mode='updown', oct=5, prob=1.0),
+       pools=dict(lead=['horn', 'trumpet', 'violin', 'strings'], chords=['strings', 'tremolo', 'spiccato'],
+                  arp=['harp', 'celesta', 'glock', 'flute'], pad=['kidchoir', 'choir', 'brass']),
+       master=dict(lufs=-15.5, air=0.6, low=0.9, gentle=True, max_gr=2.0))
+
+FORMS['christmas_finale'] = [('intro', 4, {'arp', 'pad'}, {'level': 0.4}),                    # the bells ring out
+                             ('A', 8, {'bass', 'chords', 'pad', 'arp', 'lead'}, {'level': 0.55}),
+                             ('A', 8, {'kick', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'level': 0.75, 'level_to': 0.9}),
+                             ('B', 4, {'bass', 'chords', 'pad'}, {'alt': True, 'level': 0.7}),
+                             ('A', 8, {'kick', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'level': 1.0, 'crash': True}),
+                             ('coda', 4, {'kick', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'level': 1.0, 'cad': True})]
+derive('christmas_finale', 'christmas_carol_choir', 'Orchestral',
+       'Christmas finale (bells and choir): the grand happy ending of a holiday family film - church bells and tubular '
+       'bells pealing, the full choir and orchestra singing out a carol-like tune, brass fanfares answering, '
+       'cymbals and timpani, the strings soaring, a key change up and one huge held final chord - everyone home for '
+       'Christmas', 'Christmas Finale (bells & choir)',
+       form='christmas_finale', form_scale=2.0, sounds={'arp': 'tubular', 'flute': 'brass', 'pad': 'strings', 'lead': 'choir'},
+       bpm=(76, 92), key_change=True,
+       drums={'timp': ['X.......X.......', 'X...X...X...X...'], 'sleigh': ['x.x.x.x.x.x.x.x.', ''], 'tri': ['X...............', '']},
+       pools=dict(lead=['choir', 'kidchoir', 'choir_wide'], arp=['tubular', 'churchbell', 'glock'], chords=['organ', 'strings', 'brass'],
+                  pad=['strings', 'brass', 'horn']),
+       master=dict(lufs=-15.0, air=0.6, low=0.9, gentle=True, max_gr=2.0))
+
+_XMAS_FILM = ('christmas_memory_theme', 'christmas_sneak', 'christmas_flight', 'christmas_finale')
+BELL_OK.update(_XMAS_FILM)
+MALLET_OK.update(_XMAS_FILM)

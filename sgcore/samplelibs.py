@@ -452,7 +452,7 @@ CONCERT_GRAND_STYLES = {'film_piano', 'neoclassical', 'romantic', 'classical_per
 # styles whose trumpet plays with a harmon mute
 MUTE_TRUMPET_STYLES = {'jazz', 'modal_jazz', 'jazz_hop', 'jazz_rap', 'lofi', 'trip_hop', 'smooth_jazz', 'electro_swing', 'ethio_jazz',
                        'soul_jazz', 'neo_soul'}
-PIPE_ORGAN_STYLES = {'christmas_carol_choir', 'baroque_organ', 'epic_choir', 'baroque', 'cinematic', 'tension', 'hybrid_trailer', 'symphonic_metal', 'adventure', 'romantic'}
+PIPE_ORGAN_STYLES = {'christmas_carol_choir', 'christmas_finale', 'baroque_organ', 'epic_choir', 'baroque', 'cinematic', 'tension', 'hybrid_trailer', 'symphonic_metal', 'adventure', 'romantic'}
 SHORT_NOTE = 0.24          # seconds: notes this short are played with the short articulation (spiccato / staccato)
 
 

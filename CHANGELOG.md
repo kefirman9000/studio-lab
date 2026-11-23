@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.15.1
+**Four more classic family-film Christmas score genres** (Orchestral → Christmas), in the style of the big 90s holiday-comedy scores:
+- **Christmas Memory Theme** - the tender, nostalgic carol: celesta alone, a children's choir humming long notes, an oboe / flute tune over warm strings and harp, major-seventh and borrowed minor-iv chords, a soaring climax, back to the celesta.
+- **Christmas Sneak** - the tiptoeing-burglars cue: pizzicato strings and a staccato bassoon creeping through a minor scale, a sly clarinet, celesta winks, soft timpani footsteps and a brass sting.
+- **Christmas Flight** - soaring over the snowy town: a fast, sweeping 3/4 with harp runs, horns and trumpets on a heroic tune, the children's choir above, glockenspiel glitter and a key change to a triumphant last chorus.
+- **Christmas Finale** - the bells-and-choir happy ending: tubular and church bells, full choir and pipe organ, brass fanfares, a key change up and a huge final chord.
+
 ## 2.15.0
 **Eight new Christmas genres**, grown from the Christmas ones already here - each with its sleigh bells, and its own sounds kept:
 - **Christmas Swing (big band)** - walking upright bass, brushed swing, a brass section answering a sax or trumpet tune, celesta sparkle.
