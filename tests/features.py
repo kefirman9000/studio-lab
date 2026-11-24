@@ -1639,7 +1639,19 @@ def test_afro_fewer_plucks_and_wobble():
     plain = sum(e.track == 'bass' for e in s['events'])
     wob = sum(e.track == 'bass_wob' for e in s['events'])
     assert plain and wob and 'wob' in next(t['inst'] for t in s['st']['tracks'] if t['name'] == 'bass_wob')
-    print('ok  African genres: few plucks / guitars; the wobble only in the last drop')
+    from sgcore.styles import STYLES, POOLS
+    from sgcore.electro_sounds import BRASSY_BASS
+    for g in AFRO_LEAD_EARLY:                            # (2.22.5) no brassy FM bass on an African bassline
+        assert not any(t['layer'] == 'bass' and t['inst'] in BRASSY_BASS for t in STYLES[g]['tracks']), g
+        assert not BRASSY_BASS & set(POOLS.get(g, {}).get('bass') or []), g
+        assert not BRASSY_BASS & set(STYLES[g].get('wob_drop') or []), g
+    from sgcore.instruments import INSTRUMENTS
+    from sgcore.dsp import SR
+    y = np.atleast_2d(INSTRUMENTS['casiobass'](36, 0.6, {}))[0][int(0.12 * SR):int(0.45 * SR)]
+    sp = np.abs(np.fft.rfft(y * np.hanning(len(y))))
+    fr = np.fft.rfftfreq(len(y), 1 / SR)
+    assert (sp * fr).sum() / sp.sum() / 65.4 < 2.5      # the keyboard bass settles round, not brassy
+    print('ok  African genres: few plucks / guitars; the wobble only in the last drop; no brassy FM bass')
 
 
 if __name__ == '__main__':

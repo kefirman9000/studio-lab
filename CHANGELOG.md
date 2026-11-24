@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.22.5
+No more brass-sounding basses in the African genres.
+
+- The FM basses use the textbook FM brass recipe: they hold a bright tone through the whole note, about 6-9 times
+  their fundamental, where round basses sit at 1-2 times. On a bassline they sounded like a tuba or brass section.
+  They had become the African genres' most common bass: a rule from 2.3 swaps bass guitars out of Electronic
+  genres, and it was handing several African genres the FM bass instead.
+  - No African genre uses an FM bass now, as its main bass, among its options or in a wobble genre's plain drops.
+  - Coupe-decale plays the home-keyboard bass, the village synth genre a tri bass and mahraganat a distorted 808.
+  - Tsonga disco, funana and the village party keep their electric bass guitar, as bands of those styles do.
+- The home-keyboard bass (singeli, Kinshasa electronics, balani show, coupe-decale) now has a short rubbery attack
+  and then a round tone, instead of a held, brassy one.
+
 ## 2.22.4
 Fewer plucks, guitars and wobble basses in the African genres.
 

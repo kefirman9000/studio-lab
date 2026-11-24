@@ -18,7 +18,8 @@ from .styles import POOLS, STYLES
 REAL_BASS = {'sf:fingerbass', 'sf:acbass', 'sf:pickbass', 'sf:slapbass', 'sf:contrabass', 'fingerbass', 'acbass', 'pickbass',
              'slapbass', 'ebass', 'ebass_dark', 'ebass_driven', 'ebass_bright', 'ebass_soft', 'upright', 'upright_dark',
              'upright_soft', 'contrabass', 'real:ebass', 'real:upright', 'tuba'}
-KEEP_REAL = {'electro_swing', 'krautrock', 'future_funk'}
+KEEP_REAL = {'electro_swing', 'krautrock', 'future_funk',
+             'tsonga_disco', 'funana', 'afro_village_party'}   # (2.22.5) bands with a bass guitar
 # synth bass that takes over when a genre's own bass was a real one (closest feel first)
 # synth basses added where taking the bass guitars out left a rotation too short
 REFILL = {'sunlit_electronica': ['dreambass', 'junobass', 'sinebass'], 'daydream_downtempo': ['junobass', 'sinebass'],
@@ -115,6 +116,35 @@ def lead_with_new():
             lst[:0] = [new, old]
 
 
+# (2.22.5) The FM basses hold a bright, brassy tone through each note (1:1 FM: centroid 6-9x the fundamental where round
+# basses sit at 1-2x) - on a bassline they sound like a tuba section. They had become the African genres' most common
+# bass (and the fallback when a bass guitar was taken out), so the African genres don't use them; the plain basses
+# below refill a list that gets too short.
+BRASSY_BASS = {'fmbass', 'fmbass_driven'}
+AFRO_BASS_REFILL = ['sinebass', 'organbass', 'tribass', 'casiobass']
+
+
+def no_brass_bass():
+    from .styles import AFRO_LEAD_EARLY
+    for g in AFRO_LEAD_EARLY:
+        st = STYLES.get(g)
+        if not st:
+            continue
+        lst = POOLS.get(g, {}).get('bass')
+        if lst is not None:
+            lst[:] = [i for i in lst if i not in BRASSY_BASS]
+            for i in AFRO_BASS_REFILL:
+                if len(lst) >= 3:
+                    break
+                if i not in lst:
+                    lst.append(i)
+        for t in st['tracks']:
+            if t.get('layer') == 'bass' and t.get('inst') in BRASSY_BASS:
+                t['inst'] = (lst or AFRO_BASS_REFILL)[0]
+        if st.get('wob_drop'):
+            st['wob_drop'] = [i for i in st['wob_drop'] if i not in BRASSY_BASS] or AFRO_BASS_REFILL[:2]
+
+
 def apply():
     add_new_sounds()
     lead_with_new()
@@ -169,6 +199,7 @@ def apply():
             if t.get('name') == t.get('layer') and lst and t.get('inst') in lst and lst[0] != t.get('inst'):
                 lst.remove(t['inst'])
                 lst.insert(0, t['inst'])
+    no_brass_bass()
     from .guitars2 import NEW as RIG
     from .styles import GTR_UPGRADE
     for g, st in STYLES.items():

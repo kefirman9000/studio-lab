@@ -103,15 +103,17 @@ def i_casiolead(m, dur, p, glide=None, mod=None):
 
 
 def i_casiobass(m, dur, p, glide=None, mod=None):
-    """Cheap keyboard FM bass: short and bouncy, a rubbery attack that settles to a round tone."""
+    """Cheap keyboard bass: a short, bouncy, rubbery attack that settles at once into a round tone - not a held, brassy
+    FM tone (2.22.5: the bright sustain made it sound like a tuba section on the bassline)."""
     f = float(mtof(m))
     gate = int(max(min(dur, 0.6), 0.05) * SR)
-    env = _va.adsr(gate, 0.002, 0.18, 0.55, 0.05)
+    env = _va.adsr(gate, 0.002, 0.14, 0.45, 0.05)
     n = len(env)
     t = _t(n)
-    idx = 1.6 * np.exp(-t * 14) + 0.3
+    idx = 2.6 * np.exp(-t * 24) + 0.15                   # the 'boing' is over in ~60 ms
     y = np.sin(2 * np.pi * f * t + idx * np.sin(2 * np.pi * f * t))
-    y = _crush(y * 0.85, 22000, 10)
+    y = 0.8 * y + 0.35 * np.sin(np.pi * f * t)           # a little sub-octave weight
+    y = lp(_crush(y * 0.7, 22000, 10), 2600)
     return np.vstack([y, y]) * env * 1.6
 
 
