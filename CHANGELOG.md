@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.22.0
+More fast African electronic dance music, new instruments and drums for it, and a lead that sometimes starts early.
+
+- **14 new genres** on a new **Afro Street & Rave** shelf (Afro 3-step, Bacardi house and kwaito join Afro & Amapiano):
+  singeli (200-230), Tsonga disco, kwaito, Bacardi house, Afro 3-step, batida, tarraxinha, mahraganat, Kinshasa
+  electronics, balani show, coupe-decale, funana, and two afro-wobble hybrids - kuduro wobble and Shangaan wobble.
+  Each has its own drums, bass, sounds and drum machine, so none of them is a copy of a neighbour.
+- **New instruments** (all synthesized, no samples): mbira (buzzing thumb piano), electric likembe (fuzzy amplified
+  thumb piano), home-keyboard marimba, home-keyboard lead and FM bass, kuduro stab, ngoni (West African lute) and
+  mizmar (Egyptian shawm). **New drums**: djembe (tone, slap, bass), talking drum, shekere, agogo (high and low),
+  ferrinho scraper and a party whistle.
+- **Lead from the start (African genres)**: in about 4 songs out of 10, the lead comes in quietly from the first bar -
+  sparse and about 12 dB under its full level - long before its real entry.
+- **Plugins**: the new instruments play through the plugins Studio Lab already installs (RipplerX, Dexed) and the
+  ones it can find on your computer (TAL-NoiseMaker, OB-Xf, Kars) when those are set up. OctaSine (free FM synth) and Kars (plucked string) are now
+  recommended in the plugin guide for your DAW.
+
 ## 2.21.1
 - **Generating never overwrites a song.** When a song with the same file name is already in your output folder
   (same name, genre, key, tempo and seed - e.g. "New sounds", or the same seed with other settings), the new one is

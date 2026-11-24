@@ -1521,6 +1521,8 @@ def main():
     test_beat_library_and_own_drum_samples()
     test_no_genre_twins()
     test_learn_from_midi()
+    test_new_song_never_overwrites()
+    test_afro_street_genres_and_early_lead()
     print('all good')
 
 
@@ -1567,6 +1569,37 @@ def test_new_song_never_overwrites():
         assert _free_title(d, t) == t + ' (3)'
         from sgcore.app import project_base
         assert project_base(t + ' (2)_settings.json') == t + ' (2)'
+    print('ok  a new song never overwrites one on disk: (2), (3) ...')
+
+
+def test_afro_street_genres_and_early_lead():
+    """(2.22) the African street / rave genres, their instruments and drums, and the soft early lead."""
+    from sgcore.styles import STYLES
+    from sgcore.instruments import INSTRUMENTS, DRUMS
+    from sgcore import instruments4, drumkits
+    from sgcore.compose import Options, compose
+    for k in instruments4.NEW:
+        y = INSTRUMENTS[k](36 if 'bass' in k else 60, 0.4, {})
+        assert y.shape[0] == 2 and np.isfinite(y).all() and 0.05 < np.abs(y).max() <= 1.5, k
+    for k in instruments4.NEW_DRUMS:
+        y = DRUMS[k]({})
+        assert np.isfinite(y).all() and 0.5 < np.abs(y).max() <= 1.0, k
+    new = ['singeli', 'tsonga_disco', 'kwaito', 'bacardi_house', 'afro_three_step', 'batida', 'tarraxinha', 'mahraganat',
+           'kinshasa_electronics', 'balani_show', 'coupe_decale', 'funana', 'kuduro_wobble', 'shangaan_wobble']
+    for g in new:
+        assert g in STYLES and g in drumkits.GENRE_KIT and STYLES[g].get('lead_early'), g
+    early = 0
+    for seed in range(1, 9):
+        s = compose(Options(style='balani_show', seed=seed))
+        if not s['st'].get('_lead_early'):
+            continue
+        early += 1
+        first = min(x['bar'] for x in s['sections'] if x['name'] != 'intro') * 4
+        lay = {t['name'] for t in s['st']['tracks'] if t['layer'] == 'lead'}
+        soft = [e for e in s['events'] if e.track in lay and e.midi is not None and e.beat < first]
+        assert soft and max(e.vel for e in soft) < 0.45, seed               # it plays in the intro, quietly
+    assert 0 < early < 8                                                     # only sometimes
+    print('ok  African street / rave genres, their instruments and drums, the soft early lead (sometimes)')
 
 
 if __name__ == '__main__':

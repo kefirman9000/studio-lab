@@ -1,8 +1,8 @@
-# Studio Lab genres (408)
+# Studio Lab genres (422)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (210)
+## Electronic (224)
 
 ### House & Disco (32)
 
@@ -187,25 +187,39 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Synth-pop | `synthpop` | 110-122 | Synth-pop: punchy LinnDrum-style beats, bright plucks, string pads, catchy leads |
 | Teen Pop ('99) | `teen_pop` | 92-112 | Late-90s teen pop: punchy dance-pop drums, dramatic minor chords, muted-guitar and synth-pluck riffs, string stabs, call-and-response hooks and a last-chorus key change |
 
-### Afro, Latin & Caribbean (15)
+### Afro, Latin & Caribbean (29)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
+| Afro 3-Step (118-124) | `afro_three_step` | 118-124 | Afro 3-step (South African, 118-124): a deep, percussive house groove where the kick plays in a three-step pattern instead of a straight four - kick, kick, kick, gap - over rolling djembe and shakers, a dark, sustained pad, a hypnotic thumb-piano or plucked motif and a heavy, sparse sub; dark, spiritual and hypnotic |
 | Afro Village Party (150-160) | `afro_village_party` | 150-162 | African village dance party (150-160): the music a DJ plays to a packed open-air crowd - a kick on every beat, snare, rim and shaker accents on the 3-3-2 tresillo that make it sway in half-time, a punchy, bouncing bass, bright clean guitar riffs cascading in fast 16ths, a cheap-keyboard organ chopping the off-beats, a sung, step-wise call-and-response line in long notes, in sunny major keys - and every 8 bars the kick and bass drop out for a bar while the voices carry on, then everything slams back in |
 | Afro Village Party - Synth (150-160) | `afro_village_synth` | 150-162 | African village party, synth version (150-160): the same packed open-air dance - a kick on every beat, tresillo accents that sway in half-time, a call line answered every two bars, the kick and bass dropping out every 8 bars and slamming back - but all electronic: a drum-machine kit with claps, rimshots, cowbell and synth toms, a punchy FM / analog synth bass, cheap-keyboard synth chords chopping the off-beats, bright saw and digital plucks cascading in 16ths (no guitars) and a square-wave or synth-brass lead |
 | Afro Wobble (dubstep, 150-160) | `afro_wobble` | 150-162 | Afro wobble (150-160): the African village party groove on synths - a kick on every beat, tresillo claps and rims, bright synth plucks and a synth call line - crossed with dubstep: verses with no bass at all, snare-roll builds, a one-bar stop, then drops where a huge wobble bass takes over, womping in beats, dotted 8ths and half bars and gliding between notes |
 | Afrobeats | `afrobeats` | 98-112 | Afrobeats: bouncy syncopated percussion, warm guitar chops, marimba hooks |
 | Amapiano | `amapiano` | 108-115 | Amapiano: log-drum basslines, jazzy piano chords, rolling shakers, deep groove |
+| Bacardi House (116-124) | `bacardi_house` | 116-124 | Bacardi house (Pretoria, 116-124): a jumpy, skippy kick that adds a stutter before the downbeat, rolling shakers and congas, a stabbing, bouncy synth pluck riff, a short sliding sub and party whistles - playful, bumpy and built for street dancing |
 | Baile Funk | `baile_funk` | 126-134 | Baile funk (Brazilian funk carioca): tamborzao beat, booming 808, chanted vocal hooks, horn stabs |
+| Balani Show (140-160) | `balani_show` | 140-160 | Balani show (Bamako street party, 140-160): an amplified balafon racing in loud, buzzing riffs over a drum machine - a kick on every beat, djembe slaps and tones in rolling patterns, a talking drum calling out, a bouncy keyboard bass and a bright ngoni answering - joyful, loud and fast |
 | Bass Amapiano (deep log drum) | `bass_amapiano` | 110-116 | Bass amapiano (deep, 110-116): four-on-the-floor South African house where the log drum is the star - a deep, saturated, near-sine log drum that scoops into each note, sustains and slides, playing melodic bass lines and talking on long notes - over laid-back, swung shakers, congas and light hats that roll behind the beat, a soft detuned-saw pad breathing on a slow filter LFO with a little pitch warble, scooping saw stabs or short plucky keys, side-chain on nearly everything and a tight mono low end; long builds, sparse drops, lots of space |
+| Batida (126-136) | `batida` | 126-136 | Batida (Luanda / Lisbon, 126-136): kuduro's electronic cousin - leaner and more percussive: a tight, broken kick, djembe and talking-drum patterns programmed on machines, agogo bells, deep sub drops, short gritty synth stabs and lots of space between the hits - tribal, futuristic and heavy |
+| Coupe-Decale (124-138) | `coupe_decale` | 124-138 | Coupe-decale (Abidjan club, 124-138): flashy and upbeat - a punchy kick, snares rolling into each bar, talking drum and djembe patterns, rolling toms, a bubbling synth bass and bright synth or cheap-keyboard riffs that repeat and build - party music for showing off on the dancefloor |
 | Dancehall | `dancehall` | 92-106 | Dancehall: digital riddim, syncopated kick and snare, sub bass, synth stabs and chanted hooks |
+| Funana (140-170) | `funana` | 140-170 | Funana (Cape Verde, 140-170): breakneck accordion dance music on keyboards and drum machines - the ferrinho scraper rasping on every 8th, a kick on every beat, a bouncing two-note bass, the accordion (gaita) racing through fast repeating riffs and keyboard organ chords - sweaty, joyful and relentless |
 | Funk 150 / mandelao | `funk_150` | 145-155 | Funk 150 / mandelao (Brazilian funk): the tamborzao groove sped up to 150 BPM - a driving kick pattern, bright clipped claps, tom and rim fills, a blown-out distorted sub, minimal synth stabs and chanted hooks; raw, sparse and relentless, with the beat cutting out for call-and-response |
 | Gqom | `gqom` | 120-128 | Gqom (Durban): dark, raw and broken - no four-on-the-floor, but syncopated kicks and booming toms in a hypnotic loop, sparse claps, shakers, a menacing sub and chanted vocal stabs over a minimal drone |
+| Kinshasa Electronics (136-156) | `kinshasa_electronics` | 136-156 | Kinshasa electronics (Congolese street trance, 136-156): homemade-sounding - an amplified thumb piano fuzzing through a cheap amp, looping hypnotic riffs, junk percussion (bottles, cans, woodblocks and bells), a pounding kick and a rubbery synth bass - raw, distorted and trance-inducing |
 | Kuduro | `kuduro` | 130-140 | Kuduro: Angolan street-dance music at 130-140 - a hard, broken kick-and-rim pattern, booming toms, clattering claps, a stabbing synth riff and chopped vocal shouts over a rubbery sub - raw, energetic and frantic |
+| Kuduro Wobble (140-150) | `kuduro_wobble` | 140-150 | Kuduro wobble (140-150): the hard, broken kuduro beat - stuttering kicks, booming toms, rims and claps - with gritty synth stabs in the verses, then dubstep drops where a huge wobble bass takes over, half-time and snarling, before the kuduro rhythm crashes back in |
+| Kwaito (100-115) | `kwaito` | 100-115 | Kwaito (90s Soweto): house music slowed right down to 100-115 - a heavy, laid-back kick, loud claps, a deep rolling synth bass carrying the tune, sparse piano or organ stabs, a whistle-like synth hook and a chanted, call-and-response feel - cool, swaggering and roomy |
+| Mahraganat (124-140) | `mahraganat` | 124-140 | Mahraganat (Cairo street electro, 124-140): the maqsoum rhythm on hard electronic drums - doum on 1 and 3, tek in between, rattling darbuka rolls - a distorted synth bass, a wailing mizmar or saturated synth lead twisting through Arabic scales, sirens and clattering percussion - loud, raw and celebratory |
 | Moombahton | `moombahton` | 106-112 | Moombahton: dembow groove at 110 with big-room synths and heavy drops |
 | Neoperreo | `neoperreo` | 88-100 | Neoperreo: underground reggaeton gone dark and digital at 88-100 - a stripped, crushed dembow beat, a distorted 808, eerie bell and synth riffs, glitchy chopped vocals and lots of empty space - minimal, hypnotic, nocturnal |
 | Reggaeton | `reggaeton` | 88-100 | Reggaeton: dembow rhythm, deep 808s, plucky synths, latin percussion |
 | Shangaan Electro | `shangaan_electro` | 178-190 | Shangaan electro: South African township dance at a breakneck 178-190 - a fast four-on-the-floor kick, bright Casio-style marimba and kalimba riffs racing in interlocking 16ths, a bouncy short bass, whistles and woodblocks - joyful, dizzying, made for footwork dancing |
+| Shangaan Wobble (170-180) | `shangaan_wobble` | 170-180 | Shangaan wobble (170-180, half-time drops): the racing Shangaan electro groove - fast kick, interlocking marimba and thumb-piano riffs, whistles and woodblocks - that breaks into half-time dubstep drops where a wobble bass womps under the marimbas |
+| Singeli (200+) | `singeli` | 200-230 | Singeli (Dar es Salaam street rave): breakneck 200-230 - a pounding kick on every beat, snare and clap rolls firing in 16ths, rattling shekere, tinny home-keyboard marimba and lead riffs looping at full speed over a bouncing FM bass, with taarab-style twisting melodies - frantic, hypnotic, made for wild dancing |
+| Tarraxinha (84-98) | `tarraxinha` | 84-98 | Tarraxinha (Angolan, 84-98): the slow, dark, heavy sister of kizomba - a deep, booming kick and a sliding sub that fill the room, sparse snaps and rims, a moody minor pad, a slow, sensual synth line and lots of space; hypnotic and bass-heavy |
+| Tsonga Disco (124-136) | `tsonga_disco` | 124-136 | Tsonga disco (the South African township synth-disco that Shangaan electro grew from, 124-136): a straight disco kick, open hats on the off-beats, a bouncing octave bass, cheap-keyboard marimba and organ riffs, a bright synth-brass answer and handclaps - sunny, bubbly and danceable |
 
 ### Chill, Lo-fi & Ambient (21)
 

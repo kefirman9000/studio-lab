@@ -3,6 +3,13 @@
 # category tags: bass 808 lead pad pluck chords keys epiano organ strings orchestral choir brass guitar fm drums
 #                reverb delay eq comp limiter meter
 CATALOG = [
+    dict(id='octasine', name='OctaSine', maker='Joakim Frostegard', free=True, url='https://www.octasine.com/',
+         cats=['fm', 'keys', 'bass', 'lead', 'pluck'], rank=6,
+         tip='Open-source 4-operator FM synth (VST2 / CLAP, AGPL): the cheap home-keyboard marimba, bell and bass sounds of '
+             'Shangaan electro, singeli and coupe-decale - start from a short, bright FM pluck.'),
+    dict(id='kars', name='Kars (DISTRHO)', maker='DISTRHO', free=True, url='https://github.com/DISTRHO/Kars',
+         cats=['pluck', 'guitar'], rank=4,
+         tip='Tiny open-source Karplus-Strong plucked string: a quick stand-in for ngoni and kora lines.'),
     # ---------------- free instruments
     dict(id='vital', name='Vital', maker='Matt Tytel', free=True, url='https://vital.audio',
          cats=['bass', 'lead', 'pad', 'pluck', 'chords', 'fm'], rank=10,
@@ -86,8 +93,8 @@ CATALOG.append(dict(id='generaluser', name='GeneralUser GS soundfont', maker='S.
                     cats=['keys', 'strings', 'orchestral', 'brass', 'choir', 'guitar', 'organ', 'epiano', 'drums', 'bass', 'lead', 'pad'],
                     rank=5, tip="General-MIDI soundfont (.sf2). In LMMS add an 'Sf2 Player' instrument and load it - works on every OS, no VST needed."))
 
-FORMATS = {'vital': ['vst2', 'vst3', 'au', 'lv2'], 'surge': ['vst3', 'au', 'clap', 'lv2'], 'odin2': ['vst3', 'au', 'lv2'], 'dexed': ['vst3', 'au'], 'tal_noisemaker': ['vst2', 'vst3', 'au', 'clap'], 'tyrell': ['vst2', 'vst3', 'au'], 'labs': ['vst3', 'au'], 'bbcso_discover': ['vst2', 'vst3', 'au'], 'decent': ['vst2', 'vst3', 'au'], 'mt_power': ['vst2', 'au'], 'sitala': ['vst2', 'vst3', 'au'], 'ample_lite': ['vst2', 'vst3', 'au'], 'supermassive': ['vst2', 'vst3', 'au'], 'tdr_nova': ['vst2', 'vst3', 'au'], 'kotelnikov': ['vst2', 'vst3', 'au'], 'ott': ['vst2', 'vst3', 'au'], 'youlean': ['vst2', 'vst3', 'au'], 'kh_essentials': ['vst2', 'vst3', 'au'], 'serum': ['vst3', 'au'], 'omnisphere': ['vst2', 'vst3', 'au'], 'keyscape': ['vst2', 'vst3', 'au'], 'pigments': ['vst3', 'au'], 'diva': ['vst2', 'vst3', 'au'], 'sylenth': ['vst2', 'vst3', 'au'], 'kontakt': ['vst3', 'au'], 'bbcso_core': ['vst2', 'vst3', 'au'], 'addictive_drums': ['vst2', 'vst3', 'au'], 'superior': ['vst2', 'vst3', 'au'], 'fabfilter': ['vst2', 'vst3', 'au'], 'vintageverb': ['vst2', 'vst3', 'au'], 'ozone': ['vst3', 'au'], 'generaluser': ['sf2']}
-MATCH = {'vital': ['vital'], 'surge': ['surge xt', 'surgext', 'surge'], 'odin2': ['odin2', 'odin 2'], 'dexed': ['dexed'], 'tal_noisemaker': ['noisemaker'], 'tyrell': ['tyrelln6', 'tyrell'], 'labs': ['labs', 'splice instrument'], 'bbcso_discover': ['bbc symphony orchestra'], 'decent': ['decentsampler', 'decent sampler'], 'mt_power': ['powerdrumkit', 'power drum kit', 'mt-power'], 'sitala': ['sitala'], 'ample_lite': ['ample'], 'supermassive': ['supermassive'], 'tdr_nova': ['tdr nova', 'tdrnova'], 'kotelnikov': ['kotelnikov'], 'ott': ['ott'], 'youlean': ['youlean'], 'kh_essentials': ['kilohearts'], 'serum': ['serum'], 'omnisphere': ['omnisphere'], 'keyscape': ['keyscape'], 'pigments': ['pigments'], 'diva': ['diva'], 'sylenth': ['sylenth'], 'kontakt': ['kontakt'], 'addictive_drums': ['addictive drums'], 'superior': ['superior drummer', 'superior3'], 'fabfilter': ['fabfilter'], 'vintageverb': ['vintageverb', 'vintage verb'], 'ozone': ['ozone'], 'generaluser': ['generaluser']}
+FORMATS = {'octasine': ['vst2', 'clap'], 'kars': ['vst2', 'vst3', 'lv2', 'clap'], 'vital': ['vst2', 'vst3', 'au', 'lv2'], 'surge': ['vst3', 'au', 'clap', 'lv2'], 'odin2': ['vst3', 'au', 'lv2'], 'dexed': ['vst3', 'au'], 'tal_noisemaker': ['vst2', 'vst3', 'au', 'clap'], 'tyrell': ['vst2', 'vst3', 'au'], 'labs': ['vst3', 'au'], 'bbcso_discover': ['vst2', 'vst3', 'au'], 'decent': ['vst2', 'vst3', 'au'], 'mt_power': ['vst2', 'au'], 'sitala': ['vst2', 'vst3', 'au'], 'ample_lite': ['vst2', 'vst3', 'au'], 'supermassive': ['vst2', 'vst3', 'au'], 'tdr_nova': ['vst2', 'vst3', 'au'], 'kotelnikov': ['vst2', 'vst3', 'au'], 'ott': ['vst2', 'vst3', 'au'], 'youlean': ['vst2', 'vst3', 'au'], 'kh_essentials': ['vst2', 'vst3', 'au'], 'serum': ['vst3', 'au'], 'omnisphere': ['vst2', 'vst3', 'au'], 'keyscape': ['vst2', 'vst3', 'au'], 'pigments': ['vst3', 'au'], 'diva': ['vst2', 'vst3', 'au'], 'sylenth': ['vst2', 'vst3', 'au'], 'kontakt': ['vst3', 'au'], 'bbcso_core': ['vst2', 'vst3', 'au'], 'addictive_drums': ['vst2', 'vst3', 'au'], 'superior': ['vst2', 'vst3', 'au'], 'fabfilter': ['vst2', 'vst3', 'au'], 'vintageverb': ['vst2', 'vst3', 'au'], 'ozone': ['vst3', 'au'], 'generaluser': ['sf2']}
+MATCH = {'octasine': ['octasine'], 'kars': ['kars'], 'vital': ['vital'], 'surge': ['surge xt', 'surgext', 'surge'], 'odin2': ['odin2', 'odin 2'], 'dexed': ['dexed'], 'tal_noisemaker': ['noisemaker'], 'tyrell': ['tyrelln6', 'tyrell'], 'labs': ['labs', 'splice instrument'], 'bbcso_discover': ['bbc symphony orchestra'], 'decent': ['decentsampler', 'decent sampler'], 'mt_power': ['powerdrumkit', 'power drum kit', 'mt-power'], 'sitala': ['sitala'], 'ample_lite': ['ample'], 'supermassive': ['supermassive'], 'tdr_nova': ['tdr nova', 'tdrnova'], 'kotelnikov': ['kotelnikov'], 'ott': ['ott'], 'youlean': ['youlean'], 'kh_essentials': ['kilohearts'], 'serum': ['serum'], 'omnisphere': ['omnisphere'], 'keyscape': ['keyscape'], 'pigments': ['pigments'], 'diva': ['diva'], 'sylenth': ['sylenth'], 'kontakt': ['kontakt'], 'addictive_drums': ['addictive drums'], 'superior': ['superior drummer', 'superior3'], 'fabfilter': ['fabfilter'], 'vintageverb': ['vintageverb', 'vintage verb'], 'ozone': ['ozone'], 'generaluser': ['generaluser']}
 for _p in CATALOG:
     _p['formats'] = FORMATS.get(_p['id'], ['vst3', 'au'])
 BY_ID = {p['id']: p for p in CATALOG}
@@ -126,6 +133,8 @@ INST_CAT = {
     'polysynth': 'pad', 'synthbrass': 'brass', 'moogbass': 'bass', 'moogpluck': 'bass', 'glasspad': 'pad', 'solina': 'strings', 'wurli': 'epiano',
     'vibes': 'keys', 'upright': 'bass', 'mutedgtr': 'guitar', 'harmonica': 'lead', 'trumpet': 'brass', 'pedalsteel': 'guitar',
     'accordion': 'keys', 'banjo': 'guitar',
+    'mbira': 'keys', 'likembe': 'keys', 'casiomarimba': 'fm', 'casiolead': 'lead', 'casiobass': 'bass', 'kudurostab': 'chords',
+    'ngoni': 'guitar', 'mizmar': 'lead',
     'logdrum': 'bass', 'marimba': 'keys', 'kalimba': 'keys', 'steeldrum': 'fm', 'sax': 'brass', 'flute': 'orchestral', 'clav': 'keys',
 }
 CAT_FALLBACK = {'808': ['bass', 'drums'], 'organ': ['keys', 'pad'], 'epiano': ['keys', 'fm'], 'brass': ['orchestral', 'lead'],

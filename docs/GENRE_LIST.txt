@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 408 GENRES  (version 2.19.0)
+STUDIO LAB - ALL 422 GENRES  (version 2.21.1)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 2.19
+* = new in 2.21
 
 ========================================================================
-ELECTRONIC  (210)
+ELECTRONIC  (224)
 ========================================================================
 
 House & Disco  (32)
@@ -171,7 +171,7 @@ Pop, R&B & Hopecore  (12)
     Latin freestyle (80s)  [freestyle]
     80s synth R&B  [synth_rnb]
 
-Afro, Latin & Caribbean  (15)
+Afro, Latin & Caribbean  (29)
     Shangaan Electro  [shangaan_electro]
     Kuduro  [kuduro]
     Neoperreo  [neoperreo]
@@ -187,6 +187,20 @@ Afro, Latin & Caribbean  (15)
     Afro Village Party - Synth (150-160)  [afro_village_synth]
     Afro Wobble (dubstep, 150-160)  [afro_wobble]
     Bass Amapiano (deep log drum)  [bass_amapiano]
+    Singeli (200+)  [singeli]
+    Tsonga Disco (124-136)  [tsonga_disco]
+    Kwaito (100-115)  [kwaito]
+    Bacardi House (116-124)  [bacardi_house]
+    Afro 3-Step (118-124)  [afro_three_step]
+    Batida (126-136)  [batida]
+    Tarraxinha (84-98)  [tarraxinha]
+    Mahraganat (124-140)  [mahraganat]
+    Kinshasa Electronics (136-156)  [kinshasa_electronics]
+    Balani Show (140-160)  [balani_show]
+    Coupe-Decale (124-138)  [coupe_decale]
+    Funana (140-170)  [funana]
+    Kuduro Wobble (140-150)  [kuduro_wobble]
+    Shangaan Wobble (170-180)  [shangaan_wobble]
 
 Chill, Lo-fi & Ambient  (21)
     Mallsoft  [mallsoft]

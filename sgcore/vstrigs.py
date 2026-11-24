@@ -246,8 +246,12 @@ ROLE_PATCHES = {
     'moogbass': ['tal.fat_bass', 'tal.saw_bass', 'surge.saw_bass', 'obxf.bass'], 'moogpluck': ['tal.saw_bass', 'tal.fat_bass', 'surge.saw_bass'], 'glasspad': ['surge.wide_pad', 'dexed.chime'],
     'solina': ['tal.strings', 'obxf.strings'], 'wurli': ['dexed.epiano'], 'vibes': ['ripplerx.vibes', 'dexed.vibes'], 'tubular': ['ripplerx.tubes', 'dexed.bells'],
     'harp': ['ripplerx.harp'], 'musicbox': ['ripplerx.musicbox'], 'koto': ['dexed.koto'], 'gong': ['ripplerx.gong'],
+    # (2.22) the African dance instruments: thumb pianos and the home-keyboard marimba on the modelled / FM ones
+    'mbira': ['ripplerx.kalimba', 'dexed.koto'], 'casiomarimba': ['dexed.marimba', 'ripplerx.marimba'],
+    'ngoni': ['kars.pluck', 'dexed.koto'], 'casiobass': ['dexed.bass', 'dexed.bass2'],
+    'casiolead': ['tal.square_lead', 'dexed.synlead'], 'kudurostab': ['tal.brass_stab', 'obxf.stab'],
 }
-ANY_CATEGORY = {'epiano', 'clav', 'marimba', 'steeldrum', 'kalimba', 'fmbass', 'vibes', 'koto', 'tubular', 'gong', 'musicbox', 'harp'}   # FM keys also suit funk, city pop, bossa, reggae
+ANY_CATEGORY = {'mbira', 'casiomarimba', 'ngoni', 'casiobass', 'epiano', 'clav', 'marimba', 'steeldrum', 'kalimba', 'fmbass', 'vibes', 'koto', 'tubular', 'gong', 'musicbox', 'harp'}   # FM keys also suit funk, city pop, bossa, reggae
 
 # your own saved VST sounds (any plugin): a sound whose name contains one of these words plays that kind of part.
 # Sample players (BBC SO, LABS) can only be used this way; for synths it lets e.g. "Serum supersaw" beat the built-in rig.

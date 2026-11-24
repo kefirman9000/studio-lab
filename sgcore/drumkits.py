@@ -559,3 +559,8 @@ def voice_of(name, inst):
 GENRE_KIT.update({'anthem_trance_2000': 'trance_classic', 'progressive_trance': '909', 'cinematic_trap': 'hard',
                   'rage': 'phonk808', 'plugg': 'soft', 'sunrise_chillwave': 'vintage', 'celtic_punk': 'studio',
                   'switchup_mallets': '707'})
+# (2.22) the African street / rave genres: each its own machine
+GENRE_KIT.update({'singeli': 'cr78', 'tsonga_disco': 'dmx', 'kwaito': '808', 'bacardi_house': '909_classic',
+                  'afro_three_step': 'soft', 'batida': 'punchy', 'tarraxinha': 'phonk808', 'mahraganat': 'hard',
+                  'kinshasa_electronics': 'cr78', 'balani_show': '707', 'coupe_decale': 'punchy', 'funana': 'linn',
+                  'kuduro_wobble': 'hard', 'shangaan_wobble': '606'})

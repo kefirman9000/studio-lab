@@ -358,7 +358,8 @@ OWN_GROOVE = {'reggae', 'dub', 'ska', 'reggaeton', 'dancehall', 'moombahton', 's
               'bossa_nova', 'samba', 'bachata', 'merengue', 'baile_funk', 'funk_150', 'brazilian_phonk', 'afrobeat', 'afrobeats',
               'amapiano', 'gqom', 'uk_funky', 'bhangra', 'raga_fusion', 'bhajan', 'kirtan', 'aarti', 'santoor_raga', 'sitar_bhajan', 'tabla_bhajan', 'drum_kirtan', 'jugalbandi', 'qawwali', 'carnatic_kriti', 'ghazal', 'bollywood', 'klezmer', 'gamelan', 'rai', 'takht_maqam', 'raqs_sharqi', 'arab_pop', 'sufi_dhikr', 'son_cubano', 'flamenco_rumba', 'chicha', 'krautrock', 'rockabilly', 'footwork', 'footwork_soulful', 'footwork_dark', 'juke', 'juke_raw', 'juke_house',
               'baltimore_club', 'jersey_club', 'uk_drill', 'ukgarage', 'speed_garage', 'freestyle', 'electro', 'nola_brass',
-              'tango', 'celtic_jig', 'swing_tomtom', 'western_swing', 'country', 'outlaw_country', 'surf_rock', 'afro_village_party', 'afro_wobble', 'afro_village_synth'}
+              'tango', 'celtic_jig', 'swing_tomtom', 'western_swing', 'country', 'outlaw_country', 'surf_rock', 'afro_village_party', 'afro_wobble', 'afro_village_synth',
+              'singeli', 'tsonga_disco', 'kwaito', 'bacardi_house', 'afro_three_step', 'batida', 'tarraxinha', 'mahraganat', 'kinshasa_electronics', 'balani_show', 'coupe_decale', 'funana', 'kuduro_wobble', 'shangaan_wobble'}
 
 
 def groove_family(st):
@@ -1486,6 +1487,11 @@ def compose(opts):
         return random.Random(f"{base_seed[part]}-{part}-{uid}")
     variations = []
     n_builds = 0
+    # (2.22) some songs of a genre with `lead_early` (the African dance genres) let the lead in quietly from the first
+    # bar, sparse and low, long before its real entry - only sometimes, decided per song
+    lead_early = bool(st.get('lead_early') and 'lead' in tracks and opts.structure != 'loop'
+                      and random.Random(f"{opts.seed}-lead-early").random() < float(st['lead_early']))
+    lead_seen = False
     for si, ed in enumerate(edits):
         src = int(ed['src'])
         uid = f"{src}:{int(ed.get('copy', 0))}"
@@ -1496,6 +1502,12 @@ def compose(opts):
         arp = dict(arp_base, **opts_s['arp']) if opts_s.get('arp') else arp_base      # a variation's own figuration
         var = opts_s.get('var')
         layers = set(layers) - set(ed.get('mute') or [])   # (switched-off parts are removed at the end: same take)
+        early_lead = False
+        if 'lead' in layers:
+            lead_seen = True
+        elif lead_early and not lead_seen and 'lead' not in (ed.get('mute') or []):
+            layers = layers | {'lead'}
+            early_lead = True
         if energy > 0.75 and opts_s.get('drop'):
             layers |= {'arp'}
         if energy < 0.25:
@@ -1893,14 +1905,19 @@ def compose(opts):
         # ---------------- lead
         if 'lead' in layers and 'lead' in tracks:
             soft_lead = 0.75 if sname in ('break', 'bridge', 'C', 'calm') else (0.8 if hook_verse else 1.0)
+            if early_lead:
+                soft_lead = 0.3
             reps = int(math.ceil(nbars / ph))
             src_mel = vary_melody(mel, var, key) if var in ('dim', 'aug') else mel
+            rnd_el = random.Random(f"{opts.seed}-lead-early-{si}")
             n0 = len(evs)
             for r in range(reps):
                 for (bt, du, m, v) in src_mel:
                     beat = sec_start + r * ph * 4 + bt
                     if beat < sec_start + nbars * 4 - 0.01:
                         if opts_s.get('build') and beat >= sec_start + nbars * 4 - 2:
+                            continue
+                        if early_lead and (rnd_el.random() < 0.5 or (beat - sec_start) < 2):   # sparse; not on a section's first beats
                             continue
                         evs.append(Ev('lead', beat, du, m, v * soft_lead))
             new = [e for e in evs[n0:] if e.track == 'lead']
@@ -2187,6 +2204,7 @@ def compose(opts):
         picked_fx = _pfx.apply(st, tracks, opts, opts.style)
     except Exception:
         picked_fx = {}
+    st['_lead_early'] = lead_early
     song = dict(style=sname, seed=opts.seed, bpm=bpm, key=key, events=evs, sections=sections, fx=fx, expr=expr,
                 part_effects=picked_fx, drum_picks=st.get('drum_picks') or {},
                 meter=st.get('meter') or '4/4', harm_alts=len(harm_alts),

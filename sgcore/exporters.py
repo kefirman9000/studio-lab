@@ -8,6 +8,8 @@ GM_DRUM = {'bodhran2': 41, 'bones': 75, 'spoons': 76, 'pipe_snare': 40, 'tenor_d
            'ohat': 46, 'shaker': 70, 'ride': 51, 'rim': 37, 'crash': 49, 'tom': 45, 'cowbell808': 56,
            'conga': 63, 'taiko': 41, 'timp': 43, 'snap': 39, 'tamb': 54, 'woodblock': 76,
            'bodhran': 41, 'timbale': 65, 'tabla': 60, 'bayan': 61, 'manjira': 80, 'dholak': 64, 'dholak_ta': 63, 'bongo': 60, 'bongo_lo': 61}
+from .instruments4 import DRUM_GM as _DRUM_GM4  # noqa: E402
+GM_DRUM.update(_DRUM_GM4)
 
 
 

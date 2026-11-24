@@ -126,6 +126,8 @@ DRUM_PART = {'chat': 'Closed hi-hat', 'ohat': 'Open hi-hat', 'rim': 'Rimshot', '
              'taiko': 'Taiko drums', 'bdrum': 'Orchestral bass drum', 'bayan': 'Tabla (bass drum)', 'manjira': 'Manjira (hand cymbals)', 'dholak': 'Dholak (bass)', 'dholak_ta': 'Dholak (treble)', 'bongo': 'Bongo (high)', 'bongo_lo': 'Bongo (low)', 'chipkick': 'Chip kick',
              'tom': 'Tom-toms', 'kick': 'Kick', 'snare': 'Snare', 'anvil': 'Anvil', 'chiphat': 'Chip hi-hat',
              'chipsnare': 'Chip snare', 'sleigh': 'Sleigh bells', 'triangle': 'Triangle', 'windchime': 'Wind chimes', 'bodhran2': 'Bodhrán', 'bones': 'Bones', 'spoons': 'Spoons', 'pipe_snare': 'Pipe-band snare', 'tenor_drum': 'Tenor drum', 'timbale': 'Timbales'}
+from .instruments4 import DRUM_LABELS as _DL4  # noqa: E402
+DRUM_PART.update(_DL4)
 
 
 def _tracks(song):
