@@ -90,8 +90,8 @@ def test_latin_figures():
         by_beat.setdefault(round(e.beat, 4), []).append(e.midi)
     assert all(len(v) == 2 and abs(v[0] - v[1]) == 12 for v in by_beat.values())     # montuno: octaves
     af = song('afrobeats', 1)
-    assert any(t['name'] == 'arp' and t['inst'] == 'guitar' for t in af['st']['tracks'])
-    print('ok  salsa piano montuno in octaves, afrobeats guitar')
+    assert any(t['name'] == 'arp' and t['inst'] == 'kora' for t in af['st']['tracks'])          # (2.22.4) fewer guitars
+    print('ok  salsa piano montuno in octaves, afrobeats kora')
 
 
 def test_dsp_effects():
@@ -1524,6 +1524,7 @@ def main():
     test_new_song_never_overwrites()
     test_afro_street_genres_and_early_lead()
     test_engine_gets_its_own_port()
+    test_afro_fewer_plucks_and_wobble()
     print('all good')
 
 
@@ -1618,6 +1619,27 @@ def test_engine_gets_its_own_port():
         a.server_close()
     assert not app._port_taken(port)
     print('ok  each engine gets its own port (no sharing with a leftover engine)')
+
+
+def test_afro_fewer_plucks_and_wobble():
+    """(2.22.4) plucks / guitars are rare in the African genres, and the wobble is saved for the last drop."""
+    from sgcore.styles import AFRO_LEAD_EARLY
+    plucks = {'guitar', 'cleanguitar', 'afropluck', 'jangle', 'mutedgtr', 'pluck', 'pluck_saw', 'pluck_octave',
+              'viruspluck', 'nordpluck', 'superpluck', 'pluckvox'}
+    n = parts = 0
+    for g in AFRO_LEAD_EARLY:
+        s = song(g, 3)
+        used = {e.track for e in s['events']}
+        for t in s['st']['tracks']:
+            if t['name'] in used and t['layer'] in ('chords', 'arp', 'lead', 'pad'):
+                parts += 1
+                n += t['inst'] in plucks
+    assert n / parts < 0.1, (n, parts)
+    s = song('afro_wobble', 3)
+    plain = sum(e.track == 'bass' for e in s['events'])
+    wob = sum(e.track == 'bass_wob' for e in s['events'])
+    assert plain and wob and 'wob' in next(t['inst'] for t in s['st']['tracks'] if t['name'] == 'bass_wob')
+    print('ok  African genres: few plucks / guitars; the wobble only in the last drop')
 
 
 if __name__ == '__main__':

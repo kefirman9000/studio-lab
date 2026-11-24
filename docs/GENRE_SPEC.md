@@ -254,8 +254,8 @@ Afro house: four-on-the-floor with rolling congas and shakers, deep bass, kalimb
   - bass (bass): `sinebass` -13 dB · sc=0.5 · alternatives ['fmbass', 'sawbass', '808', 'deepbass', 'deepfmbass', 'deepbass_dark', 'sawbass_driven']
   - chords (chords): `warmpad` -24 dB · rev=0.4 · sc=0.5 · alternatives ['epiano', 'piano', 'organ', 'stab', 'organ_dark', 'epiano_bright']
   - pad (pad): `choir` -28 dB · rev=0.5 · alternatives ['warmpad', 'strings', 'strings_dark', 'strings_wide']
-  - arp (arp): `kalimba` -24 dB · rev=0.3 · dly=0.3 · alternatives ['marimba', 'pluck', 'steeldrum', 'afropluck', 'pluck_octave', 'mbira', 'balafon', 'kora']
-  - lead (lead): `marimba` -19 dB · rev=0.3 · dly=0.25 · alternatives ['kalimba', 'flute', 'pluck', 'sax', 'pluckvox', 'flute_tape', 'kalimba_tape', 'kora', 'mbira', 'balafon']
+  - arp (arp): `kalimba` -24 dB · rev=0.3 · dly=0.3 · alternatives ['marimba', 'pluck', 'steeldrum', 'afropluck', 'pluck_octave']
+  - lead (lead): `marimba` -19 dB · rev=0.3 · dly=0.25 · alternatives ['kalimba', 'flute', 'pluck', 'sax', 'pluckvox', 'flute_tape', 'kalimba_tape']
   - djembe (top): `djembe` -27 dB · pan=-0.35
 - **Mix** {'lufs': -9.5, 'air': 1.4, 'low': 1.6} · reverb 2.0 · sc_depth 0.3
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.7, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4}
@@ -4642,8 +4642,8 @@ Afrobeats: bouncy syncopated percussion, warm guitar chops, marimba hooks
   - bass (bass): `sinebass`  dB · alternatives ['sf:fingerbass', 'fmbass', '808', '808_dark', 'sinebass_driven']
   - chords (chords): `epiano` -24 dB · pan=-0.25 · alternatives ['piano', 'sf:cleanguitar', 'guitar', 'organ', 'organ_dark']
   - pad (pad): `warmpad` -28 dB · rev=0.4 · alternatives ['strings', 'organ', 'glasspad', 'glasspad_dark', 'organ_driven']
-  - arp (arp): `guitar` -23 dB · pan=0.25 · rev=0.15 · dly=0.15 · alternatives ['marimba', 'kalimba', 'pluck', 'afropluck', 'marimba_octave', 'kora', 'balafon', 'mbira']
-  - lead (lead): `flute`  dB · rev=0.3 · dly=0.2 · alternatives ['sax', 'pluck', 'marimba', 'flute_soft', 'kora', 'balafon']
+  - arp (arp): `kora` -23 dB · pan=0.25 · rev=0.15 · dly=0.15 · alternatives ['guitar', 'marimba', 'kalimba', 'pluck', 'afropluck', 'marimba_octave']
+  - lead (lead): `flute`  dB · rev=0.3 · dly=0.2 · alternatives ['sax', 'pluck', 'marimba', 'flute_soft']
   - talkdrum (top): `talkdrum` -26 dB · pan=-0.3 · rev=0.15
 - **Mix** {'lufs': -9.5, 'air': 1.5, 'low': 1.5} · reverb 2.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': True, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4}
@@ -4672,7 +4672,7 @@ Amapiano: log-drum basslines, jazzy piano chords, rolling shakers, deep groove
   - bass (bass): `logdrum` -13 dB · sc=0.5 · alternatives ['logdrum_sine', 'logdrum_deep']
   - chords (chords): `piano`  dB · rev=0.3 · sc=0.4 · alternatives ['epiano', 'organ', 'wurli', 'organ_dark', 'epiano_bright']
   - pad (pad): `warmpad` -27 dB · rev=0.5 · alternatives ['strings', 'choir', 'glasspad', 'amapad_saw', 'glasspad_wide', 'glasspad_dark']
-  - arp (arp): `kalimba` -26 dB · rev=0.3 · dly=0.3 · alternatives ['marimba', 'vibes', 'pluck', 'afropluck', 'marimba_tape', 'mbira']
+  - arp (arp): `kalimba` -26 dB · rev=0.3 · dly=0.3 · alternatives ['marimba', 'vibes', 'pluck', 'afropluck', 'marimba_tape']
   - lead (lead): `flute`  dB · rev=0.3 · dly=0.3 · alternatives ['sax', 'piano', 'kalimba', 'piano_dark', 'piano_tape']
 - **Mix** {'lufs': -9.5, 'air': 1.0, 'low': 2.0} · reverb 2.0 · sc_depth 0.3
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.6, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4}
@@ -4869,14 +4869,14 @@ Shangaan electro: South African township dance at a breakneck 178-190 - a fast f
   - conga (top): `conga` -23 dB · pan=-0.25
   - woodblock (top): `woodblock` -29 dB · pan=0.2
   - ohat (top): `ohat` -28 dB
-  - bass (bass): `sinebass` -13 dB · sc=0.5 · alternatives ['fmbass', 'casiobass', 'organbass', 'chipbass']
+  - bass (bass): `sinebass` -13 dB · sc=0.5 · alternatives ['fmbass', 'sawbass', '808', 'deepbass', 'deepfmbass', 'deepbass_dark', 'sawbass_driven']
   - chords (chords): `bitpiano` -24 dB · rev=0.4 · sc=0.5 · alternatives ['organ', 'epiano_bright', 'stab']
-  - pad (pad): `organ` -28 dB · rev=0.5 · alternatives ['choir', 'warmpad', 'strings', 'solina']
-  - arp (arp): `kalimba` -24 dB · rev=0.3 · dly=0.3 · alternatives ['marimba', 'pluck', 'bell', 'kalimba_octave', 'casiomarimba', 'mbira']
-  - lead (lead): `marimba_octave` -19 dB · rev=0.3 · dly=0.25 · alternatives ['marimba', 'kalimba_octave', 'chip', 'bell', 'whistlelead', 'casiomarimba', 'casiolead']
+  - pad (pad): `organ` -28 dB · rev=0.5 · alternatives ['choir', 'warmpad', 'strings', 'strings_dark', 'strings_wide']
+  - arp (arp): `kalimba` -24 dB · rev=0.3 · dly=0.3 · alternatives ['marimba', 'pluck', 'bell', 'kalimba_octave']
+  - lead (lead): `marimba_octave` -19 dB · rev=0.3 · dly=0.25 · alternatives ['marimba', 'kalimba_octave', 'chip', 'bell', 'whistlelead']
   - refwhistle (top): `refwhistle` -31 dB · pan=0.35 · rev=0.3
 - **Mix** {'lufs': -9.5, 'air': 1.4, 'low': 1.6} · reverb 2.0 · sc_depth 0.3
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.5, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afro_house', 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.5, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'afro_house'}
 - **Sound brief** Kalimba / marimba (hooks); Congas, shakers; Deep bass; Pads; Vocal chants
 
 ### Kuduro (`kuduro`)
@@ -4901,10 +4901,10 @@ Kuduro: Angolan street-dance music at 130-140 - a hard, broken kick-and-rim patt
   - shaker (top): `shaker` -29 dB · pan=0.3
   - rim (top): `rim` -26 dB · pan=-0.3
   - bass (bass): `sinebass` -14 dB · alternatives ['808', 'reese', 'sinebass_driven', 'sinebass_suboct']
-  - chords (chords): `stab` -28 dB · rev=0.5 · alternatives ['stab_dark', 'organ_dark', 'samplerstab', 'dancestab', 'kudurostab']
-  - lead (lead): `vocalchop` -21 dB · rev=0.3 · dly=0.25 · alternatives ['vox', 'formantchop', 'acid', 'chopwob', 'kudurostab', 'casiolead']
+  - chords (chords): `stab` -28 dB · rev=0.5 · alternatives ['stab_dark', 'organ_dark', 'samplerstab', 'dancestab']
+  - lead (lead): `vocalchop` -21 dB · rev=0.3 · dly=0.25 · alternatives ['vox', 'formantchop', 'acid', 'chopwob']
 - **Mix** {'lufs': -9.5, 'air': 0.9, 'low': 1.6} · reverb 2.0 · sc_depth 0.1
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.6, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'gqom', 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.6, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'gqom'}
 
 ### Neoperreo (`neoperreo`)
 
@@ -4960,10 +4960,10 @@ African village dance party (150-160): the music a DJ plays to a packed open-air
   - bass (bass): `ebass` -16.5 dB · alternatives ['fmbass', 'organbass', 'sinebass']
   - chords (chords): `organ` -17 dB · pan=-0.2 · rev=0.2 · alternatives ['houseorgan', 'epiano', 'accordion', 'synthbrass']
   - pad (pad): `choir` -25 dB · rev=0.45 · alternatives ['humchoir', 'warmpad']
-  - arp (arp): `cleanguitar` -17 dB · pan=0.25 · rev=0.2 · dly=0.15 · alternatives ['afropluck', 'jangle', 'marimba', 'balafon', 'kalimba', 'ngoni', 'kora']
+  - arp (arp): `balafon` -17 dB · pan=0.25 · rev=0.2 · dly=0.15 · alternatives ['cleanguitar', 'afropluck', 'jangle', 'marimba', 'kalimba']
   - lead (lead): `vocalead` -17 dB · rev=0.35 · dly=0.2 · alternatives ['vox', 'pluckvox', 'whistlelead', 'synthbrass', 'accordion']
 - **Mix** {'lufs': -9.5, 'air': 0.9, 'low': 0.9} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'soukous', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [5, 0, 9, 2, 7], 'own_progs': True, 'groove': None, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'soukous', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [5, 0, 9, 2, 7], 'own_progs': True, 'groove': None}
 
 ### Bass Amapiano (deep log drum) (`bass_amapiano`)
 
@@ -4990,9 +4990,9 @@ Bass amapiano (deep, 110-116): four-on-the-floor South African house where the l
   - bass (bass): `logdrum_sine` -11 dB · sc=0.45 · alternatives ['logdrum_deep', 'logdrum_talk', 'logdrum']
   - chords (chords): `epiano` -20 dB · rev=0.3 · dly=0.2 · sc=0.5 · alternatives ['amastab_saw', 'rhodes', 'piano', 'wurli', 'm1piano']
   - pad (pad): `amapad_saw` -23 dB · rev=0.6 · dly=0.25 · sc=0.6 · alternatives ['warmpad', 'glasspad', 'junopoly', 'lushpad']
-  - lead (lead): `pluck` -20 dB · rev=0.35 · dly=0.3 · sc=0.5 · alternatives ['analoglead_soft', 'epiano', 'kalimba', 'pluckvox']
+  - lead (lead): `kalimba` -20 dB · rev=0.35 · dly=0.3 · sc=0.5 · alternatives ['pluck', 'analoglead_soft', 'epiano', 'pluckvox']
 - **Mix** {'lufs': -9.5, 'air': 0.8, 'low': 2.0} · reverb 2.0 · sc_depth 0.45
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.95, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'exact_pools': True, 'exact_form': True, 'keep_sounds': 0.85, 'no_rotation': True, 'riff_locked': True, 'roots': [5, 2, 0, 9, 7], 'bass_glide': 0.45, 'own_progs': True, 'parent': 'amapiano', 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.95, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'exact_pools': True, 'exact_form': True, 'keep_sounds': 0.85, 'no_rotation': True, 'riff_locked': True, 'roots': [5, 2, 0, 9, 7], 'bass_glide': 0.45, 'own_progs': True, 'parent': 'amapiano'}
 
 ### Afro Village Party - Synth (150-160) (`afro_village_synth`)
 
@@ -5019,10 +5019,10 @@ African village party, synth version (150-160): the same packed open-air dance -
   - bass (bass): `fmbass` -15 dB · alternatives ['junobass', 'sh101', 'tribass', 'sawbass']
   - chords (chords): `junopoly` -18 dB · pan=-0.2 · rev=0.25 · alternatives ['polysynth', 'synthbrass', 'stab', 'dancestab', 'houseorgan']
   - pad (pad): `warmpad` -26 dB · rev=0.45 · alternatives ['amapad_saw', 'junopoly', 'sawchoir']
-  - arp (arp): `pluck_saw` -18 dB · pan=0.25 · rev=0.2 · dly=0.2 · alternatives ['viruspluck', 'nordpluck', 'superpluck', 'dxbell', 'pluckbell', 'trancebell']
+  - arp (arp): `casiomarimba` -18 dB · pan=0.25 · rev=0.2 · dly=0.2 · alternatives ['pluck_saw', 'viruspluck', 'nordpluck', 'superpluck', 'dxbell', 'pluckbell', 'trancebell']
   - lead (lead): `squarelead` -17 dB · rev=0.35 · dly=0.25 · alternatives ['synthbrass', 'analoglead', 'glidelead', 'talkbox', 'chip']
 - **Mix** {'lufs': -9.0, 'air': 1.2, 'low': 1.1} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afro_village_party', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [5, 0, 9, 2, 7], 'own_progs': True, 'groove': None, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'afro_village_party', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [5, 0, 9, 2, 7], 'own_progs': True, 'groove': None}
 
 ### Afro Wobble (dubstep, 150-160) (`afro_wobble`)
 
@@ -5049,10 +5049,10 @@ Afro wobble (150-160): the African village party groove on synths - a kick on ev
   - bass (bass): `yoiwob` -12 dB · alternatives ['slowwob', 'brightwob', 'tearwob', 'pitchgrowl', 'sweepwob', 'wobble', 'reesewob']
   - chords (chords): `junopoly` -18 dB · pan=-0.2 · rev=0.25 · alternatives ['polysynth', 'synthbrass', 'stab', 'dancestab', 'houseorgan']
   - pad (pad): `warmpad` -26 dB · rev=0.45 · alternatives ['amapad_saw', 'junopoly', 'sawchoir']
-  - arp (arp): `pluck_saw` -18 dB · pan=0.25 · rev=0.2 · dly=0.2 · alternatives ['viruspluck', 'nordpluck', 'superpluck', 'dxbell', 'pluckbell', 'trancebell']
+  - arp (arp): `casiomarimba` -18 dB · pan=0.25 · rev=0.2 · dly=0.2 · alternatives ['pluck_saw', 'viruspluck', 'nordpluck', 'superpluck', 'dxbell', 'pluckbell', 'trancebell']
   - lead (lead): `squarelead` -17 dB · rev=0.35 · dly=0.25 · alternatives ['synthbrass', 'analoglead', 'glidelead', 'talkbox', 'chip']
 - **Mix** {'lufs': -9.0, 'air': 1.0, 'low': 1.4} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afro_village_synth', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [5, 0, 9, 2, 7], 'own_progs': True, 'groove': None, 'wobble_rates': [1, 0.75, 0.75, 0.5, 2, 1.5], 'wobble_rates_alt': [0.75, 0.5, 0.3333333333333333, 0.25, 1], 'wobble_lens': [4, 4, 8, 2], 'wobble_rest': 0.15, 'wobble_glide': 0.4, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'afro_village_synth', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [5, 0, 9, 2, 7], 'own_progs': True, 'groove': None, 'wob_drop': ['fmbass', 'junobass', 'sh101', 'tribass'], 'wobble_rates': [1, 0.75, 0.75, 0.5, 2, 1.5], 'wobble_rates_alt': [0.75, 0.5, 0.3333333333333333, 0.25, 1], 'wobble_lens': [4, 4, 8, 2], 'wobble_rest': 0.15, 'wobble_glide': 0.4}
 
 ### Singeli (200+) (`singeli`)
 
@@ -5081,7 +5081,7 @@ Singeli (Dar es Salaam street rave): breakneck 200-230 - a pounding kick on ever
   - arp (arp): `casiomarimba` -19 dB · pan=0.25 · dly=0.12 · alternatives ['mbira', 'kalimba', 'marimba', 'chiparp']
   - lead (lead): `casiolead` -17 dB · rev=0.2 · dly=0.15 · alternatives ['chip', 'whistlelead', 'mizmar', 'squarelead']
 - **Mix** {'lufs': -9.0, 'air': 1.3, 'low': 1.0} · reverb 2.0 · sc_depth 0.3
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.5, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'shangaan_electro', 'exact_pools': True, 'keep_sounds': 0.85, 'no_rotation': True, 'riff_locked': True, 'roots': [2, 4, 7, 9], 'own_progs': True, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.5, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'shangaan_electro', 'exact_pools': True, 'keep_sounds': 0.85, 'no_rotation': True, 'riff_locked': True, 'roots': [2, 4, 7, 9], 'own_progs': True}
 - **Sound brief** Kalimba / marimba (hooks); Congas, shakers; Deep bass; Pads; Vocal chants
 
 ### Tsonga Disco (124-136) (`tsonga_disco`)
@@ -5112,7 +5112,7 @@ Tsonga disco (the South African township synth-disco that Shangaan electro grew 
   - arp (arp): `casiomarimba` -19 dB · pan=0.25 · dly=0.15 · alternatives ['marimba', 'kalimba', 'xylophone']
   - lead (lead): `synthbrass` -18 dB · rev=0.3 · dly=0.2 · alternatives ['casiolead', 'whistlelead', 'brass', 'accordion']
 - **Mix** {'lufs': -10.0, 'air': 1.2, 'low': 1.0} · reverb 2.0 · sc_depth 0.3
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.55, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'shangaan_electro', 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.55, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'shangaan_electro', 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 5, 7, 9], 'own_progs': True}
 - **Sound brief** Kalimba / marimba (hooks); Congas, shakers; Deep bass; Pads; Vocal chants
 
 ### Kwaito (100-115) (`kwaito`)
@@ -5141,7 +5141,7 @@ Kwaito (90s Soweto): house music slowed right down to 100-115 - a heavy, laid-ba
   - pad (pad): `warmpad` -28 dB · rev=0.5 · alternatives ['solina', 'darkpad']
   - lead (lead): `whistlelead` -19 dB · rev=0.4 · dly=0.25 · alternatives ['synthbrass', 'softlead', 'casiolead']
 - **Mix** {'lufs': -10.0, 'air': 1.0, 'low': 1.5} · reverb 2.0 · sc_depth 0.3
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.75, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'bass_glide': 0.2, 'parent': 'afro_house', 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.75, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'bass_glide': 0.2, 'parent': 'afro_house'}
 - **Sound brief** Kalimba / marimba (hooks); Congas, shakers; Deep bass; Pads; Vocal chants
 
 ### Bacardi House (116-124) (`bacardi_house`)
@@ -5166,11 +5166,11 @@ Bacardi house (Pretoria, 116-124): a jumpy, skippy kick that adds a stutter befo
   - conga (top): `conga` -25 dB · pan=-0.25
   - refwhistle (top): `refwhistle` -30 dB · pan=0.35 · rev=0.3
   - bass (bass): `sinebass` -12 dB · alternatives ['logdrum', 'fmbass', '808punch']
-  - chords (chords): `pluck` -19 dB · pan=-0.15 · dly=0.2 · alternatives ['afropluck', 'viruspluck', 'stab', 'organ']
+  - chords (chords): `stab` -19 dB · pan=-0.15 · dly=0.2 · alternatives ['pluck', 'afropluck', 'viruspluck', 'organ']
   - pad (pad): `warmpad` -29 dB · rev=0.5 · alternatives ['amapad_saw', 'choir']
   - lead (lead): `mbira` -19 dB · rev=0.3 · dly=0.2 · alternatives ['kalimba', 'whistlelead', 'casiolead', 'marimba']
 - **Mix** {'lufs': -9.5, 'air': 1.1, 'low': 1.5} · reverb 2.0 · sc_depth 0.3
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.45, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 5, 9], 'own_progs': True, 'bass_glide': 0.3, 'parent': 'afro_house', 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.45, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 5, 9], 'own_progs': True, 'bass_glide': 0.3, 'parent': 'afro_house'}
 - **Sound brief** Kalimba / marimba (hooks); Congas, shakers; Deep bass; Pads; Vocal chants
 
 ### Afro 3-Step (118-124) (`afro_three_step`)
@@ -5195,13 +5195,13 @@ Afro 3-step (South African, 118-124): a deep, percussive house groove where the 
   - djembe_slap (top): `djembe_slap` -27 dB · pan=0.3
   - shaker (top): `shaker` -29 dB · pan=0.2
   - ohat (top): `ohat` -30 dB · pan=-0.15
+  - udu (top): `udu` -25 dB · pan=0.15 · rev=0.2
   - bass (bass): `deepsub` -12 dB · alternatives ['sinebass', 'logdrum_deep']
   - chords (chords): `darkpad` -25 dB · rev=0.5 · alternatives ['warmpad', 'choir_dark', 'drone']
   - arp (arp): `mbira` -21 dB · pan=0.25 · rev=0.3 · dly=0.25 · alternatives ['kalimba', 'balafon', 'marimba']
   - lead (lead): `kalimba_octave` -20 dB · rev=0.4 · dly=0.3 · alternatives ['mbira', 'ngoni', 'balafon', 'flute']
-  - udu (top): `udu` -25 dB · pan=0.15 · rev=0.2
 - **Mix** {'lufs': -10.0, 'air': 1.0, 'low': 1.6} · reverb 2.0 · sc_depth 0.3
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['rim'], 'bass_gate': 0.9, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'parent': 'afro_house', 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['rim'], 'bass_gate': 0.9, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'parent': 'afro_house'}
 - **Sound brief** Kalimba / marimba (hooks); Congas, shakers; Deep bass; Pads; Vocal chants
 
 ### Batida (126-136) (`batida`)
@@ -5227,13 +5227,13 @@ Batida (Luanda / Lisbon, 126-136): kuduro's electronic cousin - leaner and more 
   - agogo (top): `agogo` -29 dB · pan=0.35
   - agogo_lo (top): `agogo_lo` -29 dB · pan=-0.35
   - shaker (top): `shaker` -31 dB · pan=0.15
+  - udu (top): `udu` -25 dB · pan=-0.1 · rev=0.2
   - bass (bass): `808long` -11 dB · alternatives ['deepsub', 'sinebass']
   - chords (chords): `kudurostab` -21 dB · pan=-0.15 · rev=0.2 · alternatives ['stab_dark', 'samplerstab']
   - pad (pad): `darkpad` -29 dB · rev=0.5 · alternatives ['drone', 'choir_dark']
   - lead (lead): `likembe` -20 dB · rev=0.3 · dly=0.25 · alternatives ['mbira', 'balafon', 'acid']
-  - udu (top): `udu` -25 dB · pan=-0.1 · rev=0.2
 - **Mix** {'lufs': -9.5, 'air': 1.0, 'low': 1.7} · reverb 2.0 · sc_depth 0.1
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['djembe_slap'], 'bass_gate': 0.85, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'kuduro', 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 5, 7], 'own_progs': True, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['djembe_slap'], 'bass_gate': 0.85, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'kuduro', 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 5, 7], 'own_progs': True}
 
 ### Tarraxinha (84-98) (`tarraxinha`)
 
@@ -5260,7 +5260,7 @@ Tarraxinha (Angolan, 84-98): the slow, dark, heavy sister of kizomba - a deep, b
   - chords (chords): `darkpad` -24 dB · rev=0.55 · alternatives ['warmpad', 'epiano', 'glasspad']
   - lead (lead): `analoglead_soft` -20 dB · rev=0.45 · dly=0.3 · alternatives ['softlead', 'epiano', 'mbira']
 - **Mix** {'lufs': -10.0, 'air': 0.9, 'low': 2.0} · reverb 2.0 · sc_depth 0.1
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snap'], 'bass_gate': 0.95, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'kuduro', 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 4, 7, 9], 'own_progs': True, 'bass_glide': 0.4, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snap'], 'bass_gate': 0.95, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'kuduro', 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 4, 7, 9], 'own_progs': True, 'bass_glide': 0.4}
 
 ### Mahraganat (124-140) (`mahraganat`)
 
@@ -5288,7 +5288,7 @@ Mahraganat (Cairo street electro, 124-140): the maqsoum rhythm on hard electroni
   - chords (chords): `organ_dark` -23 dB · rev=0.25 · alternatives ['stab_dark', 'kudurostab']
   - lead (lead): `mizmar` -16 dB · rev=0.3 · dly=0.2 · alternatives ['electrosaw', 'accordion', 'casiolead', 'analoglead']
 - **Mix** {'lufs': -8.5, 'air': 1.3, 'low': 1.3} · reverb 2.0 · sc_depth 0.1
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.6, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'kuduro', 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 5, 7], 'own_progs': True, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare', 'clap'], 'bass_gate': 0.6, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'kuduro', 'exact_pools': True, 'keep_sounds': 0.85, 'roots': [0, 2, 5, 7], 'own_progs': True}
 
 ### Kinshasa Electronics (136-156) (`kinshasa_electronics`)
 
@@ -5317,7 +5317,7 @@ Kinshasa electronics (Congolese street trance, 136-156): homemade-sounding - an 
   - arp (arp): `likembe` -17 dB · pan=0.2 · rev=0.2 · dly=0.15 · alternatives ['mbira', 'ngoni']
   - lead (lead): `likembe` -18 dB · pan=-0.1 · rev=0.3 · dly=0.25 · alternatives ['mbira', 'casiolead', 'balafon']
 - **Mix** {'lufs': -9.0, 'air': 1.1, 'low': 1.1} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.6, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afro_village_synth', 'exact_pools': True, 'exact_form': False, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'groove': None, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.6, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'afro_village_synth', 'exact_pools': True, 'exact_form': False, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'groove': None}
 
 ### Balani Show (140-160) (`balani_show`)
 
@@ -5326,7 +5326,7 @@ Balani show (Bamako street party, 140-160): an amplified balafon racing in loud,
 - **Tempo** 140-160 BPM · **scales** major, mixolydian, minor · swing 0.55 (unit 16) · humanise 0.006
 - **Progressions** {'major': [[0, 4, 0, 4], [0, 3, 4, 0], [0, 0, 3, 4]], 'mixolydian': [[0, 6, 0, 4]], 'minor': [[0, 6, 5, 6]]} · chord_bars 1 · chord size 3
 - **Song form** `afro_village`: intro 8 [arp, chords, top] (filter_in) -> verse 15 [arp, bass, chords, kick, snare, top] (crash) -> break 1 [arp, lead, top] -> chorus 15 [arp, bass, chords, kick, lead, pad, snare, top] (drop, crash) -> break 1 [chords, lead] -> verse 16 [arp, bass, kick, lead, snare, top] (alt, crash) -> break 2 [arp, top] -> chorus 15 [arp, bass, chords, kick, lead, pad, snare, top] (drop, crash) -> break 1 [lead] -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (alt, crash) -> outro 8 [arp, chords, top] (layer_out, fade) · form_scale 1
-- **Drums** **kick** `X...X...X...X...` / `X..xX...X..xX...`; **djembe_slap** `..X..X....X..X..` / `.X..X..X..X..X..`; **djembe** `x..x..x.x..x..x.` / `x.x..x..x.x..x..`; **talkdrum** `......x.....x.x.` / `...x..x.......x.`; **shaker** `xxxxxxxxxxxxxxxx`; **dundun** `X.......X.......`
+- **Drums** **kick** `X...X...X...X...` / `X..xX...X..xX...`; **djembe_slap** `..X..X....X..X..` / `.X..X..X..X..X..`; **djembe** `x..x..x.x..x..x.` / `x.x..x..x.x..x..`; **dundun** `X.......X.......`; **talkdrum** `......x.....x.x.` / `...x..x.......x.`; **shaker** `xxxxxxxxxxxxxxxx`
 - **Drum kit** 707 · preset `808`
 - **Bass** `R..R..R.R..R..R.` / `R.R.R.R.R.O.R.R.` · mode `pattern` · lowest note 33
 - **Chord rhythm** `..x...x...x...x.`
@@ -5346,7 +5346,7 @@ Balani show (Bamako street party, 140-160): an amplified balafon racing in loud,
   - arp (arp): `balafon` -15 dB · pan=0.25 · rev=0.15 · alternatives ['casiomarimba', 'marimba', 'kora']
   - lead (lead): `ngoni` -17 dB · pan=-0.1 · rev=0.25 · dly=0.2 · alternatives ['balafon', 'kora', 'casiolead']
 - **Mix** {'lufs': -9.0, 'air': 1.2, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['djembe_slap'], 'bass_gate': 0.55, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afro_village_synth', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'groove': None, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['djembe_slap'], 'bass_gate': 0.55, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'afro_village_synth', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'groove': None}
 
 ### Coupe-Decale (124-138) (`coupe_decale`)
 
@@ -5376,7 +5376,7 @@ Coupe-decale (Abidjan club, 124-138): flashy and upbeat - a punchy kick, snares 
   - arp (arp): `pluckbell` -19 dB · pan=0.25 · rev=0.2 · dly=0.2 · alternatives ['casiomarimba', 'marimba', 'superpluck', 'dxbell']
   - lead (lead): `casiolead` -17 dB · rev=0.3 · dly=0.2 · alternatives ['synthbrass', 'squarelead', 'whistlelead', 'accordion']
 - **Mix** {'lufs': -9.0, 'air': 1.2, 'low': 1.1} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.6, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afro_village_synth', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'groove': None, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.6, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'afro_village_synth', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'groove': None}
 
 ### Funana (140-170) (`funana`)
 
@@ -5402,7 +5402,7 @@ Funana (Cape Verde, 140-170): breakneck accordion dance music on keyboards and d
   - chords (chords): `organ` -22 dB · pan=-0.2 · rev=0.2 · alternatives ['houseorgan', 'accordion']
   - lead (lead): `accordion` -15 dB · rev=0.25 · dly=0.12 · alternatives ['casiolead', 'harmonica', 'synthbrass']
 - **Mix** {'lufs': -9.5, 'air': 1.2, 'low': 0.9} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.5, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afro_village_synth', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'groove': None, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.5, 'chord_center': 62, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'afro_village_synth', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'groove': None}
 
 ### Kuduro Wobble (140-150) (`kuduro_wobble`)
 
@@ -5427,12 +5427,12 @@ Kuduro wobble (140-150): the hard, broken kuduro beat - stuttering kicks, boomin
   - cowbell808 (top): `cowbell808` -30 dB · pan=0.3
   - tom (top): `tom` -25 dB · pan=-0.15
   - bass (bass): `yoiwob` -12 dB · alternatives ['tearwob', 'brightwob', 'pitchgrowl', 'wobble']
-  - chords (chords): `kudurostab` -18 dB · pan=-0.2 · rev=0.25 · alternatives ['junopoly', 'stab_dark', 'samplerstab']
+  - chords (chords): `kudurostab` -18 dB · pan=-0.2 · rev=0.25 · alternatives ['stab_dark', 'samplerstab']
   - pad (pad): `warmpad` -26 dB · rev=0.45 · alternatives ['amapad_saw', 'junopoly', 'sawchoir']
-  - arp (arp): `pluck_saw` -18 dB · pan=0.25 · rev=0.2 · dly=0.2 · alternatives ['kudurostab', 'chiparp']
-  - lead (lead): `squarelead` -17 dB · rev=0.35 · dly=0.25 · alternatives ['casiolead', 'electrosaw']
+  - arp (arp): `kudurostab` -18 dB · pan=0.25 · rev=0.2 · dly=0.2 · alternatives ['pluck_saw', 'chiparp']
+  - lead (lead): `casiolead` -17 dB · rev=0.35 · dly=0.25 · alternatives ['squarelead', 'electrosaw']
 - **Mix** {'lufs': -9.0, 'air': 1.0, 'low': 1.4} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afro_wobble', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [0, 2, 5, 7], 'own_progs': True, 'groove': None, 'wobble_rates': [1, 0.75, 0.75, 0.5, 2, 1.5], 'wobble_rates_alt': [0.75, 0.5, 0.3333333333333333, 0.25, 1], 'wobble_lens': [4, 4, 8, 2], 'wobble_rest': 0.15, 'wobble_glide': 0.4, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'afro_wobble', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [0, 2, 5, 7], 'own_progs': True, 'groove': None, 'wob_drop': ['sinebass', 'fmbass_driven', '808punch'], 'wobble_rates': [1, 0.75, 0.75, 0.5, 2, 1.5], 'wobble_rates_alt': [0.75, 0.5, 0.3333333333333333, 0.25, 1], 'wobble_lens': [4, 4, 8, 2], 'wobble_rest': 0.15, 'wobble_glide': 0.4}
 
 ### Shangaan Wobble (170-180) (`shangaan_wobble`)
 
@@ -5459,10 +5459,10 @@ Shangaan wobble (170-180, half-time drops): the racing Shangaan electro groove -
   - bass (bass): `yoiwob` -12 dB · alternatives ['slowwob', 'brightwob', 'tearwob', 'pitchgrowl', 'sweepwob', 'wobble', 'reesewob']
   - chords (chords): `junopoly` -18 dB · pan=-0.2 · rev=0.25 · alternatives ['bitpiano', 'organ', 'casiomarimba']
   - pad (pad): `warmpad` -26 dB · rev=0.45 · alternatives ['amapad_saw', 'junopoly', 'sawchoir']
-  - arp (arp): `casiomarimba` -18 dB · pan=0.25 · rev=0.2 · dly=0.2 · alternatives ['pluck_saw', 'marimba', 'kalimba', 'mbira']
-  - lead (lead): `whistlelead` -17 dB · rev=0.35 · dly=0.25 · alternatives ['squarelead', 'casiolead', 'marimba_octave']
+  - arp (arp): `casiomarimba` -18 dB · pan=0.25 · rev=0.2 · dly=0.2 · alternatives ['marimba', 'kalimba', 'mbira']
+  - lead (lead): `whistlelead` -17 dB · rev=0.35 · dly=0.25 · alternatives ['casiolead', 'marimba_octave']
 - **Mix** {'lufs': -9.0, 'air': 1.0, 'low': 1.4} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afro_wobble', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'groove': None, 'wobble_rates': [1, 0.75, 0.75, 0.5, 2, 1.5], 'wobble_rates_alt': [0.75, 0.5, 0.3333333333333333, 0.25, 1], 'wobble_lens': [4, 4, 8, 2], 'wobble_rest': 0.15, 'wobble_glide': 0.4, 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['clap'], 'bass_gate': 0.7, 'chord_center': 60, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'afro_wobble', 'exact_pools': True, 'exact_form': True, 'short_bars': True, 'riff_locked': True, 'keep_sounds': 0.85, 'no_rotation': True, 'roots': [0, 2, 5, 7, 9], 'own_progs': True, 'groove': None, 'wob_drop': ['casiobass', 'fmbass', 'organbass'], 'wobble_rates': [1, 0.75, 0.75, 0.5, 2, 1.5], 'wobble_rates_alt': [0.75, 0.5, 0.3333333333333333, 0.25, 1], 'wobble_lens': [4, 4, 8, 2], 'wobble_rest': 0.15, 'wobble_glide': 0.4}
 
 ## Chill, Lo-fi & Ambient
 
@@ -8136,7 +8136,7 @@ Afrobeat (70s Lagos): a long, hypnotic jam on one or two chords - a busy, syncop
 - **Tempo** 100-120 BPM · **scales** dorian, minor, mixolydian · swing 0.53 (unit 16) · humanise 0.008
 - **Progressions** {'dorian': [[0, 0, 0, 0], [0, 0, 3, 3], [0, 3, 0, 3]], 'minor': [[0, 0, 6, 6]], 'mixolydian': [[0, 0, 6, 6]]} · chord_bars 1 · chord size 4
 - **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
-- **Drums** **kick** `X.....X...X..X..` / `X..x..X...X.....`; **snare** `..o.x..o.x.o..x.` / `....x..o..o.x..o`; **chat** `x.xxx.xxx.xxx.xx`; **ohat** `......x.......x.`; **woodblock** `x.x.xx.x.x.x....`; **conga** `..o.x..o..o.x..o`; **shekere** `xxxxxxxxxxxxxxxx`
+- **Drums** **kick** `X.....X...X..X..` / `X..x..X...X.....`; **snare** `..o.x..o.x.o..x.` / `....x..o..o.x..o`; **chat** `x.xxx.xxx.xxx.xx`; **ohat** `......x.......x.`; **shekere** `xxxxxxxxxxxxxxxx`; **woodblock** `x.x.xx.x.x.x....`; **conga** `..o.x..o..o.x..o`
 - **Drum kit** seventies · preset `acoustic`
 - **Bass** `R..R..O.R.....A.` / `R.....R.O..R..A.` / `R..R.R..O.R.R...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `.x.x.x.x.x.x.x.x` / `x.xx.x.xx.xx.x.x`
@@ -8155,7 +8155,7 @@ Afrobeat (70s Lagos): a long, hypnotic jam on one or two chords - a busy, syncop
   - bass (bass): `ebass` -14 dB · alternatives ['sf:fingerbass', 'sf:pickbass']
   - chords (chords): `mutedgtr` -22 dB · pan=-0.3 · alternatives ['guitar', 'clav']
   - pad (pad): `organ` -26 dB · rev=0.25 · alternatives ['epiano', 'brass']
-  - arp (arp): `guitar` -24 dB · pan=0.3 · alternatives ['mutedgtr', 'clav']
+  - arp (arp): `clav` -24 dB · pan=0.3 · alternatives ['mutedgtr', 'clav']
   - lead (lead): `brass` -17 dB · rev=0.25 · alternatives ['sax', 'sf:tenorsax', 'trumpet']
 - **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4}
@@ -10515,7 +10515,7 @@ Highlife: Ghanaian and Nigerian dance-band music at 110-130 - bright interlockin
 - **Tempo** 110-130 BPM · **scales** major, mixolydian · swing 0.54 (unit 16) · humanise 0.008
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 3], [0, 3, 0, 4]], 'mixolydian': [[0, 6, 3, 0]]} · chord_bars 1 · chord size 4
 - **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
-- **Drums** **kick** `X.....X...X..X..` / `X..x..X...X.....`; **snare** `..o.x..o.x.o..x.` / `....x..o..o.x..o`; **chat** `x.xxx.xxx.xxx.xx`; **ohat** `......x.......x.`; **shaker** `xxxxxxxxxxxxxxxx`; **conga** `..o.x..o..o.x..o`; **agogo** `x.x.xx.x.x.x....`
+- **Drums** **kick** `X.....X...X..X..` / `X..x..X...X.....`; **snare** `..o.x..o.x.o..x.` / `....x..o..o.x..o`; **chat** `x.xxx.xxx.xxx.xx`; **ohat** `......x.......x.`; **shekere** `xxxxxxxxxxxxxxxx`; **agogo** `x.x.xx.x.x.x....`; **conga** `..o.x..o..o.x..o`
 - **Drum kit** (synth preset) · preset `acoustic`
 - **Bass** `R..A..F.R...O.A.` / `R...F.A.R..F..A.` · mode `pattern` · lowest note 31
 - **Chord rhythm** `.x.x.x.x.x.x.x.x` / `x.xx.x.xx.xx.x.x`
@@ -10528,16 +10528,16 @@ Highlife: Ghanaian and Nigerian dance-band music at 110-130 - bright interlockin
   - snare (snare): `snare` -17 dB · rev=0.15
   - chat (top): `chat` -27 dB
   - ohat (top): `ohat` -28 dB
-  - shaker (top): `shaker` -30 dB · pan=0.3
-  - agogo (top): `agogo` -28 dB · pan=-0.3
+  - shekere (top): `shekere` -30 dB · pan=0.3
   - conga (top): `conga` -26 dB · pan=0.35
   - bass (bass): `ebass` -14 dB · alternatives ['sf:fingerbass', 'sf:pickbass']
   - chords (chords): `cleanguitar` -22 dB · pan=-0.3 · alternatives ['guitar', 'jangle', 'organ']
   - pad (pad): `organ` -26 dB · rev=0.25 · alternatives ['epiano', 'brass']
-  - arp (arp): `cleanguitar` -24 dB · pan=0.3 · alternatives ['jangle', 'guitar', 'marimba']
+  - arp (arp): `marimba` -24 dB · pan=0.3 · alternatives ['cleanguitar', 'jangle', 'guitar']
   - lead (lead): `brass` -17 dB · rev=0.25 · alternatives ['trumpet', 'sax', 'discohorn']
+  - agogo (top): `agogo` -28 dB · pan=-0.3
 - **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afrobeat', 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'afrobeat'}
 
 ### Soukous (`soukous`)
 
@@ -10546,7 +10546,7 @@ Soukous: Congolese dance music at 130-150 - glittering high guitars racing in fa
 - **Tempo** 130-150 BPM · **scales** major · swing 0.53 (unit 16) · humanise 0.008
 - **Progressions** {'major': [[0, 3, 4, 3], [0, 4, 0, 4], [0, 3, 0, 4]]} · chord_bars 1 · chord size 4
 - **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
-- **Drums** **kick** `X...X...X...X...`; **snare** `..x...x...x...x.` / `..x...x...x.x.x.`; **chat** `xxxxxxxxxxxxxxxx`; **conga** `x..x..x...x..x..`; **shaker** `x.x.x.x.x.x.x.x.`
+- **Drums** **kick** `X...X...X...X...`; **snare** `..x...x...x...x.` / `..x...x...x.x.x.`; **chat** `xxxxxxxxxxxxxxxx`; **conga** `x..x..x...x..x..`; **shekere** `x.x.x.x.x.x.x.x.`
 - **Drum kit** (synth preset) · preset `acoustic`
 - **Bass** `R..R.F..R..R.F.A` / `R.F.R..AR.F.R..O` · mode `pattern` · lowest note 31
 - **Chord rhythm** `.x.x.x.x.x.x.x.x` / `x.xx.x.xx.xx.x.x`
@@ -10559,16 +10559,16 @@ Soukous: Congolese dance music at 130-150 - glittering high guitars racing in fa
   - snare (snare): `snare` -17 dB · rev=0.15
   - chat (top): `chat` -27 dB
   - ohat (top): `ohat` -28 dB
-  - shaker (top): `shaker` -30 dB · pan=0.3
+  - shekere (top): `shekere` -30 dB · pan=0.3
   - woodblock (top): `woodblock` -28 dB · pan=-0.3
   - conga (top): `conga` -26 dB · pan=0.35
   - bass (bass): `ebass` -14 dB · alternatives ['sf:fingerbass', 'sf:pickbass']
   - chords (chords): `jangle` -22 dB · pan=-0.3 · alternatives ['mutedgtr', 'guitar', 'clav']
   - pad (pad): `organ` -26 dB · rev=0.25 · alternatives ['epiano', 'brass']
-  - arp (arp): `cleanguitar` -24 dB · pan=0.3 · alternatives ['jangle', 'guitar']
+  - arp (arp): `marimba` -24 dB · pan=0.3 · alternatives ['cleanguitar', 'jangle', 'guitar']
   - lead (lead): `cleanguitar` -17 dB · rev=0.25 · alternatives ['guitar', 'jangle', 'brass']
 - **Mix** {'lufs': -11.0, 'air': 1.2, 'low': 1.0} · reverb 2.0 · sc_depth 0.0
-- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'parent': 'afrobeat', 'lead_early': 0.4}
+- **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.92, 'chord_center': 64, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': True, 'trap_hats': False, 'kick_track': 'kick', 'suggest': '', 'lead_early': 0.4, 'parent': 'afrobeat'}
 
 ### Balkan Brass (`balkan_brass`)
 

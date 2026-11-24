@@ -324,6 +324,10 @@ def widen():
                 pools[role] = list(lst) + [x for x in pools.get(role, []) if x not in lst and role != 'bass']
             else:
                 pools[role] = list(pools.get(role, [])) + [x for x in lst if x not in pools.get(role, [])]
+    for g, roles in AUDIT_2224.items():                # (2.22.4) African genres: fewer plucks / guitars - see AUDIT_2224
+        if g in STYLES:
+            for role, lst in roles.items():
+                POOLS.setdefault(g, {})[role] = list(lst)
 
 
 # (2.2.8) the electronic sound audit (12 songs per genre): parts that always - or nearly always - got the same synth.
@@ -492,3 +496,75 @@ DUB_KITS_FOR = {g: _DEEP_KITS for g in ('dubstep', 'deep_dubstep', 'slow_wobble'
                                           'deep_dubstep_rollers', 'deep_dubstep_rolling', 'early_dubstep', 'steppy_halftime')}
 DUB_KITS_FOR.update({'brostep': ['own', 'own', 'slam', 'ddd'], 'riddim': ['own', 'own', 'slam', 'ddd', 'rimshot'],
                      'melodic_dubstep': ['own', 'own', 'smooth', 'soundsystem'], 'chillstep': ['own', 'own', 'smooth', 'soundsystem']})
+
+# (2.22.4) African genres: plucked synths and guitars had spread into most songs' arps, leads and chords, and log
+# drums / wobbles into the basses of neighbouring genres. These are the reviewed sound lists (exact, first = the
+# part's own sound): the region's instruments first, guitars only where they are the style, no generic plucks.
+AUDIT_2224 = {
+    'afro_house': {
+        'arp': ['kalimba', 'marimba', 'steeldrum', 'housechord', 'housevox', 'organchord', 'mbira', 'balafon', 'kora', 'acid_squelch', 'fmpluck'],
+        'lead': ['marimba', 'housevox', 'analoglead', 'discostrings', 'kalimba', 'flute', 'sax', 'flute_tape', 'kalimba_tape', 'kora', 'mbira',
+            'balafon', 'acidlead'],
+    },
+    'afro_three_step': {
+        'bass': ['deepsub', 'sinebass', 'deepbass', 'fmbass'],
+    },
+    'afro_village_party': {
+        'arp': ['balafon', 'marimba', 'kalimba', 'ngoni', 'kora', 'cleanguitar'],
+        'lead': ['vocalead', 'vox', 'whistlelead', 'synthbrass', 'accordion'],
+    },
+    'afro_village_synth': {
+        'arp': ['casiomarimba', 'dxbell', 'pluckbell', 'trancebell', 'marimba', 'mbira', 'chiparp'],
+    },
+    'afro_wobble': {
+        'arp': ['casiomarimba', 'dxbell', 'pluckbell', 'trancebell', 'marimba', 'mbira', 'chiparp'],
+    },
+    'afrobeat': {
+        'arp': ['clav', 'guitar', 'organ', 'balafon', 'marimba', 'wahgtr'],
+        'chords': ['mutedgtr', 'clav', 'organ', 'epiano', 'wahgtr'],
+    },
+    'afrobeats': {
+        'arp': ['kora', 'marimba', 'kalimba', 'marimba_octave', 'balafon', 'mbira', 'guitar'],
+        'chords': ['epiano', 'piano', 'organ', 'organ_dark'],
+        'lead': ['flute', 'sax', 'marimba', 'flute_soft', 'kora', 'balafon'],
+    },
+    'amapiano': {
+        'arp': ['kalimba', 'marimba', 'vibes', 'marimba_tape', 'mbira'],
+    },
+    'bacardi_house': {
+        'bass': ['sinebass', 'fmbass', '808punch'],
+        'chords': ['stab', 'organ', 'pluck', 'casiomarimba'],
+    },
+    'bass_amapiano': {
+        'lead': ['kalimba', 'analoglead_soft', 'epiano'],
+    },
+    'coupe_decale': {
+        'arp': ['pluckbell', 'casiomarimba', 'marimba', 'dxbell'],
+    },
+    'highlife': {
+        'arp': ['marimba', 'jangle', 'xylophone', 'kora', 'vibes'],
+        'chords': ['cleanguitar', 'organ', 'epiano', 'jangle'],
+    },
+    'kuduro': {
+        'chords': ['stab', 'stab_dark', 'organ_dark', 'samplerstab', 'dancestab', 'kudurostab'],
+        'lead': ['vocalchop', 'vox', 'formantchop', 'acid', 'kudurostab', 'casiolead'],
+    },
+    'kuduro_wobble': {
+        'arp': ['kudurostab', 'chiparp', 'casiomarimba'],
+        'chords': ['kudurostab', 'junopoly', 'stab_dark', 'samplerstab'],
+    },
+    'shangaan_electro': {
+        'arp': ['kalimba', 'marimba', 'bell', 'kalimba_octave', 'casiomarimba', 'mbira'],
+        'bass': ['sinebass', 'fmbass', 'casiobass', 'organbass', 'chipbass'],
+        'lead': ['marimba_octave', 'marimba', 'kalimba_octave', 'chip', 'bell', 'whistlelead', 'casiomarimba', 'casiolead'],
+        'pad': ['organ', 'choir', 'warmpad', 'strings', 'solina'],
+    },
+    'shangaan_wobble': {
+        'lead': ['whistlelead', 'squarelead', 'casiolead', 'marimba_octave'],
+    },
+    'soukous': {
+        'arp': ['marimba', 'cleanguitar', 'likembe', 'xylophone'],
+        'chords': ['jangle', 'clav', 'organ', 'epiano'],
+        'lead': ['cleanguitar', 'brass', 'sax', 'synthbrass'],
+    },
+}

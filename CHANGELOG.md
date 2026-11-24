@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.22.4
+Fewer plucks, guitars and wobble basses in the African genres.
+
+- **Plucks and guitars**: plucked synths and guitars had spread into most African songs' arps, leads and chords.
+  They now make up about 3% of those parts. Before, they were in about a third of the arps and a sixth of the chord
+  parts. The parts now go to the region's instruments:
+  - Afrobeats: kora.
+  - Afrobeat: clavinet.
+  - Highlife and soukous: marimba.
+  - Village party: balafon.
+  - Village synth and afro wobble: the home-keyboard marimba.
+  - Bacardi house chords: a stab.
+  - Amapiano family: kalimba.
+  Guitars stay where they are the style (soukous' lead, highlife's and afrobeat's rhythm guitar), and as rarer
+  choices elsewhere. Highlife and soukous also play a shekere now, like afrobeat.
+- **Wobble bass**: in afro wobble, kuduro wobble and Shangaan wobble, only the final drop wobbles (with one drop, its
+  second half). The earlier drops get a plain bass. Log drums stay in amapiano, and wobble chops are gone from kuduro.
+- Internal: the 2.22 African genre changes now live in each genre's own definition, and the sound lists in
+  `pool_variety.AUDIT_2224`, instead of being patched on afterwards.
+
 ## 2.22.3
 An instrument check of all 27 African genres.
 

@@ -1199,8 +1199,10 @@ DEMBOW_S = '...X..X....X..X.'
 
 style('afrobeats', 'Electronic', 'Afrobeats: bouncy syncopated percussion, warm guitar chops, marimba hooks',
       bpm=(98, 112), scales=['major', 'minor', 'dorian'], swing=0.56, human=0.006, chord_size=4, kit='soft', form='song',
+      lead_early=0.4,
       drums={'kick': ['X..x..X...X..x..', 'X.....X.X.....x.'], 'snare': ['....x.......x...', '......x.......x.'],
-             'rim': ['..x..x....x..x..', '...x..x..x..x...'], 'shaker': ['oxoxoxoxoxoxoxox'], 'conga': ['..o.x..o..o.x...', 'x..o..x...o..x..']},
+             'rim': ['..x..x....x..x..', '...x..x..x..x...'], 'shaker': ['oxoxoxoxoxoxoxox'], 'conga': ['..o.x..o..o.x...', 'x..o..x...o..x..'],
+             'talkdrum': ['......x.......x.', '...........x..x.']},
       snare_tracks=['snare'], bass=['R..R....R.R.....', 'R...R.R...R..A..', 'R-..R...R-..R...'], bass_lo=31,
       chord_rh=['.x.x..x..x.x..x.', 'x..x..x...x..x..'], chord_center=64, arp=dict(rate=1, mode='updown', oct=5,
                                                                                    rh=['..x.x..x..x.x..x',
@@ -1212,8 +1214,8 @@ style('afrobeats', 'Electronic', 'Afrobeats: bouncy syncopated percussion, warm 
               T('conga', 'top', 'conga', pan=0.2, db=-25), T('bass', 'bass', 'sinebass', p=dict(cut=600)),
               T('chords', 'chords', 'epiano', pan=-0.25, db=-24, p=dict(bright=6000, damp=0.99)),
               T('pad', 'pad', 'warmpad', rev=0.4, db=-28),
-              T('arp', 'arp', 'guitar', pan=0.25, rev=0.15, dly=0.15, db=-23, p=dict(bright=7500, damp=0.994)),
-              T('lead', 'lead', 'flute', rev=0.3, dly=0.2)],
+              T('arp', 'arp', 'kora', pan=0.25, rev=0.15, dly=0.15, db=-23, p=dict(bright=7500, damp=0.994)),
+              T('lead', 'lead', 'flute', rev=0.3, dly=0.2), T('talkdrum', 'top', 'talkdrum', pan=-0.3, rev=0.15, db=-26)],
       master=dict(lufs=-9.5, air=1.5, low=1.5),
       pools=dict(bass=['sinebass', 'sf:fingerbass', 'fmbass', '808'],
                  chords=['epiano', 'piano', 'sf:cleanguitar', 'guitar', 'organ'],
@@ -1236,7 +1238,7 @@ style('amapiano', 'Electronic', 'Amapiano: log-drum basslines, jazzy piano chord
               T('pad', 'pad', 'warmpad', rev=0.5, db=-27), T('arp', 'arp', 'kalimba', rev=0.3, dly=0.3, db=-26),
               T('lead', 'lead', 'flute', rev=0.3, dly=0.3)],
       master=dict(lufs=-9.5, air=1.0, low=2.0),
-      form='amapiano',
+      form='amapiano', lead_early=0.4,
       pools=dict(chords=['piano', 'epiano', 'organ', 'wurli'],
                  pad=['warmpad', 'strings', 'choir', 'glasspad', 'amapad_saw'],
                  arp=['kalimba', 'marimba', 'vibes', 'pluck'],
@@ -2334,7 +2336,8 @@ style('afro_house', 'Electronic', 'Afro house: four-on-the-floor with rolling co
       bpm=(118, 124), scales=['minor', 'dorian'], swing=0.54, human=0.004, kit='soft', form='groove', sc_depth=0.3, chord_size=4,
       progs={'minor': [[0, 6, 5, 6], [0, 3, 0, 3], [0, 5, 6, 0]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]},
       drums={'kick': [FOUR], 'clap': [BACKBEAT], 'shaker': ['xxxxxxxxxxxxxxxx'], 'conga': ['..o.x..o..o.x.o.', 'x..o..x.o..x..o.'],
-             'woodblock': ['..x.....x.x.....'], 'ohat': [OFFHAT]}, snare_tracks=['clap'],
+             'woodblock': ['..x.....x.x.....'], 'ohat': [OFFHAT], 'djembe': ['..x..x....x..x..', '.x..x..x..x...x.']},
+      snare_tracks=['clap'], lead_early=0.4,
       bass=['R..R....R..R....', '..R...R...R..R..', 'R-..R-..R-..R-..'], bass_lo=31, bass_gate=0.7,
       chord_rh=['x---------x-----', '..x.....x.......', 'x--.....x--.....'], chord_center=62,
       arp=dict(rate=2, mode='random', oct=5, prob=0.6),
@@ -2344,7 +2347,8 @@ style('afro_house', 'Electronic', 'Afro house: four-on-the-floor with rolling co
               T('conga', 'top', 'conga', pan=-0.25, db=-23), T('woodblock', 'top', 'woodblock', pan=0.2, db=-29),
               T('ohat', 'top', 'ohat', db=-28), T('bass', 'bass', 'sinebass', sc=0.5, db=-13, p=dict(cut=500)),
               T('chords', 'chords', 'warmpad', sc=0.5, rev=0.4, db=-24), T('pad', 'pad', 'choir', rev=0.5, db=-28),
-              T('arp', 'arp', 'kalimba', rev=0.3, dly=0.3, db=-24), T('lead', 'lead', 'marimba', rev=0.3, dly=0.25, db=-19)],
+              T('arp', 'arp', 'kalimba', rev=0.3, dly=0.3, db=-24), T('lead', 'lead', 'marimba', rev=0.3, dly=0.25, db=-19),
+              T('djembe', 'top', 'djembe', pan=-0.35, db=-27)],
       master=dict(lufs=-9.5, air=1.4, low=1.6),
       pools=dict(bass=['sinebass', 'fmbass', 'sawbass', '808', 'deepbass'],
                  chords=['warmpad', 'epiano', 'piano', 'organ', 'stab'],
@@ -10412,7 +10416,7 @@ style('dub_techno', 'Electronic', 'Dub techno: a soft four-on-the-floor under a 
 
 style('gqom', 'Electronic', 'Gqom (Durban): dark, raw and broken - no four-on-the-floor, but syncopated kicks and booming '
       'toms in a hypnotic loop, sparse claps, shakers, a menacing sub and chanted vocal stabs over a minimal drone',
-      bpm=(120, 128), scales=['minor', 'phrygian'], human=0.003, kit='soft', form='groove', sc_depth=0.1,
+      bpm=(120, 128), scales=['minor', 'phrygian'], human=0.003, kit='soft', form='groove', sc_depth=0.1, lead_early=0.4,
       progs={'minor': [[0, 0, 0, 0], [0, 0, 6, 6]], 'phrygian': [[0, 1, 0, 0]]}, chord_size=3,
       drums={'kick': ['X..X..X...X.....', 'X..X......X..X..', 'X.....X...X..X..'], 'tom': ['......x...x..x..', '..x...x.....x...'],
              'clap': ['....x.......x...', '............x...'], 'shaker': ['x.xxx.xxx.xxx.xx'], 'rim': ['...x.......x....']},
@@ -10678,17 +10682,17 @@ style('afrobeat', 'Classic', 'Afrobeat (70s Lagos): a long, hypnotic jam on one 
       bpm=(100, 120), scales=['dorian', 'minor', 'mixolydian'], swing=0.53, human=0.008, kit='acoustic', form='groove',
       progs={'dorian': [[0, 0, 0, 0], [0, 0, 3, 3], [0, 3, 0, 3]], 'minor': [[0, 0, 6, 6]], 'mixolydian': [[0, 0, 6, 6]]}, chord_size=4,
       drums={'kick': ['X.....X...X..X..', 'X..x..X...X.....'], 'snare': ['..o.x..o.x.o..x.', '....x..o..o.x..o'],
-             'chat': ['x.xxx.xxx.xxx.xx'], 'ohat': ['......x.......x.'], 'shaker': ['xxxxxxxxxxxxxxxx'],
+             'chat': ['x.xxx.xxx.xxx.xx'], 'ohat': ['......x.......x.'], 'shekere': ['xxxxxxxxxxxxxxxx'],
              'woodblock': ['x.x.xx.x.x.x....'], 'conga': ['..o.x..o..o.x..o']},
-      snare_tracks=['snare'], ghosts=True,
+      snare_tracks=['snare'], ghosts=True, lead_early=0.4,
       bass=['R..R..O.R.....A.', 'R.....R.O..R..A.', 'R..R.R..O.R.R...'], bass_lo=31,
       chord_rh=['.x.x.x.x.x.x.x.x', 'x.xx.x.xx.xx.x.x'], chord_center=64, arp=dict(rate=4, mode='updown', oct=5),
       lead_rh=['x-x-x---x-x-....', 'x...x...x.x.x---', '..x-x-x---x-x-x-'], lead_oct=5,
       tracks=[T('kick', 'kick', 'kick', db=-15), T('snare', 'snare', 'snare', rev=0.15, db=-17), T('chat', 'top', 'chat', db=-27),
-              T('ohat', 'top', 'ohat', db=-28), T('shaker', 'top', 'shaker', pan=0.3, db=-30), T('woodblock', 'top', 'woodblock', pan=-0.3, db=-28),
+              T('ohat', 'top', 'ohat', db=-28), T('shekere', 'top', 'shekere', pan=0.3, db=-30), T('woodblock', 'top', 'woodblock', pan=-0.3, db=-28),
               T('conga', 'top', 'conga', pan=0.35, db=-26), T('bass', 'bass', 'ebass', db=-14),
               T('chords', 'chords', 'mutedgtr', pan=-0.3, db=-22), T('pad', 'pad', 'organ', rev=0.25, db=-26),
-              T('arp', 'arp', 'guitar', pan=0.3, db=-24, p=dict(dist=0)), T('lead', 'lead', 'brass', rev=0.25, db=-17)],
+              T('arp', 'arp', 'clav', pan=0.3, db=-24, p=dict(dist=0)), T('lead', 'lead', 'brass', rev=0.25, db=-17)],
       master=dict(lufs=-11.0, air=1.2, low=1.0),
       pools=dict(bass=['ebass', 'sf:fingerbass', 'sf:pickbass'], chords=['mutedgtr', 'guitar', 'clav'], pad=['organ', 'epiano', 'brass'],
                  arp=['guitar', 'mutedgtr', 'clav'], lead=['brass', 'sax', 'sf:tenorsax', 'trumpet']),
@@ -12111,8 +12115,11 @@ derive('shangaan_electro', 'afro_house', 'Electronic',
        sounds={'lead': 'marimba_octave', 'arp': 'kalimba', 'chords': 'bitpiano', 'pad': 'organ'},
        bpm=(178, 190), scales=['major', 'mixolydian'], swing=0.5,
        progs={'major': [[0, 3, 4, 0], [0, 4, 3, 4], [0, 0, 3, 4]], 'mixolydian': [[0, 6, 3, 0]]},
+       add_tracks=[T('refwhistle', 'top', 'refwhistle', pan=0.35, rev=0.3, db=-31)],
+       drop_tracks=('djembe',),
        drums=dict(kick=['X...X...X...X...'], clap=['....x.......x...', '....x.......x.x.'], shaker=['xxxxxxxxxxxxxxxx'],
-                  woodblock=['x..x..x...x..x..', 'x..x.x..x..x.x..'], conga=['..x..x....x..x..'], ohat=['..x...x...x...x.']),
+                  woodblock=['x..x..x...x..x..', 'x..x.x..x..x.x..'], conga=['..x..x....x..x..'], ohat=['..x...x...x...x.'],
+                  refwhistle=['................', 'x...............']),
        bass=['R..R..R.R..R..R.', 'R.R..R.R..R.R..R'], bass_gate=0.5, chord_rh=['..x...x...x...x.', 'x..x..x..x..x...'],
        lead_rh=['x.xxx.x.xx.x.xx.', 'xx.x.xx.x.xx.x.x', 'x.x.x.xxx.x.x.x.'], arp=dict(rate=4, mode='updown', oct=5),
        pools=dict(lead=['marimba_octave', 'marimba', 'kalimba_octave', 'chip', 'bell', 'whistlelead'],
@@ -12167,7 +12174,11 @@ derive('highlife', 'afrobeat', 'Classic',
        'Highlife: Ghanaian and Nigerian dance-band music at 110-130 - bright interlocking clean guitars in sweet major '
        'keys, a melodic walking bass, a horn section answering the vocal line, a bell pattern and congas over a '
        'relaxed, swaying groove - joyful and elegant', 'Highlife',
-       sounds={'chords': 'cleanguitar', 'arp': 'cleanguitar', 'lead': 'brass', 'pad': 'organ'},
+       sounds={'chords': 'cleanguitar', 'arp': 'marimba', 'lead': 'brass', 'pad': 'organ'},
+       drop_tracks=('woodblock',), add_tracks=[T('agogo', 'top', 'agogo', pan=-0.3, db=-28)],
+       drums={'kick': ['X.....X...X..X..', 'X..x..X...X.....'], 'snare': ['..o.x..o.x.o..x.', '....x..o..o.x..o'],
+              'chat': ['x.xxx.xxx.xxx.xx'], 'ohat': ['......x.......x.'], 'shekere': ['xxxxxxxxxxxxxxxx'],
+              'agogo': ['x.x.xx.x.x.x....'], 'conga': ['..o.x..o..o.x..o']},
        bpm=(110, 130), scales=['major', 'mixolydian'], swing=0.54,
        progs={'major': [[0, 3, 4, 0], [0, 4, 0, 3], [0, 3, 0, 4]], 'mixolydian': [[0, 6, 3, 0]]},
        bass=['R..A..F.R...O.A.', 'R...F.A.R..F..A.'],
@@ -12178,10 +12189,10 @@ derive('soukous', 'afrobeat', 'Classic',
        'Soukous: Congolese dance music at 130-150 - glittering high guitars racing in fast cascading arpeggios (the '
        'sebene), a rolling, bouncing bass, a crisp snare on every off-beat and a driving hi-hat - bright, fast, '
        'irresistible', 'Soukous',
-       sounds={'chords': 'jangle', 'arp': 'cleanguitar', 'lead': 'cleanguitar'},
+       sounds={'chords': 'jangle', 'arp': 'marimba', 'lead': 'cleanguitar'},
        bpm=(130, 150), scales=['major'], progs={'major': [[0, 3, 4, 3], [0, 4, 0, 4], [0, 3, 0, 4]]},
        drums=dict(kick=['X...X...X...X...'], snare=['..x...x...x...x.', '..x...x...x.x.x.'], chat=['xxxxxxxxxxxxxxxx'],
-                  conga=['x..x..x...x..x..'], shaker=['x.x.x.x.x.x.x.x.']),
+                  conga=['x..x..x...x..x..'], shekere=['x.x.x.x.x.x.x.x.']),
        bass=['R..R.F..R..R.F.A', 'R.F.R..AR.F.R..O'], lead_rh=['x.x.x.x.x.x.x.x.', 'xxxxx.x.xxxxx.x.'],
        arp=dict(rate=4, mode='updown', oct=5),
        pools=dict(arp=['cleanguitar', 'jangle', 'guitar'], lead=['cleanguitar', 'guitar', 'jangle', 'brass']))
@@ -12715,7 +12726,7 @@ derive('afro_village_party', 'soukous', 'Electronic',
                T('bass', 'bass', 'ebass', db=-16.5, p=dict(cut=1800)),
                T('chords', 'chords', 'organ', pan=-0.2, rev=0.2, db=-17),
                T('pad', 'pad', 'choir', rev=0.45, db=-25),
-               T('arp', 'arp', 'cleanguitar', pan=0.25, rev=0.2, dly=0.15, db=-17),
+               T('arp', 'arp', 'balafon', pan=0.25, rev=0.2, dly=0.15, db=-17),
                T('lead', 'lead', 'vocalead', rev=0.35, dly=0.2, db=-17)],
        pools=dict(bass=['ebass', 'fmbass', 'organbass', 'sinebass'],
                   chords=['organ', 'houseorgan', 'epiano', 'accordion', 'synthbrass'],
@@ -12766,7 +12777,7 @@ derive('bass_amapiano', 'amapiano', 'Electronic',
                T('bass', 'bass', 'logdrum_sine', sc=0.45, db=-11),
                T('chords', 'chords', 'epiano', sc=0.5, rev=0.3, dly=0.2, db=-20, p=dict(cut=2600)),
                T('pad', 'pad', 'amapad_saw', sc=0.6, rev=0.6, dly=0.25, wide=0.3, hp=220, db=-23, p=dict(a=0.6, r=1.2, cut=1300)),
-               T('lead', 'lead', 'pluck', sc=0.5, rev=0.35, dly=0.3, db=-20)],
+               T('lead', 'lead', 'kalimba', sc=0.5, rev=0.35, dly=0.3, db=-20)],
        pools=dict(bass=['logdrum_sine', 'logdrum_deep', 'logdrum_talk', 'logdrum'],
                   chords=['epiano', 'amastab_saw', 'rhodes', 'piano', 'wurli', 'm1piano'],
                   pad=['amapad_saw', 'warmpad', 'glasspad', 'junopoly', 'lushpad'],
@@ -12824,7 +12835,7 @@ derive('afro_village_synth', 'afro_village_party', 'Electronic',
                T('bass', 'bass', 'fmbass', db=-15, p=dict(cut=1600)),
                T('chords', 'chords', 'junopoly', pan=-0.2, rev=0.25, db=-18),
                T('pad', 'pad', 'warmpad', rev=0.45, db=-26),
-               T('arp', 'arp', 'pluck_saw', pan=0.25, rev=0.2, dly=0.2, db=-18),
+               T('arp', 'arp', 'casiomarimba', pan=0.25, rev=0.2, dly=0.2, db=-18),
                T('lead', 'lead', 'squarelead', rev=0.35, dly=0.25, db=-17)],
        pools=dict(bass=['fmbass', 'junobass', 'sh101', 'tribass', 'sawbass'],
                   chords=['junopoly', 'polysynth', 'synthbrass', 'stab', 'dancestab', 'houseorgan'],
@@ -12854,7 +12865,7 @@ derive('afro_wobble', 'afro_village_synth', 'Electronic',
        'rims, bright synth plucks and a synth call line - crossed with dubstep: verses with no bass at all, snare-roll builds, a '
        'one-bar stop, then drops where a huge wobble bass takes over, womping in beats, dotted 8ths and half bars and '
        'gliding between notes', 'Afro Wobble (dubstep, 150-160)', form='afro_wobble',
-       sounds={'bass': 'yoiwob'},
+       sounds={'bass': 'yoiwob'}, wob_drop=['fmbass', 'junobass', 'sh101', 'tribass'],   # (2.22.4) wobble: last drop only
        wobble_rates=[1, 0.75, 0.75, 0.5, 2, 1.5], wobble_rates_alt=[0.75, 0.5, 1 / 3, 0.25, 1],
        wobble_lens=[4, 4, 8, 2], wobble_rest=0.15, wobble_glide=0.4,
        pools=dict(bass=['yoiwob', 'slowwob', 'brightwob', 'tearwob', 'pitchgrowl', 'sweepwob', 'wobble', 'reesewob']),
@@ -13247,7 +13258,7 @@ derive('bacardi_house', 'afro_house', 'Electronic',
                T('shaker', 'top', 'shaker', pan=0.25, db=-28), T('conga', 'top', 'conga', pan=-0.25, db=-25),
                T('refwhistle', 'top', 'refwhistle', pan=0.35, rev=0.3, db=-30),
                T('bass', 'bass', 'sinebass', db=-12),
-               T('chords', 'chords', 'pluck', pan=-0.15, dly=0.2, db=-19),
+               T('chords', 'chords', 'stab', pan=-0.15, dly=0.2, db=-19),
                T('pad', 'pad', 'warmpad', rev=0.5, db=-29),
                T('lead', 'lead', 'mbira', rev=0.3, dly=0.2, db=-19)],
        pools=dict(bass=['sinebass', 'logdrum', 'fmbass', '808punch'], chords=['pluck', 'afropluck', 'viruspluck', 'stab', 'organ'],
@@ -13264,7 +13275,7 @@ derive('afro_three_step', 'afro_house', 'Electronic',
        drums={'kick': ['X..X..X...X..X..', 'X..X..X.X..X..X.', 'X..X..X...X.....'],
               'rim': ['....x.......x...', '....x..x....x...'],
               'djembe': ['..x...x...x..x..', '.x..x..x..x...x.'], 'djembe_slap': ['......x.......x.', '...x......x.....'],
-              'shaker': ['x.xxx.xxx.xxx.xx'], 'ohat': ['..x...x...x...x.']},
+              'shaker': ['x.xxx.xxx.xxx.xx'], 'ohat': ['..x...x...x...x.'], 'udu': ['......x.......x.', '...x.......x....']},
        snare_tracks=['rim'],
        bass=['R.......R.......', 'R-------..R.....', 'R.....R.....R...'], bass_gate=0.9, bass_lo=29,
        chord_rh=['x---------------', 'x-------x-------'], chord_center=60,
@@ -13273,6 +13284,7 @@ derive('afro_three_step', 'afro_house', 'Electronic',
        tracks=[T('kick', 'kick', 'kick', db=-12), T('rim', 'snare', 'rim', rev=0.3, db=-23),
                T('djembe', 'top', 'djembe', pan=-0.25, db=-23), T('djembe_slap', 'top', 'djembe_slap', pan=0.3, db=-27),
                T('shaker', 'top', 'shaker', pan=0.2, db=-29), T('ohat', 'top', 'ohat', pan=-0.15, db=-30),
+               T('udu', 'top', 'udu', pan=0.15, rev=0.2, db=-25),
                T('bass', 'bass', 'deepsub', db=-12),
                T('chords', 'chords', 'darkpad', rev=0.5, db=-25),
                T('arp', 'arp', 'mbira', pan=0.25, rev=0.3, dly=0.25, db=-21),
@@ -13291,7 +13303,8 @@ derive('batida', 'kuduro', 'Electronic',
        drums={'kick': ['X..X......X.X...', 'X..X..X...X.....', 'X.....X...X..X..'],
               'djembe_slap': ['....X.......X...', '....X..x....X...'],
               'djembe': ['..x..x....x..x..', 'x..x..x..x..x...'], 'talkdrum': ['.......x.......x', '...x.......x....'],
-              'agogo': ['x.x..x.x..x.x...'], 'agogo_lo': ['..x....x....x...'], 'shaker': ['x.x.x.x.x.x.x.x.']},
+              'agogo': ['x.x..x.x..x.x...'], 'agogo_lo': ['..x....x....x...'], 'shaker': ['x.x.x.x.x.x.x.x.'],
+              'udu': ['.......x........', '...x......x.....']},
        snare_tracks=['djembe_slap'],
        bass=['R-..........R...', 'R.....R...R.....', 'R---------......'], bass_gate=0.85, bass_lo=29,
        chord_rh=['x.....x.........', '...x......x.....', 'x..x............'], chord_center=60,
@@ -13299,7 +13312,7 @@ derive('batida', 'kuduro', 'Electronic',
        tracks=[T('kick', 'kick', 'kick', db=-12), T('djembe_slap', 'snare', 'djembe_slap', rev=0.2, db=-20),
                T('djembe', 'top', 'djembe', pan=-0.25, db=-23), T('talkdrum', 'top', 'talkdrum', pan=0.3, rev=0.2, db=-23),
                T('agogo', 'top', 'agogo', pan=0.35, db=-29), T('agogo_lo', 'top', 'agogo_lo', pan=-0.35, db=-29),
-               T('shaker', 'top', 'shaker', pan=0.15, db=-31),
+               T('shaker', 'top', 'shaker', pan=0.15, db=-31), T('udu', 'top', 'udu', pan=-0.1, rev=0.2, db=-25),
                T('bass', 'bass', '808long', db=-11),
                T('chords', 'chords', 'kudurostab', pan=-0.15, rev=0.2, db=-21),
                T('pad', 'pad', 'darkpad', rev=0.5, db=-29),
@@ -13393,7 +13406,7 @@ derive('balani_show', 'afro_village_synth', 'Electronic',
        progs={'major': [[0, 4, 0, 4], [0, 3, 4, 0], [0, 0, 3, 4]], 'mixolydian': [[0, 6, 0, 4]], 'minor': [[0, 6, 5, 6]]}, own_progs=True,
        drums={'kick': ['X...X...X...X...', 'X..xX...X..xX...'],
               'djembe_slap': ['..X..X....X..X..', '.X..X..X..X..X..'], 'djembe': ['x..x..x.x..x..x.', 'x.x..x..x.x..x..'],
-              'djembe_bass': ['X.......X.......'], 'talkdrum': ['......x.....x.x.', '...x..x.......x.'],
+              'dundun': ['X.......X.......'], 'talkdrum': ['......x.....x.x.', '...x..x.......x.'],
               'shaker': ['xxxxxxxxxxxxxxxx']},
        snare_tracks=['djembe_slap'],
        bass=['R..R..R.R..R..R.', 'R.R.R.R.R.O.R.R.'], bass_gate=0.55, bass_lo=33,
@@ -13401,7 +13414,7 @@ derive('balani_show', 'afro_village_synth', 'Electronic',
        arp=dict(rate=1, mode='updown', oct=5, rh=['xxx.xxx.xxx.xx.x', 'x.xxx.xxx.xxx.xx']),
        lead_rh=['x.xxx.x.x.xxx.x.', 'xx.x.xx.xx.x.xx.'], lead_oct=5,
        tracks=[T('kick', 'kick', 'kick', db=-12), T('djembe_slap', 'snare', 'djembe_slap', rev=0.15, db=-21),
-               T('djembe', 'top', 'djembe', pan=-0.25, db=-23), T('djembe_bass', 'top', 'djembe_bass', db=-24),
+               T('djembe', 'top', 'djembe', pan=-0.25, db=-23), T('dundun', 'top', 'dundun', db=-24),
                T('talkdrum', 'top', 'talkdrum', pan=0.3, rev=0.15, db=-23), T('shaker', 'top', 'shaker', pan=0.2, db=-30),
                T('bass', 'bass', 'casiobass', db=-15),
                T('chords', 'chords', 'organ', pan=-0.2, rev=0.2, db=-24),
@@ -13467,6 +13480,7 @@ derive('kuduro_wobble', 'afro_wobble', 'Electronic',
        'Kuduro wobble (140-150): the hard, broken kuduro beat - stuttering kicks, booming toms, rims and claps - with '
        'gritty synth stabs in the verses, then dubstep drops where a huge wobble bass takes over, half-time and '
        'snarling, before the kuduro rhythm crashes back in', 'Kuduro Wobble (140-150)',
+       sounds={'chords': 'kudurostab', 'arp': 'kudurostab', 'lead': 'casiolead'}, wob_drop=['sinebass', 'fmbass_driven', '808punch'],
        bpm=(140, 150), scales=['minor', 'phrygian'], roots=[0, 2, 5, 7],
        progs={'minor': [[0, 0, 5, 6], [0, 6, 5, 6]], 'phrygian': [[0, 1, 0, 1]]}, own_progs=True,
        drums={'kick': ['X..X..X.X..X..X.', 'X..X..X...X.X...'], 'clap': ['....X.......X...', '....X..x....X.x.'],
@@ -13475,14 +13489,12 @@ derive('kuduro_wobble', 'afro_wobble', 'Electronic',
        pools=dict(chords=['kudurostab', 'stab_dark', 'samplerstab'], arp=['kudurostab', 'pluck_saw', 'chiparp'],
                   lead=['casiolead', 'squarelead', 'electrosaw'],
                   bass=['tearwob', 'brightwob', 'yoiwob', 'pitchgrowl', 'wobble']))
-for _t in STYLES['kuduro_wobble']['tracks']:
-    if _t['name'] == 'chords':
-        _t['inst'] = 'kudurostab'
 
 derive('shangaan_wobble', 'afro_wobble', 'Electronic',
        'Shangaan wobble (170-180, half-time drops): the racing Shangaan electro groove - fast kick, interlocking '
        'marimba and thumb-piano riffs, whistles and woodblocks - that breaks into half-time dubstep drops where a '
        'wobble bass womps under the marimbas', 'Shangaan Wobble (170-180)',
+       sounds={'arp': 'casiomarimba', 'lead': 'whistlelead'}, wob_drop=['casiobass', 'fmbass', 'organbass'],
        bpm=(170, 180), scales=['major', 'minor'], roots=[0, 2, 5, 7, 9],
        progs={'major': [[0, 3, 4, 0], [0, 4, 3, 4]], 'minor': [[0, 5, 6, 0], [0, 6, 5, 6]]}, own_progs=True,
        drums={'kick': ['X...X...X...X...'], 'clap': ['....x.......x...', '....x.......x.x.'],
@@ -13490,67 +13502,12 @@ derive('shangaan_wobble', 'afro_wobble', 'Electronic',
               'cowbell808': ['..x..x....x..x..'], 'tom': ['......x.......x.']},
        pools=dict(arp=['casiomarimba', 'marimba', 'kalimba', 'mbira'], chords=['bitpiano', 'organ', 'casiomarimba'],
                   lead=['whistlelead', 'casiolead', 'marimba_octave']))
-for _t in STYLES['shangaan_wobble']['tracks']:
-    if _t['name'] == 'arp':
-        _t['inst'] = 'casiomarimba'
-    if _t['name'] == 'lead':
-        _t['inst'] = 'whistlelead'
 
-# (2.22) the African genres: some songs let the lead in quietly from the very first bar (compose: lead_early)
+# (2.22) the African genres (their definitions - or their parents' - carry lead_early: some songs let the lead in
+# quietly from the very first bar, see compose)
 AFRO_LEAD_EARLY = ('afrobeats', 'amapiano', 'bass_amapiano', 'afro_house', 'gqom', 'afrobeat', 'highlife', 'soukous',
                    'shangaan_electro', 'kuduro', 'afro_village_party', 'afro_village_synth', 'afro_wobble',
                    'singeli', 'tsonga_disco', 'kwaito', 'bacardi_house', 'afro_three_step', 'batida', 'tarraxinha',
                    'mahraganat', 'kinshasa_electronics', 'balani_show', 'coupe_decale', 'funana', 'kuduro_wobble',
                    'shangaan_wobble')
-for _g in AFRO_LEAD_EARLY:
-    if _g in STYLES:
-        STYLES[_g]['lead_early'] = 0.4
 
-
-# ---- (2.22.3) instrument check of the African genres: the new drums and instruments where they belong, idiomatic
-# alternatives in the pools, and sound lists that start with the sound the genre really plays
-def _afro_add(g, track, pats):
-    STYLES[g]['tracks'].append(track)
-    STYLES[g]['drums'][track['name']] = pats
-
-
-def _afro_swap(g, old, new_name, inst):
-    for t in STYLES[g]['tracks']:
-        if t['name'] == old:
-            t['name'], t['inst'] = new_name, inst
-    STYLES[g]['drums'][new_name] = STYLES[g]['drums'].pop(old)
-    STYLES[g]['snare_tracks'] = [new_name if x == old else x for x in STYLES[g].get('snare_tracks') or []]
-
-
-def _afro_pool(g, role, items, first=None, drop=()):
-    pl = POOLS.setdefault(g, {}).setdefault(role, [])
-    pl[:] = [x for x in pl if x not in drop]
-    pl.extend(x for x in items if x not in pl)
-    if first:
-        pl[:] = [first] + [x for x in pl if x != first]
-
-
-_afro_swap('afrobeat', 'shaker', 'shekere', 'shekere')            # 70s Lagos: the shekere, not a studio shaker
-_afro_swap('highlife', 'woodblock', 'agogo', 'agogo')             # the highlife bell pattern on a real bell
-_afro_add('afrobeats', T('talkdrum', 'top', 'talkdrum', pan=-0.3, rev=0.15, db=-26), ['......x.......x.', '...........x..x.'])
-_afro_pool('afrobeats', 'arp', ['kora', 'balafon', 'mbira'])
-_afro_pool('afrobeats', 'lead', ['kora', 'balafon'])
-_afro_add('afro_house', T('djembe', 'top', 'djembe', pan=-0.35, db=-27), ['..x..x....x..x..', '.x..x..x..x...x.'])
-_afro_pool('afro_house', 'arp', ['mbira', 'balafon', 'kora'])
-_afro_pool('afro_house', 'lead', ['kora', 'mbira', 'balafon'])
-_afro_pool('amapiano', 'arp', ['mbira'])
-_afro_add('shangaan_electro', T('refwhistle', 'top', 'refwhistle', pan=0.35, rev=0.3, db=-31), ['................', 'x...............'])
-_afro_pool('shangaan_electro', 'bass', ['casiobass', 'fmbass', 'organbass', 'chipbass'],
-           drop=('sawbass', '808', 'deepbass', 'deepfmbass', 'deepbass_dark', 'sawbass_driven'))
-_afro_pool('shangaan_electro', 'arp', ['casiomarimba', 'mbira'])
-_afro_pool('shangaan_electro', 'lead', ['casiomarimba', 'casiolead'])
-_afro_pool('shangaan_electro', 'pad', ['solina'], drop=('strings_dark', 'strings_wide'))
-_afro_pool('kuduro', 'chords', ['kudurostab'])
-_afro_pool('kuduro', 'lead', ['kudurostab', 'casiolead'])
-_afro_pool('afro_village_party', 'arp', ['ngoni', 'kora'])
-_afro_swap('balani_show', 'djembe_bass', 'dundun', 'dundun')      # the ensemble's bass drum with its bell
-_afro_add('afro_three_step', T('udu', 'top', 'udu', pan=0.15, rev=0.2, db=-25), ['......x.......x.', '...x.......x....'])
-_afro_add('batida', T('udu', 'top', 'udu', pan=-0.1, rev=0.2, db=-25), ['.......x........', '...x......x.....'])
-_afro_pool('kuduro_wobble', 'chords', [], first='kudurostab')
-_afro_pool('shangaan_wobble', 'arp', [], first='casiomarimba')
-_afro_pool('shangaan_wobble', 'lead', [], first='whistlelead')

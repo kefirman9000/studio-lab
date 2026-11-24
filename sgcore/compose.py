@@ -2095,6 +2095,7 @@ def compose(opts):
     st['callbacks'] = _pl.callbacks(evs, sections, st, opts, key)          # (2.16) the song quotes itself
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
+    wobble_in_drops(evs, tracks, sections, st, opts)      # (2.22.4) wobble genres: the wobble is saved for the drops
     _sw = _ev.structure_moves(evs, sections, st, opts, tracks, POOLS_.get(opts.style, {}).get('bass') or [], fx)
     if _sw:                                               # (1.91) layered intros / outros, switch-up drops
         tracks[_sw['name']] = _sw
@@ -3265,6 +3266,31 @@ def switch_sections(evs, tracks, sections):
         g = next((g for b0, b1, g in spans if b0 <= e.beat < b1), None)
         if g in to:
             e.track = to[g]
+
+
+def wobble_in_drops(evs, tracks, sections, st, opts):
+    """(2.22.4) Genres with 'wob_drop' (the afro-wobble family): the wobble bass is saved for the final drop; the
+    earlier drops, verses and breaks get a plain bass from 'wob_drop', so the wobble lands as an event instead of
+    playing through every drop of every song. A bass sound you picked yourself plays everywhere, as always."""
+    plain = st.get('wob_drop')
+    bass = tracks.get('bass')
+    if not plain or not bass or bass.get('user_pick') or 'bass' in (opts.instruments or {}):
+        return
+    drops = [x for x in sections if section_group(x) == 'B']
+    if not drops:
+        return
+    last = drops[-1]                                      # only the final drop wobbles (one drop: its second half)
+    b0 = last['bar'] * 4 + (last['bars'] * 2 if len(drops) == 1 else 0)
+    spans = [(b0, (last['bar'] + last['bars']) * 4)]
+    wob = dict(bass, name='bass_wob', pooled=True)
+    bass['inst'] = random.Random(f"{opts.seed}-verse-bass").choice(list(plain))
+    bass['pooled'] = True
+    bass['p'] = {}
+    tracks['bass_wob'] = wob
+    st['tracks'].append(wob)
+    for e in evs:
+        if e.track == 'bass' and any(b0 <= e.beat < b1 for b0, b1 in spans):
+            e.track = 'bass_wob'
 
 
 def add_bass_switch_tracks(st):
