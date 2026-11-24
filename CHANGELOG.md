@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.22.1
+- The Mac installer build retries when macOS reports the disk image as busy (this transient error stopped the 2.21.1
+  release from publishing).
+
 ## 2.22.0
 More fast African electronic dance music, new instruments and drums for it, and a lead that sometimes starts early.
 

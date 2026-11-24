@@ -63,5 +63,12 @@ codesign --verify --deep "$APP"
 STAGE="build/mac/dmg"; rm -rf "$STAGE"; mkdir -p "$STAGE"
 cp -R "$APP" "$STAGE/"
 ln -s /Applications "$STAGE/Applications"
-hdiutil create -volname "Studio Lab" -srcfolder "$STAGE" -ov -format UDZO "dist/StudioLab-${VER}-Mac-${LABEL}.dmg"
+# hdiutil sometimes fails with "Resource busy" on CI runners (a disk-image helper still holding the volume): retry
+for try in 1 2 3 4 5; do
+  if hdiutil create -volname "Studio Lab" -srcfolder "$STAGE" -ov -format UDZO "dist/StudioLab-${VER}-Mac-${LABEL}.dmg"; then
+    break
+  fi
+  [ "$try" = 5 ] && exit 1
+  echo "hdiutil busy - retrying in $((try * 10))s"; sleep $((try * 10))
+done
 echo "built dist/StudioLab-${VER}-Mac-${LABEL}.dmg"
