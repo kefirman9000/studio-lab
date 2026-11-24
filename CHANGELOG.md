@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.22.2
+- **Fix (Windows): the app could freeze right after loading.** Windows let a new sound engine start on the same port
+  as one left over from an earlier session (after an update restart or a window closed hard). The main screen loaded
+  from one engine and then talked to the other, which refused it. Each engine now gets a port of its own, skipping any
+  port something else already answers on.
+
 ## 2.22.1
 - The Mac installer build retries when macOS reports the disk image as busy (this transient error stopped the 2.21.1
   release from publishing).

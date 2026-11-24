@@ -4,6 +4,7 @@ import json
 import re
 import mimetypes
 import secrets
+import socket
 import os
 import queue
 import random
@@ -1195,6 +1196,28 @@ class Handler(BaseHTTPRequestHandler):
         self.send_error(404)
 
 
+class _Server(ThreadingHTTPServer):
+    """(2.22.2) One engine per port. Python's server turns on SO_REUSEADDR, and on Windows that lets a second process
+    bind a port another one is still listening on: a leftover engine from an earlier session (an update restart, a
+    window closed hard) and the new one then shared 8765, the page loaded from one and its requests went to the other,
+    which refused them (another session's token) - the main screen sat frozen. Windows gets exclusive use instead."""
+    allow_reuse_address = os.name != 'nt'
+
+    def server_bind(self):
+        if os.name == 'nt' and hasattr(socket, 'SO_EXCLUSIVEADDRUSE'):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
+
+
+def _port_taken(p):
+    """Something (an earlier Studio Lab engine, another app) already answers on this port."""
+    try:
+        with socket.create_connection(('127.0.0.1', p), timeout=0.25):
+            return True
+    except OSError:
+        return False
+
+
 def start_server(port=8765):
     """Start the background workers and the local web server (serving in its own thread). Returns (server, url)."""
     from . import diagnostics
@@ -1209,13 +1232,19 @@ def start_server(port=8765):
         t = threading.Timer(delay, fn)
         t.daemon = True
         t.start()
+    srv = None
     for p in range(port, port + 20):
+        if _port_taken(p):
+            continue
         try:
-            srv = ThreadingHTTPServer(('127.0.0.1', p), Handler)
+            srv = _Server(('127.0.0.1', p), Handler)
             PORT[0] = p
             break
         except OSError:
             continue
+    if srv is None:                                      # every port of ours busy: let the system pick a free one
+        srv = _Server(('127.0.0.1', 0), Handler)
+        PORT[0] = srv.server_address[1]
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     return srv, f'http://127.0.0.1:{srv.server_address[1]}/'
 

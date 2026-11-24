@@ -1523,6 +1523,7 @@ def main():
     test_learn_from_midi()
     test_new_song_never_overwrites()
     test_afro_street_genres_and_early_lead()
+    test_engine_gets_its_own_port()
     print('all good')
 
 
@@ -1600,6 +1601,23 @@ def test_afro_street_genres_and_early_lead():
         assert soft and max(e.vel for e in soft) < 0.45, seed               # it plays in the intro, quietly
     assert 0 < early < 8                                                     # only sometimes
     print('ok  African street / rave genres, their instruments and drums, the soft early lead (sometimes)')
+
+
+def test_engine_gets_its_own_port():
+    """(2.22.2) A port another engine is listening on is skipped (Windows used to let two engines share 8765)."""
+    import threading
+    from sgcore import app
+    a = app._Server(('127.0.0.1', 0), app.Handler)
+    port = a.server_address[1]
+    threading.Thread(target=a.serve_forever, daemon=True).start()
+    try:
+        assert app._port_taken(port)
+        assert app._Server.allow_reuse_address == (os.name != 'nt')
+    finally:
+        a.shutdown()
+        a.server_close()
+    assert not app._port_taken(port)
+    print('ok  each engine gets its own port (no sharing with a leftover engine)')
 
 
 if __name__ == '__main__':
