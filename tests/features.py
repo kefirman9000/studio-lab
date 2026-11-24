@@ -1554,5 +1554,20 @@ def test_learned_from_stems():
     assert (f[hz < 60] ** 2).sum() > 0.5 * (f ** 2).sum()             # the stepper sub is mostly sub, like the stems
 
 
+def test_new_song_never_overwrites():
+    """(2.21.1) Same name, genre, key, tempo and seed again -> '<title> (2)', '(3)' ... instead of overwriting."""
+    import tempfile
+    from sgcore.api import _free_title
+    with tempfile.TemporaryDirectory() as d:
+        t = 'Song_house_C-minor_124bpm_seed5'
+        assert _free_title(d, t) == t
+        open(os.path.join(d, t + '.mp3'), 'w').close()
+        assert _free_title(d, t) == t + ' (2)'
+        open(os.path.join(d, t + ' (2)_settings.json'), 'w').close()
+        assert _free_title(d, t) == t + ' (3)'
+        from sgcore.app import project_base
+        assert project_base(t + ' (2)_settings.json') == t + ' (2)'
+
+
 if __name__ == '__main__':
     main()

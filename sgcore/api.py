@@ -29,6 +29,17 @@ def song_title(song):
     return f"{song['style']}_{song['key'].name().replace(' ', '-').replace('#', 's')}_{song['bpm']}bpm_seed{song['seed']}"
 
 
+def _free_title(outdir, title):
+    """(2.21.1) Generating never overwrites a song already on disk: the new one gets a number, '..._seed5 (2)',
+    '..._seed5 (3)' ... (previews and section previews still replace their own scratch files)."""
+    exts = ('.wav', '.mp3', '.flac', '_settings.json')
+    n, cand = 1, title
+    while any(os.path.exists(os.path.join(outdir, cand + x)) for x in exts):
+        n += 1
+        cand = f'{title} ({n})'
+    return cand
+
+
 def _sec_at(song, beat):
     if song.get('tempo_map'):
         from .windows import tempo_seconds
@@ -330,6 +341,8 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
         # (2.18) an edited version of a song that's already on disk gets its own file: never overwrites the original
         import hashlib
         title += '_edit-' + hashlib.sha1(json.dumps(edits, sort_keys=True, default=str).encode()).hexdigest()[:6]
+    if section is None and not preview:
+        title = _free_title(outdir, title)              # (2.21.1) a new song never overwrites one on disk
     os.makedirs(outdir, exist_ok=True)
     log(f"== \"{name}\"")
     log(f"== {info['style']} | {info['key']} | {info['bpm']} BPM | {info['duration']} | seed {opts.seed}")

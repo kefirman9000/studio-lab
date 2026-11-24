@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.21.1
+- **Generating never overwrites a song.** When a song with the same file name is already in your output folder
+  (same name, genre, key, tempo and seed - e.g. "New sounds", or the same seed with other settings), the new one is
+  saved as `..._seed5 (2)`, `(3)` ... and the earlier one stays. Previews still replace their own scratch files.
+
 ## 2.21.0
 Your own drums, learning from MIDI files, and genres that sound less alike.
 
