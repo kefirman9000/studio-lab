@@ -17,6 +17,8 @@ Drums
     agogo / agogo_lo                     the two bells of an agogo
     ferrinho       Cape Verdean scraped iron bar (funana)
     refwhistle     a referee's pea whistle (the Shangaan / batucada party whistle)
+    udu            Nigerian clay pot drum: a deep, liquid whoop
+    dundun         the djembe ensemble's big bass drum, with its bell
 """
 import zlib
 
@@ -62,14 +64,14 @@ def _thumb(name, m, dur, p, buzz=0.18):
 
 def i_mbira(m, dur, p, glide=None, mod=None):
     """Mbira: metal tines over a hollow gourd with bottle caps that buzz - a round, ringing note with a sizzle under it."""
-    return _ms_stereo(_thumb('mbira', m, dur, p), 22) * 0.42
+    return _ms_stereo(fade_out(_thumb('mbira', m, dur, p), 0.08), 22) * 0.42
 
 
 def i_likembe(m, dur, p, glide=None, mod=None):
     """Electric likembe: a thumb piano with a pickup through a small, overdriven amplifier - fuzzy, buzzing and loud."""
     y = _thumb('likembe', m, dur, p, buzz=0.3)
     y = np.tanh(eq(y, 'peak', 900, 1.0, 6.0) * p.get('drive', 5.0)) * 0.5      # a cheap amp pushed hard
-    y = bp(y, 180, 5200)
+    y = fade_out(bp(y, 180, 5200), 0.08)
     return _ms_stereo(y, 30) * 0.75
 
 
@@ -135,9 +137,10 @@ def i_ngoni(m, dur, p, glide=None, mod=None):
     n = gate + int(0.5 * SR)
     exc = _bass_exc(f, 'pick', 1.2)
     y = _va.string(f, n, exc, t60=p.get('t60', 1.3), bright=0.72, gate=gate, mute_t60=0.25, pickup=0.12)
-    y = eq(eq(hp(y, 160), 'peak', 1400, 1.4, 6.0), 'peak', 300, 1.0, -4.0)     # the skin: a nasal, bright body
-    y = np.tanh(y * 1.4) * 0.8
-    return _ms_stereo(y, 20) * 1.2
+    t = _t(len(y))
+    body = eq(eq(hp(y, 90), 'peak', 1400, 1.6, 4.5), 'peak', 220, 1.2, 3.0)   # the skin: nasal and bright, the
+    y = np.tanh(body * 1.3) * 0.8 * np.minimum(t / 0.0012, 1)                  # wooden body keeps the fundamental
+    return _ms_stereo(fade_out(y, 0.05), 20) * 1.1
 
 
 def i_mizmar(m, dur, p, glide=None, mod=None):
@@ -154,7 +157,7 @@ def i_mizmar(m, dur, p, glide=None, mod=None):
     x = eq(eq(eq(x, 'peak', 1250, 2.0, 10.0), 'peak', 2600, 2.5, 7.0), 'peak', 400, 1.0, -6.0)
     x = np.tanh(hp(x, 220) * 1.8)
     breath = 0.04 * bp(r.standard_normal(n), 1500, 5000)
-    return _ms_stereo(lp(x + breath, 7500) * env, 28) * 0.55
+    return _ms_stereo(hp(lp(x + breath, 7500), 90) * env, 28) * 0.55
 
 
 # ----------------------------------------------------------------------------------------------- drums
@@ -258,6 +261,28 @@ def d_refwhistle(p):
     return y * env * 0.5
 
 
+def d_udu(p):
+    """Udu: a clay pot drum - a hand slapped over the side hole gives a deep, liquid 'whoop' that bends up."""
+    n = int(0.45 * SR)
+    t = _t(n)
+    f = p.get('pitch', 95)
+    fr = f * (1 + 0.6 * (1 - np.exp(-t / 0.05)))                                       # the air in the pot: pitch rises
+    y = np.sin(2 * np.pi * np.cumsum(fr) / SR) * np.exp(-t * 7) * np.minimum(t / 0.004, 1)
+    y += 0.2 * bp(noise(n), 300, 2000) * np.exp(-t * 90)
+    return fade_out(y, 0.05)
+
+
+def d_dundun(p):
+    """Dundun: the big cylinder bass drum of a djembe ensemble, struck with a stick, a bell on top clanking with it."""
+    n = int(0.5 * SR)
+    t = _t(n)
+    f = p.get('pitch', 70)
+    y = _membrane(f * 1.4, f, n, 8, 0.02) + 0.3 * _membrane(f * 2.6, f * 2.4, n, 20)
+    y += 0.25 * bp(noise(n), 1000, 5000) * np.exp(-t * 120)                            # the stick
+    y += 0.35 * _bell(1250, n, 22)                                                      # the bell
+    return fade_out(np.tanh(y * 1.2), 0.05)
+
+
 NEW = {
     'mbira': (i_mbira, 'Mbira (thumb piano, buzzing gourd)', ('arp', 'lead', 'chords'), 108),
     'likembe': (i_likembe, 'Electric likembe (amplified, fuzzy thumb piano)', ('arp', 'lead'), 108),
@@ -277,7 +302,8 @@ for _k, (_fn, _info, _roles, _gm) in NEW.items():
             ROLE_CHOICES[_r].append(_k)
 
 NEW_DRUMS = {'djembe': d_djembe, 'djembe_slap': d_djembe_slap, 'djembe_bass': d_djembe_bass, 'talkdrum': d_talkdrum,
-             'shekere': d_shekere, 'agogo': d_agogo, 'agogo_lo': d_agogo_lo, 'ferrinho': d_ferrinho, 'refwhistle': d_refwhistle}
+             'shekere': d_shekere, 'agogo': d_agogo, 'agogo_lo': d_agogo_lo, 'ferrinho': d_ferrinho, 'refwhistle': d_refwhistle,
+             'udu': d_udu, 'dundun': d_dundun}
 
 
 def _peak(fn, level=0.9):
@@ -292,6 +318,7 @@ NEW_DRUMS = {k: _peak(v) for k, v in NEW_DRUMS.items()}
 DRUMS.update(NEW_DRUMS)
 DRUM_LABELS = {'djembe': 'Djembe (tone)', 'djembe_slap': 'Djembe (slap)', 'djembe_bass': 'Djembe (bass)',
                'talkdrum': 'Talking drum', 'shekere': 'Shekere', 'agogo': 'Agogo (high)', 'agogo_lo': 'Agogo (low)',
-               'ferrinho': 'Ferrinho (scraper)', 'refwhistle': 'Party whistle'}
+               'ferrinho': 'Ferrinho (scraper)', 'refwhistle': 'Party whistle',
+               'udu': 'Udu (clay pot drum)', 'dundun': 'Dundun (bass drum + bell)'}
 DRUM_GM = {'djembe': 63, 'djembe_slap': 62, 'djembe_bass': 64, 'talkdrum': 47, 'shekere': 82, 'agogo': 67, 'agogo_lo': 68,
-           'ferrinho': 73, 'refwhistle': 72}
+           'ferrinho': 73, 'refwhistle': 72, 'udu': 64, 'dundun': 41}

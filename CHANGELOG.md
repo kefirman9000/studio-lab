@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.22.3
+An instrument check of all 27 African genres.
+
+- **Fixed instruments**: the ngoni clicked on every note and its low notes sounded an octave or a fifth too high
+  (the fundamental was filtered away). The mizmar had a DC offset, and the thumb pianos (mbira, likembe) could
+  stop while still ringing. All fixed.
+- **New drums**: udu (Nigerian clay pot drum) and dundun (the djembe ensemble's bass drum, with its bell).
+- **Afrobeat** plays a shekere instead of a studio shaker. **Highlife** plays its bell pattern on an agogo.
+  **Afrobeats** gets a talking drum, and **Afro house** gets a djembe. **Shangaan electro** gets the party
+  whistle. **Balani show** gets a dundun, and **Afro 3-step** and **batida** get an udu.
+- **Better sound choices**: kora, balafon and mbira are now options in Afrobeats, Afro house and amapiano, and
+  ngoni and kora in the village party. Shangaan electro's bass choices are keyboard basses (home-keyboard FM bass,
+  organ bass) instead of deep-house saws, and it can use the home-keyboard marimba and lead. Kuduro gets the
+  kuduro stab.
+- Kuduro wobble and Shangaan wobble: re-rolling a part no longer swaps away from the genre's own sound.
+
 ## 2.22.2
 - **Fix (Windows): the app could freeze right after loading.** Windows let a new sound engine start on the same port
   as one left over from an earlier session (after an update restart or a window closed hard). The main screen loaded

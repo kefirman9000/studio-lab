@@ -13505,3 +13505,52 @@ AFRO_LEAD_EARLY = ('afrobeats', 'amapiano', 'bass_amapiano', 'afro_house', 'gqom
 for _g in AFRO_LEAD_EARLY:
     if _g in STYLES:
         STYLES[_g]['lead_early'] = 0.4
+
+
+# ---- (2.22.3) instrument check of the African genres: the new drums and instruments where they belong, idiomatic
+# alternatives in the pools, and sound lists that start with the sound the genre really plays
+def _afro_add(g, track, pats):
+    STYLES[g]['tracks'].append(track)
+    STYLES[g]['drums'][track['name']] = pats
+
+
+def _afro_swap(g, old, new_name, inst):
+    for t in STYLES[g]['tracks']:
+        if t['name'] == old:
+            t['name'], t['inst'] = new_name, inst
+    STYLES[g]['drums'][new_name] = STYLES[g]['drums'].pop(old)
+    STYLES[g]['snare_tracks'] = [new_name if x == old else x for x in STYLES[g].get('snare_tracks') or []]
+
+
+def _afro_pool(g, role, items, first=None, drop=()):
+    pl = POOLS.setdefault(g, {}).setdefault(role, [])
+    pl[:] = [x for x in pl if x not in drop]
+    pl.extend(x for x in items if x not in pl)
+    if first:
+        pl[:] = [first] + [x for x in pl if x != first]
+
+
+_afro_swap('afrobeat', 'shaker', 'shekere', 'shekere')            # 70s Lagos: the shekere, not a studio shaker
+_afro_swap('highlife', 'woodblock', 'agogo', 'agogo')             # the highlife bell pattern on a real bell
+_afro_add('afrobeats', T('talkdrum', 'top', 'talkdrum', pan=-0.3, rev=0.15, db=-26), ['......x.......x.', '...........x..x.'])
+_afro_pool('afrobeats', 'arp', ['kora', 'balafon', 'mbira'])
+_afro_pool('afrobeats', 'lead', ['kora', 'balafon'])
+_afro_add('afro_house', T('djembe', 'top', 'djembe', pan=-0.35, db=-27), ['..x..x....x..x..', '.x..x..x..x...x.'])
+_afro_pool('afro_house', 'arp', ['mbira', 'balafon', 'kora'])
+_afro_pool('afro_house', 'lead', ['kora', 'mbira', 'balafon'])
+_afro_pool('amapiano', 'arp', ['mbira'])
+_afro_add('shangaan_electro', T('refwhistle', 'top', 'refwhistle', pan=0.35, rev=0.3, db=-31), ['................', 'x...............'])
+_afro_pool('shangaan_electro', 'bass', ['casiobass', 'fmbass', 'organbass', 'chipbass'],
+           drop=('sawbass', '808', 'deepbass', 'deepfmbass', 'deepbass_dark', 'sawbass_driven'))
+_afro_pool('shangaan_electro', 'arp', ['casiomarimba', 'mbira'])
+_afro_pool('shangaan_electro', 'lead', ['casiomarimba', 'casiolead'])
+_afro_pool('shangaan_electro', 'pad', ['solina'], drop=('strings_dark', 'strings_wide'))
+_afro_pool('kuduro', 'chords', ['kudurostab'])
+_afro_pool('kuduro', 'lead', ['kudurostab', 'casiolead'])
+_afro_pool('afro_village_party', 'arp', ['ngoni', 'kora'])
+_afro_swap('balani_show', 'djembe_bass', 'dundun', 'dundun')      # the ensemble's bass drum with its bell
+_afro_add('afro_three_step', T('udu', 'top', 'udu', pan=0.15, rev=0.2, db=-25), ['......x.......x.', '...x.......x....'])
+_afro_add('batida', T('udu', 'top', 'udu', pan=-0.1, rev=0.2, db=-25), ['.......x........', '...x......x.....'])
+_afro_pool('kuduro_wobble', 'chords', [], first='kudurostab')
+_afro_pool('shangaan_wobble', 'arp', [], first='casiomarimba')
+_afro_pool('shangaan_wobble', 'lead', [], first='whistlelead')

@@ -1,6 +1,6 @@
-STUDIO LAB - ALL 422 GENRES  (version 2.21.1)
+STUDIO LAB - ALL 422 GENRES  (version 2.22.2)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 2.21
+* = new in 2.22
 
 ========================================================================
 ELECTRONIC  (224)
