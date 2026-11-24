@@ -121,10 +121,11 @@ The **🎻 Real instruments** tab downloads free recorded instruments (all publi
 
 | Choice | What it changes |
 |---|---|
-| **Drum style** | What the drums play: the genre's own beat, a classic break (jungle break, fast funk break, laid-back funk break ...), the genre's programmed beat without its break, or any other genre's beat. Beats that fit your tempo are listed first, then half / double time, then the rest by feel (four-on-the-floor, half-time, two-step, breakbeat, shuffle, backbeat ...). |
+| **Drum style** | What the drums play: the genre's own beat, a beat from the **beat library** (four on the floor, disco, 2-step, breakbeat, boom bap, trap, half-time, drum & bass, Jersey club, dembow, Afrobeats, rock, Motown, shuffle, train beat, bossa, swing, soft pulse, minimal), a classic break (jungle break, fast funk break, laid-back funk break ...), the genre's programmed beat without its break, or any other genre's beat. Beats that fit your tempo are listed first, then half / double time, then the rest by feel (four-on-the-floor, half-time, two-step, breakbeat, shuffle, backbeat ...). |
 | **Drummer** | How it's played: fills (none / fewer / more), ghost notes (off / more) and hi-hats (sparse 8ths / busy 16ths). |
 | **Percussion** | What rides on top of the kit: the genre's own, none, or a set - shakers, tambourine, disco, Latin, Afro, Caribbean, woodblocks. |
 | **Drum sounds** | The kit: drum machines (808, 909, CR-78, 606, 707, DMX, LinnDrum ...), real kits, sampled-break kits, drum & bass kits, or your own samples. |
+| **Drum voices** | Any single drum from somewhere else: the kick, snare, clap, hi-hats, ride, crash, rim or shaker can each come from another drum machine, a real kit or **one of your own samples** (＋ Load a sample for this drum…), while the rest of the kit stays. |
 
 Changing the drum sounds never changes the pattern: jungle on a 909 still plays its jungle break.
 
@@ -159,6 +160,7 @@ Each part's **Sound** menu lists your installed plugins too, so you can put any 
 - **✨ Start here** (top right) is the quick way in: pick a kind of music and press one button.
 - Search the genre list by name, instrument or mood (try *sitar*, *surf*, *organ*), ☆ star your favourites, and find recently used genres at the top.
 - On a result, **✨ More like this** makes a new song keeping what you tick (groove, chords, melody, sounds); **🔀 Something different** changes everything but the genre.
+- **🎼 Learn from MIDI** reads a song's MIDI file - its tempo, chord loops and drum and bass rhythms - and either adds those grooves to the genre you're on (it plays them among its own from then on) or saves a new genre of your own under ★ My genres that plays only them. Forget or delete either one any time; nothing is changed until you choose.
 - **🎯 Match a reference** takes audio, MIDI, MusicXML or a Studio Lab settings file - for audio it also suggests the genres it sounds closest to (tempo, key, drum feel and sound).
 - **📤 Share** on a result saves a tiny settings file; a friend opens it with **Presets → Load a shared song** and gets the exact same song.
 - The **Full song length** row picks a radio edit, normal, extended / club or a 16-bar loop in one click.

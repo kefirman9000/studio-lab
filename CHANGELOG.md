@@ -1,5 +1,30 @@
 # Changelog
 
+## 2.21.0
+Your own drums, learning from MIDI files, and genres that sound less alike.
+
+- **🎼 Learn from MIDI** (next to 🎯 Match a reference): pick a song's MIDI file and Studio Lab reads its tempo, key,
+  chord loops (as scale degrees) and its drum and bass rhythms (fills and build-up rolls left out). Then either
+  **➕ Add to <genre>** - the genre plays those grooves among its own from now on - or **★ Save as my genre** - a new
+  genre built on the one you're on, at the file's tempo, playing only those grooves, listed under **★ My genres**.
+  What you taught is kept with your samples (survives updates) and listed with *forget* / *delete* links; forgetting
+  puts the genre back exactly as it was. RIFF-wrapped .rmi files now read too.
+- **Your own sample on any single drum**: Drum voices now has eight voices (kick, snare, clap, hi-hats, ride, crash,
+  rim, shaker); each can come from another drum machine, a real kit or **one of your samples** - "＋ Load a sample for
+  this drum…" right in the menu. Drum samples can have any name now (a library), not just the slot names.
+- **Beat library** in Drum style: 19 classic beats (four on the floor, disco, 2-step, breakbeat, boom bap, trap,
+  half-time, drum & bass, Jersey club, dembow, Afrobeats, rock, Motown, shuffle, train beat, bossa, swing, soft
+  pulse, minimal) you can put on any genre's sounds; a break genre then plays the beat instead of its break.
+- **Genres that sounded like a neighbour now differ**: Wonder plays the celesta, harp and horn its description
+  promised (it had Storybook Score's sounds exactly); Celtic Punk gets the folk polka two-beat (kick on 1 and 3, snare
+  on the off-beats) and its own kit instead of plain punk's drums; Celtic Session plays a pub guitar strum and
+  mandolin instead of the reel's bouzouki and banjo; Anthem Trance gets its own supersaw anthem lead, pluck arp,
+  classic trance kit and quarter-note ride instead of the club remix's; own kits for Progressive Trance (909),
+  Cinematic Trap (hard), Rage (phonk 808), Plugg (soft), Sunrise Chillwave (vintage) and Switch-up Mallets (707).
+- **tools/genre_twins.py** scores how alike every pair of genres is built (tempo, swing, kit, drum patterns, bass
+  line, sounds); tests.features now fails if a new genre is a near-copy of an existing one.
+- CI: the slow smoke render runs as 8 parallel shards instead of 3 (about 10 minutes instead of ~28).
+
 ## 2.20.3
 
 - Fixed: turning a part down barely changed it in house, techno, dubstep and boom bap. Setting any part level switched

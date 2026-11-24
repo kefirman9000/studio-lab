@@ -732,6 +732,9 @@ class Handler(BaseHTTPRequestHandler):
             q = {k: v[0] for k, v in parse_qs(urlparse(self.path).query).items()}
             try:
                 raw = self._raw()
+                if p == '/api/upload/learnmidi':        # (2.21) Learn from MIDI: what a genre can take from this file
+                    from . import midilearn
+                    return self._json(midilearn.learn(raw, q.get('name', '')))
                 if p == '/api/upload/reffile':          # MIDI / MusicXML / settings reference
                     from .refparse import analyze_file
                     try:
@@ -781,6 +784,20 @@ class Handler(BaseHTTPRequestHandler):
             except ValueError as e:
                 return self._json({'error': str(e)}, 400)
             return self._deny()
+        if p in ('/api/learn', '/api/learn/forget'):     # (2.21) teach a genre / save a variant / forget
+            from . import midilearn
+            try:
+                if p == '/api/learn/forget':
+                    out = midilearn.forget(STYLES, body.get('genre'), body.get('variant'))
+                elif body.get('mode') == 'variant':
+                    vid = midilearn.make_variant(STYLES, body.get('genre'), str(body.get('label') or '')[:60],
+                                                 body.get('learned') or {})
+                    out = dict(midilearn.listing(), variant=vid, used=['drums', 'bass', 'chords', 'tempo'])
+                else:
+                    out = dict(midilearn.listing(), used=midilearn.teach(STYLES, body.get('genre'), body.get('learned') or {}))
+            except ValueError as e:
+                return self._json({'error': str(e)}, 400)
+            return self._json(dict(out, meta=meta()))
         if p == '/api/project':
             try:
                 return self._json(open_project(body.get('name'), body.get('settings')))
@@ -1182,6 +1199,11 @@ def start_server(port=8765):
     """Start the background workers and the local web server (serving in its own thread). Returns (server, url)."""
     from . import diagnostics
     diagnostics.capture()
+    try:                                                 # (2.21) what you taught genres from MIDI files
+        from . import midilearn
+        midilearn.apply_saved(STYLES)
+    except Exception as e:                               # noqa: BLE001 - never stop the app over it
+        print('learned grooves not loaded:', e)
     threading.Thread(target=worker, daemon=True).start()
     for delay, fn in ((20.0, startup_detect), (30.0, storage_loop)):   # (2.2.6) after the window has loaded
         t = threading.Timer(delay, fn)

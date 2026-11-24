@@ -35,8 +35,8 @@ def save(kind, name, pcm, root_note=60, vtype='phrase'):
     d = os.path.join(ROOT, _kind(kind))
     os.makedirs(d, exist_ok=True)
     name = _safe(name)
-    if kind == 'drums' and name not in DRUM_SLOTS:
-        raise ValueError('unknown drum slot')
+    # drums: a slot name ('snare') is what 'my samples' plays for that part; (2.21) any other name joins your drum
+    # library and can be picked for any drum voice
     x = np.asarray(pcm, dtype=np.float32)[: SR * (10 if kind == 'vocal' else 20)]
     if len(x) < 100:
         raise ValueError('sound is too short')

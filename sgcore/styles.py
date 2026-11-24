@@ -12232,7 +12232,11 @@ derive('wonder', 'storybook_score', 'Orchestral',
        'Wonder / discovery: a score for the moment something magical appears - shimmering celesta and harp arpeggios, '
        'warm sustained strings rising in lydian, a soaring horn and flute melody and a gentle swell of choir - '
        'awe-struck, glowing and hopeful', 'Wonder / Discovery',
-       scales=['lydian', 'major'], progs={'lydian': [[0, 1, 0, 1], [0, 1, 5, 4]], 'major': [[0, 3, 5, 4], [0, 5, 3, 4]]})
+       scales=['lydian', 'major'], progs={'lydian': [[0, 1, 0, 1], [0, 1, 5, 4]], 'major': [[0, 3, 5, 4], [0, 5, 3, 4]]},
+       # (2.21) its own sounds: celesta arpeggios doubled by harp, a horn melody (it shared storybook score's exactly)
+       sounds={'arp': 'celesta', 'lead': 'horn'},
+       add_tracks=[T('harp', 'arp', 'harp', pan=-0.3, rev=0.5, db=-25, double_of='arp', keep_inst=True)],
+       pools=dict(arp=['celesta', 'glock', 'harp', 'vibes'], lead=['horn', 'flute', 'strings']))
 
 
 # ---- (2.4) Celtic: the jig plus reels, slow airs, Celtic punk, sea shanties, a highland pipe band, Celtic new age ---
@@ -12267,6 +12271,9 @@ derive('celtic_punk', 'punk', 'Classic',
        bpm=(160, 190), scales=['major', 'mixolydian', 'dorian'], roots=[2, 7, 9, 4], celtic_orn='trad',
        progs={'major': [[0, 3, 4, 0], [0, 4, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 3, 0]], 'dorian': [[0, 6, 0, 3]]},
        sounds={'lead': 'tinwhistle'},
+       # (2.21) the folk two-beat that tells it from plain punk: kick on 1 and 3, snare on every off-beat (polka)
+       drums={'kick': ['X.......X.......', 'X...X...X...X...', 'X.X...X.X.X...X.'], 'snare': ['..X...X...X...X.', '....X.......X...'],
+              'chat': ['x.x.x.x.x.x.x.x.'], 'crash': ['X...............']},
        add_tracks=[T('arp', 'arp', 'banjo', pan=0.3, rev=0.15, db=-22), T('pad', 'pad', 'accordion', pan=-0.25, rev=0.2, db=-24)],
        pools=dict(lead=['tinwhistle', 'fiddle', 'concertina', 'uilleann', 'synthpipes', 'bagpipe', 'bagpipe_bright', 'melodeon', 'gaita'],
                   arp=['banjo', 'mandolin', 'acguitar', 'cittern'],
@@ -12485,7 +12492,11 @@ derive('anthem_trance_2000', 'club_trance_2000s', 'Electronic',
        'Anthem Trance (2000 club mix)', form='anthem_trance_2000', exact_form=True, bpm=(138, 140),
        progs={'minor': [[0, 5, 2, 6], [5, 2, 6, 0], [0, 5, 6, 4], [0, 5, 2, 4]]}, filter_arc=True,
        # the reference's top end is far more controlled than a modern club master (its air sits ~6 dB under the mids)
-       master={'tone': [0, -1.8, -8.7, -13.7, -16.5, -16.3, -16.2, -15.6, -19.6], 'lufs': -9.0, 'air': 0.4, 'low': 1.2})
+       master={'tone': [0, -1.8, -8.7, -13.7, -16.5, -16.3, -16.2, -15.6, -19.6], 'lufs': -9.0, 'air': 0.4, 'low': 1.2},
+       # (2.21) the anthem's big supersaw lead and pluck arp, a classic trance kit and a quarter-note ride
+       sounds={'lead': 'supersaw_lead', 'arp': 'pluck_saw'},
+       drums={'kick': ['X...X...X...X...'], 'clap': ['....X.......X...'], 'ohat': ['..x...x...x...x.'],
+              'chat': ['x.x.x.x.x.x.x.x.'], 'ride': ['x...x...x...x...'], 'crash': ['X...............']})
 
 
 # (2.9.9) spacious progressive-breaks electronica around 128-130 (a beat-scene record plus its producer's notes):
@@ -12594,7 +12605,8 @@ derive('celtic_polka', 'celtic_reel', 'Classic',
 derive('celtic_session', 'celtic_reel', 'Classic',
        'Celtic session set: two or three tunes played as one unbroken medley, the way a pub session runs them - each '
        'tune AABB, then straight into the next in a new key with a lift in tempo, the energy climbing to the end',
-       'Celtic Session Set', form='session_set', set_shift={2: 5, 3: 7})
+       'Celtic Session Set', form='session_set', set_shift={2: 5, 3: 7},
+       sounds={'chords': 'rhythmgtr', 'arp': 'mandolin'})    # (2.21) the pub guitar and mandolin, not the reel's bouzouki
 
 
 # ---- (2.6) a second synthscape, modelled on another short synth piece the user sent ---------------------------------

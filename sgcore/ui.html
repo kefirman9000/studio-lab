@@ -560,7 +560,9 @@ select:focus,input[type=number]:focus,input[type=text]:focus{border-color:color-
         <div class="curvebox"><canvas id="curve" width="640" height="90" title="Draw with the mouse: low = sparse (pads only), high = everything in"></canvas>
         <div class="row curvebtns"><label class="auto"><input type="checkbox" id="curveOn"> use it</label><button class="chip sm" data-cv="build">Slow build</button><button class="chip sm" data-cv="wave">Two drops</button><button class="chip sm" data-cv="peak">Peak at the end</button><button class="chip sm" data-cv="arc">Arc</button><button class="chip sm" data-cv="clear">Flat</button></div></div></div>
       <div class="f wide"><label>Reference track <span class="hint">match tempo, key, loudness &amp; brightness of a song you like</span></label>
-        <div class="row"><button class="ibtn" id="refBtn" title="An audio file, a MIDI file, MusicXML (MuseScore, Sibelius, Dorico...) or Studio Lab settings">🎯 Match a reference…</button><input type="file" id="refFile" accept="audio/*,.mid,.midi,.kar,.musicxml,.xml,.mxl,.json" hidden><span class="hint" id="refRes"></span></div></div>
+        <div class="row"><button class="ibtn" id="refBtn" title="An audio file, a MIDI file, MusicXML (MuseScore, Sibelius, Dorico...) or Studio Lab settings">🎯 Match a reference…</button><input type="file" id="refFile" accept="audio/*,.mid,.midi,.kar,.musicxml,.xml,.mxl,.json" hidden><span class="hint" id="refRes"></span></div>
+        <div class="row"><button class="ibtn" id="learnBtn" title="Teach a genre the drum and bass rhythms, chord loops and tempo of a MIDI file">🎼 Learn from MIDI…</button><input type="file" id="learnFile" accept=".mid,.midi,.kar,.rmi" hidden><span class="hint">teach a genre a song's grooves</span></div>
+        <div id="learnBox" class="hint" style="display:none;margin-top:6px"></div></div>
       <div class="f wide"><label>Chord progression <span class="hint">optional • e.g. i-VI-III-VII or 1-5-6-4</span></label><input type="text" id="prog" placeholder="auto"></div>
     </div></details>
 
@@ -1825,6 +1827,40 @@ function setupTimeline(el, r){
   };
   draw();
 }
+// ------------------------------------------------------------- (2.21) Learn from MIDI: teach a genre a file's grooves
+(function(){
+  const box=()=>$('#learnBox'); let learned=null;
+  const listTaught=r=>{ const g=r.genres||{}, v=r.variants||{}; const items=Object.entries(g).map(([k,n])=>`<span class="tag">${esc(label(k))}: ${n.length} file${n.length>1?'s':''} <a href="#" data-forget-g="${esc(k)}">forget</a></span>`)
+      .concat(Object.entries(v).map(([k,x])=>`<span class="tag">★ ${esc(x.label)} <a href="#" data-forget-v="${esc(k)}">delete</a></span>`));
+    return items.length?`<div style="margin-top:6px">Taught so far: ${items.join(' ')}</div>`:''; };
+  const label=id=>{ for(const l of Object.values(META.categories)){ const g=l.find(x=>x.id===id); if(g) return g.name } return id };
+  const bindForget=()=>box().querySelectorAll('[data-forget-g],[data-forget-v]').forEach(a=>a.onclick=async ev=>{ ev.preventDefault();
+    const r=await api('/api/learn/forget',{genre:a.dataset.forgetG||null, variant:a.dataset.forgetV||null}); if(r.meta){ META=r.meta; }
+    if(a.dataset.forgetV&&state.style===a.dataset.forgetV) state.style='house'; renderStyles(); refresh(); show(null,r); });
+  function show(lr, taught){
+    const b=box(); b.style.display='block';
+    if(!lr){ b.innerHTML=listTaught(taught||{}); bindForget(); return }
+    const parts=[...Object.keys(lr.drums||{}).map(k=>k+' rhythm'), ...(lr.bass&&lr.bass.length?['bass line']:[]), ...(lr.progs&&lr.progs.length?[lr.progs.length+' chord loop'+(lr.progs.length>1?'s':'')]:[])];
+    b.innerHTML=`<div><b>${esc(lr.name)}</b>: ${lr.bpm} BPM, ${esc(lr.scale)}, ${esc(lr.meter)} · found ${parts.length?esc(parts.join(', ')):'nothing to learn'}${lr.note?' · '+esc(lr.note):''}</div>
+      <div class="row" style="margin-top:6px"><button class="ibtn" id="learnAdd">➕ Add to ${esc(label(state.style))}</button>
+      <input id="learnName" placeholder="new genre name" style="max-width:180px" value="${esc((lr.name||'').replace(/\.[^.]+$/,'').slice(0,40))}"><button class="ibtn" id="learnNew">★ Save as my genre</button></div>
+      <div class="hint">Add: the genre plays these grooves among its own, from now on. Save as my genre: a new genre (under ★ My genres) built on ${esc(label(state.style))} that plays only these grooves at this tempo.</div><div id="learnTaught"></div>`;
+    const go=async(mode)=>{ const r=await api('/api/learn',{genre:state.style, learned:lr, mode, label:$('#learnName').value});
+      if(r.error){ alert(r.error); return } if(r.meta){ META=r.meta; }
+      $('#status').textContent= mode==='variant'?`Saved “${$('#learnName').value}” under ★ My genres.`:`${label(state.style)} learned: ${(r.used||[]).join(', ')}.`;
+      if(mode==='variant'&&r.variant){ state.style=r.variant; state.blend=[]; genreSounds(); state.blend_parts={}; }
+      renderStyles(); refresh();
+      show(null,r); };
+    $('#learnAdd').onclick=()=>go('teach'); $('#learnNew').onclick=()=>go('variant');
+    if(taught){ $('#learnTaught').innerHTML=listTaught(taught); bindForget(); }
+  }
+  setTimeout(()=>{ const btn=$('#learnBtn'), fi=$('#learnFile'); if(!btn) return;
+    btn.onclick=()=>{ fi.value=''; fi.click(); };
+    fi.onchange=async()=>{ const f=fi.files[0]; if(!f) return;
+      const r=await upload('/api/upload/learnmidi?name='+encodeURIComponent(f.name), new Blob([await f.arrayBuffer()]));
+      if(r.error){ alert(r.error); return } learned=r; show(r, null); };
+  }, 0);
+})();
 // ------------------------------------------------------------- song editor (any result, library song or dropped project)
 let EDSTYLE=null;
 function levHtml(id, v){ v=+(v||0);
@@ -2925,13 +2961,22 @@ function renderDrumVoices(){
   state.drum_voices=state.drum_voices||{}; const last=state.lastDrums||{};
   const name=id=>(menu.find(m=>m[0]===id)||[id,id])[1];
   box.innerHTML=`<label style="display:flex;align-items:center;gap:6px">Drum voices <span class="hint">ticked = the genre picks a drum machine for each song · untick to keep one · any kit's kick, snare, clap or hats can be picked · ▶ to hear it</span></label><div class="dvgrid">`+
-    ['kick','snare','clap','hats'].map(v=>{ const mine=state.drum_voices[v]; const g=!mine;
+    ['kick','snare','clap','hats','ride','crash','rim','shaker'].map(v=>{ const mine=state.drum_voices[v]; const g=!mine;
       return `<span class="gpick"><input type="checkbox" data-dvp="${v}" ${g?'checked':''} title="${g?'Genre picks this voice for each song - untick to keep the one you just heard':'Locked - tick to let the genre pick again'}"></span>`+
-        `<span>${({kick:'Kick',snare:'Snare',clap:'Clap',hats:'Hi-hats'})[v]}</span>`+
+        `<span>${({kick:'Kick',snare:'Snare',clap:'Clap',hats:'Hi-hats',ride:'Ride',crash:'Crash',rim:'Rim',shaker:'Shaker'})[v]}</span>`+
         `<select data-dv="${v}" data-sndvoice="${v}" data-snddef="${esc(last[v]||'')}"><option value="">${last[v]?'★ '+esc(name(last[v])):'★ genre picks'}</option>${
           [...new Set(menu.map(m=>m[2]||'Drum machines'))].map(g=>`<optgroup label="${esc(g)}">`+menu.filter(m=>(m[2]||'Drum machines')===g).map(([id,l])=>`<option value="${esc(id)}" ${mine===id?'selected':''}>${esc(l)}</option>`).join('')+'</optgroup>').join('')
-        }</select>`; }).join('')+`</div>`;
-  box.querySelectorAll('[data-dv]').forEach(sel=>sel.onchange=()=>{ const v=sel.dataset.dv; if(sel.value) state.drum_voices[v]=sel.value; else delete state.drum_voices[v]; renderDrumVoices(); });
+        }<optgroup label="Your own sound"><option value="__load">＋ Load a sample for this drum…</option></optgroup></select>`; }).join('')+`</div><input type="file" id="dvFile" accept="audio/*" hidden>`;
+  const f=$('#dvFile'); if(f) f.onchange=async()=>{ const file=f.files[0], v=window._dvFor; if(!file||!v) return;
+    const nm=(file.name.replace(/\.[^.]+$/,'').replace(/[^A-Za-z0-9 _-]/g,'').trim()||v).slice(0,40);
+    try{ const pcm=await decodeFile(file,44100); const r=await upload(`/api/upload/sound?kind=drums&name=${encodeURIComponent(nm)}&root=60`,new Blob([pcm.buffer]));
+      if(r.error){ alert(r.error); return }
+      META=await api('/api/meta'); state.drum_voices[v]='user:'+r.saved; renderDrumVoices();
+      $('#status').textContent=`Your sample “${r.saved}” now plays the ${v}.`;
+    }catch(e){ alert('Could not read that file: '+e.message) } };
+  box.querySelectorAll('[data-dv]').forEach(sel=>sel.onchange=()=>{ const v=sel.dataset.dv;
+    if(sel.value==='__load'){ window._dvFor=v; const fi=$('#dvFile'); fi.value=''; fi.click(); renderDrumVoices(); return; }
+    if(sel.value) state.drum_voices[v]=sel.value; else delete state.drum_voices[v]; renderDrumVoices(); });
   box.querySelectorAll('[data-dvp]').forEach(cb=>cb.onchange=()=>{ const v=cb.dataset.dvp;
     if(cb.checked) delete state.drum_voices[v]; else if(last[v]) state.drum_voices[v]=last[v]; renderDrumVoices(); });
 }

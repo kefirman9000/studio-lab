@@ -42,7 +42,7 @@ class Options:
     drum_ghosts: str = None       # drummer: None = genre | off | more
     hat_density: str = None       # drummer: None = genre | sparse | busy
     percussion: str = None        # None = genre's own | off | a set from drummer.PERC_SETS (shakers, latin, afro ...)
-    drum_pattern: str = None      # drum style: None/'genre' = genre's beat | 'programmed' | 'break:<kit id>' | 'style:<genre id>'
+    drum_pattern: str = None      # drum style: None/'genre' = genre's beat | 'programmed' | 'break:<kit id>' | 'style:<genre id>' | 'beat:<drumstyles id>'
     muted: list = field(default_factory=list)          # layers to remove
     sidechain: float = None       # 0..1 pumping depth
     sc_release: float = None      # beats
@@ -714,6 +714,11 @@ def resolve_style(opts, rnd=None, mood=None):
     from . import drumkits
     groove_of = (st.get('fusion') or {}).get('groove') or st.get('name') or opts.style
     borrow_drums(st, opts)                               # drum style: another genre's beat on this genre's sounds
+    dp_ = getattr(opts, 'drum_pattern', None) or ''
+    if dp_.startswith('beat:'):                          # (2.21) a beat from the library, on this genre's sounds
+        from . import drumstyles
+        if drumstyles.apply(st, dp_[5:]):
+            st['beat_library'] = dp_[5:]
     kit_id = drumkits.effective(opts, groove_of, st)
     pattern_id = drumkits.pattern_of(opts, groove_of)
     preset = drumkits.configure(st, kit_id, groove_of, opts, pattern_id) if (kit_id or pattern_id) else st['kit']

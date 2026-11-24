@@ -177,11 +177,13 @@ DISPLAY_OF = {sid: g for cat in DISPLAY.values() for g, ids in cat for sid in id
 
 
 def display_group(style_id):
+    if style_id.startswith('my_') and style_id not in DISPLAY_OF:
+        return 'My genres'                               # (2.21) your variants (Learn from MIDI)
     return DISPLAY_OF.get(style_id, 'More')
 
 
 def display_order(category):
-    return [g for g, _ in DISPLAY.get(category, [])] + ['More']
+    return ['My genres'] + [g for g, _ in DISPLAY.get(category, [])] + ['More']
 
 
 def display_rank(style_id):

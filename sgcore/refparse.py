@@ -30,6 +30,8 @@ def _vlq(d, i):
 
 
 def parse_midi(data):
+    if data[:4] == b'RIFF' and b'MThd' in data[:64]:      # (2.21) RIFF-wrapped MIDI (.rmi)
+        data = data[data.index(b'MThd'):]
     if data[:4] != b'MThd':
         raise ValueError('not a MIDI file')
     hl = struct.unpack('>I', data[4:8])[0]
@@ -38,7 +40,7 @@ def parse_midi(data):
         raise ValueError('SMPTE-timed MIDI files are not supported')
     ppq = div or 480
     pos = 8 + hl
-    notes, tempo, timesig, keysig = [], None, (4, 4), None
+    notes, chans, tempo, timesig, keysig = [], [], None, (4, 4), None
     for _ in range(ntrk):
         if data[pos:pos + 4] != b'MTrk':
             break
@@ -82,10 +84,11 @@ def parse_midi(data):
                 if on.get((ch, a)):
                     t0, vel = on[(ch, a)].pop(0)
                     notes.append((t0 / ppq, max(0.05, (tick - t0) / ppq), a, vel / 127, ch == 9))
+                    chans.append(ch)
     if not notes:
         raise ValueError('this MIDI file has no notes')
     bpm = 60_000_000 / tempo if tempo else 120.0
-    return dict(notes=notes, bpm=bpm, timesig=timesig, keysig=keysig)
+    return dict(notes=notes, bpm=bpm, timesig=timesig, keysig=keysig, chans=chans)
 
 
 # ----------------------------------------------------------------------------- MusicXML
@@ -218,6 +221,22 @@ def _key(notes, keysig, bpb=4.0):
 
 def _progression(notes, root, scale, beats_per_bar):
     """Best-fitting diatonic triad per bar (bass notes count double), then the most common 4-chord loop."""
+    degs = bar_degrees(notes, root, scale, beats_per_bar)
+    runs = [d for i, d in enumerate(degs) if i == 0 or d != degs[i - 1]]
+    if len(runs) < 2:
+        return None
+    if len(runs) <= 4:
+        loop = runs
+    else:
+        counts = Counter(tuple(runs[i:i + 4]) for i in range(len(runs) - 3)).most_common()
+        top = counts[0][1]
+        home = [w for w, c in counts if w[0] == 0 and c >= 0.75 * top]     # loops are written from the home chord
+        loop = list(home[0] if home else counts[0][0])
+    return '-'.join(str(d + 1) for d in loop)
+
+
+def bar_degrees(notes, root, scale, beats_per_bar):
+    """(2.21) The best-fitting diatonic triad (scale degree 0-6) of each bar that has notes."""
     sc = SCALES[scale]
     end = max(b + l for b, l, m, v, d in notes)
     nbars = max(1, int(np.ceil(end / beats_per_bar)))
@@ -250,17 +269,7 @@ def _progression(notes, root, scale, beats_per_bar):
             if s_ > bs:
                 best, bs = d, s_
         degs.append(best)
-    runs = [d for i, d in enumerate(degs) if i == 0 or d != degs[i - 1]]
-    if len(runs) < 2:
-        return None
-    if len(runs) <= 4:
-        loop = runs
-    else:
-        counts = Counter(tuple(runs[i:i + 4]) for i in range(len(runs) - 3)).most_common()
-        top = counts[0][1]
-        home = [w for w, c in counts if w[0] == 0 and c >= 0.75 * top]     # loops are written from the home chord
-        loop = list(home[0] if home else counts[0][0])
-    return '-'.join(str(d + 1) for d in loop)
+    return degs
 
 
 def _swing(notes):

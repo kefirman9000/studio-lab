@@ -855,7 +855,13 @@ class Renderer:
         sig = self.cache.get(('drum', name))
         if sig is None:
             user = None
-            if getattr(self.opts, 'user_drums', False):
+            from .drumkits import voice_of
+            mine = (self.st.get('voice_user') or {}).get(voice_of(name, inst))
+            if mine:                                       # (2.21) your own sample plays this voice
+                from .usersounds import load
+                got = load('drums', mine)
+                user = None if got is None else got[0]
+            if user is None and getattr(self.opts, 'user_drums', False):
                 from .usersounds import drum
                 user = drum(inst)
             if user is None:
@@ -995,7 +1001,7 @@ class Renderer:
         vce = voice_of(tcfg['name'], tcfg['inst']) if is_drum else None
         vreal = (self.st.get('voice_real') or {}).get(vce)       # (1.84) this voice comes from another (real) kit
         real_drums = is_drum and (self.st.get('real_kit') or self.st.get('real_perc') or vreal) and not tcfg.get('synth') \
-            and vce not in (self.st.get('voice_synth') or ())
+            and vce not in (self.st.get('voice_synth') or ()) and vce not in (self.st.get('voice_user') or {})
         brk = self.st.get('break_seq') or {}
         # kicks are never humanised (a layered kick would flam), and a break plays as one tight unit
         tight = tcfg['name'] == kick or tcfg['layer'] == 'kick' or tcfg['name'] in brk or tcfg['name'] in ('lkick', 'lsnare')

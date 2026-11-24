@@ -162,6 +162,8 @@ def menu():
 def pattern_menu():
     """Drum styles you can pick (the UI adds 'Genre beat' and the other genres itself)."""
     out = [dict(id='programmed', group='Basics', label="Genre's programmed beat (no break)")]
+    from .drumstyles import DRUM_STYLES                  # (2.21) a library of classic beats, independent of any genre
+    out += [dict(id='beat:' + k, group='Beat library', label=v['label']) for k, v in DRUM_STYLES.items()]
     for e in KIT_MENU:
         if e[5]:
             out.append(dict(id='break:' + e[0], group='Classic breaks' if e[1].startswith('Breaks') else 'Drum & bass breaks',
@@ -435,8 +437,11 @@ GENRE_KIT.update({'juke_raw': '808', 'juke_house': '808'})
 # different machine that suits the genre (a 909 kick under a 707 clap and 606 hats ...), so two songs of one genre
 # don't share one kit. The genre's own kit stays the most likely pick. Lock a voice (untick it in the Sound panel)
 # and it keeps that machine: opts.drum_voices {voice: kit id}.
-VOICES = {'kick': ('kick',), 'snare': ('snare',), 'clap': ('clap',), 'hats': ('chat', 'ohat')}
-VOICE_LABEL = {'kick': 'Kick', 'snare': 'Snare', 'clap': 'Clap', 'hats': 'Hi-hats'}
+VOICES = {'kick': ('kick',), 'snare': ('snare',), 'clap': ('clap',), 'hats': ('chat', 'ohat'),
+          'ride': ('ride',), 'crash': ('crash',), 'rim': ('rim',), 'shaker': ('shaker', 'tamb')}
+VOICE_LABEL = {'kick': 'Kick', 'snare': 'Snare', 'clap': 'Clap', 'hats': 'Hi-hats', 'ride': 'Ride', 'crash': 'Crash',
+               'rim': 'Rim', 'shaker': 'Shaker / tambourine'}
+AUTO_VOICES = ('kick', 'snare', 'clap', 'hats')          # the voices a genre may re-pick per song (the rest stay put)
 MACHINES = ['909', 'trance', 'techno', '808', '707', '606', 'linn', 'dmx', 'cr78', 'punchy', 'hard', 'soft', 'dnb',
             'phonk808', '909_classic', 'trance_classic', 'techno_classic']
 _HOUSE = {'kick': ['909', 'punchy', 'soft', 'trance'], 'snare': ['909', '707', '606'], 'clap': ['909', '707', '808', 'trance'],
@@ -471,6 +476,11 @@ def pick_voices(st, opts, kit_id, preset, style):
     from .instruments import KITS
     from .genre_groups import group_of
     mine = dict(getattr(opts, 'drum_voices', None) or {})
+    # (2.21) a voice can be one of your own samples ('user:<name>'): it plays that sample, whatever the kit
+    yours = {v: k[5:] for v, k in mine.items() if v in VOICES and isinstance(k, str) and k.startswith('user:')}
+    if yours:
+        st['voice_user'] = yours
+        mine = {v: k for v, k in mine.items() if v not in yours}
     # (1.84) a voice you picked can come from ANY kit - a real kit's kick under a 909's hats, an 808 clap on a real kit
     real = {v: k for v, k in mine.items() if v in VOICES and (MENU.get(k) or (None,) * 6)[4] and not MENU[k][5]}
     if real:
@@ -485,12 +495,12 @@ def pick_voices(st, opts, kit_id, preset, style):
                 for d in VOICES[v]:
                     if KITS[k].get(d) is not None:
                         kit[d] = dict(KITS[k][d])
-        return dict(mine, **real)
+        return dict(mine, **real, **{v: 'user:' + n for v, n in yours.items()})
     if st.get('no_drum_swap'):
-        return dict(real)
+        return dict(real, **{v: 'user:' + n for v, n in yours.items()})
     fam = FAMILY_VOICES.get(group_of(st.get('name') or style)) if st.get('category') == 'Electronic' else None
     if not fam and not mine:
-        return {}
+        return {v: 'user:' + n for v, n in yours.items()}
     rnd = random.Random((getattr(opts, 'seed', 0) or 0) * 67 + 5 + 7919 * int(getattr(opts, 'sound_seed', 0) or 0))
     kit = st['kitparams']
     own = kit_id or preset
@@ -499,6 +509,8 @@ def pick_voices(st, opts, kit_id, preset, style):
         pick = mine.get(v)
         if pick not in KITS:
             pick = None
+        if pick is None and v not in AUTO_VOICES:
+            continue
         own_kick = v == 'kick' and (st.get('kick_shape') or 'kick' in (st.get('kit_override') or {}))
         auto = fam and v in fam and not getattr(opts, 'kit', None) and not own_kick   # your kit / the genre's own kick stay
         r_ = rnd.random()
@@ -518,13 +530,20 @@ def pick_voices(st, opts, kit_id, preset, style):
                 kit[k] = new
         picks[v] = pick
     picks.update(real)
+    picks.update({v: 'user:' + n for v, n in yours.items()})
     return picks
 
 
 def voice_menu():
-    """[(kit id, label, group)] - every kit a voice can come from: the drum machines and (1.84) the real kits."""
+    """[(kit id, label, group)] - every kit a voice can come from: the drum machines, (1.84) the real kits and (2.21)
+    your own samples."""
     out = [(k, MENU[k][2], 'Drum machines') for k in MACHINES if k in MENU] + [(k, k, 'Drum machines') for k in MACHINES if k not in MENU]
     out += [(e[0], e[2], 'Real kits') for e in KIT_MENU if e[4] and not e[5] and len(e) < 7]
+    try:
+        from .usersounds import listing
+        out += [('user:' + n, n, 'My samples') for n in listing().get('drums', [])]
+    except Exception:
+        pass
     return out
 
 
@@ -534,3 +553,9 @@ def voice_of(name, inst):
         if inst in keys or name in keys:
             return v
     return None
+
+
+# (2.21) own kits for genres that sounded like a neighbour (tools/genre_twins.py)
+GENRE_KIT.update({'anthem_trance_2000': 'trance_classic', 'progressive_trance': '909', 'cinematic_trap': 'hard',
+                  'rage': 'phonk808', 'plugg': 'soft', 'sunrise_chillwave': 'vintage', 'celtic_punk': 'studio',
+                  'switchup_mallets': '707'})

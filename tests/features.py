@@ -1391,6 +1391,87 @@ def test_song_versions():
     print('ok  versions: radio edit ~3 min, extended mix with DJ intro / outro, same song')
 
 
+def test_beat_library_and_own_drum_samples():
+    """2.21: a beat from the library on any genre's sounds; any drum voice can be one of your own samples."""
+    import tempfile
+    from sgcore import usersounds
+    from sgcore.drumkits import voice_menu, pattern_menu
+    from sgcore.render import Renderer
+    from sgcore.windows import preview_window
+    assert any(p['id'] == 'beat:two_step' for p in pattern_menu())
+    s = compose(Options(style='house', seed=3, drum_pattern='beat:boom_bap'))
+    assert s['st']['drums']['kick'][0] == 'X......xX.....x.' and s['st']['beat_library'] == 'boom_bap'
+    s = compose(Options(style='jungle', seed=3, drum_pattern='beat:four_floor'))
+    assert not s['st'].get('break_seq') and s['st']['drums']['kick'] == ['X...X...X...X...']     # no break replay
+    sr = 44100
+    t = np.arange(int(sr * 0.2)) / sr
+    x = (np.sin(2 * np.pi * 900 * t) * np.exp(-t * 30)).astype(np.float32)
+    orig = usersounds.ROOT
+    usersounds.ROOT = tempfile.mkdtemp()
+    try:
+        n = usersounds.save('drums', 'ping snare', x, 60)        # any name: it joins your drum library
+        assert any(m[0] == 'user:' + n and m[2] == 'My samples' for m in voice_menu())
+        song = preview_window(compose(Options(style='house', seed=3, drum_voices={'clap': 'user:' + n, 'ride': '808'})))
+        assert song['st']['voice_user'] == {'clap': n} and song['st']['drum_picks']['clap'] == 'user:' + n
+        sig = Renderer(song, log=lambda *a: None)._drum('clap', 'clap')
+        assert abs(len(sig) - len(x)) < 5                          # the clap is your sample
+    finally:
+        usersounds.ROOT = orig
+    print('ok  beat library, your own sample on any drum voice (8 voices)')
+
+
+def test_no_genre_twins():
+    """2.21: no two genres built from the same recipe (tools/genre_twins.py) - a new genre must differ from its
+    neighbours in drums, kit, tempo or sounds. Known variants that differ only in their edits are listed."""
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'tools'))
+    from genre_twins import twins
+    variants = {('switchup_808', 'switchup_808_dj')}            # the same beat; the DJ version's edits are the point
+    bad = [(sc, a, b) for sc, a, b in twins(0.95) if (a, b) not in variants]
+    assert not bad, bad
+    print('ok  no genre twins (recipe similarity < 0.95)')
+
+
+def test_learn_from_midi():
+    """2.21: Learn from MIDI - a song's MIDI teaches a genre its tempo, chord loops and drum / bass rhythms, or becomes
+    your own genre (round trip: our own MIDI export is read back)."""
+    import tempfile
+    from sgcore import midilearn
+    from sgcore.exporters import write_midi
+    from sgcore.styles import STYLES
+    from sgcore import app
+    d = tempfile.mkdtemp()
+    src = compose(Options(style='boombap', seed=5))
+    write_midi(os.path.join(d, 'x.mid'), src)
+    lr = midilearn.learn(open(os.path.join(d, 'x.mid'), 'rb').read(), 'x.mid')
+    assert abs(lr['bpm'] - src['bpm']) <= 1 and lr['meter'] == '4/4' and lr['progs'], lr
+    assert lr['drums'].get('kick') and lr['bass'], lr
+    kick = lr['drums']['kick'][0]
+    from collections import Counter                     # the kick bar the song really plays most (from its notes)
+    bars = {}
+    kt = src['st'].get('kick_track', 'kick')
+    for e in src['events']:
+        if e.track == kt:
+            bars.setdefault(int(e.beat // 4), set()).add(int(round((e.beat % 4) * 4)) % 16)
+    common = Counter(''.join('x' if i in v else '.' for i in range(16)) for v in bars.values()).most_common(3)
+    assert kick.replace('X', 'x').replace('o', 'x') in [c for c, _ in common], (kick, common)
+    old = midilearn.PATH
+    midilearn.PATH = os.path.join(d, 'learned.json')
+    try:
+        before = list(STYLES['house']['drums']['kick'])
+        used = midilearn.teach(STYLES, 'house', lr)
+        assert 'kick rhythm' in used and STYLES['house']['drums']['kick'][0] == kick
+        vid = midilearn.make_variant(STYLES, 'boombap', 'My Test Groove', lr)
+        assert vid == 'my_my_test_groove' and STYLES[vid]['drums']['kick'][0] == kick
+        assert compose(Options(style=vid, seed=2))['bpm'] in range(lr['bpm'] - 3, lr['bpm'] + 4)
+        assert any(g['id'] == vid and g['group'] == 'My genres' for g in app.meta()['categories'][STYLES[vid]['category']])
+        midilearn.forget(STYLES, genre='house', variant=vid)
+        assert STYLES['house']['drums']['kick'] == before and vid not in STYLES        # forgetting restores
+        assert midilearn.listing() == dict(genres={}, variants={})
+    finally:
+        midilearn.PATH = old
+    print('ok  learn from MIDI: tempo, chords, drum & bass rhythms; teach a genre, save as my genre, forget')
+
+
 def main():
     test_metal_riffs()
     test_tuned_hard_kicks()
@@ -1437,6 +1518,9 @@ def main():
     test_editor_changes_only_what_you_pick()
     test_song_versions()
     test_learned_from_stems()
+    test_beat_library_and_own_drum_samples()
+    test_no_genre_twins()
+    test_learn_from_midi()
     print('all good')
 
 
