@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2.23.1
+- Toy soldier march: the piccolo tune sat under the horns. It's balanced now (this stopped 2.23.0's release).
 - **Fix: real orchestral recordings played an octave too high.** The sample libraries name their notes an octave below
   the pitch they actually sound. I measured every instrument and articulation, low and high, with pitch tracking and
   autocorrelation. Studio Lab took the names at face value, so every recorded note came out an octave above the
