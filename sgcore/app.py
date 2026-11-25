@@ -760,6 +760,14 @@ class Handler(BaseHTTPRequestHandler):
                 if p == '/api/upload/learnmidi':        # (2.21) Learn from MIDI: what a genre can take from this file
                     from . import midilearn
                     return self._json(midilearn.learn(raw, q.get('name', '')))
+                if p == '/api/upload/learnaudio':       # (2.24) Learn from audio: tempo, key, swing, drums, chord loops
+                    if len(raw) % 4:
+                        raise ValueError('bad audio data')
+                    pcm_ = np.frombuffer(raw, dtype='<f4')
+                    if not np.isfinite(pcm_).all():
+                        raise ValueError('bad audio data')
+                    from . import audiolearn
+                    return self._json(audiolearn.learn(pcm_, int(q.get('sr', 22050)), q.get('name', '')))
                 if p == '/api/upload/reffile':          # MIDI / MusicXML / settings reference
                     from .refparse import analyze_file
                     try:

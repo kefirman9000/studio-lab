@@ -566,7 +566,7 @@ select:focus,input[type=number]:focus,input[type=text]:focus{border-color:color-
         <div class="row curvebtns"><label class="auto"><input type="checkbox" id="curveOn"> use it</label><button class="chip sm" data-cv="build">Slow build</button><button class="chip sm" data-cv="wave">Two drops</button><button class="chip sm" data-cv="peak">Peak at the end</button><button class="chip sm" data-cv="arc">Arc</button><button class="chip sm" data-cv="clear">Flat</button></div></div></div>
       <div class="f wide"><label>Reference track <span class="hint">match tempo, key, loudness &amp; brightness of a song you like</span></label>
         <div class="row"><button class="ibtn" id="refBtn" title="An audio file, a MIDI file, MusicXML (MuseScore, Sibelius, Dorico...) or Studio Lab settings">🎯 Match a reference…</button><input type="file" id="refFile" accept="audio/*,.mid,.midi,.kar,.musicxml,.xml,.mxl,.json" hidden><span class="hint" id="refRes"></span></div>
-        <div class="row"><button class="ibtn" id="learnBtn" title="Teach a genre the drum and bass rhythms, chord loops and tempo of a MIDI file">🎼 Learn from MIDI…</button><input type="file" id="learnFile" accept=".mid,.midi,.kar,.rmi" hidden><span class="hint">teach a genre a song's grooves</span></div>
+        <div class="row"><button class="ibtn" id="learnBtn" title="Teach a genre the tempo, key, drum grooves and chord loops of a MIDI file or a recording (MP3, WAV, FLAC ...)">🎼 Learn from MIDI or audio…</button><input type="file" id="learnFile" accept=".mid,.midi,.kar,.rmi,audio/*,.mp3,.wav,.flac,.ogg,.m4a,.aac" hidden><span class="hint">teach a genre a song's grooves</span></div>
         <div id="learnBox" class="hint" style="display:none;margin-top:6px"></div></div>
       <div class="f wide"><label>Chord progression <span class="hint">optional • e.g. i-VI-III-VII or 1-5-6-4</span></label><input type="text" id="prog" placeholder="auto"></div>
     </div></details>
@@ -1868,7 +1868,12 @@ function setupTimeline(el, r){
   setTimeout(()=>{ const btn=$('#learnBtn'), fi=$('#learnFile'); if(!btn) return;
     btn.onclick=()=>{ fi.value=''; fi.click(); };
     fi.onchange=async()=>{ const f=fi.files[0]; if(!f) return;
-      const r=await upload('/api/upload/learnmidi?name='+encodeURIComponent(f.name), new Blob([await f.arrayBuffer()]));
+      const midi=/\.(mid|midi|kar|rmi)$/i.test(f.name);
+      let r;
+      if(midi) r=await upload('/api/upload/learnmidi?name='+encodeURIComponent(f.name), new Blob([await f.arrayBuffer()]));
+      else { $('#status').textContent='Listening to '+f.name+'…';         // (2.24) a recording: decoded here, learned there
+        let pcm; try{ pcm=await decodeFile(f,22050); }catch(e){ alert('Could not read that audio file.'); return }
+        r=await upload('/api/upload/learnaudio?sr=22050&name='+encodeURIComponent(f.name), new Blob([pcm.buffer])); $('#status').textContent=''; }
       if(r.error){ alert(r.error); return } learned=r; show(r, null); };
   }, 0);
 })();

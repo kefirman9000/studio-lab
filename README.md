@@ -160,7 +160,7 @@ Each part's **Sound** menu lists your installed plugins too, so you can put any 
 - **✨ Start here** (top right) is the quick way in: pick a kind of music and press one button.
 - Search the genre list by name, instrument or mood (try *sitar*, *surf*, *organ*), ☆ star your favourites, and find recently used genres at the top.
 - On a result, **✨ More like this** makes a new song keeping what you tick (groove, chords, melody, sounds); **🔀 Something different** changes everything but the genre.
-- **🎼 Learn from MIDI** reads a song's MIDI file - its tempo, chord loops and drum and bass rhythms - and either adds those grooves to the genre you're on (it plays them among its own from then on) or saves a new genre of your own under ★ My genres that plays only them. Forget or delete either one any time; nothing is changed until you choose.
+- **🎼 Learn from MIDI or audio** reads a song's MIDI file - its tempo, chord loops and drum and bass rhythms - or a recording (MP3, WAV, FLAC ...: its tempo, key, swing, drum grooves and chord loops; best on music with a steady, straight beat) - and either adds those grooves to the genre you're on (it plays them among its own from then on) or saves a new genre of your own under ★ My genres that plays only them. Forget or delete either one any time; nothing is changed until you choose.
 - **🎯 Match a reference** takes audio, MIDI, MusicXML or a Studio Lab settings file - for audio it also suggests the genres it sounds closest to (tempo, key, drum feel and sound).
 - **📤 Share** on a result saves a tiny settings file; a friend opens it with **Presets → Load a shared song** and gets the exact same song.
 - The **Full song length** row picks a radio edit, normal, extended / club or a 16-bar loop in one click.

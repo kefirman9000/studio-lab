@@ -1529,6 +1529,7 @@ def main():
     test_dexed_patches_set_every_voice_parameter()
     test_sample_libraries_in_real_ranges()
     test_ratings_steer_sounds()
+    test_learn_from_audio()
     print('all good')
 
 
@@ -1741,6 +1742,38 @@ def test_ratings_steer_sounds():
     b = compose(Options(style='house', seed=5, taste={}))
     assert [t['inst'] for t in a['st']['tracks']] == [t['inst'] for t in b['st']['tracks']]   # no ratings = same song
     print('ok  ratings steer sounds: liked sounds likelier, disliked rarer, nothing certain or impossible')
+
+
+def test_learn_from_audio():
+    """(2.24) Learn from audio: a drum loop (kick on every beat, clap on 2 and 4, off-beat hats, 124 BPM) comes back as
+    those patterns and that tempo."""
+    from sgcore import audiolearn, midilearn
+    from sgcore.instruments import DRUMS
+    from sgcore.styles import STYLES
+    sr, bpm, bars = 44100, 124, 24
+    step = 60 / bpm / 4
+    y = np.zeros(int(sr * step * 16 * bars) + sr)
+    hits = {'kick': (0, 4, 8, 12), 'clap': (4, 12), 'chat': (2, 6, 10, 14)}
+    for name, steps in hits.items():
+        hit = np.asarray(DRUMS[name]({}))
+        hit = hit.mean(0) if hit.ndim == 2 else hit
+        for b_ in range(bars):
+            for st_ in steps:
+                i = int((b_ * 16 + st_) * step * sr)
+                y[i:i + len(hit)] += hit[:len(y) - i] * (0.6 if name == 'chat' else 1.0)
+    rng = np.random.default_rng(1)
+    t = np.arange(len(y)) / sr                                       # a held chord under it
+    y += 0.05 * sum(np.sin(2 * np.pi * f * t) for f in (220.0, 277.18, 329.63)) + 0.002 * rng.standard_normal(len(y))
+    lr = audiolearn.learn(y.astype(np.float32), sr, 'drum loop')
+    assert abs(lr['bpm'] - bpm) <= 2, lr['bpm']
+    kick, snare = lr['drums'].get('kick', [''])[0], lr['drums'].get('snare', [''])[0]
+    assert kick.replace('X', 'x') == 'x...x...x...x...', lr['drums']
+    assert snare.replace('X', 'x') == '....x.......x...', lr['drums']
+    st = {k: (list(v) if isinstance(v, list) else v) for k, v in STYLES['deep_house'].items()}
+    st['drums'] = {k: list(v) for k, v in STYLES['deep_house']['drums'].items()}
+    used = midilearn._merge(st, lr, replace=True)
+    assert 'tempo' in used and st['bpm'][0] <= lr['bpm'] <= st['bpm'][1]
+    print('ok  learn from audio: tempo, four-on-the-floor kick and the backbeat clap from a recording')
 
 
 if __name__ == '__main__':

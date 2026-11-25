@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.24.1
+- **🎼 Learn from audio.** The Learn button now also takes a recording (MP3, WAV, FLAC, OGG ...) as well as a MIDI
+  file. From the audio it learns:
+  - **Tempo:** tried against the usual confusions and kept where the grid catches the most onsets.
+  - **Key:** from sustained, harmonic energy. It got the right scale notes in 37 of 40 test songs; the older reference
+    analysis got 29.
+  - **Swing.**
+  - **Drum grooves:** kick, snare/clap and hats per 16th step, as the consensus groove plus the bars that repeat.
+  - **Chord loops.**
+
+  Like MIDI, the result can be added to the current genre or saved as a ★ My genre. On test songs, house, drum &
+  bass, trap and rock came back with the right tempo and kick and snare/clap patterns (drum & bass and rock's kicks
+  only roughly). Swung grooves (boom-bap, Afrobeats) can read at double or 1.5× tempo, and the result says so. Sounds
+  aren't learned.
+
 ## 2.24.0
 - **👍 / 👎 now steer the sounds.** Rating a song used to steer only which genre "🎲 Surprise me" picks. Now:
   - New songs in that genre pick the sounds it played more often (after a 👍) or less often (after a 👎). Ratings in

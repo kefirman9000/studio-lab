@@ -227,6 +227,9 @@ def _merge(st, lr, replace=False):
         b = int(lr['bpm'])
         st['bpm'] = (max(40, b - 3), b + 3)
         used.append('tempo')
+    if replace and isinstance(lr.get('swing'), (int, float)) and 0.5 <= lr['swing'] <= 0.7:
+        st['swing'] = float(lr['swing'])               # (2.24) learned from audio: the recording's swing
+        used.append('swing')
     return used
 
 
@@ -236,7 +239,7 @@ def _register_variant(styles, vid, base, label, lr):
     st = copy.deepcopy(styles[base])
     st['name'] = st.get('name') or base                 # genre-specific behaviour keeps following the original
     st['variant_of'] = base
-    st['desc'] = f"Your variant of {LABELS.get(base, base)}, grooving like {lr.get('name') or 'your MIDI file'}: " \
+    st['desc'] = f"Your variant of {LABELS.get(base, base)}, grooving like {lr.get('name') or ('your recording' if lr.get('source') == 'audio' else 'your MIDI file')}: " \
         + (st.get('desc') or '')
     _merge(st, lr, replace=True)
     styles[vid] = st
