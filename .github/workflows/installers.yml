@@ -1,6 +1,6 @@
 name: installers
 # One-click installers with their own Python inside (nothing else to install):
-#   Windows: StudioLab-Setup-<ver>.exe        macOS: StudioLab-<ver>-Mac-AppleSilicon.dmg / -Mac-Intel.dmg
+#   Windows: StudioLab-Setup-<ver>.exe   (the Mac installers were dropped in 2.24.2)
 # Called by release.yml for every new version (attached to the GitHub release). Pushing installer changes to any
 # other branch, or running it by hand, builds them as downloadable workflow artifacts for testing.
 on:
@@ -11,7 +11,7 @@ on:
         default: ''
   workflow_dispatch:
   schedule:
-    - cron: '23 6 * * 1'                 # every Monday: build and self-test all three installers, so a broken one is found early
+    - cron: '23 6 * * 1'                 # every Monday: build and self-test the installer, so a broken one is found early
   push:
     branches-ignore: [main]
     paths: ['installer/**', '.github/workflows/installers.yml']
@@ -95,34 +95,3 @@ jobs:
       - name: Attach to the release
         if: inputs.tag != ''
         run: gh release upload "${{ inputs.tag }}" dist/*.exe --clobber
-
-  mac:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: macos-15
-            triple: aarch64-apple-darwin
-            label: AppleSilicon
-          - runner: macos-15-intel
-            triple: x86_64-apple-darwin
-            label: Intel
-    runs-on: ${{ matrix.runner }}
-    env:
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build Studio Lab.app and the .dmg (includes a self-test)
-        run: |
-          VER="$(tr -d '[:space:]' < VERSION)"
-          gh release download --repo astral-sh/python-build-standalone --dir pbs \
-             --pattern "cpython-${PY_SERIES}.*-${{ matrix.triple }}-install_only.tar.gz"
-          bash installer/mac/build.sh pbs/*.tar.gz "${{ matrix.label }}" "$VER"
-      - uses: actions/upload-artifact@v4
-        continue-on-error: true            # (GitHub's artifact service times out now and then: never block the release on it)
-        with:
-          name: mac-${{ matrix.label }}
-          path: dist/*.dmg
-      - name: Attach to the release
-        if: inputs.tag != ''
-        run: gh release upload "${{ inputs.tag }}" dist/*.dmg --clobber

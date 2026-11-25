@@ -58,10 +58,7 @@ Go to the [latest release](https://github.com/kefirman9000/studio-lab/releases/l
 | | |
 |---|---|
 | **Windows** | Download `StudioLab-Setup-<version>.exe` and double-click it. If Windows shows *"Windows protected your PC"*, click **More info → Run anyway** (the installer isn't signed with a paid certificate). No admin password needed. Studio Lab appears in the Start menu (and on the desktop, if you tick the box). |
-| **Mac (M1 / M2 / M3 / M4)** | Download `StudioLab-<version>-Mac-AppleSilicon.dmg`, open it and drag **Studio Lab** onto **Applications**. |
-| **Mac (older Intel Macs)** | Same, with `StudioLab-<version>-Mac-Intel.dmg`. |
-
-*First time on a Mac:* macOS will say it can't check the app for malicious software (it isn't signed with a paid Apple developer ID). Click **Done**, then open **System Settings → Privacy & Security**, scroll down and click **Open Anyway** next to Studio Lab. You only need to do this once.
+| **Mac** | There's no Mac installer any more (dropped in 2.24.2). Use the *With your own Python* steps below, then double-click `Start Studio Lab (Mac).command`. |
 
 Updates work the same as always: click **⟳ Updates** inside the app. Your songs, presets and sounds are kept when you update or reinstall (on Windows they live in the install folder, on a Mac in *~/Library/Application Support/Studio Lab*). To remove Studio Lab, use *Add or remove programs* on Windows, or drag it to the Trash on a Mac.
 

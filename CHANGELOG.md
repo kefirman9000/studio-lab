@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.24.2
+- **No more Mac installers.** Releases now build only the Windows installer. GitHub kept failing to find a Mac machine
+  to build the Apple Silicon one on, and that held releases up. Studio Lab still runs on a Mac from the zip with your
+  own Python (`Start Studio Lab (Mac).command`).
+
 ## 2.24.1
 - **🎼 Learn from audio.** The Learn button now also takes a recording (MP3, WAV, FLAC, OGG ...) as well as a MIDI
   file. From the audio it learns:

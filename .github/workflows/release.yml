@@ -43,7 +43,6 @@ jobs:
             echo ""
             echo "**Install (easy - nothing else needed):** download the installer for your computer below (it appears a few minutes after this release):"
             echo "- **Windows:** \`StudioLab-Setup-${VER}.exe\` - double-click it and follow the steps."
-            echo "- **Mac:** \`StudioLab-${VER}-Mac-AppleSilicon.dmg\` (M1/M2/M3/M4 Macs) or \`-Mac-Intel.dmg\` (older Macs) - open it and drag Studio Lab into Applications."
             echo ""
             echo "Or, if you already have Python 3.9+: download \`studio-lab-${VER}.zip\`, unzip it, and double-click \`Start Studio Lab (Windows).bat\` or \`Start Studio Lab (Mac).command\`."
             echo "Already installed? Click **⟳ Updates** inside the app."
