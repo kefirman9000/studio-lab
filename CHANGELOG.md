@@ -1,6 +1,28 @@
 # Changelog
 
 ## 2.23.0
+Brassier, bassier orchestral Christmas music.
+
+- **Three new orchestral Christmas genres**:
+  - **Christmas brass fanfare**: trumpets on the tune, horns and trombones on the chords, a tuba with the celli and
+    basses, and a string ostinato.
+  - **Christmas overture**: the strings carry the whole piece, and the brass swells in for each big statement.
+  - **Toy soldier march**: tuba and low strings on the oom, horns and trombones on the pah, piccolo and snare.
+
+  Their balance was calibrated on a reference set of orchestral Christmas film-score cues:
+  - The low strings sound almost all the time (about 90%).
+  - The cello, horn and trombone range holds about half the energy, and there's very little top end.
+  - The brass carries most of the loud passages.
+- **String backbone for the orchestral Christmas genres.** The low strings no longer drop out: where a section had no
+  bass, the celli and basses keep a soft pizzicato pulse on the downbeats. In the fuller genres (joyful, mischief,
+  festive cinematic, carol choir, memory theme, flight, finale, sleigh ride) a tuba doubles the bass and a brass
+  section doubles the chords in the choruses and climaxes. The gentle ones (lullaby, magic, sneak) get the low
+  strings without the brass.
+- **🎺 More brass / 🎻 More strings** switches (Rhythm card, "Orchestra"), for any genre:
+  - **More brass**: a tuba and brass section in the big sections, and soft horns elsewhere.
+  - **More strings**: the low strings never drop out, celli double the bass and a string section plays the chords.
+
+## 2.23.0
 Richer harmony and bass phrasing for any genre, a rebuilt set of sunlit-electronica genres from a second look at the
 reference records, and a breaks-techno genre.
 

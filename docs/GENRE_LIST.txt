@@ -1,6 +1,6 @@
-STUDIO LAB - ALL 424 GENRES  (version 2.22.5)
+STUDIO LAB - ALL 427 GENRES  (version 2.23.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 2.22
+* = new in 2.23
 
 ========================================================================
 ELECTRONIC  (226)
@@ -445,7 +445,7 @@ Hindu devotional  (9)
     Carnatic kriti (veena & mridangam)  [carnatic_kriti]
 
 ========================================================================
-ORCHESTRAL  (42)
+ORCHESTRAL  (45)
 ========================================================================
 
 Film & Trailer  (11)
@@ -478,7 +478,7 @@ Ambient & Experimental  (2)
 Fantasy & Games  (1)
     Fantasy RPG  [fantasy_rpg]
 
-Christmas & Holiday  (10)
+Christmas & Holiday  (13)
     Christmas orchestral - joyful  [christmas_joyful]
     Christmas orchestral - magical (celesta)  [christmas_magic]
     Christmas orchestral - mischief  [christmas_mischief]
@@ -489,6 +489,9 @@ Christmas & Holiday  (10)
     Christmas Sneak (tiptoeing burglars)  [christmas_sneak]
     Christmas Flight (soaring)  [christmas_flight]
     Christmas Finale (bells & choir)  [christmas_finale]
+    Christmas orchestral - brass fanfare  [christmas_brass_fanfare]
+    Christmas orchestral - overture  [christmas_overture]
+    Toy soldier march (Christmas)  [toy_soldier_march]
 
 Classical Eras  (12)
     Gregorian Chant  [gregorian_chant]

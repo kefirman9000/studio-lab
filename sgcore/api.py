@@ -112,6 +112,11 @@ def _nice(name):
     return INSTRUMENT_INFO.get(name, name).split(' (')[0]
 
 
+# (2.23) the parts the orchestration pass adds (compose.orchestrate)
+ORCH_PART = {'bass_quiet': 'Low strings (quiet parts)', 'tuba': 'Tuba (big sections)', 'brass_sec': 'Brass section (big sections)',
+             'horns_soft': 'Horns (quiet parts)', 'strings_low': 'Celli (doubling the bass)', 'strings_sec': 'String section'}
+
+
 def _instruments(song):
     """{part: 'Supersaw lead + Bell (8va)'} - the main instrument of each part plus any layer doubling it."""
     out = {}
@@ -169,6 +174,8 @@ def _tracks(song):
             what = f"{TRACK_ROLE_LABEL.get(t['layer'], t['layer'])} layer"
         elif t.get('counter'):
             what = 'Counter-melody'
+        elif t['name'] in ORCH_PART:
+            what = ORCH_PART[t['name']]
         else:
             what = DRUM_PART.get(t['name']) or DRUM_PART.get(t['inst']) or t['name'].replace('_', ' ').capitalize()
         if t['name'] == t['inst'] and t['name'] in DRUM_PART and t['name'] != t['layer']:

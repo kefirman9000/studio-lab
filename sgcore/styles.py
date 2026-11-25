@@ -1133,6 +1133,7 @@ style('festive_cinematic', 'Orchestral',
       'sparkle doubling the melody, sleigh bells, harp arpeggios, pizzicato, horns on a counter-melody and a choir on '
       'the big statements; rich maj7 / add9 harmony with smooth, stepwise bass lines; it starts with high, glittering '
       'textures and grows to the full orchestra',
+      backbone=dict(brass=True),   # (2.23) low strings never drop out; brass in the big sections
       bpm=(76, 104), scales=['major'], human=0.012, form='festive_cinematic', reverb=3.3, sec_vel=[0.5, 0.62, 0.78, 0.9, 0.58, 1.0, 0.5],
       progs={'major': [[0, 0, 3, 0], [0, 2, 3, 4], [0, 5, 1, 4], [3, 4, 2, 5], [0, 3, 1, 4], [0, 4, 5, 3]]},
       own_progs=True, chord_size=4, chord_bars=1,
@@ -10002,6 +10003,7 @@ style('christmas_joyful', 'Orchestral',
       'basses, pizzicato and short strings on the off-beats, a soaring violin melody doubled by glockenspiel an octave up, '
       'celesta sparkle, a children\'s-choir pad with warm horns, sleigh bells and timpani; it starts hushed, swells '
       'chorus by chorus, changes key up for the last chorus and ends on a big held chord',
+      backbone=dict(brass=True),   # (2.23) low strings never drop out; tuba + brass section in the choruses
       meter='3/4', bpm=(120, 152), scales=['major'], human=0.012, form='christmas_joy', form_scale=1.6, reverb=3.4,
       key_change=True, no_rotation=True, no_layers=True,
       progs={'major': [[0, 3, 4, 0], [0, 5, 1, 4], [0, 3, 0, 4], [3, 4, 2, 5], [0, 4, 5, 3], [0, 0, 3, 0], [0, 4, 3, 0], [0, 5, 2, 3]]},
@@ -10045,6 +10047,7 @@ style('christmas_mischief', 'Orchestral',
       'staccato low-string ostinato, stabbing strings, blasting horns and brass, chromatic woodwind scurries, a sneaky '
       'celesta / flute motif, snare, timpani and sleigh bells driving 8ths; it gathers pace, explodes into the chase, '
       'tiptoes through a quiet sneaky break, and ends on a low unison hit',
+      backbone=dict(brass=True),   # (2.23) low strings never drop out; tuba + brass in the chase
       bpm=(128, 154), scales=['minor', 'harmonic_minor'], human=0.008, form='christmas_trap', colour_boost=0.15, form_scale=1, reverb=2.8,
       no_rotation=True, no_layers=True, fill=True,
       progs={'minor': [[0, 0, 5, 4], [0, 1, 0, 4], [0, 3, 4, 0], [0, 5, 1, 4]], 'harmonic_minor': [[0, 0, 4, 4], [0, 1, 4, 0]]},
@@ -10093,6 +10096,7 @@ style('christmas_magic', 'Orchestral',
       'melody way up high doubled by flutes, rippling harp arpeggios and glissandi, vibraphone and soft piano, a warm '
       'string bed, soft sleigh bells and a triangle; minor-key magic with the flat sixth, minor iv and a dark Neapolitan '
       'chord, swelling once with timpani before fading back to the celesta',
+      backbone=dict(brass=False),   # (2.23) low strings never drop out (gentle: no brass section)
       bpm=(88, 100), scales=['harmonic_minor', 'minor', 'phrygian'], human=0.012, form='christmas_magic', form_scale=1.5,
       reverb=4.0, no_rotation=True, no_layers=True, colour_boost=0.2, rubato=0.25,
       progs={'harmonic_minor': [[0, 4, 0, 5], [0, 5, 3, 4], [0, 3, 4, 0], [5, 3, 4, 0]],
@@ -13106,6 +13110,7 @@ derive('christmas_lullaby', 'christmas_joyful', 'Orchestral',
        'Christmas lullaby (music box): a hushed, rocking 3/4 around 66-84 - a music-box melody tinkling up high, a harp '
        'rippling underneath, a soft string bed and a breathy flute, the faintest sleigh bells and celesta - a candle-lit '
        'Christmas Eve cradle song', 'Christmas Lullaby (music box)', exact_pools=True, keep_sounds=0.8,
+       backbone=dict(brass=False),   # (2.23) hushed: soft pizzicato instead of silence, no brass
        sounds={'lead': 'musicbox', 'chords': 'harp', 'pad': 'strings', 'arp': 'celesta', 'horns': 'flute', 'glock': 'flute'},
        drop_tracks=('timp', 'bass_cb'),
        bpm=(66, 84), reverb=4.2, rubato=0.2, key_change=False, form_scale=0.85,
@@ -13120,6 +13125,7 @@ derive('christmas_carol_choir', 'christmas_magic', 'Orchestral',
        'singing the tune in chords, a pipe organ underneath, church bells ringing out at the start of each verse, '
        'timpani swells and a brass fanfare for the last verse - candles, stone arches, a midnight service',
        'Christmas Carol (choir & organ)', exact_pools=True, keep_sounds=0.8,
+       backbone=dict(brass=True),   # (2.23) low strings throughout; brass in the big verses
        sounds={'lead': 'choir', 'chords': 'organ', 'pad': 'strings', 'arp': 'churchbell', 'flute': 'horn', 'vibes': 'organ'},
        bpm=(72, 92), scales=['major'], rubato=0.1, reverb=4.6,
        progs={'major': [[0, 3, 4, 0], [0, 4, 5, 3], [3, 0, 4, 0], [0, 5, 3, 4]]}, own_progs=True,
@@ -13170,6 +13176,7 @@ derive('christmas_memory_theme', 'christmas_magic', 'Orchestral',
        'celesta alone, then a children\'s choir humming long notes, an oboe or flute singing the tune over a warm string '
        'bed and harp, rich major-seventh and borrowed minor-iv chords, a soaring string climax with soft timpani and '
        'sleigh bells, then back to the celesta - bittersweet, homesick, snow falling', 'Christmas Memory Theme (family film)',
+       backbone=dict(brass=True),   # (2.23) low strings throughout; brass swells in the climax
        exact_pools=True, keep_sounds=0.85, form='christmas_memory', form_scale=1.0,
        sounds={'lead': 'oboe', 'arp': 'celesta', 'pad': 'kidchoir', 'chords': 'strings', 'flute': 'flute', 'vibes': 'harp'},
        bpm=(68, 84), scales=['major'], rubato=0.3, reverb=4.4, chord_size=4, colour_boost=0.35,
@@ -13189,6 +13196,7 @@ derive('christmas_sneak', 'christmas_mischief', 'Orchestral',
        'strings and a staccato bassoon tiptoeing up and down a minor scale, a sly clarinet, celesta and glockenspiel '
        'winks, soft timpani footsteps, a muted brass sting and a cymbal crash when someone gets caught - sneaky, '
        'mischievous, a little spooky', 'Christmas Sneak (tiptoeing burglars)',
+       backbone=dict(brass=False),   # (2.23) tiptoeing: pizzicato basses throughout, no brass section
        exact_pools=True, keep_sounds=0.85, form='christmas_sneak', form_scale=2.0,
        sounds={'chords': 'pizz', 'lead': 'bassoon', 'arp': 'celesta', 'cel': 'clarinet', 'bass': 'pizz', 'pad': 'horn'},
        bpm=(96, 116), scales=['minor', 'harmonic_minor'], swing=0.5,
@@ -13233,7 +13241,135 @@ derive('christmas_finale', 'christmas_carol_choir', 'Orchestral',
                   pad=['strings', 'brass', 'horn']),
        master=dict(lufs=-15.0, air=0.6, low=0.9, gentle=True, max_gr=2.0))
 
-_XMAS_FILM = ('christmas_memory_theme', 'christmas_sneak', 'christmas_flight', 'christmas_finale')
+# ---- (2.23) big orchestral Christmas: brass and low strings carry the whole piece. Calibrated on a reference set of
+# orchestral Christmas film-score cues: low strings sound in ~90% of the music, the low-mid body (250-800 Hz: celli,
+# horns, trombones) holds about half the energy, very little top end, and a 15-25 dB swing from hushed to full.
+FORMS['christmas_fanfare'] = [('intro', 4, {'kick', 'bass', 'chords'}, {'level': 0.75, 'crash': True}),
+                              ('verse', 16, {'kick', 'bass', 'arp', 'pad', 'lead'}, {'level': 0.4, 'level_to': 0.6}),
+                              ('chorus', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'pad', 'lead'}, {'crash': True, 'level': 0.85}),
+                              ('bridge', 8, {'bass', 'arp', 'pad'}, {'alt': True, 'level': 0.22, 'level_to': 0.45}),
+                              ('verse', 16, {'kick', 'bass', 'chords', 'arp', 'pad', 'lead'}, {'level': 0.5, 'level_to': 0.75}),
+                              ('chorus', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'pad', 'lead'}, {'crash': True, 'level': 0.95, 'level_to': 1.0}),
+                              ('outro', 4, {'kick', 'bass', 'chords', 'pad', 'lead'}, {'crash': True, 'level': 1.0})]
+style('christmas_brass_fanfare', 'Orchestral',
+      'Christmas orchestral, brass fanfare (family-film main title, 112-132): trumpets ring out the tune over horns and '
+      'trombones on the chords, a tuba doubling the celli and basses on a marching bassline, a driving spiccato string '
+      'ostinato under everything, sustained strings, timpani rolls, snare, cymbals and sleigh bells - it opens with a '
+      'brass call, drops to a hushed string passage, builds back and changes key up for a last, full-orchestra chorus',
+      bpm=(112, 132), scales=['major', 'mixolydian'], human=0.01, form='christmas_fanfare', form_scale=1, reverb=3.2,
+      key_change=True, no_rotation=True, no_layers=True, colour_boost=0.2, backbone=dict(brass=True),
+      progs={'major': [[0, 4, 5, 3], [0, 3, 4, 0], [0, 5, 3, 4], [3, 4, 0, 5], [0, 1, 4, 0]], 'mixolydian': [[0, 6, 3, 0]]},
+      chord_size=4, chord_bars=1,
+      drums={'timp': ['X.......X.......', 'X.....x.X.......', 'X...x...X...x.x.'], 'snare': ['....x.......x...', 'x.xxx.x.x.xxx.xx'],
+             'sleigh': ['x.x.x.x.x.x.x.x.'], 'crash': ['X...............']},
+      kick_track='timp', snare_tracks=['snare'],
+      bass=['R...R...F...R...', 'R.R.R...F.F.R...', 'R...O...F...A...'], bass_lo=31, bass_gate=0.7,
+      chord_rh=['x-------x-------', 'x.....x.x-------', 'x---x---x---x---'], chord_center=58,
+      arp=dict(rate=1, mode='updown', oct=4, prob=0.95, rh=['xxxxxxxxxxxxxxxx', 'x.xxx.xxx.xxx.xx']),
+      lead_rh=['x---x.x.x-------', 'x.x.x---x---x---', 'x-----x.x.x.x---', 'x---x---x.x.x---'], lead_oct=5, repetition=0.8,
+      gm_hint='Trumpets (melody); French horns + trombones (chords); tuba + celli + basses (bass); violins / violas '
+              'spiccato ostinato; strings (sustained); timpani, snare, cymbals, sleigh bells; glockenspiel doubling the tune',
+      tracks=[T('timp', 'kick', 'timp', rev=0.4, db=-23),
+              T('snare', 'snare', 'snare', rev=0.35, db=-27),
+              T('sleigh', 'top', 'sleigh', pan=0.3, rev=0.3, db=-33),
+              T('crash', 'top', 'crash', rev=0.4, db=-30),
+              T('bass', 'bass', 'cello', rev=0.35, db=-19, p=dict(a=0.02)),
+              T('bass_cb', 'bass', 'contrabass', double_of='bass', octave=-12, keep_inst=True, rev=0.35, db=-26),
+              T('bass_tuba', 'bass', 'tuba', double_of='bass', keep_inst=True, rev=0.35, db=-24),
+              T('chords', 'chords', 'brass', rev=0.4, db=-15),
+              T('horns', 'chords', 'horn', double_of='chords', keep_inst=True, rev=0.45, db=-18),
+              T('pad', 'pad', 'strings', rev=0.5, db=-19),
+              T('arp', 'arp', 'spiccato', rev=0.35, pan=-0.2, db=-22),
+              T('lead', 'lead', 'trumpet', rev=0.45, pan=0.1, db=-17),
+              T('glock', 'lead', 'glock', double_of='lead', octave=12, keep_inst=True, rev=0.45, pan=0.2, db=-31)],
+      master=dict(lufs=-16.0, air=0.2, low=1.0, gentle=True, max_gr=1.5),
+      pools=dict(bass=['cello', 'contrabass', 'tuba'], chords=['brass', 'horn', 'trombone'], pad=['strings', 'violas', 'horn'],
+                 arp=['spiccato', 'violas', 'pizz'], lead=['trumpet', 'horn', 'violin']),
+      label='Christmas orchestral - brass fanfare')
+
+FORMS['christmas_overture'] = [('intro', 8, {'bass', 'pad', 'arp'}, {'level': 0.2, 'level_to': 0.4}),
+                               ('A', 16, {'kick', 'bass', 'chords', 'arp', 'pad', 'lead'}, {'level': 0.55, 'level_to': 0.7}),
+                               ('B', 16, {'kick', 'top', 'bass', 'chords', 'arp', 'pad', 'lead'}, {'crash': True, 'level': 0.85}),
+                               ('bridge', 12, {'bass', 'chords', 'lead'}, {'alt': True, 'level': 0.2, 'level_to': 0.4}),
+                               ('A', 16, {'kick', 'bass', 'chords', 'arp', 'pad', 'lead'}, {'level': 0.6, 'level_to': 0.8}),
+                               ('climax', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'pad', 'lead'}, {'crash': True, 'level': 1.0}),
+                               ('outro', 8, {'kick', 'bass', 'chords', 'pad'}, {'level': 0.7, 'level_to': 0.25})]
+style('christmas_overture', 'Orchestral',
+      'Christmas orchestral, overture (family-film concert suite, 92-108): the strings carry the whole piece - celli '
+      'and basses always moving, violas weaving a flowing figure, violins singing the theme with a flute an octave up, '
+      'warm horns on long chords - and the brass section swells in for each big statement: trombones and tuba under the '
+      'tune, timpani and cymbals; it opens hushed, rises to a broad climax a key higher, and settles to a quiet close',
+      bpm=(92, 108), scales=['major'], human=0.014, form='christmas_overture', form_scale=1, reverb=3.6,
+      key_change=True, no_rotation=True, no_layers=True, colour_boost=0.3, backbone=dict(brass=True, section='trombone'),
+      progs={'major': [[0, 5, 3, 4], [0, 3, 1, 4], [0, 2, 5, 4], [3, 0, 1, 4], [0, 4, 5, 2]]},
+      chord_size=4, chord_bars=1,
+      drums={'timp': ['X...............', 'X.......x.......'], 'snare': ['x.x.x.x.x.x.x.x.'], 'crash': ['X...............'],
+             'tri': ['x.......x.......']},
+      kick_track='timp', snare_tracks=['snare'],
+      bass=['R-------F-------', 'R---O---F---R---', 'R---A---F---O---'], bass_lo=31, bass_gate=0.9,
+      chord_rh=['x---------------', 'x-------x-------'], chord_center=60,
+      arp=dict(rate=2, mode='updown', oct=4, prob=0.9),
+      lead_rh=['x-------x---x---', 'x---x---x-------', 'x-----x.x-------', 'x---------------'], lead_oct=5, repetition=0.75,
+      gm_hint='Violins (theme) + flute 8va; violas (flowing figure); celli + basses; French horns (sustained); '
+              'trombones + tuba in the big statements; timpani, cymbals, triangle; harp glissandi',
+      tracks=[T('timp', 'kick', 'timp', rev=0.45, db=-24),
+              T('snare', 'snare', 'snare', rev=0.4, db=-31),
+              T('tri', 'top', 'triangle', pan=0.3, rev=0.4, db=-34),
+              T('crash', 'top', 'crash', rev=0.45, db=-30),
+              T('bass', 'bass', 'cello', rev=0.4, db=-19, p=dict(a=0.04)),
+              T('bass_cb', 'bass', 'contrabass', double_of='bass', octave=-12, keep_inst=True, rev=0.4, db=-25),
+              T('chords', 'chords', 'strings', rev=0.5, db=-16),
+              T('pad', 'pad', 'horn', rev=0.5, db=-18),
+              T('arp', 'arp', 'violas', rev=0.45, pan=-0.25, db=-22),
+              T('lead', 'lead', 'violin', rev=0.5, pan=0.1, db=-17),
+              T('flute', 'lead', 'flute', double_of='lead', octave=12, keep_inst=True, rev=0.5, pan=0.25, db=-26)],
+      master=dict(lufs=-17.0, air=0.2, low=1.0, gentle=True, max_gr=1.2),
+      pools=dict(bass=['cello', 'contrabass'], chords=['strings', 'violas', 'horn'], pad=['horn', 'strings', 'choir'],
+                 arp=['violas', 'harp', 'spiccato'], lead=['violin', 'flute', 'horn', 'oboe']),
+      label='Christmas orchestral - overture')
+
+FORMS['toy_march'] = [('intro', 4, {'snare', 'bass'}, {'level': 0.35}),
+                      ('A', 16, {'kick', 'snare', 'bass', 'chords', 'lead'}, {'level': 0.5}),
+                      ('A', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'lead'}, {'level': 0.75}),
+                      ('trio', 16, {'kick', 'bass', 'chords', 'pad', 'lead'}, {'alt': True, 'level': 0.3}),
+                      ('A', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'arp', 'pad', 'lead'}, {'crash': True, 'level': 1.0}),
+                      ('outro', 2, {'kick', 'snare', 'bass', 'chords'}, {'crash': True, 'level': 1.0})]
+style('toy_soldier_march', 'Orchestral',
+      'Toy soldier march (Christmas, 108-120): a bouncy, strutting march - the tuba and low strings on the oom, horns '
+      'and trombones on the pah, a crisp snare with rolls, a bright piccolo and glockenspiel on the tune, bassoon '
+      'answering, and a gentler trio in the middle before the full band strikes up the last strain',
+      bpm=(108, 120), scales=['major'], human=0.008, form='toy_march', form_scale=1, reverb=2.6,
+      no_rotation=True, no_layers=True, colour_boost=0.1, backbone=dict(brass=True, section='trombone'),
+      progs={'major': [[0, 4, 4, 0], [0, 0, 4, 0], [3, 0, 4, 0], [0, 3, 0, 4], [0, 5, 1, 4]]},
+      chord_size=3, chord_bars=1,
+      drums={'timp': ['X.......X.......'], 'snare': ['x.x.x.xxx.x.x.x.', 'x...x.x.x...xxxx', 'xxx.x.x.xxx.x.x.'],
+             'crash': ['X.......X.......']},
+      kick_track='timp', snare_tracks=['snare'],
+      bass=['R...F...R...F...', 'R...O...R...F...', 'R...F...A...F...'], bass_lo=31, bass_gate=0.45,
+      chord_rh=['..x...x...x...x.'], chord_center=58,
+      arp=dict(rate=1, mode='updown', oct=5, prob=0.7),
+      lead_rh=['x.x.x.x.x---x...', 'x.xxx.x.x.x.x...', 'x---x.x.x.x.x---', 'xx.xx.x.x---x...'], lead_oct=5, repetition=0.85,
+      gm_hint='Tuba + celli/basses (oom); horns + trombones (pah); piccolo + glockenspiel (tune); bassoon (answers); '
+              'snare drum, bass drum, cymbals',
+      tracks=[T('timp', 'kick', 'timp', rev=0.3, db=-23),
+              T('snare', 'snare', 'snare', rev=0.25, db=-26),
+              T('crash', 'top', 'crash', rev=0.35, db=-31),
+              T('bass', 'bass', 'tuba', rev=0.3, db=-18),
+              T('bass_vc', 'bass', 'cello', double_of='bass', octave=12, keep_inst=True, rev=0.3, db=-24),
+              T('bass_cb', 'bass', 'pizz', double_of='bass', keep_inst=True, rev=0.3, db=-27),
+              T('chords', 'chords', 'horn', rev=0.35, db=-16),
+              T('bones', 'chords', 'trombone', double_of='chords', keep_inst=True, rev=0.35, db=-19),
+              T('pad', 'pad', 'strings', rev=0.45, db=-21),
+              T('arp', 'arp', 'bassoon', rev=0.3, pan=-0.25, db=-22),
+              T('lead', 'lead', 'piccolo', rev=0.35, pan=0.1, db=-22),
+              T('glock', 'lead', 'glock', double_of='lead', keep_inst=True, rev=0.35, pan=0.2, db=-32)],
+      master=dict(lufs=-16.0, air=0.0, low=0.8, gentle=True, max_gr=1.2),
+      pools=dict(bass=['tuba', 'cello', 'contrabass'], chords=['horn', 'trombone', 'brass'], pad=['strings', 'horn', 'violas'],
+                 arp=['bassoon', 'clarinet', 'pizz'], lead=['piccolo', 'flute', 'trumpet', 'glock']),
+      label='Toy soldier march (Christmas)')
+
+_XMAS_FILM = ('christmas_memory_theme', 'christmas_sneak', 'christmas_flight', 'christmas_finale',
+              'christmas_brass_fanfare', 'christmas_overture', 'toy_soldier_march')
 BELL_OK.update(_XMAS_FILM)
 MALLET_OK.update(_XMAS_FILM)
 

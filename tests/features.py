@@ -1525,6 +1525,7 @@ def main():
     test_afro_street_genres_and_early_lead()
     test_engine_gets_its_own_port()
     test_afro_fewer_plucks_and_wobble()
+    test_orchestral_backbone_and_switches()
     print('all good')
 
 
@@ -1652,6 +1653,33 @@ def test_afro_fewer_plucks_and_wobble():
     fr = np.fft.rfftfreq(len(y), 1 / SR)
     assert (sp * fr).sum() / sp.sum() / 65.4 < 2.5      # the keyboard bass settles round, not brassy
     print('ok  African genres: few plucks / guitars; the wobble only in the last drop; no brassy FM bass')
+
+
+def test_orchestral_backbone_and_switches():
+    """(2.23) orchestral Christmas: low strings never drop out, brass in the big sections; More brass / More strings."""
+    from sgcore.styles import STYLES
+    from sgcore.compose import ORCH_BIG, section_group
+    for g in ('christmas_brass_fanfare', 'christmas_overture', 'toy_soldier_march'):
+        assert g in STYLES and STYLES[g].get('backbone'), g
+    for g in ('christmas_joyful', 'christmas_magic', 'christmas_brass_fanfare', 'christmas_overture'):
+        s = song(g, 2)
+        low = {t['name'] for t in s['st']['tracks'] if t['layer'] == 'bass'}
+        for x in s['sections']:
+            if (x.get('opts') or {}).get('build'):
+                continue
+            a, b = x['bar'] * 4, (x['bar'] + x['bars']) * 4
+            assert any(e.track in low and a <= e.beat < b for e in s['events']), (g, x['name'])   # low strings play
+        big = [(x['bar'] * 4, (x['bar'] + x['bars']) * 4) for x in s['sections']
+               if x['name'] in ORCH_BIG or section_group(x) == 'B' or (x.get('opts') or {}).get('crash')]
+        for e in s['events']:
+            if e.track in ('tuba', 'brass_sec'):
+                assert any(a <= e.beat < b for a, b in big), (g, e.track, e.beat)                 # brass: big sections only
+    plain = song('house', 1)
+    both = compose(Options(style='house', seed=1, more_brass=True, more_strings=True))
+    names = {e.track for e in both['events']}
+    assert {'tuba', 'brass_sec', 'horns_soft', 'strings_low', 'strings_sec'} <= names
+    assert not {'tuba', 'brass_sec', 'strings_sec'} & {e.track for e in plain['events']}
+    print('ok  orchestral Christmas: low strings throughout, brass in the big sections; More brass / More strings switches')
 
 
 if __name__ == '__main__':

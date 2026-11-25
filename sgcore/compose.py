@@ -96,6 +96,8 @@ class Options:
     part_fx: dict = field(default_factory=dict)       # layer -> effect plugin name (e.g. {'lead': 'ValhallaSupermassive'})
     part_effects: dict = field(default_factory=dict)  # part -> built-in effect preset (sgcore.part_effects; 'none' = dry)
     drum_voices: dict = field(default_factory=dict)   # drum voice (kick / snare / clap / hats) -> drum machine id, locked
+    more_brass: bool = False      # (2.23) a brass section: tuba on the bass + brass on the chords in the big sections, horns elsewhere
+    more_strings: bool = False    # (2.23) strings all the way through: low strings never drop out, a string section on the chords
     extra_parts: list = None      # extra instruments: [{inst, follows (lead/counter/chords/pad/arp/bass), octave, db, pan}]
     ending: str = 'auto'          # auto | hit (final chord + crash) | fade
     vocal_guide: bool = False     # also play the vocal guide melody (it is always in the MIDI export)
@@ -1494,6 +1496,8 @@ def compose(opts):
     lead_early = bool(st.get('lead_early') and 'lead' in tracks and opts.structure != 'loop'
                       and random.Random(f"{opts.seed}-lead-early").random() < float(st['lead_early']))
     lead_seen = False
+    backbone = bool(st.get('backbone') or opts.more_strings) and 'bass' in tracks and opts.structure != 'loop'
+    quiet_si = set()                                       # (2.23) sections where the low strings would have dropped out
     for si, ed in enumerate(edits):
         src = int(ed['src'])
         uid = f"{src}:{int(ed.get('copy', 0))}"
@@ -1510,6 +1514,9 @@ def compose(opts):
         elif lead_early and not lead_seen and 'lead' not in (ed.get('mute') or []):
             layers = layers | {'lead'}
             early_lead = True
+        if backbone and 'bass' not in layers and 'bass' not in (ed.get('mute') or []) and not opts_s.get('build'):
+            layers = layers | {'bass'}
+            quiet_si.add(si)
         if energy > 0.75 and opts_s.get('drop'):
             layers |= {'arp'}
         if energy < 0.25:
@@ -2102,6 +2109,7 @@ def compose(opts):
     evs += double_layers(evs, tracks)                    # layers copy the tuned notes
     switch_sections(evs, tracks, sections)                # verses / choruses / breaks on different instruments
     wobble_in_drops(evs, tracks, sections, st, opts)      # (2.22.4) wobble genres: the wobble is saved for the drops
+    evs[:] = orchestrate(evs, tracks, sections, st, opts, quiet_si)   # (2.23) string backbone, brass section
     _sw = _ev.structure_moves(evs, sections, st, opts, tracks, POOLS_.get(opts.style, {}).get('bass') or [], fx)
     if _sw:                                               # (1.91) layered intros / outros, switch-up drops
         tracks[_sw['name']] = _sw
@@ -3272,6 +3280,85 @@ def switch_sections(evs, tracks, sections):
         g = next((g for b0, b1, g in spans if b0 <= e.beat < b1), None)
         if g in to:
             e.track = to[g]
+
+
+ORCH_BIG = ('chorus', 'drop', 'climax', 'finale', 'chase', 'hook', 'B', 'tutti', 'fanfare')
+STRING_SOUNDS = ('cello', 'contrabass', 'pizz', 'violas', 'strings', 'spiccato', 'tremolo', 'violin')
+
+
+def orchestrate(evs, tracks, sections, st, opts, quiet_si):
+    """(2.23) Orchestral weight, from the genre's 'backbone' (the brassy orchestral Christmas genres) or the More strings /
+    More brass switches (any genre).
+    - Low strings never drop out: a section that had no bass gets a soft pizzicato pulse (beat 1, and the half bar) on
+      'bass_quiet' instead of silence - the cellos and basses carry the whole piece.
+    - More strings: celli double the bassline everywhere (when the bass isn't a string already) and a string section
+      doubles the chords.
+    - Brass: in the big sections (choruses, drops, the finale ...) a tuba doubles the bassline and a brass section the
+      chords; with More brass, horns also play the chords softly everywhere else."""
+    bb = st.get('backbone') or {}
+    more_s, more_b = bool(getattr(opts, 'more_strings', False)), bool(getattr(opts, 'more_brass', False))
+    brass = bool(bb.get('brass')) or more_b
+    if not (bb or more_s or more_b) or 'bass' not in tracks:
+        return evs
+    num = int(str(st.get('meter') or '4/4').split('/')[0])
+    bar = 4.0                                              # event time: every bar is 4 beats (3/4 subdivides it)
+
+    def span(x):
+        return x['bar'] * bar, (x['bar'] + x['bars']) * bar
+
+    def inside(beat, spans):
+        return any(a <= beat < b for a, b in spans)
+
+    def add_track(src, name, inst, db, **kw):
+        t = dict(tracks[src], name=name, inst=inst, db=db, double_of=None, keep_inst=True, pooled=True, p={},
+                 user_pick=False, **kw)
+        tracks[name] = t
+        st['tracks'].append(t)
+        return t
+
+    out = evs
+    quiet = [span(sections[i]) for i in sorted(quiet_si) if i < len(sections)]
+    if quiet:
+        low = {n for n, t in tracks.items() if t.get('layer') == 'bass'}
+        add_track('bass', 'bass_quiet', bb.get('quiet', 'pizz'), (tracks['bass'].get('db') or -17) - 2, rev=0.4)
+        pulse = bar / 2 if num % 2 == 0 else bar
+        kept = []
+        for e in out:
+            if e.track in low and e.midi is not None and inside(e.beat, quiet):
+                if e.track == 'bass':                      # pulse the held pitch: beat 1 (and the half bar)
+                    end = next(b_ for a_, b_ in quiet if a_ <= e.beat < b_)
+                    t = math.ceil(e.beat / pulse - 1e-6) * pulse   # on the pulse grid only
+                    while t < min(e.beat + max(e.dur, 0.01), end) - 1e-6:
+                        kept.append(e.copy(track='bass_quiet', beat=t, vel=e.vel * 0.62, dur=min(pulse * 0.9, 1.5)))
+                        t += pulse
+                continue
+            kept.append(e)
+        out = kept
+    bass_ev = [e for e in out if e.track == 'bass' and e.midi is not None]
+    chord_ev = [e for e in out if e.track == 'chords' and e.midi is not None] if 'chords' in tracks else []
+    if more_s:
+        if tracks['bass'].get('inst') not in STRING_SOUNDS:
+            add_track('bass', 'strings_low', 'cello', (tracks['bass'].get('db') or -17) - 3, rev=0.35)
+            out += [e.copy(track='strings_low', vel=e.vel * 0.8, midi=e.midi + (12 if e.midi < 36 else 0)) for e in bass_ev]
+        if chord_ev and tracks['chords'].get('inst') not in STRING_SOUNDS:
+            add_track('chords', 'strings_sec', 'strings', (tracks['chords'].get('db') or -20) - 3, rev=0.45)
+            out += [e.copy(track='strings_sec', vel=e.vel * 0.7) for e in chord_ev]
+    if brass:
+        big = [span(x) for x in sections if x['name'] in ORCH_BIG or section_group(x) == 'B'
+               or (x.get('opts') or {}).get('crash')]
+        layer_insts = lambda layer: {t.get('inst') for t in tracks.values() if t.get('layer') == layer}   # noqa: E731
+        brassy = {'brass', 'horn', 'trombone', 'trumpet', 'tuba', 'brass_wide', 'brass_dark'}
+        if big and 'tuba' not in layer_insts('bass'):
+            add_track('bass', 'tuba', bb.get('low_brass', 'tuba'), (tracks['bass'].get('db') or -17) - 2, rev=0.35)
+            out += [e.copy(track='tuba', vel=e.vel * 0.85) for e in bass_ev if inside(e.beat, big)]
+        if chord_ev and not (layer_insts('chords') & brassy):     # a genre whose chords are brass already keeps them
+            if big:
+                add_track('chords', 'brass_sec', bb.get('section', 'brass'), (tracks['chords'].get('db') or -20) - 1, rev=0.4)
+                out += [e.copy(track='brass_sec', vel=e.vel * 0.85) for e in chord_ev if inside(e.beat, big)]
+            if more_b:
+                add_track('chords', 'horns_soft', 'horn', (tracks['chords'].get('db') or -20) - 5, rev=0.45)
+                out += [e.copy(track='horns_soft', vel=e.vel * 0.5) for e in chord_ev if not inside(e.beat, big)]
+    return out
 
 
 def wobble_in_drops(evs, tracks, sections, st, opts):

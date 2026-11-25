@@ -485,6 +485,9 @@ select:focus,input[type=number]:focus,input[type=text]:focus{border-color:color-
       <div class="f"><label>Humanize <b id="humanizeV"></b></label><input type="range" id="humanize" min="0" max="200" value="100"></div>
       <div class="f"><label>Groove feel <span class="hint">timing of each part</span></label><select id="groove"><option value="">Genre feel</option><option value="straight">Straight (on the grid)</option><option value="dilla">Lazy hip-hop (drunk, late snares)</option><option value="laidback">Laid back (reggae)</option><option value="afro">Afro swing</option><option value="dembow">Dembow push</option><option value="jazz">Jazz (ride on top)</option><option value="house">House (late hats)</option><option value="funk">Funk (pushed 16ths)</option><optgroup label="Classic feels"><option value="mpc54">MPC swing 54%</option><option value="mpc58">MPC swing 58%</option><option value="mpc62">MPC swing 62%</option><option value="boombap">Boom bap (swung hats, lazy snare)</option><option value="drunk">Drunk (very loose)</option><option value="ukg">UK garage shuffle</option><option value="techno_shuffle">Techno shuffle</option><option value="trap_tight">Trap (tight, hats ahead)</option><option value="drill">Drill (late snare, bounce)</option><option value="dnb_roll">DnB roll (snare ahead)</option></optgroup></select></div>
       <div class="f"><label>Bass rhythm</label><select id="bassRhythm"><option value="">Style's bassline</option><option value="kick">Follow the kick drum</option></select></div>
+      <div class="f"><label>Orchestra <span class="hint">any genre</span></label>
+        <div class="row" style="gap:10px"><label class="auto" title="A tuba on the bass and a brass section on the chords in the big sections, soft horns elsewhere"><input type="checkbox" id="moreBrass">🎺 More brass</label>
+        <label class="auto" title="Low strings never drop out (soft pizzicato in the quiet parts), celli doubling the bass and a string section on the chords"><input type="checkbox" id="moreStrings">🎻 More strings</label></div></div>
       <div class="f"><label>Drum style <span class="hint">what the drums play</span></label><select id="drumPattern"></select>
         <div class="hint">Changing the drum sounds never changes this.</div></div>
       <div class="f wide"><label>Drummer <span class="hint">how the beat is played</span></label>
@@ -1010,6 +1013,8 @@ function options(){
   if($('#drHats').value) o.hat_density=$('#drHats').value;
   if($('#percSet').value) o.percussion=$('#percSet').value;
   if($('#userDrums').checked) o.user_drums=true;
+  if($('#moreBrass').checked) o.more_brass=true;
+  if($('#moreStrings').checked) o.more_strings=true;
   if(Object.keys(state.part_fx).length) o.part_fx=Object.assign({},state.part_fx);
   if(Object.keys(state.part_effects).length) o.part_effects=JSON.parse(JSON.stringify(state.part_effects));
   if(Object.keys(state.drum_voices||{}).length) o.drum_voices=Object.assign({},state.drum_voices);
@@ -1060,7 +1065,7 @@ function applyOptions(o){
   $('#bpmAuto').checked=!o.bpm; if(o.bpm)$('#bpm').value=o.bpm; $('#key').value=o.key||''; $('#scale').value=o.scale||''; $('#prog').value=o.progression||'';
   $('#swingAuto').checked=o.swing==null; if(o.swing!=null)$('#swing').value=o.swing*100;
   $('#scAuto').checked=o.sidechain==null; if(o.sidechain!=null)$('#sidechain').value=o.sidechain*100;
-  $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#drFills').value=o.drum_fills||''; $('#drGhosts').value=o.drum_ghosts||''; $('#drHats').value=o.hat_density||''; $('#percSet').value=o.percussion||''; $('#drumPattern').value=o.drum_pattern||(o.kit&&(META.drum_patterns||[]).some(p=>p.id==='break:'+o.kit)?'break:'+o.kit:'genre'); $('#userDrums').checked=!!o.user_drums;
+  $('#loudAuto').checked=o.loudness==null; if(o.loudness!=null)$('#loud').value=o.loudness; $('#kit').value=o.kit||''; $('#drFills').value=o.drum_fills||''; $('#drGhosts').value=o.drum_ghosts||''; $('#drHats').value=o.hat_density||''; $('#percSet').value=o.percussion||''; $('#drumPattern').value=o.drum_pattern||(o.kit&&(META.drum_patterns||[]).some(p=>p.id==='break:'+o.kit)?'break:'+o.kit:'genre'); $('#userDrums').checked=!!o.user_drums; $('#moreBrass').checked=!!o.more_brass; $('#moreStrings').checked=!!o.more_strings;
   if($('#ornaments')) $('#ornaments').value=(o.ornaments==null?'':String(o.ornaments));
   if(o.energy_curve&&o.energy_curve.length>1){CURVE=resample(o.energy_curve,CURVE_N);$('#curveOn').checked=true;}else $('#curveOn').checked=false; drawCurve();
   $('#groove').value=o.groove||''; $('#leadStyle').value=o.lead_style||''; $('#buildStyle').value=o.build_style||''; $('#builds').value=o.builds||'auto'; renderTraits(); setTraits(o.traits); state.octaves=Object.assign({}, o.octaves||{}); bindOctaves(); $('#transFx').value=o.transition_fx||'auto'; $('#vinyl').value=o.vinyl===true?'on':''; $('#bassRhythm').value=o.bass_rhythm||''; $('#ending').value=o.ending||'auto'; $('#counter').value=o.counter||''; $('#hookFirst').value=o.hook_first||''; $('#layering').value=o.layering||''; $('#bends').value=o.bends||''; $('#vocals').value=o.vocals||(o.vocal_guide?'guide':''); $('#voice').value=o.voice||'female'; $('#lyrics').value=o.lyrics||''; syncVocals(); fillVox(o.vox_sample||''); $('#voxUse').value=o.vox_use||'auto'; $('#voxPitch').value=o.vox_pitch||'auto'; $('#voxAmount').value=o.vox_amount||'normal'; syncVox();

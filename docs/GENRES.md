@@ -1,4 +1,4 @@
-# Studio Lab genres (424)
+# Studio Lab genres (427)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
@@ -518,7 +518,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Kirtan - drums & sitar (speeding up) | `drum_kirtan` | 90-100 | Kirtan - drums & sitar: the dholak, bongos and kartal start it off alone, then the sitar calls each line and the group answers, over a harmonium and drone - speeding up chant by chant, with drum breaks between, until it is a wild, ecstatic drum-driven chant |
 | Sitar & tabla jugalbandi | `jugalbandi` | 84-104 | Sitar & tabla jugalbandi (devotional duet): the sitar opens alone over the drone with a slow alap; the tabla joins for the composition (gat); then they trade - the tabla answers each sitar phrase with a solo of its own - before playing together, faster and faster, into a blazing jhala |
 
-## Orchestral (42)
+## Orchestral (45)
 
 ### Film & Trailer (11)
 
@@ -565,7 +565,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 |---|---|---|---|
 | Fantasy RPG | `fantasy_rpg` | 84-116 | Fantasy RPG / video-game score: harp arpeggios, flute & oboe melody, warm strings, horn swells |
 
-### Christmas & Holiday (10)
+### Christmas & Holiday (13)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -575,10 +575,13 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Christmas Lullaby (music box) | `christmas_lullaby` | 66-84 | Christmas lullaby (music box): a hushed, rocking 3/4 around 66-84 - a music-box melody tinkling up high, a harp rippling underneath, a soft string bed and a breathy flute, the faintest sleigh bells and celesta - a candle-lit Christmas Eve cradle song |
 | Christmas Memory Theme (family film) | `christmas_memory_theme` | 68-84 | Christmas memory theme (classic family-film score): the tender, nostalgic carol of a 90s holiday comedy - a celesta alone, then a children's choir humming long notes, an oboe or flute singing the tune over a warm string bed and harp, rich major-seventh and borrowed minor-iv chords, a soaring string climax with soft timpani and sleigh bells, then back to the celesta - bittersweet, homesick, snow falling |
 | Christmas Sneak (tiptoeing burglars) | `christmas_sneak` | 96-116 | Christmas sneak (burglars tiptoeing): the comic creeping cue of a holiday family film - plucked pizzicato strings and a staccato bassoon tiptoeing up and down a minor scale, a sly clarinet, celesta and glockenspiel winks, soft timpani footsteps, a muted brass sting and a cymbal crash when someone gets caught - sneaky, mischievous, a little spooky |
+| Christmas orchestral - brass fanfare | `christmas_brass_fanfare` | 112-132 | Christmas orchestral, brass fanfare (family-film main title, 112-132): trumpets ring out the tune over horns and trombones on the chords, a tuba doubling the celli and basses on a marching bassline, a driving spiccato string ostinato under everything, sustained strings, timpani rolls, snare, cymbals and sleigh bells - it opens with a brass call, drops to a hushed string passage, builds back and changes key up for a last, full-orchestra chorus |
 | Christmas orchestral - joyful | `christmas_joyful` | 120-152 | Christmas orchestral, joyful (family-film score): a lilting 3/4 carol for full orchestra - oom-pah cellos and basses, pizzicato and short strings on the off-beats, a soaring violin melody doubled by glockenspiel an octave up, celesta sparkle, a children's-choir pad with warm horns, sleigh bells and timpani; it starts hushed, swells chorus by chorus, changes key up for the last chorus and ends on a big held chord |
 | Christmas orchestral - magical (celesta) | `christmas_magic` | 88-100 | Christmas orchestral, magical (family-film opening titles): a hushed, glittering cue around 95 BPM - a celesta melody way up high doubled by flutes, rippling harp arpeggios and glissandi, vibraphone and soft piano, a warm string bed, soft sleigh bells and a triangle; minor-key magic with the flat sixth, minor iv and a dark Neapolitan chord, swelling once with timpani before fading back to the celesta |
 | Christmas orchestral - mischief | `christmas_mischief` | 128-154 | Christmas orchestral, mischief (family-film action cue): a driving 4/4 around 130-140 in a minor key - a staccato low-string ostinato, stabbing strings, blasting horns and brass, chromatic woodwind scurries, a sneaky celesta / flute motif, snare, timpani and sleigh bells driving 8ths; it gathers pace, explodes into the chase, tiptoes through a quiet sneaky break, and ends on a low unison hit |
+| Christmas orchestral - overture | `christmas_overture` | 92-108 | Christmas orchestral, overture (family-film concert suite, 92-108): the strings carry the whole piece - celli and basses always moving, violas weaving a flowing figure, violins singing the theme with a flute an octave up, warm horns on long chords - and the brass section swells in for each big statement: trombones and tuba under the tune, timpani and cymbals; it opens hushed, rises to a broad climax a key higher, and settles to a quiet close |
 | Sleigh-Ride Gallop (orchestral) | `sleigh_ride_gallop` | 128-150 | Sleigh-ride gallop (light orchestral): a bright major-key 2/4 gallop around 130-150 - woodblock hooves clip-clopping, sleigh bells driving 8ths, bouncing pizzicato and spiccato strings, a cheeky trumpet tune with flutes and celesta doubling it, horn calls, a snare and a whip-crack crash at the big moments - pure winter-holiday fun |
+| Toy soldier march (Christmas) | `toy_soldier_march` | 108-120 | Toy soldier march (Christmas, 108-120): a bouncy, strutting march - the tuba and low strings on the oom, horns and trombones on the pah, a crisp snare with rolls, a bright piccolo and glockenspiel on the tune, bassoon answering, and a gentler trio in the middle before the full band strikes up the last strain |
 
 ### Classical Eras (12)
 
