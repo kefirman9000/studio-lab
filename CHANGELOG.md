@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.25.0
+- **Trance pumps like the records.** The pads, chords, arp and now the lead duck under every kick and swell back
+  across the beat, the classic trance sidechain. Measured against the trance reference set, the music swelled back up
+  by about +1.7 dB per beat on the records and not at all in ours (-0.8 dB); club, anthem and classic vocal trance now
+  swell about +2.3 dB, progressive about +3 dB. 90s trance pop's pads and lead are sidechained for the first time.
+- **Melodic deep house tuned against 21 reference tracks** (one producer's melodic deep house). Emotive deep house
+  and sunny melodic house now:
+  - pump much harder (+3 to +4 dB of swell per beat, was 0 to +1; the records swell about +5);
+  - are much wider (shakers, congas, hats, rims and plucks panned out, pads and chords wide; they were nearly mono);
+  - sit darker on top with the sub leading the low end, like the records;
+  - master about 1 dB louder in the main sections, and swing a little more (0.55, the records' median).
+
 ## 2.24.3
 - **Trance tuned against real records.** Eight trance genres were measured against a set of ten trance tracks
   (2000s club and anthem trance, a progressive set, a 90s dream-trance single) and their mastering targets now
