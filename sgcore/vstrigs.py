@@ -15,6 +15,7 @@ import re
 import time
 
 from . import vsthost
+from .dexed_patches import PATCHES as _DX
 
 
 def _matcher(*pats, exclude=()):
@@ -162,25 +163,17 @@ PATCHES = {
         'filter_cutoff_hz': 0.34, 'filter_resonance': 0.2, 'filter_env_amount': 0.5, 'filter_env_attack_ms': 0.0,
         'filter_env_decay_ms': 0.32, 'filter_env_sustain': 0.2, 'amp_env_attack_ms': 0.0, 'amp_env_decay_ms': 0.5,
         'amp_env_sustain': 0.9, 'amp_env_release_ms': 0.12}),
-    # ---- Dexed: original DX7 ROM 1A voices, selected by program name
-    'dexed.epiano': dict(player='dexed', label='DX7 E.Piano 1', program=['E.PIANO 1', 10], params={}),
-    'dexed.clav': dict(player='dexed', label='DX7 Clav', program=['CLAV 1', 19], params={}),
-    'dexed.marimba': dict(player='dexed', label='DX7 Marimba', program=['MARIMBA', 21], params={}),
-    'dexed.vibes': dict(player='dexed', label='DX7 Vibes', program=['VIBE 1', 20], params={}),
-    'dexed.bells': dict(player='dexed', label='DX7 Tubular bells', program=['TUB BELLS', 25], params={}),
-    'dexed.steeldrum': dict(player='dexed', label='DX7 Steel drum', program=['STEEL DRUM', 26], params={}),
-    'dexed.bass': dict(player='dexed', label='DX7 Bass 1', program=['BASS 1', 14], params={}),
-    'dexed.organ': dict(player='dexed', label='DX7 E.Organ', program=['E.ORGAN 1', 16], params={}),
-    'dexed.koto': dict(player='dexed', label='DX7 Koto', program=['KOTO', 22], params={}),
-    'dexed.brass': dict(player='dexed', label='DX7 Brass 1', program=['BRASS 1', 0], params={}),
-    'dexed.strings': dict(player='dexed', label='DX7 Strings 1', program=['STRINGS 1', 3], params={}),
-    'dexed.piano': dict(player='dexed', label='DX7 Piano 1', program=['PIANO 1', 7], params={}),
-    'dexed.synlead': dict(player='dexed', label='DX7 Syn-Lead 1', program=['SYN-LEAD 1', 13], params={}),
-    'dexed.bass2': dict(player='dexed', label='DX7 Bass 2', program=['BASS 2', 15], params={}),
-    'dexed.harpsichord': dict(player='dexed', label='DX7 Harpsichord', program=['HARPSICH 1', 18], params={}),
-    'dexed.flute': dict(player='dexed', label='DX7 Flute 1', program=['FLUTE 1', 23], params={}),
-    'dexed.chime': dict(player='dexed', label='DX7 Orch-Chime', program=['ORCH-CHIME', 24], params={}),
-    'dexed.voice': dict(player='dexed', label='DX7 Voice 1', program=['VOICE 1', 29], params={}),
+    # ---- Dexed (2.23): Studio Lab's own FM patches, every voice parameter set directly (dexed_patches.py). Dexed starts
+    # on a synth bank with no classic patches, so selecting 'E.PIANO 1' etc. by name never worked.
+    'dexed.epiano': dict(player='dexed', label='FM electric piano', params=_DX['epiano']),
+    'dexed.clav': dict(player='dexed', label='FM clav', params=_DX['clav']),
+    'dexed.marimba': dict(player='dexed', label='FM marimba', params=_DX['marimba']),
+    'dexed.vibes': dict(player='dexed', label='FM vibes', params=_DX['vibes']),
+    'dexed.bells': dict(player='dexed', label='FM tubular bells', params=_DX['bells']),
+    'dexed.steeldrum': dict(player='dexed', label='FM steel drum', params=_DX['steeldrum']),
+    'dexed.bass': dict(player='dexed', label='FM bass (round)', params=_DX['bass']),
+    'dexed.organ': dict(player='dexed', label='FM organ', params=_DX['organ']),
+    'dexed.koto': dict(player='dexed', label='FM koto / pluck', params=_DX['koto']),
     # ---- Surge XT: from its init patch (scene A). Surge names parameters "A Osc 1 ...", "A Filter 1 ...".
     'surge.supersaw': dict(player='surge', label='Supersaw', required=['A Osc 1 Unison Voices'], params={
         'A Osc 1 Unison Voices|Osc 1 Unison Voices': 0.4, 'A Osc 1 Unison Detune|Osc 1 Unison Detune': 0.32,
@@ -224,32 +217,32 @@ ROLE_PATCHES = {
     'sawbass': ['tal.saw_bass', 'surge.saw_bass', 'tal.fat_bass', 'jc303.bass', 'nekobi.bass', 'obxf.bass'],
     'reese': ['surge.reese', 'tal.reese'],
     'wobble': [],                                              # LFO-routed wobbles stay built-in
-    'fmbass': ['dexed.bass', 'dexed.bass2', 'tal.fat_bass'],
+    'fmbass': ['dexed.bass', 'tal.fat_bass'],
     'chipbass': [], 'sinebass': [], '808': [],                # sub-heavy parts sound best from the built-in engine
     'supersaw': ['surge.supersaw', 'surge.dark_supersaw', 'tal.analog_pad'],
     'supersaw_lead': ['surge.supersaw_lead', 'tal.80s_lead', 'obxf.lead'],
     'warmpad': ['tal.analog_pad', 'surge.warm_pad', 'surge.wide_pad', 'obxf.pad'],
-    'strings': ['tal.strings', 'dexed.strings', 'surge.wide_pad', 'obxf.strings'],
+    'strings': ['tal.strings', 'surge.wide_pad', 'obxf.strings'],
     'stab': ['tal.brass_stab', 'surge.pluck', 'surge.bright_pluck', 'obxf.stab'],
-    'brass': ['tal.brass_stab', 'dexed.brass', 'obxf.brass'],
+    'brass': ['tal.brass_stab', 'obxf.brass'],
     'pluck_saw': ['tal.pluck', 'surge.pluck', 'surge.bright_pluck'],
-    'leadsaw': ['tal.80s_lead', 'surge.saw_lead', 'tal.square_lead', 'dexed.synlead', 'obxf.lead'],
-    'softlead': ['tal.soft_lead', 'dexed.flute'],
+    'leadsaw': ['tal.80s_lead', 'surge.saw_lead', 'tal.square_lead', 'obxf.lead'],
+    'softlead': ['tal.soft_lead'],
     'pluck': ['kars.pluck', 'tal.pluck', 'surge.bright_pluck'],
     'chip': ['tal.square_lead'],
-    'vox': ['dexed.voice'],
-    'piano': ['dexed.piano'], 'harpsichord': ['dexed.harpsichord'], 'flute': ['dexed.flute'],
-    'epiano': ['dexed.epiano'], 'clav': ['dexed.clav'], 'marimba': ['ripplerx.marimba', 'dexed.marimba'], 'bell': ['ripplerx.bells', 'dexed.bells', 'dexed.chime', 'ripplerx.crystal'],
-    'celesta': ['ripplerx.musicbox', 'dexed.chime', 'dexed.vibes'],
+    'vox': [],
+    'piano': [], 'harpsichord': [], 'flute': [],
+    'epiano': ['dexed.epiano'], 'clav': ['dexed.clav'], 'marimba': ['ripplerx.marimba', 'dexed.marimba'], 'bell': ['ripplerx.bells', 'dexed.bells', 'ripplerx.crystal'],
+    'celesta': ['ripplerx.musicbox', 'dexed.vibes'],
     'steeldrum': ['dexed.steeldrum'], 'kalimba': ['ripplerx.kalimba', 'dexed.koto'], 'cowbell': [], 'cowbell_808': [], 'cowbell_long': [], 'cowbell_dist': [], 'cowbell_crushed': [], 'organ': ['dexed.organ'],
-    'polysynth': ['tal.pluck', 'tal.analog_pad', 'surge.pluck', 'obxf.stab'], 'synthbrass': ['tal.brass_stab', 'dexed.brass', 'obxf.brass'],
-    'moogbass': ['tal.fat_bass', 'tal.saw_bass', 'surge.saw_bass', 'obxf.bass'], 'moogpluck': ['tal.saw_bass', 'tal.fat_bass', 'surge.saw_bass'], 'glasspad': ['surge.wide_pad', 'dexed.chime'],
+    'polysynth': ['tal.pluck', 'tal.analog_pad', 'surge.pluck', 'obxf.stab'], 'synthbrass': ['tal.brass_stab', 'obxf.brass'],
+    'moogbass': ['tal.fat_bass', 'tal.saw_bass', 'surge.saw_bass', 'obxf.bass'], 'moogpluck': ['tal.saw_bass', 'tal.fat_bass', 'surge.saw_bass'], 'glasspad': ['surge.wide_pad'],
     'solina': ['tal.strings', 'obxf.strings'], 'wurli': ['dexed.epiano'], 'vibes': ['ripplerx.vibes', 'dexed.vibes'], 'tubular': ['ripplerx.tubes', 'dexed.bells'],
     'harp': ['ripplerx.harp'], 'musicbox': ['ripplerx.musicbox'], 'koto': ['dexed.koto'], 'gong': ['ripplerx.gong'],
     # (2.22) the African dance instruments: thumb pianos and the home-keyboard marimba on the modelled / FM ones
     'mbira': ['ripplerx.kalimba', 'dexed.koto'], 'casiomarimba': ['dexed.marimba', 'ripplerx.marimba'],
-    'ngoni': ['kars.pluck', 'dexed.koto'], 'casiobass': ['dexed.bass', 'dexed.bass2'],
-    'casiolead': ['tal.square_lead', 'dexed.synlead'], 'kudurostab': ['tal.brass_stab', 'obxf.stab'],
+    'ngoni': ['kars.pluck', 'dexed.koto'], 'casiobass': ['dexed.bass'],
+    'casiolead': ['tal.square_lead'], 'kudurostab': ['tal.brass_stab', 'obxf.stab'],
 }
 ANY_CATEGORY = {'mbira', 'casiomarimba', 'ngoni', 'casiobass', 'epiano', 'clav', 'marimba', 'steeldrum', 'kalimba', 'fmbass', 'vibes', 'koto', 'tubular', 'gong', 'musicbox', 'harp'}   # FM keys also suit funk, city pop, bossa, reggae
 

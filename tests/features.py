@@ -1526,6 +1526,8 @@ def main():
     test_engine_gets_its_own_port()
     test_afro_fewer_plucks_and_wobble()
     test_orchestral_backbone_and_switches()
+    test_dexed_patches_set_every_voice_parameter()
+    test_sample_libraries_in_real_ranges()
     print('all good')
 
 
@@ -1680,6 +1682,39 @@ def test_orchestral_backbone_and_switches():
     assert {'tuba', 'brass_sec', 'horns_soft', 'strings_low', 'strings_sec'} <= names
     assert not {'tuba', 'brass_sec', 'strings_sec'} & {e.track for e in plain['events']}
     print('ok  orchestral Christmas: low strings throughout, brass in the big sections; More brass / More strings switches')
+
+
+def test_dexed_patches_set_every_voice_parameter():
+    """(2.23) Dexed rigs set the whole FM voice themselves (Dexed's own bank has no classic patches to select)."""
+    from sgcore import vstrigs
+    from sgcore.dexed_patches import PATCHES
+    dx = [k for k in vstrigs.PATCHES if k.startswith('dexed.')]
+    assert dx and all(not vstrigs.PATCHES[k].get('program') for k in dx)
+    for k in dx:
+        prm = vstrigs.PATCHES[k]['params']
+        assert all(f'op{n}_output_level' in prm and f'op{n}_switch' in prm for n in range(1, 7)), k
+        assert all(isinstance(v, str) or isinstance(v, bool) or 0.0 <= v <= 1.0 for v in prm.values()), k
+    used = {c for lst in vstrigs.ROLE_PATCHES.values() for c in lst}
+    assert all(c in vstrigs.PATCHES for c in used)                    # no role points at a patch that doesn't exist
+    assert len(PATCHES) >= 9
+    print('ok  Dexed: own FM patches with every voice parameter set')
+
+
+def test_sample_libraries_in_real_ranges():
+    """(2.23.1) Sample notes are labelled at the pitch they sound: each instrument's lowest recorded note sits at (or just
+    above) the real instrument's lowest note - VSCO / VCSL files named an octave low played every note an octave high."""
+    import json as _json
+    m = _json.load(open(os.path.join(ROOT, 'sgcore', 'samplelibs.json')))['libs']
+    lowest = {('winds', 'trumpet'): 52, ('winds', 'horn'): 34, ('winds', 'trombone'): 34, ('winds', 'tuba'): 26,
+              ('winds', 'flute'): 59, ('winds', 'oboe'): 57, ('winds', 'clarinet'): 49, ('winds', 'bassoon'): 33,
+              ('winds', 'piccolo'): 73, ('strings', 'violins'): 55, ('strings', 'violas'): 48, ('strings', 'celli'): 36,
+              ('strings', 'basses'): 23, ('strings', 'violin'): 55, ('colors', 'xylophone'): 64, ('colors', 'glock'): 77,
+              ('colors', 'vibes'): 52, ('colors', 'marimba'): 43, ('keys', 'harpsichord'): 29, ('twang', 'twang'): 40}
+    for (lib, inst), lo in lowest.items():
+        ns = [f['n'] for f in m[lib]['files'] if f['i'] == inst and f.get('n') is not None]
+        assert ns, (lib, inst)
+        assert lo - 2 <= min(ns) <= lo + 14, (lib, inst, min(ns), lo)
+    print('ok  sample libraries: every instrument labelled at the pitch it sounds')
 
 
 if __name__ == '__main__':

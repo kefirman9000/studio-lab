@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.23.1
+- **Fix: real orchestral recordings played an octave too high.** The sample libraries name their notes an octave below
+  the pitch they actually sound. I measured every instrument and articulation, low and high, with pitch tracking and
+  autocorrelation. Studio Lab took the names at face value, so every recorded note came out an octave above the
+  written one. That made trumpets shrill and "off", and a melody jumped octaves wherever it moved between a recorded
+  note and the built-in sound.
+  - Octave high (now fixed): all brass and woodwinds; the violin, viola, cello and bass sections; glockenspiel,
+    vibes, marimba, xylophone, tubular bells, kalimba, sax, harmonica and ocarina; harpsichord and the upright piano.
+  - Octave low (now fixed): the twangy electric guitar, which was named at written guitar pitch.
+  - Already right: the grand pianos, FM piano, harp, solo violin, acoustic guitar, electric bass and double bass.
+  - Installed libraries are fixed by the update itself, with nothing to download again.
+- **Fix: Dexed never played its sounds.** Dexed starts on a bank of synth patches with no bass, electric piano,
+  marimba or bells, so selecting those by name failed and every Dexed part fell back to the built-in sound. Studio
+  Lab now sets the whole FM voice itself. There are nine of its own patches: electric piano, clav, marimba, vibes,
+  tubular bells, steel drum, a round bass, organ and koto.
+
 ## 2.23.0
 Brassier, bassier orchestral Christmas music.
 

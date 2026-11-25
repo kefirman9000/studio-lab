@@ -210,6 +210,17 @@ LIBS = {
 }
 
 
+# (2.23.1) Instruments whose files are named an octave away from the pitch they sound (measured: pitch tracking +
+# autocorrelation on low and high samples of every instrument / articulation). VSCO 2 CE and most of VCSL name notes
+# one octave low; Black And Green Guitars names the guitar at written (octave-up) pitch.
+OCTAVE_FIX = {('strings', 'violins'): 12, ('strings', 'violas'): 12, ('strings', 'celli'): 12, ('strings', 'basses'): 12,
+              ('keys', 'harpsichord'): 12, ('keys', 'upright_piano'): 12, ('twang', 'twang'): -12}
+OCTAVE_FIX.update({('winds', i): 12 for i in ('horn', 'trumpet', 'trombone', 'tuba', 'flute', 'oboe', 'clarinet', 'bassoon',
+                                              'piccolo', 'mutehorn', 'mutetrumpet')})
+OCTAVE_FIX.update({('colors', i): 12 for i in ('glock', 'harmonica', 'kalimba', 'marimba', 'ocarina', 'sax', 'tubular', 'vibes',
+                                               'xylophone')})
+
+
 def size_of(repo, commit, path):
     url = f'https://raw.githubusercontent.com/{repo}/{commit}/' + urllib.parse.quote(path)
     req = urllib.request.Request(url, method='HEAD')
@@ -234,6 +245,8 @@ def main(root, only=None):
                 midi, dyn, rr = parse(path, cfg.get('lower', False))
                 if midi is not None and cfg.get('shift'):
                     midi += cfg['shift']             # Growlybass files are named an octave above the sounding pitch
+                if midi is not None:
+                    midi += OCTAVE_FIX.get((lib, inst), 0)   # (2.23.1) measured: named an octave off the sounding pitch
                 if rr > max_rr:
                     continue
                 f = dict(p=path, sha=sha, i=(kit + ':' + inst) if kit else inst, a=art, v=dyn, r=rr)
