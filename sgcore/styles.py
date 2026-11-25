@@ -3333,8 +3333,8 @@ FORMS['melodic_house'] = [('intro', 16, {'chords', 'pad', 'fx'}, {'filter_in': T
 
 style('melodic_house', 'Electronic', 'Melodic deep house: warm rolling bassline, organic shakers and congas, emotive piano and plucked '
       'melodies over lush pads, gentle and euphoric',
-      bpm=(118, 124), scales=['minor', 'major', 'dorian'], swing=0.53, kit='soft', form='melodic_house', build_family=['drumless', 'filter', 'none'], sc_depth=0.35, chord_size=4,
-      progs={'minor': [[0, 5, 2, 6], [0, 6, 5, 3], [5, 3, 0, 4]], 'major': [[0, 4, 5, 3], [3, 0, 4, 5], [5, 3, 0, 4]],
+      texture_kind=['shore', 'birds', 'waves', 'none', 'none'], bpm=(118, 124), scales=['minor', 'major', 'dorian'], swing=0.53, kit='soft', form='melodic_house', build_family=['drumless', 'filter', 'none'], sc_depth=0.35, chord_size=4,
+      progs={'minor': [[0, 5, 0, 5], [3, 6, 3, 6], [5, 2, 5, 2], [6, 4, 6, 4], [2, 0, 2, 0], [3, 6, 4, 3], [0, 6, 3, 0], [0, 5, 2, 6], [0, 6, 5, 3], [5, 3, 0, 4]], 'major': [[1, 4, 1, 4], [5, 3, 5, 3], [3, 0, 3, 0], [4, 2, 4, 2], [5, 0, 5, 0], [1, 4, 2, 1], [5, 4, 1, 5], [0, 4, 5, 3], [3, 0, 4, 5], [5, 3, 0, 4]],
              'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]},
       drums={'kick': [FOUR], 'clap': [BACKBEAT], 'shaker': ['x.xxx.xxx.xxx.xx'], 'conga': ['......o.......o.', '..o.....o.o.....'],
              'ohat': [OFFHAT], 'rim': ['...x......x.....']}, snare_tracks=['clap'],
@@ -5106,9 +5106,9 @@ FORMS['melodic_house_radio'] = [('intro', 8, {'pad', 'chords', 'arp', 'fx'}, {'f
 
 style('sunny_melodic_house', 'Electronic',
       'Sunny melodic deep house: warm 122-124 four-on-the-floor with shakers, congas and offbeat hats, a melodic rolling bass, bright piano chords and plucks, lush strings and a singing lead, long filtered breakdowns that open into big emotional returns',
-      bpm=(121, 124), scales=['minor', 'dorian', 'major'], swing=0.55, human=0.003, form='melodic_house_radio', form_scale=1, build_family=['drumless', 'filter', 'pickup'],
-      progs={'minor': [[0, 5, 2, 6], [5, 3, 0, 6], [0, 3, 5, 4], [3, 6, 0, 5]], 'dorian': [[0, 3, 0, 6], [0, 6, 3, 4], [0, 2, 1, 0]],
-             'major': [[0, 4, 5, 3], [5, 3, 0, 4], [3, 4, 0, 5]]},
+      texture_kind=['shore', 'birds', 'waves', 'none', 'none'], bpm=(121, 124), scales=['minor', 'dorian', 'major'], swing=0.55, human=0.003, form='melodic_house_radio', form_scale=1, build_family=['drumless', 'filter', 'pickup'],
+      progs={'minor': [[0, 5, 0, 5], [3, 6, 3, 6], [5, 2, 5, 2], [6, 4, 6, 4], [2, 0, 2, 0], [3, 6, 4, 3], [0, 6, 3, 0], [0, 5, 2, 6], [5, 3, 0, 6], [0, 3, 5, 4], [3, 6, 0, 5]], 'dorian': [[0, 3, 0, 6], [0, 6, 3, 4], [0, 2, 1, 0]],
+             'major': [[1, 4, 1, 4], [5, 3, 5, 3], [3, 0, 3, 0], [4, 2, 4, 2], [5, 0, 5, 0], [1, 4, 2, 1], [5, 4, 1, 5], [0, 4, 5, 3], [5, 3, 0, 4], [3, 4, 0, 5]]},
       chord_size=4, sc_depth=0.95, sc_release=0.8, reverb=2.6, kit='909',
       kit_override=dict(kick=dict(pitch=50, punch=120, decay=8, drive=1.6, click=0.3)),
       drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'chat': ['.o.o.o.o.o.o.o.o', 'oxoxoxoxoxoxoxox'],
@@ -5141,15 +5141,15 @@ style('sunny_melodic_house', 'Electronic',
 
 FORMS['emotive_deep_house'] = [   # the extended-mix arc: DJ intro, the groove stacking up, a first main section, the long
     ('intro', 16, {'kick', 'top', 'fx'}, {'filter_in': True}),                     # emotional breakdown, the build, the
-    ('verse', 16, {'kick', 'top', 'snare', 'bass', 'arp', 'fx'}, {}),              # full return, and a DJ-friendly exit
+    ('verse', 8, {'kick', 'top', 'snare', 'bass', 'arp', 'fx'}, {}),               # full return, and a DJ-friendly exit
     ('verse', 16, {'kick', 'top', 'snare', 'bass', 'arp', 'chords', 'pad'}, {'crash': True}),
     ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'drop': True}),
-    ('break', 24, {'pad', 'chords', 'lead', 'arp', 'fx'}, {'alt': True, 'crash': True}),
+    ('break', 16, {'pad', 'chords', 'lead', 'arp', 'fx'}, {'alt': True, 'crash': True}),
     ('build', 8, {'top', 'chords', 'pad', 'arp', 'lead'}, {'build': True}),
-    ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead', 'fx'}, {'drop': True}),
+    ('drop', 24, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead', 'fx'}, {'drop': True}),
     ('verse', 8, {'kick', 'top', 'snare', 'bass', 'arp'}, {}),
-    ('outro', 16, {'kick', 'top', 'bass'}, {}),
-]
+    ('outro', 8, {'kick', 'top', 'bass'}, {}),
+]   # (2.26: 120 bars, was 152 - the reference extended mixes run 104-144 bars, a 16-bar breakdown in the middle)
 
 style('emotive_deep_house', 'Electronic',
       'Emotive melodic deep house (extended mix): a deep, round 122 bpm kick with a long low tail, a warm rolling bass on the '
@@ -5159,8 +5159,9 @@ style('emotive_deep_house', 'Electronic',
       'breakdown and open into the return',
       bpm=(121, 124), scales=['major', 'minor'], swing=0.55, human=0.003, form='emotive_deep_house', form_scale=1,
       build_family=['drumless', 'filter'],
-      progs={'major': [[0, 4, 5, 3], [5, 3, 0, 4], [3, 4, 5, 5], [0, 5, 3, 4], [3, 0, 4, 5]],
-             'minor': [[0, 5, 2, 6], [0, 3, 5, 4], [5, 6, 0, 0], [0, 6, 5, 6]]},
+      progs={'major': [[1, 4, 1, 4], [5, 3, 5, 3], [3, 0, 3, 0], [4, 2, 4, 2], [5, 0, 5, 0], [1, 4, 2, 1], [5, 4, 1, 5], [0, 4, 5, 3], [3, 0, 4, 5]],
+             'minor': [[0, 5, 0, 5], [3, 6, 3, 6], [5, 2, 5, 2], [6, 4, 6, 4], [2, 0, 2, 0], [3, 6, 4, 3], [0, 6, 3, 0], [0, 5, 2, 6], [0, 3, 5, 4]]},
+      own_progs=True, roots=[6, 7, 6, 7, 4, 0, 5, 10, 3, 1], texture_kind=['shore', 'shore', 'birds', 'waves', 'air', 'none'],
       chord_size=4, chord_bars=1, sc_depth=0.95, sc_release=0.8, reverb=3.2, rev_predelay=0.035, rev_hp=200, delay_beats=0.75,
       kit='909', kit_override=dict(kick=dict(pitch=47, punch=95, decay=11, drive=1.4, click=0.18)),
       drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'shaker': ['oxxoxxoxoxxoxxox', 'x.xxx.xxx.xxx.xx', 'oxoxoxoxoxoxoxox'],

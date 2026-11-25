@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.26.0
+- **Melodic deep house learned from 18 more reference tracks** (one producer's melodic deep house). The emotive deep house, sunny melodic house and melodic house genres changed in four ways:
+  - **Two-chord vamps:**
+    - **What the records do:** almost every track loops two chords a bar each (ii-V, vi-IV, IV-I, V-iii, vi-I) for the whole song. Before, these genres played four-chord pop progressions.
+    - **Now:** those vamps are what these genres mostly pick. Emotive deep house plays only them, plus two of its old progressions.
+  - **Keys:** the references sit mostly in F♯ minor / A major and G major, then E, C, F, B♭ and E♭. Emotive deep house now picks from those keys.
+  - **Arrangement:** the extended mix is 120 bars (was 152), matching the references (104-144 bars), with a 16-bar breakdown in the middle.
+  - **A beach in the background:** a new built-in texture of waves rolling in every 7-12 s, with birds chirping now and then. Field recordings like this are part of the style. These genres pick it, waves, air or nothing, per song.
+- **Christmas genres play real instruments only.**
+  - Every part in the orchestral and band Christmas genres now plays an instrument that has a recording.
+  - Synth stand-ins are replaced by the nearest real one: a sine or Moog bass becomes a double bass or upright, a warm synth pad becomes strings, a music box becomes celesta, a children's choir becomes the recorded choir.
+  - Your own picks stay. Christmas house and Christmas lo-fi keep their electronic sounds.
+- **✂ Chop a break into a kit** (Sound panel > Drum voices):
+  - Load any drum break or beat (WAV, MP3, FLAC, AIFF ...). Studio Lab finds its hits and keeps the best kick, snare, closed hat and open hat.
+  - They go into your drum library (pick them for any drum voice). With "play it on this song" ticked, they play this song's kick, snare and hats straight away.
+  - **RX2 / REX files can't be read.** They are a closed ReCycle format only its own library opens. Export the loop as a WAV from ReCycle, Reason, FL Studio's Slicer or most DAWs, and chop that.
+- **DnB drum sounds now really change the kick and snare.**
+  - **The problem:** in the break-based DnB genres (anthemic, rollers, liquid ...), the kick and snare you hear are a two-step layered on top of the break. That layer always came from the genre's preset, so picking a drum machine or a Drum voice only changed the quiet, filtered break underneath.
+  - **Now:** your drum machine and your kick / snare Drum voices play the layer, as themselves. When you pick one, the break's own kick / snare drop further back. Each song also rolls its own layered kick and snare from machines that suit the style.
+
 ## 2.25.0
 - **Trance pumps like the records.** The pads, chords, arp and now the lead duck under every kick and swell back
   across the beat, the classic trance sidechain. Measured against the trance reference set, the music swelled back up

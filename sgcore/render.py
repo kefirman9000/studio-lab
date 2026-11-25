@@ -385,6 +385,49 @@ def loudness_range(y, win=3.0, hop=1.0):
     return float(np.percentile(g, 95) - np.percentile(g, 10)), float(np.max(lk))
 
 
+
+def shore_birds(n, seed, waves=True):
+    """A beach at a distance, made from scratch: waves that roll in every 7-12 s (a low swell of filtered noise that
+    rises, breaks into a brighter wash and drains back), and now and then a bird - short chirps that glide up and down
+    (an FM-warbled sine), a phrase of 2-6 notes, placed somewhere left or right. Stereo, quiet, never on the beat."""
+    rng = np.random.default_rng(int(seed) * 977 + 41)
+    out = np.zeros((2, n), dtype=np.float32)
+    if waves:
+        env = np.zeros(n)
+        pos = rng.uniform(0, 4) * SR
+        while pos < n:
+            L = int(rng.uniform(7, 12) * SR)
+            a = int(pos)
+            k = np.arange(min(L, n - a)) / L
+            env[a:a + len(k)] += np.clip(k / 0.45, 0, 1) ** 2 * np.exp(-np.clip(k - 0.45, 0, None) * 6) * rng.uniform(0.6, 1.0)
+            pos += L * rng.uniform(0.6, 0.9)
+        env = lp(env, 2.0)
+        for c in range(2):
+            nz = rng.standard_normal(n)
+            low = lp(nz, 700) * 0.8
+            wash = bp(nz, 1200, 6000) * 0.35
+            bright = np.clip(env - 0.5, 0, None) * 2
+            out[c] = (low * env + wash * env * (0.3 + bright)).astype(np.float32) * 0.6
+    pos = rng.uniform(1, 6) * SR
+    while pos < n:                                       # birds
+        f0 = rng.uniform(2600, 4800)
+        pan = rng.uniform(-0.8, 0.8)
+        p0 = int(pos)
+        for j in range(int(rng.integers(2, 7))):
+            L = int(rng.uniform(0.05, 0.16) * SR)
+            if p0 + L >= n:
+                break
+            tt = np.arange(L) / SR
+            sweep = f0 * (1 + rng.uniform(-0.25, 0.35) * np.sin(np.pi * tt / (L / SR)))
+            ph = 2 * np.pi * np.cumsum(sweep) / SR
+            y = np.sin(ph + 0.8 * np.sin(2 * np.pi * rng.uniform(25, 60) * tt)) * np.sin(np.pi * tt / (L / SR)) ** 2
+            y *= rng.uniform(0.15, 0.35)
+            out[0, p0:p0 + L] += (y * np.sqrt(0.5 * (1 - pan))).astype(np.float32)
+            out[1, p0:p0 + L] += (y * np.sqrt(0.5 * (1 + pan))).astype(np.float32)
+            p0 += L + int(rng.uniform(0.03, 0.18) * SR)
+        pos += rng.uniform(3, 11) * SR
+    return out
+
 def mix_report(y, song=None, spb=None, tone=None, low_env=None, dyn_eq=None, lead_db=None):
     """Quality check of a finished master - what a mastering engineer looks at:
     loudness (LUFS), true peak (dBTP, 4x oversampled), peak-to-loudness ratio (PLR - how much punch the limiter left),
@@ -955,6 +998,9 @@ class Renderer:
             if kind == 'vinyl':
                 buf[0] = fx_vinyl(self.length) * 0.4
                 buf[1] = fx_vinyl(self.length) * 0.4
+                return buf
+            if kind in ('shore', 'birds'):                  # (2.26) melodic deep house's field recordings, synthesized
+                buf[:] = shore_birds(self.length, self.song['seed'], waves=kind == 'shore')
                 return buf
             for c in range(2):
                 if kind == 'air':                           # a soft high breath that swells very slowly

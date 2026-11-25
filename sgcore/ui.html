@@ -2982,7 +2982,22 @@ function renderDrumVoices(){
         `<span>${({kick:'Kick',snare:'Snare',clap:'Clap',hats:'Hi-hats',ride:'Ride',crash:'Crash',rim:'Rim',shaker:'Shaker'})[v]}</span>`+
         `<select data-dv="${v}" data-sndvoice="${v}" data-snddef="${esc(last[v]||'')}"><option value="">${last[v]?'★ '+esc(name(last[v])):'★ genre picks'}</option>${
           [...new Set(menu.map(m=>m[2]||'Drum machines'))].map(g=>`<optgroup label="${esc(g)}">`+menu.filter(m=>(m[2]||'Drum machines')===g).map(([id,l])=>`<option value="${esc(id)}" ${mine===id?'selected':''}>${esc(l)}</option>`).join('')+'</optgroup>').join('')
-        }<optgroup label="Your own sound"><option value="__load">＋ Load a sample for this drum…</option></optgroup></select>`; }).join('')+`</div><input type="file" id="dvFile" accept="audio/*" hidden>`;
+        }<optgroup label="Your own sound"><option value="__load">＋ Load a sample for this drum…</option></optgroup></select>`; }).join('')+`</div><input type="file" id="dvFile" accept="audio/*" hidden>
+    <div class="row" style="margin-top:6px;gap:8px;align-items:center"><button class="mini" id="brkChop" title="Load a drum break (WAV, MP3, FLAC, AIFF ...). Studio Lab finds its hits and keeps the best kick, snare and hats as a kit you can play">✂ Chop a break into a kit…</button>
+      <label class="hint" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="brkKit" checked> play it on this song</label><input type="file" id="brkFile" accept="audio/*" hidden></div>`;
+  const bf=$('#brkFile'), bb=$('#brkChop');
+  if(bb) bb.onclick=e=>{ e.preventDefault(); bf.value=''; bf.click(); };
+  if(bf) bf.onchange=async()=>{ const file=bf.files[0]; if(!file) return;
+    if(/\.(rx2|rex|rcy)$/i.test(file.name)){ alert('RX2 / REX files are a closed format from ReCycle that only its own library can open. Export the loop as a WAV (ReCycle, Reason, FL Studio\'s Slicer or most DAWs can) and load that - Studio Lab will chop it.'); return; }
+    const nm=(file.name.replace(/\.[^.]+$/,'').replace(/[^A-Za-z0-9 _-]/g,'').trim()||'break').slice(0,28);
+    $('#status').textContent='Chopping the break…';
+    try{ const pcm=await decodeFile(file,44100); const r=await upload(`/api/upload/break?name=${encodeURIComponent(nm)}&kit=0`,new Blob([pcm.buffer]));
+      if(r.error){ alert(r.error); $('#status').textContent=''; return }
+      META=await api('/api/meta'); const c=r.chopped||{};
+      if($('#brkKit').checked){ if(c.kick) state.drum_voices.kick='user:'+c.kick; if(c.snare) state.drum_voices.snare='user:'+c.snare; if(c.chat) state.drum_voices.hats='user:'+c.chat; }
+      renderDrumVoices();
+      $('#status').textContent=`Chopped “${nm}”: ${c.hits||0} hits found - kept ${['kick','snare','chat','ohat'].filter(k=>c[k]).map(k=>({kick:'kick',snare:'snare',chat:'hat',ohat:'open hat'})[k]).join(', ')}. They're in your drum library (Drum voices > any voice).`;
+    }catch(e){ alert('Could not read that file: '+e.message); $('#status').textContent=''; } };
   const f=$('#dvFile'); if(f) f.onchange=async()=>{ const file=f.files[0], v=window._dvFor; if(!file||!v) return;
     const nm=(file.name.replace(/\.[^.]+$/,'').replace(/[^A-Za-z0-9 _-]/g,'').trim()||v).slice(0,40);
     try{ const pcm=await decodeFile(file,44100); const r=await upload(`/api/upload/sound?kind=drums&name=${encodeURIComponent(nm)}&root=60`,new Blob([pcm.buffer]));

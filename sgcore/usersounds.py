@@ -178,3 +178,91 @@ def vocal_slice(name, mod, semis, dur):
     y[:f] *= np.linspace(0, 1, f)
     y[-f * 2:] *= np.linspace(1, 0, f * 2)
     return y
+
+
+# ----------------------------------------------------------------------------- (2.26) chop a break into a drum kit
+def chop_break(pcm, name, sr=SR, as_kit=False):
+    """Cut a drum break (any recording of a beat) into its hits and keep the best kick, snare, closed and open hat.
+
+    Onsets: spectral flux on a 5.8 ms hop, peaks at least 55 ms apart. Each slice runs to the next onset (at most
+    0.6 s) with a short fade. A slice is scored on its first 60 ms: kick = low end (35-120 Hz) against the rest,
+    snare = body (150-400 Hz) + crack (1.5-5 kHz) with little sub, hats = energy above 6 kHz. The loudest clear
+    example of each wins; the open hat is the hat that rings longest. They're saved to your drum library as
+    '<name> kick' etc. (pick them for any drum voice), and with as_kit also into the kick / snare / hat slots that
+    'my samples' plays. Returns {voice: saved name}."""
+    from scipy import signal as _sig
+    x = np.asarray(pcm, dtype=np.float64)
+    if x.ndim > 1:
+        x = x.mean(axis=0)
+    if len(x) < sr // 4:
+        raise ValueError('that recording is too short to chop')
+    x = x[: sr * 40]
+    hop, nfft = 256, 1024
+    f, _, Z = _sig.stft(x, sr, nperseg=nfft, noverlap=nfft - hop)
+    S = np.abs(Z)
+    flux = np.maximum(np.diff(np.log1p(S * 30), axis=1), 0).sum(axis=0)
+    flux = flux - _sig.medfilt(flux, 31)
+    thr = max(np.percentile(flux, 75), 0.15 * flux.max())
+    peaks, _ = _sig.find_peaks(flux, height=thr, distance=max(1, int(0.055 * sr / hop)))
+    on = [max(0, int((p + 1) * hop - 0.004 * sr)) for p in peaks]
+    if len(on) < 3:
+        raise ValueError('no clear drum hits found in that recording')
+    lv = [float(np.sqrt(np.mean(x[a:a + int(0.03 * sr)] ** 2))) for a in on]
+    slices = []
+    for i, a in enumerate(on):
+        # a hit rings until the next hit at least ~60 % as loud (ghost notes and hats riding on its tail don't cut it
+        # short), at least 0.12 s, at most 0.6 s
+        nxt = next((on[j] for j in range(i + 1, len(on)) if lv[j] >= 0.6 * lv[i]), len(x))
+        b = min(max(nxt, a + int(0.12 * sr)), a + int(0.6 * sr), len(x))
+        y = x[a:b].copy()
+        if len(y) < int(0.03 * sr):
+            continue
+        k = min(len(y) // 4, int(0.008 * sr))
+        y[-k:] *= np.linspace(1, 0, k)
+        head = y[: int(0.06 * sr)]
+        F = np.abs(np.fft.rfft(head * np.hanning(len(head)), 4096)) ** 2
+        fr = np.fft.rfftfreq(4096, 1 / sr)
+        band = lambda lo, hi: float(F[(fr >= lo) & (fr < hi)].sum()) + 1e-12
+        tot = band(20, sr / 2)
+        lvl = float(np.sqrt(np.mean(head ** 2)))
+        env = np.abs(_sig.hilbert(y)) if len(y) < sr else np.abs(y)
+        ring = float(np.argmax(np.cumsum(env ** 2) > 0.9 * np.sum(env ** 2)) / sr)
+        slices.append(dict(y=y, lvl=lvl, ring=ring, kick=band(35, 200) / tot, crack=band(1500, 5000) / tot,
+                           body=band(150, 400) / tot, hat=band(6000, sr / 2) / tot))
+    if not slices:
+        raise ValueError('no clear drum hits found in that recording')
+    picks = {}
+    # in a real break the hat rides on top of the kick and snare, and sped-up breaks push the kick's thump up to
+    # 120-200 Hz: the kick is the loudest slice that is mostly low end, the snare the loudest crack + body with little
+    # low end, the hats the bright, quiet slices
+    ks = [s for s in slices if s['kick'] > 0.4]
+    kick = max(ks, key=lambda s: s['kick'] * s['lvl']) if ks else None
+    if kick:
+        picks['kick'] = kick['y'][: int(0.5 * sr)]
+    rest = [s for s in slices if s is not kick]
+    sn = [s for s in rest if s['kick'] < 0.3 and s['crack'] > 0.1]
+    snare = max(sn, key=lambda s: (s['crack'] + 0.5 * s['body']) * s['lvl']) if sn else None
+    if snare:
+        picks['snare'] = snare['y'][: int(0.4 * sr)]
+    hats = [s for s in rest if s is not snare and s['hat'] > 0.3 and s['kick'] < 0.1]
+    if not hats:                                         # darker recordings (a ride, a worn break): the brightest quarter
+        cand = sorted((s for s in rest if s is not snare and s['kick'] < 0.15 and s['hat'] > 0.12), key=lambda s: -s['hat'])
+        hats = cand[:max(1, len(cand) // 4)]
+    if hats:
+        ch = min(hats, key=lambda s: s['ring'])
+        picks['chat'] = ch['y'][: int(0.25 * sr)]
+        oh = max(hats, key=lambda s: s['ring'])
+        if oh is not ch and oh['ring'] > ch['ring'] * 1.6:
+            picks['ohat'] = oh['y'][: int(0.6 * sr)]
+    if sr != SR:
+        from scipy.signal import resample_poly
+        picks = {k: resample_poly(v, SR, sr) for k, v in picks.items()}
+    base = _safe(name)[:28] or 'break'
+    label = {'kick': 'kick', 'snare': 'snare', 'chat': 'hat', 'ohat': 'open hat'}
+    out = {}
+    for v, y in picks.items():
+        out[v] = save('drums', f'{base} {label[v]}', y)
+        if as_kit:
+            save('drums', v, y)                          # the slot 'my samples' plays
+    out['hits'] = len(slices)
+    return out

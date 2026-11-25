@@ -243,6 +243,10 @@ def configure(st, kit_id, style, opts, pattern_id=None):
     return preset
 
 
+# DnB layered two-step: machines a song may roll for its kick / snare on top of the break (per break layer)
+LAYER_POOL = {'dnb': ['dnb', 'punchy', 'liquid', '909'], 'liquid': ['liquid', 'dnb', 'soft', '909'], 'neuro': ['neuro', 'dnb', 'punchy']}
+
+
 def install_break(st, tracks_list):
     """Replace the style's drum patterns with the break's (adding the drum tracks it needs)."""
     seq = st.get('break_seq')
@@ -288,14 +292,35 @@ def install_break(st, tracks_list):
         # the layered kick carries the low end, the way it sits on DnB records (measured on reference tracks: the hit
         # 9-14 dB out of the mix, its low end dying 12 dB in 40-75 ms, the knock 11-19 dB under the thump). The kits'
         # own kicks were all click and snap (15 ms, little low end), stacked on the break's knock: too much.
-        lk = dict(kp.get('kick', {}))
-        lk['click'] = min(float(lk.get('click', 0.4)), 0.4)
-        lk['drive'] = min(float(lk.get('drive', 1.6)), 2.0)
-        lk['decay'] = min(float(lk.get('decay', 9)), 9.0)
-        lk['sweep'] = min(float(lk.get('sweep', 50)), 50.0)
-        lk['punch'] = min(float(lk.get('punch', 140)), 150.0)
+        # (2.26) the layered two-step is the kick / snare you hear, so the drum machine you pick (Drum sounds) and
+        # your Drum voices play it - before, they only changed the filtered break underneath and the layer always
+        # came from the genre's preset (it kept sounding like the same kick). Genres also roll their own layer per song.
+        uk = st.get('_user_kit')
+        if uk and uk in KITS and not (MENU.get(uk) or (None,) * 6)[5] and not (MENU.get(uk) or (None,) * 6)[4]:
+            kp = KITS[uk]
+        vs = set(st.get('voice_synth') or ())
+        auto = st.pop('_layer_auto', None)
+        pk = st.setdefault('drum_picks', {})
+        if 'kick' not in vs and auto and auto.get('kick'):
+            kp = dict(kp, kick=KITS[auto['kick']].get('kick', kp.get('kick', {})))
+            pk['kick'] = auto['kick']
+        if 'snare' not in vs and auto and auto.get('snare'):
+            kp = dict(kp, snare=KITS[auto['snare']].get('snare', kp.get('snare', {})))
+            pk['snare'] = auto['snare']
+        lk = dict(st['kitparams'].get('kick', {})) if 'kick' in vs else dict(kp.get('kick', {}))
+        if 'kick' in vs or 'snare' in vs:                 # yours: the break's own kick / snare stay quiet underneath
+            for t in tracks_list:
+                if t['name'] in ('kick', 'snare') and t['name'] in vs:
+                    t['db'] = (t.get('db') or -16) - 6
+        if not ('kick' in vs or (uk and kp is KITS.get(uk))):   # the genre's / rolled layer: tamed to sit like the records
+            lk['click'] = min(float(lk.get('click', 0.4)), 0.4)    # (a machine you picked plays as itself)
+            lk['drive'] = min(float(lk.get('drive', 1.6)), 2.0)
+            lk['decay'] = min(float(lk.get('decay', 9)), 9.0)
+            lk['sweep'] = min(float(lk.get('sweep', 50)), 50.0)
+            lk['punch'] = min(float(lk.get('punch', 140)), 150.0)
         lk['len'] = max(float(lk.get('len', 0.4)), 0.4)
-        st['drum_voice'] = dict(st.get('drum_voice') or {}, lkick=lk, lsnare=dict(kp.get('snare', {})))
+        ls = dict(st['kitparams'].get('snare', {})) if 'snare' in vs else dict(kp.get('snare', {}))
+        st['drum_voice'] = dict(st.get('drum_voice') or {}, lkick=lk, lsnare=ls)
         st['kick_track'] = 'lkick'
         st['snare_tracks'] = ['lsnare', 'snare']
 

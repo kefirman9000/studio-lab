@@ -809,6 +809,10 @@ class Handler(BaseHTTPRequestHandler):
                     except Exception as e:                # suggestions are a bonus - the analysis still applies
                         res['genres_error'] = str(e)
                     return self._json(res)
+                if p == '/api/upload/break':           # (2.26) chop a break into a drum kit
+                    from . import usersounds
+                    got = usersounds.chop_break(pcm, q.get('name', 'break'), 44100, q.get('kit') == '1')
+                    return self._json(dict(usersounds.listing(), chopped=got, slots=usersounds.DRUM_SLOTS))
                 if p == '/api/upload/sound':
                     from . import usersounds
                     name = usersounds.save(q.get('kind', 'drums'), q.get('name', 'kick'), pcm, int(q.get('root', 60)),

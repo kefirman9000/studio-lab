@@ -550,10 +550,51 @@ def borrow_drums(st, opts):
     st['borrowed_drums'] = dp[6:]
 
 
+# (2.26) Christmas genres play real (recorded) instruments only: a synth stand-in - a sine bass, a warm synth pad, a
+# music box or a church-bell synth - sounds fake next to the orchestra. Every part that has no recording becomes the
+# nearest instrument that has one (your own picks stay yours). The electronic Christmas genres (house, lo-fi) are exempt.
+REAL_ONLY_GENRES = {'festive_cinematic', 'holiday', 'christmas_joyful', 'christmas_mischief', 'christmas_magic',
+                    'christmas_swing', 'christmas_wall_of_sound', 'christmas_rockabilly', 'sleigh_ride_gallop',
+                    'christmas_lullaby', 'christmas_carol_choir', 'christmas_memory_theme', 'christmas_sneak',
+                    'christmas_flight', 'christmas_finale', 'christmas_brass_fanfare', 'christmas_overture', 'toy_soldier_march'}
+REAL_SUB = {'bassclarinet': 'bassoon', 'kidchoir': 'choir', 'humchoir': 'choir', 'choir_wide': 'choir', 'churchbell': 'tubular',
+            'musicbox': 'celesta', 'warmpad': 'strings', 'piano_dark': 'piano', 'dustpiano': 'piano', 'm1piano': 'piano',
+            'm1piano_dark': 'piano', 'organ_dark': 'organ', 'houseorgan': 'organ', 'organbass': 'contrabass', 'rhodes': 'epiano',
+            'lofikeys': 'epiano', 'sinebass': 'contrabass', 'sinebass_driven': 'contrabass', 'sinebass_suboct': 'contrabass',
+            'moogbass': 'upright', 'moogbass_dark': 'upright', 'moogbass_driven': 'upright', 'fmbass': 'upright',
+            'junobass': 'upright', 'rubberbass': 'upright', 'sawbass': 'upright', '808': 'contrabass', 'synthbrass': 'brass',
+            'discohorn': 'brass', 'stab': 'brass', 'stab_wide': 'brass', 'junopoly': 'strings', 'chordmemory': 'strings',
+            'discofilter': 'strings', 'telegtr': 'cleanguitar', 'dreadnought': 'acguitar', 'glock': 'glock', 'xylophone': 'xylophone'}
+REAL_ROLE = {'bass': 'contrabass', 'chords': 'strings', 'pad': 'strings', 'arp': 'harp', 'lead': 'flute'}
+
+
+def real_only(st, opts):
+    """Christmas genres: every part on an instrument that has a recording (see REAL_ONLY_GENRES)."""
+    from . import soundfont as sfm
+    from . import samplelibs as sl
+    if (st.get('name') or opts.style) not in REAL_ONLY_GENRES:
+        return
+    mine = opts.instruments or {}
+
+    def has_rec(i):
+        b = i[3:] if i.startswith('sf:') else i
+        return i.startswith(('sf:', 'real:', 'user:', 'vst:')) or b in sfm.ACOUSTIC or b in sfm.SF_ALIAS or b in sl.ORCH \
+            or b in sfm.SAMPLED
+    for t in st['tracks']:
+        if t['layer'] not in MELODIC_ROLES or has_rec(t['inst']) or t.get('extra'):
+            continue
+        if mine.get(t['name']) == t['inst'] or mine.get(t['layer']) == t['inst']:
+            continue                                     # you picked it: it stays
+        new = REAL_SUB.get(t['inst'])
+        t['inst'] = new if new and has_rec(new) else REAL_ROLE.get(t['layer'], 'strings')
+        t['p'] = {}
+
+
 def apply_sampled(st, opts):
     """Swap synthesised stand-ins for real recorded instruments (if the sound library is installed)."""
     from . import soundfont as sfm
     from .styles import ACOUSTIC_MAP, ACOUSTIC_KIT, POWER_CHORDS, GENTLE_MASTER
+    real_only(st, opts)
     name, cat = opts.style, st.get('category')
     if name in POWER_CHORDS:
         st['voicing'] = 'power'
@@ -755,6 +796,11 @@ def resolve_style(opts, rnd=None, mood=None):
         kit['kick'] = {**kit.get('kick', {}), **st['kick_shape']}
     st['kitparams'] = kit
     st['drum_picks'] = drumkits.pick_voices(st, opts, kit_id, preset, groove_of)   # each song: its own kick / snare / clap / hats
+    st['_user_kit'] = getattr(opts, 'kit', None)
+    if st.get('break_layer') and not getattr(opts, 'kit', None):    # DnB: the layered two-step's machine, per song
+        _r = random.Random((opts.seed or 0) * 71 + 13 + 7919 * int(getattr(opts, 'sound_seed', 0) or 0))
+        _pool = drumkits.LAYER_POOL.get(st['break_layer'], [])
+        st['_layer_auto'] = {v: (_r.choice(_pool) if _pool and _r.random() < 0.5 else None) for v in ('kick', 'snare')}
     drumkits.install_break(st, st['tracks'])
     drummer.apply_percussion(st, opts)                   # percussion picked on its own (or switched off)
     if opts.swing is not None:
