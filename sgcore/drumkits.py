@@ -413,6 +413,35 @@ GENRE_KIT.update({'holiday': 'brushes', 'western': 'vintage', 'chamber_pop': 'st
                   'garage_house': 'punchy', 'future_garage': 'vintage', 'grime': 'punchy'})
 GENRE_KIT.update({'funk_150': '808'})
 GENRE_KIT.setdefault('new_jack_swing', 'linn')
+
+# (2.23) Genres that still used a generic preset ('soft' - 69 of them -, 'punchy', 'default') get a drum machine or kit
+# that fits their family, rotated within the family so neighbours differ (and never the same as their parent genre's).
+# Genres whose own preset was a deliberate choice (808, Linn, a dive kit, a real acoustic kit ...) keep it.
+GENRE_KIT.update({
+    'aarti': 'soft', 'afro_house': 'soft', 'afrobeats': 'punchy', 'amapiano': '707', 'arab_pop': 'studio',
+    'bachata': 'crisp_kit', 'balearic_chill': 'vintage', 'bass_amapiano': '909', 'bassline_140': '909',
+    'beat_tape_cinematic': 'vintage', 'bhajan': 'crisp_kit', 'bhangra': 'soft', 'bollywood': 'punchy',
+    'breton_an_dro': 'studio', 'carnatic_kriti': 'brushes', 'celtic_hornpipe': 'vintage', 'celtic_jig': 'seventies',
+    'celtic_new_age': 'crisp_kit', 'celtic_polka': 'dead70s', 'celtic_reel': 'rusty', 'celtic_session': 'brushes',
+    'celtic_slow_air': 'studio', 'chant_downtempo': 'dead70s', 'chicha': 'studio', 'chillstep': 'hard',
+    'chipmunk_2step': 'punchy', 'chiptune': 'linn', 'christmas_lofi': 'crisp_kit',
+    'christmas_wall_of_sound': 'sunroom', 'clarsach_air': 'vintage', 'cumbia': 'seventies',
+    'deep_house': '909_classic', 'desert_blues': 'soft', 'drum_kirtan': 'studio', 'early_dubstep': 'phonk808',
+    'emotive_2step': '707', 'flamenco_rumba': 'vintage', 'galician_muineira': 'crisp_kit', 'gamelan': 'soft',
+    'ghazal': '808', 'glitch_future_bass': 'punchy', 'glitch_pop': 'crisp_kit', 'gqom': '808', 'groovy_soca': '707',
+    'hazy_downtempo': 'sunroom', 'hopecore_dreamy': '808', 'japanese_zen': 'crisp_kit', 'jazz_hop': 'dirty',
+    'jugalbandi': 'soft', 'kirtan': 'crisp_kit', 'kpop': 'soft', 'kuduro': '707', 'mallet_house': '707',
+    'mallsoft': 'brushes', 'melodic_club_rap': '808', 'melodic_house': 'linn', 'merengue': '707',
+    'midtempo_bass': 'punchy', 'monster_synth': 'dmx', 'moombahton': '707', 'organic_house': 'punchy',
+    'outsider_house': 'dmx', 'qawwali': 'crisp_kit', 'raga_fusion': 'soft', 'rai': 'crisp_kit',
+    'raqs_sharqi': 'seventies', 'rnb': 'vintage', 'rolling_atmos_bass': 'hard', 'rolling_pump_house': '909_classic',
+    'samba': 'crisp_kit', 'santoor_raga': 'brushes', 'sea_shanty': 'crisp_kit', 'shangaan_electro': 'cr78',
+    'sitar_bhajan': 'studio', 'slip_jig': 'dead70s', 'soca': '808', 'son_cubano': 'studio', 'speed_garage': '606',
+    'strathspey': 'brushes', 'sufi_dhikr': 'rusty', 'switchup_bass': '808', 'tabla_bhajan': 'soft',
+    'takht_maqam': 'vintage', 'teen_pop': 'punchy', 'tropical_house': '909_classic', 'uk_bounce_house': '707',
+    'uk_funky': '909', 'uk_tribal_techno': 'techno', 'ukgarage': 'punchy', 'velvet_pop': 'studio',
+    'warped_electronica': 'hard', 'wonky_beats': 'phonk808',
+})
 GENRE_KIT.update({'spooky_tv_theme': 'linn', 'uk_rnb_swing': 'linn', 'vocal_trance_remix': '909', 'cybergrind': 'hard', 'slam': 'hard',
                   'switchup_deathcore': '808', 'dark_drill': '808'})       # SP-1200 / drum-machine era, gated snare
 GENRE_KIT.update({'jump_up': 'dnb_amen', 'dark_synthwave': 'linn'})

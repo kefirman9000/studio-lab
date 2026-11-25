@@ -1528,6 +1528,7 @@ def main():
     test_orchestral_backbone_and_switches()
     test_dexed_patches_set_every_voice_parameter()
     test_sample_libraries_in_real_ranges()
+    test_ratings_steer_sounds()
     print('all good')
 
 
@@ -1715,6 +1716,31 @@ def test_sample_libraries_in_real_ranges():
         assert ns, (lib, inst)
         assert lo - 2 <= min(ns) <= lo + 14, (lib, inst, min(ns), lo)
     print('ok  sample libraries: every instrument labelled at the pitch it sounds')
+
+
+def test_ratings_steer_sounds():
+    """(2.23) 👍 / 👎 on a song make the sounds it played likelier / rarer in new songs of that genre."""
+    import json as _json
+    import tempfile
+    from sgcore import app
+    old = app.RATINGS
+    app.RATINGS = tempfile.mktemp()
+    try:
+        _json.dump([dict(options=dict(style='house'), rating=1, sounds={'bass': 'moogbass'}),
+                    dict(options=dict(style='house'), rating=1, sounds={'bass': 'moogbass'}),
+                    dict(options=dict(style='house'), rating=-1, sounds={'lead': 'supersaw'}),
+                    dict(options=dict(style='house'), rating=-1, sounds={'lead': 'supersaw'})], open(app.RATINGS, 'w'))
+        t = app.sound_taste('house')
+        assert t['moogbass'] > 2 and t['supersaw'] < 0.3
+        assert 0.1 <= min(t.values()) and max(t.values()) <= 3.0
+        assert abs(app.sound_taste('techno')['moogbass'] - 1.6) < 0.01       # other genres count at half weight
+    finally:
+        os.remove(app.RATINGS)
+        app.RATINGS = old
+    a = song('house', 5)
+    b = compose(Options(style='house', seed=5, taste={}))
+    assert [t['inst'] for t in a['st']['tracks']] == [t['inst'] for t in b['st']['tracks']]   # no ratings = same song
+    print('ok  ratings steer sounds: liked sounds likelier, disliked rarer, nothing certain or impossible')
 
 
 if __name__ == '__main__':

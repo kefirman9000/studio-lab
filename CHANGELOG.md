@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.24.0
+- **👍 / 👎 now steer the sounds.** Rating a song used to steer only which genre "🎲 Surprise me" picks. Now:
+  - New songs in that genre pick the sounds it played more often (after a 👍) or less often (after a 👎). Ratings in
+    other genres count at half weight.
+  - In a test, parts matching a liked song's sounds went from 24 to 41 out of 40 songs, and from 24 to 9 after a 👎.
+  - Nothing becomes certain or impossible: weights stay between a tenth and 3×.
+  - A song's preview and its full version keep the same sounds.
+  - The ♡ on a single part now records that part's actual sound, not its display name, so it counts too.
+- **Own drum machines for 92 more genres.** 69 genres shared the same "soft" drum preset and 33 the same "punchy" one.
+  The genres on those generic presets now each get a machine or kit that fits their family (909s and Linns for house,
+  real kits for Celtic and Latin, 808s and phonk kits for trap and dubstep, vintage and brushes for lo-fi ...). The
+  machines rotate within each family so neighbouring genres differ, and none shares its parent genre's machine.
+  Genres whose preset was a deliberate choice keep it.
+
 ## 2.23.1
 - Toy soldier march: the piccolo tune sat under the horns. It's balanced now (this stopped 2.23.0's release).
 - **Fix: real orchestral recordings played an octave too high.** The sample libraries name their notes an octave below

@@ -1297,7 +1297,7 @@ function mixTag(r){ const m=r.mix_report; if(!m) return '';
 // (2.0) one Play button that fits the situation: replay the last song, or - once you have changed something - the same
 // song (same seed, same picks, your note edits) rendered again with your changes. Generate makes a new song.
 let LASTR=null, LASTKEY='';
-const PLAY_SKIP=['seed','avoid','favorites','title','sound_seed','vst_rig'];   // (bookkeeping, not your settings)
+const PLAY_SKIP=['seed','avoid','favorites','taste','title','sound_seed','vst_rig'];   // (bookkeeping, not your settings)
 function playKey(o){ const c=JSON.parse(JSON.stringify(o||{})); PLAY_SKIP.forEach(k=>delete c[k]);
   const srt=x=>Array.isArray(x)?x.map(srt):(x&&typeof x==='object')?Object.fromEntries(Object.keys(x).sort().map(k=>[k,srt(x[k])])):x;
   return JSON.stringify(srt(c)); }
@@ -1359,7 +1359,7 @@ function addResult(r, target){
       ' <span class="hint">(full list in the PLUGIN_GUIDE file)</span>';
   }
   el.querySelectorAll('.rate').forEach(b=>b.onclick=async()=>{ el.querySelectorAll('.rate').forEach(x=>x.classList.remove('on')); b.classList.add('on');
-    const t=await api('/api/rate',{options:r.options,rating:+b.dataset.r}); TASTE=t; $('#status').textContent='Thanks — Surprise me now leans toward what you like.'; });
+    const t=await api('/api/rate',{options:r.options,rating:+b.dataset.r,sounds:r.main_ids||{}}); TASTE=t; $('#status').textContent=+b.dataset.r>0?'Thanks — new songs will pick these sounds more often (and Surprise me leans this way).':'Noted — new songs will pick these sounds less often.'; });
   if(r.part_urls&&Object.keys(r.part_urls).length){
     const dr=el.querySelector('.dragrow'); dr.innerHTML='<span class="lbl">Drag into your DAW</span>';
     Object.entries(r.part_urls).forEach(([part,u])=>{ const a=document.createElement('a'); a.className='drag'; a.textContent='♪ '+part; a.href=u+'?t='+TOKEN; a.download='';
@@ -1378,7 +1378,7 @@ function addResult(r, target){
     if(LOCKS[p]&&LOCKS[p].from===r.id){ delete LOCKS[p]; } else { LOCKS[p]={seed:partSeed(p),from:r.id,style:r.style}; if(p==='melody'&&!LOCKS.harmony) LOCKS.harmony={seed:partSeed('harmony'),from:r.id,style:r.style,auto:true}; }
     renderLocks(); });
   el.querySelectorAll('[data-lv]').forEach(b=>b.onclick=async()=>{ b.classList.toggle('on'); const p=b.dataset.lv; const role=p==='melody'?'lead':p;
-    TASTE=await api('/api/rate',{options:r.options,rating:1,part:p,part_seed:partSeed(p),inst:(r.instruments||{})[role]});
+    TASTE=await api('/api/rate',{options:r.options,rating:1,part:p,part_seed:partSeed(p),inst:(r.main_ids||{})[role]||(r.instruments||{})[role]});
     $('#status').textContent=`Noted - you like this ${p} part.`; });
   el.querySelectorAll('[data-mu]').forEach(b=>b.onclick=()=>{ const o=JSON.parse(JSON.stringify(r.options)); o.seed=r.seed;
     const k=b.dataset.mu; const m=new Set(o.muted||[]); m.has(k)?m.delete(k):m.add(k); o.muted=[...m];

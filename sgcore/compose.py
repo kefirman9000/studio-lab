@@ -61,6 +61,7 @@ class Options:
     part_seeds: dict = field(default_factory=dict)     # re-roll one part: harmony, melody, drums, bass, chords
     midi_parts: dict = None       # (1.87) parts imported from a MIDI file {'lead'|'chords'|'bass': [[beat, len, midi, vel]], 'root': pc}
     favorites: list = None        # (1.87) your favourite sounds: picked more often when a genre chooses sounds
+    taste: dict = None            # (2.23) {sound: weight} from your 👍 / 👎 ratings: liked sounds likelier, disliked rarer
     lanes: dict = None            # (1.87) editor lanes {'filter'|'reverb'|'pan': {track: [[beat, value], ...]}}
     melody_check: str = 'auto'    # (1.85) write a few hooks, keep the strongest | off
     evolve: str = 'auto'          # (1.85) later drops develop (octave climb, bass pushes, stutters, half-time) | off
@@ -475,8 +476,9 @@ def apply_variety(st, opts, rnd):
             # instruments your last songs in this genre used are picked less often, so the next one sounds fresh
             recent = set((getattr(opts, 'avoid', None) or {}).get(role, []))
             favs = set(getattr(opts, 'favorites', None) or ())
+            taste = getattr(opts, 'taste', None) or {}
             w = [(1.4 if i == 0 and not club else 1.0) * (0.25 if x in recent else 1.0) * (2.5 if x in favs else 1.0)
-                 * (1.0 if x in favs else RARE_SOUNDS.get(x, 1.0)) for i, x in enumerate(pool)]
+                 * (1.0 if x in favs else RARE_SOUNDS.get(x, 1.0)) * float(taste.get(x, 1.0)) for i, x in enumerate(pool)]
             choice = rr.choices(pool, w)[0]
             choice = _GTR_UP.get(opts.style, {}).get(choice, choice)     # (2.0) the rig guitars play the old guitar picks
             if choice != t['inst']:                   # (the genre's level for this part stays: every part is levelled to it)

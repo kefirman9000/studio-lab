@@ -24,7 +24,7 @@ from . import updater, plugins
 from .api import generate, have_ffmpeg
 from .compose import Options, MOODS, FUSION_PARTS, PART_LABELS, MELODY_STYLES
 from .theory import SCALES, NOTE_NAMES, VOICINGS, COLORS
-from .instruments import ROLE_CHOICES, INSTRUMENT_INFO, KITS
+from .instruments import ROLE_CHOICES, INSTRUMENT_INFO, KITS, INSTRUMENTS
 from .styles import STYLES, CATEGORIES, POOLS, label
 
 ROOT = updater.ROOT
@@ -203,6 +203,30 @@ def taste():
                 energy=round(sum(en) / len(en), 2) if en else None, complexity=round(sum(cx) / len(cx), 2) if cx else None,
                 liked=sorted([k for k, v in styles.items() if v > 0], key=lambda k: -styles[k])[:5],
                 part_likes={k: {p: v[-5:] for p, v in d.items()} for k, d in part_likes.items()}, inst_likes=inst_likes)
+
+
+def sound_taste(style):
+    """(2.23) {sound id: weight} for one genre from your ratings: each 👍 on a song (or ♡ on a part) makes the sounds it
+    played likelier next time, each 👎 rarer. Ratings in this genre count fully, other genres' at half weight (a sound
+    you love tends to be a sound you love). Weights stay between 0.1 and 3, so nothing becomes certain or impossible."""
+    score = {}
+    for r in load_ratings():
+        o, v = r.get('options') or {}, r.get('rating', 0)
+        k = 1.0 if o.get('style') == style else 0.5
+        if r.get('part'):
+            ids = [r['inst']] if isinstance(r.get('inst'), str) and r['inst'] in INSTRUMENTS else []
+        else:
+            ids = list((r.get('sounds') or {}).values())
+        for i in ids:
+            score[i] = score.get(i, 0.0) + v * k
+    out = {}
+    for i, sc in score.items():
+        if abs(sc) >= 0.5:
+            out[i] = round(min(3.0, 1.6 ** sc) if sc > 0 else max(0.1, 0.45 ** -sc), 3)
+    return out
+
+
+SEED_TASTE = {}                                   # (style, seed) -> the taste a song was made with (same seed = same song)
 
 
 def out_dir():
@@ -839,6 +863,8 @@ class Handler(BaseHTTPRequestHandler):
             fresh = isinstance(o, dict) and 'avoid' not in o and body.get('section') is None
             if fresh:
                 o['avoid'] = recent_avoid(o.get('style'))   # lean away from what your last songs in this genre used
+                if 'taste' not in o:
+                    o['taste'] = sound_taste(o.get('style')) or None   # (2.23) your 👍 / 👎 steer which sounds it picks
             Options.from_dict(o)  # validate keys early
             n = max(1, min(8, int(body.get('count', 1))))
             preview = bool(body.get('preview', True))
@@ -859,6 +885,12 @@ class Handler(BaseHTTPRequestHandler):
                     oi = dict(o, seed=base + i if n > 1 else base)
                 if fresh:                                # the same seed again (e.g. Full song after its preview) = the same song
                     k = (oi.get('style'), oi['seed'])
+                    if k in SEED_TASTE:
+                        oi['taste'] = SEED_TASTE[k]
+                    else:
+                        SEED_TASTE[k] = oi.get('taste')
+                        if len(SEED_TASTE) > 500:
+                            SEED_TASTE.pop(next(iter(SEED_TASTE)))
                     if k in SEED_AVOID:
                         oi['avoid'] = SEED_AVOID[k]
                     else:
@@ -1157,6 +1189,8 @@ class Handler(BaseHTTPRequestHandler):
         if p == '/api/rate':
             rs = load_ratings()
             rec = dict(options=body.get('options', {}), rating=1 if body.get('rating', 0) > 0 else -1, t=int(time.time()))
+            if isinstance(body.get('sounds'), dict):      # (2.23) the sound ids the song played, so ratings can steer sounds
+                rec['sounds'] = {str(k): str(v) for k, v in body['sounds'].items() if isinstance(v, str)}
             if body.get('part') in ('drums', 'bass', 'chords', 'melody', 'harmony'):
                 rec.update(part=body['part'], part_seed=body.get('part_seed'), inst=body.get('inst'))
             rs.append(rec)

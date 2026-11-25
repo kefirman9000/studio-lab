@@ -63,7 +63,7 @@ Deep house: warm organ & Rhodes 7th chords, round sub, shuffled shakers
 - **Progressions** {'dorian': [[0, 3, 0, 3], [0, 3, 6, 4], [0, 6, 3, 0], [0, 2, 1, 0]], 'minor': [[0, 3, 6, 5], [0, 5, 3, 4]]} · chord_bars 1 · chord size 4
 - **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **rim** `......o.....o..o` / `...o......o.....`; **ohat** `..x...x...x...x.`; **shaker** `oxoxoxoxoxoxoxox`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** 909_classic · preset `soft`
 - **Bass** `R.....R...R..O..` / `..R.....R.R...R.` / `R-....R-..R-..A.` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x--.......x--...` / `...x--......x-..` / `x-.x--....x-....`
 - **Arp** {'rate': 2, 'mode': 'up', 'oct': 5}
@@ -237,7 +237,7 @@ Afro house: four-on-the-floor with rolling congas and shakers, deep bass, kalimb
 - **Progressions** {'minor': [[0, 6, 5, 6], [0, 3, 0, 3], [0, 5, 6, 0]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]} · chord_bars 1 · chord size 4
 - **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **shaker** `xxxxxxxxxxxxxxxx`; **conga** `..o.x..o..o.x.o.` / `x..o..x.o..x..o.`; **woodblock** `..x.....x.x.....`; **ohat** `..x...x...x...x.`; **djembe** `..x..x....x..x..` / `.x..x..x..x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** soft · preset `soft`
 - **Bass** `R..R....R..R....` / `..R...R...R..R..` / `R-..R-..R-..R-..` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------x-----` / `..x.....x.......` / `x--.....x--.....`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.6}
@@ -269,7 +269,7 @@ Melodic deep house: warm rolling bassline, organic shakers and congas, emotive p
 - **Progressions** {'minor': [[0, 5, 2, 6], [0, 6, 5, 3], [5, 3, 0, 4]], 'major': [[0, 4, 5, 3], [3, 0, 4, 5], [5, 3, 0, 4]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]} · chord_bars 1 · chord size 4
 - **Song form** `melodic_house`: intro 16 [chords, fx, pad] (filter_in) -> intro 16 [arp, chords, fx, pad] -> verse 12 [arp, bass, chords, kick, pad] -> drop 28 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> break 24 [chords, fx, lead, pad, top] (alt) -> build 8 [arp, chords, fx, pad] (build) -> verse 16 [arp, bass, chords, kick, lead, pad] (alt) -> drop 24 [arp, bass, chords, kick, lead, pad, snare, top] (drop, alt) -> outro 8 [bass, kick, pad, top] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **shaker** `x.xxx.xxx.xxx.xx`; **conga** `......o.......o.` / `..o.....o.o.....`; **ohat** `..x...x...x...x.`; **rim** `...x......x.....`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** linn · preset `soft`
 - **Bass** `R..R..R.R..R..R.` / `..R...R...R..R..` / `R-..R-..R-..R-..` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
@@ -301,7 +301,7 @@ Organic melodic deep house: warm four-on-the-floor with shakers and congas, pian
 - **Progressions** {'minor': [[0, 5, 2, 6], [0, 3, 5, 4], [5, 3, 0, 4]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]], 'major': [[0, 4, 5, 3], [3, 0, 4, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...`; **shaker** `x.xxx.xxx.xxx.xx` / `x.x.x.x.x.x.x.x.`; **conga** `......o.......o.` / `..o.....o.o.....` / `...o..o....o..o.`; **ohat** `..x...x...x...x.`; **rim** `...x......x.....`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** punchy · preset `soft`
 - **Bass** `R..R..R.R..R..R.` / `R-..R-..R-..R-..` / `..R...R...R..R..` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
@@ -519,7 +519,7 @@ Outsider house: murky, warped, lo-fi house at 120-128 - a kick that stumbles ins
 - **Progressions** {'minor': [[0, 0, 5, 5], [0, 6, 5, 6], [0, 0, 3, 3]], 'dorian': [[0, 3, 0, 3], [0, 0, 6, 6]], 'phrygian': [[0, 1, 0, 1]]} · chord_bars 1 · chord size 4
 - **Song form** `lofi`: intro 4 [chords, fx] (filter_in) -> A 16 [bass, chords, fx, kick, snare, top] -> B 16 [bass, chords, fx, kick, lead, snare, top] -> C 8 [bass, chords, fx, lead] (alt) -> A 16 [bass, chords, fx, kick, lead, snare, top] -> outro 4 [chords, fx] (fade) · form_scale 1
 - **Drums** **kick** `X...X...x.x.....` / `X.....x.X...x...` / `X...X.....x.X...` / `X..x....X.....x.`; **snare** `....x.......x...` / `......x.......x.` / `................`; **chat** `x.x.x.x.x.x.x.x.` / `x.X.x.X.x.X.x.X.`; **ohat** `..x...x...x...x.` / `................`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** dmx · preset `soft`
 - **Bass** `R...R...R.R.....` / `R-..R-..........` / `R..R..R...R.....` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---....x---....` / `x-------........` / `..x---....x---..`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.3}
@@ -549,7 +549,7 @@ UK bounce house: a four-on-the-floor groove at 122-126 with busy, shuffling perc
 - **Progressions** {'minor': [[0, 5, 6, 4], [0, 0, 5, 6], [0, 3, 6, 5]], 'dorian': [[0, 3, 0, 3], [0, 0, 3, 3]]} · chord_bars 1 · chord size 4
 - **Song form** `bass_house`: intro 16 [chords, fx, top] (filter_in) -> build 4 [fx, top] (build) -> drop 8 [bass, fx, kick, snare, top] (drop) -> break 4 [chords, top] -> drop 24 [bass, chords, fx, kick, lead, snare, top] (crash) -> break 16 [chords, fx, pad, top] (alt) -> build 8 [chords, fx, top] (build) -> drop 32 [bass, chords, fx, kick, lead, snare, top] (drop, alt) -> outro 8 [fx, kick, top] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...` / `....X.......X..x`; **snare** `......x.......x.` / `...x......x.....`; **chat** `..x...x...x...x.` / `.xx..xx..xx..xx.`; **shaker** `x.xxx.xxx.xxx.xx`; **ohat** `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** 707 · preset `punchy`
 - **Bass** `..R.R..R..R.R...` / `R..R..R...R..R..` / `..R..R.R..R...R.` · mode `pattern` · lowest note 31
 - **Chord rhythm** `..x.....x.......` / `...x......x.....` / `x.....x.....x...`
 - **Arp** {'rate': 4, 'mode': 'random', 'oct': 5, 'prob': 0.35}
@@ -702,7 +702,7 @@ Mallet-led melodic house / IDM-house: interlocking marimba, vibraphone and kalim
 - **Progressions** {'minor': [[0, 5, 3, 4], [0, 6, 3, 4]], 'dorian': [[0, 3, 0, 6], [0, 1, 0, 3]], 'major': [[0, 4, 5, 3]], 'lydian': [[0, 1, 0, 1]]} · chord_bars 1 · chord size 4
 - **Song form** `mallet_house`: intro 16 [arp, fx, pad] (filter_in) -> build 8 [arp, bass, chords, fx, pad] (build) -> drop 8 [arp, bass, chords, kick, snare, top] (drop) -> break 12 [arp, chords, pad, top] -> verse 32 [arp, bass, chords, kick, lead, snare, top] (crash) -> break 8 [arp, bass, fx, pad] (alt) -> build 8 [arp, chords, fx, pad, top] (build) -> drop 48 [arp, bass, chords, kick, lead, pad, snare, top] (drop, alt) -> outro 16 [arp, fx, pad] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...` / `X...X...X...X..x`; **clap** `........X.......` / `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `x.xxx.xxx.xxx.xx`; **shaker** `.x.x.x.x.x.x.x.x`; **conga** `..o..x.o...o.x..`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** 707 · preset `soft`
 - **Bass** `R-------..R-....` / `R---..R-R-------` · mode `pattern` · lowest note 29
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5, 'prob': 0.95}
@@ -824,7 +824,7 @@ Tropical house: a relaxed four-on-the-floor around 105, soft snaps and shakers, 
 - **Progressions** {'major': [[0, 4, 5, 3], [5, 3, 0, 4], [3, 0, 4, 5]], 'minor': [[0, 5, 2, 6]]} · chord_bars 1 · chord size 3
 - **Song form** `edm`: intro 8 [chords, kick, pad, top] (filter_in) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> build 8 [arp, chords, pad, top] (build) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> break 8 [chords, lead, pad] (alt, crash) -> build 8 [arp, chords, lead, top] (build, alt) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, kick, pad, top] (fade, crash) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **snap** `....X.......X...`; **shaker** `x.xxx.xxx.xxx.xx`; **chat** `..x...x...x...x.`; **conga** `......o.......o.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** 909_classic · preset `soft`
 - **Bass** `R.....R...R.....` / `R...R...R.....O.` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x..x..x...x..x..` / `x--x--x---x-----`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
@@ -972,7 +972,7 @@ Rolling pump house: club house at 124-128 built the way the records measure - th
 - **Progressions** [[0, 0, 0, 0], [0, 0, 5, 6], [0, 3, 0, 3]] · chord_bars 1 · chord size 3
 - **Song form** `rolling_house`: intro 8 [kick, top] (filter_in) -> groove 8 [bass, kick, snare, top] -> drop 32 [bass, chords, kick, lead, snare, top] (drop) -> break 8 [chords, pad, top] (alt) -> build 8 [chords, pad, snare, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 8 [kick, top] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **clap** `....X.......X...` / `....X..x....X...` / `....X.......X..x`; **ohat** `..x...x...x...x.`; **chat** `...x...x...x...x` / `.x.x.x.x.x.x.x.x`; **shaker** `x.xxx.xxx.xxx.xx`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** 909_classic · preset `punchy`
 - **Bass** `.RRR.RRR.RRR.RRR` / `..R...R...R...R.` / `..RR..RR..RR..RR` / `RRRRRRRRRRRRRRRR` · mode `pattern` · lowest note 31
 - **Chord rhythm** `..x.......x.....` / `...x......x.....` / `..x...x...x...x.` / `x.......x.......`
 - **Arp** {'rate': 1, 'mode': 'random', 'oct': 5, 'prob': 0.5}
@@ -1149,7 +1149,7 @@ UK tribal techno-bass: a driving, broken groove around 128-134 - kicks that skip
 - **Progressions** {'minor': [[0, 0, 0, 0], [0, 0, 5, 5], [0, 0, 6, 6]], 'phrygian': [[0, 0, 1, 1]]} · chord_bars 1 · chord size 3
 - **Song form** `bass_house`: intro 16 [chords, fx, top] (filter_in) -> build 4 [fx, top] (build) -> drop 8 [bass, fx, kick, snare, top] (drop) -> break 4 [chords, top] -> drop 24 [bass, chords, fx, kick, lead, snare, top] (crash) -> break 16 [chords, fx, pad, top] (alt) -> build 8 [chords, fx, top] (build) -> drop 32 [bass, chords, fx, kick, lead, snare, top] (drop, alt) -> outro 8 [fx, kick, top] (fade) · form_scale 1
 - **Drums** **kick** `X.....X....XX..x` / `X.....Xx...X....` / `X..x..X.....X...`; **clap** `....X.xx....X...` / `....X.......X...`; **chat** `xxxxxxxxxxxxxxxx` / `.xxx.xxx.xxx.xxx`; **tom** `......x...x...x.` / `...x...x..x.x...`; **conga** `..x..x....x..x.x` / `x..x..x...x.x...`; **shaker** `x.xxx.xxx.xxx.xx`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** techno · preset `punchy`
 - **Bass** `R..R..R...R..R..` / `R.R...R..R..R...` / `R-..R-..R-..R...` · mode `pattern` · lowest note 26
 - **Chord rhythm** `..x.......x.....` / `......x.....x...`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.3}
@@ -1917,7 +1917,7 @@ UK garage / 2-step: skippy shuffled drums, organ stabs, vocal chops, sub bass
 - **Progressions** {'minor': [[0, 5, 3, 4], [0, 3, 6, 5], [0, 5, 2, 4]], 'dorian': [[0, 3, 0, 3], [0, 3, 6, 4]]} · chord_bars 1 · chord size 4
 - **Song form** `garage`: intro 8 [chords, pad, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> hook 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] -> break 4 [chords, top] (build) -> hook 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, kick, snare, top] (fade) · form_scale 1
 - **Drums** **kick** `X.........X.....` / `X......X..X.....` / `X.........X..x..` / `X.....X.X.....X.`; **snare** `....X.......X...`; **chat** `.xox.xox.xox.xox` / `x.xxx.xxx.xxx.xx`; **shaker** `o.o.o.o.o.o.o.o.`; **rim** `......o......o..`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** punchy · preset `punchy`
 - **Bass** `R-......R..R....` / `R-....R-..R..O..` / `..R-.....R-..R..` / `R-....R-R-....R.` · mode `pattern` · lowest note 31
 - **Chord rhythm** `..x..x....x..x..` / `x..x..x...x.....` / `...x..x...x..x..`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.4}
@@ -1946,7 +1946,7 @@ Rolling atmospheric bass: a wonky, swung beat around 120-130 with a lazy, drunk 
 - **Progressions** {'minor': [[0, 5, 2, 6], [0, 0, 5, 3], [0, 6, 5, 6]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]], 'lydian': [[0, 1, 0, 1], [0, 1, 4, 3]]} · chord_bars 1 · chord size 4
 - **Song form** `lofi`: intro 4 [chords, fx] (filter_in) -> A 16 [bass, chords, fx, kick, snare, top] -> B 16 [bass, chords, fx, kick, lead, snare, top] -> C 8 [bass, chords, fx, lead] (alt) -> A 16 [bass, chords, fx, kick, lead, snare, top] -> outro 4 [chords, fx] (fade) · form_scale 1
 - **Drums** **kick** `X.x......xX.....` / `X.X.....x.X..x..` / `X......X..X.....`; **snare** `....X.......X...` / `....X.....x.X...`; **chat** `x.x.x.X.X.x.x.X.` / `.xx.x.xx.x..xx.x` / `x.xx.x.xx.x.x.xx`; **rim** `......x.......x.` / `...x......x.....`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** hard · preset `soft`
 - **Bass** `R.RR.R..R.R.R..R` / `R..R.RR..R.R.RR.` / `R-.R..R.R..RR.R.` · mode `pattern` · lowest note 26
 - **Chord rhythm** `x---------------` / `x-------..x-....`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.35}
@@ -2005,7 +2005,7 @@ Emotive 2-step house: a warm, swung UK groove around 120-126 - skippy 2-step kic
 - **Progressions** {'minor': [[0, 5, 2, 6], [5, 6, 0, 0], [0, 6, 5, 3]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]} · chord_bars 1 · chord size 4
 - **Song form** `garage`: intro 8 [chords, pad, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> hook 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] -> break 4 [chords, top] (build) -> hook 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, kick, snare, top] (fade) · form_scale 1
 - **Drums** **kick** `X......x..x.....` / `X.....x...X.....` / `X......x..X..x..`; **snare** `....X.......X...` / `....X......xX...`; **chat** `..x...x...x...x.` / `.xx..xx..xx..x.x`; **shaker** `x.xxx.xxx.xxx.xx`; **rim** `......x.......x.`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** 707 · preset `punchy`
 - **Bass** `R..R....R.....R.` / `R.....R...R.R...` / `R-..R...R-......` · mode `pattern` · lowest note 28
 - **Chord rhythm** `x-----x---x-----` / `..x.....x.......` / `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.4}
@@ -2283,7 +2283,7 @@ Chipmunk 2-step: hyper, playful UK bass at 140-146 - a skippy 2-step kick, snare
 - **Progressions** {'major': [[0, 4, 5, 3], [3, 4, 0, 5], [0, 5, 3, 4]], 'minor': [[0, 5, 2, 6], [0, 6, 5, 6]], 'dorian': [[0, 3, 0, 3]]} · chord_bars 1 · chord size 4
 - **Song form** `garage`: intro 8 [chords, pad, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> hook 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] -> break 4 [chords, top] (build) -> hook 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, kick, snare, top] (fade) · form_scale 1
 - **Drums** **kick** `X......x..x.....` / `X......x..X.....` / `X.........x..x..`; **snare** `....X.......X...` / `....X.......X..x`; **chat** `..x...x...x...x.` / `.xx..xx..xx..x.x` / `..x.x.x...x.x.xx`; **shaker** `x.xxx.xxx.xxx.xx`; **ohat** `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** punchy · preset `punchy`
 - **Bass** `R..R....R.....R.` / `R.....R...R.R...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x...x...x...x...` / `..x...x...x...x.` / `x--.x--.x--.x--.`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
@@ -2313,7 +2313,7 @@ Glitch future bass: emotional, bright future bass at 150-160 in half-time - huge
 - **Progressions** {'major': [[0, 4, 5, 3], [3, 4, 5, 0], [5, 3, 0, 4]], 'minor': [[0, 5, 2, 6], [5, 6, 0, 0]]} · chord_bars 1 · chord size 4
 - **Song form** `future_bass`: intro 4 [chords, pad] (filter_in) -> verse 8 [chords, kick, lead, pad, top] -> build 4 [chords, snare, top] (build) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (drop) -> verse 8 [chords, kick, pad, top] -> drop 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> break 12 [chords, lead, pad, top] (alt) -> build 4 [chords, snare, top] (build) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (drop, alt) -> outro 8 [chords, pad] (fade) · form_scale 1
 - **Drums** **kick** `X...x...X.....X.` / `X..Xx.X....XX...` / `X.......X.x.....`; **snare** `........X.......` / `........X.....x.`; **clap** `........X.......`; **chat** `x.x.x.x.x.x.x.x.` / `xxx.x.xxx.x.xxxx` / `x.x.xxx.x.x.xx.x`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** punchy · preset `punchy`
 - **Bass** `R.......R.......` · mode `808` · lowest note 29
 - **Chord rhythm** `x--x--x-x--x--x-` / `x-------x-------` / `x.x.x.x.x.x.x.x.`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 6, 'prob': 0.6}
@@ -2342,7 +2342,7 @@ Early dubstep (2005-07 "stepper" era): half-time 140 with a kick on 1, snare on 
 - **Progressions** {'minor': [[0, 0, 5, 0], [0, 0, 0, 6], [0, 6, 5, 6]], 'phrygian': [[0, 1, 0, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `early_dubstep`: intro 12 [fx, pad, top] (filter_in) -> intro 4 [fx, kick, pad, top] -> drop 32 [bass, fx, kick, lead, pad, snare, top] (drop) -> drop 32 [bass, chords, fx, kick, lead, snare, top] -> break 16 [fx, pad, top] (alt) -> build 4 [fx, kick, pad, top] (build) -> drop 32 [bass, chords, fx, kick, lead, snare, top] (drop, alt) -> drop 32 [arp, bass, fx, kick, lead, pad, snare, top] -> outro 8 [fx, pad, top] (fade) · form_scale 1
 - **Drums** **kick** `X.........X.....` / `X.....X...X.....`; **snare** `........X.......`; **chat** `x.xxx.xxx.xxx.xx` / `..x.x.x...x.x.x.`; **shaker** `.x.x.x.x.x.x.x.x`; **rim** `......x.......x.`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** phonk808 · preset `punchy`
 - **Bass** `R-.R-...R-..O-..` / `R---R-..F---R-..` / `R-------R-.R-...` · mode `wobble` · lowest note 28
 - **Chord rhythm** `....x.......x...` / `x.......x.......`
 - **Arp** {'rate': 4, 'mode': 'random', 'oct': 4, 'prob': 0.3}
@@ -2372,7 +2372,7 @@ UK bassline (Northern / speed-garage style): a bouncy four-on-the-floor around 1
 - **Progressions** {'minor': [[0, 0, 5, 6], [0, 5, 3, 4], [0, 6, 5, 6]], 'dorian': [[0, 3, 0, 3]]} · chord_bars 1 · chord size 3
 - **Song form** `bassline_140`: intro 12 [chords, fx, pad] (filter_in) -> intro 8 [bass, chords, kick] -> build 8 [chords, fx, top] (build) -> drop 32 [bass, chords, kick, lead, snare, top] (drop) -> break 12 [chords, fx, pad] (alt) -> build 8 [bass, chords, fx, kick] (build) -> drop 36 [arp, bass, chords, kick, lead, snare, top] (drop, alt) -> outro 4 [chords, fx] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **snare** `....X.......X...`; **ohat** `..x...x...x...x.`; **chat** `.xox.xox.xox.xox` / `x.xxx.xxx.xxx.xx`; **rim** `...x......x.....`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** 909 · preset `punchy`
 - **Bass** `R.O.R.O.R.O.R.O.` / `.R.O.R.R.O.R.O.R` / `R..O..R.R.O..R..` · mode `wobble` · lowest note 31
 - **Chord rhythm** `..x...x...x...x.` / `x..x..x...x.....`
 - **Arp** {'rate': 4, 'mode': 'random', 'oct': 5, 'prob': 0.4}
@@ -2492,7 +2492,7 @@ Chillstep (the ambient side of dubstep): slow half-time dubstep at 140 with lush
 - **Progressions** {'minor': [[0, 5, 2, 6], [0, 3, 5, 4], [5, 3, 0, 4]], 'major': [[0, 5, 3, 4], [3, 0, 4, 5]], 'dorian': [[0, 3, 0, 3]]} · chord_bars 1 · chord size 4
 - **Song form** `halftime`: intro 8 [chords, pad, top] (filter_in) -> build 8 [arp, chords, pad, top] (build) -> drop 16 [bass, chords, kick, lead, pad, snare, top] (drop) -> break 8 [arp, chords, lead, pad] (alt) -> build 8 [arp, chords, lead, top] (build, alt) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, pad] (fade) · form_scale 1
 - **Drums** **kick** `X.........X.....` / `X.....x...X.....`; **snare** `........X.......`; **chat** `x.x.x.x.x.x.x.x.` / `x...x...x.x.x...`; **shaker** `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `default`
+- **Drum kit** hard · preset `default`
 - **Bass** `R-------R-------` · mode `wobble` · lowest note 29
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.8}
@@ -2522,7 +2522,7 @@ UK funky: London house at 130 with a soca and Afro swing - a house kick under sy
 - **Progressions** {'minor': [[0, 5, 3, 6], [0, 3, 0, 6]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 4]]} · chord_bars 1 · chord size 4
 - **Song form** `garage`: intro 8 [chords, pad, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> hook 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] -> break 4 [chords, top] (build) -> hook 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, kick, snare, top] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **snare** `...x..x....x..x.` / `...x..x...xx..x.` / `....x..x...x..x.`; **chat** `x.xxx.xxx.xxx.xx`; **tom** `......x.......x.` / `..x.....x.x.....`; **conga** `..o.x..o..o.x..o`; **shaker** `.x.x.x.x.x.x.x.x`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** 909 · preset `punchy`
 - **Bass** `R..R..R...R..O..` / `..R..R..R.R...R.` · mode `pattern` · lowest note 31
 - **Chord rhythm** `..x..x....x..x..` / `x..x..x...x.....`
 - **Arp** {'rate': 2, 'mode': 'up', 'oct': 5, 'prob': 0.5}
@@ -2552,7 +2552,7 @@ Midtempo bass: 100-110 BPM, dark and heavy - a punchy kick and huge snare on 2 a
 - **Progressions** {'minor': [[0, 5, 6, 5], [0, 0, 6, 6]], 'phrygian': [[0, 1, 0, 6]], 'harmonic_minor': [[0, 5, 1, 4]]} · chord_bars 1 · chord size 3
 - **Song form** `edm`: intro 8 [chords, kick, pad, top] (filter_in) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> build 8 [arp, chords, pad, top] (build) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> break 8 [chords, lead, pad] (alt, crash) -> build 8 [arp, chords, lead, top] (build, alt) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, kick, pad, top] (fade, crash) · form_scale 1
 - **Drums** **kick** `X.........X.....` / `X......X..X.....` / `X.X.......X..X..`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.` / `x.xxx.x.x.xxx.x.`; **crash** `X...............` / `................`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** punchy · preset `punchy`
 - **Bass** `R...R.R...R.R...` / `R-R-....R.R.O...` / `R.....R.R...R.R.` · mode `pattern` · lowest note 26
 - **Chord rhythm** `x.....x...x.....` / `x...............`
 - **Arp** {'rate': 4, 'mode': 'up', 'oct': 5, 'prob': 0.6}
@@ -2580,7 +2580,7 @@ Speed garage (late 90s UK): a fast, shuffled four-on-the-floor with garage snare
 - **Progressions** {'minor': [[0, 0, 5, 6], [0, 3, 0, 6]], 'dorian': [[0, 3, 0, 3]]} · chord_bars 1 · chord size 4
 - **Song form** `garage`: intro 8 [chords, pad, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> hook 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] -> break 4 [chords, top] (build) -> hook 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, kick, snare, top] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **snare** `....X.......X...` / `....X......X.X..`; **ohat** `..x...x...x...x.`; **chat** `.xox.xox.xox.xox` / `x.xxx.xxx.xxx.xx`; **rim** `...x......x.....`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** 606 · preset `punchy`
 - **Bass** `R-..R-.OR-..R-.A` / `R...R.R.R...R...` / `R-R-..R-R-..R-O-` · mode `pattern` · lowest note 28
 - **Chord rhythm** `..x...x...x...x.` / `...x..x....x..x.`
 - **Arp** {'rate': 2, 'mode': 'up', 'oct': 5, 'prob': 0.5}
@@ -2639,7 +2639,7 @@ Switch-up bass: one broken UK-bass rhythm from the first bar to the last and a h
 - **Progressions** {'minor': [[0, 0, 0, 0], [0, 0, 5, 5], [0, 0, 6, 6]], 'phrygian': [[0, 0, 1, 1], [0, 0, 0, 1]]} · chord_bars 1 · chord size 2
 - **Song form** `switchup_bass`: intro 8 [chords, fx, kick, top] (filter_in) -> drop 16 [arp, bass, chords, kick, snare, top] (drop, crash) -> drop 8 [arp, bass, kick, lead, snare, top] (drop) -> break 4 [chords, fx, kick, lead, top] (gap) -> drop 16 [bass, chords, kick, lead, snare, top] (drop, crash) -> drop 16 [arp, bass, kick, lead, snare, top] (drop) -> drop 8 [bass, chords, kick, snare, top] (drop) -> break 4 [fx, kick, lead, top] (gap) -> drop 16 [arp, bass, chords, kick, lead, snare, top] (drop, crash) -> drop 8 [arp, bass, chords, kick, snare, top] (drop) -> outro 8 [bass, kick, top] (fade) · form_scale 1
 - **Drums** **kick** `X..X.X.......XX.`; **clap** `....X.......X...`; **chat** `x...x...x.....x.`; **shaker** `x.x.x.x.x.x.x.x.`; **rim** `..x.....x..x....`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** 808 · preset `punchy`
 - **Bass** `R..R.R.......RR.` · mode `pattern` · lowest note 33
 - **Chord rhythm** `x..x.x.......x..` / `x.......x.......` / `..x...x...x...x.`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.55}
@@ -3843,7 +3843,7 @@ Wonky / beat-scene bass (purple sound): a lazy, drunken hip-hop swing around 86-
 - **Progressions** {'minor': [[0, 5, 3, 4], [0, 6, 5, 6]], 'dorian': [[0, 3, 0, 3], [0, 1, 0, 6]], 'mixolydian': [[0, 6, 3, 0]]} · chord_bars 1 · chord size 4
 - **Song form** `wonky_beats`: intro 16 [bass, chords, fx, kick] (filter_in) -> break 8 [bass, fx, pad] (build) -> A 20 [bass, chords, fx, kick, lead, snare, top] (drop) -> break 8 [bass, chords, fx, kick, pad] (alt) -> A 20 [arp, bass, chords, fx, kick, lead, snare, top] (alt) -> outro 4 [chords, fx, pad] (fade) · form_scale 1
 - **Drums** **kick** `X......X..X.....` / `X.....x..X......` / `X..x.....X..x...`; **snare** `....X.......X...` / `....X.......X..x`; **chat** `x.xxx.x.xx.x.xxx` / `x..x.xx..x.xx.x.`; **rim** `......x.......x.`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** phonk808 · preset `punchy`
 - **Bass** `R-------..R-....` / `R---..R-R-------` · mode `pattern` · lowest note 28
 - **Chord rhythm** `x---..x-..x-....` / `x-------x---....`
 - **Arp** {'rate': 4, 'mode': 'random', 'oct': 5, 'prob': 0.5}
@@ -4244,7 +4244,7 @@ Spacious progressive-breaks electronica (around 128-130): warbly, slightly detun
 - **Progressions** {'minor': [[0, 5, 3, 4], [0, 5, 0, 5], [0, 5, 3, 0], [5, 0, 3, 4]]} · chord_bars 2 · chord size 4
 - **Song form** `warped_electronica`: intro 16 [bass, fx, pad] (filter_in) -> verse 8 [arp, bass, chords, fx, pad] (layer_in) -> verse 8 [bass, chords, fx, lead, pad] -> build 8 [bass, chords, fx, lead, pad, top] (build) -> drop 32 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop, crash) -> break 8 [chords, fx, lead, pad] (alt) -> build 8 [chords, fx, lead, pad, top] (build) -> drop 32 [arp, bass, chords, fx, kick, lead, pad, snare, top] (drop, alt) -> outro 16 [chords, fx, pad] (layer_out, fade) · form_scale 1
 - **Drums** **kick** `X.....x...X..x..` / `X.x.......X.....` / `X.....x.x.X...x.`; **snare** `....X..o.o..X..o` / `....X.......X.o.`; **chat** `x.xxx.x.x.xxx.xx` / `xxx.xxx.xxx.xxx.` / `x.x.x.x.x.x.x.x.`; **rim** `..x...x...x..x..` / `...x..x.x....x..`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** hard · preset `punchy`
 - **Bass** `R-------..R-....` / `R---..R-R-------` · mode `pattern` · lowest note 28
 - **Chord rhythm** `x-------x-------` / `x---------------` / `x-------x---x---`
 - **Arp** {'rate': 4, 'mode': 'random', 'oct': 5, 'prob': 0.5}
@@ -4274,7 +4274,7 @@ Melodic club rap (around 160, half-time): a catchy sung hook over a long, sustai
 - **Progressions** {'minor': [[0, 3, 5, 4], [0, 5, 3, 6], [0, 0, 5, 6], [0, 5, 6, 4]]} · chord_bars 1 · chord size 4
 - **Song form** `trap`: intro 8 [chords, pad] (filter_in) -> hook 16 [bass, chords, kick, lead, pad, snare, top] (drop) -> verse 16 [bass, chords, kick, snare, top] (crash) -> hook 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [chords, lead, pad] (alt) -> hook 16 [bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, pad] (fade) · form_scale 1
 - **Drums** **kick** `X.....X...X..X..` / `X..X......X.....` / `X.....X.X.....X.`; **snare** `........X.......`; **clap** `........X.......`; **ohat** `..............x.` / ``
-- **Drum kit** (synth preset) · preset `default`
+- **Drum kit** 808 · preset `default`
 - **Bass** `R---------------` / `R-------R---F---` / `R-----------R---` · mode `808` · lowest note 28
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'up', 'oct': 6, 'prob': 0.8}
@@ -4390,7 +4390,7 @@ K-pop: polished genre-hopping pop - punchy drums, bright plucks and piano, big p
 - **Progressions** {'minor': [[0, 5, 2, 6], [5, 6, 0, 0], [0, 3, 5, 4], [3, 4, 2, 5]], 'major': [[3, 4, 2, 5], [0, 4, 5, 3], [3, 4, 0, 5]]} · chord_bars 1 · chord size 4
 - **Song form** `song_b`: intro 8 [chords, pad] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> pre 4 [bass, chords, pad, snare, top] (build) -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] -> pre 4 [bass, chords, pad, snare, top] (build) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [arp, chords, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad] (fade) · form_scale 1
 - **Drums** **kick** `X.....X...X.....` / `X..X..X...X.....` / `X...X...X...X...`; **snare** `....X.......X...`; **clap** `....X.......X...`; **chat** `x.xxx.x.x.xxx.x.` / `x.x.x.x.x.x.x.x.`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** soft · preset `punchy`
 - **Bass** `R..R..R.R..R....` / `R...R...R.R.R...` · mode `pattern` · lowest note 28
 - **Chord rhythm** `x..x..x.x..x..x.` / `x---x---x---x---` / `..x...x...x...x.`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.7}
@@ -4419,7 +4419,7 @@ Late-90s teen pop: punchy dance-pop drums, dramatic minor chords, muted-guitar a
 - **Progressions** {'minor': [[0, 5, 2, 6], [0, 3, 5, 4], [5, 3, 0, 4], [0, 5, 3, 4]], 'major': [[0, 4, 5, 3], [5, 3, 0, 4], [3, 4, 2, 5]]} · chord_bars 1 · chord size 4
 - **Song form** `song_b`: intro 8 [chords, pad] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> pre 4 [bass, chords, pad, snare, top] (build) -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] -> pre 4 [bass, chords, pad, snare, top] (build) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [arp, chords, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad] (fade) · form_scale 1
 - **Drums** **kick** `X.....X.X.......` / `X..X..X...X.....` / `X.....X...X..X..`; **snare** `....X.......X...`; **clap** `....X.......X...`; **chat** `x.xxx.x.x.xxx.x.` / `xxxxxxxxxxxxxxxx`; **tamb** `....x.......x...`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** punchy · preset `punchy`
 - **Bass** `R..R..R.R.R...R.` / `R...R..RR...R.R.` / `R.R...R.R.R...A.` · mode `pattern` · lowest note 28
 - **Chord rhythm** `x..x..x.x..x..x.` / `x---x---x---x---` / `x.x...x.x.x...x.`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.8}
@@ -4540,7 +4540,7 @@ Hopecore (dreamy): the slower, softer side - warm 120-135 BPM bounce with a sub-
 - **Progressions** {'major': [[3, 4, 5, 0], [0, 4, 5, 3], [3, 0, 4, 5]], 'lydian': [[0, 1, 0, 1]], 'mixolydian': [[0, 6, 3, 0]]} · chord_bars 1 · chord size 4
 - **Song form** `halftime`: intro 8 [chords, pad, top] (filter_in) -> build 8 [arp, chords, pad, top] (build) -> drop 16 [bass, chords, kick, lead, pad, snare, top] (drop) -> break 8 [arp, chords, lead, pad] (alt) -> build 8 [arp, chords, lead, top] (build, alt) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, pad] (fade) · form_scale 1
 - **Drums** **kick** `X.........X.....` / `X.......X.X.....` / `X..X......X.....`; **clap** `........X.......`; **chat** `x.x.x.x.x.x.x.x.` / `x...x...x.x.x...`; **shaker** `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** 808 · preset `soft`
 - **Bass** `R---------------` / `R-------R-------` · mode `808` · lowest note 28
 - **Chord rhythm** `x-------x-------` / `x---x---x-x-x---`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 6, 'prob': 0.85}
@@ -4597,7 +4597,7 @@ Glitchy IDM pop / electronica: a soft, swung mid-tempo beat built from clicks, c
 - **Progressions** {'major': [[0, 4, 5, 3], [0, 5, 3, 4]], 'minor': [[0, 5, 3, 4], [0, 6, 3, 4]], 'dorian': [[0, 3, 0, 6]]} · chord_bars 1 · chord size 4
 - **Song form** `glitch_pop`: intro 8 [fx, pad, top] (filter_in) -> A 32 [bass, chords, fx, kick, pad, snare, top] -> B 32 [bass, chords, fx, kick, lead, pad, snare, top] -> C 32 [arp, bass, chords, fx, kick, lead, snare, top] (alt) -> B 24 [arp, bass, chords, fx, kick, lead, pad, snare, top] -> outro 8 [fx, pad, top] (fade) · form_scale 1
 - **Drums** **kick** `X..........X....` / `X.....x....X....` / `X..x.......X..x.`; **snare** `........X.......` / `........X.....x.`; **rim** `..x..x.x....x..x` / `.x..x...x.x...x.`; **chat** `x.xxx.x.xx.xx.x.` / `xxx.x.xx.x.xx.x.`; **shaker** `.o.o.o.o.o.o.o.o`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** crisp_kit · preset `soft`
 - **Bass** `R--.R-.O..R-.R..` / `R-..R-.F..R-....` · mode `pattern` · lowest note 33
 - **Chord rhythm** `x---..x-..x-....` / `x-..x-..x-..x-..`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -4657,7 +4657,7 @@ Afrobeats: bouncy syncopated percussion, warm guitar chops, marimba hooks
 - **Tempo** 98-112 BPM · **scales** major, minor, dorian · swing 0.56 (unit 16) · humanise 0.006
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
 - **Drums** **kick** `X..x..X...X..x..` / `X.....X.X.....x.`; **snare** `....x.......x...` / `......x.......x.`; **rim** `..x..x....x..x..` / `...x..x..x..x...`; **shaker** `oxoxoxoxoxoxoxox`; **conga** `..o.x..o..o.x...` / `x..o..x...o..x..`; **talkdrum** `......x.......x.` / `...........x..x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** punchy · preset `soft`
 - **Bass** `R..R....R.R.....` / `R...R.R...R..A..` / `R-..R...R-..R...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `.x.x..x..x.x..x.` / `x..x..x...x..x..`
 - **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'rh': ['..x.x..x..x.x..x', '.x..x.x..x..x.x.', 'x..x.x..x.x..x..']}
@@ -4687,7 +4687,7 @@ Amapiano: log-drum basslines, jazzy piano chords, rolling shakers, deep groove
 - **Progressions** {'minor': [[0, 3, 6, 5], [0, 5, 3, 4], [0, 6, 3, 4]], 'dorian': [[0, 3, 0, 3], [0, 3, 6, 2]]} · chord_bars 1 · chord size 5
 - **Song form** `amapiano`: intro 16 [chords, pad, top] (filter_in) -> verse 16 [chords, kick, pad, snare, top] -> drop 16 [bass, chords, kick, lead, pad, snare, top] (drop) -> break 8 [chords, pad, top] (build) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> verse 16 [arp, bass, chords, kick, top] -> outro 16 [chords, kick, top] (fade) · form_scale 1
 - **Drums** **kick** `X.......X.......` / `X...X...X...X...`; **clap** `....x.......x...`; **shaker** `oxoxoxoxoxoxoxox` / `oxoXoxoxoxoXoxox`; **woodblock** `..x.....x.x.....` / `......x.....x...`; **chat** `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** 707 · preset `soft`
 - **Bass** `R..F..R...R..F..` / `..R...F.R...R..O` / `R..R....F..R..R.` / `...R..R...F..R..` · mode `pattern` · lowest note 33
 - **Chord rhythm** `x--.......x--...` / `...x-.....x-....` / `x---------------`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.5}
@@ -4745,7 +4745,7 @@ Moombahton: dembow groove at 110 with big-room synths and heavy drops
 - **Progressions** [[0, 5, 2, 6], [0, 6, 5, 6], [0, 5, 3, 4]] · chord_bars 1 · chord size 3
 - **Song form** `edm`: intro 8 [chords, kick, pad, top] (filter_in) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> build 8 [arp, chords, pad, top] (build) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> break 8 [chords, lead, pad] (alt, crash) -> build 8 [arp, chords, lead, top] (build, alt) -> drop 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> outro 8 [chords, kick, pad, top] (fade, crash) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **snare** `...X..X....X..X.`; **clap** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`; **tamb** `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** 707 · preset `punchy`
 - **Bass** `R..R..R.R..R..R.` / `R...R.R...R.R...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x..x..x.x..x..x.`
 - **Arp** {'rate': 1, 'mode': 'up', 'oct': 5}
@@ -4859,7 +4859,7 @@ Gqom (Durban): dark, raw and broken - no four-on-the-floor, but syncopated kicks
 - **Progressions** {'minor': [[0, 0, 0, 0], [0, 0, 6, 6]], 'phrygian': [[0, 1, 0, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
 - **Drums** **kick** `X..X..X...X.....` / `X..X......X..X..` / `X.....X...X..X..`; **tom** `......x...x..x..` / `..x...x.....x...`; **clap** `....x.......x...` / `............x...`; **shaker** `x.xxx.xxx.xxx.xx`; **rim** `...x.......x....`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** 808 · preset `soft`
 - **Bass** `R..R..R...R.....` / `R.........R.....` · mode `pattern` · lowest note 26
 - **Chord rhythm** `x...............` / `x.......x.......`
 - **Arp** {'rate': 2, 'mode': 'up', 'oct': 5, 'prob': 0.3}
@@ -4886,7 +4886,7 @@ Shangaan electro: South African township dance at a breakneck 178-190 - a fast f
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 3, 4], [0, 0, 3, 4]], 'mixolydian': [[0, 6, 3, 0]]} · chord_bars 1 · chord size 4
 - **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **clap** `....x.......x...` / `....x.......x.x.`; **shaker** `xxxxxxxxxxxxxxxx`; **woodblock** `x..x..x...x..x..` / `x..x.x..x..x.x..`; **conga** `..x..x....x..x..`; **ohat** `..x...x...x...x.`; **refwhistle** `................` / `x...............`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** cr78 · preset `soft`
 - **Bass** `R..R..R.R..R..R.` / `R.R..R.R..R.R..R` · mode `pattern` · lowest note 31
 - **Chord rhythm** `..x...x...x...x.` / `x..x..x..x..x...`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
@@ -4918,7 +4918,7 @@ Kuduro: Angolan street-dance music at 130-140 - a hard, broken kick-and-rim patt
 - **Progressions** {'minor': [[0, 0, 0, 0], [0, 0, 6, 6]], 'phrygian': [[0, 1, 0, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `groove`: intro 16 [kick, top] (filter_in) -> verse 16 [bass, kick, snare, top] -> verse 16 [arp, bass, kick, snare, top] (crash) -> break 16 [arp, chords, pad, top] (build) -> drop 32 [arp, bass, chords, kick, lead, snare, top] (drop) -> outro 16 [bass, kick, top] (fade) · form_scale 1
 - **Drums** **kick** `X..X..X.X..X..X.` / `X..X..X...X.X...`; **tom** `......x.......x.` / `...x......x...x.`; **clap** `....X.......X...` / `....X..x....X.x.`; **shaker** `x.xxx.xxx.xxx.xx`; **rim** `..x..x..x..x..x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** 707 · preset `soft`
 - **Bass** `R..R..R.R..R..R.` / `R..R...RR..R..R.` · mode `pattern` · lowest note 26
 - **Chord rhythm** `x..x..x.x.......` / `...x..x...x.x...`
 - **Arp** {'rate': 2, 'mode': 'up', 'oct': 5, 'prob': 0.3}
@@ -5004,7 +5004,7 @@ Bass amapiano (deep, 110-116): four-on-the-floor South African house where the l
 - **Progressions** {'minor': [[0, 5, 3, 4], [0, 3, 6, 5], [0, 0, 5, 6]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 0]]} · chord_bars 1 · chord size 4
 - **Song form** `bass_amapiano`: intro 16 [chords, pad, top] (filter_in) -> verse 16 [chords, kick, pad, snare, top] (layer_in) -> build 8 [chords, kick, pad, top] (build) -> drop 16 [bass, kick, pad, snare, top] (drop, crash) -> drop 16 [bass, chords, kick, lead, pad, snare, top] (alt) -> break 8 [bass, pad] -> verse 8 [chords, kick, pad, top] -> build 8 [chords, kick, lead, pad, top] (build) -> drop 16 [bass, chords, kick, lead, pad, snare, top] (drop, crash) -> drop 16 [bass, chords, kick, pad, snare, top] (alt) -> outro 16 [bass, kick, pad, top] (layer_out, fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **clap** `....x.......x...` / `........x.......`; **shaker** `oxoxoxoxoxoxoxox` / `oxoXoxoxoxoXoxox`; **conga** `..o.x..o..o.x..o` / `......x.o.....x.`; **chat** `..x...x...x...x.` / `..x...x...x.x.x.`; **rim** `...x......x...x.` / `......x.......x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** 909 · preset `soft`
 - **Bass** `R-.F-.R---.O-.F-` / `R--.R--.F-.A--O.` / `..R-.F-.R--.O---` / `R---F---.A-.R-..` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x.........x.....` / `...x......x..x..` / `x..x......x.....`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.5}
@@ -5614,7 +5614,7 @@ Balearic chill: a sunset groove around 95-108 - a soft four-on-the-floor kick, s
 - **Progressions** {'major': [[0, 3, 0, 3], [0, 5, 3, 4], [3, 4, 0, 0]], 'dorian': [[0, 3, 0, 3]], 'mixolydian': [[0, 6, 3, 0]], 'lydian': [[0, 1, 0, 1]]} · chord_bars 1 · chord size 4
 - **Song form** `ambient`: intro 8 [fx, pad] (filter_in) -> A 16 [arp, bass, fx, pad] -> B 16 [arp, bass, fx, lead, pad, top] -> C 16 [bass, chords, fx, lead, pad] (alt) -> outro 8 [fx, pad] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **snare** `....x.......x...` / `................`; **shaker** `x.xxx.xxx.xxx.xx`; **conga** `..x..x....x..x.x` / `...x..x...x..x..`; **chat** `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** vintage · preset `soft`
 - **Bass** `R...R.R.R...R.R.` / `R..R..R.R..R....` / `R-..R...R-..R...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 4, 'prob': 0.7}
@@ -5772,7 +5772,7 @@ Hazy downtempo: a slow, dusty beat at 75-90 - a soft hip-hop break with busy, qu
 - **Progressions** {'major': [[3, 4, 0, 0], [0, 4, 5, 3], [0, 0, 3, 3], [5, 3, 0, 4]], 'mixolydian': [[0, 6, 3, 0], [0, 6, 0, 6]], 'lydian': [[0, 1, 0, 1], [0, 1, 5, 1]], 'dorian': [[0, 3, 0, 3], [0, 6, 3, 3]]} · chord_bars 2 · chord size 4
 - **Song form** `hazy_downtempo`: intro 8 [arp, fx, pad] (filter_in) -> A 16 [arp, bass, chords, kick, pad, snare, top] -> B 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> break 8 [chords, fx, lead, pad] (level=0.5) -> B 16 [arp, bass, chords, kick, lead, pad, snare, top] (drop, alt) -> outro 8 [chords, fx, pad] (fade) · form_scale 1
 - **Drums** **kick** `X......xX.x.....` / `X.....x.X.......` / `X..x....X..x....`; **snare** `....X.......X...` / `....X.......X..x`; **chat** `xxxxxxxxxxxxxxxx` / `x.xxx.xxx.xxx.xx`; **shaker** `x.x.x.x.x.x.x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** sunroom · preset `soft`
 - **Bass** `R-------R-......` / `R---..R-R---....` / `R-------R---R---` · mode `pattern` · lowest note 28
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.8}
@@ -5891,7 +5891,7 @@ Chant downtempo (early 90s): it opens on a lone, breathy shakuhachi calling over
 - **Progressions** {'minor': [[0, 0, 6, 0], [0, 0, 5, 6], [0, 5, 6, 0]], 'phrygian': [[0, 1, 0, 0]], 'dorian': [[0, 3, 0, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `chant_downtempo`: intro 4 [fx, lead, pad] (filter_in) -> chant 8 [chords, fx, pad] -> groove 16 [bass, chords, fx, kick, pad, snare, top] (crash) -> theme 16 [bass, chords, fx, kick, lead, pad, snare, top] -> break 8 [chords, fx, lead, pad] (alt) -> theme 16 [arp, bass, chords, fx, kick, lead, pad, snare, top] (crash) -> outro 8 [fx, lead, pad] (fade) · form_scale 1
 - **Drums** **kick** `X.........X.....` / `X.....X...X..x..`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`; **ohat** `..............x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** dead70s · preset `soft`
 - **Bass** `R---------------` / `R-------R-------` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 1, 'mode': 'up', 'oct': 5, 'prob': 0.4}
@@ -6062,7 +6062,7 @@ Mallsoft: vaporwave heard from the far end of an empty shopping mall at 50-70 - 
 - **Progressions** {'major': [[3, 2, 1, 4], [1, 4, 0, 5], [3, 4, 2, 5]], 'dorian': [[0, 3, 6, 2]]} · chord_bars 1 · chord size 4
 - **Song form** `lofi`: intro 4 [chords, fx] (filter_in) -> A 16 [bass, chords, fx, kick, snare, top] -> B 16 [bass, chords, fx, kick, lead, snare, top] -> C 8 [bass, chords, fx, lead] (alt) -> A 16 [bass, chords, fx, kick, lead, snare, top] -> outro 4 [chords, fx] (fade) · form_scale 1
 - **Drums** **kick** `X.......X.......` / ``; **snare** `` / `........x.......`; **chat** `` / `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** brushes · preset `soft`
 - **Bass** `R-----..R-..F...` / `R-------A-------` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'up', 'oct': 5}
@@ -6118,7 +6118,7 @@ Christmas lo-fi (cosy beats): a dusty, laid-back hip-hop beat around 72-88 - war
 - **Progressions** {'major': [[1, 4, 0, 5], [3, 2, 1, 4], [0, 5, 1, 4], [3, 4, 2, 5]], 'dorian': [[0, 3, 6, 2], [0, 3, 0, 4], [3, 4, 0, 0], [0, 6, 3, 4]]} · chord_bars 1 · chord size 5
 - **Song form** `lofi`: intro 4 [chords, fx] (filter_in) -> A 16 [bass, chords, fx, kick, snare, top] -> B 16 [bass, chords, fx, kick, lead, snare, top] -> C 8 [bass, chords, fx, lead] (alt) -> A 16 [bass, chords, fx, kick, lead, snare, top] -> outro 4 [chords, fx] (fade) · form_scale 1
 - **Drums** **kick** `X.....x...X.....` / `X......xX.....x.` / `X.x.......X..x..`; **snare** `....X.......X...`; **rim** `......o.......o.` / `..........o.....`; **chat** `x.ox.ox.x.ox.oxo` / `x.x.x.x.x.x.x.x.`; **sleigh** `x...x...x...x...` / `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** crisp_kit · preset `soft`
 - **Bass** `R.....R...F.....` / `R-----..A.R.....` / `R-------F---A---` · mode `pattern` · lowest note 33
 - **Chord rhythm** `x-------x-------` / `x--------..x----` / `x---------------`
 - **Arp** {'rate': 2, 'mode': 'up', 'oct': 5}
@@ -6348,7 +6348,7 @@ Juke house (126): bouncy and hypnotic - a 3-3-2 tresillo kick, hi-hats on the of
 - **Progressions** [[0, 4, 5, 3], [0, 5, 3, 4], [5, 3, 0, 4], [0, 3, 4, 4]] · chord_bars 1 · chord size 3
 - **Song form** `chip`: intro 4 [arp, bass] -> verse 16 [arp, bass, kick, snare, top] -> chorus 16 [arp, bass, kick, lead, snare, top] -> verse 16 [arp, bass, kick, snare, top] -> chorus 16 [arp, bass, kick, lead, snare, top] -> bridge 8 [arp, bass, lead, top] (alt) -> chorus 16 [arp, bass, kick, lead, snare, top] -> outro 4 [arp, bass, kick] (fade) · form_scale 1
 - **Drums** **chipkick** `X.......X.x.....` / `X...X...X...X...`; **chipsnare** `....X.......X...`; **chiphat** `x.x.x.x.x.x.x.x.` / `xxxxxxxxxxxxxxxx`
-- **Drum kit** (synth preset) · preset `default`
+- **Drum kit** linn · preset `default`
 - **Bass** `R.O.R.O.R.O.R.O.` / `R.R.O.R.R.R.O.R.` · mode `pattern` · lowest note 33
 - **Chord rhythm** `x---------------`
 - **Arp** {'rate': 0.5, 'mode': 'up', 'oct': 5}
@@ -6461,7 +6461,7 @@ Spooky surf - modern monster theme: the 60s monster-sitcom theme rebuilt with mo
 - **Progressions** {'minor': [[0, 0, 0, 0], [0, 0, 5, 4], [2, 6, 5, 2]], 'harmonic_minor': [[0, 0, 0, 0], [0, 3, 5, 4], [5, 3, 4, 4]]} · chord_bars 1 · chord size 3
 - **Song form** `monster_synth`: intro 8 [bass, fx, pad] -> build 8 [bass, kick, pad, top] (riser) -> A 16 [bass, chords, kick, snare, top] (crash) -> bridge 8 [bass, chords, kick, lead, snare, top] (alt, crash) -> break 16 [arp, fx, lead, pad] (alt) -> build 8 [arp, bass, kick, snare, top] (riser) -> A 16 [arp, bass, chords, kick, snare, top] (crash) -> A 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [bass, chords, kick, snare, top] (stop_end) · form_scale 1
 - **Drums** **kick** `X.......X.......` / `X.....X.X.......` / `X.......X.....x.`; **snare** `....X.......X...`; **clap** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.` / `x.xxx.x.x.xxx.x.`; **ride** `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** dmx · preset `punchy`
 - **Bass** `R.R.u.R.d.R.R...` / `R.u.R.d.R.R.u.R.` / `R.R.R.u.R.d.R...` · mode `pattern` · lowest note 36
 - **Chord rhythm** `..x...x...x...x.` / `x.......x.x.....` / `x.....x...x.....`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5, 'prob': 0.85}
@@ -7786,7 +7786,7 @@ Velvet pop: a soft, intimate pop groove around 100-110 - a muffled, close drum m
 - **Progressions** {'major': [[3, 0, 1, 4], [5, 3, 0, 4], [0, 5, 1, 4]], 'minor': [[0, 3, 6, 2], [5, 3, 0, 6]], 'dorian': [[0, 3, 0, 3]]} · chord_bars 1 · chord size 4
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
 - **Drums** **kick** `X..X..X...X.....` / `X..X......X.....`; **snare** `....X.......X...` / `....X.....x.X...`; **chat** `x.x.x.x.x.x.x.x.` / `x.xxx.x.x.xxx.x.`; **shaker** `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** studio · preset `soft`
 - **Bass** `R..R..R...R.R...` / `R-.R..R-..R.....` / `R..R..R.R.R.....` · mode `pattern` · lowest note 28
 - **Chord rhythm** `x-------x-------` / `x---x---x---x---`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 6, 'prob': 0.4}
@@ -8019,7 +8019,7 @@ Christmas wall of sound (60s girl-group Christmas pop): a huge, echoing 4/4 arou
 - **Progressions** {'major': [[0, 5, 3, 4], [0, 3, 4, 0], [0, 5, 1, 4]]} · chord_bars 1 · chord size 4
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
 - **Drums** **kick** `X.....X.X.......` / `X.....X.X...X...`; **snare** `............X...` / `....X.......X...`; **sleigh** `x.x.x.x.x.x.x.x.`; **tamb** `x.x.x.x.x.x.x.x.`; **cast** `..x...x...x..xx.` / `x..x..x...x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** sunroom · preset `soft`
 - **Bass** `R...F...R...F...` / `R.......F.......` / `R...F...R...A...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x.x.x.x.x.x.x.x.` / `xxxxxxxxxxxxxxxx`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 6}
@@ -8323,7 +8323,7 @@ R&B: lazy swung drums, Rhodes 9th chords, deep sub bass, finger snaps and clean 
 - **Progressions** {'minor': [[0, 5, 3, 4], [0, 3, 6, 5], [0, 6, 5, 3]], 'dorian': [[0, 3, 0, 3], [0, 3, 6, 2], [1, 0, 1, 0]], 'major': [[1, 4, 0, 5], [3, 2, 1, 4], [3, 4, 2, 5], [3, 5, 0, 0]]} · chord_bars 1 · chord size 5
 - **Song form** `song_b`: intro 8 [chords, pad] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> pre 4 [bass, chords, pad, snare, top] (build) -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] -> pre 4 [bass, chords, pad, snare, top] (build) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [arp, chords, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad] (fade) · form_scale 0.75
 - **Drums** **kick** `X......X..X.....` / `X.....X...X..x..` / `X..X..X...X.....` / `X......X.XX.....`; **snare** `....X.......X...`; **snap** `....X.......X...`; **chat** `x.xxx.x.x.xxx.x.` / `x.x.x.x.x.x.x.xx`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** vintage · preset `soft`
 - **Bass** `R-----..R---F...` / `R---..R-..F-A...` / `R-....R...R-....` / `R-.R-.R-........` / `R-........R.R.R.` · mode `pattern` · lowest note 28
 - **Chord rhythm** `x---------x-----` / `x-------..x-----` / `x--.....x--.....`
 - **Arp** {'rate': 2, 'mode': 'up', 'oct': 5}
@@ -8552,7 +8552,7 @@ Jazz-hop: crisp swung boom-bap drums under lush 9th-chord piano and Rhodes, a wa
 - **Progressions** {'minor': [[1, 4, 0, 5], [0, 3, 6, 2], [5, 1, 4, 0]], 'dorian': [[0, 3, 0, 3], [1, 4, 0, 0]], 'major': [[1, 4, 0, 5], [3, 2, 1, 4]]} · chord_bars 1 · chord size 4
 - **Song form** `lofi`: intro 4 [chords, fx] (filter_in) -> A 16 [bass, chords, fx, kick, snare, top] -> B 16 [bass, chords, fx, kick, lead, snare, top] -> C 8 [bass, chords, fx, lead] (alt) -> A 16 [bass, chords, fx, kick, lead, snare, top] -> outro 4 [chords, fx] (fade) · form_scale 1
 - **Drums** **kick** `X.....x.X.....x.` / `X......XX.....x.` / `X.....X...X.....`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.` / `x.xxx.x.x.xxx.x.`; **shaker** `..x...x...x...x.`; **rim** `..............o.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** dirty · preset `soft`
 - **Bass** `R.....R.R.....A.` / `R-....R-..R...A.` / `R...F...R...A...` · mode `pattern` · lowest note 28
 - **Chord rhythm** `x---------x-....` / `x-----..x---....` / `..x-----x-------`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -8583,7 +8583,7 @@ Cinematic beat tape: instrumental hip hop around 86-96 BPM built like a film sco
 - **Progressions** {'minor': [[0, 5, 3, 4], [0, 6, 5, 4], [0, 3, 6, 5]], 'dorian': [[0, 3, 0, 6]], 'harmonic_minor': [[0, 5, 4, 4], [0, 3, 4, 0]]} · chord_bars 1 · chord size 4
 - **Song form** `lofi`: intro 4 [chords, fx] (filter_in) -> A 16 [bass, chords, fx, kick, snare, top] -> B 16 [bass, chords, fx, kick, lead, snare, top] -> C 8 [bass, chords, fx, lead] (alt) -> A 16 [bass, chords, fx, kick, lead, snare, top] -> outro 4 [chords, fx] (fade) · form_scale 1
 - **Drums** **kick** `X.X.....X.xx....` / `X.....X.X.......` / `X.X.....X..X....`; **snare** `....X.......X...` / `....X.......X..x`; **chat** `x.x.x.x.x.x.x.x.` / `x.x.x.xxx.x.x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** vintage · preset `soft`
 - **Bass** `R-------R---....` / `R-----..R-.R....` / `R---..R-R-------` · mode `pattern` · lowest note 28
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.55}
@@ -9296,7 +9296,7 @@ Celtic jig (6/8): a session in full flight - fiddle and tin whistle in unison on
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
 - **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
 - **Drums** **bodhran** `X.xX.xX.xX.x` / `X..X.xX..X.x` / `X.xx.xX.xX.x`; **tip** `..x..x..x..x` / `.....x.....x`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** seventies · preset `soft`
 - **Bass** `R.....F.....` / `R..F..R..F..` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x.xx.xx.xx.x` / `x..x..x..x..`
 - **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
@@ -9324,7 +9324,7 @@ Celtic reel (4/4): the fastest dance in the session - fiddle and tin whistle tea
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
 - **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
 - **Drums** **bodhran** `X.xxX.xxX.xxX.xx` / `X..xX.x.X..xX.x.` / `X.xxX.x.X.xxX.xx`; **tip** `..x...x...x...x.` / `......x.......x.`; **bones** `x.xxx.xxx.xxx.xx` / `x.x.x.xxx.x.x.xx` / ``
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** rusty · preset `soft`
 - **Bass** `R.......F.......` / `R...F...R...F...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x.xxx.xxx.xxx.xx` / `x.x.x.x.x.x.x.x.`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -9353,7 +9353,7 @@ Celtic slow air: a lament played freely and slowly - pipes or a low whistle carr
 - **Progressions** {'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]], 'minor': [[0, 5, 6, 0], [0, 3, 5, 6]], 'major': [[0, 3, 0, 4]]} · chord_bars 1 · chord size 3
 - **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
 - **Drums** **bodhran** `X...............` / `X.......X.......` / ``; **tip** `` / `........x.......`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** studio · preset `soft`
 - **Bass** `R---------------` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
@@ -9410,7 +9410,7 @@ Sea shanty: a working song for hauling ropes - a heavy stomp on 1 and 3 and clap
 - **Progressions** {'minor': [[0, 6, 0, 4], [0, 5, 6, 0]], 'dorian': [[0, 6, 0, 6]], 'major': [[0, 4, 0, 4]]} · chord_bars 1 · chord size 3
 - **Song form** `folk_jam`: intro 4 [chords] -> verse 16 [bass, chords, kick, top] -> chorus 8 [bass, chords, kick, lead, snare, top] -> verse 16 [arp, bass, chords, kick, snare, top] -> chorus 8 [bass, chords, kick, lead, pad, snare, top] -> solo 16 [arp, bass, chords, kick, lead, snare, top] (alt) -> verse 16 [arp, bass, chords, kick, pad, snare, top] -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [bass, chords, lead] (fade) · form_scale 1
 - **Drums** **kick** `X.......X.......`; **snare** `....X.......X...`; **tamb** `` / `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** crisp_kit · preset `soft`
 - **Bass** `R...F...R...F...` / `R...A...F...R.A.` / `R.....R.R.....F.` · mode `walk` · lowest note 31
 - **Chord rhythm** `x.x.xxx.x.x.xxx.` / `x--x--x-x--x--x-`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -9492,7 +9492,7 @@ Breton an dro: the hypnotic Breton line dance - a piercing bombarde calling the 
 - **Progressions** {'dorian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'minor': [[0, 6, 5, 6], [0, 5, 6, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
 - **Drums** **bodhran** `X.xxX.xxX.xxX.xx` / `X..xX.x.X..xX.x.` / `X.xxX.x.X.xxX.xx`; **tip** `..x...x...x...x.` / `......x.......x.`; **bones** `x.xxx.xxx.xxx.xx` / `x.x.x.xxx.x.x.xx` / ``
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** studio · preset `soft`
 - **Bass** `R.......F.......` / `R...F...R...F...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x.xxx.xxx.xxx.xx` / `x.x.x.x.x.x.x.x.`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -9520,7 +9520,7 @@ Galician muiñeira (6/8): the dance of Galicia and Asturias - a gaita (the Galic
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
 - **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
 - **Drums** **bodhran** `X.xX.xX.xX.x` / `X..X.xX..X.x` / `X.xx.xX.xX.x`; **tip** `..x..x..x..x` / `.....x.....x`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** crisp_kit · preset `soft`
 - **Bass** `R.....F.....` / `R..F..R..F..` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x.xx.xx.xx.x` / `x..x..x..x..`
 - **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
@@ -9547,7 +9547,7 @@ Clarsach air: the old Gaelic harpers' music - a wire-strung harp ringing out a s
 - **Progressions** {'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]], 'minor': [[0, 5, 6, 0], [0, 3, 5, 6]], 'major': [[0, 3, 0, 4]]} · chord_bars 1 · chord size 3
 - **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
 - **Drums** **bodhran** `X...............` / `X.......X.......` / ``; **tip** `` / `........x.......`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** vintage · preset `soft`
 - **Bass** `R---------------` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5}
@@ -9574,7 +9574,7 @@ Celtic new age: misty, layered and serene - a wordless choir stacked into lush c
 - **Progressions** {'dorian': [[0, 6, 3, 0], [0, 3, 6, 0]], 'minor': [[0, 5, 6, 0], [0, 5, 2, 6]], 'major': [[0, 4, 5, 3]]} · chord_bars 1 · chord size 3
 - **Song form** `new_age_chant`: intro 4 [fx, kick, pad, top] -> A 16 [bass, fx, kick, pad, snare, top] -> B 20 [bass, chords, fx, kick, lead, pad, snare, top] -> climax 16 [arp, bass, chords, fx, kick, lead, pad, snare, top] (crash) -> outro 8 [fx, lead, pad] (fade) · form_scale 1
 - **Drums** **kick** `X.........X.....` / `X.....X...X.....`; **snare** `....X.......X...`; **chat** `x.x.x.x.x.x.x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** crisp_kit · preset `soft`
 - **Bass** `R---------------` / `R-------R-------` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------`
 - **Arp** {'rate': 1, 'mode': 'up', 'oct': 5, 'prob': 0.5}
@@ -9603,7 +9603,7 @@ Celtic hornpipe (4/4): slower and heavier than a reel, with the hornpipe's dotte
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
 - **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
 - **Drums** **bodhran** `X...x.X.X...x.X.` / `X..xX...X..xX...` / `X...X.x.X...X.x.`; **tip** `..x...x...x...x.` / `....x.......x...`; **bones** `` / `x.x.x.x.x.x.x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** vintage · preset `soft`
 - **Bass** `R.......F.......` / `R...F...R...F...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x...x...x...x...` / `x.x.x.x.x.x.x.x.`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -9632,7 +9632,7 @@ Slip jig (9/8): the graceful Irish dance in three groups of three (ONE-two-three
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
 - **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
 - **Drums** **bodhran** `X.xX.xX.xX.xX.xX.x` / `X..X..X..X..X..X..` / `X.xX..X.xX.xX..X.x`; **tip** `..x..x..x..x..x..x` / `.....x.....x.....x`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** dead70s · preset `soft`
 - **Bass** `R........F........` / `R.....F..R.....F..` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x..x..x..x..x..x..` / `x........x........`
 - **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.5}
@@ -9660,7 +9660,7 @@ Scottish strathspey (4/4): slower and prouder than a reel, built on dotted rhyth
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
 - **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
 - **Drums** **bodhran** `X...X...X...X...` / `X..xX...X..xX...`; **tip** `....x.......x...`; **bones** ``
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** brushes · preset `soft`
 - **Bass** `R.......R.......` / `R.......F.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x...x...x...x...` / `x--xx--xx--xx--x`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -9689,7 +9689,7 @@ Celtic polka (2/4 feel): fast, bright and punchy - strong downbeats, an oom-pah 
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
 - **Song form** `jig`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) · form_scale 1
 - **Drums** **bodhran** `X...x...X...x...` / `X.x.x...X.x.x...`; **tip** `..x...x...x...x.`; **bones** `` / `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** dead70s · preset `soft`
 - **Bass** `R.......F.......` / `R...F...R...F...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `..x...x...x...x.` / `x.x...x.x.x...x.`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -9718,7 +9718,7 @@ Celtic session set: two or three tunes played as one unbroken medley, the way a 
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [0, 0, 3, 4], [0, 5, 3, 4]], 'mixolydian': [[0, 6, 0, 6], [0, 3, 6, 0]], 'dorian': [[0, 6, 0, 6], [0, 3, 0, 6]]} · chord_bars 1 · chord size 3
 - **Song form** `session_set`: A 8 [bass, chords, kick, lead, snare, top] -> A 8 [bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad) -> A 8 [arp, bass, chords, kick, lead, snare, top] (alt, tune=2, tempo=1.05) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad, alt, tune=2, tempo=1.05) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt=False, tune=2, tempo=1.05) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt=False, cad, tune=2, tempo=1.05) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, tune=2, tempo=1.05) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad, alt, tune=2, tempo=1.05) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt=False, tune=2, tempo=1.05) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt=False, cad, tune=2, tempo=1.05) -> A 8 [arp, bass, chords, kick, lead, snare, top] (tune=3, tempo=1.09) -> A 8 [arp, bass, chords, kick, lead, pad, snare, top] (cad, tune=3, tempo=1.09) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, tune=3, tempo=1.09) -> B 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt, cad, tune=3, tempo=1.09) · form_scale 1
 - **Drums** **bodhran** `X.xxX.xxX.xxX.xx` / `X..xX.x.X..xX.x.` / `X.xxX.x.X.xxX.xx`; **tip** `..x...x...x...x.` / `......x.......x.`; **bones** `x.xxx.xxx.xxx.xx` / `x.x.x.xxx.x.x.xx` / ``
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** brushes · preset `soft`
 - **Bass** `R.......F.......` / `R...F...R...F...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x.xxx.xxx.xxx.xx` / `x.x.x.x.x.x.x.x.`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -10117,7 +10117,7 @@ Cumbia: guira scrape and congas, kick on one and three, offbeat guitar, accordio
 - **Progressions** {'minor': [[0, 4, 4, 0], [0, 3, 4, 0], [0, 6, 5, 4]], 'major': [[0, 4, 4, 0], [0, 3, 4, 0], [0, 4, 0, 4]]} · chord_bars 1 · chord size 3
 - **Song form** `cumbia`: intro 4 [bass, chords, kick, top] -> A 16 [bass, chords, kick, lead, snare, top] -> B 16 [arp, bass, chords, kick, lead, snare, top] (crash) -> A 16 [bass, chords, kick, lead, snare, top] -> solo 16 [bass, chords, kick, lead, snare, top] (alt) -> B 16 [arp, bass, chords, kick, lead, snare, top] (crash) -> outro 8 [bass, chords, kick, lead, snare, top] (fade) · form_scale 1
 - **Drums** **kick** `X.......X.......`; **shaker** `x.xxx.xxx.xxx.xx`; **conga** `..o...ox..o...ox` / `......ox......o.`; **rim** `....x.......x...`; **cowbell808** `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** seventies · preset `soft`
 - **Bass** `R...F...R...F...` / `R..RF...R..RF...` / `R...F..RR...F...` · mode `pattern` · lowest note 28
 - **Chord rhythm** `..x...x...x...x.` / `..xx..xx..xx..xx`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.4}
@@ -10170,7 +10170,7 @@ Soca / calypso (Trinidad carnival): fast four-on-the-floor with the soca snare a
 - **Progressions** {'major': [[0, 4, 0, 4], [0, 3, 4, 0], [0, 5, 3, 4], [3, 4, 0, 0]], 'mixolydian': [[0, 6, 3, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `soca`: intro 4 [bass, chords, kick, snare, top] -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] -> chorus 16 [arp, bass, chords, kick, lead, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 4 [bass, kick, snare, top] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **snare** `...x..x....x..x.` / `...x..x...xx..x.`; **cowbell808** `..x...x...x...x.` / `x.x.x.x.x.x.x.x.`; **chat** `x.xxx.xxx.xxx.xx`; **conga** `..o.x..o..o.x..o`; **tamb** `....x.......x...`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** 808 · preset `punchy`
 - **Bass** `R..R..R...R.R...` / `R..R..R.R..R..R.` / `...R..R....R..R.` · mode `pattern` · lowest note 31
 - **Chord rhythm** `..x...x...x...x.` / `.x.x.x.x.x.x.x.x`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.8}
@@ -10202,7 +10202,7 @@ Flamenco rumba: a nylon guitar driving fast rasgueado strums on the Andalusian c
 - **Progressions** {'phrygian': [[3, 2, 1, 0], [0, 1, 0, 1]], 'phrygian_dominant': [[5, 1, 0, 0], [0, 1, 0, 1], [3, 5, 1, 0]], 'minor': [[0, 6, 5, 4]]} · chord_bars 1 · chord size 3
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
 - **Drums** **cajon** `X.....x.X.......` / `X..x..x.X.......`; **cajon_slap** `....X.......X...` / `....X..x....X.x.`; **palmas** `..x...x...x...x.` / `..x.x.x...x.x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** vintage · preset `soft`
 - **Bass** `R...F...R...F...` / `R..R..F.R...F...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x.xxx.xxx.xxx.xx` / `x.x.xx.xx.x.xx.x` / `x.xxx.x.x.xxx.x.`
 - **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -10229,7 +10229,7 @@ Son cubano: the tres guitar repeating its montuno, the son clave and maracas, th
 - **Progressions** {'major': [[0, 3, 4, 0], [0, 4, 0, 4], [1, 4, 0, 0]], 'minor': [[0, 3, 4, 0], [0, 5, 3, 4]]} · chord_bars 1 · chord size 3
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
 - **Drums** **bongo_lo** `x.....x.x.....x.` / `x...x...x.....x.`; **bongo** `..x.x.xx..x.x.xx` / `x.x.x.xxx.x.x.xx`; **clave** `x..x..x...x.x...`; **maracas** `x.x.x.x.x.x.x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** studio · preset `soft`
 - **Bass** `......R.....R...` / `...R..R.....R...` / `......F.....R...` · mode `pattern` · lowest note 28
 - **Chord rhythm** `x.....x...x.....` / `..x...x..x..x...`
 - **Arp** {'rate': 1, 'mode': 'montuno', 'oct': 4, 'rh': ['x.xx.x.xx.x.x.x.', '.x.x.xx..x.x.xx.']}
@@ -10257,7 +10257,7 @@ Groovy soca (Trinidad carnival, slower lane): a rolling four-on-the-floor around
 - **Progressions** {'major': [[0, 4, 5, 3], [0, 3, 4, 0], [3, 4, 0, 0]], 'mixolydian': [[0, 6, 3, 0]], 'minor': [[0, 5, 6, 0]]} · chord_bars 1 · chord size 4
 - **Song form** `soca`: intro 4 [bass, chords, kick, snare, top] -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] -> chorus 16 [arp, bass, chords, kick, lead, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 4 [bass, kick, snare, top] (fade) · form_scale 1
 - **Drums** **kick** `X...X...X...X...`; **snare** `...x..x....x..x.` / `....x.......x...`; **cowbell808** `..x...x...x...x.`; **chat** `x.xxx.xxx.xxx.xx`; **conga** `..o.x..o..o.x..o`; **shaker** `.x.x.x.x.x.x.x.x`
-- **Drum kit** (synth preset) · preset `punchy`
+- **Drum kit** 707 · preset `punchy`
 - **Bass** `R..R..R...R.R...` / `R...R..R..R..R..` / `R..R...RR..R....` · mode `pattern` · lowest note 31
 - **Chord rhythm** `..x...x...x...x.` / `x..x..x...x..x..`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -10338,7 +10338,7 @@ Bachata (Dominican): a romantic, swaying 4/4 - bongos playing the martillo, a sc
 - **Progressions** {'minor': [[0, 3, 4, 0], [0, 5, 3, 4], [0, 3, 6, 4]], 'major': [[0, 3, 4, 0], [0, 5, 3, 4]]} · chord_bars 1 · chord size 3
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
 - **Drums** **bongo** `x.xxx.xxx.xxx.xx` / `x.xxx.xxx.xx.xxx`; **guira** `x.xxx.xxx.xxx.xx`; **tumba** `......x.......x.` / `......x.....x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** crisp_kit · preset `soft`
 - **Bass** `R.....R.R.....F.` / `R...R.R.R...F.R.` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x.x.x.x.x.x.x.x.` / `x-x-x-x-x-x-x-x-`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
@@ -10364,7 +10364,7 @@ Merengue (Dominican): fast and driving - the tambora drum slapping its pattern, 
 - **Progressions** {'major': [[0, 4, 4, 0], [0, 3, 4, 0], [0, 0, 4, 4]], 'minor': [[0, 4, 4, 0], [0, 3, 4, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
 - **Drums** **tambora** `X..x.xX.x..x.xX.` / `X..x.xX...x..xX.`; **guira** `X.xxX.xxX.xxX.xx`; **conga** `..o.x..o..o.x..o`; **tambora_hi** `....x.......x...`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** 707 · preset `soft`
 - **Bass** `R...R...R.R.R...` / `R...F...R.R.F...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x.x.x.x.x.x.x.x.` / `..x...x...x...x.`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
@@ -10391,7 +10391,7 @@ Samba (Brazil): a bright 2-feel carnival groove - the surdo booming on the secon
 - **Progressions** {'major': [[0, 5, 1, 4], [0, 3, 4, 0], [1, 4, 0, 5]], 'minor': [[0, 3, 4, 0], [0, 5, 1, 4]]} · chord_bars 1 · chord size 4
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
 - **Drums** **surdo** `X.......X.......` / `x.......X.....x.`; **caixa** `oxoxoxoxoxoxoxox` / `xoxxxoxxxoxxxoxx`; **pandeiro** `xoxxxoxxxoxxxoxx`; **tamborim** `x.xx.x.xx.x.x.xx` / `x.x.xx.x.xx.x.x.`; **agogo** `x.x..x.x..x.x...`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** crisp_kit · preset `soft`
 - **Bass** `R..A..R.F..A..R.` / `R...F...R.A.F...` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x.xx.x.xx.x.x.xx` / `x..x..x...x..x..`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
@@ -10421,7 +10421,7 @@ Raga (Hindustani-inspired): a tanpura drone the whole way, the sitar alone in a 
 - **Progressions** {'phrygian_dominant': [[0, 0, 0, 0], [0, 1, 0, 0]], 'mixolydian': [[0, 0, 0, 0], [0, 0, 6, 0]], 'harmonic_minor': [[0, 0, 0, 0], [0, 0, 4, 0]], 'dorian': [[0, 0, 0, 0], [0, 0, 3, 0]]} · chord_bars 4 · chord size 3
 - **Song form** `raga`: alap 8 [lead, pad] (filter_in) -> jor 8 [bass, lead, pad] -> gat 16 [bass, kick, lead, pad, snare, top] -> gat 16 [arp, bass, kick, lead, pad, snare, top] (alt) -> jhala 8 [arp, bass, kick, lead, pad, snare, top] (drop, cad) · form_scale 1
 - **Drums** **tabla** `X.x.x.X.X.x.x.X.` / `X.xxx.X.X.x.x.Xx` / `X.x.x.x.X.x.xxX.`; **bayan** `X.....X.X.....X.` / `X.....X.......X.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** soft · preset `soft`
 - **Bass** `R-------........` · mode `pattern` · lowest note 36
 - **Chord rhythm** `x---------------`
 - **Arp** {'rate': 1, 'mode': 'random', 'oct': 5, 'prob': 0.6}
@@ -10475,7 +10475,7 @@ Gamelan (Java / Bali): an ensemble of bronze metallophones and gongs - the saron
 - **Progressions** [[0, 0, 0, 0], [0, 4, 0, 3]] · chord_bars 2 · chord size 3
 - **Song form** `gamelan`: buka 4 [lead] -> gending 16 [bass, kick, lead, snare, top] -> gending 16 [arp, bass, kick, lead, snare, top] -> ngelik 16 [arp, bass, kick, lead, snare, top] (alt) -> gending 16 [arp, bass, kick, lead, snare, top] -> suwuk 8 [bass, kick, lead, top] (cad) · form_scale 1
 - **Drums** **gong** `X...............`; **kempul** `........X.......`; **kendang** `x..x.x..x..x.xx.` / `x..x..x.x.x..x..`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** soft · preset `soft`
 - **Bass** `R-------........` · mode `pattern` · lowest note 40
 - **Chord rhythm** `x---------------`
 - **Arp** {'rate': 1, 'mode': 'updown', 'oct': 6, 'prob': 0.9}
@@ -10501,7 +10501,7 @@ Rai (Algeria / North Africa): the darbuka in a rolling maqsum rhythm with tambou
 - **Progressions** {'phrygian_dominant': [[0, 1, 0, 0], [0, 6, 1, 0], [3, 1, 0, 0]], 'bhairav': [[0, 1, 0, 0], [0, 3, 1, 0]], 'minor': [[0, 6, 5, 4], [0, 3, 6, 4]]} · chord_bars 1 · chord size 3
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
 - **Drums** **darbuka** `X.......X.......` / `X.......X..X....`; **darbuka_tek** `..X...X.....X...` / `..X.x.X.x.x.X.x.`; **tamb** `x.x.x.x.x.x.x.x.`; **claps** `....x.......x...`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** crisp_kit · preset `soft`
 - **Bass** `R..R..R.R...R...` / `R.....R.R..R..R.` · mode `pattern` · lowest note 31
 - **Chord rhythm** `..x...x...x...x.` / `..xx..xx..xx..xx`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.5}
@@ -10529,7 +10529,7 @@ Japanese zen / traditional-inspired: koto plucks and pressed bends, a breathy sh
 - **Progressions** {'phrygian': [[0, 1, 0, 0], [0, 0, 5, 1], [0, 6, 1, 0]], 'minor': [[0, 5, 0, 3], [0, 0, 5, 0]]} · chord_bars 2 · chord size 3
 - **Song form** `arch`: intro 4 [arp, pad] (filter_in, arp={'rate': 0.5, 'mode': 'updown'}) -> A 8 [bass, chords, lead, pad] -> B 8 [arp, bass, lead, pad] (alt, arp={'rate': 0.5, 'mode': 'updown', 'oct': 5}) -> A 8 [arp, bass, chords, lead, pad] -> outro 4 [arp, pad] (fade, arp={'rate': 1, 'mode': 'updown'}) · form_scale 1
 - **Drums** **taiko** `X...............` / `x...............`; **woodblock** `....x.......x...` / `......x.......x.`
-- **Drum kit** (synth preset) · preset `default`
+- **Drum kit** crisp_kit · preset `default`
 - **Bass** `R---------------` · mode `pattern` · lowest note 36
 - **Chord rhythm** `x---------------` / `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.7}
@@ -10556,7 +10556,7 @@ Bhangra (Punjabi): the dhol drum driving its swung, galloping chaal rhythm, a br
 - **Progressions** {'mixolydian': [[0, 0, 6, 6], [0, 6, 0, 6]], 'major': [[0, 0, 4, 4], [0, 3, 4, 0]], 'phrygian_dominant': [[0, 1, 0, 1]]} · chord_bars 1 · chord size 3
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
 - **Drums** **dhol** `X..x.xX..x.xX.x.` / `X..x..X.xX..x.x.`; **dhol_hi** `..x...x...x...x.` / `..x.x.x...x.x.x.`; **chimta** `x.x.x.x.x.x.x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** soft · preset `soft`
 - **Bass** `R..R..R.R..R..R.` / `R...R...R...R.O.` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x-------x-------` / `x---x---x---x---`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5}
@@ -10674,7 +10674,7 @@ Qawwali (Sufi devotional): the lead singer's line answered by the chorus of the 
 - **Progressions** {'harmonic_minor': [[0, 0, 4, 0], [0, 3, 4, 0]], 'bhairav': [[0, 0, 4, 0], [0, 1, 0, 0]], 'mixolydian': [[0, 6, 0, 0], [0, 3, 6, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `qawwali`: alap 4 [lead, pad] (filter_in) -> chant 8 [chords, kick, lead, pad, snare, top] (level=0.85) -> chant 8 [chords, kick, lead, pad, snare, top] -> chant 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> chant 8 [chords, kick, lead, pad, snare, top] -> ecstatic 8 [arp, chords, kick, lead, pad, snare, top] (drop) -> ecstatic 8 [arp, chords, kick, lead, pad, snare, top] (drop) -> close 4 [chords, lead, pad] (cad) · form_scale 1
 - **Drums** **bayan** `X.....X.X.....X.` / `X..X..X.X.....X.`; **tabla** `X.x.x.X.X.x.x.X.` / `X.xxx.X.X.x.x.Xx`; **dholak** `X.x.........x...` / `X.x.......x.X...`; **claps** `....x.......x...` / `....x..x....x...`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** crisp_kit · preset `soft`
 - **Bass** `R.......R.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x...x...x...x...` / `x.x.x.x.x.x.x.x.`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -10703,7 +10703,7 @@ Bollywood / filmi (60s-70s): a swinging dholak-and-bongo groove, a big string se
 - **Progressions** {'minor': [[0, 5, 3, 4], [0, 3, 6, 4]], 'harmonic_minor': [[0, 3, 4, 0], [0, 5, 4, 0]], 'major': [[0, 5, 3, 4], [0, 3, 4, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `filmi`: intro 4 [arp, lead, pad, top] -> verse 8 [bass, chords, kick, lead, snare, top] -> chorus 8 [bass, chords, kick, lead, pad, snare, top] (crash) -> interlude 8 [arp, bass, kick, pad, snare, top] (alt) -> verse 8 [bass, chords, kick, lead, snare, top] -> chorus 8 [bass, chords, kick, lead, pad, snare, top] -> chorus 8 [arp, bass, chords, kick, lead, pad, snare, top] -> outro 4 [lead, pad, top] (cad) · form_scale 1
 - **Drums** **dholak** `X.x.........x...` / `X.x.......x.X...`; **dholak_ta** `....x.x.x.x...x.` / `..x.x.x.x.x.x.x.`; **bongo** `..x..x.x..x..x.x` / `..x.xx.x..x.xx.x`; **tamb** `x.x.x.x.x.x.x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** punchy · preset `soft`
 - **Bass** `R...F...R...F...` / `R.R.F...R...F.A.` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x.x...x.x.x...x.` / `x---x---x---x---`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.75}
@@ -10732,7 +10732,7 @@ Ghazal: slow, romantic and poetic - each couplet sung tenderly over a gentle tab
 - **Progressions** {'minor': [[0, 3, 6, 4], [0, 5, 3, 4]], 'harmonic_minor': [[0, 3, 4, 0], [0, 5, 4, 0]], 'dorian': [[0, 3, 0, 6]]} · chord_bars 2 · chord size 3
 - **Song form** `ghazal`: intro 4 [lead, pad] (filter_in) -> sher 8 [chords, kick, lead, pad, snare] -> refrain 8 [arp, chords, kick, lead, pad, snare] -> sher 8 [chords, kick, lead, pad, snare] (alt) -> refrain 8 [arp, chords, kick, lead, pad, snare] -> sher 8 [chords, kick, lead, pad, snare] (alt) -> refrain 8 [arp, chords, kick, lead, pad, snare] -> outro 4 [chords, lead, pad] (cad) · form_scale 1
 - **Drums** **bayan** `X.....X.X.......` / `X.......X.....X.`; **tabla** `X.x...x.X.x...x.` / `X.x.x.x.X.x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** 808 · preset `soft`
 - **Bass** `R.......R.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.4}
@@ -10760,7 +10760,7 @@ Takht (Arabic classical ensemble): opens with a taqsim - the oud improvising alo
 - **Progressions** {'bayati': [[0, 0, 0, 0], [0, 0, 3, 0]], 'rast': [[0, 0, 0, 0], [0, 0, 4, 0]], 'hijaz': [[0, 0, 0, 0], [0, 0, 6, 0]], 'saba': [[0, 0, 0, 0], [0, 0, 2, 0]], 'nahawand': [[0, 0, 0, 0], [0, 0, 4, 0]]} · chord_bars 4 · chord size 3
 - **Song form** `takht_maqam`: taqsim 8 [lead, pad] (filter_in) -> dulab 4 [kick, pad, snare, top] -> song 8 [arp, kick, lead, pad, snare, top] -> song 8 [arp, kick, lead, pad, snare, top] -> taqsim 4 [arp, pad] (level=0.7) -> song 8 [arp, kick, lead, pad, snare, top] (alt) -> song 8 [arp, kick, lead, pad, snare, top] -> qafla 4 [arp, kick, lead, pad, snare, top] (cad) · form_scale 1
 - **Drums** **darbuka** `X.......X.......` / `X.......X..X....`; **darbuka_tek** `..X...X.....X...` / `..X.x.X.x...X.x.`; **riq** `x.x.x.x.x.x.x.x.` / `X.x.x.xxX.x.x.xx`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** vintage · preset `soft`
 - **Bass** `R.......R.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.55}
@@ -10787,7 +10787,7 @@ Raqs sharqi (belly dance): a fast, driving darbuka in baladi, maqsum or saidi wi
 - **Progressions** {'hijaz': [[0, 0, 6, 0], [0, 1, 0, 0], [0, 6, 1, 0]], 'nahawand': [[0, 0, 4, 0], [0, 5, 4, 0], [0, 3, 4, 0]], 'kurd': [[0, 1, 0, 0], [0, 6, 1, 0]], 'bayati': [[0, 0, 3, 0], [0, 6, 0, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `raqs_sharqi`: intro 4 [lead, pad] (filter_in) -> entrance 8 [arp, bass, kick, lead, pad, snare, top] -> dance 8 [arp, bass, chords, kick, lead, pad, snare, top] -> dance 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> tabla_solo 8 [kick, snare, top] (drop) -> dance 8 [arp, bass, chords, kick, lead, pad, snare, top] (drop) -> dance 8 [arp, bass, chords, kick, lead, pad, snare, top] (alt) -> finale 4 [arp, bass, kick, lead, snare, top] (cad) · form_scale 1
 - **Drums** **darbuka** `X.X.....X.......` / `X.X.....X...X...` / `X.....X.X.......`; **darbuka_tek** `......X.....X...` / `....x.X.x...X.x.`; **riq** `x.x.x.x.x.x.x.x.` / `X.xxx.x.X.xxx.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** seventies · preset `soft`
 - **Bass** `R.R.....R.......` / `R.....R.R.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `..x...x...x...x.` / `x...x...x...x...`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -10817,7 +10817,7 @@ Arabic pop: a modern Egyptian / Lebanese pop song - the maqsum on darbuka over a
 - **Progressions** {'nahawand': [[0, 5, 3, 4], [0, 3, 4, 0], [0, 6, 5, 4]], 'hijaz': [[0, 1, 0, 0], [0, 6, 1, 0], [3, 1, 0, 0]], 'kurd': [[0, 1, 0, 0], [0, 6, 5, 1]]} · chord_bars 1 · chord size 3
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
 - **Drums** **darbuka** `X.......X.......` / `X.......X..X....`; **darbuka_tek** `..X...X.....X...` / `..X.x.X.x...X.x.`; **riq** `x.x.x.x.x.x.x.x.` / `X.x.x.xxX.x.x.xx`; **kick** `X.......X.......` / `X.....X.X.......`; **claps** `....x.......x...`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** studio · preset `soft`
 - **Bass** `R..R....R.R.....` / `R.....R.R..R....` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x-------x-------` / `x---x---x---x---`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.45}
@@ -10847,7 +10847,7 @@ Sufi dhikr (remembrance): opens on the ney alone, breathy and searching, over a 
 - **Progressions** {'hijaz': [[0, 0, 0, 0], [0, 0, 6, 0]], 'bayati': [[0, 0, 0, 0], [0, 0, 3, 0]], 'rast': [[0, 0, 0, 0], [0, 0, 4, 0]], 'saba': [[0, 0, 0, 0], [0, 0, 2, 0]]} · chord_bars 4 · chord size 3
 - **Song form** `sufi_dhikr`: ney 8 [lead, pad] (filter_in) -> dhikr 8 [kick, lead, pad] (level=0.8) -> dhikr 8 [kick, lead, pad, snare, top] -> dhikr 8 [arp, kick, lead, pad, snare, top] -> dhikr 8 [arp, kick, lead, pad, snare, top] (alt) -> hadra 8 [arp, kick, lead, pad, snare, top] (drop) -> hadra 8 [arp, kick, lead, pad, snare, top] (drop) -> ney 4 [lead, pad] (cad) · form_scale 1
 - **Drums** **bendir** `X.......X.......` / `X.....X.X.......`; **bendir_tek** `....X.......X...` / `....X..x....X.x.`; **riq** `....x.......x...` / `..x.x...x.x.x...`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** rusty · preset `soft`
 - **Bass** `R.......R.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.4}
@@ -10934,7 +10934,7 @@ Chicha (Peruvian psychedelic cumbia): the cumbia beat on timbales, guiro and con
 - **Progressions** {'minor': [[0, 4, 4, 0], [0, 3, 4, 0], [0, 6, 5, 4]], 'harmonic_minor': [[0, 4, 4, 0], [0, 3, 4, 0]], 'dorian': [[0, 3, 0, 3]]} · chord_bars 1 · chord size 3
 - **Song form** `cumbia`: intro 4 [bass, chords, kick, top] -> A 16 [bass, chords, kick, lead, snare, top] -> B 16 [arp, bass, chords, kick, lead, snare, top] (crash) -> A 16 [bass, chords, kick, lead, snare, top] -> solo 16 [bass, chords, kick, lead, snare, top] (alt) -> B 16 [arp, bass, chords, kick, lead, snare, top] (crash) -> outro 8 [bass, chords, kick, lead, snare, top] (fade) · form_scale 1
 - **Drums** **kick** `X.......X.......`; **guiro** `x.xxx.xxx.xxx.xx`; **conga** `..o...ox..o...ox` / `......ox......o.`; **timbale** `....x.......x...` / `....x..x....x.xx`; **cowbell808** `..x...x...x...x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** studio · preset `soft`
 - **Bass** `R...F...R...F...` / `R..RF...R..RF...` · mode `pattern` · lowest note 28
 - **Chord rhythm** `..x...x...x...x.`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.4}
@@ -10963,7 +10963,7 @@ Desert blues (Tuareg / Sahara): interlocking, hypnotic electric guitar loops on 
 - **Progressions** {'minor': [[0, 0, 0, 0], [0, 0, 6, 0], [0, 3, 0, 6]], 'dorian': [[0, 0, 0, 0], [0, 3, 0, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `song`: intro 4 [chords, top] (filter_in) -> verse 16 [bass, chords, kick, snare, top] -> chorus 16 [bass, chords, kick, lead, pad, snare, top] (crash) -> verse 16 [arp, bass, chords, kick, snare, top] (crash) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> bridge 8 [bass, chords, lead, pad] (alt) -> chorus 16 [arp, bass, chords, kick, lead, pad, snare, top] (crash) -> outro 8 [chords, pad, top] (fade) · form_scale 1
 - **Drums** **kick** `X.....x.X.....x.` / `X..x..x.X.......`; **claps** `....x.......x...` / `....x..x....x...`; **conga** `..o.x..o..o.x..o` / `x.o.x.ox..o.x.o.`; **shaker** `x.x.x.x.x.x.x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** soft · preset `soft`
 - **Bass** `R..R..R.R...R...` / `R.....R.R..R....` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x..x..x.x..x..x.` / `x.x..x.xx.x..x.x`
 - **Arp** {'rate': 2, 'mode': 'random', 'oct': 5, 'prob': 0.7}
@@ -10993,7 +10993,7 @@ Bhajan (Hindu devotional song): a simple, heartfelt melody that winds up and dow
 - **Progressions** {'major': [[0, 0, 3, 4], [0, 3, 0, 4], [0, 0, 0, 4]], 'mixolydian': [[0, 6, 0, 0], [0, 3, 6, 0]], 'bhairav': [[0, 0, 3, 0], [0, 5, 4, 0]], 'phrygian': [[0, 1, 0, 0], [0, 6, 1, 0]]} · chord_bars 2 · chord size 3
 - **Song form** `bhajan`: alap 4 [lead, pad] (filter_in) -> sthayi 8 [chords, kick, lead, pad, snare, top] -> sthayi 8 [chords, kick, lead, pad, snare, top] -> antara 8 [chords, kick, lead, pad, snare, top] (alt) -> sthayi 8 [chords, kick, lead, pad, snare, top] -> antara 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> sthayi 8 [arp, chords, kick, lead, pad, snare, top] -> outro 4 [chords, lead, pad, top] (cad) · form_scale 1
 - **Drums** **dholak** `X.x.........x...` / `X.x.......x.X...` / `X.x..x......x.x.`; **dholak_ta** `....x.x.x.x...x.` / `..x.x.x.x.x.x.x.` / `....x.xxx.x...x.`; **manjira** `x...x...x...x...` / `x...x...x...x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** crisp_kit · preset `soft`
 - **Bass** `R.......R.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x-------x-------` / `x---x---x---x---`
 - **Arp** {'rate': 4, 'mode': 'random', 'oct': 5, 'prob': 0.5}
@@ -11021,7 +11021,7 @@ Kirtan (call-and-response chanting): a leader sings a short line of divine names
 - **Progressions** {'major': [[0, 0, 4, 4], [0, 3, 4, 0], [0, 0, 3, 4]], 'mixolydian': [[0, 0, 6, 0], [0, 6, 3, 0]], 'bhairav': [[0, 0, 4, 0], [0, 3, 4, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `kirtan`: invocation 4 [lead, pad] (filter_in) -> chant 8 [chords, lead, pad, top] (level=0.8) -> chant 8 [chords, kick, lead, pad, snare, top] -> chant 8 [chords, kick, lead, pad, snare, top] -> chant 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> chant 8 [arp, chords, kick, lead, pad, snare, top] -> ecstatic 8 [arp, chords, kick, lead, pad, snare, top] (drop) -> ecstatic 8 [arp, chords, kick, lead, pad, snare, top] (drop) -> close 4 [chords, lead, pad] (cad) · form_scale 1
 - **Drums** **dholak** `X.....x.X.......` / `X.....x.X...x...`; **dholak_ta** `..x.x...x.x.x.x.` / `..x.x.x.x.x.x.x.`; **manjira** `x.x.x.x.x.x.x.x.` / `X.x.X.x.X.x.X.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** crisp_kit · preset `soft`
 - **Bass** `R.......R.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x...x...x...x...` / `x.x.x.x.x.x.x.x.`
 - **Arp** {'rate': 4, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -11049,7 +11049,7 @@ Aarti (temple prayer with lamps): the evening worship song - temple bells ringin
 - **Progressions** {'major': [[0, 0, 4, 0], [0, 3, 4, 0]], 'mixolydian': [[0, 6, 0, 0], [0, 3, 6, 0]]} · chord_bars 2 · chord size 3
 - **Song form** `aarti`: bells 2 [arp, pad] -> verse 8 [arp, chords, kick, lead, pad, snare, top] -> verse 8 [arp, chords, kick, lead, pad, snare, top] -> verse 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> verse 8 [arp, chords, kick, lead, pad, snare, top] -> jai 8 [arp, chords, kick, lead, pad, snare, top] (drop) -> bells 4 [arp, chords, pad, top] (cad) · form_scale 1
 - **Drums** **dholak** `X.x.........x...` / `X.x.......x.X...` / `X.x..x......x.x.`; **dholak_ta** `....x.x.x.x...x.` / `..x.x.x.x.x.x.x.` / `....x.xxx.x...x.`; **manjira** `x...x...x...x...` / `x...x...x...x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** soft · preset `soft`
 - **Bass** `R.......R.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x-------x-------`
 - **Arp** {'rate': 4, 'mode': 'random', 'oct': 6, 'prob': 0.95}
@@ -11077,7 +11077,7 @@ Devotional raga on santoor: a morning or evening raga for prayer and meditation 
 - **Progressions** {'bhairav': [[0, 0, 0, 0], [0, 0, 3, 0]], 'lydian': [[0, 0, 0, 0], [0, 0, 1, 0]], 'dorian': [[0, 0, 0, 0], [0, 0, 3, 0]], 'major': [[0, 0, 0, 0], [0, 0, 4, 0]]} · chord_bars 4 · chord size 3
 - **Song form** `santoor_raga`: alap 8 [lead, pad] (filter_in) -> jor 8 [arp, lead, pad] -> gat 16 [arp, kick, lead, pad, snare] -> gat 16 [arp, kick, lead, pad, snare] (alt) -> jhala 8 [arp, kick, lead, pad, snare] (drop, cad) · form_scale 1
 - **Drums** **tabla** `X.x.x.X.X.x.x.X.` / `X.xxx.X.X.x.x.Xx`; **bayan** `X.....X.X.....X.` / `X.....X.......X.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** brushes · preset `soft`
 - **Bass** `R-------........` · mode `pattern` · lowest note 36
 - **Chord rhythm** `x---------------`
 - **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.85}
@@ -11102,7 +11102,7 @@ Bhajan - sitar & tabla: opens on the sitar alone over the tanpura drone, slowly 
 - **Progressions** {'major': [[0, 0, 3, 4], [0, 3, 0, 4]], 'mixolydian': [[0, 6, 0, 0], [0, 3, 6, 0]], 'bhairav': [[0, 0, 3, 0], [0, 5, 4, 0]], 'phrygian': [[0, 1, 0, 0], [0, 6, 1, 0]]} · chord_bars 2 · chord size 3
 - **Song form** `sitar_bhajan`: alap 8 [lead, pad] (filter_in) -> theka 4 [kick, pad, snare, top] -> sthayi 8 [chords, kick, lead, pad, snare, top] -> sthayi 8 [chords, kick, lead, pad, snare, top] -> antara 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> sthayi 8 [chords, kick, lead, pad, snare, top] -> antara 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> sthayi 8 [arp, chords, kick, lead, pad, snare, top] -> outro 4 [lead, pad] (cad) · form_scale 1
 - **Drums** **bayan** `X.....X.X.....X.` / `X.....X.......X.`; **tabla** `X.x.x.X.X.x.x.X.` / `X.xxx.X.X.x.x.Xx` / `X.x.x.x.X.x.xxX.`; **manjira** `x...x...x...x...`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** studio · preset `soft`
 - **Bass** `R.......R.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x-------x-------` / `x---x---x---x---`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.7}
@@ -11129,7 +11129,7 @@ Bhajan groove - tabla, dholak & bongos: the drums start alone - tabla, dholak, b
 - **Progressions** {'major': [[0, 0, 4, 0], [0, 3, 4, 0]], 'mixolydian': [[0, 6, 0, 0], [0, 0, 6, 0]], 'bhairav': [[0, 0, 4, 0], [0, 1, 0, 0]]} · chord_bars 2 · chord size 3
 - **Song form** `tabla_bhajan`: drums 8 [kick, snare, top] -> drums 4 [kick, pad, snare, top] -> sthayi 8 [kick, lead, pad, snare, top] -> sthayi 8 [chords, kick, lead, pad, snare, top] -> antara 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> drums 8 [kick, pad, snare, top] -> sthayi 8 [chords, kick, lead, pad, snare, top] -> antara 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> sthayi 8 [arp, chords, kick, lead, pad, snare, top] -> drums 4 [kick, snare, top] (cad) · form_scale 1
 - **Drums** **bayan** `X.....X.X.....X.` / `X..X..X.X.....X.`; **tabla** `X.xxx.X.X.xxx.Xx` / `X.x.xxX.X.x.xxX.`; **dholak** `X.x.........x...` / `X.x.......x.X...`; **bongo** `..x.x..x..x.x..x` / `..x.xx.x..x.x.xx`; **bongo_lo** `x.....x.x.....x.` / `x.....x...x...x.`; **manjira** `x.x.x.x.x.x.x.x.` / `x...x...x...x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** soft · preset `soft`
 - **Bass** `R.......R.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x-------x-------`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.75}
@@ -11159,7 +11159,7 @@ Kirtan - drums & sitar: the dholak, bongos and kartal start it off alone, then t
 - **Progressions** {'major': [[0, 0, 4, 4], [0, 3, 4, 0]], 'mixolydian': [[0, 0, 6, 0], [0, 6, 3, 0]], 'bhairav': [[0, 0, 4, 0]]} · chord_bars 1 · chord size 3
 - **Song form** `drum_kirtan`: drums 4 [kick, snare, top] -> call 4 [kick, lead, pad, snare, top] -> chant 8 [chords, kick, lead, pad, snare, top] -> chant 8 [chords, kick, lead, pad, snare, top] -> drums 4 [kick, pad, snare, top] -> chant 8 [arp, chords, kick, lead, pad, snare, top] (alt) -> chant 8 [arp, chords, kick, lead, pad, snare, top] -> ecstatic 8 [arp, chords, kick, lead, pad, snare, top] (drop) -> ecstatic 8 [arp, chords, kick, lead, pad, snare, top] (drop) -> drums 4 [kick, snare, top] (cad) · form_scale 1
 - **Drums** **dholak** `X.....x.X.......` / `X.....x.X...x...`; **dholak_ta** `..x.x...x.x.x.x.` / `..x.x.x.x.x.x.x.`; **bongo** `..x..x.x..x..x.x` / `..x.xx.x..x.xx.x`; **bongo_lo** `x.......x.......` / `x.....x.x.......`; **manjira** `x.x.x.x.x.x.x.x.` / `X.x.X.x.X.x.X.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** studio · preset `soft`
 - **Bass** `R.......R.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x...x...x...x...` / `x.x.x.x.x.x.x.x.`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.7}
@@ -11189,7 +11189,7 @@ Sitar & tabla jugalbandi (devotional duet): the sitar opens alone over the drone
 - **Progressions** {'bhairav': [[0, 0, 0, 0]], 'phrygian_dominant': [[0, 0, 0, 0], [0, 1, 0, 0]], 'mixolydian': [[0, 0, 0, 0], [0, 0, 6, 0]], 'lydian': [[0, 0, 0, 0]]} · chord_bars 4 · chord size 3
 - **Song form** `jugalbandi`: alap 8 [lead, pad] (filter_in) -> gat 8 [kick, lead, pad, snare] -> tabla 4 [kick, pad, snare, top] -> sitar 4 [bass, lead, pad] (alt) -> tabla 4 [kick, pad, snare, top] -> sitar 4 [bass, lead, pad] (alt) -> gat 8 [kick, lead, pad, snare, top] -> jhala 8 [arp, kick, lead, pad, snare, top] (drop, cad) · form_scale 1
 - **Drums** **bayan** `X.....X.X.....X.` / `X.....X.......X.`; **tabla** `X.x.x.X.X.x.x.X.` / `X.xxx.X.X.x.x.Xx` / `X.x.x.x.X.x.xxX.`; **tabla_solo** `X.xxXxx.Xxx.XxXx` / `XxxxX.xxXx.xXxxx` / `X.xX.xX.XxxxX.Xx`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** soft · preset `soft`
 - **Bass** `R-------........` · mode `pattern` · lowest note 36
 - **Chord rhythm** `x---------------`
 - **Arp** {'rate': 1, 'mode': 'updown', 'oct': 5, 'prob': 0.8}
@@ -11216,7 +11216,7 @@ Carnatic kriti (South Indian devotional song): a free alapana on the veena over 
 - **Progressions** {'bhairav': [[0, 0, 0, 0]], 'major': [[0, 0, 0, 0], [0, 0, 4, 0]], 'lydian': [[0, 0, 0, 0]]} · chord_bars 4 · chord size 3
 - **Song form** `kriti`: alapana 8 [lead, pad] (filter_in) -> pallavi 8 [kick, lead, pad, snare, top] -> pallavi 8 [arp, kick, lead, pad, snare, top] -> anupallavi 8 [kick, lead, pad, snare, top] (alt) -> pallavi 8 [kick, lead, pad, snare, top] -> charanam 8 [arp, kick, lead, pad, snare, top] (alt) -> charanam 8 [arp, kick, lead, pad, snare, top] (alt) -> pallavi 8 [arp, kick, lead, pad, snare, top] (cad) · form_scale 1
 - **Drums** **mridangam_lo** `X.......X...X...` / `X.....X.X.......`; **mridangam** `x.x.xx.xx.x.xx.x` / `x.xxx.x.x.xx.x.x`; **kanjira** `x...x.x.x...x.x.` / `x.x.x...x.x.x...`; **ghatam** `..x...x...x...xx` / `..x.x.x...x.x.x.`
-- **Drum kit** (synth preset) · preset `soft`
+- **Drum kit** brushes · preset `soft`
 - **Bass** `R.......R.......` · mode `pattern` · lowest note 31
 - **Chord rhythm** `x---------------`
 - **Arp** {'rate': 2, 'mode': 'updown', 'oct': 5, 'prob': 0.6}
@@ -12251,11 +12251,11 @@ Toy soldier march (Christmas, 108-120): a bouncy, strutting march - the tuba and
   - bass (bass): `tuba` -18 dB · rev=0.3 · alternatives ['cello', 'contrabass']
   - bass_vc (bass): `cello` -24 dB · rev=0.3
   - bass_cb (bass): `pizz` -27 dB · rev=0.3
-  - chords (chords): `horn` -16 dB · rev=0.35 · alternatives ['trombone', 'brass']
-  - bones (chords): `trombone` -19 dB · rev=0.35
+  - chords (chords): `horn` -18 dB · rev=0.35 · alternatives ['trombone', 'brass']
+  - bones (chords): `trombone` -21 dB · rev=0.35
   - pad (pad): `strings` -21 dB · rev=0.45 · alternatives ['horn', 'violas']
   - arp (arp): `bassoon` -22 dB · pan=-0.25 · rev=0.3 · alternatives ['clarinet', 'pizz']
-  - lead (lead): `piccolo` -22 dB · pan=0.1 · rev=0.35 · alternatives ['flute', 'trumpet', 'glock']
+  - lead (lead): `piccolo` -17 dB · pan=0.1 · rev=0.35 · alternatives ['flute', 'trumpet', 'glock']
   - glock (lead): `glock` -32 dB · pan=0.2 · rev=0.35
 - **Mix** {'lufs': -16.0, 'air': 0.0, 'low': 0.8, 'gentle': True, 'max_gr': 1.2} · reverb 2.6 · sc_depth 0.0
 - **Other rules** {'sc_release': 0.45, 'delay_beats': 0.75, 'kit_override': {}, 'snare_tracks': ['snare'], 'bass_gate': 0.45, 'chord_center': 58, 'strum': 0.0, 'voicing': 'close', 'lead_oct': 5, 'fill': False, 'ghosts': False, 'trap_hats': False, 'kick_track': 'timp', 'suggest': '', 'no_rotation': True, 'no_layers': True, 'colour_boost': 0.1, 'backbone': {'brass': True, 'section': 'trombone'}, 'repetition': 0.85}
