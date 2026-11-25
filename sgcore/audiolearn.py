@@ -127,7 +127,9 @@ def learn(pcm, sr=SR, name=''):
     snare = np.maximum(norm(_band_onsets(S, f, 1000, 5000)) - 0.5 * hats - 0.3 * kick, 0)   # the crack / clap, not hats
     full = kick + snare + hats
     # tempo: the analysis' guess and its usual confusions (4:3, 3:2 ...) - keep the one whose bars line up best
-    cands = sorted({round(base['bpm'] * m) for m in (1, 0.75, 4 / 3, 2 / 3, 1.5, 0.5, 2) if 60 <= base['bpm'] * m <= 200})
+    # (the analysis' tempo is right far more often than any re-reading of the grid - on real, dense mixes a finer grid
+    # always 'catches' more - so only its octave errors are considered: half or double)
+    cands = sorted({round(base['bpm'] * m) for m in (1, 0.5, 2) if 60 <= base['bpm'] * m <= 200})
     scored = []
     for b in cands:
         step = fps * 60 / b / 4
@@ -146,12 +148,11 @@ def learn(pcm, sr=SR, name=''):
         scored.append((min(caught, 1.0) * (1 + bar / (kb.mean() + sb.mean() + 1e-9) * 0.1) * (0.9 if b < 72 else 1.0),
                        b, ph, sw))
     by = {b: (sc, ph, sw) for sc, b, ph, sw in scored}
-    top = max(sc for sc, *_ in scored)
-    if base['bpm'] in by and by[base['bpm']][0] >= 0.92 * top:    # the analysis' guess unless another reads clearly better
-        bpm = base['bpm']
-    else:
-        bpm = max(scored)[1]
-    for slower in (bpm / 2, bpm * 2 / 3):                          # a double-time reading of the same groove: take the
+    bpm = base['bpm'] if base['bpm'] in by else max(scored)[1]
+    dbl = [b for b in by if abs(b - 2 * bpm) <= 1]
+    if dbl and by[dbl[0]][0] >= 1.25 * by[bpm][0] and bpm < 90:   # read at half tempo: the double grid catches far more
+        bpm = dbl[0]
+    for slower in (bpm / 2,):                                       # a double-time reading of the same groove: take the
         near = [b for b in by if abs(b - slower) <= 1 and b >= 60]  # slower one when it catches nearly as much
         if near and by[near[0]][0] >= 0.95 * by[bpm][0]:
             bpm = near[0]

@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.24.3
+- **Trance tuned against real records.** Eight trance genres were measured against a set of ten trance tracks
+  (2000s club and anthem trance, a progressive set, a 90s dream-trance single) and their mastering targets now
+  follow them: the low end sits in the kick and bass (60-120 Hz) instead of the deep sub, and the mids carry more
+  of the mix. Club, anthem and classic vocal trance match the references to within about 1 dB per band on average
+  (they were 3-4 dB too heavy in the sub and too thin in the mids before).
+- **Learn from audio reads tempo more reliably.** It now trusts the analysed tempo and only checks it for half- or
+  double-time mistakes, instead of trying 3:2 and 4:3 re-readings of the grid. All ten trance references came back
+  at the right tempo (before: several at 1.5× or 3/4 speed).
+
 ## 2.24.2
 - **No more Mac installers.** Releases now build only the Windows installer. GitHub kept failing to find a Mac machine
   to build the Apple Silicon one on, and that held releases up. Studio Lab still runs on a Mac from the zip with your
