@@ -2610,7 +2610,7 @@ def master(x, cfg, log=print):
     # bass-safe pre-limiter takes at most another 1.5 dB) - a bass-heavy song ends up a little quieter, not clipped
     lo = signal.sosfiltfilt(signal.butter(2, 120 / (SR / 2), output='sos'), x.mean(axis=0))
     lp999 = float(np.percentile(np.abs(lo), 99.9)) + 1e-9
-    g_cap = min(g_cap, 1.5 + 20 * np.log10(0.8 * 10 ** (-1.0 / 20) / lp999))
+    g_cap = min(g_cap, float(cfg.get('low_gr', 1.5)) + 20 * np.log10(0.8 * 10 ** (-1.0 / 20) / lp999))
     clip_amt = float(cfg.get('clip', 0.0 if gentle else 0.5))   # (2.10.2) half the clipping (was 1.0)
 
     def chain(v, g):                                       # gain > clipper > bass-safe limiter > limiter
@@ -2805,7 +2805,7 @@ def fx_impact2(root_hz, seed=7):
     return fade_out(y, 0.3).astype(np.float32) * 0.8
 
 
-SHOUT_WORDS = {'oi': ('o', 'i'), 'hey': ('e', 'i'), 'yeah': ('i', 'a'), 'whoa': ('u', 'o'), 'go': ('o', 'u')}
+SHOUT_WORDS = {'oi': ('o', 'i'), 'hey': ('e', 'i'), 'yeah': ('i', 'a'), 'whoa': ('u', 'o'), 'go': ('o', 'u'), 'ho': ('o', 'o')}
 
 
 def fx_shout(word='oi', seed=11, low=True, spb=0.47):

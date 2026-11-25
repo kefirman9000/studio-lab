@@ -1000,8 +1000,13 @@ KITS['surf60s'] = dict(kick=dict(pitch=60, punch=55, sweep=26, decay=12, drive=1
 # 1.96 sun room: a warm, soft live-room kit for sunlit electronica - a round kick with body and only a little click,
 # a warm, fairly dry snare (shell and body over sizzle, its noise kept under ~6 kHz), dark soft hats
 KITS['sunroom'] = dict(kick=dict(pitch=56, punch=75, sweep=32, decay=10, drive=1.4, len=0.42, click=0.2),
-                       snare=dict(tone=192, snap=0.85, body=1.05, decay=13, tdecay=24, nlo=900, nhi=6000, crack=0.2),
-                       chat=dict(decay=70, hp=5500), ohat=dict(decay=7, hp=5000))
+                       snare=dict(tone=195, snap=1.0, body=1.0, decay=13, tdecay=24, nlo=1100, nhi=6500, crack=0.4),
+                       chat=dict(decay=70, hp=5500), ohat=dict(decay=7, hp=5000))   # (2.23: a clearer crack - measured buried)
+# 2.23 dive kit: the programmed, sample-based drums of dreamy downtempo electronica - a short round kick with almost no
+# click, a soft, tape-dulled snare (body over sizzle, short room), very dark, soft hats; everything a little rounded
+KITS['divekit'] = dict(kick=dict(pitch=54, punch=60, sweep=28, decay=11, drive=1.25, len=0.34, click=0.08),
+                       snare=dict(tone=185, snap=0.7, body=1.15, decay=15, tdecay=28, nlo=800, nhi=5000, crack=0.25),
+                       chat=dict(decay=85, hp=4800), ohat=dict(decay=8, hp=4500))
 KITS['909']['kick'].update(hold=0.04, drive=1.9)
 KITS['techno']['kick'].update(hold=0.05, drive=2.6)
 KITS['trance']['kick'].update(hold=0.03)
@@ -8073,3 +8078,74 @@ from . import deepwob as _deepwob  # noqa: E402
 _deepwob.register()
 from . import stemsynths as _stemsynths  # noqa: E402  (2.20) synths modelled on measured stems
 _stemsynths.register()
+
+
+
+# =============================================================================
+#  2.23: more sounds for the sunlit-electronica genres (from the second look at the reference records)
+# =============================================================================
+def v_roundarp(m, dur, p, glide=None, mod=None):
+    """Round arp: the soft analog arpeggio of dreamy electronica - a triangle and a quiet saw through a gentle low-pass
+    with a short, soft filter blip, a 6 ms attack (no click), a medium decay and a little release; rounded and warm,
+    never the glassy EDM pluck."""
+    f = float(mtof(m))
+    gate = int(max(min(dur, 0.6), 0.05) * SR)
+    env = _va.adsr(gate, 0.006, p.get('d', 0.32), 0.25, p.get('r', 0.22))
+    n = len(env)
+    t = np.arange(n) / SR
+    ph = np.cumsum(np.full(n, f * (1 + 0.0006 * np.sin(2 * np.pi * 0.37 * t)))) / SR
+    tri = 2 * np.abs(2 * (ph % 1.0) - 1) - 1
+    x = tri + 0.35 * _va.saw(f * 1.002, n, 0.3)
+    cut = p.get('cut', 1300) * (1 + 1.2 * np.exp(-t / 0.05)) + 2 * f
+    y = _va.vcf(x * 0.4, cut, res=0.1, drive=1.2)
+    return _st(y * env, 20) * 0.55
+
+
+def v_neckguitar(m, dur, p, glide=None, mod=None):
+    """Neck-pickup guitar: a clean electric played on the warm neck pickup - round attack, fewer highs, gently
+    compressed so the notes sustain evenly, with a slow stereo chorus built in; the arpeggio guitar of sunlit
+    electronica (the dotted-8th delay and the room come from the track)."""
+    y, pm = _eg_string(m, dur, dict(p, pickup=0.24, tone=1.0), mod)
+    y = np.tanh(y * 1.8) / 1.5                                            # the compressor's evenness
+    y = eq(eq(y, 'peak', 220, 0.8, 2.0), 'peak', 2600, 1.0, -2.0)
+    y = lp(y, 5200)
+    n = len(y)
+    t = np.arange(n) / SR
+    d = (0.008 + 0.0025 * np.sin(2 * np.pi * 0.6 * t)) * SR                 # a slow chorus voice, one per side
+    idx = np.clip(np.arange(n) - d, 0, n - 1)
+    ch = np.interp(idx, np.arange(n), y)
+    late = np.concatenate([np.zeros(90), ch[:-90]])
+    a = int(0.002 * SR)
+    y[:a] *= np.linspace(0, 1, a)                                         # (no click on the first sample)
+    ch[:a] *= np.linspace(0, 1, a)
+    return np.vstack([y * 0.8 + ch * 0.35, y * 0.8 - ch * 0.2 + 0.25 * late]) * 0.62
+
+
+def v_revswell(m, dur, p, glide=None, mod=None):
+    """Reverse swell: a warm pad chord tone played backwards - it rises out of nothing over the whole note and stops
+    dead on the next downbeat; the 'sucked-in' transitions into a new section of dreamy electronica."""
+    f = float(mtof(m))
+    n = int(max(dur, 0.25) * SR)
+    t = np.arange(n) / SR
+    out = np.zeros((2, n))
+    for side, c in ((0, -6), (1, 6)):
+        ph = np.cumsum(np.full(n, f * 2 ** (c / 1200))) / SR
+        out[side] = sum(a * np.sin(2 * np.pi * k * ph) for k, a in ((1, 1.0), (2, 0.45), (3, 0.25), (4, 0.12)))
+    rise = (t / t[-1]) ** 2.2 if n > 1 else np.ones(n)
+    out *= rise
+    out[:, -int(0.008 * SR):] *= np.linspace(1, 0, int(0.008 * SR))
+    return lp(out, 3500) * 0.3
+
+
+NEW_223 = (
+    ('roundarp', v_roundarp, 'Round arp (soft analog arpeggio, no click)', ('arp', 'lead'), 81),
+    ('neckguitar', v_neckguitar, 'Neck-pickup guitar (warm, compressed, chorused)', ('arp', 'chords', 'lead'), 27),
+    ('revswell', v_revswell, 'Reverse swell (pad tone played backwards)', ('pad', 'chords'), 89),
+)
+for _name, _fn, _info, _roles, _gm in NEW_223:
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)

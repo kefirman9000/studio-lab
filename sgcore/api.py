@@ -54,6 +54,7 @@ def describe(song):
                 duration=f"{int(dur // 60)}:{int(dur % 60):02d}", seconds=round(dur, 1), seed=song['seed'],
                 form=' > '.join(f"{s['name']}({s['bars']})" for s in song['sections']),
                 chords=k.roman(song['prog_main']), chords_alt=k.roman(song['prog_alt']),
+                colour=_colour(song),
                 instruments=_instruments(song), inst_ids=_inst_ids(song), main_ids=_main_ids(song), tracks=_tracks(song),
                 meter=song.get('meter', '4/4'),
                 bpm_quarter=round(song['bpm'] * 1.5) if song.get('meter') == '3/4' else song['bpm'],
@@ -66,6 +67,25 @@ def describe(song):
                 mood=song['opts'].mood,
                 tempo_range=[round(min(v for _, v in song['tempo_map'])), round(max(v for _, v in song['tempo_map']))]
                 if song.get('tempo_map') else None)
+
+
+def _colour(song):
+    """(1.97) A line on the song's harmony colours and bass phrasing, e.g. 'borrowed iv, bVI · bass inversions'."""
+    st, k = song['st'], song['key']
+    hm = st.get('harmony_moves') or []
+    out = []
+    names = ({3: 'iv', 5: 'bVI', 2: 'bIII', 6: 'bVII'} if k.scale_name == 'major' else {3: 'IV', 4: 'V'})
+    bor = sorted({names.get(x[3], '?') for x in hm if x[0] == 'borrowed'})
+    if bor:
+        out.append('borrowed ' + ', '.join(bor))
+    if any(x[0] == 'inversion' for x in hm):
+        out.append('bass inversions')
+    ped = sorted({x[1] for x in hm if x[0] == 'pedal'})
+    if ped:
+        out.append('pedal note in ' + ' & '.join(ped))
+    if st.get('bass_phrases'):
+        out.append('bass call & answer' if st.get('bass_mode') == 'wobble' else 'bass pickups & fills')
+    return ' · '.join(out)
 
 
 def _nice(name):

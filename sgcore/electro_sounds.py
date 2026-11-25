@@ -18,11 +18,11 @@ from .styles import POOLS, STYLES
 REAL_BASS = {'sf:fingerbass', 'sf:acbass', 'sf:pickbass', 'sf:slapbass', 'sf:contrabass', 'fingerbass', 'acbass', 'pickbass',
              'slapbass', 'ebass', 'ebass_dark', 'ebass_driven', 'ebass_bright', 'ebass_soft', 'upright', 'upright_dark',
              'upright_soft', 'contrabass', 'real:ebass', 'real:upright', 'tuba'}
-KEEP_REAL = {'electro_swing', 'krautrock', 'future_funk',
+KEEP_REAL = {'electro_swing', 'krautrock', 'future_funk', 'sunlit_electronica',   # (2.23: the live-band one)
              'tsonga_disco', 'funana', 'afro_village_party'}   # (2.22.5) bands with a bass guitar
 # synth bass that takes over when a genre's own bass was a real one (closest feel first)
 # synth basses added where taking the bass guitars out left a rotation too short
-REFILL = {'sunlit_electronica': ['dreambass', 'junobass', 'sinebass'], 'daydream_downtempo': ['junobass', 'sinebass'],
+REFILL = {'daydream_downtempo': ['junobass', 'sinebass'],
           'sunrise_chillwave': ['junobass', 'sinebass'], 'hazy_downtempo': ['junobass', 'dreambass']}
 REPLACE = {'analog_arp_drive': 'moogbass', 'drill_space': 'fmbass', 'idm_jungle_theme': 'moogbass', 'sunrise_chillwave': 'moogbass'}
 SWAPS = {

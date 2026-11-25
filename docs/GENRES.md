@@ -1,8 +1,8 @@
-# Studio Lab genres (422)
+# Studio Lab genres (424)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (224)
+## Electronic (226)
 
 ### House & Disco (32)
 
@@ -108,7 +108,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Vocal Stepper 140 | `vocal_stepper_140` | 138-142 | Vocal stepper 140: half-time dubstep at 140 with soul - a kick on 1 (and often the "and" of 2), the snare on 3, swung hats, a heavy held sub that swells on a slow half-note wobble, minor chord loops that move every bar or two, and chopped vocal phrases thrown into long reverbs and echoes; drops of 16-32 bars, short 8-bar breaks |
 | Wave (ethereal half-time, 808 sub, vocal chops) | `ethereal_wave` | 140-155 | Wave (ethereal half-time): floating, melancholic bass music at 140-155 - a long intro of airy pads and breathy vocal chops with no low end, then the drop: a huge held 808 sub that slides between its notes and carries the whole track, half-time drums with the snare on the 3 and busy trap hats with rolls, washed-out maj7 chords pumping hard against the kick, glassy plucks and chops drifting in a huge reverb; slow harmony that hangs on one or two chords - dreamy, heavy and wide open |
 
-### Drum & Bass, Breaks & Hard (20)
+### Drum & Bass, Breaks & Hard (21)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -131,6 +131,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Liquid DnB - euphoric (piano & bleeps) | `liquid_euphoric` | 174-176 | Liquid drum & bass, euphoric: an uplifting 175 BPM two-step with rolling ghost snares, a bright piano playing a new chord every bar, lush strings, 16th-note bleeps and bloops on top and a big singing synth lead; a warm mid-bass pumping in 8ths with the sub arriving only for the drops; long keys intro and breakdown, two 64-bar drops with a switch-up every 16 bars, a DJ outro |
 | Neurofunk | `neurofunk` | 172-176 | Neurofunk: tight, technical two-step at 174, dark and mechanical - growls, reese and FM stabs trading every bar over a sine sub, cold stabs and sparse atmospheres |
 | Neurofunk (lighter) | `neurofunk_lite` | 172-176 | Neurofunk, lighter and more melodic: the tight 174 two-step and a dark reese, but with clearer chords, a pad underneath and a lead you can hum - less extreme sound design than full neurofunk |
+| Steel breaks (breaks techno / electro, rave breaks) | `steel_breaks` | 138-156 | Steel breaks (breaks techno / electro): a club tool for big systems - tightly programmed, steely breakbeats layered with a hard kick and sharp claps, a heavy mono sub you feel more than hear, a squelchy acid line, one or two dark stabbed chords instead of a progression, filtered noise sweeping through; long DJ intros and outros, a driving, hypnotic body, hard pumping, loud - hypnotic and steely at ~140, or a frantic rave-breaks tool at ~155 with hype-man shouts before the drops |
 | UK hardcore / happy hardcore | `uk_hardcore` | 168-178 | UK hardcore / happy hardcore: 170+ BPM four-on-the-floor, bouncing off-beat octave bass, rolling piano chords, euphoric supersaw leads and big builds into massive major-key drops |
 
 ### Hip-Hop, Trap & Phonk (32)
@@ -221,7 +222,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Tarraxinha (84-98) | `tarraxinha` | 84-98 | Tarraxinha (Angolan, 84-98): the slow, dark, heavy sister of kizomba - a deep, booming kick and a sliding sub that fill the room, sparse snaps and rims, a moody minor pad, a slow, sensual synth line and lots of space; hypnotic and bass-heavy |
 | Tsonga Disco (124-136) | `tsonga_disco` | 124-136 | Tsonga disco (the South African township synth-disco that Shangaan electro grew from, 124-136): a straight disco kick, open hats on the off-beats, a bouncing octave bass, cheap-keyboard marimba and organ riffs, a bright synth-brass answer and handclaps - sunny, bubbly and danceable |
 
-### Chill, Lo-fi & Ambient (21)
+### Chill, Lo-fi & Ambient (22)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -234,6 +235,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Chant downtempo - shakuhachi & monks | `chant_downtempo` | 92-100 | Chant downtempo (early 90s): it opens on a lone, breathy shakuhachi calling over a dark pad - then a monk choir chants slow minor chords, and a heavy, lazy hip-hop break around 96 drops in under it with a deep pedal sub; the shakuhachi answers the chant between the drums - mystical, sensual, cavernous |
 | Christmas Lo-fi (cosy) | `christmas_lofi` | 72-88 | Christmas lo-fi (cosy beats): a dusty, laid-back hip-hop beat around 72-88 - warm Rhodes chords with jazzy 7ths and 9ths, a soft celesta or music-box tune, gentle sleigh bells on the beat, a round sub bass, vinyl crackle and tape wobble - snow outside, cocoa inside |
 | Daydream downtempo (dusty breaks, guitar haze, 74-95) | `daydream_downtempo` | 74-95 | Daydream downtempo: dusty, sun-faded electronica at 74-95 - a soft hip-hop break (a syncopated kick, the snare on 2 and 4, quiet swung hats) under warm analog pads, a guitar frozen into the reverb, tape-worn keys, a clean guitar figure in the delay and a round mono bass on long notes; one or two coloured chords swaying for minutes (IVmaj7 - ii7, vi7 - I, a single-chord vamp), a long bass-less intro, short breakdowns that drop the low end, a soft gliding synth or wordless voice on top - hazy, wide and warm, nothing bright |
+| Dive electronica (dreamy, synth-led, 112-122) | `dive_electronica` | 112-122 | Dive electronica (dreamy, synth-led): hazy analog electronica at 112-122 - soft programmed drums on a steady pulse, warm pads pumping on every beat, round analog arpeggios carrying the motion, a round mono bass pushing 8ths, a guitar frozen into the reverb and a sparse answering guitar, one high note held over each loop, reversed swells sucking into the new sections; slow maj7 / m7 / add9 loops that keep their common notes, a long intro without bass, a breakdown and a slow fade - tape-dark and dreamy |
 | Downtempo | `downtempo` | 85-100 | Downtempo / chillout: laid-back beats, Rhodes & piano, warm pads, glassy bells |
 | Dreamy synthscape (chill synth space) | `dream_synthscape` | 94-120 | Dreamy synthscape: a chill, effects-washed synth space - warm pulsing chords breathing against a muffled heartbeat kick, a soft pad cloud, a high bass on the phrase starts, tiny chimes sparkling far above, a gliding sine line drifting through; slow ii - IV - I movement on rich 7th and 9th chords, dark and warm (no sub, no bright top), wide and deep in reverb, one long swell that rises and fades, and a moment where it all stops |
 | Hazy downtempo (pumping pads, dusty break, wide) | `hazy_downtempo` | 74-90 | Hazy downtempo: a slow, dusty beat at 75-90 - a soft hip-hop break with busy, quiet 16th hats - under deep, pumping analog pads that swell and breathe with the kick, a round synth bass, wordless vocal pads, a gentle plucked arpeggio and a guitar or synth melody floating far away in the reverb; a huge, wide, dreamy stereo field and a warm, tape-soft top |
@@ -242,7 +244,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Mid-fi synth-funk / chillwave | `midfi_synthfunk` | 80-100 | Mid-fi synth-funk / chillwave: a slow, crunchy drum-machine groove around 80-100 with a fat gated snare, a rubbery analog bass, detuned, warbly poly-synth chords and arps soaked in tape wobble and chorus, a warm square lead - nostalgic, hazy and funky, like a worn 80s VHS |
 | Spooky TV theme (90s mystery, whistle & echoes) | `spooky_tv_theme` | 84-90 | Spooky TV theme (90s paranormal mystery): a slow, steady electronic groove at about 87 BPM under a cold, echoing four-note piano / bell ostinato in a minor key that keeps repeating into a long delay, dark synth pads and a lonely, sliding whistled melody - drenched in reverb, very wide, quiet and dark on top (no air), like a late-night TV main title |
 | Sunlit chillwave (live drums, chorus guitar, analog synths) | `sunrise_chillwave` | 114-128 | Sunlit chillwave (live band): a warm, nostalgic, sun-faded sound - a long ambient intro of tape hiss, soft analog pads and a chorus-drenched guitar picking in the delay, then a real drummer drives a straight, motorik indie beat with a picked bass guitar underneath, a bright analog synth arpeggio sparkling on top and a simple synth melody; slow, open major-key chords, pads breathing with the kick, a breakdown with the drums out, a slow fade |
-| Sunlit electronica (analog band, guitars, 112-122) | `sunlit_electronica` | 112-122 | Sunlit electronica (analog band): warm, nostalgic electronic post-rock at 112-122 - a long intro of a pad and a clean guitar picking into a dotted-8th delay, hats creeping in, then a warm live-room kit and a round mono bass pushing 8th notes; slow, two-chord progressions on maj7 / m7 / add9 chords, a guitar frozen into a reverb pad, analog pads breathing with the kick, interlocking guitar lines and an understated mono synth melody; layers come and go, a breakdown with the bass out, a slow fade - tape-warm and dark on top |
+| Sunlit electronica (live band, guitars, 112-122) | `sunlit_electronica` | 112-122 | Sunlit electronica (live band): warm electronic post-rock at 112-122 played like a band - a drummer with ghost notes and laid-back hats, a picked bass guitar walking into every chord change, two clean neck-pickup guitars interlocking (one picking 8ths into a dotted-8th delay, one answering high and sparse), a guitar note held over the whole loop, warm analog pads underneath and a soft mono-synth melody now and then; open maj7 / m7 / add9 chords that keep their common notes, a long intro, parts coming and going, a breakdown with the bass out |
 | Synthscape vignette (one-minute miniature) | `vignette_synthscape` | 106-114 | Synthscape vignette: a one-minute synth miniature - a hushed opening, then everything drops in at once over a soft quarter-note heartbeat and a high bass walking the V pedal, warm maj7 chord tones pulsing in triplets against it, then a long tail that only thins and fades. Very dark and muffled (almost nothing above 1 kHz), no sub, close and soft - like a synth heard through the wall |
 | Trip-hop | `trip_hop` | 76-96 | Trip-hop: slow, heavy, dusty breakbeats, a deep sub, dark minor Rhodes and string chords, a haunting theremin-like lead, harpsichord or vibes colour and vinyl crackle - moody, cinematic and smoky |
 | Vaporwave | `vaporwave` | 58-74 | Vaporwave: slowed 80s nostalgia - lush Rhodes, sax, chorused pads, tape haze |

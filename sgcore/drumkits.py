@@ -85,6 +85,7 @@ KIT_MENU = [
     ('techno_classic', 'Drum machines', 'Techno 909 (classic sound, before 1.72)', 'techno_classic', None, None),
     ('linn', 'Drum machines', '80s LinnDrum-style (gated snare)', 'linn', None, None),
     ('surf60s', 'Modelled kits', 'Surf 60s (bright rattling snare, boomy kick, washy cymbals)', 'surf60s', None, None),
+    ('divekit', 'Modelled kits', 'Dive kit (soft programmed drums, dulled snare, dark hats)', 'divekit', None, None),
     ('sunroom', 'Modelled kits', 'Sun room (warm, soft live-room kit, dark hats)', 'sunroom', None, None),
     ('punchy', 'Drum machines', 'Punchy EDM', 'punchy', None, None),
     ('hard', 'Drum machines', 'Hardstyle / big room', 'hard', None, None),
@@ -127,7 +128,7 @@ KIT_MENU = [
 MENU = {k[0]: k for k in KIT_MENU}
 
 # the kit each genre plays by default (genres not listed keep their own synthesized kit)
-GENRE_KIT = {
+GENRE_KIT = {'steel_breaks': 'think', 
     'jungle': 'amen', 'breakcore': 'amen', 'dnb': 'amen', 'liquid_dnb': 'think', 'liquid_euphoric': 'think', 'liquid_dancefloor': 'think', 'anthem_dnb': 'dnb_rollers',
     'boombap': 'funky_drummer', 'downtempo': 'back_to_life', 'hauntology': 'vintage', 'vaporwave': 'vintage', 'lofi': 'vintage',
     'hauntology_sunlit': 'vintage', 'hauntology_dark': 'vintage', 'neo_soul': 'funky_drummer', 'g_funk': '808', 'new_jack_swing': 'linn',
@@ -146,7 +147,7 @@ GENRE_KIT = {
     'bebop': 'studio', 'modal_jazz': 'studio', 'soul_jazz': 'studio', 'fusion': 'studio',
 }
 # how much jungle-style chopping a genre does with its break (0 = played straight)
-CHOP = {'braindance': 0.75, 'rave_hardcore': 0.3, 'jungle': 0.55, 'breakcore': 0.85, 'dnb': 0.2, 'liquid_dnb': 0.1, 'boombap': 0.08}
+CHOP = {'steel_breaks': 0.35, 'braindance': 0.75, 'rave_hardcore': 0.3, 'jungle': 0.55, 'breakcore': 0.85, 'dnb': 0.2, 'liquid_dnb': 0.1, 'boombap': 0.08}
 
 
 def menu():

@@ -263,7 +263,7 @@ def section_dynamics(evs, sections, st, opts, tracks):
 # ----------------------------------------------------------------------------- (1.90) genre fills / transitions
 REWIND_GENRES = {'dnb', 'jungle', 'jump_up', 'neurofunk', 'neurofunk_lite', 'anthem_dnb', 'liquid_dancefloor',
                  'ukgarage', 'speed_garage', 'grime', 'bassline_140', 'uk_hardcore', 'idm_jungle_theme'}
-SHOUT_GENRES = {'dubstep': ('oi', 'yeah'), 'brostep': ('oi', 'yeah', 'go'), 'riddim': ('oi', 'go'),
+SHOUT_GENRES = {'steel_breaks': ('ho', 'hey', 'oi'), 'dubstep': ('oi', 'yeah'), 'brostep': ('oi', 'yeah', 'go'), 'riddim': ('oi', 'go'),
                 'midtempo_bass': ('hey', 'oi'), 'dark_dubstep_classic': ('oi', 'whoa'), 'bass_house': ('hey', 'go'),
                 'trap_metal': ('yeah', 'go'), 'hard_trap': ('yeah', 'hey'), 'hardstyle': ('hey', 'yeah')}
 TRANCE_ROLL_GENRES = {'trance', 'uplifting_trance', 'progressive_trance', 'club_trance_2000s', 'progressive_trance_2010s',
@@ -683,3 +683,318 @@ def drop_space(evs, sections, st, opts, tracks, genres):
                     e.dur = min(e.dur, 0.5)
     evs[:] = [e for e in evs if id(e) not in kill]
     return len(kill)
+
+
+# ----------------------------------------------------------------------------- (1.97) richer harmony
+PITCHED_SKIP = ('kick', 'snare', 'top', 'fx')
+HARMONY_CHANCE = {'Electronic': 0.35, 'Classic': 0.45, 'Orchestral': 0.3}
+
+
+def _chord_blocks(sections, cb):
+    """(section, first bar, bars, chord degree) for every run of bars on one chord, in song order."""
+    out = []
+    for sec in sections:
+        ch = sec.get('bar_chords') or []
+        i = 0
+        while i < len(ch):
+            j = i
+            while j + 1 < len(ch) and ch[j + 1] == ch[i] and (j + 1 - i) < max(1, cb):
+                j += 1
+            out.append((sec, sec['bar'] + i, j - i + 1, ch[i]))
+            i = j + 1
+    return out
+
+
+def richer_harmony(evs, sections, st, opts, tracks, key):
+    """Harmony beyond the seven chords of the key, the way real songwriters colour a plain progression:
+    - BORROWED CHORDS (modal interchange) - in a major key the IV turns minor (iv), and the vi, iii and vii
+      become the flat VI, flat III and flat VII of the parallel minor; in a minor key the iv turns major (the dorian
+      IV) and the v becomes the major V that pulls home. Every part moves with it (chords, bass, arps, the melody), so
+      nothing clashes - the whole bar is in the borrowed scale;
+    - INVERSIONS - where the bass would leap from one root to the next, it plays the new chord's 3rd instead when that
+      is a step away (C - G/B - Am: a walking line down instead of jumps);
+    - PEDAL NOTES - in intros, breakdowns and outros the bass can hold the home note while the chords move over it.
+    The same section always gets the same colours (every chorus borrows in the same place). Off: harmony_color='plain'.
+    Returns a list of what was done."""
+    mode = getattr(opts, 'harmony_color', 'auto') or 'auto'
+    hd = st.get('harmony_default')
+    if mode == 'auto' and hd:                            # a genre whose harmony always has these colours:
+        mode = hd if isinstance(hd, str) else 'genre'    # 'rich', or {'borrow': chance, 'invert': .., 'pedal': ..}
+    if mode == 'plain' or st.get('composer') or st.get('riff_locked') or key.scale_name not in ('major', 'minor'):
+        return []
+    import random as _r
+    ps = getattr(opts, 'part_seeds', None) or {}
+    seed = ps.get('harmony') if ps.get('harmony') is not None else opts.seed
+    g = st.get('name') or opts.style
+    rnd = _r.Random(f'{seed}-{g}-harmony-colour')
+    if mode == 'auto' and rnd.random() > HARMONY_CHANCE.get(st.get('category'), 0.3):
+        return []
+    if mode == 'genre':
+        use = {k_: rnd.random() < float(hd.get(k_, 0)) for k_ in ('borrow', 'invert', 'pedal')}
+        mode = 'auto'
+    elif mode == 'rich':
+        use = dict(borrow=True, invert=True, pedal=True)
+    else:
+        use = dict(borrow=rnd.random() < 0.7, invert=rnd.random() < 0.6, pedal=rnd.random() < 0.4)
+    cb = max(1, int(st.get('chord_bars') or 1))
+    pcs = [(key.root + iv) % 12 for iv in key.scale]
+    if key.scale_name == 'major':                       # degree -> scale degrees lowered a semitone
+        borrow = {d: (2, 5, 6) for d in (3, 5, 2, 6)}   # the whole bar in the parallel minor: iv(7), bVI, bIII, bVII
+    else:
+        borrow = {3: (5,), 4: (6,)}                     # IV (dorian 6th), V (leading tone)
+    up = key.scale_name == 'minor'
+    done = []
+    pitched = [e for e in evs if e.midi is not None and tracks.get(e.track, {}).get('layer') not in PITCHED_SKIP]
+    blocks = _chord_blocks(sections, cb)
+    if use['borrow']:
+        # colour, not a new progression: in each 8-bar phrase only the LAST eligible chord of its second half is
+        # borrowed (the turnaround - IV to iv on the way home, the flat VI before the last chord ...), and a section
+        # either always does it or never does (every chorus the same)
+        picked = []
+        for sec in sections:
+            r_ = _r.Random(f'{seed}-{g}-{sec["name"]}-{sec["opts"].get("alt", 0)}-borrow')
+            if sec['opts'].get('key_change') or sec.get('key_change') or r_.random() > (0.85 if mode == 'rich' else 0.55):
+                continue
+            mine = [b_ for b_ in blocks if b_[0] is sec and b_[3] in borrow]
+            for ph in range(0, sec['bars'], 8):
+                cand = [b_ for b_ in mine if ph + 4 <= b_[1] - sec['bar'] < ph + 8]
+                if cand:
+                    picked.append(cand[-1])
+        for sec, bar, n, ch in picked:
+            alt = {pcs[d]: (pcs[d] + (1 if up else -1)) % 12 for d in borrow[ch]}
+            b0, b1 = bar * 4, (bar + n) * 4
+            changed = 0
+            for e in pitched:
+                if e.beat >= b1 or e.beat + e.dur <= b0 or e.midi % 12 not in alt:
+                    continue
+                if e.beat < b0:                         # held in from before: stops where the borrowed chord starts
+                    e.dur = max(0.05, b0 - e.beat)
+                    continue
+                e.midi += 1 if up else -1
+                changed += 1
+                if e.glide is not None:
+                    e.glide += 1 if up else -1
+                if e.beat + e.dur > b1:
+                    e.dur = max(0.05, b1 - e.beat)
+            if changed:
+                done.append(('borrowed', sec['name'], bar, ch))
+    bass_tr = {n for n, t in tracks.items() if t.get('layer') == 'bass' and not t.get('double_of')}
+    bass = [e for e in evs if e.track in bass_tr and e.midi is not None and not isinstance(e.mod, str)]
+    if use['invert'] and bass and not st.get('switchups'):
+        for (s0, bar0, n0, c0), (sec, bar, n, ch) in zip(blocks, blocks[1:]):
+            if s0 is not sec or ch == c0:
+                continue
+            r0, r1 = pcs[c0 % 7], pcs[ch % 7]
+            third = pcs[(ch + 2) % 7]
+            step = min((third - r0) % 12, (r0 - third) % 12)
+            leap = min((r1 - r0) % 12, (r0 - r1) % 12)
+            if not (step <= 2 and leap >= 3):
+                continue
+            r_ = _r.Random(f'{seed}-{g}-{sec["name"]}-{bar - sec["bar"]}-{ch}-invert')
+            if r_.random() > (0.7 if mode == 'rich' else 0.5):
+                continue
+            b0, b1 = bar * 4, (bar + n) * 4
+            moved = 0
+            for e in bass:
+                if b0 <= e.beat < b1 and e.midi % 12 == r1:
+                    d = (third - r1) % 12
+                    d = d - 12 if d > 6 else d
+                    e.midi += d
+                    e.glide = None
+                    moved += 1
+            if moved:
+                done.append(('inversion', sec['name'], bar, ch))
+    if use['pedal'] and bass:
+        tonic = pcs[0]
+        for sec in sections:
+            if sec['opts'].get('drop') or sec['name'] not in ('intro', 'break', 'breakdown', 'outro', 'calm', 'build'):
+                continue
+            r_ = _r.Random(f'{seed}-{g}-{sec["name"]}-pedal')
+            if r_.random() > 0.6:
+                continue
+            b0, b1 = sec['bar'] * 4, (sec['bar'] + sec['bars']) * 4
+            moved = 0
+            for e in bass:
+                if b0 <= e.beat < b1 and e.midi % 12 != tonic:
+                    d = (tonic - e.midi) % 12
+                    d = d - 12 if d > 6 else d
+                    e.midi += d
+                    e.glide = None
+                    moved += 1
+            if moved:
+                done.append(('pedal', sec['name'], sec['bar'], 0))
+    return done
+
+
+# ----------------------------------------------------------------------------- (1.97) bass phrasing
+PHRASE_CHANCE = {'Electronic': 0.55, 'Classic': 0.6, 'Orchestral': 0.3}
+
+
+def bass_phrasing(evs, sections, st, opts, tracks, key):
+    """A bassline that speaks in phrases instead of repeating one bar:
+    - the last beat of every 4-bar phrase gets a PICKUP - a scale step (or two) leading into the next chord's root;
+    - the end of every 8-bar phrase gets a bigger FILL - root, the chord's 5th, then the step into the next root;
+    - walking styles ('bass_walk') also step into every chord change, so the bass connects the roots instead of
+      jumping between them;
+    - in wobble genres (dubstep and its cousins) the four bars of a phrase TALK to each other: the call at the
+      written wobble speed, an answer twice as fast, the call again, then a triplet stutter that stops dead on the
+      last 8th - silence before the phrase starts over.
+    Every note stays in the key. Off: phrasing='off'. Returns how many phrase ends were written."""
+    mode = getattr(opts, 'phrasing', 'auto') or 'auto'
+    if mode == 'auto' and st.get('phrasing_default'):    # a genre whose bass always phrases
+        mode = st['phrasing_default']
+    if mode == 'off' or st.get('composer') or st.get('riff_locked') or st.get('switchups') or st.get('bass_stutter') \
+            or getattr(opts, 'bass_rhythm', None) == 'kick' or st.get('meter'):   # (kick-locked bass / 3-4, 6-8, 12-8)
+        return 0
+    import random as _r
+    ps = getattr(opts, 'part_seeds', None) or {}
+    seed = ps.get('bass') if ps.get('bass') is not None else opts.seed
+    g = st.get('name') or opts.style
+    rnd = _r.Random(f'{seed}-{g}-bass-phrases')
+    if mode == 'auto' and rnd.random() > PHRASE_CHANCE.get(st.get('category'), 0.4):
+        return 0
+    bass_tr = [n for n, t in tracks.items() if t.get('layer') == 'bass' and not t.get('double_of')]
+    if not bass_tr:
+        return 0
+    pcs = [(key.root + iv) % 12 for iv in key.scale]
+    wobble = st.get('bass_mode') == 'wobble'
+    count = 0
+    gone = set()
+
+    def scale_near(m, pc_target, direction):
+        """The scale note one step from the target root, approached from below (+1) or above (-1)."""
+        out = m
+        for k in range(1, 4):
+            c = m - direction * k
+            if c % 12 in pcs:
+                return c
+        return out
+    for sec in sections:
+        ch = sec.get('bar_chords') or []
+        if sec['bars'] < 4 or not ch:
+            continue
+        b_sec0 = sec['bar'] * 4
+        for tn in bass_tr:
+            notes = sorted((e for e in evs if e.track == tn and e.midi is not None
+                            and b_sec0 <= e.beat < b_sec0 + sec['bars'] * 4), key=lambda e: e.beat)
+            if len(notes) < 4 or any(isinstance(e.mod, str) for e in notes):   # (drones / strummed tanpura: left alone)
+                continue
+            if wobble:
+                base = next((e.mod for e in notes if isinstance(e.mod, (int, float)) and not isinstance(e.mod, bool)), None)
+                if not base:
+                    continue
+                for e in notes:
+                    k = int((e.beat - b_sec0) // 4) % 4
+                    if not isinstance(e.mod, (int, float)) or isinstance(e.mod, bool):
+                        continue
+                    if k == 1:
+                        e.mod = max(0.125, base / 2)                     # the answer: twice as fast
+                    elif k == 3:
+                        bar_end = b_sec0 + (int((e.beat - b_sec0) // 4) + 1) * 4
+                        if e.beat >= bar_end - 2:
+                            e.mod = 1 / 3                                # the triplet stutter
+                        if e.beat + e.dur > bar_end - 0.5:
+                            e.dur = max(0.1, bar_end - 0.5 - e.beat)     # ... and a dead stop before the next call
+                count += 1
+                continue
+            ends = set(range(3, sec['bars'], 4))
+            if st.get('bass_walk'):                      # (walking styles) a passing note into EVERY chord change
+                ends |= {b for b in range(len(ch) - 1) if ch[b + 1] != ch[b]}
+            for b in sorted(ends):
+                end = b_sec0 + (b + 1) * 4
+                nxt_ch = ch[b + 1] if b + 1 < len(ch) else ch[0]
+                if not any(end - 4 <= e.beat < end for e in notes):
+                    continue                                              # (a resting bar stays resting)
+                ref = max((e for e in notes if e.beat < end and id(e) not in gone), key=lambda e: e.beat)
+                target_pc = pcs[nxt_ch % 7]
+                tgt = ref.midi + ((target_pc - ref.midi) % 12)
+                if tgt - ref.midi > 6:
+                    tgt -= 12
+                direction = 1 if tgt >= ref.midi else -1
+                big = (b % 8 == 7)
+                t0 = end - (2.0 if big else 1.0)
+                for e in notes:                                           # clear the window
+                    if e.beat >= t0 and e.beat < end:
+                        gone.add(id(e))
+                    elif e.beat < t0 < e.beat + e.dur:
+                        e.dur = max(0.1, t0 - e.beat)
+                vel = max(e.vel for e in notes if id(e) not in gone) * 0.9
+                if big:
+                    root = ref.midi - ((ref.midi - pcs[ch[b] % 7]) % 12)
+                    fifth = root + 7 if (root + 7) % 12 in pcs else root + 6 if (root + 6) % 12 in pcs else root + 12
+                    seq = [(t0, root), (t0 + 0.75, fifth), (t0 + 1.5, scale_near(tgt, target_pc, direction))]
+                    durs = [0.7, 0.7, 0.45]
+                elif st.get('bass_walk'):                 # walk there through the scale (passing notes, 8ths)
+                    lo_, hi_ = sorted((ref.midi, tgt))
+                    between = [m_ for m_ in range(lo_ + 1, hi_) if m_ % 12 in pcs]
+                    between = between if direction > 0 else between[::-1]
+                    walk = between[-2:] if between else [scale_near(tgt, target_pc, direction)]
+                    seq = [(t0, ref.midi)] + [(t0 + 0.5 * (k_ + 1) / len(walk) * (1 if len(walk) == 1 else 1), m_)
+                                              for k_, m_ in enumerate(walk)]
+                    if len(walk) == 2:
+                        seq = [(t0, walk[0]), (t0 + 0.5, walk[1])]
+                    durs = [0.45] * len(seq)
+                else:
+                    seq = [(t0, ref.midi), (t0 + 0.5, scale_near(tgt, target_pc, direction))]
+                    durs = [0.45, 0.45]
+                for (t_, m_), d_ in zip(seq, durs):
+                    evs.append(Ev(tn, t_, d_, m_, vel * (1.0 if t_ == t0 else 0.85)))
+                count += 1
+    evs[:] = [e for e in evs if id(e) not in gone]
+    return count
+
+
+# ----------------------------------------------------------------------------- (2.23) a held top note
+def top_pedal(evs, sections, st, opts, tracks, key):
+    """A note held high above the changing chords (styles with 'top_pedal': {'track': ..., 'lo': 72, 'hi': 86}): for
+    each 8-bar phrase (or 4-bar half, if nothing fits the whole phrase) the track holds one note that belongs to EVERY
+    chord under it - as its root, 3rd, 5th, 7th or 9th - so the harmony moves while one bright tone stays (the guitar
+    or glass note ringing over a whole loop in sunlit electronica). It keeps the same note from phrase to phrase where
+    it can, and leaves out bars whose chord was borrowed from the parallel key. Returns the notes written."""
+    cfg = st.get('top_pedal')
+    if not cfg or st.get('composer'):
+        return 0
+    name = cfg.get('track', 'halo')
+    t = tracks.get(name)
+    if not t:
+        return 0
+    lo, hi = int(cfg.get('lo', 72)), int(cfg.get('hi', 86))
+    pcs = [(key.root + iv) % 12 for iv in key.scale]
+    cb = max(1, int(st.get('chord_bars') or 1))
+    borrowed = set()
+    for kind, _s, bar, _c in (st.get('harmony_moves') or []):
+        if kind == 'borrowed':
+            borrowed |= set(range(bar, bar + cb))
+
+    def tones(c):
+        r = pcs[c % 7]
+        out = {pcs[(c + k) % 7] for k in (0, 2, 4, 6)}
+        ninth = pcs[(c + 1) % 7]
+        if (ninth - r) % 12 == 2:                        # a major 9th sings; a minor 9th grinds
+            out.add(ninth)
+        return out
+    prev = None
+    n = 0
+    for sec in sections:
+        ch = sec.get('bar_chords') or []
+        if t['layer'] not in sec['layers'] or len(ch) < 4:
+            continue
+        for p0 in range(0, len(ch), 8):
+            spans = [(p0, min(8, len(ch) - p0))]
+            while spans:
+                a, L = spans.pop(0)
+                bars = range(sec['bar'] + a, sec['bar'] + a + L)
+                common = set.intersection(*(tones(c) for c in ch[a:a + L]))
+                if not common or any(b in borrowed for b in bars):
+                    if L > 4:                             # try the two halves
+                        spans += [(a, 4), (a + 4, L - 4)]
+                    continue
+                pc = prev if prev in common else min(common, key=lambda q: (q != pcs[4], q != pcs[1], q))
+                m = lo + ((pc - lo) % 12)
+                if m > hi:
+                    m -= 12
+                b0 = (sec['bar'] + a) * 4
+                evs.append(Ev(name, b0, L * 4 - 0.25, m, 0.62))
+                prev = pc
+                n += 1
+    return n

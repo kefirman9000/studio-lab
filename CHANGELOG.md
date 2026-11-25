@@ -1,5 +1,64 @@
 # Changelog
 
+## 2.23.0
+Richer harmony and bass phrasing for any genre, a rebuilt set of sunlit-electronica genres from a second look at the
+reference records, and a breaks-techno genre.
+
+- **Richer harmony** (Harmony control: genre decides / richer / plain). Songs can now use chords from outside the key,
+  the way songwriters colour a plain progression:
+  - **Borrowed chords:** in a major key the IV can turn minor, and the vi, iii and vii can become the flat VI, flat III
+    and flat VII. In a minor key the iv can turn major and the v can become the major V. Only the turnaround of each
+    8-bar phrase is coloured, and every repeat of a section does it in the same place. All the parts move together,
+    the melody included, so nothing clashes.
+  - **Bass inversions:** where the bass would jump between two roots, it plays the new chord's 3rd when that is a step
+    away, so the line walks instead of leaping.
+  - **Pedal notes:** in intros, breakdowns and outros, the bass can hold the home note while the chords move over it.
+  - The result card says what a song used, e.g. "borrowed iv · bass inversions".
+- **Bass phrasing** (Bass phrasing control: genre decides / always / never):
+  - A pickup leads into the next chord at the end of every 4-bar phrase, and a bigger fill comes at the end of every 8.
+  - Walking genres also step into every chord change.
+  - Dubstep-style wobbles talk in 4-bar phrases: the call, an answer twice as fast, the call again, then a triplet
+    stutter that stops dead.
+- **The batch generator** can now spread harmony and phrasing across a batch.
+- **The sunlit-electronica genres, re-measured.** I went back over the twelve reference records, with your notes on the
+  two albums in mind, and measured how the parts relate:
+  - chords keep about 70% of their notes from one chord to the next;
+  - the bass plays 2.5 to 3.5 different notes a bar and walks into the changes;
+  - the snare cracks clearly over the guitars;
+  - the hats lean back with a light swing;
+  - there is no extra drum fill every 8 bars;
+  - the dreamy ones pump on every beat, the band ones much less.
+
+  The genres now follow these numbers:
+  - **Sunlit electronica** is now the live-band version:
+    - a drummer with ghost notes, laid-back hats and a ride in the big parts;
+    - a picked bass guitar that walks into the chord changes;
+    - two clean neck-pickup guitars interlocking, one picking 8ths into a dotted-8th delay and one answering high and
+      sparse;
+    - pads underneath;
+    - a soft synth melody now and then.
+  - **New: Dive electronica** is the programmed, synth-led version:
+    - soft sample-like drums on a steady pulse;
+    - pads pumping on every beat;
+    - round analog arpeggios carrying the motion;
+    - a round mono bass pushing 8ths;
+    - the guitar mostly as atmosphere.
+  - **Daydream downtempo:** a laid-back groove, a snare that cuts through, and the neck-pickup guitar.
+  - **All three:** one high guitar or glass note is held over each loop while the chords change under it. It is
+    always a note of every chord it sits over.
+- **New sounds:**
+  - **Round arp:** a soft analog arpeggio with no click.
+  - **Neck-pickup guitar:** warm, compressed and chorused.
+  - **Reverse swell:** a pad tone played backwards.
+  - **Dive kit:** soft programmed drums.
+  - **Sun room kit:** its snare now has a clearer crack.
+- **New genre: Steel breaks** (breaks techno and electro), from your two newest reference tracks:
+  - tight, steely breakbeats layered with a hard kick and sharp claps, over a heavy mono sub;
+  - a squelchy acid line, with one or two dark stabbed chords instead of a progression;
+  - long DJ intros and outros, and hard pumping;
+  - two moods: hypnotic at about 140, or a faster rave-breaks tool at about 155 with hype-man shouts.
+- Each genre can set how hard the mastering may press on the low end. Steel breaks uses this to stay loud.
+
 ## 2.22.5
 No more brass-sounding basses in the African genres.
 
