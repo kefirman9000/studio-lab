@@ -1,8 +1,8 @@
-# Studio Lab genres (427)
+# Studio Lab genres (429)
 
 Every genre the app can generate, by category: display name, id (used by `--style` and in genre bibles), tempo range and the description the app currently works from.
 
-## Electronic (226)
+## Electronic (228)
 
 ### House & Disco (32)
 
@@ -41,7 +41,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Tropical house | `tropical_house` | 100-115 | Tropical house: a relaxed four-on-the-floor around 105, soft snaps and shakers, warm piano chords, marimba and steel-pan plucks, a pan-flute or sax hook - sunny, laid-back and summery |
 | UK bounce house (bassline, vocal chops) | `uk_bounce_house` | 122-126 | UK bounce house: a four-on-the-floor groove at 122-126 with busy, shuffling percussion and crisp claps, a rubbery, bouncing bassline doing most of the work, chopped vocal hooks answering it and short organ / piano stabs - radio-friendly, warm and made for dancing |
 
-### Techno & Trance (28)
+### Techno & Trance (29)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -60,6 +60,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Late-90s trance-pop | `trance_pop_90s` | 130-138 | Late-90s vocal trance-pop / UK dance: a pumping four-on-the-floor around 134 with an offbeat octave bass, big warm string-synth and supersaw chords, a sweet vocal-style hook and plucked arps - euphoric and radio-sized, built of clear verses and choruses |
 | Melodic Techno | `melodic_techno` | 120-128 | Melodic techno: rolling 16th basslines, hypnotic arpeggios, big emotional pads and plucks |
 | Minimal | `minimal` | 124-128 | Minimal techno: sparse clicks and blips, deep sub, lots of space and delay |
+| Modern trance (2020s, stacked saws, big breakdown) | `trance_2020s` | 132-140 | Modern trance (2020s main stage, radio edit): a punchy four-on-the-floor kick at 132-140 with a rolling bass - off-beat 8ths, a 16th gallop or straight 16ths - a short intro, a driving first drop, then one big emotional breakdown where piano, wide pads and the lead melody carry the song before a snare-roll build into the last drop; huge stacked supersaw leads and chords, plucky 16th arps, everything pumping hard against the kick; loud, bright and very wide, with a mono sub |
 | New Beat | `new_beat` | 100-116 | New beat (late-80s Belgium): slow, heavy, stomping four-on-the-floor at ~100-115 BPM, industrial EBM drums, dark acid-tinged bass and sampled stabs - hypnotic and menacing |
 | Peak-Time Techno | `peak_time_techno` | 128-130 | Peak-time techno: driving 128-130 four-on-the-floor where a clap lands on every beat, an off-beat sub bass answers each kick, rides and hats run in 16ths and one short, detuned stab or a single-note hook pumps under heavy sidechain - very little melody, long 16-bar intros and outros for mixing, a 16-bar break and one build |
 | Progressive Trance (emotional) | `progressive_trance` | 128-136 | Emotional progressive trance / melodic progressive house: simple emotive chords, a big singable lead, long builds, a piano breakdown and a clean, wide drop - melody over complexity |
@@ -134,7 +135,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Steel breaks (breaks techno / electro, rave breaks) | `steel_breaks` | 138-156 | Steel breaks (breaks techno / electro): a club tool for big systems - tightly programmed, steely breakbeats layered with a hard kick and sharp claps, a heavy mono sub you feel more than hear, a squelchy acid line, one or two dark stabbed chords instead of a progression, filtered noise sweeping through; long DJ intros and outros, a driving, hypnotic body, hard pumping, loud - hypnotic and steely at ~140, or a frantic rave-breaks tool at ~155 with hype-man shouts before the drops |
 | UK hardcore / happy hardcore | `uk_hardcore` | 168-178 | UK hardcore / happy hardcore: 170+ BPM four-on-the-floor, bouncing off-beat octave bass, rolling piano chords, euphoric supersaw leads and big builds into massive major-key drops |
 
-### Hip-Hop, Trap & Phonk (32)
+### Hip-Hop, Trap & Phonk (33)
 
 | Genre | id | BPM | Current description |
 |---|---|---|---|
@@ -158,6 +159,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Orchestral Hip Hop | `orchestral_hiphop` | 132-145 | Orchestral hip hop / drill: dramatic string stabs, choir, pizzicato, sliding 808s, rolling hats |
 | Plugg / Pluggnb | `plugg` | 140-160 | Plugg / pluggnb: dreamy major-key synth chords and soft bells, simple sliding 808s, sparse bouncy trap drums - floaty and sweet |
 | Rage | `rage` | 150-165 | Rage: huge detuned supersaw synth leads and arps, distorted booming 808s, hard trap drums at 150+ - loud, bright and euphoric |
+| Rally phonk (hard, 124-128, growl 808) | `rally_phonk` | 124-128 | Rally phonk: hard, short, car-speaker phonk at 124-128 (or a sprint at 150) - a distorted kick on every beat with extra 16th kicks, a growling driven 808 bouncing between two notes, busy clipped claps and hats, a distorted cowbell or folded-saw riff on loop and Memphis-style chops; squashed loud, narrow and pumping, with a mono low end |
 | Spacious breaks electronica (128-130) | `warped_electronica` | 127-131 | Spacious progressive-breaks electronica (around 128-130): warbly, slightly detuned modular-style pads and soaring leads, weather, wind and fire field recordings, a long atmospheric opening before an energetic breakbeat with a flurry of percussion arrives, melancholic Am - Fmaj7 colour chords that never resolve, a warm, rolled-off top - vast yet intimate, one continuous, flowing arrangement with no hard cuts |
 | Switch-up 808 (no two bars alike) | `switchup_808` | 155-168 | Switch-up 808: a pitch-dark, almost mono trap beat at 155-168 BPM where the 808 never plays the same bar twice - grinding root and flat-2nd 8ths, leaping one or two octaves up and sliding back down, 16th rolls, dives and wobbles, bars of folded, buzzing 808 with the sub gone, chopped stabs, sudden gaps and dead stops where the drums cut out - over semitone-rub phrygian chords, a faint eerie melody and a lot of empty space |
 | Switch-up 808 - DJ edits (slowdowns, pitch warps) | `switchup_808_dj` | 155-168 | Switch-up 808 - DJ edits: the switch-up 808 beat (an 808 that never plays the same bar twice, phrygian rubs, dead stops) cut up like a DJ is playing with it - fake slowdowns before the drops (the record dragged by hand, sinking in pitch, then the drop slamming in), hats climbing, diving and swooping in pitch, rolls that dive into the next bar, a lead that gets down-tuned, up-tuned and played a tone flat, chops and tape stops |
@@ -244,7 +246,7 @@ Every genre the app can generate, by category: display name, id (used by `--styl
 | Mid-fi synth-funk / chillwave | `midfi_synthfunk` | 80-100 | Mid-fi synth-funk / chillwave: a slow, crunchy drum-machine groove around 80-100 with a fat gated snare, a rubbery analog bass, detuned, warbly poly-synth chords and arps soaked in tape wobble and chorus, a warm square lead - nostalgic, hazy and funky, like a worn 80s VHS |
 | Spooky TV theme (90s mystery, whistle & echoes) | `spooky_tv_theme` | 84-90 | Spooky TV theme (90s paranormal mystery): a slow, steady electronic groove at about 87 BPM under a cold, echoing four-note piano / bell ostinato in a minor key that keeps repeating into a long delay, dark synth pads and a lonely, sliding whistled melody - drenched in reverb, very wide, quiet and dark on top (no air), like a late-night TV main title |
 | Sunlit chillwave (live drums, chorus guitar, analog synths) | `sunrise_chillwave` | 114-128 | Sunlit chillwave (live band): a warm, nostalgic, sun-faded sound - a long ambient intro of tape hiss, soft analog pads and a chorus-drenched guitar picking in the delay, then a real drummer drives a straight, motorik indie beat with a picked bass guitar underneath, a bright analog synth arpeggio sparkling on top and a simple synth melody; slow, open major-key chords, pads breathing with the kick, a breakdown with the drums out, a slow fade |
-| Sunlit electronica (live band, guitars, 112-122) | `sunlit_electronica` | 112-122 | Sunlit electronica (live band): warm electronic post-rock at 112-122 played like a band - a drummer with ghost notes and laid-back hats, a picked bass guitar walking into every chord change, two clean neck-pickup guitars interlocking (one picking 8ths into a dotted-8th delay, one answering high and sparse), a guitar note held over the whole loop, warm analog pads underneath and a soft mono-synth melody now and then; open maj7 / m7 / add9 chords that keep their common notes, a long intro, parts coming and going, a breakdown with the bass out |
+| Sunlit electronica (live band, guitars, 112-122) | `sunlit_electronica` | 112-140 | Sunlit electronica (live band): warm electronic post-rock at 112-122 played like a band - a drummer with ghost notes and laid-back hats, a picked bass guitar walking into every chord change, two clean neck-pickup guitars interlocking (one picking 8ths into a dotted-8th delay, one answering high and sparse), a guitar note held over the whole loop, warm analog pads underneath and a soft mono-synth melody now and then; open maj7 / m7 / add9 chords that keep their common notes, a long intro, parts coming and going, a breakdown with the bass out |
 | Synthscape vignette (one-minute miniature) | `vignette_synthscape` | 106-114 | Synthscape vignette: a one-minute synth miniature - a hushed opening, then everything drops in at once over a soft quarter-note heartbeat and a high bass walking the V pedal, warm maj7 chord tones pulsing in triplets against it, then a long tail that only thins and fades. Very dark and muffled (almost nothing above 1 kHz), no sub, close and soft - like a synth heard through the wall |
 | Trip-hop | `trip_hop` | 76-96 | Trip-hop: slow, heavy, dusty breakbeats, a deep sub, dark minor Rhodes and string chords, a haunting theremin-like lead, harpsichord or vibes colour and vinyl crackle - moody, cinematic and smoky |
 | Vaporwave | `vaporwave` | 58-74 | Vaporwave: slowed 80s nostalgia - lush Rhodes, sax, chorused pads, tape haze |

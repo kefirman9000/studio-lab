@@ -851,8 +851,8 @@ def bass_phrasing(evs, sections, st, opts, tracks, key):
     seed = ps.get('bass') if ps.get('bass') is not None else opts.seed
     g = st.get('name') or opts.style
     rnd = _r.Random(f'{seed}-{g}-bass-phrases')
-    if mode == 'auto' and rnd.random() > PHRASE_CHANCE.get(st.get('category'), 0.4):
-        return 0
+    if mode == 'auto' and (st.get('_four') or rnd.random() > PHRASE_CHANCE.get(st.get('category'), 0.4)):
+        return 0                                         # (house / trance / techno basslines roll; they don't fill)
     bass_tr = [n for n, t in tracks.items() if t.get('layer') == 'bass' and not t.get('double_of')]
     if not bass_tr:
         return 0

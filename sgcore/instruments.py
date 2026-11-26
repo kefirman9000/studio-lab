@@ -8233,3 +8233,100 @@ for _name, _fn, _info, _roles, _gm in NEW_223:
     for _role in _roles:
         if _name not in ROLE_CHOICES[_role]:
             ROLE_CHOICES[_role].append(_name)
+
+
+# =============================================================================
+#  2.29: sounds from the modern-trance, rally-phonk and melodic-deep-house reference sets
+#  (harmonic partials and a few cents of chorus only - everything stays in key)
+# =============================================================================
+def v_stacklead(m, dur, p, glide=None, mod=None):
+    """Stack lead: the modern trance main-stage lead - nine saws spread a few cents apart and wide across the stereo
+    field, a sine an octave down for weight, a short bright pluck layer on the attack so every note speaks through
+    the mix, and a soft clipper that keeps the stack dense and forward (as the records' leads sit, at 0.65-0.9
+    side/mid width in the upper mids)."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, p.get('a', 0.008), 0.4, 0.88, p.get('r', 0.35))
+    rng = _rng()
+    fr = _glide_freq(f, n, glide, 0.05)
+    x = _stack_saw(fr, n, (-24, -15, -8, -3, 0, 3, 8, 15, 24), rng, 0.95)
+    sub = np.sin(2 * np.pi * np.cumsum(fr / 2) / SR) * 0.35
+    x = x + np.vstack([sub, sub])
+    cut = p.get('cut', 5200) * (0.75 + 0.25 * np.exp(-t / 0.4))
+    x = np.vstack([_va.vcf(x[i] * 0.8, cut, res=0.12, drive=1.2) for i in range(2)])
+    pk = np.vstack([_va.saw(fr * 2, n, 0.1)] * 2) * np.exp(-t / 0.035) * 0.45   # the pluck on the attack
+    y = np.tanh((x + hp(pk, 900)) * 1.6) / 1.25
+    return y * env * 0.42
+
+
+def v_gallopbass(m, dur, p, glide=None, mod=None):
+    """Gallop bass: the tight rolling trance bass - a saw and a square through a low-pass that snaps shut in 70 ms,
+    a clean sine underneath, very short notes, so the 16th-note gallop between the kicks stays punchy and never smears."""
+    f = float(mtof(m))
+    env, n, t = _env_n(min(dur, 0.3), 0.002, 0.11, 0.25, 0.05)
+    x = _va.saw(np.full(n, f), n, 0.0) + 0.5 * _va.pulse(np.full(n, f * 1.002), n, 0.25, 0.5)
+    cut = 260 + 2400 * np.exp(-t / 0.07) + 2 * f
+    y = _va.vcf(x * 0.4, cut, res=0.2, drive=1.5) + 0.55 * np.sin(2 * np.pi * f * t)
+    return np.vstack([y, y]) * env * 0.6
+
+
+def v_rallysaw(m, dur, p, glide=None, mod=None):
+    """Rally saw: the hard lead of rally / drift phonk - two detuned saws pushed through a wavefolder and a hard
+    clipper, a bit-crushed edge and a quick pitch scoop into each note; nasty, narrow and in your face."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.003, 0.25, 0.85, 0.08)
+    fr = _glide_freq(f, n, glide, 0.03) * 2 ** (-0.7 * np.exp(-t / 0.02) / 12)
+    x = _va.saw(fr * 2 ** (-6 / 1200), n, 0.0) + _va.saw(fr * 2 ** (6 / 1200), n, 0.5)
+    x = np.sin(1.8 * x)                                                   # fold
+    x = np.clip(x * 2.2, -1, 1)                                           # hard clip
+    q = 2 ** 6
+    x = np.round(x * q) / q                                               # crush
+    y = lp(eq(x, 'peak', 1400, 1.0, 4.0), 7000)
+    return _st(y * env, 8) * 0.3
+
+
+def v_growl808(m, dur, p, glide=None, mod=None):
+    """Growl 808: the distorted 808 of rally phonk - a long sine 808 with a short pitch drop, driven into tube clipping
+    so its harmonics growl in the low mids (heard on small speakers), with a slides-friendly glide; kept mono."""
+    f = float(mtof(m))
+    env, n, t = _env_n(dur, 0.002, 0.5, 0.8, p.get('r', 0.18))
+    fr = _glide_freq(f, n, glide, 0.07) * 2 ** (2.0 * np.exp(-t / 0.025) / 12)
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    y = np.sin(ph)
+    y = np.tanh(y * p.get('drive', 4.0)) / np.tanh(p.get('drive', 4.0))
+    y = y + 0.18 * np.tanh(3 * np.sin(2 * ph))
+    y = lp(y, 2400)
+    return np.vstack([y, y]) * env * 0.5
+
+
+def v_purepluck(m, dur, p, glide=None, mod=None):
+    """Pure pluck: the bright, round melodic pluck of sunny melodic deep house - a triangle and a soft FM 'ping' on the
+    attack, two voices a few cents apart, a medium decay that leaves room for the dotted-8th delay to carry the tune."""
+    f = float(mtof(m))
+    n = int((min(dur, 0.8) + 0.45) * SR)
+    t = np.arange(n) / SR
+    out = np.zeros((2, n))
+    for side, c in ((0, -4), (1, 4)):
+        fc = f * 2 ** (c / 1200)
+        ph = 2 * np.pi * fc * t
+        idx = 1.6 * np.exp(-t / 0.045)
+        tri = (2 / np.pi) * np.arcsin(np.sin(ph + idx * np.sin(2 * ph)))
+        out[side] = tri + 0.25 * np.sin(2 * ph)
+    env = np.exp(-t / p.get('d', 0.32)) * np.minimum(1, t / 0.002)
+    env[-int(0.02 * SR):] *= np.linspace(1, 0, int(0.02 * SR))
+    return lp(out * env, 6500) * 0.35
+
+
+NEW_229 = (
+    ('stacklead', v_stacklead, 'Stack lead (modern trance: 9 saws + pluck attack)', ('lead', 'chords'), 81),
+    ('gallopbass', v_gallopbass, 'Gallop bass (tight rolling trance bass)', ('bass',), 38),
+    ('rallysaw', v_rallysaw, 'Rally saw (folded, clipped phonk lead)', ('lead', 'arp'), 81),
+    ('growl808', v_growl808, 'Growl 808 (driven 808 for rally phonk)', ('bass',), 38),
+    ('purepluck', v_purepluck, 'Pure pluck (bright round melodic-house pluck)', ('lead', 'arp'), 46),
+)
+for _name, _fn, _info, _roles, _gm in NEW_229:
+    INSTRUMENTS[_name] = _fn
+    INSTRUMENT_INFO[_name] = _info
+    GM_PROGRAM[_name] = _gm
+    for _role in _roles:
+        if _name not in ROLE_CHOICES[_role]:
+            ROLE_CHOICES[_role].append(_name)

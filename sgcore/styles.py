@@ -3332,6 +3332,131 @@ style('uplifting_trance', 'Electronic', 'Uplifting trance: emotional minor-key a
                  lead=['supersaw_lead', 'leadsaw', 'pluck_saw', 'hypersaw', 'emolead', 'progpluck']),
       label='Uplifting Trance')
 
+# ============================== 2.29 MODERN TRANCE (from nine 2022 trance radio edits the user sent) ==============
+# Measured: 128-140 BPM (median 136); radio edits of 3-4.5 min (~124 bars) with SHORT intros (0-16 bars) and one BIG
+# breakdown in the middle (26-47 bars) where piano, pads and the lead melody carry it; the bass rolls - off-beat 8ths,
+# a 16th gallop between the kicks, or 16ths throughout - under a four-on-the-floor kick; everything pumps hard (+5 dB
+# of swell per beat, 3-8 dB); the mids are very wide (side/mid 0.65-0.9 at 1-5 kHz: stacked supersaws), the sub mono
+# (0.03-0.18); loud (about -7.6 LUFS, crest ~11.4) and much brighter than the older trance (only -12 dB at 2-8 kHz
+# against the bass); harmony in two-bar chords, minor loops like VII-iv-VI-III and i-VI-III-VII, or major ii-I-iii.
+TRANCE_2020_TONE = [0.0, -0.3, -6.4, -9.8, -9.8, -9.8, -12.3, -12.9, -16.6]
+FORMS['trance_2020s'] = [('intro', 8, {'kick', 'top', 'bass', 'fx'}, {'filter_in': True}),
+                         ('verse', 16, {'kick', 'snare', 'top', 'bass', 'arp', 'pad'}, {}),
+                         ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'drop': True, 'crash': True}),
+                         ('break', 24, {'pad', 'chords', 'lead', 'fx'}, {'alt': True, 'crash': True}),
+                         ('build', 8, {'top', 'snare', 'chords', 'pad', 'arp', 'lead'}, {'build': True}),
+                         ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'drop': True, 'crash': True}),
+                         ('outro', 16, {'kick', 'top', 'bass', 'arp'}, {})]
+FORMS['trance_2020s_long'] = [('intro', 16, {'kick', 'top', 'bass', 'fx'}, {'filter_in': True}),
+                              ('verse', 16, {'kick', 'snare', 'top', 'bass', 'arp', 'pad'}, {}),
+                              ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'drop': True, 'crash': True}),
+                              ('break', 32, {'pad', 'chords', 'lead', 'fx'}, {'alt': True, 'crash': True}),
+                              ('build', 8, {'top', 'snare', 'chords', 'pad', 'arp', 'lead'}, {'build': True}),
+                              ('drop', 32, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'drop': True, 'crash': True}),
+                              ('break', 8, {'pad', 'arp', 'fx'}, {}),
+                              ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'drop': True}),
+                              ('outro', 8, {'kick', 'top', 'bass'}, {})]
+style('trance_2020s', 'Electronic',
+      'Modern trance (2020s main stage, radio edit): a punchy four-on-the-floor kick at 132-140 with a rolling bass - '
+      'off-beat 8ths, a 16th gallop or straight 16ths - a short intro, a driving first drop, then one big emotional '
+      'breakdown where piano, wide pads and the lead melody carry the song before a snare-roll build into the last drop; '
+      'huge stacked supersaw leads and chords, plucky 16th arps, everything pumping hard against the kick; loud, bright '
+      'and very wide, with a mono sub',
+      bpm=(132, 140), scales=['minor', 'minor', 'major'], swing=0.5, human=0.002, kit='trance', form='trance_2020s',
+      roots=[9, 11, 3, 5, 6, 5, 9, 6, 4], no_rotation=True, no_layers=True, exact_pools=True, no_answer=True,
+      chord_size=4, chord_bars=2, voicing='open', chord_center=62, own_progs=True,
+      progs={'minor': [[6, 3, 5, 2], [0, 5, 2, 6], [5, 6, 0, 0], [3, 5, 2, 6], [0, 6, 5, 6]], 'major': [[1, 0, 2, 3], [5, 3, 0, 4], [3, 4, 5, 5]]},
+      sc_depth=1.0, sc_release=0.65, sc_arc=True, filter_arc=True, reverb=3.0, rev_predelay=0.04, rev_hp=220, delay_beats=0.75,
+      fill=True, transition_moves=['crash', 'swell', 'crash'], build_family=['roll', 'filter', 'lift'],
+      song_variations=dict(
+          bass=[dict(name='off-beat 8ths', bass=['..R...R...R...R.']),
+                dict(name='gallop', bass=['..RR..RR..RR..RR', '.RRR.RRR.RRR.RRR']),
+                dict(name='rolling 16ths', bass=['.RRR.RRR.RRR.RRR'])],
+          palette=[dict(name='stack', lead='stacklead', chords='hypersaw', arp='trancepluck', pad='trancepad', bass='gallopbass'),
+                   dict(name='classic saws', lead='supersaw_lead', chords='supersaw', arp='pluck_saw', pad='trancepad', bass='rollbass'),
+                   dict(name='bright pluck', lead='stacklead', chords='supersaw', arp='superpluck', pad='trancestrings', bass='fmroll'),
+                   dict(name='piano breakdown', lead='stacklead', chords='piano', arp='trancepluck', pad='trancestrings', bass='gallopbass')],
+          form=[dict(name='radio edit', form='trance_2020s'), dict(name='extended', form='trance_2020s_long')],
+          bpm=[dict(name='132', bpm=(132, 134)), dict(name='136', bpm=(135, 137)), dict(name='138', bpm=(137, 140))],
+          lead=[dict(name='anthem', lead_rh=['x-x-x-x-x---x---', 'x--x--x-x-------', 'x-x-x---x-x-x---']),
+                dict(name='long notes', lead_rh=['x-------x---x---', 'x---x---x-------']),
+                dict(name='syncopated', lead_rh=['x--x--x---x--x--', '..x--x--x-x-x---'])]),
+      drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'chat': ['x.x.x.x.x.x.x.x.', 'xxxxxxxxxxxxxxxx'],
+             'ride': ['x.x.x.x.x.x.x.x.']},
+      snare_tracks=['clap'],
+      bass=['..R...R...R...R.', '..RR..RR..RR..RR'], bass_lo=31, bass_gate=0.6,
+      chord_rh=['x---------------', '..x...x...x...x.'],
+      arp=dict(rate=4, mode='updown', oct=5),
+      lead_rh=['x-x-x-x-x---x---', 'x--x--x-x-------', 'x-x-x---x-x-x---'], lead_oct=5, repetition=0.85,
+      gm_hint='Punchy trance kick, clap, off-beat open hat, 16th hats, ride; rolling bass (off-beat 8ths / gallop / 16ths); '
+              'huge stacked supersaw lead and chords with OTT; plucky 16th arp; wide trance pad; piano in the breakdown',
+      tracks=[T('kick', 'kick', 'kick', db=-10), T('clap', 'snare', 'clap', rev=0.3, db=-18),
+              T('ohat', 'top', 'ohat', pan=0.4, db=-24), T('chat', 'top', 'chat', pan=-0.4, db=-26), T('ride', 'top', 'ride', pan=0.2, db=-29),
+              T('bass', 'bass', 'gallopbass', sc=0.75, db=-13),
+              T('chords', 'chords', 'hypersaw', wide=0.8, ott=0.3, rev=0.4, sc=1.0, db=-21, hp=180),
+              T('pad', 'pad', 'trancepad', wide=1.0, rev=0.6, sc=1.0, db=-25),
+              T('arp', 'arp', 'trancepluck', wide=0.6, dly=0.4, dly_time=0.75, rev=0.35, sc=1.0, db=-23),
+              T('lead', 'lead', 'stacklead', ott=0.35, wide=0.6, rev=0.5, dly=0.3, sc=0.9, db=-17),
+              T('texture', 'fx', 'texture', db=-36)],
+      master=dict(tone=TRANCE_2020_TONE, lufs=-6.4, air=2.5, low=1.2, width=1.3, max_gr=4.5, min_plr=6.6, low_gr=3.5, tone_amount=1.0, tone_limit=6.0),
+      pools=dict(bass=['gallopbass', 'rollbass', 'fmroll', 'nordroll'],
+                 chords=['hypersaw', 'supersaw', 'piano', 'stab'],
+                 pad=['trancepad', 'trancestrings', 'strings', 'gatepad'],
+                 arp=['trancepluck', 'pluck_saw', 'superpluck', 'tranceseq'],
+                 lead=['stacklead', 'supersaw_lead', 'hypersaw', 'trancebell']),
+      label='Modern trance (2020s, stacked saws, big breakdown)')
+
+
+# ============================== 2.29 RALLY PHONK (from the user's five phonk references) ==========================
+# Measured: 124-127 BPM (one at 150), short (1.5-4 min, ~73 bars), a hard kick on every beat with extra 16th kicks
+# and a distorted 808 / growl bass that alternates two notes (often the minor 3rd and the 7th, or the root alone),
+# the clap and hats busy on the off-16ths; VERY compressed (crest ~8.6 dB, -7 LUFS), narrow (side/mid 0.24, the
+# low end mono), pumping (median +3.6 dB, up to +10), a heavy 60-120 Hz and a dark top. Hard, nasty and in your face.
+PHONK_RALLY_TONE = [-1.1, 0.0, -8.6, -9.6, -12.6, -12.1, -15.2, -14.9, -20.5]
+FORMS['rally_phonk'] = [('intro', 8, {'top', 'lead', 'fx'}, {'filter_in': True}),
+                        ('drop', 16, {'kick', 'snare', 'top', 'bass', 'lead', 'arp'}, {'drop': True, 'crash': True}),
+                        ('verse', 8, {'kick', 'snare', 'top', 'bass', 'arp'}, {}),
+                        ('drop', 16, {'kick', 'snare', 'top', 'bass', 'lead', 'arp', 'chords'}, {'drop': True}),
+                        ('break', 8, {'lead', 'chords', 'fx'}, {'level': 0.6}),
+                        ('drop', 16, {'kick', 'snare', 'top', 'bass', 'lead', 'arp', 'chords'}, {'drop': True, 'crash': True}),
+                        ('outro', 4, {'kick', 'top', 'lead'}, {'stop_end': True})]
+style('rally_phonk', 'Electronic',
+      'Rally phonk: hard, short, car-speaker phonk at 124-128 (or a sprint at 150) - a distorted kick on every beat with '
+      'extra 16th kicks, a growling driven 808 bouncing between two notes, busy clipped claps and hats, a distorted '
+      'cowbell or folded-saw riff on loop and Memphis-style chops; squashed loud, narrow and pumping, with a mono low end',
+      bpm=(124, 128), scales=['minor', 'phrygian'], swing=0.5, human=0.002, kit='808', form='rally_phonk',
+      roots=[8, 6, 8, 1, 11], no_rotation=True, no_layers=True, exact_pools=True, no_answer=True, harmony_default='plain', phrasing_default='off',
+      chord_size=3, chord_bars=1, own_progs=True,
+      progs={'minor': [[2, 4, 2, 4], [0, 0, 0, 0], [5, 5, 2, 2], [0, 6, 0, 6]], 'phrygian': [[0, 1, 0, 1], [0, 0, 1, 0]]},
+      sc_depth=0.8, sc_release=0.35, reverb=1.2, drum_crush=0.3, drum_drive=0.75,
+      kit_override=dict(kick=dict(drive=7.0), clap=dict(drive=3.0), snare=dict(drive=3.0)),
+      song_variations=dict(
+          bpm=[dict(name='rally 125', bpm=(124, 128)), dict(name='rally 125', bpm=(124, 128)), dict(name='sprint 150', bpm=(148, 152))],
+          palette=[dict(name='cowbell', lead='cowbell_dist', arp='vox', bass='growl808'),
+                   dict(name='folded saw', lead='rallysaw', arp='cowbell', bass='growl808'),
+                   dict(name='crushed bell', lead='cowbell_crushed', arp='rallysaw', bass='808')]),
+      drums={'kick': ['X...X...X...X.x.', 'X..xX...X..xX...', 'X...X.x.X...X..x'], 'clap': [BACKBEAT, '....X..x....X.x.'],
+             'chat': ['x.xxx.xxx.xxx.xx', '.x.x.x.x.x.x.x.x'], 'cowbell808': ['..x.......x.....']},
+      snare_tracks=['clap'], bass_mode='808', bass_lo=26, bass_glide=0.3,
+      bass=['R...R...R...R...', 'R..R..R...R..R..'],
+      chord_rh=['x---------------'], arp=dict(rate=4, mode='random', oct=4, prob=0.3),
+      lead_rh=['x.x.x.x.x.xxx.x.', 'x..x..x.x..x..x.', 'xxx.xxx.x.x.x.x.'], lead_lo=57, repetition=0.95, simplicity=0.2,
+      gm_hint='Hard distorted four-on-the-floor kick with extra 16ths; a growling distorted 808 bouncing between two notes; '
+              'clipped claps and busy hats; a distorted cowbell or folded saw riff; Memphis vocal chops; squashed loud',
+      tracks=[T('kick', 'kick', 'kick', db=-10, drive=0.6), T('clap', 'snare', 'clap', rev=0.15, db=-15),
+              T('chat', 'top', 'chat', pan=0.4, db=-24, drive=0.3), T('cowbell808', 'top', 'cowbell808', pan=-0.4, db=-28),
+              T('bass', 'bass', 'growl808', sc=0.4, db=-10),
+              T('chords', 'chords', 'darkpiano', rev=0.3, db=-27),
+              T('arp', 'arp', 'vox', rev=0.25, dly=0.2, db=-23, pan=-0.3, wide=0.5),
+              T('lead', 'lead', 'cowbell_dist', sc=0.4, rev=0.15, db=-14, wide=0.3, p=dict(drive=6.0, crush=0.35, ring=9.0))],
+      master=dict(tone=PHONK_RALLY_TONE, lufs=-6.8, air=1.5, low=2.0, drive=0.6, clip=1.0, width=1.3, max_gr=6.0, min_plr=5.6, low_gr=4.5, tone_amount=1.0, tone_limit=6.0, lofi=True, wobble=0.15),
+      pools=dict(bass=['growl808', '808', 'reese'],
+                 chords=['darkpiano', 'organ', 'orchhit'],
+                 arp=['vox', 'cowbell', 'rallysaw', 'phonkbell'],
+                 lead=['cowbell_dist', 'rallysaw', 'cowbell_crushed', 'cowbell', 'phonkbell']),
+      label='Rally phonk (hard, 124-128, growl 808)')
+
+
 # from the references: ~32 bars where the keys and pads build with no kick, 12 bars of kick + sub without hats, the
 # full groove, a long (24-36 bar) kick-out break where the hats and keys carry on, kick + sub alone, the last groove
 FORMS['melodic_house'] = [('intro', 16, {'chords', 'pad', 'fx'}, {'filter_in': True}),
@@ -5112,8 +5237,8 @@ FORMS['melodic_house_radio'] = [('intro', 8, {'pad', 'chords', 'arp', 'fx'}, {'f
                                 ('verse', 4, {'kick', 'bass', 'chords', 'pad'}, {}),
                                 ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'drop': True}),
                                 ('verse', 8, {'kick', 'snare', 'top', 'bass', 'chords', 'arp'}, {}),
-                                ('break', 12, {'top', 'chords', 'pad', 'lead', 'fx'}, {'alt': True}),
-                                ('build', 4, {'kick', 'bass', 'chords', 'pad'}, {'build': True}),
+                                ('break', 24, {'top', 'chords', 'pad', 'lead', 'fx'}, {'alt': True}),   # (2.29: the radio
+                                ('build', 8, {'kick', 'bass', 'chords', 'pad'}, {'build': True}),       # edits' breakdowns run 24-36)
                                 ('drop', 24, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'drop': True, 'alt': True}),
                                 ('outro', 4, {'chords', 'pad', 'arp'}, {'fade': True})]
 
@@ -5122,7 +5247,7 @@ style('sunny_melodic_house', 'Electronic',
       texture_kind=['shore', 'birds', 'waves', 'none', 'none'], bpm=(121, 124), scales=['minor', 'dorian', 'major'], swing=0.55, human=0.003, form='melodic_house_radio', form_scale=1, build_family=['drumless', 'filter', 'pickup'],
       progs={'minor': [[0, 5, 0, 5], [3, 6, 3, 6], [5, 2, 5, 2], [6, 4, 6, 4], [2, 0, 2, 0], [3, 6, 4, 3], [0, 6, 3, 0], [0, 5, 2, 6], [5, 3, 0, 6], [0, 3, 5, 4], [3, 6, 0, 5]], 'dorian': [[0, 3, 0, 6], [0, 6, 3, 4], [0, 2, 1, 0]],
              'major': [[1, 4, 1, 4], [5, 3, 5, 3], [3, 0, 3, 0], [4, 2, 4, 2], [5, 0, 5, 0], [1, 4, 2, 1], [5, 4, 1, 5], [0, 4, 5, 3], [5, 3, 0, 4], [3, 4, 0, 5]]},
-      chord_size=4, sc_depth=0.95, sc_release=0.8, reverb=2.6, kit='909',
+      chord_size=4, sc_depth=1.0, sc_release=1.0, reverb=2.6, kit='909',
       kit_override=dict(kick=dict(pitch=50, punch=120, decay=8, drive=1.6, click=0.3)),
       drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'chat': ['.o.o.o.o.o.o.o.o', 'oxoxoxoxoxoxoxox'],
              'shaker': ['oxxoxxoxoxxoxxox', 'x.xxx.xxx.xxx.xx'], 'conga': ['..o..x.o...o.x..', 'x..o..x...o..x..'],
@@ -5144,25 +5269,26 @@ style('sunny_melodic_house', 'Electronic',
               T('arp', 'arp', 'pluck_saw', sc=0.9, pan=-0.45, rev=0.35, dly=0.4, db=-27, p=dict(cut=3000)),
               T('lead', 'lead', 'pluck', sc=0.8, rev=0.45, dly=0.35, pan=0.1, db=-20, p=dict(bright=6000)),
               T('texture', 'fx', 'texture', db=-38)],
-      master=dict(tone=[0.0, -2.6, -8.0, -9.1, -11.1, -15.5, -20.2, -17.4, -20.4], lufs=-6.8, air=1.4, low=1.5, tone_amount=0.8, tone_limit=5.0, max_gr=3.0, low_gr=2.5, width=2.0),
+      master=dict(tone=[0.0, -2.6, -8.0, -9.1, -11.1, -15.5, -20.2, -17.4, -20.4], lufs=-6.8, air=1.4, low=1.5, tone_amount=0.8, tone_limit=5.0, max_gr=4.5, min_plr=6.8, low_gr=3.5, width=2.0),
       pools=dict(bass=['moogbass', 'sinebass', 'sawbass', 'sf:fingerbass', 'deepbass'],
                  chords=['piano', 'm1piano', 'epiano', 'pluck_saw'],
                  pad=['strings', 'warmpad', 'glasspad', 'solina', 'lushpad'],
-                 arp=['pluck_saw', 'pluck', 'marimba', 'bell', 'mhpluck'],
-                 lead=['pluck', 'flute', 'pluck_saw', 'marimba', 'breathlead']),
+                 arp=['pluck_saw', 'purepluck', 'pluck', 'marimba', 'bell', 'mhpluck'],
+                 lead=['pluck', 'purepluck', 'flute', 'pluck_saw', 'marimba', 'breathlead']),
       label='Melodic deep house (sunny, piano & strings)')
 
 FORMS['emotive_deep_house'] = [   # the extended-mix arc: DJ intro, the groove stacking up, a first main section, the long
-    ('intro', 16, {'kick', 'top', 'fx'}, {'filter_in': True}),                     # emotional breakdown, the build, the
+    ('intro', 8, {'top', 'pad', 'fx'}, {'filter_in': True}),                       # emotional breakdown, the build, the
+    ('intro', 8, {'kick', 'top', 'fx'}, {}),                                       # (2.29: the references open without
     ('verse', 8, {'kick', 'top', 'snare', 'bass', 'arp', 'fx'}, {}),               # full return, and a DJ-friendly exit
     ('verse', 16, {'kick', 'top', 'snare', 'bass', 'arp', 'chords', 'pad'}, {'crash': True}),
     ('drop', 16, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead'}, {'drop': True}),
-    ('break', 16, {'pad', 'chords', 'lead', 'arp', 'fx'}, {'alt': True, 'crash': True}),
-    ('build', 8, {'top', 'chords', 'pad', 'arp', 'lead'}, {'build': True}),
+    ('break', 24, {'pad', 'chords', 'lead', 'arp', 'fx'}, {'alt': True, 'crash': True}),   # (2.29: 24 bars - the main
+    ('build', 8, {'top', 'chords', 'pad', 'arp', 'lead'}, {'build': True}),               # breakdowns run 24-36)
     ('drop', 24, {'kick', 'snare', 'top', 'bass', 'chords', 'pad', 'arp', 'lead', 'fx'}, {'drop': True}),
     ('verse', 8, {'kick', 'top', 'snare', 'bass', 'arp'}, {}),
     ('outro', 8, {'kick', 'top', 'bass'}, {}),
-]   # (2.26: 120 bars, was 152 - the reference extended mixes run 104-144 bars, a 16-bar breakdown in the middle)
+]   # (2.26: 120 bars, was 152 - the reference extended mixes run 104-144 bars; 2.29: the kick waits 8 bars, a 24-bar breakdown)
 
 style('emotive_deep_house', 'Electronic',
       'Emotive melodic deep house (extended mix): a deep, round 122 bpm kick with a long low tail, a warm rolling bass on the '
@@ -5175,7 +5301,7 @@ style('emotive_deep_house', 'Electronic',
       progs={'major': [[1, 4, 1, 4], [5, 3, 5, 3], [3, 0, 3, 0], [4, 2, 4, 2], [5, 0, 5, 0], [1, 4, 2, 1], [5, 4, 1, 5], [0, 4, 5, 3], [3, 0, 4, 5]],
              'minor': [[0, 5, 0, 5], [3, 6, 3, 6], [5, 2, 5, 2], [6, 4, 6, 4], [2, 0, 2, 0], [3, 6, 4, 3], [0, 6, 3, 0], [0, 5, 2, 6], [0, 3, 5, 4]]},
       own_progs=True, roots=[6, 7, 6, 7, 4, 0, 5, 10, 3, 1], texture_kind=['shore', 'shore', 'birds', 'waves', 'air', 'none'],
-      chord_size=4, chord_bars=1, sc_depth=0.95, sc_release=0.8, reverb=3.2, rev_predelay=0.035, rev_hp=200, delay_beats=0.75,
+      chord_size=4, chord_bars=1, sc_depth=1.0, sc_release=1.0, reverb=3.2, rev_predelay=0.035, rev_hp=200, delay_beats=0.75,
       kit='909', kit_override=dict(kick=dict(pitch=47, punch=95, decay=11, drive=1.4, click=0.18)),
       drums={'kick': [FOUR], 'clap': [BACKBEAT], 'ohat': [OFFHAT], 'shaker': ['oxxoxxoxoxxoxxox', 'x.xxx.xxx.xxx.xx', 'oxoxoxoxoxoxoxox'],
              'rim': ['......o.......o.', '...o.......o....'], 'chat': ['..o...o...o...o.']},
@@ -5197,12 +5323,12 @@ style('emotive_deep_house', 'Electronic',
               T('arp', 'arp', 'mhpluck', sc=0.9, pan=-0.45, rev=0.35, dly=0.45, db=-25),
               T('lead', 'lead', 'breathlead', sc=0.8, rev=0.5, dly=0.3, pan=0.05, db=-19),
               T('texture', 'fx', 'texture', rev=0.5, db=-36)],
-      master=dict(tone=[0.0, -2.6, -8.0, -9.1, -11.1, -15.5, -20.2, -17.4, -20.4], lufs=-6.8, air=2.0, low=1.5, tone_amount=0.8, tone_limit=5.0, max_gr=3.0, low_gr=2.5, width=2.0),
+      master=dict(tone=[0.0, -2.6, -8.0, -9.1, -11.1, -15.5, -20.2, -17.4, -20.4], lufs=-6.8, air=2.0, low=1.5, tone_amount=0.8, tone_limit=5.0, max_gr=4.5, min_plr=6.8, low_gr=3.5, width=2.0),
       pools=dict(bass=['deepbass', 'sinebass', 'moogbass', 'junobass'],
                  chords=['piano', 'guitar', 'lushpad', 'epiano', 'mhpluck'],
                  pad=['lushpad', 'strings', 'warmpad', 'vocalpad', 'junopad', 'atmos'],
-                 arp=['mhpluck', 'guitar', 'pluck', 'marimba', 'harp'],
-                 lead=['breathlead', 'mhpluck', 'flute', 'vox', 'piano', 'emolead', 'vocalchop']),
+                 arp=['mhpluck', 'purepluck', 'guitar', 'pluck', 'marimba', 'harp'],
+                 lead=['breathlead', 'purepluck', 'mhpluck', 'flute', 'vox', 'piano', 'emolead', 'vocalchop']),
       label='Emotive deep house (extended, plucks & pads)')
 
 FORMS['club_trance_2000s'] = [   # the long club remix: DJ intro, a long rolling groove, the riff section, the big

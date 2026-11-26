@@ -561,7 +561,8 @@ def production_pass(mix, cfg, out, log=print):
         c['width'] = float(c.get('width', 1.0)) * 0.8
         c['min_corr'] = 0.45                              # (the width guard's target: the wide parts stop cancelling)
         changes.append('narrower stereo (it lost level in mono)')
-    if rep['plr'] < 7.6:                                 # (the first master already keeps ~8 dB)
+    if rep['plr'] < min(7.6, float(cfg.get('min_plr', 8.0)) - 0.4):   # (the first master already keeps ~8 dB; 2.29: a
+        #                                                  genre mastered loud on purpose is judged against its own floor)
         c['max_gr'] = max(1.0, float(c.get('max_gr', 3.0)) - 1.5)
         c['lufs'] = float(c.get('lufs', -10)) - 1.0
         changes.append('less limiting, 1 dB quieter (it was squashed)')

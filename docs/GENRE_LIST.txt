@@ -1,9 +1,9 @@
-STUDIO LAB - ALL 427 GENRES  (version 2.25.0)
+STUDIO LAB - ALL 429 GENRES  (version 2.28.0)
 Grouped as in the app: tab > group. [id] = the name for the command line, e.g.  python studiolab.py generate --style bhajan
-* = new in 2.25
+* = new in 2.28
 
 ========================================================================
-ELECTRONIC  (226)
+ELECTRONIC  (228)
 ========================================================================
 
 House & Disco  (32)
@@ -40,7 +40,7 @@ House & Disco  (32)
     Brazilian bass  [brazilian_bass]
     Progressive House Journey (Y2K)  [progressive_journey]
 
-Techno & Trance  (28)
+Techno & Trance  (29)
     techno  [techno]
     Peak-Time Techno  [peak_time_techno]
     minimal  [minimal]
@@ -65,6 +65,7 @@ Techno & Trance  (28)
     Dark psy / forest (148-158)  [darkpsy]
     Late-90s trance-pop  [trance_pop_90s]
     Hard trance / hands-up  [hard_trance]
+    Modern trance (2020s, stacked saws, big breakdown)  [trance_2020s]
     UK bass / 130  [uk_bass_130]
     UK tribal techno-bass (broken kicks, rolling percussion)  [uk_tribal_techno]
     Hard techno (150)  [hard_techno]
@@ -124,7 +125,7 @@ Drum & Bass, Breaks & Hard  (21)
     Big beat  [big_beat]
     UK hardcore / happy hardcore  [uk_hardcore]
 
-Hip-Hop, Trap & Phonk  (32)
+Hip-Hop, Trap & Phonk  (33)
     Trap  [trap]
     UK Drill  [uk_drill]
     UK road rap  [uk_road_rap]
@@ -138,6 +139,7 @@ Hip-Hop, Trap & Phonk  (32)
     Drift Phonk  [phonk]
     Memphis Phonk  [memphis_phonk]
     House Phonk  [house_phonk]
+    Rally phonk (hard, 124-128, growl 808)  [rally_phonk]
     Brazilian Phonk  [brazilian_phonk]
     Hard trap (brass & strings)  [hard_trap]
     Trap metal (clipped 808s, drop-tuned guitars)  [trap_metal]

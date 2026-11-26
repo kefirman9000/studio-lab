@@ -1,5 +1,53 @@
 # Changelog
 
+## 2.29.0
+Two new genres and two reworked ones from your three new reference sets: nine 2022 trance radio edits, five rally phonk tracks and fifteen melodic deep house tracks from one producer.
+
+Every track was measured: tempo, key, chord loop, kick / bass / clap / hat patterns, section lengths, tone, loudness, punch, stereo width per band and how much the music pumps against the kick. Generated songs were then measured the same way and tuned until they landed near the records.
+
+- **New genre: Modern trance (2020s main stage).**
+  - **What the records do:**
+    - 132–140 BPM;
+    - short intros and one big breakdown in the middle (26–47 bars), carried by piano, pads and the lead;
+    - a rolling bass: off-beat 8ths, a 16th gallop or straight 16ths;
+    - +5 dB of pump per beat;
+    - very wide upper mids from stacked saws, with a mono sub;
+    - loud, about -7.6 LUFS;
+    - much brighter than the older trance in the app.
+  - **What the genre does now:**
+    - it follows those numbers;
+    - it adds a radio-edit and an extended layout;
+    - it picks the references' keys;
+    - each song chooses its bass style.
+- **New genre: Rally phonk.**
+  - **What the records do:**
+    - 124–128 BPM, with an occasional 150 sprint;
+    - 2–3 minutes long;
+    - a hard kick on every beat plus extra 16ths;
+    - a driven 808 bouncing between two notes;
+    - busy clipped claps and hats;
+    - squashed on purpose: about 8.6 dB crest, -7 LUFS;
+    - narrow, with a mono low end.
+  - **What the genre does now:** it follows those numbers. The existing drift phonk stays as it is; it sits much faster, at 145–165.
+- **Melodic deep house (emotive and sunny), checked against fifteen more of that producer's tracks:**
+  - **Breakdowns:**
+    - **On the records:** the main breakdown runs 24–36 bars.
+    - **Now:** emotive deep house's breakdown is 24 bars (was 16) and sunny melodic house's is 24 (was 12, with an 8-bar build).
+  - **Intro:** emotive deep house now opens with 8 bars of percussion and pads before the kick, like the records.
+  - **Pump:** it is deeper, closer to the records' +6.7 dB.
+  - **Loudness:** both master about 1 dB louder, closer to the records' -7.4 LUFS.
+- **New sounds:**
+  - **Stack lead:** 9 wide saws, a sub octave and a pluck on the attack, the modern trance lead.
+  - **Gallop bass:** a tight rolling trance bass whose filter snaps shut, so 16ths stay punchy.
+  - **Rally saw:** a folded, clipped, crushed phonk lead.
+  - **Growl 808:** a driven 808 that growls in the low mids.
+  - **Pure pluck:** a bright, round melodic-house pluck made for dotted-8th delays. It is now in the emotive and sunny melodic house rotations.
+- **Mastering for genres that are loud on purpose:**
+  - A genre can now set how much punch it keeps (rally phonk, modern trance and melodic deep house sit at 5.6–6.8 dB, like their records).
+  - The production pass no longer turns those songs down 1 dB for being "squashed".
+  - The mix check only calls a song squashed below its genre's own floor.
+- **Bass phrasing on "Genre decides"** no longer adds pickups and fills in four-on-the-floor genres (house, trance, techno), whose basslines roll rather than fill. "Always" still adds them.
+
 ## 2.28.0
 - **Sunlit electronica and dive electronica re-measured against 18 more references from the same artist**: 8 from the live-band album and 10 from the dreamy, programmed one.
   - **Two-chord sways:** most of these songs rock between just two chords, a bar or two each, for the whole track. Five new harmony choices:

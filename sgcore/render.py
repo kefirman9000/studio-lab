@@ -467,7 +467,11 @@ def mix_report(y, song=None, spb=None, tone=None, low_env=None, dyn_eq=None, lea
     warn = []
     if tp > -0.9:
         warn.append('true peak above -1 dBTP')
-    if plr < 7.5:
+    plr_ok = 7.5
+    if song is not None:                                  # (2.29) a genre mastered loud on purpose (its references sit at a
+        mp_ = float(((song.get('st') or {}).get('master') or {}).get('min_plr', 8.0))   # 5.6-6.8 PLR) is only
+        plr_ok = min(7.5, mp_ - 0.4)                      # 'squashed' below its own floor
+    if plr < plr_ok:
         warn.append('very squashed (little punch left)')
     if corr < 0.15:
         warn.append('very wide / phasey stereo - check in mono')
