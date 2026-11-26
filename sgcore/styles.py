@@ -2833,6 +2833,11 @@ style('sunrise_chillwave', 'Electronic',
 #    -17 at 4-8, -24 above): warm, tape-dark, nothing brittle; ~-10 LUFS with ~12 dB crest (not squashed);
 #  - the fast ones pump: the pads dip ~3 dB on each beat and recover over an 8th; the slow ones barely pump (~1 dB).
 SUNLIT_TONE = [-1.4, 0.0, -7.1, -5.1, -1.8, -2.6, -14.2, -16.7, -24.6]
+# 2.28: re-measured per album (8 live-band references, 10 from the dreamy programmed album): the live-band record sits
+# lighter in the deep sub and fuller at 120-250 Hz, the dreamy one fuller in the low-mids; both darker at 1-2 kHz than
+# the mixed first measurement. Loudness: about -8.6 LUFS (live band) and -10 LUFS (dreamy) integrated.
+AWAKE_TONE = [-5.2, 0.0, -4.2, -5.4, -5.9, -6.2, -14.6, -17.2, -24.2]
+DIVE_TONE = [-2.3, 0.0, -3.4, -3.3, -2.0, -5.2, -13.3, -16.8, -24.2]
 DAYDREAM_TONE = [-3.2, 0.0, -2.4, -7.9, -11.2, -11.9, -16.2, -16.8, -23.0]
 FORMS['sunlit'] = [('intro', 8, {'pad', 'fx'}, {'filter_in': True}),
                    ('intro', 8, {'pad', 'arp', 'top', 'fx'}, {}),
@@ -2868,7 +2873,14 @@ SUNLIT_HARMONY = [
     dict(name='IV - ii - vi', scales=['major'], chord_bars=1, progs={'major': [[3, 1, 5, 0], [0, 5, 5, 0], [3, 1, 5, 5]]}),
     dict(name='home vamp', scales=['major'], chord_bars=4, progs={'major': [[0, 0, 0, 5], [0, 3, 0, 3]]}),
     dict(name='mixolydian glow', scales=['mixolydian'], chord_bars=2, progs={'mixolydian': [[0, 6, 0, 6], [0, 6, 3, 0]]}),
-    dict(name='minor shade', scales=['minor'], chord_bars=2, progs={'minor': [[0, 5, 2, 6], [0, 5, 0, 5]]})]
+    dict(name='minor shade', scales=['minor'], chord_bars=2, progs={'minor': [[0, 5, 2, 6], [0, 5, 0, 5]]}),
+    # 2.28: 18 more references from the same two albums - most of their songs rock between just TWO chords, a bar or
+    # two each, for the whole track: IV-I (the most common, 4 of 10 on the dreamy album), I-IV, I-vi, iii-V and vi-V
+    dict(name='IV - I sway', scales=['major'], chord_bars=2, progs={'major': [[3, 0, 3, 0], [3, 0, 3, 1]]}),
+    dict(name='I - IV rock', scales=['major'], chord_bars=2, progs={'major': [[0, 3, 0, 3], [0, 3, 0, 5]]}),
+    dict(name='I - vi', scales=['major'], chord_bars=2, progs={'major': [[0, 5, 0, 5], [5, 0, 5, 3]]}),
+    dict(name='iii - V float', scales=['major'], chord_bars=2, progs={'major': [[2, 4, 2, 4], [2, 4, 2, 5]]}),
+    dict(name='vi - V', scales=['major'], chord_bars=2, progs={'major': [[5, 4, 5, 4], [5, 4, 5, 0]]})]
 # 2.23: the second look at the twelve references (and the user's notes on the two albums they come from) split the
 # 112-122 family in two: the LIVE-BAND records (a drummer with ghost notes, a bass guitar, two interlocking clean
 # guitars carrying the song, the synths supporting) - this genre - and the PROGRAMMED, synth-led dreamy ones
@@ -2882,7 +2894,7 @@ style('sunlit_electronica', 'Electronic',
       'interlocking (one picking 8ths into a dotted-8th delay, one answering high and sparse), a guitar note held over '
       'the whole loop, warm analog pads underneath and a soft mono-synth melody now and then; open maj7 / m7 / add9 '
       'chords that keep their common notes, a long intro, parts coming and going, a breakdown with the bass out',
-      bpm=(112, 122), scales=['major', 'major', 'mixolydian'], swing=0.58, human=0.009, kit='sunroom', form='sunlit',
+      roots=[9, 9, 3, 3, 6, 6, 8, 0, 11], bpm=(112, 140), scales=['major', 'major', 'mixolydian'], swing=0.58, human=0.009, kit='sunroom', form='sunlit',
       chord_size=4, chord_bars=2, voicing='open', chord_center=60, own_progs=True,
       progs={'major': [[5, 3, 0, 3], [5, 3, 1, 3], [0, 1, 0, 3]], 'mixolydian': [[0, 6, 0, 6]], 'minor': [[0, 5, 2, 6]]},
       sc_depth=0.4, sc_release=0.4, phrase_evolve=True, top_pedal=dict(track='halo', lo=74, hi=86),
@@ -2900,7 +2912,8 @@ style('sunlit_electronica', 'Electronic',
                dict(name='high quarters', track='arp_mid', step=1.0, mode='updown', center=76, span=4, vel=0.5, prob=0.8),
                dict(name='dotted answer', track='arp_mid', step=0.75, mode='down', center=72, span=5, vel=0.5, prob=0.75, phrase=4)],
           form=[dict(name='classic', form='sunlit'), dict(name='two breaks', form='sunlit_two'), dict(name='long vamp', form='sunlit_vamp')],
-          bpm=[dict(name='112', bpm=(112, 116)), dict(name='118', bpm=(116, 120)), dict(name='120', bpm=(118, 122))],
+          bpm=[dict(name='112', bpm=(112, 116)), dict(name='118', bpm=(116, 120)), dict(name='120', bpm=(118, 122)),
+               dict(name='128', bpm=(126, 129)), dict(name='136', bpm=(134, 140))],   # (2.28: half the live-band album runs 127-140)
           harmony=SUNLIT_HARMONY,
           bass=[dict(name='driving 8ths', bass=['R.R.R.R.R.R.R.R.', 'R.R.R.R.R.R.RRR.']),
                 dict(name='syncopated', bass=['R..R..R.R..R..R.', 'R..R..R.R.R.R...']),
@@ -2933,7 +2946,7 @@ style('sunlit_electronica', 'Electronic',
               T('arp_mid', 'arp', 'neckguitar', rev=0.45, dly=0.45, dly_time=0.75, pan=0.32, db=-23, hp=150, sc=0.3),
               T('lead', 'lead', 'softmoog', rev=0.45, dly=0.3, db=-19, sc=0.2),
               T('texture', 'fx', 'texture', db=-40)],
-      master=dict(tone=SUNLIT_TONE, lufs=-9.2, air=-0.5, low=1.6, width=1.0, lofi=True, wobble=0.2, vintage_lp=12000),
+      master=dict(tone=AWAKE_TONE, lufs=-7.6, air=-0.5, low=1.6, width=1.0, lofi=True, wobble=0.2, vintage_lp=12000),
       pools=dict(bass=['sf:pickbass', 'sf:fingerbass', 'ebass', 'roundmoog'],
                  chords=['sunpad', 'rhodes', 'junopad', 'warmpad'],
                  pad=['warmpad', 'sunpad', 'spaceguitar', 'vocalpad'],
@@ -2968,7 +2981,7 @@ style('dive_electronica', 'Electronic',
       '8ths, a guitar frozen into the reverb and a sparse answering guitar, one high note held over each loop, '
       'reversed swells sucking into the new sections; slow maj7 / m7 / add9 loops that keep their common notes, a long '
       'intro without bass, a breakdown and a slow fade - tape-dark and dreamy',
-      bpm=(112, 122), scales=['major', 'major', 'mixolydian'], swing=0.6, human=0.006, kit='divekit', form='dive',
+      roots=[9, 9, 3, 3, 6, 6, 8, 0, 11], bpm=(112, 122), scales=['major', 'major', 'mixolydian'], swing=0.6, human=0.006, kit='divekit', form='dive',
       chord_size=4, chord_bars=2, voicing='open', chord_center=60, own_progs=True,
       progs={'major': [[5, 3, 0, 3], [5, 3, 1, 3], [0, 1, 0, 3]], 'mixolydian': [[0, 6, 0, 6]], 'minor': [[0, 5, 2, 6]]},
       sc_depth=0.95, sc_release=0.45, sc_quarters=True, phrase_evolve=True, top_pedal=dict(track='halo', lo=74, hi=86),
@@ -3022,7 +3035,7 @@ style('dive_electronica', 'Electronic',
               T('arp_mid', 'arp', 'neckguitar', rev=0.45, dly=0.45, dly_time=0.75, pan=0.22, db=-25, hp=150, sc=0.9),
               T('lead', 'lead', 'softmoog', rev=0.45, dly=0.3, db=-18, sc=0.5),
               T('texture', 'fx', 'texture', db=-38)],
-      master=dict(tone=SUNLIT_TONE, lufs=-8.6, air=-1.0, low=2.0, width=0.95, lofi=True, wobble=0.25, vintage_lp=11000),
+      master=dict(tone=DIVE_TONE, lufs=-8.5, air=-1.0, low=2.0, width=0.95, lofi=True, wobble=0.25, vintage_lp=11000),
       pools=dict(bass=['roundmoog', 'junobass', 'moogbass', 'dreambass'],
                  chords=['sunpad', 'junopad', 'rhodes', 'warmpad'],
                  pad=['spaceguitar', 'sunpad', 'vocalpad', 'warmpad', 'revswell'],

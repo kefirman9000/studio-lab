@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.28.0
+- **Sunlit electronica and dive electronica re-measured against 18 more references from the same artist**: 8 from the live-band album and 10 from the dreamy, programmed one.
+  - **Two-chord sways:** most of these songs rock between just two chords, a bar or two each, for the whole track. Five new harmony choices:
+    - IV–I sway (the most common: 4 of the 10 dreamy songs);
+    - I–IV;
+    - I–vi;
+    - iii–V;
+    - vi–V.
+  - **Faster live-band songs:** half of the live-band album runs 127–140 BPM, not just 112–122. Sunlit electronica can now also land around 128 or 136.
+  - **Keys like the records:** both genres now pick from the references' keys, A and E♭ most, then F♯, A♭, C and B.
+  - **Tone per album:**
+    - The live-band sound sits lighter in the deep sub and fuller at 120–250 Hz.
+    - The dreamy sound is fuller in the low mids.
+    - Both are darker at 1–2 kHz than the earlier, mixed measurement.
+  - **Loudness:** both master closer to the records, about -9 LUFS for the live band and -10 for the dreamy one. They were about 1 dB quieter.
+
 ## 2.27.0
 - **A theme you can follow through the whole song.** The hook (the lead's first two bars in the first drop or chorus) now comes back where you expect it:
   - **Foreshadow:** its opening notes play softly at the end of a long intro, before it really arrives.
