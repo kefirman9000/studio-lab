@@ -353,6 +353,68 @@ def d_hardkick(p):
     return fade_out(soft(y, 1.4), 0.02)
 
 
+def _tr808_kick(p):
+    """TR-808-style kick (2.27): a bridged-T resonator rung by a pulse - a pure, round sine with only a small, quick
+    pitch drop at the start (the 808 'boom' is barely swept, unlike a 909), a soft rounded attack with a faint click,
+    and a long, smooth exponential decay set by 'decay' (the famous long tail). A touch of saturation gives the
+    harmonics that make it audible on small speakers."""
+    n = int(p.get('len', 0.9) * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 50)
+    f = f0 * (1 + 0.35 * np.exp(-t * 45)) + p.get('punch', 90) * 0.25 * np.exp(-t * 120)
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    env = np.exp(-t * p.get('decay', 5) * 0.9) * np.minimum(1.0, t / 0.0015)
+    y = np.sin(ph) * env
+    y = y + p.get('click', 0.15) * 0.6 * bp(noise(n), 1500, 6000) * np.exp(-t * 500)
+    drv = p.get('drive', 1.6)
+    return fade_out(np.tanh(y * drv) / np.tanh(drv), 0.03)
+
+
+def _tr808_snare(p):
+    """TR-808-style snare: two resonators tuned roughly an octave apart (~238 / 476 Hz scaled by 'tone'), each a
+    decaying sine, plus the 'snappy' - high-passed noise with its own envelope. Thinner and more electronic than a 909."""
+    n = int(p.get('len', 0.3) * SR)
+    t = np.arange(n) / SR
+    tf = p.get('tone', 230)
+    body = (np.sin(2 * np.pi * tf * t) * np.exp(-t * 28) + 0.55 * np.sin(2 * np.pi * tf * 2.0 * t) * np.exp(-t * 40))
+    snap = lp(hp(noise(n), 1800), 7500) * np.exp(-t * p.get('decay', 18)) * np.minimum(1.0, t / 0.001)
+    y = body * (0.4 + p.get('body', 0.5)) + snap * p.get('snap', 1.1) * 1.1
+    return fade_out(np.tanh(y * 1.2), 0.02)
+
+
+def _pcm_kick(p):
+    """Early digital drum machine kick (LinnDrum / 707 / DMX - 2.27): those machines played short recordings of a
+    real kick drum, so this is modelled as an acoustic kick - the beater slap, the batter head's quickly falling pitch,
+    a second skin mode, a short shell resonance - before the machine's own bit depth / sample rate (the kit's 'bits'
+    and 'srate') crunch it."""
+    n = int(p.get('len', 0.45) * SR)
+    t = np.arange(n) / SR
+    f0 = p.get('pitch', 55)
+    f = f0 * (1 + 0.9 * np.exp(-t * 30))
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    head = np.sin(ph) * np.exp(-t * p.get('decay', 10)) + 0.35 * np.sin(1.59 * ph) * np.exp(-t * 22)
+    slap = bp(noise(n), 1200, 5000) * np.exp(-t * 260) * (0.4 + p.get('click', 0.35))
+    shell = bp(noise(n), 90, 260) * np.exp(-t * 18) * 0.25
+    y = (head + slap + shell) * np.minimum(1.0, t / 0.0008)
+    drv = p.get('drive', 1.5)
+    return fade_out(np.tanh(y * drv) / np.tanh(drv), 0.02)
+
+
+def _pcm_snare(p):
+    """Early digital drum machine snare: a sampled acoustic snare - two or three shell modes under the wires, a sharp
+    stick attack and a little room - thick and punchy (the 80s LinnDrum / 707 sound)."""
+    n = int(p.get('len', 0.35) * SR)
+    t = np.arange(n) / SR
+    tf = p.get('tone', 205)
+    shell = sum(a * np.sin(2 * np.pi * tf * r * t) * np.exp(-t * d) for r, a, d in ((1.0, 0.8, 22), (1.6, 0.45, 30), (2.3, 0.25, 40)))
+    nz = noise(n)
+    wires = (hp(lp(nz, 9000), 1500) * np.exp(-t * p.get('decay', 12)) * 0.9 + bp(nz, 3000, 7000) * np.exp(-t * 30) * 0.4)
+    stick = hp(noise(n), 3000) * np.exp(-t * 700) * 0.5
+    room = lp(nz, 3000) * np.exp(-t * 9) * 0.06
+    y = shell * p.get('body', 1.0) + wires * p.get('snap', 1.0) + stick + room
+    return fade_out(np.tanh(y * 1.3), 0.02)
+
+
 def _analog_kick(p):
     """Analog drum-machine kick (909 / techno / house - since 1.72): a bridged-T style body - a sine pushed through a
     soft triangle shaper (the 909's slightly square, 'woody' tone), a two-stage pitch drop (a fast click-like sweep
@@ -442,6 +504,10 @@ def d_kick(p):
         return d_hardkick(p)
     if p.get('model') == 'analog':
         return _analog_kick(p)
+    if p.get('model') == 'tr808':
+        return _tr808_kick(p)
+    if p.get('model') == 'pcm':
+        return _pcm_kick(p)
     n = int(p.get('len', 0.5) * SR)
     t = np.arange(n) / SR
     f = p.get('pitch', 48) + p.get('punch', 120) * np.exp(-t * p.get('sweep', 40))
@@ -453,6 +519,10 @@ def d_kick(p):
 def d_snare(p):
     """Snare: a pitched shell tone + band-passed wire noise. Optional: crack (a hard stick transient - the crisp DnB
     snare), nlo / nhi (the wire band), tdecay (how long the shell rings), drive (a squashed, distorted neuro snare)."""
+    if p.get('model') == 'tr808':
+        return _tr808_snare(p)
+    if p.get('model') == 'pcm':
+        return _pcm_snare(p)
     if p.get('model') == 'analog':
         return _analog_snare(p)
     n = int(p.get('len', 0.35) * SR)
@@ -992,6 +1062,20 @@ for _k in ('909', 'trance', 'techno'):
     for _d in ('kick', 'snare', 'clap', 'chat', 'ohat'):
         KITS[_k].setdefault(_d, {})
         KITS[_k][_d] = dict(KITS[_k][_d], model='analog')
+# 2.27: the other classic machines modelled too - the 808 and 606 (analog: bridged-T kick and snare, analog clap,
+# six-oscillator metal hats) and the sample-based 707 / LinnDrum / DMX (their kick and snare were recordings of real
+# drums, so they're modelled as acoustic hits, then crunched by the machine's own bit depth). Old sounds: '<kit>_classic'.
+for _k, _kick, _snare, _rest in (('808', 'tr808', 'tr808', 'analog'), ('606', 'analog', 'tr808', 'analog'),
+                                 ('707', 'pcm', 'pcm', None), ('linn', 'pcm', 'pcm', None), ('dmx', 'pcm', 'pcm', None)):
+    KITS[_k + '_classic'] = {d: dict(v) for d, v in KITS[_k].items()}
+    KITS[_k]['kick'] = dict(KITS[_k].get('kick', {}), model=_kick)
+    KITS[_k]['snare'] = dict(KITS[_k].get('snare', {}), model=_snare)
+    if _rest:
+        for _d in ('clap', 'chat', 'ohat'):
+            KITS[_k][_d] = dict(KITS[_k].get(_d, {}), model=_rest)
+KITS['606']['kick'].update(hold=0.01, drive=1.5)
+KITS['606']['chat'].update(tone=1.12)
+KITS['606']['ohat'].update(tone=1.12)
 # 1.97 surf 60s: a small early-60s rock kit played hard in a live room - a boomy, short kick, a bright, ringing snare
 # with lots of wire rattle, and splashy, washy hats and ride (the 'Wipe Out' kit)
 KITS['surf60s'] = dict(kick=dict(pitch=60, punch=55, sweep=26, decay=12, drive=1.2, len=0.36, click=0.35),

@@ -58,6 +58,7 @@ class Options:
     vinyl: bool = None            # vinyl crackle: only True turns it on (None / False = off)
     blend: list = field(default_factory=list)          # extra styles to fuse with the main style
     blend_parts: dict = field(default_factory=dict)    # part -> style  (groove, bass, harmony, melody, form, mix)
+    blend_mix: float = None       # (2.27) genre DNA: 0..1 how much of the 2nd style (with one blended style and auto parts)
     part_seeds: dict = field(default_factory=dict)     # re-roll one part: harmony, melody, drums, bass, chords
     midi_parts: dict = None       # (1.87) parts imported from a MIDI file {'lead'|'chords'|'bass': [[beat, len, midi, vel]], 'root': pc}
     favorites: list = None        # (1.87) your favourite sounds: picked more often when a genre chooses sounds
@@ -208,6 +209,7 @@ FUSION_PARTS = {
     'form': ['form', 'form_scale'],
     'mix': ['reverb', 'delay_beats', 'master'],
 }
+DNA_ORDER = ['mix', 'melody', 'harmony', 'bass', 'form', 'groove']   # (2.27) what a 2nd style takes over first
 PART_LAYERS = {'groove': ('kick', 'snare', 'top'), 'bass': ('bass',), 'harmony': ('chords', 'pad'),
                'melody': ('lead', 'arp'), 'mix': ('fx',), 'form': ()}
 PART_LABELS = {'groove': 'Drums & groove', 'bass': 'Bassline', 'harmony': 'Chords & pads', 'melody': 'Lead & arps',
@@ -283,6 +285,14 @@ def fuse_styles(opts, rnd):
         return dict(base), {p: opts.style for p in FUSION_PARTS}
     parts = list(FUSION_PARTS)
     assign = {p: s for p, s in (opts.blend_parts or {}).items() if s in STYLES and p in FUSION_PARTS}
+    mix = getattr(opts, 'blend_mix', None)
+    if mix is not None and len(names) == 2:              # (2.27) genre DNA slider: 0 = all the lead style, 1 = all the other
+        mix = max(0.0, min(1.0, float(mix)))
+        # the parts the 2nd style takes over first: the ones that change the colour least drastically go first
+        order = [p for p in DNA_ORDER if p in parts and p not in assign]
+        k = int(round(mix * len(order)))
+        for i, p in enumerate(order):
+            assign[p] = names[1] if i < k else names[0]
     free = [p for p in parts if p not in assign]
     rnd.shuffle(free)
     # make sure every chosen style contributes at least one part
@@ -326,6 +336,16 @@ def fuse_styles(opts, rnd):
         st['kick_track'] = next((t['name'] for t in tracks if t['layer'] == 'kick'), 'kick')
     st['tracks'] = tracks
     st['category'] = base['category']
+    if mix is not None and len(names) == 2:              # tempo and swing glide between the two styles too
+        a, b = STYLES[names[0]], STYLES[names[1]]
+        lo = a['bpm'][0] + (b['bpm'][0] - a['bpm'][0]) * mix
+        hi = a['bpm'][1] + (b['bpm'][1] - a['bpm'][1]) * mix
+        if abs(a['bpm'][0] - b['bpm'][0]) < 40:          # (not across a double / half-time gap: DnB vs house)
+            st['bpm'] = (int(round(min(lo, hi))), int(round(max(lo, hi))))
+        sa, sb = a.get('swing'), b.get('swing')
+        if sa is not None and sb is not None:
+            st['swing'] = sa + (sb - sa) * mix
+        st['blend_mix'] = mix
     return st, assign
 
 
@@ -2018,6 +2038,8 @@ def compose(opts):
 
     if 'counter' in tracks:
         evs += gen_counter(evs, key, sections, cb, st, prng('melody', 2 + 90))
+    if any(t.get('extra_line') for t in tracks.values()):   # (2.27) your extra instruments' own lines
+        evs += gen_extra_lines(evs, key, sections, cb, st, tracks, prng('melody', 2 + 97))
     apply_harm_alts(evs, tracks, harm_alts)
     for (b0, b1, vs) in variations:
         evs = apply_variation(evs, b0, b1, vs, key, st, tracks)
@@ -2151,6 +2173,10 @@ def compose(opts):
     st['drop_space'] = _ev.drop_space(evs, sections, st, opts, tracks, CLUB_DUBSTEP - {'melodic_dubstep', 'chillstep'})   # (1.95.1)
     st['entries'] = _dv.layer_entries(evs, sections, st, opts, tracks)   # (2.14) parts come in one at a time
     st['callbacks'] = _pl.callbacks(evs, sections, st, opts, key)          # (2.16) the song quotes itself
+    from . import theme as _th                                             # (2.27) the theme told as a story
+    st['callbacks'] = list(st['callbacks'] or []) + _th.theme_reprise(evs, sections, st, opts, key)
+    if _th.final_lift(evs, sections, st, opts, key):
+        st['callbacks'].append('last big section: the lead sings in two voices')
     st['harmony_moves'] = _ev.richer_harmony(evs, sections, st, opts, tracks, key)   # (1.97) borrowed chords, inversions, pedals
     st['bass_phrases'] = _ev.bass_phrasing(evs, sections, st, opts, tracks, key)     # (1.97) pickups, fills, wobble answers
     st['top_pedal_notes'] = _ev.top_pedal(evs, sections, st, opts, tracks, key)            # (2.23) one high note held over the chords
@@ -2417,6 +2443,7 @@ def apply_note_edits(evs, edits, tracks):
 SUB_BASSES = ('808', '808dist', '808long', '808punch', 'sinebass', 'deepsub', 'sleepersub', 'divesub', 'logdrum', 'logdrum_deep', 'logdrum_talk', 'logdrum_sine', 'chipbass', 'deepbass', 'splitbass', 'rumble', 'subwob')
 
 EXTRA_FOLLOWS = ('lead', 'counter', 'chords', 'pad', 'arp', 'bass')
+EXTRA_LINES = ('fanfare', 'runs', 'ostinato', 'answer', 'sustain')   # (2.27) extras that write their own line
 
 
 def add_extra_parts(st, opts):
@@ -2433,9 +2460,18 @@ def add_extra_parts(st, opts):
         if not isinstance(x, dict):
             continue
         inst, f = x.get('inst'), x.get('follows', 'lead')
-        if not inst or f not in EXTRA_FOLLOWS or not (inst in INSTRUMENTS or str(inst).startswith(('sf:', 'real:', 'vst:'))):
+        if not inst or (f not in EXTRA_FOLLOWS and f not in EXTRA_LINES) or not (inst in INSTRUMENTS or str(inst).startswith(('sf:', 'real:', 'vst:'))):
             continue
         lead = next((t for t in st['tracks'] if t['name'] == 'lead'), None)
+        if f in EXTRA_LINES:                             # (2.27) its own line, written after the song's parts
+            name = f'extra{i + 1}'
+            layer = {'ostinato': 'arp', 'sustain': 'pad'}.get(f, 'lead')
+            st['tracks'].append(dict(name=name, layer=layer, inst=inst, pan=float(x.get('pan', (-0.3 if i % 2 else 0.3))),
+                                     rev=0.35, dly=0.12 if f in ('answer', 'runs') else 0.0, sc=0.0,
+                                     db=-23 + float(x.get('db', -4) or 0), hp=None, drive=None, p={},
+                                     octave=int(x.get('octave', 0) or 0), user_pick=True, extra=True, extra_line=f))
+            names.add(name)
+            continue
         if f == 'counter' and 'counter' not in names:
             if not lead:
                 continue
@@ -2472,6 +2508,95 @@ def add_counter_track(st, opts):
     lead = next(t for t in st['tracks'] if t['layer'] == 'lead')
     st['tracks'].append(dict(name='counter', layer='lead', inst=inst, pan=-0.3 if (lead.get('pan') or 0) >= 0 else 0.3,
                              rev=max(0.3, lead.get('rev') or 0), dly=0.1, sc=0.0, db=-24, hp=None, drive=None, p={}, counter=True))
+
+
+def gen_extra_lines(evs, key, sections, cb, st, tracks, rnd):
+    """(2.27) Extra instruments that write their own part instead of doubling one:
+    fanfare  - a short brass-style call on the chord (a rhythmic triad figure) at the top of each big section and
+               every 8 bars inside it: the horn / trumpet entrance of a film score
+    runs     - a quick scale run (8 or 16 steps) rushing up into each new section: woodwind / string flourishes
+    ostinato - a repeating 8th-note figure on the chord tones under everything in the fuller sections: the busy
+               pizzicato / mallet / guitar motor
+    answer   - fills the lead's gaps with an echo of its last notes, an octave away: a call and its response
+    sustain  - long held notes on the chord's top voice, moving by step: a string or choir pedal line
+    Every line follows the song's chords and key; the octave setting moves it."""
+    out = []
+
+    def chord_at(beat):
+        for sec in sections:
+            if sec['bar'] * 4 <= beat < (sec['bar'] + sec['bars']) * 4 and sec.get('prog'):
+                b = int(beat // 4) - sec['bar']
+                return sec['prog'][(b // max(1, cb)) % len(sec['prog'])]
+        return 0
+
+    def triad(beat, octv):
+        c = chord_at(beat)
+        return [key.deg(c + iv, octv) for iv in (0, 2, 4)]
+    big = [s_ for s_ in sections if (s_.get('opts') or {}).get('drop') or s_['name'] in ('chorus', 'drop', 'hook', 'climax', 'main', 'theme', 'B')]
+    full = [s_ for s_ in sections if len(s_.get('layers') or ()) >= 4 and s_['name'] not in ('intro', 'outro')]
+    lead = sorted((e for e in evs if e.track == 'lead' and e.midi is not None), key=lambda e: e.beat)
+    for name, t in tracks.items():
+        mode = t.get('extra_line')
+        if not mode:
+            continue
+        o = int(t.get('octave') or 0)
+        if mode == 'fanfare':
+            figs = [[(0, 0.5, 0), (0.5, 0.5, 1), (1, 1.5, 2)], [(0, 0.75, 0), (0.75, 0.25, 0), (1, 0.5, 1), (1.5, 1.5, 2)],
+                    [(0, 1.0, 2), (1, 0.5, 1), (1.5, 1.5, 0)]]
+            fig = rnd.choice(figs)
+            for sec in (big or full or sections[1:2]):
+                for bar in range(0, sec['bars'], 8):
+                    b0 = (sec['bar'] + bar) * 4
+                    tr = triad(b0, 4)
+                    for (bt, d, k) in fig:
+                        out.append(Ev(name, b0 + bt, d, tr[k] + o, 0.85 if bt == 0 else 0.75))
+        elif mode == 'runs':
+            for sec in sections[1:]:
+                b1 = sec['bar'] * 4
+                if b1 < 4:
+                    continue
+                n = rnd.choice([8, 8, 12, 16]) if (sec.get('opts') or {}).get('drop') or sec in big else 6
+                stepd = 0.25 if n > 6 else 1 / 3
+                target = triad(b1, 5)[0] + o
+                for i in range(n):
+                    m = target - (n - i)                 # a diatonic run up into the section's first chord
+                    while (m - key.root) % 12 not in [x % 12 for x in key.scale]:
+                        m -= 1
+                    out.append(Ev(name, b1 - (n - i) * stepd, stepd * 0.9, m, 0.55 + 0.35 * i / n))
+            # keep it diatonic and strictly rising
+            seen = sorted([e for e in out if e.track == name], key=lambda e: e.beat)
+            for a_, b_ in zip(seen, seen[1:]):
+                if b_.beat - a_.beat < 0.4 and b_.midi <= a_.midi:
+                    b_.midi = a_.midi + (1 if (a_.midi + 1 - key.root) % 12 in [x % 12 for x in key.scale] else 2)
+        elif mode == 'ostinato':
+            shape = rnd.choice([[0, 1, 2, 1], [0, 2, 1, 2], [0, 1, 2, 3], [2, 1, 0, 1]])
+            for sec in full:
+                for bt in range(sec['bars'] * 8):
+                    b = sec['bar'] * 4 + bt * 0.5
+                    tr = triad(b, 4)
+                    tr = tr + [tr[0] + 12]
+                    out.append(Ev(name, b, 0.4, tr[shape[bt % 4]] + o, 0.62 if bt % 2 else 0.74))
+        elif mode == 'answer':
+            for a_, b_ in zip(lead, lead[1:]):
+                g0 = a_.beat + a_.dur
+                gap = b_.beat - g0
+                if 1.0 <= gap <= 6:
+                    tail = [e for e in lead if a_.beat - 2 <= e.beat <= a_.beat][-3:]
+                    t0 = math.ceil((g0 + 0.25) * 2) / 2
+                    for j, e in enumerate(tail):
+                        if t0 + j * 0.5 >= b_.beat - 0.25:
+                            break
+                        out.append(Ev(name, t0 + j * 0.5, 0.45, e.midi + (12 if o >= 0 else -12) + (o if abs(o) > 12 else 0), 0.6))
+        elif mode == 'sustain':
+            prev = None
+            for sec in full or sections:
+                for bar in range(0, sec['bars'], max(1, cb)):
+                    b = (sec['bar'] + bar) * 4
+                    tr = triad(b, 5)
+                    m = min(tr, key=lambda x: abs(x - prev)) if prev else tr[2]
+                    out.append(Ev(name, b, 4 * max(1, cb) - 0.05, m + o, 0.6))
+                    prev = m
+    return out
 
 
 def gen_counter(evs, key, sections, cb, st, rnd):

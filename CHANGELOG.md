@@ -1,5 +1,32 @@
 # Changelog
 
+## 2.27.0
+- **A theme you can follow through the whole song.** The hook (the lead's first two bars in the first drop or chorus) now comes back where you expect it:
+  - **Foreshadow:** its opening notes play softly at the end of a long intro, before it really arrives.
+  - **Breakdown:** the first breakdown or bridge restates it at half speed, every note twice as long, over the open pads.
+  - **Farewell:** its first bar plays once more, softly, near the end of the outro.
+  - **Final lift:** the last big section is bigger than the first. The lead gets a second voice a third above it for the second half.
+  - All of it stays in key. It's skipped for through-composed scores, exact forms, ornamented / quarter-tone melodies, and Development: off. Each song lists what it did.
+- **Extra instruments can play their own parts** (Parts panel > + Add instrument > "Own line: ..."), instead of only doubling a part:
+  - **Fanfare calls:** a short brass-style call on the chord at the top of each big section and every 8 bars inside it.
+  - **Runs into sections:** a quick rising scale run into each new section, like a woodwind or string flourish.
+  - **Ostinato:** a busy 8th-note figure on the chord tones under the fuller sections, like pizzicato, mallets or guitar.
+  - **Answers the melody:** echoes the lead's last notes in its gaps, an octave away.
+  - **Held notes:** long notes on the chords' top voice, moving by step, like a string or choir pedal.
+
+  Every line follows the song's chords and key, and the octave setting moves it.
+- **The other classic drum machines are modelled too.** The old sounds stay in the drum menu as "classic sound, before 2.27".
+  - **808:** a pure, barely swept boom with the long smooth tail, a two-tone snare with its own snappy noise, the analog clap and six-oscillator hats.
+  - **606:** the analog kick, snare, clap and hats, smaller and brighter.
+  - **707, LinnDrum, DMX:** these machines played recordings of real drums. Their kick and snare are now modelled as acoustic hits (beater slap, skin and shell, stick and wires), then crunched by each machine's own bit depth.
+- **🎹 Play any sound** (transport bar):
+  - Open it to play any instrument on your computer keyboard (A W S E D F T G Y H U J K O L P ;, with Z / X for octave), by clicking the on-screen keys, or from a plugged-in MIDI keyboard.
+  - The notes are prepared as soon as you pick a sound, so they play straight away.
+- **Genre DNA slider:** when you blend exactly two styles, a slider sets how much of each (0-100 %).
+  - As you slide, the second style takes over the mix and space first, then the lead and arps, the chords, the bass, the arrangement and last the drums.
+  - The tempo and swing glide between the two styles, unless they're a half / double-time pair.
+  - Picking a source for a part yourself still works as before.
+
 ## 2.26.0
 - **Melodic deep house learned from 18 more reference tracks** (one producer's melodic deep house). The emotive deep house, sunny melodic house and melodic house genres changed in four ways:
   - **Two-chord vamps:**

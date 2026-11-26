@@ -381,6 +381,14 @@ select:focus,input[type=number]:focus,input[type=text]:focus{border-color:color-
 .hint{line-height:1.45}
 *{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--muted) 40%,transparent) transparent}
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--muted) 35%,transparent);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+#kbPanel{position:fixed;left:50%;bottom:62px;transform:translateX(-50%);z-index:60;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:0 12px 36px rgba(0,0,0,.45);display:none;min-width:620px}
+#kbPanel .kbtop{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+#kbPanel select{max-width:280px}
+#kbKeys{position:relative;height:96px;user-select:none;touch-action:none}
+#kbKeys .wk,#kbKeys .bk{position:absolute;top:0;border:1px solid var(--line);border-radius:0 0 6px 6px;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;font:10px var(--mono);color:var(--muted);padding-bottom:4px}
+#kbKeys .wk{height:96px;background:color-mix(in srgb,var(--text) 88%,var(--bg));color:#555}
+#kbKeys .bk{height:58px;background:#111;z-index:2;color:#888}
+#kbKeys .on{background:var(--acc) !important;color:var(--onacc)}
 </style>
 </head>
 <body>
@@ -586,9 +594,14 @@ select:focus,input[type=number]:focus,input[type=text]:focus{border-color:color-
   <div class="tpt"><b id="tpTitle">Nothing playing</b><span id="tpSub">Make a preview to start</span></div>
   <span class="tm" id="tpTime">0:00</span><canvas id="tpWave" title="Click to jump"></canvas><span class="tm" id="tpDur">0:00</span>
   <span class="tpl" id="tpLoud"></span>
+  <button class="mini" id="kbBtn" title="Play any sound on your computer keyboard (A W S E D F T G Y H U J K ...) or a MIDI keyboard">🎹 Play</button>
   <button class="mini" id="tpAB" title="Compare your last two results: flips between them at the same spot, loudness matched (key: B)">⇄ A/B last two</button>
   <label class="tpv" title="Volume"><span id="tpVolIc"></span><input type="range" id="tpVol" min="0" max="1" step="0.01" value="1"></label>
 </footer>
+<div id="kbPanel"><div class="kbtop"><b>🎹 Play a sound</b><select id="kbInst"></select>
+  <button class="mini" id="kbDn" title="Octave down (Z)">− oct</button><span id="kbOct" class="hint"></span><button class="mini" id="kbUp" title="Octave up (X)">+ oct</button>
+  <span class="hint" id="kbMidi"></span><span class="hint" id="kbLoad"></span><button class="mini" id="kbClose" style="margin-left:auto">✕</button></div>
+  <div id="kbKeys"></div><div class="hint" style="margin-top:6px">Keys: A W S E D F T G Y H U J K O L P ; - Z / X change octave. A MIDI keyboard plugged in plays it too.</div></div>
 </div>
 
 <div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
@@ -771,6 +784,14 @@ function renderSelected(){
     c.innerHTML=`${i===0?'★ ':''}${styleName(id)}${state.blend.length?' <span class="x" title="remove">✕</span>':''}`; c.title=i===0?'Lead style':'Click to make this the lead style';
     c.onclick=e=>{ if(e.target.classList.contains('x')) toggleMix(id); else setLead(id); }; mc.appendChild(c); });
   $('#mixHint').innerHTML=state.blend.length?'★ = lead style (sets the overall character). Click a chip to change the lead.':'Tip: tick other styles in the list to blend them in.';
+  { const old_=document.querySelector('.dna'); if(old_) old_.remove(); }
+  if(state.blend.length===1){ const v=state.blend_mix==null?50:Math.round(state.blend_mix*100);   // (2.27) genre DNA slider
+    const d=document.createElement('div'); d.className='dna'; d.style.cssText='display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px';
+    d.innerHTML=`<span title="${esc(styleName(state.style))}">${esc(styleName(state.style))}</span><input type="range" id="dnaMix" min="0" max="100" step="5" value="${v}" style="flex:1" title="Genre DNA: how much of each style. Mix and space, then lead and arps, chords, bass, arrangement and last the drums move over as you slide; the tempo and swing glide between them."><span>${esc(styleName(state.blend[0]))}</span><b id="dnaV" style="font-family:var(--mono);min-width:64px;text-align:right">${100-v} / ${v}</b>`;
+    $('#mixHint').after(d);
+    d.querySelector('#dnaMix').dataset.knob='1';
+    d.querySelector('#dnaMix').oninput=e=>{ state.blend_mix=+e.target.value/100; state.blend_parts={}; d.querySelector('#dnaV').textContent=`${100-e.target.value} / ${e.target.value}`; };
+  }
   renderTabs();
   // fusion part selectors
   $('#fusionBox').style.display=state.blend.length?'':'none';
@@ -993,7 +1014,7 @@ function setTraits(t){ t=t||{}; document.querySelectorAll('[data-trait]').forEac
   if($('#traitSurprise')) $('#traitSurprise').checked=!!t._surprise; }
 
 function options(){
-  const o={style:state.style, seed:+$('#seed').value||1, blend:state.blend, blend_parts:state.blend_parts, mood:state.mood,
+  const o={style:state.style, seed:+$('#seed').value||1, blend:state.blend, blend_parts:state.blend_parts, blend_mix:(state.blend.length===1&&state.blend_mix!=null&&!Object.keys(state.blend_parts).length)?state.blend_mix:null, mood:state.mood,
     length:state.length, structure:state.structure, energy:$('#energy').value/100, complexity:$('#complexity').value/100,
     simplicity:$('#simplicity').value/100, repetition:$('#repetition').value/100, melody_range:$('#mrange').value/100,
     humanize:$('#humanize').value/100, variety:$('#variety').value/100, instruments:Object.assign({}, (instMode()==='keep'&&!state.blend.length)?(state.locked||{}):{}, state.instruments), muted:state.muted, brightness:$('#brightness').value/100, synth_character:$('#synthChar').value||'analog',
@@ -1055,7 +1076,7 @@ function options(){
   return o;
 }
 function applyOptions(o){
-  state.style=o.style; state.blend=o.blend||[]; state.blend_parts=o.blend_parts||{}; state.mood=o.mood||null;
+  state.style=o.style; state.blend=o.blend||[]; state.blend_parts=o.blend_parts||{}; state.blend_mix=o.blend_mix??null; state.mood=o.mood||null;
   state.part_fx=Object.assign({},o.part_fx||{}); state.part_effects=JSON.parse(JSON.stringify(o.part_effects||{})); state.drum_voices=Object.assign({},o.drum_voices||{}); state.midi_parts=o.midi_parts||null; state.tlevels=Object.assign({}, o.track_levels||{}); state.extra_parts=JSON.parse(JSON.stringify(o.extra_parts||[])); if(typeof renderDrumVoices==='function') renderDrumVoices();
   state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.locked={}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
   $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#masterPreset').value=o.master_preset||''; $('#prodPass').checked=o.production_pass!==false; $('#motif').value=o.motif||'song'; $('#development').value=o.development||'auto'; $('#rotation').value=o.rotation||'auto';
@@ -3107,7 +3128,8 @@ new MutationObserver(()=>document.querySelectorAll('select[data-sndrole],select[
 document.querySelectorAll('select[data-sndrole],select[data-sndvoice]').forEach(enhanceSound);
 
 // ------------------------------------------------------------- extra instruments: more rows under the parts (orchestration)
-const XFOLLOW=[['lead','Doubles the melody'],['counter','Counter-melody'],['chords','Doubles the chords'],['pad','Doubles the pad'],['arp','Doubles the arp'],['bass','Doubles the bass']];
+const XFOLLOW=[['lead','Doubles the melody'],['counter','Counter-melody'],['chords','Doubles the chords'],['pad','Doubles the pad'],['arp','Doubles the arp'],['bass','Doubles the bass'],
+  ['fanfare','Own line: fanfare calls'],['runs','Own line: runs into sections'],['ostinato','Own line: ostinato (busy motor)'],['answer','Own line: answers the melody'],['sustain','Own line: held notes']];
 function allInstruments(){ const seen=new Set(), out=[]; Object.entries(META.roles||{}).forEach(([r,l])=>(l||[]).forEach(i=>{ if(!seen.has(i.id)){ seen.add(i.id); out.push(i); } }));
   const g={}; out.forEach(i=>{ (g[i.group||'Built-in']=g[i.group||'Built-in']||[]).push(i); }); return g; }
 function extraRows(){
@@ -3135,10 +3157,64 @@ function extraRows(){
   w.innerHTML=`<div class="xh">Add an instrument <span class="qh" data-tip="Thicken the arrangement like an orchestrator: e.g. celesta + glockenspiel doubling the melody an octave or two up, horns on a counter-melody, a choir on the chords, pizzicato on the bass. Each one plays the notes of the part it follows and appears under that part.">i</span>
       <button class="mini" id="xAdd" style="margin-left:auto">+ Add instrument</button></div>`;
   $('#soundBody').appendChild(w);                       // (after every part; the panel moves the parts above the drums)
-  w.querySelector('#xAdd').onclick=e=>{ e.preventDefault(); const sug=[['celesta','lead',12],['glock','lead',24],['horn','counter',0],['choir','chords',0],['pizz','bass',12],['flute','lead',12]];
+  w.querySelector('#xAdd').onclick=e=>{ e.preventDefault(); const sug=[['celesta','lead',12],['horn','fanfare',0],['flute','runs',12],['pizz','ostinato',0],['glock','lead',24],['violin','answer',0],['choir','sustain',0],['horn','counter',0]];
     const used=new Set(state.extra_parts.map(x=>x.inst)); const s=sug.find(([i])=>!used.has(i))||sug[0];
     state.extra_parts.push({inst:s[0],follows:s[1],octave:s[2],db:-4}); renderSelected(); };
 }
+
+// ------------------------------------------------------------- (2.27) play any sound on the computer / a MIDI keyboard
+const KB={ac:null, buf:{}, oct:4, inst:null, role:'lead', loading:{}, midi:null};
+const KB_KEYS='awsedftgyhujkolp;';
+function kbAll(){ const seen=new Set(), out=[]; Object.entries(META.roles||{}).forEach(([r,l])=>(l||[]).forEach(i=>{ if(!seen.has(i.id)){ seen.add(i.id); out.push([i.id,i.name,r,i.group||'Built-in']); } })); return out; }
+function kbOpen(){
+  const panel=$('#kbPanel'); const on=panel.style.display!=='block'; panel.style.display=on?'block':'none'; if(!on) return;
+  if(!KB.ac) KB.ac=new (window.AudioContext||window.webkitAudioContext)();
+  const all=kbAll(), groups={}; all.forEach(x=>(groups[x[3]]=groups[x[3]]||[]).push(x));
+  const cur=KB.inst||(state.instruments||{}).lead||(((META.styles||[]).find?null:null))||'piano';
+  $('#kbInst').innerHTML=Object.entries(groups).map(([g,xs])=>`<optgroup label="${esc(g)}">`+xs.map(([id,n,r])=>`<option value="${esc(id)}" data-r="${r}" ${id===cur?'selected':''}>${esc(n)}</option>`).join('')+'</optgroup>').join('');
+  kbSet($('#kbInst').value); kbDraw(); kbMidiInit();
+}
+function kbSet(id){ KB.inst=id; const o=$('#kbInst').selectedOptions[0]; KB.role=(o&&o.dataset.r)||'lead'; kbPrefetch(); }
+function kbDraw(){
+  const box=$('#kbKeys'); const lo=12*(KB.oct+1); box.innerHTML=''; $('#kbOct').textContent='C'+KB.oct;
+  const W=30; let x=0;
+  for(let m=lo;m<lo+25;m++){ const pc=m%12, black=[1,3,6,8,10].includes(pc), i=m-lo;
+    const k=document.createElement('div'); k.className=black?'bk':'wk'; k.dataset.m=m;
+    if(black){ k.style.left=(x-W*0.3)+'px'; k.style.width=(W*0.6)+'px'; } else { k.style.left=x+'px'; k.style.width=(W-2)+'px'; x+=W; }
+    k.textContent=i<KB_KEYS.length?KB_KEYS[i].toUpperCase():''; box.appendChild(k); }
+  box.style.width=x+'px';
+  box.onpointerdown=e=>{ const k=e.target.closest('[data-m]'); if(k) kbPlay(+k.dataset.m); };
+}
+async function kbFetch(m){
+  const key=KB.inst+'|'+m; if(KB.buf[key]||KB.loading[key]) return KB.buf[key]||KB.loading[key];
+  KB.loading[key]=(async()=>{ try{ const r=await fetch('/api/audition',{method:'POST',headers:{'X-Studio-Token':TOKEN,'Content-Type':'application/json'},
+      body:JSON.stringify({inst:KB.inst, role:KB.role, midi:m, dur:1.2})}); if(!r.ok) return null;
+      const ab=await r.arrayBuffer(); KB.buf[key]=await KB.ac.decodeAudioData(ab); return KB.buf[key]; }catch(e){ return null } finally{ delete KB.loading[key]; } })();
+  return KB.loading[key];
+}
+async function kbPrefetch(){ const lo=12*(KB.oct+1), inst=KB.inst; let n=0; $('#kbLoad').textContent='loading…';
+  for(let m=lo;m<lo+25;m++){ if(KB.inst!==inst) return; await kbFetch(m); n++; $('#kbLoad').textContent=n<25?`loading ${n}/25`:''; } }
+async function kbPlay(m, vel){
+  const el=$(`#kbKeys [data-m="${m}"]`); if(el){ el.classList.add('on'); setTimeout(()=>el.classList.remove('on'),180); }
+  if(!KB.ac) return; if(KB.ac.state==='suspended') KB.ac.resume();
+  const b=await kbFetch(m); if(!b) return; const src=KB.ac.createBufferSource(), g=KB.ac.createGain(); g.gain.value=(vel==null?0.9:vel)*0.9;
+  src.buffer=b; src.connect(g); g.connect(KB.ac.destination); src.start();
+}
+function kbMidiInit(){ if(KB.midi||!navigator.requestMIDIAccess) return;
+  navigator.requestMIDIAccess().then(acc=>{ KB.midi=acc; const hook=()=>{ let n=0; acc.inputs.forEach(inp=>{ n++; inp.onmidimessage=ev=>{ const [st,no,vel]=ev.data;
+      if((st&0xf0)===0x90&&vel>0){ if($('#kbPanel').style.display==='block'){ kbPlay(no, vel/127); } } }; }); $('#kbMidi').textContent=n?`MIDI: ${n} device${n>1?'s':''}`:''; };
+    hook(); acc.onstatechange=hook; }).catch(()=>{});
+}
+(function(){
+  $('#kbBtn').onclick=kbOpen; $('#kbClose').onclick=()=>$('#kbPanel').style.display='none';
+  $('#kbInst').onchange=e=>kbSet(e.target.value);
+  const oct=d=>{ KB.oct=Math.max(0,Math.min(7,KB.oct+d)); kbDraw(); kbPrefetch(); };
+  $('#kbDn').onclick=()=>oct(-1); $('#kbUp').onclick=()=>oct(1);
+  document.addEventListener('keydown',e=>{ if($('#kbPanel').style.display!=='block'||e.repeat||e.ctrlKey||e.metaKey||e.altKey) return;
+    if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName||'')&&e.target.id!=='kbInst') return;
+    const k=e.key.toLowerCase(); if(k==='z'){ oct(-1); e.preventDefault(); return; } if(k==='x'){ oct(1); e.preventDefault(); return; }
+    const i=KB_KEYS.indexOf(k); if(i>=0){ e.preventDefault(); e.stopPropagation(); kbPlay(12*(KB.oct+1)+i); } }, true);
+})();
 </script>
 </body>
 </html>
