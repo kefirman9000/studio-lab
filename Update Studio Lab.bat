@@ -26,7 +26,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
  "  Invoke-WebRequest ('https://github.com/' + $repo + '/archive/refs/heads/main.zip') -OutFile (Join-Path $tmp 'sl.zip') -UseBasicParsing -Headers @{'User-Agent'='studio-lab-updater'};" ^
  "  Write-Host 'Unpacking...'; Expand-Archive (Join-Path $tmp 'sl.zip') (Join-Path $tmp 'x') -Force;" ^
  "  $src=Get-ChildItem (Join-Path $tmp 'x') -Directory | Select-Object -First 1;" ^
- "  $keep=@('runtime','songs','presets','settings.json','update.json','user_sounds','ratings.json','plugins','vst_sounds','sound_library','recent_instruments.json','.git');" ^
+ "  $keep=@('runtime','songs','presets','settings.json','update.json','user_sounds','ratings.json','ab_picks.jsonl','plugins','vst_sounds','sound_library','recent_instruments.json','.git');" ^
  "  Write-Host 'Installing...';" ^
  "  Get-ChildItem $src.FullName -Force | Where-Object { $keep -notcontains $_.Name } | ForEach-Object { Copy-Item $_.FullName -Destination $here -Recurse -Force };" ^
  "  $py=Join-Path $here 'runtime\python\python.exe'; if(Test-Path $py){ Write-Host 'Preparing it for a quick start...'; & $py -m compileall -q -j 0 --invalidation-mode checked-hash (Join-Path $here 'sgcore') (Join-Path $here 'studiolab.py') | Out-Null };" ^

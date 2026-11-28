@@ -168,6 +168,31 @@ def plugin_state():
 RATINGS = os.path.join(ROOT, 'ratings.json')
 
 
+AB_PICKS = os.path.join(ROOT, 'ab_picks.jsonl')
+
+
+def load_ab_picks():
+    """(2.30) Every A/B choice you made: {t, winner, loser, winner_sounds, loser_sounds} (newest last)."""
+    out = []
+    try:
+        with open(AB_PICKS, encoding='utf-8') as f:
+            for line in f:
+                try:
+                    out.append(json.loads(line))
+                except ValueError:
+                    pass
+    except OSError:
+        pass
+    return out
+
+
+def save_ab_pick(rec, keep=2000):
+    picks = load_ab_picks() + [rec]
+    with open(AB_PICKS, 'w', encoding='utf-8') as f:
+        for r in picks[-keep:]:
+            f.write(json.dumps(r) + '\n')
+
+
 def load_ratings():
     try:
         with open(RATINGS) as f:
@@ -508,7 +533,8 @@ def library():
     return items
 
 
-PROJECT_SUFFIXES = ('_settings.json', '_PLUGIN_GUIDE.txt', '_samplepack', '_waveform', '_DAW', '_parts', '_stems',
+PROJECT_SUFFIXES = ('_60s.wav', '_30s.wav', '_15s.wav', '_60s.mp3', '_30s.mp3', '_15s.mp3', '_seamless_loop.wav', '_seamless_loop.mp3', '_release',
+                    '_settings.json', '_PLUGIN_GUIDE.txt', '_samplepack', '_waveform', '_DAW', '_parts', '_stems',
                     '.mp3', '.wav', '.mid', '.mmp', '.json', '.zip', '.flac')
 
 
@@ -887,6 +913,9 @@ class Handler(BaseHTTPRequestHandler):
             items = []
             base = int(o.get('seed') or random.randrange(1, 10 ** 6))
             vary = body.get('vary_part')
+            # (2.30) a brand-new song (its seed was just rolled): compose a few candidates and keep the strongest
+            best_of = int(body.get('pick_best') or 0) if section is None and vary is None else 0
+            picked = []
             for i in range(n):
                 if vary in ('drums', 'bass', 'chords', 'melody', 'harmony'):
                     # N versions of one part over the exact same song: same seed, only that part's seed changes
@@ -895,6 +924,11 @@ class Handler(BaseHTTPRequestHandler):
                     oi = dict(o, seed=base, part_seeds=ps)
                 else:
                     oi = dict(o, seed=base + i if n > 1 else base)
+                if best_of > 1:
+                    from .polish import pick_best_seed
+                    s_, sc_, tried_ = pick_best_seed(oi, oi['seed'], k=min(8, best_of), budget=2.0 if n == 1 else 1.0)
+                    oi['seed'] = s_
+                    picked.append(dict(seed=s_, score=sc_, tried=tried_))
                 if fresh:                                # the same seed again (e.g. Full song after its preview) = the same song
                     k = (oi.get('style'), oi['seed'])
                     if k in SEED_TASTE:
@@ -922,7 +956,7 @@ class Handler(BaseHTTPRequestHandler):
                 # in seconds; the full song follows in the same job
                 items.insert(0, dict(options=dict(items[0]['options']), outputs=['wav'], preview=True, section=None,
                                      loop=False, quick=True, weight=0.2))
-            return self._json({'job': submit(items)})
+            return self._json({'job': submit(items), 'picked': picked})
         if p == '/api/versions':                         # (2.19) editor: radio edit / extended mix / shorter / longer
             from .compose import compose
             from .versions import version_edits, duration
@@ -1209,6 +1243,21 @@ class Handler(BaseHTTPRequestHandler):
             with open(RATINGS, 'w') as f:
                 json.dump(rs[-500:], f)
             return self._json(taste())
+        if p == '/api/ab_pick':                          # (2.30) A/B: 'this one is better' - logged with both songs'
+            rec = dict(t=int(time.time()), winner=body.get('winner') or {}, loser=body.get('loser') or {})   # settings
+            for k in ('winner_sounds', 'loser_sounds'):
+                if isinstance(body.get(k), dict):
+                    rec[k] = {str(x): str(y) for x, y in body[k].items() if isinstance(y, str)}
+            save_ab_pick(rec)
+            if body.get('rate', True):                   # the winner also counts as a 👍 (steers sounds and Surprise me)
+                rs = load_ratings()
+                r_ = dict(options=rec['winner'], rating=1, t=rec['t'], ab=True)
+                if rec.get('winner_sounds'):
+                    r_['sounds'] = rec['winner_sounds']
+                rs.append(r_)
+                with open(RATINGS, 'w') as f:
+                    json.dump(rs[-500:], f)
+            return self._json(dict(taste(), ab_count=len(load_ab_picks())))
         if p == '/api/uiprefs':                          # the app's own settings (theme, visualizer, window size ...)
             prefs = body.get('prefs')                    # kept in settings.json, so they survive a new port / profile
             if isinstance(prefs, dict):

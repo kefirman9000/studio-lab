@@ -24,7 +24,22 @@ jobs:
       - run: .py39/bin/python -m tests.features
       - run: .py39/bin/python -m tests.smoke --shard 1/8
 
+  quick:
+    # (2.30) the few-minute checks run first: the 16 long jobs below only start once these pass
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m compileall -q sgcore studiolab.py tests tools
+      - run: python -m tests.appmisc
+      - run: python -m tests.quick
+
   tests:
+    needs: quick
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

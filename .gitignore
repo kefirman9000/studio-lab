@@ -7,6 +7,7 @@ settings.json
 .DS_Store
 user_sounds/
 ratings.json
+ab_picks.jsonl
 plugins/*
 !plugins/README.txt
 vst_sounds/

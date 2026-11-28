@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Studio Lab</title>
 <script>
+let ROLLED=true;                                    // (2.30) the seed is a fresh one for a new song (until settings set it)
 // (2.12.1) the saved theme painted before anything else, so the app opens in your colours (no flash of the default)
 (function(){ try{ const P='__SL_UIPREFS__'; if(P&&typeof P==='object') for(const [k,v] of Object.entries(P)) if(localStorage.getItem(k)!==v) localStorage.setItem(k,v);
   const c=JSON.parse(localStorage.getItem('sl_theme_css')||'null'); if(!c||!c.vars) return; const r=document.documentElement;
@@ -440,7 +441,7 @@ select:focus,input[type=number]:focus,input[type=text]:focus{border-color:color-
       </div>
       <div class="outs" id="outs"></div>
       <div class="lenrow"><span class="hint">Full song length</span><div class="seg" id="lenPreset"></div>
-        <label class="hint" style="margin-left:auto" title="When you click Full song, hear a short preview of the same song within seconds while the full version renders"><input type="checkbox" id="quickFirst"> quick preview first</label></div>
+        <label class="hint" style="margin-left:auto" title="When you click Full song, hear a short preview of the same song within seconds while the full version renders"><input type="checkbox" id="quickFirst"> quick preview first</label><label class="hint" title="Each new song composes 6 candidates (in about a second, nothing rendered) and keeps the one with the strongest tune, genre fit and section contrast"><input type="checkbox" id="pickBest"> best of 6</label></div>
       <div class="lenrow"><span class="hint" title="Full song also saves the same song in these lengths - same melody, sounds and mix, its sections rearranged">Also export</span>
         <label class="hint"><input type="checkbox" id="verRadio"> 📻 radio edit</label><label class="hint"><input type="checkbox" id="verExt"> 🪩 extended mix</label></div>
       <div class="prog" id="progBar"><i></i></div>
@@ -616,7 +617,7 @@ const LEVELS=[['drums','Drums',['kick','snare','top']],['bass','Bass',['bass']],
 let META=null, state={closed:(()=>{try{return JSON.parse(localStorage.getItem('sl_closed')||'{}')}catch(_){return {}}})(), orch_plugin:(()=>{try{return !!localStorage.getItem('sl_orch_plugin')}catch(_){return false}})(), style:'house', part_fx:{}, part_effects:{}, lastFx:{}, drum_voices:{}, lastDrums:{}, extra_parts:[], levels:{}, octaves:{}, blend:[], mood:null, cat:'Electronic', length:1.0, structure:'auto', lofi:null,
   muted:[], instruments:{}, blend_parts:{}, outputs:(()=>{ try{ const v=JSON.parse(localStorage.getItem('sl_outs')||'null'); if(Array.isArray(v)&&v.length) return v; }catch(e){} return ['mp3','midi','lmms']; })()};
 const LAYERS=[['kick','Kick'],['snare','Snare/Clap'],['top','Hats & Perc'],['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead'],['fx','FX']];
-const OUTS=[['mp3','MP3'],['wav','WAV'],['wav24','WAV 24-bit'],['flac','FLAC'],['midi','MIDI'],['stems','Stems'],['daw','DAW project (Reaper .rpp + stems, markers, tempo · Ableton, FL, Logic)'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack'],['final_only','🧹 Keep only final files']];
+const OUTS=[['mp3','MP3'],['wav','WAV'],['wav24','WAV 24-bit'],['flac','FLAC'],['midi','MIDI'],['stems','Stems'],['daw','DAW project (Reaper .rpp + stems, markers, tempo · Ableton, FL, Logic)'],['lmms','LMMS'],['waveform','Waveform'],['pack','Sample pack'],['cutdowns','Cutdowns (60 / 30 / 15 s)'],['loop','Seamless loop'],['release','📦 Release folder'],['final_only','🧹 Keep only final files']];
 const ROLES=[['bass','Bass'],['chords','Chords'],['pad','Pad'],['arp','Arp'],['lead','Lead']];
 let audio=new Audio(), playingId=null;
 // ------------------------------------------------------------- the levels visualizer in the top bar
@@ -962,6 +963,9 @@ function renderMoods(){
 function renderLayers(){ bindMutes(); }       // parts are muted with the small 'mute' boxes in Sound
 // exports that write every part as its own audio file - big (often 200-500 MB a song), so they're off unless you tick them
 const BIG_OUTS={stems:'Every part as its own WAV file - big (often 200-500 MB per song)', waveform:'A Tracktion Waveform project with every part as audio - big (often 200-500 MB per song)',
+  cutdowns:'60, 30 and 15 second edits of the song for stock-music sites: the opening bars, the hook and the song\'s own ending, joined on bar lines',
+  loop:'The whole song cut on its last bar, with the reverb and last notes folded onto the start - it repeats with no gap (for long loop videos)',
+  release:'One folder per song with the master, the cutdowns, the seamless loop, the settings and a release.json (title, genre, tempo, key, length, loudness) for an uploader',
   final_only:'After each full song is exported, delete the stems, per-part MIDI, DAW / LMMS / Waveform projects, sample pack and plugin guide - only the song itself (MP3 / WAV / FLAC, and its MIDI if chosen) is kept, plus a tiny settings file so it still opens in the editor. Saves hundreds of MB per song.',
   daw:'Projects for Ableton, FL, Logic and Reaper with every part as audio - big (often 200-500 MB per song)', pack:'A sample pack: loops and one-shots cut from the song as audio files - bigger than the song itself'};
 function renderOuts(){
@@ -1080,7 +1084,7 @@ function applyOptions(o){
   state.part_fx=Object.assign({},o.part_fx||{}); state.part_effects=JSON.parse(JSON.stringify(o.part_effects||{})); state.drum_voices=Object.assign({},o.drum_voices||{}); state.midi_parts=o.midi_parts||null; state.tlevels=Object.assign({}, o.track_levels||{}); state.extra_parts=JSON.parse(JSON.stringify(o.extra_parts||[])); if(typeof renderDrumVoices==='function') renderDrumVoices();
   state.length=o.length||1; state.structure=o.structure||'auto'; state.instruments=o.instruments||{}; state.locked={}; state.muted=o.muted||[]; state.lofi=o.lofi??null;
   $('#simplicity').value=(o.simplicity??0)*100; $('#repetition').value=(o.repetition??.5)*100; $('#mrange').value=(o.melody_range??.5)*100; $('#chordSpeed').value=o.chord_speed||''; $('#masterPreset').value=o.master_preset||''; $('#prodPass').checked=o.production_pass!==false; $('#motif').value=o.motif||'song'; $('#development').value=o.development||'auto'; $('#rotation').value=o.rotation||'auto';
-  $('#songName').value=o.title||''; $('#seed').value=o.seed||1; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
+  $('#songName').value=o.title||''; $('#seed').value=o.seed||1; ROLLED=false; $('#energy').value=(o.energy??.5)*100; $('#complexity').value=(o.complexity??.5)*100; $('#humanize').value=(o.humanize??1)*100; $('#variety').value=(o.variety??.5)*100;
   $('#brightness').value=(o.brightness||0)*100; $('#synthChar').value=o.synth_character||'analog'; $('#reverb').value=(o.reverb??1)*100; $('#delay').value=(o.delay??1)*100; $('#width').value=(o.width??1)*100;
   $('#bass').value=o.bass_boost||0; $('#drive').value=(o.drive||0)*100;
   $('#bpmAuto').checked=!o.bpm; if(o.bpm)$('#bpm').value=o.bpm; $('#key').value=o.key||''; $('#scale').value=o.scale||''; $('#prog').value=o.progression||'';
@@ -1182,7 +1186,12 @@ async function run(preview, count, opts, section, onResult, varyPart, extra){
   if(!preview && section==null && (count||1)===1 && !onResult && !varyPart && !(extra&&extra.from_queue) && quickFirst()) body.quick_first=true;
   if(body.from_queue) delete body.from_queue;
   if(!preview && section==null && (count||1)===1 && !varyPart && !o.version){ const v=exportVersions(); if(v.length) body.versions=v; }
-  const {job}=await api('/api/generate', body);
+  if(ROLLED && !opts && section==null && !varyPart && !$('#seedLock').checked && pickBest()) body.pick_best=6;   // (2.30) a new song: keep the best of 6
+  ROLLED=false;
+  const {job, picked}=await api('/api/generate', body);
+  if(picked && picked.length===1 && (count||1)===1){ const P=picked[0];
+    $('#seed').value=P.seed; document.dispatchEvent(new CustomEvent('sl-picked',{detail:P.seed}));
+    $('#status').textContent=`Kept the strongest of ${P.tried.length} candidates (score ${P.score}) — rendering…`; }
   const seen=new Set();
   const poll=async()=>{
     const j=await api('/api/job/'+job);
@@ -1203,6 +1212,7 @@ async function run(preview, count, opts, section, onResult, varyPart, extra){
 }
 // (2.17) 'Full song' plays a short preview of the same song first while the rest renders (can be switched off)
 function exportVersions(){ const v=[]; try{ if(localStorage.getItem('sl_ver_radio')==='1') v.push('radio'); if(localStorage.getItem('sl_ver_ext')==='1') v.push('extended'); }catch(e){} return v; }
+function pickBest(){ try{ return localStorage.getItem('sl_pickbest')!=='0'; }catch(e){ return true; } }
 function quickFirst(){ try{ return localStorage.getItem('sl_quickfirst')!=='0'; }catch(e){ return true; } }
 // (1.90) render queue: full songs, each with the settings it had when you queued it, rendered one after another
 const QUEUE=[]; let qRunning=null, qDone=0;
@@ -1657,7 +1667,12 @@ function abPick(r, el){
   if(AB.length<2){ bar.style.display=AB.length?'':'none'; bar.innerHTML=AB.length?'<span class="hint">A/B: pick one more result to compare</span>':''; return; }
   const name=x=>`${esc(styleName(x.r.style))} · seed ${x.r.seed}`;
   bar.style.display='';
-  bar.innerHTML=`<b>A/B</b><button class="btn s" data-ab="0">A · ${name(AB[0])}</button><button class="btn s" data-ab="1">B · ${name(AB[1])}</button><span class="hint">loudness matched · keeps your place</span><button class="mini" data-ab="x">✕</button>`;
+  bar.innerHTML=`<b>A/B</b><button class="btn s" data-ab="0">A · ${name(AB[0])}</button><button class="btn s" data-ab="1">B · ${name(AB[1])}</button><span class="hint">loudness matched · keeps your place</span><button class="mini" data-abw="0" title="A is the better song: saved with both songs' settings, and counts as a 👍">A is better</button><button class="mini" data-abw="1" title="B is the better song: saved with both songs' settings, and counts as a 👍">B is better</button><button class="mini" data-ab="x">✕</button>`;
+  bar.querySelectorAll('[data-abw]').forEach(b=>b.onclick=async()=>{ const w=AB[+b.dataset.abw], l=AB[1-(+b.dataset.abw)];
+    const wo=Object.assign({}, w.r.options||{}, {seed:w.r.seed}), lo_=Object.assign({}, l.r.options||{}, {seed:l.r.seed});
+    const t=await api('/api/ab_pick',{winner:wo, loser:lo_, winner_sounds:w.r.main_ids||{}, loser_sounds:l.r.main_ids||{}});
+    TASTE=t; bar.querySelectorAll('[data-abw]').forEach(y=>y.disabled=true);
+    $('#status').textContent=`Saved: ${b.dataset.abw==='0'?'A':'B'} is better (${t.ab_count} A/B picks so far). It counts as a 👍 too.`; });
   const lo=Math.min(...AB.map(x=>x.r.loudness??-10));
   bar.querySelectorAll('[data-ab]').forEach(b=>b.onclick=()=>{
     if(b.dataset.ab==='x'){ AB=[]; $$('.res').forEach(x=>x.classList.remove('ab')); bar.style.display='none'; audio.volume=1; return; }
@@ -2840,12 +2855,13 @@ async function init(){
   document.querySelectorAll('[data-lp]').forEach(b=>b.onclick=()=>{ $('#loudAuto').checked=false; $('#loud').value=b.dataset.lp; syncAutos(); });
   $('#bpm').oninput=syncAutos; ['bpmAuto','swingAuto','scAuto','loudAuto'].forEach(a=>$('#'+a).onchange=syncAutos);
   $('#search').oninput=renderStyles;
-  $('#dice').onclick=()=>$('#seed').value=Math.floor(Math.random()*999999)+1;
+  $('#dice').onclick=()=>{ $('#seed').value=Math.floor(Math.random()*999999)+1; ROLLED=true; };
   // pressing a generate button again makes a new song; Full song right after a preview renders that preview's song
   let lastRun=null;
   const freshSeed=(preview)=>{ const cur=+$('#seed').value||1;
-    if(!$('#seedLock').checked && lastRun && lastRun.seed===cur && (preview || !lastRun.preview)) $('#seed').value=Math.floor(Math.random()*999999)+1;
+    if(!$('#seedLock').checked && lastRun && lastRun.seed===cur && (preview || !lastRun.preview)){ $('#seed').value=Math.floor(Math.random()*999999)+1; ROLLED=true; }
     lastRun={seed:+$('#seed').value||1, preview}; };
+  document.addEventListener('sl-picked', e=>{ if(lastRun) lastRun.seed=e.detail; });   // Full song after a preview = that song
   $('#prevBtn').onclick=()=>{ freshSeed(true); run(true,1); };
   $('#playBtn').onclick=()=>{ if(!LASTR) return;
     if(changed()){ $('#status').textContent='Same song, with your changes…';
@@ -2857,6 +2873,7 @@ async function init(){
   $('#fullBtn').onclick=()=>{ freshSeed(false); run(false,1); };
   [['#verRadio','sl_ver_radio'],['#verExt','sl_ver_ext']].forEach(([id,k])=>{ const c=$(id); if(!c) return; try{ c.checked=localStorage.getItem(k)==='1'; }catch(e){}
     c.onchange=()=>{ try{ localStorage.setItem(k, c.checked?'1':'0'); }catch(e){} }; });
+  { const q=$('#pickBest'); if(q){ q.checked=pickBest(); q.onchange=()=>{ try{ localStorage.setItem('sl_pickbest', q.checked?'1':'0'); }catch(e){} }; } }
   { const q=$('#quickFirst'); if(q){ q.checked=quickFirst(); q.onchange=()=>{ try{ localStorage.setItem('sl_quickfirst', q.checked?'1':'0'); }catch(e){} }; } }
   $('#queueBtn').onclick=()=>queueAdd(freshSeed);
   $('#batchBtn').onclick=()=>batchModal(freshSeed);

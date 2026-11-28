@@ -161,3 +161,27 @@ def song_score(song):
     contrast = (max(lv) - min(lv)) * 100 if len(lv) > 1 else 30
     c = min(100, 40 + contrast * 1.5)
     return round(0.5 * g + 0.4 * max(0, min(100, m)) + 0.1 * c)
+
+
+def pick_best_seed(opts_dict, base, k=6, budget=2.0, rnd=None):
+    """(2.30) Best of several: compose (not render) the song for `base` and k-1 other fresh seeds, score each with
+    song_score and return (best seed, its score, every [seed, score] tried). Only used for a brand-new song whose seed
+    was just rolled - the chosen seed is the song's real seed, so it replays and re-renders exactly like any other.
+    Stops early when `budget` seconds are used up (slow genres try fewer candidates)."""
+    import copy
+    import time
+    from .compose import Options, compose
+    rnd = rnd or random.Random(base)
+    seeds = [int(base)] + [rnd.randrange(1, 10 ** 6) for _ in range(max(0, int(k) - 1))]
+    tried = []
+    t0 = time.time()
+    for s in seeds:
+        try:
+            sc = song_score(compose(Options.from_dict(dict(copy.deepcopy(opts_dict), seed=s))))
+        except Exception:
+            sc = -1
+        tried.append([s, sc])
+        if time.time() - t0 > budget:
+            break
+    best = max(tried, key=lambda x: x[1])
+    return best[0], best[1], tried

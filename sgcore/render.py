@@ -342,6 +342,31 @@ def loud_mask(x, span_db=8.0):
     return np.interp(np.arange(len(m)), np.arange(len(k)) * hop, k)
 
 
+_FAMILY_TONE = {}
+
+
+def family_tone(style_id, min_genres=3):
+    """(2.30) The average tonal balance of the record-measured genres in this genre's family (genre_groups), for a genre
+    that has no reference records itself - or None (it has its own, or its family has fewer than 3 measured genres).
+    Checked leave-one-out on the measured genres: hiding a genre's own target and using its family's average brought
+    83 of 90 renders closer to the hidden target (3.6 -> 3.0 dB average band error)."""
+    from .styles import STYLES
+    from .genre_groups import group_of
+    st = STYLES.get(style_id) or {}
+    if (st.get('master') or {}).get('tone'):
+        return None
+    g = group_of(style_id)
+    if g not in _FAMILY_TONE:
+        ts = []
+        for k, s in STYLES.items():
+            m = s.get('master') or {}
+            if m.get('tone') and not m.get('sub_cut') and group_of(k) == g:   # (a synthscape with no sub would skew it)
+                t = np.asarray(m['tone'], float)
+                ts.append(t - t.mean())
+        _FAMILY_TONE[g] = [round(float(v), 2) for v in np.mean(ts, axis=0)] if len(ts) >= min_genres else None
+    return _FAMILY_TONE[g]
+
+
 def tone_match(x, target, log=print, amount=0.6, limit=3.0):
     """Gentle reference matching: compare the mix's band balance with the genre's reference records and nudge each
     band part of the way there (at most +-3 dB), with broad peaking EQs - the sub with a low shelf, the air with a high
@@ -2609,6 +2634,9 @@ def master(x, cfg, log=print):
     x = eq(x, 'peak', 3000, 0.8, 0.2)
     x = eq(x, 'peak', 4600, 1.2, -0.7)
     x = eq(x, 'highshelf', 9000, 0.7, float(cfg.get('air', 1.5)) - 1.0)
+    if not cfg.get('tone') and cfg.get('tone_family'):
+        # (2.30) a genre with no reference records of its own: a gentle nudge toward its family's records
+        x = tone_match(x, cfg['tone_family'], log, amount=float(cfg.get('tone_family_amount', 0.4)), limit=2.0)
     if cfg.get('tone'):                # steer the tonal balance toward the genre's reference records
         x0 = x
         x = tone_match(x, cfg['tone'], log, amount=float(cfg.get('tone_amount', 0.6)), limit=float(cfg.get('tone_limit', 3.0)))

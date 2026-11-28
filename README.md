@@ -162,6 +162,8 @@ Each part's **Sound** menu lists your installed plugins too, so you can put any 
 - **📤 Share** on a result saves a tiny settings file; a friend opens it with **Presets → Load a shared song** and gets the exact same song.
 - The **Full song length** row picks a radio edit, normal, extended / club or a 16-bar loop in one click.
 - Export a **DAW pack** for Ableton Live, FL Studio, Logic, Reaper and others.
+- For releasing music, tick **Cutdowns** (60 / 30 / 15 s edits for stock sites), **Seamless loop** (for long loop videos) or **📦 Release folder** (all of it plus a `release.json`) under *Full song exports*.
+- In the **A/B** bar, press **A is better** or **B is better**: your picks are saved, and `python tools/ab_report.py` shows what the winners had in common.
 
 ```
 python studiolab.py generate --style rock --reference song.mid --groove laidback --ending hit --formats wav,daw
@@ -183,6 +185,7 @@ python studiolab.py generate --help
 
 ```
 pip install -r requirements.txt
+python -m tests.quick         # the quick checks that run first on every push - a few minutes
 python -m tests.features      # genre features (riffs, tuned kicks, classical forms, effects) - about a minute
 python -m tests.smoke         # every genre renders (python -m tests.smoke --shard 1/3 for a third of them)
 python -m tests.genres        # genre authenticity checks

@@ -19,7 +19,8 @@ DEFAULT = dict(mode='midi', days=7)
 PREVIEW_DAYS = 1.0
 # what a trimmed song keeps
 KEEP_WHEN_TRIMMED = ('_settings.json', '.mid')
-PROJECT_PARTS = ('_settings.json', '_PLUGIN_GUIDE.txt', '_samplepack', '_waveform', '_DAW', '_parts', '_stems',
+PROJECT_PARTS = ('_60s.wav', '_30s.wav', '_15s.wav', '_60s.mp3', '_30s.mp3', '_15s.mp3', '_seamless_loop.wav', '_seamless_loop.mp3', '_release',
+                 '_settings.json', '_PLUGIN_GUIDE.txt', '_samplepack', '_waveform', '_DAW', '_parts', '_stems',
                  '.mp3', '.wav', '.mid', '.mmp', '.zip', '.flac')
 
 

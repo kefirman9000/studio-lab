@@ -11,7 +11,7 @@ from .compose import Options, compose
 from .windows import preview_window, section_window, section_loop
 from .render import Renderer, master
 
-OUTPUTS = ('wav', 'mp3', 'midi', 'stems', 'lmms', 'waveform', 'pack', 'daw', 'final_only')
+OUTPUTS = ('wav', 'mp3', 'midi', 'stems', 'lmms', 'waveform', 'pack', 'daw', 'cutdowns', 'loop', 'release', 'final_only')
 
 
 # options the song editor changes on an existing song (sounds, levels, notes, volume lines ...)
@@ -388,6 +388,11 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     mix = r.render(stems_dir, progress=progress)
     r.premaster_peak = float(np.max(np.abs(mix)))
     mcfg = dict(song['st']['master'])
+    if not mcfg.get('tone'):                          # (2.30) no records of its own: its family's records, gently
+        from .render import family_tone
+        ft = family_tone(str(song.get('style') or '').split('+')[0])
+        if ft:
+            mcfg['tone_family'] = ft
     from .render import _trim
     _trim()
     out = master(mix, mcfg, log=log)
@@ -399,6 +404,7 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
     if loop:
         out = wrap_loop(out, r._bt(song['total_bars'] * 4))
         info['loop_seconds'] = round(out.shape[-1] / dsp.SR, 3)
+    untrimmed = out                                   # (2.30) beat 0 = sample 0: what the cutdowns are cut from
     out, trimmed = (out, 0.0) if loop else trim_lead_in(out)
     if trimmed > 0.05:
         log(f'   trimmed {trimmed:.1f} s of near-silent lead-in (at most 1 s left before the music)')
@@ -437,6 +443,36 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
         mp3 = dsp.write_mp3(wav, wav[:-4] + '.mp3', 320, dict(title=name, genre=info['style'], artist='Studio Lab'))
         if mp3:
             files['mp3'] = mp3
+    rel_out = {'cutdowns', 'loop', 'release'} & outputs
+    if rel_out and not preview and section is None:       # (2.30) stock cutdowns, a seamless loop, a release folder
+        from . import release as rel
+        tags = dict(title=name, genre=info['style'], artist='Studio Lab')
+        extra = {}
+
+        def _save(x, suffix, key):
+            w = dsp.write_wav(os.path.join(outdir, title + suffix + '.wav'), x)
+            w = w if isinstance(w, str) else os.path.join(outdir, title + suffix + '.wav')
+            if 'mp3' in outputs and have_ffmpeg():
+                m = dsp.write_mp3(w, w[:-4] + '.mp3', 320, tags)
+                if m and 'wav' not in outputs:
+                    os.remove(w)
+                    w = m
+                elif m:
+                    extra[key + '_mp3'] = m
+            extra[key] = w
+        try:
+            if {'cutdowns', 'release'} & outputs:
+                for L, x in rel.cutdowns(untrimmed, song, r).items():
+                    _save(x, f'_{L}s', f'cut{L}')
+                info['cutdowns'] = sorted(int(k[3:]) for k in extra if k[3:].isdigit())
+                log('   cutdowns: ' + (', '.join(f'{L} s' for L in info['cutdowns']) or 'the song is too short for any'))
+            if {'loop', 'release'} & outputs:
+                _save(rel.seamless_loop(untrimmed, song, r), '_seamless_loop', 'loop')
+                log('   seamless loop: the whole song, cut on its last bar with the ring-out folded onto the start')
+        except Exception as e:                             # a bonus export never fails the song itself
+            log(f'   (release exports skipped: {e})')
+        files.update(extra)
+        files['_release_extra'] = extra
     if not preview:
         from . import exporters
         full = song
@@ -466,6 +502,18 @@ def generate(opts, outdir, outputs=('wav',), preview=False, log=print, progress=
             json.dump(dict(options=opts.to_dict(), info=info), f, indent=2)
         from . import plugins
         files['guide'] = plugins.write_guide(os.path.join(outdir, title + '_PLUGIN_GUIDE.txt'), song, prefs)
+    extra = files.pop('_release_extra', None)
+    if 'release' in outputs and not preview and section is None:
+        from . import release as rel
+        try:
+            main = {k: files[k] for k in ('mp3', 'wav', 'flac', 'wav24', 'midi', 'stems') if k in files}
+            info.update(loudness=round(loud, 1), peak=round(peak, 1))
+            st_ = os.path.join(outdir, title + '_settings.json')
+            files['release'] = rel.write_release(os.path.join(outdir, title + '_release'), title, name, info, main,
+                                                 dict(extra or {}, settings=st_), song)
+            log('   release folder: master, cutdowns, loop and release.json')
+        except Exception as e:
+            log(f'   (release folder skipped: {e})')
     if 'wav' not in outputs and 'mp3' in files and not preview:
         os.remove(wav)
         files.pop('wav')
